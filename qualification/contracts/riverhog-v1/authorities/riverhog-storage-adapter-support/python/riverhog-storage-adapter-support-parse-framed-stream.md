@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-633b4476fc"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b4c2507b17"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-238685f6c4"></a>`distribution` | "riverhog-storage-adapter-support" |
-| <a id="s-87f802a6c6"></a>`module` | "riverhog_storage_adapter_support" |
-| <a id="s-bebc30f3f3"></a>`name` | "parse_framed_stream" |
-| <a id="s-983c8fd085"></a>`unit` | "export" |
+- <a id="s-238685f6c4"></a>`distribution`: `riverhog-storage-adapter-support`
+- <a id="s-87f802a6c6"></a>`module`: `riverhog_storage_adapter_support`
+- <a id="s-bebc30f3f3"></a>`name`: `parse_framed_stream`
+- <a id="s-983c8fd085"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-c2dc7e8ba1"></a>`kind`: `"function"`
+- <a id="s-f5cf62b09b"></a>`signature`: `"\"(chunks: 'Iterable[bytes]', model: 'type[ModelT]', *, content_length: 'int', maximum_header_bytes: 'int' = 32768) -> 'tuple[ModelT, FramedContent]'\""`
 
 ## Governing policies
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a8a7f9fa0d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8a83b3ec23"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-444acb13b5"></a>`distribution` | "stove0-review-rclone-effect-target" |
-| <a id="s-62e746a86b"></a>`module` | "stove0_review_rclone_effect_target" |
-| <a id="s-f26262e0e8"></a>`name` | "ReviewRcloneEffectTargetService" |
-| <a id="s-321dfd6b1e"></a>`unit` | "export" |
+- <a id="s-444acb13b5"></a>`distribution`: `stove0-review-rclone-effect-target`
+- <a id="s-62e746a86b"></a>`module`: `stove0_review_rclone_effect_target`
+- <a id="s-f26262e0e8"></a>`name`: `ReviewRcloneEffectTargetService`
+- <a id="s-321dfd6b1e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-9ed50a7219"></a>`kind`: `"class"`
+- <a id="s-714f4e9a06"></a>`signature`: `"\"(*, state_root: 'Path', workspace_root: 'Path', samplers: 'tuple[SamplerRegistration, ...]', destination: 'RcloneReviewDestination', source_revision: 'str' = 'unknown', image_digest: 'str', implementation_version: 'str', terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""`
 
 ## Governing policies
 

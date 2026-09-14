@@ -14,13 +14,41 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0583469c59"></a>
-| Field | Shape |
+- <a id="s-e924690e61"></a>`distribution`: `stove0-media-archive-target-contracts`
+- <a id="s-786c5fda7e"></a>`module`: `stove0_media_archive_target_contracts`
+- <a id="s-08d103b95c"></a>`name`: `MediaProjectionPolicy`
+- <a id="s-b5c0bc4f38"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-1b78e378a7"></a>`kind`: `"class"`
+- <a id="s-ecf27d7543"></a>`signature`: `"\"(*, format: Literal['stove0-media-projection-policy/v1'] = 'stove0-media-projection-policy/v1', device_make: str \| None = None, device_model: str \| None = None, gps: stove0_media_archive_target_contracts.projection_policy.MediaGps \| None = None, creators: tuple[str, ...] = (), tags: tuple[str, ...] = (), field_preferences: tuple[stove0_media_archive_target_contracts.projection_policy.MediaFieldPreference, ...] = ()) -> None\""`
+
+#### Validated model schema
+
+<a id="s-1ef0b6d911"></a>
+- <a id="s-c8eed6f6e7"></a>`title`: MediaProjectionPolicy
+- <a id="s-515829c2ba"></a>`description`: Portable recipe-owned choices; omitted values are never manufactured.
+- <a id="s-3a66fe7954"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f165b60f52"></a>`creators` | no | type="array"; items=(type="string") |  |
+| <a id="s-8a5b4f8985"></a>`device_make` | no | anyOf=type="string" \| type="null" |  |
+| <a id="s-5b78b916e3"></a>`device_model` | no | anyOf=type="string" \| type="null" |  |
+| <a id="s-bd011a12ad"></a>`field_preferences` | no | type="array"; items=(#/$defs/MediaFieldPreference) |  |
+| <a id="s-d84a23de97"></a>`format` | no | type="string"; const="stove0-media-projection-policy/v1" |  |
+| <a id="s-767a992ab5"></a>`gps` | no | anyOf=#/$defs/MediaGps \| type="null" |  |
+| <a id="s-abb83142af"></a>`tags` | no | type="array"; items=(type="string") |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-ead53debb9"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-e924690e61"></a>`distribution` | "stove0-media-archive-target-contracts" |
-| <a id="s-786c5fda7e"></a>`module` | "stove0_media_archive_target_contracts" |
-| <a id="s-08d103b95c"></a>`name` | "MediaProjectionPolicy" |
-| <a id="s-b5c0bc4f38"></a>`unit` | "export" |
+| <a id="s-9266a8309a"></a>`MediaFieldPreference` | type="object"; fields=`fields`, `name`; additional keys=`additionalProperties`, `required` |
+| <a id="s-12cf49e35b"></a>`MediaGps` | type="object"; fields=`latitude`, `longitude`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -55,13 +83,137 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3927e5d1a07fac8b88f9eee597fadb5f94bdaaefeb22a0d7328b22234ed7c664 -->
+<!-- exact-contract-value: a82d121e7d9709cc9844ef64d7fbffc019780056a31e59e6cb86320f5f376b25 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "77a33bbdb2a9e5f2d6191fab61273bc8f1eb5d357196a75ecf82c730a1dfd621",
+    "schema": {
+      "$defs": {
+        "MediaFieldPreference": {
+          "additionalProperties": false,
+          "properties": {
+            "fields": {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "title": "Fields",
+              "type": "array"
+            },
+            "name": {
+              "enum": [
+                "capture-time",
+                "creator",
+                "device-make",
+                "device-model",
+                "gps-latitude",
+                "gps-longitude"
+              ],
+              "title": "Name",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "fields"
+          ],
+          "title": "MediaFieldPreference",
+          "type": "object"
+        },
+        "MediaGps": {
+          "additionalProperties": false,
+          "properties": {
+            "latitude": {
+              "title": "Latitude",
+              "type": "number"
+            },
+            "longitude": {
+              "title": "Longitude",
+              "type": "number"
+            }
+          },
+          "required": [
+            "latitude",
+            "longitude"
+          ],
+          "title": "MediaGps",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Portable recipe-owned choices; omitted values are never manufactured.",
+      "properties": {
+        "creators": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Creators",
+          "type": "array"
+        },
+        "device_make": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Device Make"
+        },
+        "device_model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Device Model"
+        },
+        "field_preferences": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/MediaFieldPreference"
+          },
+          "title": "Field Preferences",
+          "type": "array"
+        },
+        "format": {
+          "const": "stove0-media-projection-policy/v1",
+          "default": "stove0-media-projection-policy/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "gps": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MediaGps"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "tags": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Tags",
+          "type": "array"
+        }
+      },
+      "title": "MediaProjectionPolicy",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['stove0-media-projection-policy/v1'] = 'stove0-media-projection-policy/v1', device_make: str | None = None, device_model: str | None = None, gps: stove0_media_archive_target_contracts.projection_policy.MediaGps | None = None, creators: tuple[str, ...] = (), tags: tuple[str, ...] = (), field_preferences: tuple[stove0_media_archive_target_contracts.projection_policy.MediaFieldPreference, ...] = ()) -> None\""
   },
   "distribution": "stove0-media-archive-target-contracts",

@@ -7,12 +7,15 @@ import re
 import sys
 from pathlib import Path
 from types import ModuleType
-from typing import Any
+from typing import Any, cast
 
+import pytest
 from jsonschema import Draft202012Validator
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts/contract_freeze.py"
+_CHECKED_PROJECTION: dict[str, Any] | None = None
+_CHECKED_TRACE: dict[str, Any] | None = None
 
 
 def load_script() -> ModuleType:
@@ -26,12 +29,21 @@ def load_script() -> ModuleType:
     return module
 
 
+@pytest.fixture(scope="module", autouse=True)
+def _bind_checked_contract(checked_contract_closure: dict[str, Any]) -> None:
+    global _CHECKED_PROJECTION, _CHECKED_TRACE
+    _CHECKED_PROJECTION = cast(dict[str, Any], checked_contract_closure["projection"])
+    _CHECKED_TRACE = cast(dict[str, Any], checked_contract_closure["trace"])
+
+
 def _checked_projection() -> dict[str, Any]:
-    return load_script()._load_checked_projection()
+    assert _CHECKED_PROJECTION is not None
+    return _CHECKED_PROJECTION
 
 
 def _checked_trace() -> dict[str, Any]:
-    return load_script()._load_checked_trace()
+    assert _CHECKED_TRACE is not None
+    return _CHECKED_TRACE
 
 
 def _resolve_pointer(document: object, pointer: str) -> object:
@@ -420,7 +432,11 @@ def test_semantic_protocol_and_state_authorities_do_not_freeze_source_layout() -
         for authority in external["protocol_schemas"]
     )
     assert all(
-        "fixture_sha256s" in owner and "fixtures" not in owner
+        "structure" in owner
+        and "fixtures" not in owner
+        and "fixture_sha256s" not in owner
+        and "module" not in owner["structure"]
+        and "symbol" not in owner["structure"]
         for owner in external["durable_state"]["owners"]
     )
 

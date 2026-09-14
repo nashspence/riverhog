@@ -14,13 +14,25 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a6657af26d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-aaadaeeb0e"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-0f3165e2dc"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-45b152ebd2"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-3bbaef7019"></a>`name` | "SegmentFilePlacement" |
-| <a id="s-7e5f1a5a88"></a>`unit` | "export" |
+- <a id="s-0f3165e2dc"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-45b152ebd2"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-3bbaef7019"></a>`name`: `SegmentFilePlacement`
+- <a id="s-7e5f1a5a88"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-70dad46fe4"></a>`kind`: `"class"`
+- <a id="s-c4df0bea86"></a>`signature`: `"\"(path: 'str', offset: 'int', bytes: 'int', file_bytes: 'int', sha256: 'str') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-568583e4f8"></a>`path` | `'str'` | `required` |
+| <a id="s-f8cbb20b8e"></a>`offset` | `'int'` | `required` |
+| <a id="s-0b236ba0bd"></a>`bytes` | `'int'` | `required` |
+| <a id="s-17cd87c930"></a>`file_bytes` | `'int'` | `required` |
+| <a id="s-419cd535a0"></a>`sha256` | `'str'` | `required` |
 
 ## Maintained corroboration
 

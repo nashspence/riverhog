@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d8fac89bc4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d5d7ce8c91"></a>`contract` | type="http_api_contracts.HttpOperationErrorAuthority"; additional keys=`kind` |
-| <a id="s-4689120c37"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-01fd31f171"></a>`module` | "riverhog_protocol" |
-| <a id="s-fc254ca0ae"></a>`name` | "RIVERHOG_HTTP_ERROR_AUTHORITY" |
-| <a id="s-6a96d8a0b7"></a>`unit` | "export" |
+- <a id="s-4689120c37"></a>`distribution`: `riverhog-protocol`
+- <a id="s-01fd31f171"></a>`module`: `riverhog_protocol`
+- <a id="s-fc254ca0ae"></a>`name`: `RIVERHOG_HTTP_ERROR_AUTHORITY`
+- <a id="s-6a96d8a0b7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0f196bb98c"></a>`kind`: `"object"`
+- <a id="s-655aeea3b4"></a>`type`: `"http_api_contracts.HttpOperationErrorAuthority"`
 
 ## Governing policies
 

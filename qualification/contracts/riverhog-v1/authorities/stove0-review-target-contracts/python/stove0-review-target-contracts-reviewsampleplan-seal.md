@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-cce4ed2455"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-efd7b269be"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e8f5cd88ba"></a>`distribution` | "stove0-review-target-contracts" |
-| <a id="s-c4f4d6f412"></a>`module` | "stove0_review_target_contracts" |
-| <a id="s-ddc254ff52"></a>`name` | "seal" |
-| <a id="s-bcb48aab49"></a>`owner` | "stove0_review_target_contracts.ReviewSamplePlan" |
-| <a id="s-b6a9127d32"></a>`unit` | "member" |
+- <a id="s-e8f5cd88ba"></a>`distribution`: `stove0-review-target-contracts`
+- <a id="s-c4f4d6f412"></a>`module`: `stove0_review_target_contracts`
+- <a id="s-ddc254ff52"></a>`name`: `seal`
+- <a id="s-bcb48aab49"></a>`owner`: `stove0_review_target_contracts.ReviewSamplePlan`
+- <a id="s-b6a9127d32"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-b5eae63e0d"></a>`kind`: `"classmethod"`
+- <a id="s-5524125603"></a>`signature`: `"\"(cls, payload: 'ReviewSamplePlanPayload') -> 'ReviewSamplePlan'\""`
 
 ## Maintained corroboration
 

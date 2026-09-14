@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b0963aeba9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9c74d0c469"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-7a601da911"></a>`distribution` | "stove0-protocol" |
-| <a id="s-c2cf00e222"></a>`module` | "stove0_protocol" |
-| <a id="s-001b6c76eb"></a>`name` | "BRANCH_EFFECT_SETTLEMENT_FORMAT" |
-| <a id="s-8fa49d4dfc"></a>`unit` | "export" |
+- <a id="s-7a601da911"></a>`distribution`: `stove0-protocol`
+- <a id="s-c2cf00e222"></a>`module`: `stove0_protocol`
+- <a id="s-001b6c76eb"></a>`name`: `BRANCH_EFFECT_SETTLEMENT_FORMAT`
+- <a id="s-8fa49d4dfc"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-541ec319c3"></a>`kind`: `"constant"`
+- <a id="s-ae4453aebf"></a>`value`: `"stove0-branch-effect-settlement/v1"`
 
 ## Governing policies
 

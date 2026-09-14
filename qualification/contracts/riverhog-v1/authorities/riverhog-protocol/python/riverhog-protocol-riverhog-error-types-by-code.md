@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-27d1acf713"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6ded57031a"></a>`contract` | type="builtins.dict"; additional keys=`kind` |
-| <a id="s-116f34bb84"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-11ace64bcc"></a>`module` | "riverhog_protocol" |
-| <a id="s-247415a87d"></a>`name` | "RIVERHOG_ERROR_TYPES_BY_CODE" |
-| <a id="s-d966af4579"></a>`unit` | "export" |
+- <a id="s-116f34bb84"></a>`distribution`: `riverhog-protocol`
+- <a id="s-11ace64bcc"></a>`module`: `riverhog_protocol`
+- <a id="s-247415a87d"></a>`name`: `RIVERHOG_ERROR_TYPES_BY_CODE`
+- <a id="s-d966af4579"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-31e2b34f44"></a>`kind`: `"object"`
+- <a id="s-d500f3b2d0"></a>`type`: `"builtins.dict"`
 
 ## Governing policies
 

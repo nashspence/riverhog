@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-255af30b2b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-18d5d6535a"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-32a2c31223"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-92b9f0609e"></a>`module` | "stove0_target_protocol" |
-| <a id="s-cb1948dcd0"></a>`name` | "TargetInapplicable" |
-| <a id="s-a006e32614"></a>`unit` | "export" |
+- <a id="s-32a2c31223"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-92b9f0609e"></a>`module`: `stove0_target_protocol`
+- <a id="s-cb1948dcd0"></a>`name`: `TargetInapplicable`
+- <a id="s-a006e32614"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-2a710a2af3"></a>`kind`: `"class"`
+- <a id="s-c4dc403505"></a>`signature`: `"\"(*, code: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-607b89b2a0"></a>
+- <a id="s-c119e5b93d"></a>`title`: TargetInapplicable
+- <a id="s-ffa69fa9fd"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-873c9abaec"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-625057ee90"></a>`message` | yes | type="string"; minLength=1; maxLength=1000 |  |
 
 ## Governing policies
 
@@ -46,13 +61,34 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 24de941dbb767c4d4c0c216a6777d9a46535b053599491f1f719cb58a95589cb -->
+<!-- exact-contract-value: 03ba79bd12a17ceb7f1f7ee18b931c4aea4825ab7889f3a72f8cec8883f05f2f -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "e6e7b7f0a6d88757ed930e374dc9c6877fd96d32d1a689c2d8fbc8e6a3838457",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "TargetInapplicable",
+      "type": "object"
+    },
     "signature": "\"(*, code: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None\""
   },
   "distribution": "stove0-target-protocol",

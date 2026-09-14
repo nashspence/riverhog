@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fc0269984a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4e329c9cd0"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-15c5e22d2f"></a>`distribution` | "lifecycle-events" |
-| <a id="s-321958d9c8"></a>`module` | "lifecycle_events" |
-| <a id="s-ff00a09b47"></a>`name` | "append" |
-| <a id="s-7de3845bcf"></a>`owner` | "lifecycle_events.SQLiteLifecycleEventLog" |
-| <a id="s-05333dc52c"></a>`unit` | "member" |
+- <a id="s-15c5e22d2f"></a>`distribution`: `lifecycle-events`
+- <a id="s-321958d9c8"></a>`module`: `lifecycle_events`
+- <a id="s-ff00a09b47"></a>`name`: `append`
+- <a id="s-7de3845bcf"></a>`owner`: `lifecycle_events.SQLiteLifecycleEventLog`
+- <a id="s-05333dc52c"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-f5e34cd494"></a>`kind`: `"method"`
+- <a id="s-d54b5f2170"></a>`signature`: `"\"(self, event: 'CloudEvent', *, owner: 'str', context: 'dict[str, object] \| None' = None, context_expires_at: 'str \| None' = None) -> 'int'\""`
 
 ## Maintained corroboration
 

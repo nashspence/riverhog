@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4dd2d3137d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1921083d67"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-153beb4e14"></a>`distribution` | "stove0-server" |
-| <a id="s-b47b619a9c"></a>`module` | "stove0_core" |
-| <a id="s-20a0eed63b"></a>`name` | "settle_processing_claim" |
-| <a id="s-5b077e7478"></a>`owner` | "stove0_core.RiverhogApi" |
-| <a id="s-61eae5ed9e"></a>`unit` | "member" |
+- <a id="s-153beb4e14"></a>`distribution`: `stove0-server`
+- <a id="s-b47b619a9c"></a>`module`: `stove0_core`
+- <a id="s-20a0eed63b"></a>`name`: `settle_processing_claim`
+- <a id="s-5b077e7478"></a>`owner`: `stove0_core.RiverhogApi`
+- <a id="s-61eae5ed9e"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-81e84e7840"></a>`kind`: `"method"`
+- <a id="s-12ac7d92b5"></a>`signature`: `"\"(self, claim_id: 'str', *, fence: 'int', output_collection_id: 'int', derivation: 'Mapping[str, Any]', outcome_claim_id: 'str \| None' = None, outcome_fence: 'int \| None' = None, outcome_id: 'str \| None' = None) -> 'ProcessingClaimDocument'\""`
 
 ## Maintained corroboration
 

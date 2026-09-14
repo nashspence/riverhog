@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2d0d5f1f51"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-10a13e6c2f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-3e38956bca"></a>`distribution` | "gogurt-core" |
-| <a id="s-0837cd9240"></a>`module` | "gogurt_core" |
-| <a id="s-697671926a"></a>`name` | "from_mapping" |
-| <a id="s-f4cf81fe3a"></a>`owner` | "gogurt_core.GogurtRouteMarker" |
-| <a id="s-c429684da7"></a>`unit` | "member" |
+- <a id="s-3e38956bca"></a>`distribution`: `gogurt-core`
+- <a id="s-0837cd9240"></a>`module`: `gogurt_core`
+- <a id="s-697671926a"></a>`name`: `from_mapping`
+- <a id="s-f4cf81fe3a"></a>`owner`: `gogurt_core.GogurtRouteMarker`
+- <a id="s-c429684da7"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-012181e1c7"></a>`kind`: `"classmethod"`
+- <a id="s-b89b5ebbc0"></a>`signature`: `"\"(cls, value: 'object') -> 'GogurtRouteMarker'\""`
 
 ## Maintained corroboration
 

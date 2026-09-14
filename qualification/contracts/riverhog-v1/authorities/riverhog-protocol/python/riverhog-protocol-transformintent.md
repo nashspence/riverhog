@@ -14,13 +14,27 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-31a07b99be"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d5c7f60f27"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-bf4e6dfd1f"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-4f7f42422b"></a>`module` | "riverhog_protocol" |
-| <a id="s-81e91cabf3"></a>`name` | "TransformIntent" |
-| <a id="s-bcfb57ad1c"></a>`unit` | "export" |
+- <a id="s-bf4e6dfd1f"></a>`distribution`: `riverhog-protocol`
+- <a id="s-4f7f42422b"></a>`module`: `riverhog_protocol`
+- <a id="s-81e91cabf3"></a>`name`: `TransformIntent`
+- <a id="s-bcfb57ad1c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-33c88b4fbd"></a>`kind`: `"class"`
+- <a id="s-55a08a6a00"></a>`signature`: `"\"(transform_id: 'str', recipe: 'RecipeIdentity', operation: 'OperationIdentity', inputs: 'tuple[CollectionRootIdentity, ...]', effective_intent: 'dict[str, JsonValue]', retirement_policy: 'RetirementPolicy' = 'retain', retirement_grace_seconds: 'int' = 0) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-36fa438658"></a>`transform_id` | `'str'` | `required` |
+| <a id="s-83c4503171"></a>`recipe` | `'RecipeIdentity'` | `required` |
+| <a id="s-dc33e87e1a"></a>`operation` | `'OperationIdentity'` | `required` |
+| <a id="s-eda689f306"></a>`inputs` | `'tuple[CollectionRootIdentity, ...]'` | `required` |
+| <a id="s-4478b58b21"></a>`effective_intent` | `'dict[str, JsonValue]'` | `required` |
+| <a id="s-914047a5fa"></a>`retirement_policy` | `'RetirementPolicy'` | `'retain'` |
+| <a id="s-eea4e56ee4"></a>`retirement_grace_seconds` | `'int'` | `0` |
 
 ## Maintained corroboration
 

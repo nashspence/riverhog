@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2b249a0d91"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-13e34f6544"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-94de2d6c30"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-d5f979f1e9"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-ee33da7404"></a>`name` | "EvaluationReviewIn" |
-| <a id="s-af4b6314cf"></a>`unit` | "export" |
+- <a id="s-94de2d6c30"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-d5f979f1e9"></a>`module`: `stove0_operator_contracts`
+- <a id="s-ee33da7404"></a>`name`: `EvaluationReviewIn`
+- <a id="s-af4b6314cf"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ee74c3ad2e"></a>`kind`: `"class"`
+- <a id="s-749736db76"></a>`signature`: `"\"(*, rating: Annotated[int \| None, Ge(ge=1), Le(le=5)] = None, note: Annotated[Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=None, pattern='^\\\\\\\\S(?:[\\\\\\\\s\\\\\\\\S]*\\\\\\\\S)?$', ascii_only=None)]], MaxLen(max_length=4000)] = None) -> None\""`
+
+#### Validated model schema
+
+<a id="s-c3c9c96bae"></a>
+- <a id="s-180af637df"></a>`title`: EvaluationReviewIn
+- <a id="s-d3100af1b2"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-8f6ed07d62"></a>`note` | no | anyOf=type="string"; minLength=1; maxLength=4000; pattern="^\\S(?:[\\s\\S]*\\S)?$" \| type="null" |  |
+| <a id="s-a7f49cdf49"></a>`rating` | no | anyOf=type="integer"; minimum=1; maximum=5 \| type="null" |  |
 
 ## Maintained corroboration
 
@@ -52,13 +67,70 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fe6bc4d5b05e25897079dd1cf3d5f95dbcbaf96c369e60102be561c9776c4e64 -->
+<!-- exact-contract-value: ceff4a715a8b619a949fa7b0b097574b4c4b5141605720c3f38fa1994751da97 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "057c8f0be704962160a967eaa670c87ef7dd12dc49b77caed90b95a7d1b002fc",
+    "schema": {
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "properties": {
+            "rating": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "rating"
+          ]
+        },
+        {
+          "properties": {
+            "note": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "note"
+          ]
+        }
+      ],
+      "properties": {
+        "note": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "pattern": "^\\S(?:[\\s\\S]*\\S)?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        },
+        "rating": {
+          "anyOf": [
+            {
+              "maximum": 5,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rating"
+        }
+      },
+      "title": "EvaluationReviewIn",
+      "type": "object"
+    },
     "signature": "\"(*, rating: Annotated[int | None, Ge(ge=1), Le(le=5)] = None, note: Annotated[Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=None, pattern='^\\\\\\\\S(?:[\\\\\\\\s\\\\\\\\S]*\\\\\\\\S)?$', ascii_only=None)]], MaxLen(max_length=4000)] = None) -> None\""
   },
   "distribution": "stove0-operator-contracts",

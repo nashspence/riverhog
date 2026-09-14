@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8880b6b947"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6c1dfb4330"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7422c70726"></a>`distribution` | "riverhog-storage-adapter-filesystem" |
-| <a id="s-0ff7d9b3ef"></a>`module` | "riverhog_storage_adapter_filesystem" |
-| <a id="s-fcb32ed153"></a>`name` | "close" |
-| <a id="s-6f32962246"></a>`owner` | "riverhog_storage_adapter_filesystem.FilesystemStorageAdapter" |
-| <a id="s-dcfcbac901"></a>`unit` | "member" |
+- <a id="s-7422c70726"></a>`distribution`: `riverhog-storage-adapter-filesystem`
+- <a id="s-0ff7d9b3ef"></a>`module`: `riverhog_storage_adapter_filesystem`
+- <a id="s-fcb32ed153"></a>`name`: `close`
+- <a id="s-6f32962246"></a>`owner`: `riverhog_storage_adapter_filesystem.FilesystemStorageAdapter`
+- <a id="s-dcfcbac901"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-26c5908ed7"></a>`kind`: `"method"`
+- <a id="s-a1c120a854"></a>`signature`: `"\"(self) -> 'None'\""`
 
 ## Maintained corroboration
 

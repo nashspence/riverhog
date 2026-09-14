@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d505295d0a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d320a4d58a"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-9dd965a199"></a>`distribution` | "http-api-contracts" |
-| <a id="s-756975461e"></a>`module` | "http_api_contracts" |
-| <a id="s-0bb83745e0"></a>`name` | "JSON_SEQUENCE_MEDIA_TYPE" |
-| <a id="s-e71fd8f38b"></a>`unit` | "export" |
+- <a id="s-9dd965a199"></a>`distribution`: `http-api-contracts`
+- <a id="s-756975461e"></a>`module`: `http_api_contracts`
+- <a id="s-0bb83745e0"></a>`name`: `JSON_SEQUENCE_MEDIA_TYPE`
+- <a id="s-e71fd8f38b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-452f00d7f3"></a>`kind`: `"constant"`
+- <a id="s-f94502ea62"></a>`value`: `"application/json-seq"`
 
 ## Governing policies
 

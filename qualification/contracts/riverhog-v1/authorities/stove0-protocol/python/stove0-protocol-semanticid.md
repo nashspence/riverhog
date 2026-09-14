@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1957007a90"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2f9af9609c"></a>`contract` | type="typing._AnnotatedAlias"; additional keys=`kind` |
-| <a id="s-d1394e5a11"></a>`distribution` | "stove0-protocol" |
-| <a id="s-725dc9b88f"></a>`module` | "stove0_protocol" |
-| <a id="s-02736a8813"></a>`name` | "SemanticId" |
-| <a id="s-1d02259036"></a>`unit` | "export" |
+- <a id="s-d1394e5a11"></a>`distribution`: `stove0-protocol`
+- <a id="s-725dc9b88f"></a>`module`: `stove0_protocol`
+- <a id="s-02736a8813"></a>`name`: `SemanticId`
+- <a id="s-1d02259036"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0fe5f65e51"></a>`kind`: `"object"`
+- <a id="s-992457870d"></a>`type`: `"typing._AnnotatedAlias"`
 
 ## Governing policies
 

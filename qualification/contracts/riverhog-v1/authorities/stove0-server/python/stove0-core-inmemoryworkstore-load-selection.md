@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1b9b24e852"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2e99444b85"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-1f91ca4d28"></a>`distribution` | "stove0-server" |
-| <a id="s-77a4cd63d3"></a>`module` | "stove0_core" |
-| <a id="s-e6dfd217c4"></a>`name` | "load_selection" |
-| <a id="s-a489865124"></a>`owner` | "stove0_core.InMemoryWorkStore" |
-| <a id="s-868f850f9c"></a>`unit` | "member" |
+- <a id="s-1f91ca4d28"></a>`distribution`: `stove0-server`
+- <a id="s-77a4cd63d3"></a>`module`: `stove0_core`
+- <a id="s-e6dfd217c4"></a>`name`: `load_selection`
+- <a id="s-a489865124"></a>`owner`: `stove0_core.InMemoryWorkStore`
+- <a id="s-868f850f9c"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-d726c9c2dc"></a>`kind`: `"method"`
+- <a id="s-5f45484120"></a>`signature`: `"\"(self, selection_sha256: 'str') -> 'ArtifactSelection \| None'\""`
 
 ## Maintained corroboration
 

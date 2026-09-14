@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e2dadabf7f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3d41677714"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-036bb6e548"></a>`distribution` | "gogurt-core" |
-| <a id="s-bbfec0dce9"></a>`module` | "gogurt_core" |
-| <a id="s-69abb98fac"></a>`name` | "iter_new_mounts" |
-| <a id="s-2021fadfdb"></a>`unit` | "export" |
+- <a id="s-036bb6e548"></a>`distribution`: `gogurt-core`
+- <a id="s-bbfec0dce9"></a>`module`: `gogurt_core`
+- <a id="s-69abb98fac"></a>`name`: `iter_new_mounts`
+- <a id="s-2021fadfdb"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-2812443fc3"></a>`kind`: `"function"`
+- <a id="s-4a36e5d061"></a>`signature`: `"\"(*, discover: 'Callable[[], Sequence[Path]]', interval_seconds: 'float' = 2.0, include_existing: 'bool' = False, sleep: 'Callable[[float], None]' = <built-in function sleep>) -> 'Iterator[Path]'\""`
 
 ## Governing policies
 

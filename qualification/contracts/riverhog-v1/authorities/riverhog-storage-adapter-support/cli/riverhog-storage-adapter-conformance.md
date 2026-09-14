@@ -41,7 +41,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-0779825aae"></a>`conformant` | <a id="s-3356217d42"></a>`{"kind":"conformance-completed"}` | <a id="s-a511e84d49"></a>`0` | <a id="s-545267f90c"></a>`json: riverhog-storage-adapter-conformance-result/v1` | <a id="s-d8d26cc42e"></a>`all: empty` |
+| <a id="s-0779825aae"></a>`conformant` | <a id="s-3356217d42"></a>`{"kind":"conformance-completed"}` | <a id="s-a511e84d49"></a>`0` | <a id="s-545267f90c"></a>`json: schema-authority` | <a id="s-d8d26cc42e"></a>`all: empty` |
 
 #### Failure outcomes
 
@@ -144,7 +144,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/riverhog-storage-adapter-conformance/result_contract`
 
-<!-- exact-contract-value: c11d76dc83925f98b0fa2695bbc41e8b41731a55530827dbe8bd4ab31f48f57c -->
+<!-- exact-contract-value: 8f9369a0b3894d42ed58104a115a9acb5381def19e71b617277f68d35b04a77e -->
 
 ```json
 {
@@ -179,8 +179,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "stdout": {
         "json": {
-          "identity": "riverhog-storage-adapter-conformance-result/v1",
-          "kind": "semantic-format"
+          "authority": "generated:riverhog-storage-adapter",
+          "definition": "StorageAdapterConformanceResult",
+          "kind": "schema-authority"
         }
       }
     }

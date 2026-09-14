@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-abdbfe1517"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-de0dd45743"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-a9b85af8b0"></a>`distribution` | "stove0-target-support" |
-| <a id="s-40f46d91a4"></a>`module` | "stove0_target_support" |
-| <a id="s-3d0ac00b98"></a>`name` | "__exit__" |
-| <a id="s-bba8a209fb"></a>`owner` | "stove0_target_support.TargetExecutionRuntime" |
-| <a id="s-79f595c5cd"></a>`unit` | "member" |
+- <a id="s-a9b85af8b0"></a>`distribution`: `stove0-target-support`
+- <a id="s-40f46d91a4"></a>`module`: `stove0_target_support`
+- <a id="s-3d0ac00b98"></a>`name`: `__exit__`
+- <a id="s-bba8a209fb"></a>`owner`: `stove0_target_support.TargetExecutionRuntime`
+- <a id="s-79f595c5cd"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c5cb599d1b"></a>`kind`: `"method"`
+- <a id="s-25a345cee7"></a>`signature`: `"\"(self, exc_type: 'object', exc: 'object', tb: 'object') -> 'None'\""`
 
 ## Maintained corroboration
 

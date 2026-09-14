@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-06e8f37bc7"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-95669f6494"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-675b1ed188"></a>`distribution` | "stove0-server" |
-| <a id="s-95b801ccee"></a>`module` | "stove0_core" |
-| <a id="s-b19f0f8ec3"></a>`name` | "scan_work" |
-| <a id="s-d16452aa77"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-6e7f56148e"></a>`unit` | "member" |
+- <a id="s-675b1ed188"></a>`distribution`: `stove0-server`
+- <a id="s-95b801ccee"></a>`module`: `stove0_core`
+- <a id="s-b19f0f8ec3"></a>`name`: `scan_work`
+- <a id="s-d16452aa77"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-6e7f56148e"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-53e8466472"></a>`kind`: `"method"`
+- <a id="s-63b32dc913"></a>`signature`: `"\"(self, *, phases: 'Sequence[str]', after_work_id: 'str', limit: 'int') -> 'tuple[list[WorkRecord], str]'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ca04a28465"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-fa276e6c59"></a>`contract` | type="collections.abc._CallableGenericAlias"; additional keys=`kind` |
-| <a id="s-202740213a"></a>`distribution` | "stove0-observer-protocol" |
-| <a id="s-f5c6354889"></a>`module` | "stove0_observer_protocol" |
-| <a id="s-0489d94948"></a>`name` | "FactsSemanticValidator" |
-| <a id="s-12371b69e6"></a>`unit` | "export" |
+- <a id="s-202740213a"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-f5c6354889"></a>`module`: `stove0_observer_protocol`
+- <a id="s-0489d94948"></a>`name`: `FactsSemanticValidator`
+- <a id="s-12371b69e6"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-1e6b935139"></a>`kind`: `"object"`
+- <a id="s-b51c9d4364"></a>`type`: `"collections.abc._CallableGenericAlias"`
 
 ## Governing policies
 

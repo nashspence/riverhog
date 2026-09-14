@@ -14,13 +14,25 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-983af429f4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5f0a52c46f"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-a5e6e94be5"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-9b1f820bcf"></a>`module` | "riverhog_provenance" |
-| <a id="s-4dd6d21be6"></a>`name` | "ResolvedProvenanceObserver" |
-| <a id="s-e7cfa11de9"></a>`unit` | "export" |
+- <a id="s-a5e6e94be5"></a>`distribution`: `riverhog-provenance`
+- <a id="s-9b1f820bcf"></a>`module`: `riverhog_provenance`
+- <a id="s-4dd6d21be6"></a>`name`: `ResolvedProvenanceObserver`
+- <a id="s-e7cfa11de9"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-349921fa9f"></a>`kind`: `"class"`
+- <a id="s-663678b531"></a>`signature`: `"\"(name: 'str', metadata: 'ProvenanceProviderMetadata', binding: 'ProvenanceObserverBinding', contract: 'ProvenanceContractBinding', _validator: 'Callable[[Mapping[str, Any]], None]') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-826aa7ac56"></a>`name` | `'str'` | `required` |
+| <a id="s-de2c5db533"></a>`metadata` | `'ProvenanceProviderMetadata'` | `required` |
+| <a id="s-0243552fb2"></a>`binding` | `'ProvenanceObserverBinding'` | `required` |
+| <a id="s-84af2c6730"></a>`contract` | `'ProvenanceContractBinding'` | `required` |
+| <a id="s-60ee95f52a"></a>`_validator` | `'Callable[[Mapping[str, Any]], None]'` | `required` |
 
 ## Maintained corroboration
 

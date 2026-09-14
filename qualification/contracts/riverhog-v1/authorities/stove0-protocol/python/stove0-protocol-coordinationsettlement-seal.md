@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a32a471ea2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8be39858c8"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f73200e857"></a>`distribution` | "stove0-protocol" |
-| <a id="s-9efa6f10f2"></a>`module` | "stove0_protocol" |
-| <a id="s-907095cabd"></a>`name` | "seal" |
-| <a id="s-e1ae10c2aa"></a>`owner` | "stove0_protocol.CoordinationSettlement" |
-| <a id="s-e021fe79e5"></a>`unit` | "member" |
+- <a id="s-f73200e857"></a>`distribution`: `stove0-protocol`
+- <a id="s-9efa6f10f2"></a>`module`: `stove0_protocol`
+- <a id="s-907095cabd"></a>`name`: `seal`
+- <a id="s-e1ae10c2aa"></a>`owner`: `stove0_protocol.CoordinationSettlement`
+- <a id="s-e021fe79e5"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-cd7f725841"></a>`kind`: `"classmethod"`
+- <a id="s-308d2e3f8f"></a>`signature`: `"\"(cls, *, plan: 'BranchSetPlan', collection_settlements: 'Sequence[BranchSettlement]', effect_settlements: 'Sequence[BranchEffectSettlement]', coordination_settlements: 'Sequence[CoordinationSettlement]', join_settlement: 'JoinSettlement \| None') -> 'CoordinationSettlement'\""`
 
 ## Maintained corroboration
 

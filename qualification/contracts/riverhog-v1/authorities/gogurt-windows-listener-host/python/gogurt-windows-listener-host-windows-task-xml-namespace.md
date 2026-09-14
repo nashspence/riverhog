@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2ffe2c808b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-bc5129698d"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-fb88778155"></a>`distribution` | "gogurt-windows-listener-host" |
-| <a id="s-8b38b02873"></a>`module` | "gogurt_windows_listener_host" |
-| <a id="s-586f9edf8b"></a>`name` | "WINDOWS_TASK_XML_NAMESPACE" |
-| <a id="s-1838bad94f"></a>`unit` | "export" |
+- <a id="s-fb88778155"></a>`distribution`: `gogurt-windows-listener-host`
+- <a id="s-8b38b02873"></a>`module`: `gogurt_windows_listener_host`
+- <a id="s-586f9edf8b"></a>`name`: `WINDOWS_TASK_XML_NAMESPACE`
+- <a id="s-1838bad94f"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ab04410000"></a>`kind`: `"constant"`
+- <a id="s-c576952227"></a>`value`: `"http://schemas.microsoft.com/windows/2004/02/mit/task"`
 
 ## Governing policies
 

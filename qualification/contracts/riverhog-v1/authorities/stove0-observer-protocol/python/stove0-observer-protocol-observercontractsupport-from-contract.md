@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-572a623611"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-fb58c1ae13"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-63320b1518"></a>`distribution` | "stove0-observer-protocol" |
-| <a id="s-fadb5d0945"></a>`module` | "stove0_observer_protocol" |
-| <a id="s-958d80f836"></a>`name` | "from_contract" |
-| <a id="s-f1fb240701"></a>`owner` | "stove0_observer_protocol.ObserverContractSupport" |
-| <a id="s-f5116db747"></a>`unit` | "member" |
+- <a id="s-63320b1518"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-fadb5d0945"></a>`module`: `stove0_observer_protocol`
+- <a id="s-958d80f836"></a>`name`: `from_contract`
+- <a id="s-f1fb240701"></a>`owner`: `stove0_observer_protocol.ObserverContractSupport`
+- <a id="s-f5116db747"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-46216b8a9b"></a>`kind`: `"classmethod"`
+- <a id="s-4f1bf750fb"></a>`signature`: `"\"(cls, value: 'ObserverContract', *, preferred_subject_batch_size: 'int' = 128) -> 'ObserverContractSupport'\""`
 
 ## Maintained corroboration
 

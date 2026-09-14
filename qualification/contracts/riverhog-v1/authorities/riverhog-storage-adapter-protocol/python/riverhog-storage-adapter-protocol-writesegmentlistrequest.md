@@ -14,13 +14,37 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d3cbfbec1d"></a>
-| Field | Shape |
+- <a id="s-aace5a99e0"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-930616bc27"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-13148a36ee"></a>`name`: `WriteSegmentListRequest`
+- <a id="s-e990b6d6c0"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e5633b8e7c"></a>`kind`: `"class"`
+- <a id="s-cb3ab0dc9d"></a>`signature`: `"'(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, after_number: Annotated[int, Ge(ge=0)] = 0, traversal_token: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, maximum_items: Annotated[int, Ge(ge=1), Le(le=128)] = 128) -> None'"`
+
+#### Validated model schema
+
+<a id="s-bb9487fbdc"></a>
+- <a id="s-bce0c4ce47"></a>`title`: WriteSegmentListRequest
+- <a id="s-024ba13bf4"></a>`description`: Request one bounded page from an exact accepted-segment view.
+- <a id="s-d723c95cd1"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-9de7fb3114"></a>`after_number` | no | type="integer"; minimum=0; additional keys=`x-riverhog-extent` |  |
+| <a id="s-271af5454e"></a>`maximum_items` | no | type="integer"; minimum=1; maximum=128 |  |
+| <a id="s-3d7b574285"></a>`session` | yes | #/$defs/WriteSession |  |
+| <a id="s-a54ca5cef3"></a>`traversal_token` | no | anyOf=type="string"; minLength=1; maxLength=4000 \| type="null" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-308b67eb91"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-aace5a99e0"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-930616bc27"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-13148a36ee"></a>`name` | "WriteSegmentListRequest" |
-| <a id="s-e990b6d6c0"></a>`unit` | "export" |
+| <a id="s-14ac5609c9"></a>`WriteSession` | type="object"; fields=`expected_bytes`, `object_path`, `write_token`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
@@ -46,13 +70,90 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d1f5d16415e6da18f4f990dd0631efc1aee0695ab96647c646d7331c705b5727 -->
+<!-- exact-contract-value: e88766324ada0a773b711d7070983cb8a4a9de677f12c15e35d18200f446f614 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "c655ec3f5640ade7ac2d3b60a3b9bb3de1ecaf39de3d4bcd731afb029a65684f",
+    "schema": {
+      "$defs": {
+        "WriteSession": {
+          "additionalProperties": false,
+          "properties": {
+            "expected_bytes": {
+              "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
+              "minimum": 1,
+              "title": "Expected Bytes",
+              "type": "integer"
+            },
+            "object_path": {
+              "maxLength": 4096,
+              "minLength": 1,
+              "title": "Object Path",
+              "type": "string"
+            },
+            "write_token": {
+              "description": "Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal.",
+              "maxLength": 4000,
+              "minLength": 1,
+              "title": "Write Token",
+              "type": "string"
+            }
+          },
+          "required": [
+            "object_path",
+            "expected_bytes",
+            "write_token"
+          ],
+          "title": "WriteSession",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Request one bounded page from an exact accepted-segment view.",
+      "properties": {
+        "after_number": {
+          "default": 0,
+          "minimum": 0,
+          "title": "After Number",
+          "type": "integer",
+          "x-riverhog-extent": {
+            "policy": "segmented_no_total_max",
+            "reason": "write-segment-history-bounded-traversal"
+          }
+        },
+        "maximum_items": {
+          "default": 128,
+          "maximum": 128,
+          "minimum": 1,
+          "title": "Maximum Items",
+          "type": "integer"
+        },
+        "session": {
+          "$ref": "#/$defs/WriteSession"
+        },
+        "traversal_token": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Traversal Token"
+        }
+      },
+      "required": [
+        "session"
+      ],
+      "title": "WriteSegmentListRequest",
+      "type": "object"
+    },
     "signature": "'(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, after_number: Annotated[int, Ge(ge=0)] = 0, traversal_token: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, maximum_items: Annotated[int, Ge(ge=1), Le(le=128)] = 128) -> None'"
   },
   "distribution": "riverhog-storage-adapter-protocol",

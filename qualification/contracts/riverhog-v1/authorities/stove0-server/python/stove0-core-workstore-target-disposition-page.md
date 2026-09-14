@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8f78df6056"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-274fc87a99"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-3ef5124ae7"></a>`distribution` | "stove0-server" |
-| <a id="s-204d0efbd8"></a>`module` | "stove0_core" |
-| <a id="s-d600a07cb7"></a>`name` | "target_disposition_page" |
-| <a id="s-ec54674676"></a>`owner` | "stove0_core.WorkStore" |
-| <a id="s-d1d94e9937"></a>`unit` | "member" |
+- <a id="s-3ef5124ae7"></a>`distribution`: `stove0-server`
+- <a id="s-204d0efbd8"></a>`module`: `stove0_core`
+- <a id="s-d600a07cb7"></a>`name`: `target_disposition_page`
+- <a id="s-ec54674676"></a>`owner`: `stove0_core.WorkStore`
+- <a id="s-d1d94e9937"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-bb006f82f7"></a>`kind`: `"method"`
+- <a id="s-7c26c25202"></a>`signature`: `"\"(self, work_id: 'str', job_id: 'str', *, after_id: 'str \| None', limit: 'int') -> 'tuple[InputDispositionDeclaration, ...]'\""`
 
 ## Maintained corroboration
 

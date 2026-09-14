@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-25e692f500"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4927f322ab"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d16b38ba57"></a>`distribution` | "stove0-observer-support" |
-| <a id="s-41ba94a569"></a>`module` | "stove0_observer_support" |
-| <a id="s-805482cfea"></a>`name` | "ObservationRuntime" |
-| <a id="s-d93443815d"></a>`unit` | "export" |
+- <a id="s-d16b38ba57"></a>`distribution`: `stove0-observer-support`
+- <a id="s-41ba94a569"></a>`module`: `stove0_observer_support`
+- <a id="s-805482cfea"></a>`name`: `ObservationRuntime`
+- <a id="s-d93443815d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-9fdd048e57"></a>`kind`: `"class"`
+- <a id="s-557a2c6c21"></a>`signature`: `"\"(api: 'Any', *, request: 'ObservationRequest', claim_id: 'str', fence: 'int', cancellation_check: 'CancellationCheck \| None' = None, heartbeat: 'Heartbeat \| None' = None, workspace_assurance: 'str' = 'ephemeral', owned_api: 'bool' = False) -> 'None'\""`
 
 ## Maintained corroboration
 

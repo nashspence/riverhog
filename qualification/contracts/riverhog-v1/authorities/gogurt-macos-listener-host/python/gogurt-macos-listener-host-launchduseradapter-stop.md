@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6e3b1c2acf"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-fe3725dbc0"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e6fc33fa17"></a>`distribution` | "gogurt-macos-listener-host" |
-| <a id="s-de293d7f8c"></a>`module` | "gogurt_macos_listener_host" |
-| <a id="s-3b7009fc80"></a>`name` | "stop" |
-| <a id="s-82aa58e3ba"></a>`owner` | "gogurt_macos_listener_host.LaunchdUserAdapter" |
-| <a id="s-b1bce66527"></a>`unit` | "member" |
+- <a id="s-e6fc33fa17"></a>`distribution`: `gogurt-macos-listener-host`
+- <a id="s-de293d7f8c"></a>`module`: `gogurt_macos_listener_host`
+- <a id="s-3b7009fc80"></a>`name`: `stop`
+- <a id="s-82aa58e3ba"></a>`owner`: `gogurt_macos_listener_host.LaunchdUserAdapter`
+- <a id="s-b1bce66527"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-45b4557bfc"></a>`kind`: `"method"`
+- <a id="s-894840f913"></a>`signature`: `"\"(self, paths: 'ListenerRuntimePaths') -> 'None'\""`
 
 ## Maintained corroboration
 

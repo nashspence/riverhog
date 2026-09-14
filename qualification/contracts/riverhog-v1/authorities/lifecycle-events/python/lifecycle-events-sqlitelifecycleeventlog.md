@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7a8d194ead"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d431aa1e3c"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-79cba93bfc"></a>`distribution` | "lifecycle-events" |
-| <a id="s-d669083f6b"></a>`module` | "lifecycle_events" |
-| <a id="s-0735a842cc"></a>`name` | "SQLiteLifecycleEventLog" |
-| <a id="s-6b835221be"></a>`unit` | "export" |
+- <a id="s-79cba93bfc"></a>`distribution`: `lifecycle-events`
+- <a id="s-d669083f6b"></a>`module`: `lifecycle_events`
+- <a id="s-0735a842cc"></a>`name`: `SQLiteLifecycleEventLog`
+- <a id="s-6b835221be"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f3ac3ef0de"></a>`kind`: `"class"`
+- <a id="s-79a5122f02"></a>`signature`: `"\"(connect: 'Callable[[], sqlite3.Connection]') -> 'None'\""`
 
 ## Maintained corroboration
 

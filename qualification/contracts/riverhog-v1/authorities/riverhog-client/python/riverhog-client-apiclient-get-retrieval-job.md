@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-160014d459"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-dec8fc3556"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-60cc7828b3"></a>`distribution` | "riverhog-client" |
-| <a id="s-294dbfbe40"></a>`module` | "riverhog_client" |
-| <a id="s-a6186dadf0"></a>`name` | "get_retrieval_job" |
-| <a id="s-ce86f62269"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-ad610be03b"></a>`unit` | "member" |
+- <a id="s-60cc7828b3"></a>`distribution`: `riverhog-client`
+- <a id="s-294dbfbe40"></a>`module`: `riverhog_client`
+- <a id="s-a6186dadf0"></a>`name`: `get_retrieval_job`
+- <a id="s-ce86f62269"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-ad610be03b"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-eb6db1f872"></a>`kind`: `"method"`
+- <a id="s-3cb8749e07"></a>`signature`: `"\"(self, job_id: 'str') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

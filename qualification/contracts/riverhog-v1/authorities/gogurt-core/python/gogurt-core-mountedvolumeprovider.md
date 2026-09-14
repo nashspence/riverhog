@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8cab3a7060"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e1adde9d10"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-bdbba32ac0"></a>`distribution` | "gogurt-core" |
-| <a id="s-c4471e2674"></a>`module` | "gogurt_core" |
-| <a id="s-88c82d087a"></a>`name` | "MountedVolumeProvider" |
-| <a id="s-a032343d85"></a>`unit` | "export" |
+- <a id="s-bdbba32ac0"></a>`distribution`: `gogurt-core`
+- <a id="s-c4471e2674"></a>`module`: `gogurt_core`
+- <a id="s-88c82d087a"></a>`name`: `MountedVolumeProvider`
+- <a id="s-a032343d85"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-cf93483513"></a>`kind`: `"class"`
+- <a id="s-0d89516228"></a>`signature`: `"'(*args, **kwargs)'"`
 
 ## Maintained corroboration
 

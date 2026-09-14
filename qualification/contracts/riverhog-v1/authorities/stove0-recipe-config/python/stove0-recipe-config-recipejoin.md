@@ -14,13 +14,42 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ae20f3e87c"></a>
-| Field | Shape |
+- <a id="s-3b1279601b"></a>`distribution`: `stove0-recipe-config`
+- <a id="s-b562b69b0c"></a>`module`: `stove0_recipe_config`
+- <a id="s-5489320d70"></a>`name`: `RecipeJoin`
+- <a id="s-3f431ca44b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-5ce0dd1586"></a>`kind`: `"class"`
+- <a id="s-3a6b297aee"></a>`signature`: `"\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], members: Annotated[tuple[stove0_recipe_config.models.RecipeJoinMember, ...], MinLen(min_length=2)], operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], target_registration_id: str, intent: dict[str, JsonValue] = <factory>, target_options: dict[str, JsonValue] = <factory>, projections: tuple[stove0_recipe_config.models.OperationProjection, ...] = (), input_retrieval_policy: Literal['available-only', 'allow'] = 'available-only') -> None\""`
+
+#### Validated model schema
+
+<a id="s-d16a3c32cf"></a>
+- <a id="s-0dabf96a8d"></a>`title`: RecipeJoin
+- <a id="s-1f48fb4fb8"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6195bd8c6c"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-c23629ec46"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
+| <a id="s-feebc6fc22"></a>`intent` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-10d81d6560"></a>`members` | yes | type="array"; minItems=2; items=(#/$defs/RecipeJoinMember) |  |
+| <a id="s-3b53494533"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-713bdbd2ca"></a>`projections` | no | type="array"; items=(#/$defs/OperationProjection) |  |
+| <a id="s-c492917418"></a>`target_options` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-fd8185303e"></a>`target_registration_id` | yes | type="string" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-f7aed4864b"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-3b1279601b"></a>`distribution` | "stove0-recipe-config" |
-| <a id="s-b562b69b0c"></a>`module` | "stove0_recipe_config" |
-| <a id="s-5489320d70"></a>`name` | "RecipeJoin" |
-| <a id="s-3f431ca44b"></a>`unit` | "export" |
+| <a id="s-43a3175f14"></a>`JsonValue` | empty object |
+| <a id="s-6d62c8e596"></a>`OperationProjection` | type="object"; fields=`destination`, `destination_pointer`, `source`, `source_pointer`; additional keys=`additionalProperties`, `required` |
+| <a id="s-4e893b9aee"></a>`RecipeJoinMember` | type="object"; fields=`branch_id`, `output_roles`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -52,13 +81,146 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 53589d45805f6a5d79df5038c4a1f096032ed21c1002dc70d58d04f09d570975 -->
+<!-- exact-contract-value: 01769477ba6fc8eb3d9e5396aa4721034fb4a26e35ccb96e764f97b76400842d -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "5fef83beb5dcd069ffebfd5201605f3b9a08ae25dab3e7e9504bf4b01666daf8",
+    "schema": {
+      "$defs": {
+        "JsonValue": {},
+        "OperationProjection": {
+          "additionalProperties": false,
+          "description": "One declarative JSON-pointer copy into an operation request.",
+          "properties": {
+            "destination": {
+              "enum": [
+                "intent",
+                "target-options"
+              ],
+              "title": "Destination",
+              "type": "string"
+            },
+            "destination_pointer": {
+              "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
+              "title": "Destination Pointer",
+              "type": "string"
+            },
+            "source": {
+              "enum": [
+                "work-effective-intent",
+                "work-evaluation"
+              ],
+              "title": "Source",
+              "type": "string"
+            },
+            "source_pointer": {
+              "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
+              "title": "Source Pointer",
+              "type": "string"
+            }
+          },
+          "required": [
+            "source",
+            "source_pointer",
+            "destination",
+            "destination_pointer"
+          ],
+          "title": "OperationProjection",
+          "type": "object"
+        },
+        "RecipeJoinMember": {
+          "additionalProperties": false,
+          "properties": {
+            "branch_id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Branch Id",
+              "type": "string"
+            },
+            "output_roles": {
+              "items": {
+                "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+                "type": "string"
+              },
+              "minItems": 1,
+              "title": "Output Roles",
+              "type": "array"
+            }
+          },
+          "required": [
+            "branch_id",
+            "output_roles"
+          ],
+          "title": "RecipeJoinMember",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "input_retrieval_policy": {
+          "default": "available-only",
+          "enum": [
+            "available-only",
+            "allow"
+          ],
+          "title": "Input Retrieval Policy",
+          "type": "string"
+        },
+        "intent": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Intent",
+          "type": "object"
+        },
+        "members": {
+          "items": {
+            "$ref": "#/$defs/RecipeJoinMember"
+          },
+          "minItems": 2,
+          "title": "Members",
+          "type": "array"
+        },
+        "operation_id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "projections": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/OperationProjection"
+          },
+          "title": "Projections",
+          "type": "array"
+        },
+        "target_options": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Target Options",
+          "type": "object"
+        },
+        "target_registration_id": {
+          "title": "Target Registration Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "members",
+        "operation_id",
+        "target_registration_id"
+      ],
+      "title": "RecipeJoin",
+      "type": "object"
+    },
     "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], members: Annotated[tuple[stove0_recipe_config.models.RecipeJoinMember, ...], MinLen(min_length=2)], operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], target_registration_id: str, intent: dict[str, JsonValue] = <factory>, target_options: dict[str, JsonValue] = <factory>, projections: tuple[stove0_recipe_config.models.OperationProjection, ...] = (), input_retrieval_policy: Literal['available-only', 'allow'] = 'available-only') -> None\""
   },
   "distribution": "stove0-recipe-config",

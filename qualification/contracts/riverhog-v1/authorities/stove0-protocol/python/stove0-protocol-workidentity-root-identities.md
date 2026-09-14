@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3f538d3870"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-668a3f96bb"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f35fb65243"></a>`distribution` | "stove0-protocol" |
-| <a id="s-b5b90f6e5e"></a>`module` | "stove0_protocol" |
-| <a id="s-b87c32b2ea"></a>`name` | "root_identities" |
-| <a id="s-5bc2a984cf"></a>`owner` | "stove0_protocol.WorkIdentity" |
-| <a id="s-a5dfe2ce4d"></a>`unit` | "member" |
+- <a id="s-f35fb65243"></a>`distribution`: `stove0-protocol`
+- <a id="s-b5b90f6e5e"></a>`module`: `stove0_protocol`
+- <a id="s-b87c32b2ea"></a>`name`: `root_identities`
+- <a id="s-5bc2a984cf"></a>`owner`: `stove0_protocol.WorkIdentity`
+- <a id="s-a5dfe2ce4d"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3175021d62"></a>`kind`: `"method"`
+- <a id="s-172ebaa6fa"></a>`signature`: `"\"(self) -> 'tuple[CollectionRootIdentity, ...]'\""`
 
 ## Maintained corroboration
 

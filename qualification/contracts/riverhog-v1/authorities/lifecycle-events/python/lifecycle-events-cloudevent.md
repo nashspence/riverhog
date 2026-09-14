@@ -14,13 +14,34 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1177f7ab8d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-cf30eb2307"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-a7b4f3e4bc"></a>`distribution` | "lifecycle-events" |
-| <a id="s-ad7bf5ebbf"></a>`module` | "lifecycle_events" |
-| <a id="s-2f03e10a66"></a>`name` | "CloudEvent" |
-| <a id="s-19c004df0d"></a>`unit` | "export" |
+- <a id="s-a7b4f3e4bc"></a>`distribution`: `lifecycle-events`
+- <a id="s-ad7bf5ebbf"></a>`module`: `lifecycle_events`
+- <a id="s-2f03e10a66"></a>`name`: `CloudEvent`
+- <a id="s-19c004df0d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-b267ee0cbf"></a>`kind`: `"class"`
+- <a id="s-ea7ddd3dda"></a>`signature`: `"\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Annotated[str, MinLen(min_length=1)], type: Annotated[str, MinLen(min_length=1)], subject: Annotated[str \| None, MinLen(min_length=1)] = None, time: str, datacontenttype: Literal['application/json'] = 'application/json', data: dict[str, typing.Any] = <factory>) -> None\""`
+
+#### Validated model schema
+
+<a id="s-1b227bba88"></a>
+- <a id="s-2eadbd8a20"></a>`title`: CloudEvent
+- <a id="s-a1faf51260"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-bdab0ff150"></a>`data` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-ce18951641"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-fe5b598876"></a>`id` | yes | type="string"; minLength=1 |  |
+| <a id="s-ffcf800cd2"></a>`source` | yes | type="string"; minLength=1 |  |
+| <a id="s-6194936dee"></a>`specversion` | no | type="string"; const="1.0" |  |
+| <a id="s-722293f09c"></a>`subject` | no | anyOf=type="string"; minLength=1 \| type="null" |  |
+| <a id="s-687ecd37d4"></a>`time` | yes | type="string" |  |
+| <a id="s-45e923bd2e"></a>`type` | yes | type="string"; minLength=1 |  |
 
 ## Maintained corroboration
 
@@ -52,13 +73,74 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 643b114311801e94330500dfae5d8d46c141a3df71e3ac802231ecb30b9c940f -->
+<!-- exact-contract-value: a4a21a82491aa7e28e6a0e8851d616e5448e25a5548a98967fca53a30e038270 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "4f1bdc2cc9c131a7c8aad0b1bbe56f7bf3cf1f2c4a12a0727d577333cfc771c8",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "additionalProperties": true,
+          "title": "Data",
+          "type": "object"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "title": "Datacontenttype",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Specversion",
+          "type": "string"
+        },
+        "subject": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Subject"
+        },
+        "time": {
+          "title": "Time",
+          "type": "string"
+        },
+        "type": {
+          "minLength": 1,
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "type",
+        "time"
+      ],
+      "title": "CloudEvent",
+      "type": "object"
+    },
     "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Annotated[str, MinLen(min_length=1)], type: Annotated[str, MinLen(min_length=1)], subject: Annotated[str | None, MinLen(min_length=1)] = None, time: str, datacontenttype: Literal['application/json'] = 'application/json', data: dict[str, typing.Any] = <factory>) -> None\""
   },
   "distribution": "lifecycle-events",

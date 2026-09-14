@@ -14,13 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f46a8ec3f6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b10dfcd6f7"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-41445ab8af"></a>`distribution` | "gogurt-core" |
-| <a id="s-e19f849445"></a>`module` | "gogurt_core" |
-| <a id="s-bc04d9e672"></a>`name` | "GogurtProviderReference" |
-| <a id="s-cc77f665d8"></a>`unit` | "export" |
+- <a id="s-41445ab8af"></a>`distribution`: `gogurt-core`
+- <a id="s-e19f849445"></a>`module`: `gogurt_core`
+- <a id="s-bc04d9e672"></a>`name`: `GogurtProviderReference`
+- <a id="s-cc77f665d8"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-9d96804bb7"></a>`kind`: `"class"`
+- <a id="s-c1f563fee2"></a>`signature`: `"\"(kind: 'GogurtProviderKind', name: 'str', provider_id: 'str', format: 'str' = 'gogurt-provider-reference/v1') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-b5c754032b"></a>`kind` | `'GogurtProviderKind'` | `required` |
+| <a id="s-b7a63935f9"></a>`name` | `'str'` | `required` |
+| <a id="s-e99960a627"></a>`provider_id` | `'str'` | `required` |
+| <a id="s-b7a9e18096"></a>`format` | `'str'` | `'gogurt-provider-reference/v1'` |
 
 ## Maintained corroboration
 

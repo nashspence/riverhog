@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-216f5c27af"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b36688ccd2"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-9791e21c12"></a>`distribution` | "stove0-server" |
-| <a id="s-523b57c348"></a>`module` | "stove0_core" |
-| <a id="s-3e9c834eab"></a>`name` | "compare_and_swap_target_production_seal" |
-| <a id="s-8eeda53f32"></a>`owner` | "stove0_core.InMemoryWorkStore" |
-| <a id="s-61056b17bc"></a>`unit` | "member" |
+- <a id="s-9791e21c12"></a>`distribution`: `stove0-server`
+- <a id="s-523b57c348"></a>`module`: `stove0_core`
+- <a id="s-3e9c834eab"></a>`name`: `compare_and_swap_target_production_seal`
+- <a id="s-8eeda53f32"></a>`owner`: `stove0_core.InMemoryWorkStore`
+- <a id="s-61056b17bc"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-feca51918c"></a>`kind`: `"method"`
+- <a id="s-abcda2973d"></a>`signature`: `"\"(self, work_id: 'str', job_id: 'str', *, expected_revision: 'int', replacement: 'TargetProductionSealRecord') -> 'TargetProductionSealRecord'\""`
 
 ## Maintained corroboration
 

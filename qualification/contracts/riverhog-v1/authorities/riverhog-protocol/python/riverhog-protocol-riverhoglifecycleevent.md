@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-868ddf62ab"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-32d3c45ac5"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-83416f716d"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-c32056fd9d"></a>`module` | "riverhog_protocol" |
-| <a id="s-9c611d108f"></a>`name` | "RiverhogLifecycleEvent" |
-| <a id="s-66ee1010fe"></a>`unit` | "export" |
+- <a id="s-83416f716d"></a>`distribution`: `riverhog-protocol`
+- <a id="s-c32056fd9d"></a>`module`: `riverhog_protocol`
+- <a id="s-9c611d108f"></a>`name`: `RiverhogLifecycleEvent`
+- <a id="s-66ee1010fe"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-3eecaead89"></a>`kind`: `"type-alias"`
+- <a id="s-bca9570120"></a>`value`: `"typing.Annotated[riverhog_protocol.lifecycle_events.CollectionFinalizedEvent \| riverhog_protocol.lifecycle_events.CollectionDeletedEvent \| riverhog_protocol.lifecycle_events.ArchiveCopyRequestedEvent \| riverhog_protocol.lifecycle_events.ArchiveCopyCompletedEvent \| riverhog_protocol.lifecycle_events.ArchiveCopyIssueEvent \| riverhog_protocol.lifecycle_events.ArchiveCopyCanceledEvent \| riverhog_protocol.lifecycle_events.RetrievalRequestedEvent \| riverhog_protocol.lifecycle_events.RetrievalReadyEvent \| riverhog_protocol.lifecycle_events.RetrievalRenewedEvent \| riverhog_protocol.lifecycle_events.RetrievalCompletedEvent \| riverhog_protocol.lifecycle_events.RetrievalCanceledEvent \| riverhog_protocol.lifecycle_events.RetrievalExpiredEvent \| riverhog_protocol.lifecycle_events.RetrievalIssueEvent \| riverhog_protocol.lifecycle_events.RetrievalFailedEvent, FieldInfo(annotation=NoneType, required=True, discriminator='type')]"`
 
 ## Governing policies
 

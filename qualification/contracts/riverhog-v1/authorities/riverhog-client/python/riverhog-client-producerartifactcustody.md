@@ -14,13 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3e3d77fa22"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e4f759ff62"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-8796264bb3"></a>`distribution` | "riverhog-client" |
-| <a id="s-cac0886349"></a>`module` | "riverhog_client" |
-| <a id="s-fadfc6b693"></a>`name` | "ProducerArtifactCustody" |
-| <a id="s-40b56b887c"></a>`unit` | "export" |
+- <a id="s-8796264bb3"></a>`distribution`: `riverhog-client`
+- <a id="s-cac0886349"></a>`module`: `riverhog_client`
+- <a id="s-fadfc6b693"></a>`name`: `ProducerArtifactCustody`
+- <a id="s-40b56b887c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-dc4af65413"></a>`kind`: `"class"`
+- <a id="s-875114721e"></a>`signature`: `"\"(artifact: 'ProducerArtifactIdentity', receipt: 'CollectionUploadArtifactCustodyReceiptDocument') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-8cd10c208a"></a>`artifact` | `'ProducerArtifactIdentity'` | `required` |
+| <a id="s-95cedc2890"></a>`receipt` | `'CollectionUploadArtifactCustodyReceiptDocument'` | `required` |
 
 ## Governing policies
 

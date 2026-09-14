@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-53641765b4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0748715a6f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-64a68f3096"></a>`distribution` | "lifecycle-events" |
-| <a id="s-47d76ed831"></a>`module` | "lifecycle_events" |
-| <a id="s-ab7b96f346"></a>`name` | "initialize" |
-| <a id="s-8acbe41ef4"></a>`owner` | "lifecycle_events.SQLiteLifecycleEventLog" |
-| <a id="s-fb3b169cc0"></a>`unit` | "member" |
+- <a id="s-64a68f3096"></a>`distribution`: `lifecycle-events`
+- <a id="s-47d76ed831"></a>`module`: `lifecycle_events`
+- <a id="s-ab7b96f346"></a>`name`: `initialize`
+- <a id="s-8acbe41ef4"></a>`owner`: `lifecycle_events.SQLiteLifecycleEventLog`
+- <a id="s-fb3b169cc0"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-43626e40b3"></a>`kind`: `"method"`
+- <a id="s-0733ff0059"></a>`signature`: `"\"(self) -> 'None'\""`
 
 ## Maintained corroboration
 

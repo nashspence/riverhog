@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-cd1011876f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7bd656c996"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-faef0cf78e"></a>`distribution` | "riverhog-client" |
-| <a id="s-6f1cb4f80b"></a>`module` | "riverhog_client" |
-| <a id="s-f851d971db"></a>`name` | "list_lifecycle_events" |
-| <a id="s-5ebaf3b052"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-f3a7debf87"></a>`unit` | "member" |
+- <a id="s-faef0cf78e"></a>`distribution`: `riverhog-client`
+- <a id="s-6f1cb4f80b"></a>`module`: `riverhog_client`
+- <a id="s-f851d971db"></a>`name`: `list_lifecycle_events`
+- <a id="s-5ebaf3b052"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-f3a7debf87"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c0a91604bf"></a>`kind`: `"method"`
+- <a id="s-46272689da"></a>`signature`: `"\"(self, *, after: 'LifecycleEventCursor \| None' = None, limit: 'int' = 100) -> 'RiverhogEventPage'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,30 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7e79d55b1f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-fa70e25928"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-5d0b35929b"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-5dede16988"></a>`module` | "riverhog_protocol" |
-| <a id="s-4cbbe4945c"></a>`name` | "CollectionUploadRawDigestProgressDocument" |
-| <a id="s-9d6a624bd9"></a>`unit` | "export" |
+- <a id="s-5d0b35929b"></a>`distribution`: `riverhog-protocol`
+- <a id="s-5dede16988"></a>`module`: `riverhog_protocol`
+- <a id="s-4cbbe4945c"></a>`name`: `CollectionUploadRawDigestProgressDocument`
+- <a id="s-9d6a624bd9"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-4d557fcb28"></a>`kind`: `"class"`
+- <a id="s-5370ee5641"></a>`signature`: `"'(*, path: str, accepted_parts: Annotated[int, Strict(strict=True), Ge(ge=0)], expected_parts: Annotated[int, Strict(strict=True), Ge(ge=1)], complete: bool) -> None'"`
+
+#### Validated model schema
+
+<a id="s-7b6db1bda1"></a>
+- <a id="s-29e9c86d21"></a>`title`: CollectionUploadRawDigestProgressDocument
+- <a id="s-cd26ee3d7e"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4e774600c7"></a>`accepted_parts` | yes | type="integer"; minimum=0 |  |
+| <a id="s-ca9a90315b"></a>`complete` | yes | type="boolean" |  |
+| <a id="s-97f2b7dccc"></a>`expected_parts` | yes | type="integer"; minimum=1 |  |
+| <a id="s-462cb70bff"></a>`path` | yes | type="string" |  |
 
 ## Maintained corroboration
 
@@ -53,13 +70,43 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2114e010268bedf5e24fbb7f0c9f5473426310fdd0434e4575a7522dc71df550 -->
+<!-- exact-contract-value: c4eb863cb3b7a07ccbf354c011da05c82ccd16e0a02df450e77a4c59bbb73fac -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "65617a770d19d14c6eaf53cf21c753767836d93c430135b0465dcfe6d6f219bd",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "accepted_parts": {
+          "minimum": 0,
+          "title": "Accepted Parts",
+          "type": "integer"
+        },
+        "complete": {
+          "title": "Complete",
+          "type": "boolean"
+        },
+        "expected_parts": {
+          "minimum": 1,
+          "title": "Expected Parts",
+          "type": "integer"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "accepted_parts",
+        "expected_parts",
+        "complete"
+      ],
+      "title": "CollectionUploadRawDigestProgressDocument",
+      "type": "object"
+    },
     "signature": "'(*, path: str, accepted_parts: Annotated[int, Strict(strict=True), Ge(ge=0)], expected_parts: Annotated[int, Strict(strict=True), Ge(ge=1)], complete: bool) -> None'"
   },
   "distribution": "riverhog-protocol",

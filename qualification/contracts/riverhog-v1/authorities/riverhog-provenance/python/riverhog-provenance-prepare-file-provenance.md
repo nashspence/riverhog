@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-20979b1d81"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6d5538727b"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-1877a78fdc"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-484fd2188b"></a>`module` | "riverhog_provenance" |
-| <a id="s-7277a23b38"></a>`name` | "prepare_file_provenance" |
-| <a id="s-3642f48186"></a>`unit` | "export" |
+- <a id="s-1877a78fdc"></a>`distribution`: `riverhog-provenance`
+- <a id="s-484fd2188b"></a>`module`: `riverhog_provenance`
+- <a id="s-7277a23b38"></a>`name`: `prepare_file_provenance`
+- <a id="s-3642f48186"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-eff7b7ca12"></a>`kind`: `"function"`
+- <a id="s-71aaf862a5"></a>`signature`: `"\"(payload: 'Path', *, relative_path: 'str', host_id: 'str', agent_name: 'str', agent_version: 'str', observer: 'FileStateObserver \| None' = None, provenance: 'Path \| None' = None, omit_reason: 'str \| None' = None) -> 'PreparedFileProvenance'\""`
 
 ## Governing policies
 

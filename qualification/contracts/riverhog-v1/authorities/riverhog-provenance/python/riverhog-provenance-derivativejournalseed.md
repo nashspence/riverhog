@@ -14,13 +14,29 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8e4079f440"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ebebb3d09c"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-16b0f96430"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-e565075394"></a>`module` | "riverhog_provenance" |
-| <a id="s-7209c445e1"></a>`name` | "DerivativeJournalSeed" |
-| <a id="s-a294f73ecb"></a>`unit` | "export" |
+- <a id="s-16b0f96430"></a>`distribution`: `riverhog-provenance`
+- <a id="s-e565075394"></a>`module`: `riverhog_provenance`
+- <a id="s-7209c445e1"></a>`name`: `DerivativeJournalSeed`
+- <a id="s-a294f73ecb"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-083c1a07a0"></a>`kind`: `"class"`
+- <a id="s-6f2a675f94"></a>`signature`: `"\"(journal_id: 'str', recorded_by_agent_id: 'str', state_id: 'str', activity_id: 'str', current_entry_id: 'str', current_entry_json_sha256: 'str', previous_entry_id: 'str', previous_entry_json_sha256: 'str', next_sequence: 'int') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-aa4195957b"></a>`journal_id` | `'str'` | `required` |
+| <a id="s-8b889bc21a"></a>`recorded_by_agent_id` | `'str'` | `required` |
+| <a id="s-f47b62ded7"></a>`state_id` | `'str'` | `required` |
+| <a id="s-7655442f91"></a>`activity_id` | `'str'` | `required` |
+| <a id="s-975798b7e6"></a>`current_entry_id` | `'str'` | `required` |
+| <a id="s-bd04447964"></a>`current_entry_json_sha256` | `'str'` | `required` |
+| <a id="s-d7ac409799"></a>`previous_entry_id` | `'str'` | `required` |
+| <a id="s-9a94c097f8"></a>`previous_entry_json_sha256` | `'str'` | `required` |
+| <a id="s-8869b7c89c"></a>`next_sequence` | `'int'` | `required` |
 
 ## Governing policies
 

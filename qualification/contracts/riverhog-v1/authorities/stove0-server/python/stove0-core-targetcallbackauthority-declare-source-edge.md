@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6d6f263297"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e1baacf248"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7030e75c4c"></a>`distribution` | "stove0-server" |
-| <a id="s-b8d7b0a3bc"></a>`module` | "stove0_core" |
-| <a id="s-2946fae855"></a>`name` | "declare_source_edge" |
-| <a id="s-2d251c5da7"></a>`owner` | "stove0_core.TargetCallbackAuthority" |
-| <a id="s-d683cedf11"></a>`unit` | "member" |
+- <a id="s-7030e75c4c"></a>`distribution`: `stove0-server`
+- <a id="s-b8d7b0a3bc"></a>`module`: `stove0_core`
+- <a id="s-2946fae855"></a>`name`: `declare_source_edge`
+- <a id="s-2d251c5da7"></a>`owner`: `stove0_core.TargetCallbackAuthority`
+- <a id="s-d683cedf11"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-f284ab4c14"></a>`kind`: `"method"`
+- <a id="s-33963184fd"></a>`signature`: `"\"(self, token: 'str', *, job_id: 'str', edge: 'OutputSourceEdge') -> 'None'\""`
 
 ## Maintained corroboration
 

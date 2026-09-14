@@ -14,13 +14,40 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9819eb3e2f"></a>
-| Field | Shape |
+- <a id="s-550d2794ad"></a>`distribution`: `stove0-protocol`
+- <a id="s-12d29f7299"></a>`module`: `stove0_protocol`
+- <a id="s-57b5fb5e53"></a>`name`: `ArtifactSelection`
+- <a id="s-a53c8acf0d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-643e70571f"></a>`kind`: `"class"`
+- <a id="s-a6220a5ca2"></a>`signature`: `"\"(*, format: Literal['stove0-artifact-selection/v1'] = 'stove0-artifact-selection/v1', artifacts: Annotated[tuple[stove0_protocol.models.ArtifactSubject, ...], MinLen(min_length=1)], artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[int, Ge(ge=0)], selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-906dd2a2dd"></a>
+- <a id="s-f9e512d993"></a>`title`: ArtifactSelection
+- <a id="s-f69ee5b950"></a>`description`: One exact, content-addressed selection of immutable artifacts.
+- <a id="s-adafd05867"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b2cbdf1c91"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-06c68d2d91"></a>`artifacts` | yes | type="array"; minItems=1; items=(#/$defs/ArtifactSubject) |  |
+| <a id="s-6578d1a7df"></a>`format` | no | type="string"; const="stove0-artifact-selection/v1" |  |
+| <a id="s-19bc8d66c9"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2c1f70cfeb"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-8c007fd171"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-550d2794ad"></a>`distribution` | "stove0-protocol" |
-| <a id="s-12d29f7299"></a>`module` | "stove0_protocol" |
-| <a id="s-57b5fb5e53"></a>`name` | "ArtifactSelection" |
-| <a id="s-a53c8acf0d"></a>`unit` | "export" |
+| <a id="s-a833d3a7e5"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-b798222c0f"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-c384ddac04"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -57,13 +84,144 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 22c976a611b86556ad195e185b1eefe5e3d4494f6157adf49d1f492988752644 -->
+<!-- exact-contract-value: 541e0c835496ee436a26fa13d9f068de488f355ef4e050232c28f8be62001c5c -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "ddd13318263dfef1cbb2e7911190fc38edd7b4dec41df377a17edcb68cbc328d",
+    "schema": {
+      "$defs": {
+        "ArtifactSubject": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "minimum": 0,
+              "title": "Bytes",
+              "type": "integer"
+            },
+            "collection": {
+              "$ref": "#/$defs/CollectionRootRef"
+            },
+            "id": {
+              "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "media_type": {
+              "anyOf": [
+                {
+                  "maxLength": 255,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Media Type"
+            },
+            "path": {
+              "maxLength": 4096,
+              "minLength": 1,
+              "title": "Path",
+              "type": "string"
+            },
+            "role": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Role",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "role",
+            "collection",
+            "path",
+            "bytes",
+            "sha256"
+          ],
+          "title": "ArtifactSubject",
+          "type": "object"
+        },
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "CollectionRootRef": {
+          "additionalProperties": false,
+          "properties": {
+            "archive_root_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Archive Root Sha256",
+              "type": "string"
+            },
+            "collection_id": {
+              "$ref": "#/$defs/CollectionId"
+            },
+            "content_identity": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Content Identity",
+              "type": "string"
+            }
+          },
+          "required": [
+            "collection_id",
+            "archive_root_sha256",
+            "content_identity"
+          ],
+          "title": "CollectionRootRef",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "One exact, content-addressed selection of immutable artifacts.",
+      "properties": {
+        "artifact_count": {
+          "minimum": 1,
+          "title": "Artifact Count",
+          "type": "integer"
+        },
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/ArtifactSubject"
+          },
+          "minItems": 1,
+          "title": "Artifacts",
+          "type": "array"
+        },
+        "format": {
+          "const": "stove0-artifact-selection/v1",
+          "default": "stove0-artifact-selection/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "selection_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Selection Sha256",
+          "type": "string"
+        },
+        "total_bytes": {
+          "minimum": 0,
+          "title": "Total Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "artifacts",
+        "artifact_count",
+        "total_bytes",
+        "selection_sha256"
+      ],
+      "title": "ArtifactSelection",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['stove0-artifact-selection/v1'] = 'stove0-artifact-selection/v1', artifacts: Annotated[tuple[stove0_protocol.models.ArtifactSubject, ...], MinLen(min_length=1)], artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[int, Ge(ge=0)], selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-protocol",

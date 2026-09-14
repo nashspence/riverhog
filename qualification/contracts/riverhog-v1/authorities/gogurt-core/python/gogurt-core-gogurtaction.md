@@ -14,13 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0ae304c2ba"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8ced3876fe"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-f43dfcda83"></a>`distribution` | "gogurt-core" |
-| <a id="s-8b1cd39b43"></a>`module` | "gogurt_core" |
-| <a id="s-5bb8fc9add"></a>`name` | "GogurtAction" |
-| <a id="s-4197c62cf4"></a>`unit` | "export" |
+- <a id="s-f43dfcda83"></a>`distribution`: `gogurt-core`
+- <a id="s-8b1cd39b43"></a>`module`: `gogurt_core`
+- <a id="s-5bb8fc9add"></a>`name`: `GogurtAction`
+- <a id="s-4197c62cf4"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-4d72801466"></a>`kind`: `"class"`
+- <a id="s-db90722750"></a>`signature`: `"\"(route: 'str', command: 'tuple[str, ...]') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-01e5441076"></a>`route` | `'str'` | `required` |
+| <a id="s-2f730b91a7"></a>`command` | `'tuple[str, ...]'` | `required` |
 
 ## Governing policies
 

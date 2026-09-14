@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d85cedace5"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7485c59194"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d187250105"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-c059da5668"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-3407d395cc"></a>`name` | "from_mapping" |
-| <a id="s-d1a95225dd"></a>`owner` | "riverhog_archive_contracts.SegmentFilePlacement" |
-| <a id="s-59fe063fe8"></a>`unit` | "member" |
+- <a id="s-d187250105"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-c059da5668"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-3407d395cc"></a>`name`: `from_mapping`
+- <a id="s-d1a95225dd"></a>`owner`: `riverhog_archive_contracts.SegmentFilePlacement`
+- <a id="s-59fe063fe8"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-6671d12def"></a>`kind`: `"classmethod"`
+- <a id="s-f74ec2d885"></a>`signature`: `"\"(cls, value: 'object', *, plaintext_bytes: 'int') -> 'SegmentFilePlacement'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-76c82fb3d3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-fb38e5f66f"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-ef188b1b4d"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-a02774a774"></a>`module` | "riverhog_protocol" |
-| <a id="s-e3d4ec07f0"></a>`name` | "ProcessingClaimRestartDocument" |
-| <a id="s-1db7fb9246"></a>`unit` | "export" |
+- <a id="s-ef188b1b4d"></a>`distribution`: `riverhog-protocol`
+- <a id="s-a02774a774"></a>`module`: `riverhog_protocol`
+- <a id="s-e3d4ec07f0"></a>`name`: `ProcessingClaimRestartDocument`
+- <a id="s-1db7fb9246"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e6338ea845"></a>`kind`: `"class"`
+- <a id="s-c5be82a6f1"></a>`signature`: `"'(*, fence: Annotated[int, Ge(ge=1)], lease_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 1800) -> None'"`
+
+#### Validated model schema
+
+<a id="s-445f8600e0"></a>
+- <a id="s-42cfa26bd0"></a>`title`: ProcessingClaimRestartDocument
+- <a id="s-a2aaf7a807"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-1f8e290dab"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-0833ed1442"></a>`lease_seconds` | no | type="integer"; minimum=30; maximum=86400 |  |
 
 ## Governing policies
 
@@ -46,13 +61,34 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 81dc2ddfb955dce112073325602bf1e42fb611e10fc37d29849f9e068e7cbc68 -->
+<!-- exact-contract-value: 4eca5e8fb85bb0a38eea38afa05a8e581f52a5833c3c1675289c99c98efe38e7 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "a1567d5ffa38a300b1cbcb6ae7cf2fc435dc07e4f6a6b18d2578795929f17619",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "fence": {
+          "minimum": 1,
+          "title": "Fence",
+          "type": "integer"
+        },
+        "lease_seconds": {
+          "default": 1800,
+          "maximum": 86400,
+          "minimum": 30,
+          "title": "Lease Seconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "fence"
+      ],
+      "title": "ProcessingClaimRestartDocument",
+      "type": "object"
+    },
     "signature": "'(*, fence: Annotated[int, Ge(ge=1)], lease_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 1800) -> None'"
   },
   "distribution": "riverhog-protocol",

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0cf31d5419"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a65b077921"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-a67aa2608d"></a>`distribution` | "riverhog-client" |
-| <a id="s-66df27a2c9"></a>`module` | "riverhog_client.transform" |
-| <a id="s-326e179cc0"></a>`name` | "create_retrieval_job" |
-| <a id="s-e137f04092"></a>`owner` | "riverhog_client.transform.ClaimedCollectionApi" |
-| <a id="s-50b98537b1"></a>`unit` | "member" |
+- <a id="s-a67aa2608d"></a>`distribution`: `riverhog-client`
+- <a id="s-66df27a2c9"></a>`module`: `riverhog_client.transform`
+- <a id="s-326e179cc0"></a>`name`: `create_retrieval_job`
+- <a id="s-e137f04092"></a>`owner`: `riverhog_client.transform.ClaimedCollectionApi`
+- <a id="s-50b98537b1"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-f83bf5da5c"></a>`kind`: `"method"`
+- <a id="s-4486284d4e"></a>`signature`: `"\"(self, plan_id: 'str', *, plan_etag: 'str', event_context: 'Mapping[str, Any] \| None' = None) -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

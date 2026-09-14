@@ -14,13 +14,34 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c550b1ab90"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-25ff813397"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-b864aac556"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-f8517daba3"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-c3fa11ca62"></a>`name` | "SchedulerPruning" |
-| <a id="s-a8376fc91d"></a>`unit` | "export" |
+- <a id="s-b864aac556"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-f8517daba3"></a>`module`: `stove0_operator_contracts`
+- <a id="s-c3fa11ca62"></a>`name`: `SchedulerPruning`
+- <a id="s-a8376fc91d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-41ac795e9f"></a>`kind`: `"class"`
+- <a id="s-2f8744bcdc"></a>`signature`: `"'(*, work: Annotated[int, Ge(ge=0)], work_bytes: Annotated[int, Ge(ge=0)], evaluations: Annotated[int, Ge(ge=0)], evaluation_bytes: Annotated[int, Ge(ge=0)], selections: Annotated[int, Ge(ge=0)], selection_bytes: Annotated[int, Ge(ge=0)], events: Annotated[int, Ge(ge=0)], event_bytes: Annotated[int, Ge(ge=0)]) -> None'"`
+
+#### Validated model schema
+
+<a id="s-2c6cccb853"></a>
+- <a id="s-738f9cfff5"></a>`title`: SchedulerPruning
+- <a id="s-ca46b77744"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4ac34dd18f"></a>`evaluation_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-da2457bcd6"></a>`evaluations` | yes | type="integer"; minimum=0 |  |
+| <a id="s-13340efda2"></a>`event_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-d174c11067"></a>`events` | yes | type="integer"; minimum=0 |  |
+| <a id="s-ec7be4f946"></a>`selection_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-c80453fc9c"></a>`selections` | yes | type="integer"; minimum=0 |  |
+| <a id="s-b06e45685c"></a>`work` | yes | type="integer"; minimum=0 |  |
+| <a id="s-987035cd40"></a>`work_bytes` | yes | type="integer"; minimum=0 |  |
 
 ## Governing policies
 
@@ -46,13 +67,69 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e1a051e912d57937767b1d327f10bdd14fbdb8d99ec7261c8175c1dcb2128937 -->
+<!-- exact-contract-value: e20ba9807979d5fbc2fd2dbf60215ee3436d9191d3a0cac5c5cf9b0a58e14246 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "639614e3a2443f84fe63c2477757b5c11d526671cd5d37014cf1699993cccc8c",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "evaluation_bytes": {
+          "minimum": 0,
+          "title": "Evaluation Bytes",
+          "type": "integer"
+        },
+        "evaluations": {
+          "minimum": 0,
+          "title": "Evaluations",
+          "type": "integer"
+        },
+        "event_bytes": {
+          "minimum": 0,
+          "title": "Event Bytes",
+          "type": "integer"
+        },
+        "events": {
+          "minimum": 0,
+          "title": "Events",
+          "type": "integer"
+        },
+        "selection_bytes": {
+          "minimum": 0,
+          "title": "Selection Bytes",
+          "type": "integer"
+        },
+        "selections": {
+          "minimum": 0,
+          "title": "Selections",
+          "type": "integer"
+        },
+        "work": {
+          "minimum": 0,
+          "title": "Work",
+          "type": "integer"
+        },
+        "work_bytes": {
+          "minimum": 0,
+          "title": "Work Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "work",
+        "work_bytes",
+        "evaluations",
+        "evaluation_bytes",
+        "selections",
+        "selection_bytes",
+        "events",
+        "event_bytes"
+      ],
+      "title": "SchedulerPruning",
+      "type": "object"
+    },
     "signature": "'(*, work: Annotated[int, Ge(ge=0)], work_bytes: Annotated[int, Ge(ge=0)], evaluations: Annotated[int, Ge(ge=0)], evaluation_bytes: Annotated[int, Ge(ge=0)], selections: Annotated[int, Ge(ge=0)], selection_bytes: Annotated[int, Ge(ge=0)], events: Annotated[int, Ge(ge=0)], event_bytes: Annotated[int, Ge(ge=0)]) -> None'"
   },
   "distribution": "stove0-operator-contracts",

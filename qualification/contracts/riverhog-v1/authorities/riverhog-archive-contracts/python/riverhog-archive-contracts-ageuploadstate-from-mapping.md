@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1c8b42de70"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-47ab1b6a56"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-16926723d4"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-684e686f67"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-a2d7217d75"></a>`name` | "from_mapping" |
-| <a id="s-55f872a0ba"></a>`owner` | "riverhog_archive_contracts.AgeUploadState" |
-| <a id="s-00b179ce8d"></a>`unit` | "member" |
+- <a id="s-16926723d4"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-684e686f67"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-a2d7217d75"></a>`name`: `from_mapping`
+- <a id="s-55f872a0ba"></a>`owner`: `riverhog_archive_contracts.AgeUploadState`
+- <a id="s-00b179ce8d"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-d84d5976da"></a>`kind`: `"classmethod"`
+- <a id="s-bf2208d444"></a>`signature`: `"\"(cls, value: 'object', *, plaintext_bytes: 'int') -> 'AgeUploadState'\""`
 
 ## Maintained corroboration
 

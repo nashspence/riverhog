@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fc2562d591"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8d87499c1d"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-72c0d257ff"></a>`distribution` | "state-schema" |
-| <a id="s-3c207670e7"></a>`module` | "state_schema" |
-| <a id="s-b23bfc5f2b"></a>`name` | "exec_driver_sql" |
-| <a id="s-e2d8f218dd"></a>`owner` | "state_schema.StateConnection" |
-| <a id="s-03169c1aec"></a>`unit` | "member" |
+- <a id="s-72c0d257ff"></a>`distribution`: `state-schema`
+- <a id="s-3c207670e7"></a>`module`: `state_schema`
+- <a id="s-b23bfc5f2b"></a>`name`: `exec_driver_sql`
+- <a id="s-e2d8f218dd"></a>`owner`: `state_schema.StateConnection`
+- <a id="s-03169c1aec"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e55a5b1b50"></a>`kind`: `"method"`
+- <a id="s-734f0339cb"></a>`signature`: `"\"(self, statement: 'str', parameters: 'Optional[_DBAPIAnyExecuteParams]' = None, execution_options: 'Optional[CoreExecuteOptionsParameter]' = None) -> 'CursorResult[Any]'\""`
 
 ## Maintained corroboration
 

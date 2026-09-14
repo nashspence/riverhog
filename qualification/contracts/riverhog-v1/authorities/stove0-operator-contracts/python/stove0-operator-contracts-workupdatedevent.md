@@ -14,13 +14,40 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f34ed81392"></a>
-| Field | Shape |
+- <a id="s-3d8a289b38"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-3e154e63b5"></a>`module`: `stove0_operator_contracts`
+- <a id="s-80b374214b"></a>`name`: `WorkUpdatedEvent`
+- <a id="s-ea297efab6"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-8161f95009"></a>`kind`: `"class"`
+- <a id="s-f078f699e6"></a>`signature`: `"\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.work.updated'], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.WorkUpdatedEventData) -> None\""`
+
+#### Validated model schema
+
+<a id="s-d0016e645b"></a>
+- <a id="s-923637117b"></a>`title`: WorkUpdatedEvent
+- <a id="s-2580168585"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-99f463106a"></a>`data` | yes | #/$defs/WorkUpdatedEventData |  |
+| <a id="s-5e209602b9"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-76a67b34ed"></a>`id` | yes | type="string"; minLength=1 |  |
+| <a id="s-b22c31709e"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
+| <a id="s-7172069c73"></a>`specversion` | no | type="string"; const="1.0" |  |
+| <a id="s-6ace36c6ad"></a>`subject` | yes | type="string"; minLength=1 |  |
+| <a id="s-1e8e6facd4"></a>`time` | yes | type="string" |  |
+| <a id="s-8d8ae1ff1e"></a>`type` | yes | type="string"; const="io.riverhog.stove0.work.updated" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-82fb93c356"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-3d8a289b38"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-3e154e63b5"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-80b374214b"></a>`name` | "WorkUpdatedEvent" |
-| <a id="s-ea297efab6"></a>`unit` | "export" |
+| <a id="s-2e033a7744"></a>`WorkUpdatedEventData` | type="object"; fields=`phase`, `revision`, `work_id`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
@@ -46,13 +73,113 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f5426cad44b091c0988f207a6190b5420801140933825ae863d55724d0b51d2d -->
+<!-- exact-contract-value: 359de8d058c5664ff7ee5b7854c655ee81de3c2b7d54d8134a2af038235f3e7a -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "7acf51ea02c3f6916c1897ebba522acabdab1949ada2cf0aa9dd4ecc4865e666",
+    "schema": {
+      "$defs": {
+        "WorkUpdatedEventData": {
+          "additionalProperties": false,
+          "properties": {
+            "phase": {
+              "enum": [
+                "eligible",
+                "claimed",
+                "observing",
+                "planning",
+                "target_preflight",
+                "queued",
+                "executing",
+                "output_finalizing",
+                "verifying",
+                "settled",
+                "retirement_pending",
+                "coordinating",
+                "abandon_pending",
+                "complete",
+                "inapplicable",
+                "failed",
+                "canceled"
+              ],
+              "title": "Phase",
+              "type": "string"
+            },
+            "revision": {
+              "minimum": 2,
+              "title": "Revision",
+              "type": "integer"
+            },
+            "work_id": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Work Id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "work_id",
+            "phase",
+            "revision"
+          ],
+          "title": "WorkUpdatedEventData",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "$ref": "#/$defs/WorkUpdatedEventData"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "title": "Datacontenttype",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "const": "urn:riverhog:stove0",
+          "title": "Source",
+          "type": "string"
+        },
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Specversion",
+          "type": "string"
+        },
+        "subject": {
+          "minLength": 1,
+          "title": "Subject",
+          "type": "string"
+        },
+        "time": {
+          "title": "Time",
+          "type": "string"
+        },
+        "type": {
+          "const": "io.riverhog.stove0.work.updated",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "type",
+        "subject",
+        "time",
+        "data"
+      ],
+      "title": "WorkUpdatedEvent",
+      "type": "object"
+    },
     "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.work.updated'], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.WorkUpdatedEventData) -> None\""
   },
   "distribution": "stove0-operator-contracts",

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ccbd21d1a2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5e29c9031d"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-10bf585453"></a>`distribution` | "riverhog-client" |
-| <a id="s-b9567df5b8"></a>`module` | "riverhog_client.transform" |
-| <a id="s-65d0d089f6"></a>`name` | "download" |
-| <a id="s-7e2ebd1dee"></a>`owner` | "riverhog_client.transform.ClaimedRetrieval" |
-| <a id="s-e157797621"></a>`unit` | "member" |
+- <a id="s-10bf585453"></a>`distribution`: `riverhog-client`
+- <a id="s-b9567df5b8"></a>`module`: `riverhog_client.transform`
+- <a id="s-65d0d089f6"></a>`name`: `download`
+- <a id="s-7e2ebd1dee"></a>`owner`: `riverhog_client.transform.ClaimedRetrieval`
+- <a id="s-e157797621"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3fb7de90d3"></a>`kind`: `"method"`
+- <a id="s-0ee4f4141f"></a>`signature`: `"\"(self, artifact: 'ClaimedArtifact', output: 'Path') -> 'int'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d5208bc61d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d676f8eedc"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-75bb39f7f0"></a>`distribution` | "stove0-server" |
-| <a id="s-d7c6d61359"></a>`module` | "stove0_core" |
-| <a id="s-1cec50a8bd"></a>`name` | "list_work" |
-| <a id="s-e53c3ad605"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-7aa8e3fcaa"></a>`unit` | "member" |
+- <a id="s-75bb39f7f0"></a>`distribution`: `stove0-server`
+- <a id="s-d7c6d61359"></a>`module`: `stove0_core`
+- <a id="s-1cec50a8bd"></a>`name`: `list_work`
+- <a id="s-e53c3ad605"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-7aa8e3fcaa"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-2cfba3dfbd"></a>`kind`: `"method"`
+- <a id="s-46323fab61"></a>`signature`: `"\"(self, *, page_size: 'int' = 25, position: 'tuple[str \| int \| bool \| bytes \| None, ...] \| None' = None, phase: 'str \| None' = None, query: 'str \| None' = None, sort: 'WorkSort' = 'updated_at', order: 'SortOrder' = 'desc') -> 'dict[str, object]'\""`
 
 ## Maintained corroboration
 

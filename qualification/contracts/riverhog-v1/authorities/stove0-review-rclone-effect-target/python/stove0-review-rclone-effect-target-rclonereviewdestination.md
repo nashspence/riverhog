@@ -14,13 +14,25 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f22daed25e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d903112e93"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-a9e48ccdb8"></a>`distribution` | "stove0-review-rclone-effect-target" |
-| <a id="s-f86ffc0684"></a>`module` | "stove0_review_rclone_effect_target" |
-| <a id="s-494f327aa5"></a>`name` | "RcloneReviewDestination" |
-| <a id="s-46721d52da"></a>`unit` | "export" |
+- <a id="s-a9e48ccdb8"></a>`distribution`: `stove0-review-rclone-effect-target`
+- <a id="s-f86ffc0684"></a>`module`: `stove0_review_rclone_effect_target`
+- <a id="s-494f327aa5"></a>`name`: `RcloneReviewDestination`
+- <a id="s-46721d52da"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-74d5ea8af0"></a>`kind`: `"class"`
+- <a id="s-72b2448305"></a>`signature`: `"\"(identity: 'str', remote: 'str', config_path: 'Path \| None' = None, executable: 'str' = 'rclone', timeout_seconds: 'int' = 86400) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-4ee7eecfda"></a>`identity` | `'str'` | `required` |
+| <a id="s-4409d2851f"></a>`remote` | `'str'` | `required` |
+| <a id="s-1ddf3348d2"></a>`config_path` | `'Path \| None'` | `None` |
+| <a id="s-675c99507f"></a>`executable` | `'str'` | `'rclone'` |
+| <a id="s-e09ef4d6ba"></a>`timeout_seconds` | `'int'` | `86400` |
 
 ## Maintained corroboration
 

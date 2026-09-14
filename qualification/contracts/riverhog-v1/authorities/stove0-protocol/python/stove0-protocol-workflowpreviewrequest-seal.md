@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bfb48f6cec"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8d5306feb1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-02847c56f9"></a>`distribution` | "stove0-protocol" |
-| <a id="s-2a6215107f"></a>`module` | "stove0_protocol" |
-| <a id="s-9b5d3dd2a6"></a>`name` | "seal" |
-| <a id="s-4f64df65cd"></a>`owner` | "stove0_protocol.WorkflowPreviewRequest" |
-| <a id="s-fcb1d78051"></a>`unit` | "member" |
+- <a id="s-02847c56f9"></a>`distribution`: `stove0-protocol`
+- <a id="s-2a6215107f"></a>`module`: `stove0_protocol`
+- <a id="s-9b5d3dd2a6"></a>`name`: `seal`
+- <a id="s-4f64df65cd"></a>`owner`: `stove0_protocol.WorkflowPreviewRequest`
+- <a id="s-fcb1d78051"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e2aa9e3172"></a>`kind`: `"classmethod"`
+- <a id="s-5804f9957e"></a>`signature`: `"\"(cls, payload: 'WorkflowPreviewRequestPayload') -> 'WorkflowPreviewRequest'\""`
 
 ## Maintained corroboration
 

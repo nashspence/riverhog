@@ -5,8 +5,8 @@ import json
 import re
 import sys
 from collections import Counter
-from functools import cache
 from pathlib import Path
+from typing import Any, cast
 
 import pytest
 
@@ -17,13 +17,20 @@ if str(REPO_ROOT / "scripts") not in sys.path:
 import contract_atlas as atlas  # noqa: E402
 
 ARTIFACT = REPO_ROOT / "qualification/contracts/riverhog-v1.json"
+_CHECKED_ATLAS: atlas.ContractAtlas | None = None
 
 
-@cache
+@pytest.fixture(scope="module", autouse=True)
+def _bind_checked_atlas(checked_contract_closure: dict[str, Any]) -> None:
+    global _CHECKED_ATLAS
+    _CHECKED_ATLAS = cast(atlas.ContractAtlas, checked_contract_closure["atlas"])
+
+
 def checked_atlas() -> atlas.ContractAtlas:
-    """Load and validate the large checked closure once for presentation assertions."""
+    """Return the session-validated immutable closure for presentation assertions."""
 
-    return atlas.load_atlas(ARTIFACT)
+    assert _CHECKED_ATLAS is not None
+    return _CHECKED_ATLAS
 
 
 def test_semantic_json_identity_does_not_distinguish_integral_float_spelling() -> None:
@@ -123,6 +130,45 @@ def test_atlas_rollups_and_dossiers_are_exact_and_descriptive() -> None:
     assert all(b"### Exact owned JSON" in checked.files[item["dossier"]] for item in elements)
 
 
+def test_durable_state_and_python_structures_are_exact_human_audit_units() -> None:
+    checked = checked_atlas()
+    projection = checked.root["projection"]
+    elements = checked.root["elements"]
+    state_owners = projection["external_contract"]["durable_state"]["owners"]
+    state_elements = [item for item in elements if item["interface"] == "durable-state"]
+    expected_units = 0
+    for owner in state_owners:
+        structure = owner["structure"]
+        collections = [value for value in structure.values() if isinstance(value, list)]
+        expected_units += 1 + sum(len(value) for value in collections)
+    assert len(state_elements) == expected_units
+    assert all("state_unit" in item["details"] for item in state_elements)
+
+    collections = next(
+        item
+        for item in state_elements
+        if item["authority"] == "riverhog-catalog" and item["title"].endswith(": collections")
+    )
+    collections_page = checked.files[collections["dossier"]].decode()
+    assert "### Columns" in collections_page
+    assert "### Table constraints" in collections_page
+    assert "`description_search`" in collections_page
+    assert "`ck_collections_archive_root_sha256`" in collections_page
+
+    pydantic_element = next(
+        item
+        for item in elements
+        if item["interface"] == "python"
+        and "schema" in atlas.pointer_value(projection, item["pointers"][0])["contract"]
+    )
+    pydantic_page = checked.files[pydantic_element["dossier"]].decode()
+    assert "#### Validated model schema" in pydantic_page
+    assert "### Fields" in pydantic_page
+
+    sources_page = checked.files["riverhog-v1/evidence/sources.md"].decode()
+    assert "tests/fixtures/state/v1_0001/riverhog.postgresql.sql" in sources_page
+
+
 def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None:
     checked = checked_atlas()
     root = checked.root
@@ -198,7 +244,7 @@ def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None
     release_elements = [item for item in root["elements"] if item["authority"] == "release"]
     expected_interfaces = {
         "artifact-verification": 3,
-        "compatibility-guarantees": 7,
+        "compatibility-guarantees": 8,
         "installation-roots": 4,
         "publication-locations": 2,
         "python-distributions": 71,
@@ -206,7 +252,7 @@ def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None
         "runtime-images": 13,
         "versioning-tags": 5,
     }
-    assert len(release_elements) == 117
+    assert len(release_elements) == 118
     assert Counter(item["interface"] for item in release_elements) == expected_interfaces
     assert "release" not in {item["interface"] for item in release_elements}
     assert "riverhog-v1/authorities/release/release/index.md" not in checked.files

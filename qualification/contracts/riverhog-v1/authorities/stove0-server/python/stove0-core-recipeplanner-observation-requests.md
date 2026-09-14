@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6d10664b99"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f4958e18a5"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-0904d866d6"></a>`distribution` | "stove0-server" |
-| <a id="s-b9b8099f16"></a>`module` | "stove0_core" |
-| <a id="s-7561ea4903"></a>`name` | "observation_requests" |
-| <a id="s-65bd5defbe"></a>`owner` | "stove0_core.RecipePlanner" |
-| <a id="s-cc974b8462"></a>`unit` | "member" |
+- <a id="s-0904d866d6"></a>`distribution`: `stove0-server`
+- <a id="s-b9b8099f16"></a>`module`: `stove0_core`
+- <a id="s-7561ea4903"></a>`name`: `observation_requests`
+- <a id="s-65bd5defbe"></a>`owner`: `stove0_core.RecipePlanner`
+- <a id="s-cc974b8462"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-fab8b79b34"></a>`kind`: `"method"`
+- <a id="s-a18de5e3ff"></a>`signature`: `"\"(self, work: 'WorkIdentity') -> 'tuple[ObservationRequest, ...]'\""`
 
 ## Maintained corroboration
 

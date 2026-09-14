@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-60d924664a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a249786fa1"></a>`contract` | type="typing._AnnotatedAlias"; additional keys=`kind` |
-| <a id="s-0dfa687fb4"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-7ec48cfbbc"></a>`module` | "riverhog_protocol" |
-| <a id="s-1ac8b70ff5"></a>`name` | "FileProvenanceBinding" |
-| <a id="s-b39ea7c194"></a>`unit` | "export" |
+- <a id="s-0dfa687fb4"></a>`distribution`: `riverhog-protocol`
+- <a id="s-7ec48cfbbc"></a>`module`: `riverhog_protocol`
+- <a id="s-1ac8b70ff5"></a>`name`: `FileProvenanceBinding`
+- <a id="s-b39ea7c194"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-4269d33e6d"></a>`kind`: `"object"`
+- <a id="s-d81a34cda1"></a>`type`: `"typing._AnnotatedAlias"`
 
 ## Governing policies
 

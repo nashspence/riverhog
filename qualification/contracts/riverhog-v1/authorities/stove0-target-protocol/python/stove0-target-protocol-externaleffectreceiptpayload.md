@@ -14,13 +14,40 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-17fa7c8b9f"></a>
-| Field | Shape |
+- <a id="s-405451ae6a"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-7ed4a98ec0"></a>`module`: `stove0_target_protocol`
+- <a id="s-638d9e47f0"></a>`name`: `ExternalEffectReceiptPayload`
+- <a id="s-fd6af42653"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-c4eeb453a2"></a>`kind`: `"class"`
+- <a id="s-03bdb053ce"></a>`signature`: `"\"(*, format: Literal['stove0-external-effect-receipt/v1'] = 'stove0-external-effect-receipt/v1', job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], request_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], target_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], execution_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], result: dict[str, JsonValue]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-ef6c1dadef"></a>
+- <a id="s-477e6eff82"></a>`title`: ExternalEffectReceiptPayload
+- <a id="s-b2306808b3"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-268f278e53"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-91a45315f1"></a>`format` | no | type="string"; const="stove0-external-effect-receipt/v1" |  |
+| <a id="s-232e746948"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-9af6677f28"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-806174901e"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6ef3a64691"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ec51b29310"></a>`result` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| <a id="s-45f72f8330"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-d7afb79751"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-405451ae6a"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-7ed4a98ec0"></a>`module` | "stove0_target_protocol" |
-| <a id="s-638d9e47f0"></a>`name` | "ExternalEffectReceiptPayload" |
-| <a id="s-fd6af42653"></a>`unit` | "export" |
+| <a id="s-5066a7c85e"></a>`JsonValue` | empty object |
 
 ## Maintained corroboration
 
@@ -52,13 +79,79 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e9e76a6a068786821aa02542b87e86e843693fec2da8f355f2d82e11fac652f3 -->
+<!-- exact-contract-value: 3bd724c983ed3bf3e5edd24dd12748241c4a321fb6af6cbfa1dd4b376758a393 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "d3489bc5c57692d8e98b5c61032d8c138fa5e476ccad3c14201bc96374d42f10",
+    "schema": {
+      "$defs": {
+        "JsonValue": {}
+      },
+      "additionalProperties": false,
+      "properties": {
+        "execution_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Execution Sha256",
+          "type": "string"
+        },
+        "format": {
+          "const": "stove0-external-effect-receipt/v1",
+          "default": "stove0-external-effect-receipt/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "job_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Job Id",
+          "type": "string"
+        },
+        "operation_contract_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Operation Contract Sha256",
+          "type": "string"
+        },
+        "plan_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Plan Sha256",
+          "type": "string"
+        },
+        "request_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Request Sha256",
+          "type": "string"
+        },
+        "result": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Result",
+          "type": "object",
+          "x-riverhog-encoded-bytes-max": 65536,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-external-effect-receipt"
+          }
+        },
+        "target_contract_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Target Contract Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "job_id",
+        "request_sha256",
+        "target_contract_sha256",
+        "operation_contract_sha256",
+        "plan_sha256",
+        "execution_sha256",
+        "result"
+      ],
+      "title": "ExternalEffectReceiptPayload",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['stove0-external-effect-receipt/v1'] = 'stove0-external-effect-receipt/v1', job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], request_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], target_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], execution_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], result: dict[str, JsonValue]) -> None\""
   },
   "distribution": "stove0-target-protocol",

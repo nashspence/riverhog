@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-41c2840cf8"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-21f05f0387"></a>`contract` | type="stove0_protocol.models.JsonSchemaDocument"; additional keys=`kind` |
-| <a id="s-c88c6480db"></a>`distribution` | "stove0-media-sampling-observer-contracts" |
-| <a id="s-7abf82e7dc"></a>`module` | "stove0_media_sampling_observer_contracts" |
-| <a id="s-142575c743"></a>`name` | "MEDIA_SAMPLING_FACTS_SCHEMA" |
-| <a id="s-ebed36cb2c"></a>`unit` | "export" |
+- <a id="s-c88c6480db"></a>`distribution`: `stove0-media-sampling-observer-contracts`
+- <a id="s-7abf82e7dc"></a>`module`: `stove0_media_sampling_observer_contracts`
+- <a id="s-142575c743"></a>`name`: `MEDIA_SAMPLING_FACTS_SCHEMA`
+- <a id="s-ebed36cb2c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-cf2b4e7c03"></a>`kind`: `"object"`
+- <a id="s-d1c662946c"></a>`type`: `"stove0_protocol.models.JsonSchemaDocument"`
 
 ## Governing policies
 

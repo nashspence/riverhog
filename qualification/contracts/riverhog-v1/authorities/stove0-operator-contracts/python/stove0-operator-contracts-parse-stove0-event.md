@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-280b6c3965"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c5f4685768"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-58df574e68"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-0a3834d67a"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-8dfc13abff"></a>`name` | "parse_stove0_event" |
-| <a id="s-7d85e7d3e7"></a>`unit` | "export" |
+- <a id="s-58df574e68"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-0a3834d67a"></a>`module`: `stove0_operator_contracts`
+- <a id="s-8dfc13abff"></a>`name`: `parse_stove0_event`
+- <a id="s-7d85e7d3e7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-8063455461"></a>`kind`: `"function"`
+- <a id="s-5338c009f1"></a>`signature`: `"\"(value: 'object') -> 'Stove0LifecycleEvent'\""`
 
 ## Governing policies
 

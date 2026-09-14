@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-441ceb2550"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ebaaf90b6b"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-fbb09413df"></a>`distribution` | "riverhog-client" |
-| <a id="s-963e6e3b25"></a>`module` | "riverhog_client" |
-| <a id="s-6cf4941c2b"></a>`name` | "download_retrieval_file" |
-| <a id="s-be8dd1b80e"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-5df55ffbfa"></a>`unit` | "member" |
+- <a id="s-fbb09413df"></a>`distribution`: `riverhog-client`
+- <a id="s-963e6e3b25"></a>`module`: `riverhog_client`
+- <a id="s-6cf4941c2b"></a>`name`: `download_retrieval_file`
+- <a id="s-be8dd1b80e"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-5df55ffbfa"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1b876e5364"></a>`kind`: `"method"`
+- <a id="s-7be726f270"></a>`signature`: `"\"(self, job_id: 'str', *, collection_id: 'CollectionId', path: 'str', output: 'Path', expected_bytes: 'int', expected_sha256: 'str', progress: 'DownloadProgress \| None' = None) -> 'int'\""`
 
 ## Maintained corroboration
 

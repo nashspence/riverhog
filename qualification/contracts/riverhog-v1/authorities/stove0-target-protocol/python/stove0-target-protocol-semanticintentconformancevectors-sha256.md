@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2d9b63594f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-802da3224c"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-3cbbbe1ba0"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-7488035dc4"></a>`module` | "stove0_target_protocol" |
-| <a id="s-2bd75ef317"></a>`name` | "sha256" |
-| <a id="s-e775cebc29"></a>`owner` | "stove0_target_protocol.SemanticIntentConformanceVectors" |
-| <a id="s-f465af53f2"></a>`unit` | "member" |
+- <a id="s-3cbbbe1ba0"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-7488035dc4"></a>`module`: `stove0_target_protocol`
+- <a id="s-2bd75ef317"></a>`name`: `sha256`
+- <a id="s-e775cebc29"></a>`owner`: `stove0_target_protocol.SemanticIntentConformanceVectors`
+- <a id="s-f465af53f2"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-252890a6a0"></a>`kind`: `"property"`
+- <a id="s-dc6fef8709"></a>`signature`: `"\"(self) -> 'str'\""`
 
 ## Maintained corroboration
 

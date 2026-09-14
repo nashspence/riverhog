@@ -14,13 +14,26 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8c3043c1c7"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7a00e3fcf9"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-4805089464"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-55bc26b6fa"></a>`module` | "riverhog_provenance" |
-| <a id="s-22021258db"></a>`name` | "ObservationResult" |
-| <a id="s-a7722ae7bb"></a>`unit` | "export" |
+- <a id="s-4805089464"></a>`distribution`: `riverhog-provenance`
+- <a id="s-55bc26b6fa"></a>`module`: `riverhog_provenance`
+- <a id="s-22021258db"></a>`name`: `ObservationResult`
+- <a id="s-a7722ae7bb"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-50ce0b89cd"></a>`kind`: `"class"`
+- <a id="s-6c13228d26"></a>`signature`: `"\"(state: 'JsonObject', capture: 'JsonObject', environment: 'JsonObject', agents: 'tuple[JsonObject, ...]', payload_bindings: 'tuple[JsonObject, ...]' = (), extensions: 'tuple[JsonObject, ...]' = ()) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-3274cf9f58"></a>`state` | `'JsonObject'` | `required` |
+| <a id="s-1d7ca4c29a"></a>`capture` | `'JsonObject'` | `required` |
+| <a id="s-37d0a60426"></a>`environment` | `'JsonObject'` | `required` |
+| <a id="s-5d91605620"></a>`agents` | `'tuple[JsonObject, ...]'` | `required` |
+| <a id="s-c0522dc334"></a>`payload_bindings` | `'tuple[JsonObject, ...]'` | `()` |
+| <a id="s-534e193dac"></a>`extensions` | `'tuple[JsonObject, ...]'` | `()` |
 
 ## Maintained corroboration
 

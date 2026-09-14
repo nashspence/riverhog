@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-13a01db581"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b839aea105"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-e3a9cb5230"></a>`distribution` | "gogurt-windows-listener-host" |
-| <a id="s-d594148a74"></a>`module` | "gogurt_windows_listener_host" |
-| <a id="s-d278bf304b"></a>`name` | "WINDOWS_TASK_RESTART_INTERVAL" |
-| <a id="s-f13e587c85"></a>`unit` | "export" |
+- <a id="s-e3a9cb5230"></a>`distribution`: `gogurt-windows-listener-host`
+- <a id="s-d594148a74"></a>`module`: `gogurt_windows_listener_host`
+- <a id="s-d278bf304b"></a>`name`: `WINDOWS_TASK_RESTART_INTERVAL`
+- <a id="s-f13e587c85"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-04f16c6091"></a>`kind`: `"constant"`
+- <a id="s-123be213ab"></a>`value`: `"PT1M"`
 
 ## Governing policies
 

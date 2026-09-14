@@ -14,13 +14,33 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d35a36d9c4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-28ebdb2a8a"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-6eaba65920"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-4b341f8d4e"></a>`module` | "riverhog_provenance" |
-| <a id="s-ffab464123"></a>`name` | "JournalSummary" |
-| <a id="s-421df73033"></a>`unit` | "export" |
+- <a id="s-6eaba65920"></a>`distribution`: `riverhog-provenance`
+- <a id="s-4b341f8d4e"></a>`module`: `riverhog_provenance`
+- <a id="s-ffab464123"></a>`name`: `JournalSummary`
+- <a id="s-421df73033"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f71d6d671a"></a>`kind`: `"class"`
+- <a id="s-5131e369a2"></a>`signature`: `"\"(journal_id: 'str', primary_lineage_id: 'str', frames: 'tuple[JournalFrame, ...]', entries: 'int', tail_frame: 'JournalFrame', journal_sha256: 'str', current_binding_id: 'str', current_state_id: 'str', current_path: 'str', current_bytes: 'int', current_sha256: 'str', agent_ids: 'frozenset[str]', external_states: 'tuple[ExternalStateReference, ...]') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-c55c6eb92a"></a>`journal_id` | `'str'` | `required` |
+| <a id="s-92b7473780"></a>`primary_lineage_id` | `'str'` | `required` |
+| <a id="s-f657521f1a"></a>`frames` | `'tuple[JournalFrame, ...]'` | `required` |
+| <a id="s-bb7e701ab9"></a>`entries` | `'int'` | `required` |
+| <a id="s-11758ba090"></a>`tail_frame` | `'JournalFrame'` | `required` |
+| <a id="s-ea65d94b06"></a>`journal_sha256` | `'str'` | `required` |
+| <a id="s-a4be47b24b"></a>`current_binding_id` | `'str'` | `required` |
+| <a id="s-f9d77f213d"></a>`current_state_id` | `'str'` | `required` |
+| <a id="s-b372dbbd14"></a>`current_path` | `'str'` | `required` |
+| <a id="s-6e9b9eb72f"></a>`current_bytes` | `'int'` | `required` |
+| <a id="s-694ef157bf"></a>`current_sha256` | `'str'` | `required` |
+| <a id="s-f6c64b78fe"></a>`agent_ids` | `'frozenset[str]'` | `required` |
+| <a id="s-537166ac95"></a>`external_states` | `'tuple[ExternalStateReference, ...]'` | `required` |
 
 ## Maintained corroboration
 

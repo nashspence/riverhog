@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-45f8a907ca"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-44c15af8fc"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-3543a3d422"></a>`distribution` | "stove0-server" |
-| <a id="s-a72f36457d"></a>`module` | "stove0_core" |
-| <a id="s-1ca962e0f3"></a>`name` | "retain_selection" |
-| <a id="s-7a38ab170f"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-18ef0768f2"></a>`unit` | "member" |
+- <a id="s-3543a3d422"></a>`distribution`: `stove0-server`
+- <a id="s-a72f36457d"></a>`module`: `stove0_core`
+- <a id="s-1ca962e0f3"></a>`name`: `retain_selection`
+- <a id="s-7a38ab170f"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-18ef0768f2"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-6b341fbe1a"></a>`kind`: `"method"`
+- <a id="s-11cd6ac7ef"></a>`signature`: `"\"(self, selection: 'ArtifactSelection') -> 'None'\""`
 
 ## Maintained corroboration
 

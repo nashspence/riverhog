@@ -14,13 +14,29 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-be78184727"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-bb4573e450"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-0d43b035c2"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-61b8867c02"></a>`module` | "riverhog_protocol" |
-| <a id="s-b3a53c2e4e"></a>`name` | "CollectionUploadRawPartsIn" |
-| <a id="s-5f32ab1388"></a>`unit` | "export" |
+- <a id="s-0d43b035c2"></a>`distribution`: `riverhog-protocol`
+- <a id="s-61b8867c02"></a>`module`: `riverhog_protocol`
+- <a id="s-b3a53c2e4e"></a>`name`: `CollectionUploadRawPartsIn`
+- <a id="s-5f32ab1388"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-20939c8aa6"></a>`kind`: `"class"`
+- <a id="s-4c88f3668f"></a>`signature`: `"\"(*, part_plaintext_bytes: Annotated[int, Ge(ge=65536)], part_count: Annotated[int, Strict(strict=True), Ge(ge=1)], ordered_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-e98b5f0d86"></a>
+- <a id="s-26ed804d1c"></a>`title`: CollectionUploadRawPartsIn
+- <a id="s-42c55b9d54"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-69aaeec32c"></a>`ordered_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-eef617ea2c"></a>`part_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-414ee80a09"></a>`part_plaintext_bytes` | yes | type="integer"; minimum=65536 |  |
 
 ## Governing policies
 
@@ -46,13 +62,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 600f5a2a5026db575ecb7ec52abdd2ac07cf7d2839149c46730cb228c8d064a2 -->
+<!-- exact-contract-value: 52591dbea8ff567066fe22efbf56ae7ae662de131bcd7ad652c33890a60072d9 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "76ccb435180670cd87a5f21b23e35a4dfbc75f28f4535248bc6671c05f6a8baf",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "ordered_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Ordered Sha256",
+          "type": "string"
+        },
+        "part_count": {
+          "minimum": 1,
+          "title": "Part Count",
+          "type": "integer"
+        },
+        "part_plaintext_bytes": {
+          "minimum": 65536,
+          "title": "Part Plaintext Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "part_plaintext_bytes",
+        "part_count",
+        "ordered_sha256"
+      ],
+      "title": "CollectionUploadRawPartsIn",
+      "type": "object"
+    },
     "signature": "\"(*, part_plaintext_bytes: Annotated[int, Ge(ge=65536)], part_count: Annotated[int, Strict(strict=True), Ge(ge=1)], ordered_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
   },
   "distribution": "riverhog-protocol",

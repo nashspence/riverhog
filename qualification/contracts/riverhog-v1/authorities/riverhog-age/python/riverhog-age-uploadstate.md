@@ -14,13 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f7e65dc723"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-17d140fe82"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-6e78f52c70"></a>`distribution` | "riverhog-age" |
-| <a id="s-06614783f8"></a>`module` | "riverhog_age" |
-| <a id="s-e67255d16b"></a>`name` | "UploadState" |
-| <a id="s-d36a0c0574"></a>`unit` | "export" |
+- <a id="s-6e78f52c70"></a>`distribution`: `riverhog-age`
+- <a id="s-06614783f8"></a>`module`: `riverhog_age`
+- <a id="s-e67255d16b"></a>`name`: `UploadState`
+- <a id="s-d36a0c0574"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-04ac7dba43"></a>`kind`: `"class"`
+- <a id="s-09da5e35d7"></a>`signature`: `"\"(header: 'bytes', payload_nonce: 'bytes', plaintext_size: 'int \| None' = None, format: 'str' = 'age-v1-scrypt-resumable') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-f9b3b77d98"></a>`header` | `'bytes'` | `required` |
+| <a id="s-ec22247ecc"></a>`payload_nonce` | `'bytes'` | `required` |
+| <a id="s-91d237cdd3"></a>`plaintext_size` | `'int \| None'` | `None` |
+| <a id="s-f8c6e2d2dc"></a>`format` | `'str'` | `'age-v1-scrypt-resumable'` |
 
 ## Maintained corroboration
 

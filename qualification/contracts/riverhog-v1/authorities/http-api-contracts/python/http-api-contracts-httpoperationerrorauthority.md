@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-01fb327fce"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-95799cc14e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c07e8f564a"></a>`distribution` | "http-api-contracts" |
-| <a id="s-e51584b0dd"></a>`module` | "http_api_contracts" |
-| <a id="s-d6d6712eed"></a>`name` | "HttpOperationErrorAuthority" |
-| <a id="s-7399688125"></a>`unit` | "export" |
+- <a id="s-c07e8f564a"></a>`distribution`: `http-api-contracts`
+- <a id="s-e51584b0dd"></a>`module`: `http_api_contracts`
+- <a id="s-d6d6712eed"></a>`name`: `HttpOperationErrorAuthority`
+- <a id="s-7399688125"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-3d0b5c999e"></a>`kind`: `"class"`
+- <a id="s-8b4595204e"></a>`signature`: `"\"(*, common: 'Collection[HttpErrorContract]', operation: 'Mapping[str, Collection[HttpErrorContract]]', exact: 'Mapping[str, Collection[HttpErrorContract]] \| None' = None) -> 'None'\""`
 
 ## Maintained corroboration
 

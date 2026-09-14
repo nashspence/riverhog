@@ -14,13 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6c5e53fb63"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f2c5dc4da2"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-de9577eb57"></a>`distribution` | "stove0-review-sampler-support" |
-| <a id="s-b90102e922"></a>`module` | "stove0_review_sampler_support" |
-| <a id="s-900f3b3859"></a>`name` | "SamplerHttpResponse" |
-| <a id="s-59b1ba9202"></a>`unit` | "export" |
+- <a id="s-de9577eb57"></a>`distribution`: `stove0-review-sampler-support`
+- <a id="s-b90102e922"></a>`module`: `stove0_review_sampler_support`
+- <a id="s-900f3b3859"></a>`name`: `SamplerHttpResponse`
+- <a id="s-59b1ba9202"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-21fcdfb0b3"></a>`kind`: `"class"`
+- <a id="s-486af26366"></a>`signature`: `"\"(status: 'int', headers: 'tuple[tuple[str, str], ...]', body: 'bytes') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-b96fe9dc5b"></a>`status` | `'int'` | `required` |
+| <a id="s-be18c7eefa"></a>`headers` | `'tuple[tuple[str, str], ...]'` | `required` |
+| <a id="s-e321aaaea2"></a>`body` | `'bytes'` | `required` |
 
 ## Governing policies
 

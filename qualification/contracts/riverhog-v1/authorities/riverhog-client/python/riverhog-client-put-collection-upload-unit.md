@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7cb43131c3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-882a4736de"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e1c21d6049"></a>`distribution` | "riverhog-client" |
-| <a id="s-b93a1f5902"></a>`module` | "riverhog_client" |
-| <a id="s-bb844fd13a"></a>`name` | "put_collection_upload_unit" |
-| <a id="s-c3ca270d90"></a>`unit` | "export" |
+- <a id="s-e1c21d6049"></a>`distribution`: `riverhog-client`
+- <a id="s-b93a1f5902"></a>`module`: `riverhog_client`
+- <a id="s-bb844fd13a"></a>`name`: `put_collection_upload_unit`
+- <a id="s-c3ca270d90"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-2c301c4024"></a>`kind`: `"function"`
+- <a id="s-d3403cbd0a"></a>`signature`: `"\"(api: 'CollectionUnitApi', collection_id: 'CollectionId', assignment: 'CollectionUploadUnitAssignmentDocument', *, content_for_unit: 'UnitContent', retry_notice: 'RetryNotice \| None' = None, retry_initial_delay_seconds: 'float' = 1.0, retry_max_delay_seconds: 'float' = 10.0) -> 'int'\""`
 
 ## Governing policies
 

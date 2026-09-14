@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-96d6c492f6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8adcc3dab8"></a>`contract` | type="gogurt_core.mounts.MountedVolumeProviderBinding"; additional keys=`kind` |
-| <a id="s-b7634719d7"></a>`distribution` | "gogurt-macos-mounted-volume" |
-| <a id="s-884a7b5ffa"></a>`module` | "gogurt_macos_mounted_volume" |
-| <a id="s-0507dd4792"></a>`name` | "MOUNTED_VOLUME_PROVIDER_BINDING" |
-| <a id="s-56fc5689d8"></a>`unit` | "export" |
+- <a id="s-b7634719d7"></a>`distribution`: `gogurt-macos-mounted-volume`
+- <a id="s-884a7b5ffa"></a>`module`: `gogurt_macos_mounted_volume`
+- <a id="s-0507dd4792"></a>`name`: `MOUNTED_VOLUME_PROVIDER_BINDING`
+- <a id="s-56fc5689d8"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-2103e018f9"></a>`kind`: `"object"`
+- <a id="s-2c31521fa7"></a>`type`: `"gogurt_core.mounts.MountedVolumeProviderBinding"`
 
 ## Governing policies
 

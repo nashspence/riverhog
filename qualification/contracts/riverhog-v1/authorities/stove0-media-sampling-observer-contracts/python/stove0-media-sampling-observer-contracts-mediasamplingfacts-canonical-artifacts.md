@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3db3615017"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f91803485f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-3ce0e15d8c"></a>`distribution` | "stove0-media-sampling-observer-contracts" |
-| <a id="s-f0a7ec9384"></a>`module` | "stove0_media_sampling_observer_contracts" |
-| <a id="s-8d42fd1bd6"></a>`name` | "canonical_artifacts" |
-| <a id="s-6a61893db5"></a>`owner` | "stove0_media_sampling_observer_contracts.MediaSamplingFacts" |
-| <a id="s-d7aa09911c"></a>`unit` | "member" |
+- <a id="s-3ce0e15d8c"></a>`distribution`: `stove0-media-sampling-observer-contracts`
+- <a id="s-f0a7ec9384"></a>`module`: `stove0_media_sampling_observer_contracts`
+- <a id="s-8d42fd1bd6"></a>`name`: `canonical_artifacts`
+- <a id="s-6a61893db5"></a>`owner`: `stove0_media_sampling_observer_contracts.MediaSamplingFacts`
+- <a id="s-d7aa09911c"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-b03a63766a"></a>`kind`: `"classmethod"`
+- <a id="s-27affba128"></a>`signature`: `"\"(cls, value: 'tuple[MediaSamplingArtifactFacts, ...]') -> 'tuple[MediaSamplingArtifactFacts, ...]'\""`
 
 ## Maintained corroboration
 

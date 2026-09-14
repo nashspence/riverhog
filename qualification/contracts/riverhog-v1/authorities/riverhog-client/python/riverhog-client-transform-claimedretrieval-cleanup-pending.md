@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6d7563ac88"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-bbe96d02f9"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-2996c77c88"></a>`distribution` | "riverhog-client" |
-| <a id="s-adc1941b82"></a>`module` | "riverhog_client.transform" |
-| <a id="s-e7f0587d7b"></a>`name` | "cleanup_pending" |
-| <a id="s-e155af48c3"></a>`owner` | "riverhog_client.transform.ClaimedRetrieval" |
-| <a id="s-361fe48569"></a>`unit` | "member" |
+- <a id="s-2996c77c88"></a>`distribution`: `riverhog-client`
+- <a id="s-adc1941b82"></a>`module`: `riverhog_client.transform`
+- <a id="s-e7f0587d7b"></a>`name`: `cleanup_pending`
+- <a id="s-e155af48c3"></a>`owner`: `riverhog_client.transform.ClaimedRetrieval`
+- <a id="s-361fe48569"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-54b4007319"></a>`kind`: `"property"`
+- <a id="s-94f2c76991"></a>`signature`: `"\"(self) -> 'bool'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5c6c95db10"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-be8f120fc1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-487eaee4c0"></a>`distribution` | "stove0-api-client" |
-| <a id="s-e841c58d66"></a>`module` | "stove0_api_client" |
-| <a id="s-30749d572c"></a>`name` | "list_events" |
-| <a id="s-5e8bb0be12"></a>`owner` | "stove0_api_client.Stove0ApiClient" |
-| <a id="s-a30a7875da"></a>`unit` | "member" |
+- <a id="s-487eaee4c0"></a>`distribution`: `stove0-api-client`
+- <a id="s-e841c58d66"></a>`module`: `stove0_api_client`
+- <a id="s-30749d572c"></a>`name`: `list_events`
+- <a id="s-5e8bb0be12"></a>`owner`: `stove0_api_client.Stove0ApiClient`
+- <a id="s-a30a7875da"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-8678d18a2d"></a>`kind`: `"method"`
+- <a id="s-76d24ae2ff"></a>`signature`: `"\"(self, *, after: 'str \| None' = None, limit: 'int' = 100) -> 'Stove0EventPage'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-26ac15e823"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c92255b94e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-a26a054210"></a>`distribution` | "stove0-observer-support" |
-| <a id="s-56407a7a54"></a>`module` | "stove0_observer_support" |
-| <a id="s-dffd5250a5"></a>`name` | "ObserverHttpBinding" |
-| <a id="s-df44d8f57c"></a>`unit` | "export" |
+- <a id="s-a26a054210"></a>`distribution`: `stove0-observer-support`
+- <a id="s-56407a7a54"></a>`module`: `stove0_observer_support`
+- <a id="s-dffd5250a5"></a>`name`: `ObserverHttpBinding`
+- <a id="s-df44d8f57c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-418ee5075e"></a>`kind`: `"class"`
+- <a id="s-3e3aa4c0a2"></a>`signature`: `"\"(observer: 'ContentObserver', *, semantic_validators: 'SemanticValidatorProvider \| None' = None, maximum_request_bytes: 'int' = 4194304, maximum_concurrency: 'int' = 1) -> 'None'\""`
 
 ## Maintained corroboration
 

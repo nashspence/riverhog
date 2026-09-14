@@ -14,13 +14,36 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f1bd22a3d6"></a>
-| Field | Shape |
+- <a id="s-99a9e71ff8"></a>`distribution`: `riverhog-protocol`
+- <a id="s-aeced36ffc"></a>`module`: `riverhog_protocol`
+- <a id="s-d58d184434"></a>`name`: `ImmutableFileIdentityDocument`
+- <a id="s-c4a485c480"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-7700da86eb"></a>`kind`: `"class"`
+- <a id="s-9c54513f5e"></a>`signature`: `"\"(*, path: CanonicalRelPath, bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-6c90ef496b"></a>
+- <a id="s-d121f80187"></a>`title`: ImmutableFileIdentityDocument
+- <a id="s-dabb65cc14"></a>`description`: The exact path, length, and plaintext digest shared by file projections.
+- <a id="s-a26b9a0466"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-73aa3462b8"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-d8d372ba45"></a>`path` | yes | #/$defs/CanonicalRelPath |  |
+| <a id="s-e161f15c80"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-3ab3990bfb"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-99a9e71ff8"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-aeced36ffc"></a>`module` | "riverhog_protocol" |
-| <a id="s-d58d184434"></a>`name` | "ImmutableFileIdentityDocument" |
-| <a id="s-c4a485c480"></a>`unit` | "export" |
+| <a id="s-2f866a5e07"></a>`CanonicalRelPath` | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
 
 ## Governing policies
 
@@ -46,13 +69,60 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 507d3de029df8e7e78b8454326edd8d53f7cefa9c9ec673ad9ba9465d0470eb4 -->
+<!-- exact-contract-value: 9d8036d1e5eb576dce0e5f1847701a9773c7c9ba161379c0b634ebbe7334385c -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "b70f55d90a8f7b3a8506e96e423fbbf6705b9d55d919d9918254e4a3da6188b1",
+    "schema": {
+      "$defs": {
+        "CanonicalRelPath": {
+          "allOf": [
+            {
+              "not": {
+                "pattern": "(?:^|/)\\.{1,2}(?:/|$)"
+              }
+            },
+            {
+              "not": {
+                "pattern": "^\\s|\\s$"
+              }
+            }
+          ],
+          "format": "riverhog-canonical-relpath-v1",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[^/\\\\]+(?:/[^/\\\\]+)*$",
+          "type": "string",
+          "x-unicode-normalization": "NFC"
+        }
+      },
+      "additionalProperties": false,
+      "description": "The exact path, length, and plaintext digest shared by file projections.",
+      "properties": {
+        "bytes": {
+          "minimum": 0,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "path": {
+          "$ref": "#/$defs/CanonicalRelPath"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "title": "ImmutableFileIdentityDocument",
+      "type": "object"
+    },
     "signature": "\"(*, path: CanonicalRelPath, bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
   },
   "distribution": "riverhog-protocol",

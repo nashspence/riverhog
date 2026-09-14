@@ -14,13 +14,35 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1115155719"></a>
-| Field | Shape |
+- <a id="s-59bf0e8cee"></a>`distribution`: `riverhog-protocol`
+- <a id="s-1c628d835b"></a>`module`: `riverhog_protocol`
+- <a id="s-a2a199460a"></a>`name`: `RetrievalFileReferenceSetDocument`
+- <a id="s-ce9fd8f62c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0c07729b51"></a>`kind`: `"class"`
+- <a id="s-647b32cae2"></a>`signature`: `"'(*, files: Annotated[list[riverhog_protocol.retrieval_transport.RetrievalFileReferenceDocument], MinLen(min_length=1), MaxLen(max_length=10000)]) -> None'"`
+
+#### Validated model schema
+
+<a id="s-379ee065cb"></a>
+- <a id="s-107276300f"></a>`title`: RetrievalFileReferenceSetDocument
+- <a id="s-b3278f72da"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-968becece6"></a>`files` | yes | type="array"; minItems=1; maxItems=10000; items=(#/$defs/RetrievalFileReferenceDocument); additional keys=`x-riverhog-extent` |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-e5ae605562"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-59bf0e8cee"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-1c628d835b"></a>`module` | "riverhog_protocol" |
-| <a id="s-a2a199460a"></a>`name` | "RetrievalFileReferenceSetDocument" |
-| <a id="s-ce9fd8f62c"></a>`unit` | "export" |
+| <a id="s-1828163c8e"></a>`CanonicalRelPath` | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
+| <a id="s-e440dc7980"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-221613439d"></a>`RetrievalFileReferenceDocument` | type="object"; fields=`collection_id`, `path`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -52,13 +74,79 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 954c9be129114059139a83f6cfc8182fc12949fc124e934699873331f234c251 -->
+<!-- exact-contract-value: d13ccba69aabacc6c2ab59be40adf6bb3bb453e42a05f36127eef9c60b298bd5 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "4c11764dce1fcd90fb2ef4ea211c8ba1ae3c76a21a1cf46e720fd2d17d827e3c",
+    "schema": {
+      "$defs": {
+        "CanonicalRelPath": {
+          "allOf": [
+            {
+              "not": {
+                "pattern": "(?:^|/)\\.{1,2}(?:/|$)"
+              }
+            },
+            {
+              "not": {
+                "pattern": "^\\s|\\s$"
+              }
+            }
+          ],
+          "format": "riverhog-canonical-relpath-v1",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[^/\\\\]+(?:/[^/\\\\]+)*$",
+          "type": "string",
+          "x-unicode-normalization": "NFC"
+        },
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "RetrievalFileReferenceDocument": {
+          "additionalProperties": false,
+          "properties": {
+            "collection_id": {
+              "$ref": "#/$defs/CollectionId"
+            },
+            "path": {
+              "$ref": "#/$defs/CanonicalRelPath"
+            }
+          },
+          "required": [
+            "collection_id",
+            "path"
+          ],
+          "title": "RetrievalFileReferenceDocument",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "files": {
+          "items": {
+            "$ref": "#/$defs/RetrievalFileReferenceDocument"
+          },
+          "maxItems": 10000,
+          "minItems": 1,
+          "title": "Files",
+          "type": "array",
+          "x-riverhog-extent": {
+            "policy": "segmented_no_total_max",
+            "progression": "multiple-retrieval-jobs",
+            "reason": "bounded-retrieval-work-request"
+          }
+        }
+      },
+      "required": [
+        "files"
+      ],
+      "title": "RetrievalFileReferenceSetDocument",
+      "type": "object"
+    },
     "signature": "'(*, files: Annotated[list[riverhog_protocol.retrieval_transport.RetrievalFileReferenceDocument], MinLen(min_length=1), MaxLen(max_length=10000)]) -> None'"
   },
   "distribution": "riverhog-protocol",

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1747991167"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-97c9e66c90"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-11eaa40ccc"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-063baf4794"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-47e5d449fc"></a>`name` | "summary" |
-| <a id="s-86c7e4ba72"></a>`owner` | "gogurt_listener_runtime.ListenerStore" |
-| <a id="s-e8e491d528"></a>`unit` | "member" |
+- <a id="s-11eaa40ccc"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-063baf4794"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-47e5d449fc"></a>`name`: `summary`
+- <a id="s-86c7e4ba72"></a>`owner`: `gogurt_listener_runtime.ListenerStore`
+- <a id="s-e8e491d528"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-379f8f056a"></a>`kind`: `"method"`
+- <a id="s-759546c2d6"></a>`signature`: `"\"(self, *, timeout_seconds: 'float' = 30) -> 'dict[str, object]'\""`
 
 ## Maintained corroboration
 

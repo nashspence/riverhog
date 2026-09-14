@@ -85,7 +85,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0-review-planning/result_contract`
 
-<!-- exact-contract-value: b8492de7dc7e8409047017490e916e72e719b3102f7d37b2db362b2363ba11a4 -->
+<!-- exact-contract-value: 17a2c7ad2f81bc115350c21007fb983626ee3bea87984e11cab31c61d9b7436c -->
 
 ```json
 {
@@ -120,8 +120,279 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "stdout": {
         "json": {
+          "document": {
+            "format": "stove0-review-contract-report/v1",
+            "observer_contract": {
+              "contract_sha256": "beb0c37e896b0b2e3a8818f667ff59628614a461b06dc9f83560db434525a5be",
+              "facts_schema": {
+                "dialect": "https://json-schema.org/draft/2020-12/schema",
+                "document": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "additionalProperties": false,
+                  "properties": {
+                    "artifacts": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "artifact_id": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "duration_ms": {
+                            "minimum": 1,
+                            "type": "integer"
+                          },
+                          "sampleable_ranges": {
+                            "items": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "duration_ms": {
+                                  "minimum": 1,
+                                  "type": "integer"
+                                },
+                                "start_ms": {
+                                  "minimum": 0,
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "start_ms",
+                                "duration_ms"
+                              ],
+                              "type": "object"
+                            },
+                            "minItems": 1,
+                            "type": "array"
+                          }
+                        },
+                        "required": [
+                          "artifact_id",
+                          "duration_ms",
+                          "sampleable_ranges"
+                        ],
+                        "type": "object"
+                      },
+                      "minItems": 1,
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "artifacts"
+                  ],
+                  "type": "object"
+                },
+                "format_policy": "annotation-only",
+                "id": "stove0.review.media-sampling-facts/v1",
+                "sha256": "730e1fcd4a831bad9707814fe65fb59861359795bcf336ed65f72670c725f71a"
+              },
+              "facts_semantics": {
+                "conformance_vectors_sha256": "7fa8220ce785a840b854d24a70b9c4b6da99c853ab0b6eba4100d89ae1fb23f8",
+                "id": "stove0.review.media-sampling-facts-semantics/v1",
+                "profile_sha256": "6f91eaa38e4152a6db4d9d7f6c157295ac7d30fc412fef92ebcd5120de8fce7e",
+                "rules": [
+                  "stove0.review.media-sampling-facts.complete-request-subjects/v1",
+                  "stove0.review.media-sampling-facts.nonoverlapping-bounded-ranges/v1"
+                ]
+              },
+              "id": "stove0.review.media-sampling/v1",
+              "maximum_result_bytes": 262144,
+              "options_schema": {
+                "dialect": "https://json-schema.org/draft/2020-12/schema",
+                "document": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "additionalProperties": false,
+                  "properties": {},
+                  "type": "object"
+                },
+                "format_policy": "annotation-only",
+                "id": "stove0.review.media-sampling-options/v1",
+                "sha256": "9c523e70f370789ff20984ca7a638b47ada230c1d751869ce8dfc162db15b77a"
+              }
+            },
+            "operation_contract": {
+              "contract_sha256": "5517370bb1016dfadd236f0f06300999e18de90537bbdad46b87f274958ab06d",
+              "effect_receipt_schema": null,
+              "id": "stove0.review.materialize/v1",
+              "inputs": [
+                {
+                  "allowed_dispositions": [
+                    "preserved",
+                    "transformed"
+                  ],
+                  "maximum": null,
+                  "minimum": 1,
+                  "role": "stove0.review.source/v1"
+                }
+              ],
+              "intent_schema": {
+                "dialect": "https://json-schema.org/draft/2020-12/schema",
+                "document": {
+                  "$defs": {
+                    "JsonValue": {},
+                    "ReviewSamplePlan": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "format": {
+                          "const": "stove0-review-sample-plan/v1",
+                          "default": "stove0-review-sample-plan/v1",
+                          "title": "Format",
+                          "type": "string"
+                        },
+                        "sample_plan_sha256": {
+                          "pattern": "^[0-9a-f]{64}$",
+                          "title": "Sample Plan Sha256",
+                          "type": "string"
+                        },
+                        "samples_per_artifact": {
+                          "minimum": 1,
+                          "title": "Samples Per Artifact",
+                          "type": "integer"
+                        },
+                        "selection_method": {
+                          "const": "evenly-spaced/v1",
+                          "default": "evenly-spaced/v1",
+                          "title": "Selection Method",
+                          "type": "string"
+                        },
+                        "window_duration_ms": {
+                          "minimum": 1,
+                          "title": "Window Duration Ms",
+                          "type": "integer"
+                        },
+                        "windows": {
+                          "items": {
+                            "$ref": "#/$defs/ReviewSampleWindow"
+                          },
+                          "minItems": 1,
+                          "title": "Windows",
+                          "type": "array"
+                        }
+                      },
+                      "required": [
+                        "samples_per_artifact",
+                        "window_duration_ms",
+                        "windows",
+                        "sample_plan_sha256"
+                      ],
+                      "title": "ReviewSamplePlan",
+                      "type": "object"
+                    },
+                    "ReviewSampleWindow": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "artifact_id": {
+                          "maxLength": 160,
+                          "minLength": 1,
+                          "title": "Artifact Id",
+                          "type": "string"
+                        },
+                        "duration_ms": {
+                          "minimum": 1,
+                          "title": "Duration Ms",
+                          "type": "integer"
+                        },
+                        "start_ms": {
+                          "minimum": 0,
+                          "title": "Start Ms",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "artifact_id",
+                        "start_ms",
+                        "duration_ms"
+                      ],
+                      "title": "ReviewSampleWindow",
+                      "type": "object"
+                    },
+                    "ReviewVariantIntent": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "id": {
+                          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,158}[a-z0-9])?$",
+                          "title": "Id",
+                          "type": "string"
+                        },
+                        "portable_intent": {
+                          "additionalProperties": {
+                            "$ref": "#/$defs/JsonValue"
+                          },
+                          "title": "Portable Intent",
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "portable_intent"
+                      ],
+                      "title": "ReviewVariantIntent",
+                      "type": "object"
+                    }
+                  },
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "additionalProperties": false,
+                  "properties": {
+                    "sample_plan": {
+                      "$ref": "#/$defs/ReviewSamplePlan"
+                    },
+                    "variant": {
+                      "$ref": "#/$defs/ReviewVariantIntent"
+                    }
+                  },
+                  "required": [
+                    "sample_plan",
+                    "variant"
+                  ],
+                  "title": "ReviewMaterializeIntent",
+                  "type": "object"
+                },
+                "format_policy": "annotation-only",
+                "id": "stove0.review.materialize-intent/v1",
+                "sha256": "dacf9977497657d10678176bb83ecf7783db08114b417390d577810d47ef2b30"
+              },
+              "intent_semantics": {
+                "conformance_vectors_sha256": "eda75742bb220994e735aa6e00cb0f598dbac7de55e3cdd9576cbe4944789583",
+                "id": "stove0.review.materialize-intent-semantics/v1",
+                "profile_sha256": "4625bc86e212e403da151d0c6dfe1f7a6cbf9832adea7161ffcec32656c1b79c",
+                "rules": [
+                  "stove0.review.sample-plan.exact-declared-shape/v1",
+                  "stove0.review.sample-plan.identity-verification/v1"
+                ]
+              },
+              "outputs": [
+                {
+                  "derived_from_roles": [
+                    "stove0.review.source/v1"
+                  ],
+                  "maximum": null,
+                  "minimum": 0,
+                  "role": "stove0.review.audio/v1"
+                },
+                {
+                  "derived_from_roles": [
+                    "stove0.review.source/v1"
+                  ],
+                  "maximum": 1,
+                  "minimum": 1,
+                  "role": "stove0.review.index/v1"
+                },
+                {
+                  "derived_from_roles": [
+                    "stove0.review.source/v1"
+                  ],
+                  "maximum": null,
+                  "minimum": 0,
+                  "role": "stove0.review.video/v1"
+                }
+              ],
+              "result_kind": "collection",
+              "source_retirement_permitted": false
+            },
+            "source_retirement_permitted": false,
+            "status": "conformant"
+          },
           "identity": "stove0-review-contract-report/v1",
-          "kind": "semantic-format"
+          "kind": "cli-local-exact-json"
         }
       }
     }

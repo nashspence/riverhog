@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f7550a785e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-320cc2b15e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-808af29f2c"></a>`distribution` | "riverhog-age" |
-| <a id="s-fc73719f0d"></a>`module` | "riverhog_age" |
-| <a id="s-e4327dd963"></a>`name` | "age_aligned_unit_plans" |
-| <a id="s-39a33f1986"></a>`owner` | "riverhog_age.ResumableAgeScryptSession" |
-| <a id="s-3f0b64c513"></a>`unit` | "member" |
+- <a id="s-808af29f2c"></a>`distribution`: `riverhog-age`
+- <a id="s-fc73719f0d"></a>`module`: `riverhog_age`
+- <a id="s-e4327dd963"></a>`name`: `age_aligned_unit_plans`
+- <a id="s-39a33f1986"></a>`owner`: `riverhog_age.ResumableAgeScryptSession`
+- <a id="s-3f0b64c513"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c0bd44a916"></a>`kind`: `"method"`
+- <a id="s-d6d5c6486c"></a>`signature`: `"\"(self, plaintext_size: 'int', *, chunks_per_unit: 'int' = 1024) -> 'list[AgeAlignedUnitPlan]'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9e3a2d0f57"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c4931a4cbb"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-a5a39c270d"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-1a298a61a8"></a>`module` | "stove0_target_protocol" |
-| <a id="s-17b4647b08"></a>`name` | "seal" |
-| <a id="s-af9915ec6a"></a>`owner` | "stove0_target_protocol.SemanticValidationProfile" |
-| <a id="s-9fcfd9cd12"></a>`unit` | "member" |
+- <a id="s-a5a39c270d"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-1a298a61a8"></a>`module`: `stove0_target_protocol`
+- <a id="s-17b4647b08"></a>`name`: `seal`
+- <a id="s-af9915ec6a"></a>`owner`: `stove0_target_protocol.SemanticValidationProfile`
+- <a id="s-9fcfd9cd12"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-010a165881"></a>`kind`: `"classmethod"`
+- <a id="s-a2977713c9"></a>`signature`: `"\"(cls, payload: 'SemanticValidationProfilePayload') -> 'SemanticValidationProfile'\""`
 
 ## Maintained corroboration
 

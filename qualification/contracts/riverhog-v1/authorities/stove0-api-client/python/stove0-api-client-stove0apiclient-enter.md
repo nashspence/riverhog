@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e3a81e343e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b860406d11"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d95fd360b8"></a>`distribution` | "stove0-api-client" |
-| <a id="s-80ca84b5d3"></a>`module` | "stove0_api_client" |
-| <a id="s-afe258f719"></a>`name` | "__enter__" |
-| <a id="s-e50f2dcd7a"></a>`owner` | "stove0_api_client.Stove0ApiClient" |
-| <a id="s-b1cc551383"></a>`unit` | "member" |
+- <a id="s-d95fd360b8"></a>`distribution`: `stove0-api-client`
+- <a id="s-80ca84b5d3"></a>`module`: `stove0_api_client`
+- <a id="s-afe258f719"></a>`name`: `__enter__`
+- <a id="s-e50f2dcd7a"></a>`owner`: `stove0_api_client.Stove0ApiClient`
+- <a id="s-b1cc551383"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-bab3a8eb9e"></a>`kind`: `"method"`
+- <a id="s-d15f374cea"></a>`signature`: `"\"(self) -> 'Self'\""`
 
 ## Maintained corroboration
 

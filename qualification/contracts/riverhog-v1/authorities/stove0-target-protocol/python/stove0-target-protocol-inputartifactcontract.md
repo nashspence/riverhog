@@ -14,13 +14,30 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bf6f1ab052"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ac01d57609"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-ba1d3e93a1"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-deae47df1f"></a>`module` | "stove0_target_protocol" |
-| <a id="s-a8fc3566c9"></a>`name` | "InputArtifactContract" |
-| <a id="s-e937d8cf47"></a>`unit` | "export" |
+- <a id="s-ba1d3e93a1"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-deae47df1f"></a>`module`: `stove0_target_protocol`
+- <a id="s-a8fc3566c9"></a>`name`: `InputArtifactContract`
+- <a id="s-e937d8cf47"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-c05bbe6aa1"></a>`kind`: `"class"`
+- <a id="s-768712fd8a"></a>`signature`: `"\"(*, role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], minimum: Annotated[int, Ge(ge=0)] = 1, maximum: Annotated[int \| None, Ge(ge=1)] = None, allowed_dispositions: tuple[typing.Literal['transformed', 'preserved', 'omitted', 'rejected'], ...] \| None = None) -> None\""`
+
+#### Validated model schema
+
+<a id="s-e2ea8b8c55"></a>
+- <a id="s-3b95ea2a4b"></a>`title`: InputArtifactContract
+- <a id="s-1f0e29ee03"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a561d92e4d"></a>`allowed_dispositions` | no | anyOf=type="array"; items=(type="string"; enum=["transformed","preserved","omitted","rejected"]) \| type="null" |  |
+| <a id="s-a3c8a665ac"></a>`maximum` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| <a id="s-00cc278bb3"></a>`minimum` | no | type="integer"; minimum=0 |  |
+| <a id="s-9852d50fa4"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ## Maintained corroboration
 
@@ -53,13 +70,67 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 673a7f0ca58407e6926d8ccab486e8f707a3dfb748f55648aa18ac84f5fc2fdd -->
+<!-- exact-contract-value: 9632ded51d38cef96298c13d36dd3640665927a0d0ab7aab9dad47e394eabce4 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "a77940dd0cdd6154e96246459b292378e83a95b94bd488f79c5ead938fb2a73c",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_dispositions": {
+          "anyOf": [
+            {
+              "items": {
+                "enum": [
+                  "transformed",
+                  "preserved",
+                  "omitted",
+                  "rejected"
+                ],
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Allowed Dispositions"
+        },
+        "maximum": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maximum"
+        },
+        "minimum": {
+          "default": 1,
+          "minimum": 0,
+          "title": "Minimum",
+          "type": "integer"
+        },
+        "role": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role"
+      ],
+      "title": "InputArtifactContract",
+      "type": "object"
+    },
     "signature": "\"(*, role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], minimum: Annotated[int, Ge(ge=0)] = 1, maximum: Annotated[int | None, Ge(ge=1)] = None, allowed_dispositions: tuple[typing.Literal['transformed', 'preserved', 'omitted', 'rejected'], ...] | None = None) -> None\""
   },
   "distribution": "stove0-target-protocol",

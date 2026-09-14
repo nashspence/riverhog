@@ -14,13 +14,31 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-425c1feb0b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-84f9f426ea"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-27797de284"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-e511f932c5"></a>`module` | "riverhog_protocol" |
-| <a id="s-0d5d113d4f"></a>`name` | "ProcessingClaimCreateDocument" |
-| <a id="s-317a90dfc4"></a>`unit` | "export" |
+- <a id="s-27797de284"></a>`distribution`: `riverhog-protocol`
+- <a id="s-e511f932c5"></a>`module`: `riverhog_protocol`
+- <a id="s-0d5d113d4f"></a>`name`: `ProcessingClaimCreateDocument`
+- <a id="s-317a90dfc4"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-8f5ac273b0"></a>`kind`: `"class"`
+- <a id="s-af47c58e99"></a>`signature`: `"\"(*, work_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], work_document: dict[str, typing.Any], work_document_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], lease_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 1800, purpose: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)] = 'collection-work/v1') -> None\""`
+
+#### Validated model schema
+
+<a id="s-066637d859"></a>
+- <a id="s-67a93840df"></a>`title`: ProcessingClaimCreateDocument
+- <a id="s-85e8f017f0"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-54899f9616"></a>`lease_seconds` | no | type="integer"; minimum=30; maximum=86400 |  |
+| <a id="s-2300784e92"></a>`purpose` | no | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-7279ed4f97"></a>`work_document` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| <a id="s-3a0a371c33"></a>`work_document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1a257e4bf5"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -52,13 +70,58 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2e941923bf477668814c367c950dcb028615748a295b068816b0faca9c818552 -->
+<!-- exact-contract-value: f5206d5f0fb13f78a89cf2841bd5ef418e13f6236caf314a934400a4e6a0fe50 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "7f81f54843c68bd43b662283b523cf02085ec0e8d673cd66cdb5201223ea00a6",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "lease_seconds": {
+          "default": 1800,
+          "maximum": 86400,
+          "minimum": 30,
+          "title": "Lease Seconds",
+          "type": "integer"
+        },
+        "purpose": {
+          "default": "collection-work/v1",
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "work_document": {
+          "additionalProperties": true,
+          "title": "Work Document",
+          "type": "object",
+          "x-riverhog-encoded-bytes-max": 4194304,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-work-document-envelope"
+          }
+        },
+        "work_document_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Work Document Sha256",
+          "type": "string"
+        },
+        "work_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Work Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "work_id",
+        "work_document",
+        "work_document_sha256"
+      ],
+      "title": "ProcessingClaimCreateDocument",
+      "type": "object"
+    },
     "signature": "\"(*, work_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], work_document: dict[str, typing.Any], work_document_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], lease_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 1800, purpose: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)] = 'collection-work/v1') -> None\""
   },
   "distribution": "riverhog-protocol",

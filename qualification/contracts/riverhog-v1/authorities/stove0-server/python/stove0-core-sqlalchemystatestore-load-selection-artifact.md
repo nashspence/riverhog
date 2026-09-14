@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9ac807eb0c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f1c5a2809b"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-1d2058bac2"></a>`distribution` | "stove0-server" |
-| <a id="s-8fdd7c7c72"></a>`module` | "stove0_core" |
-| <a id="s-aaefd02768"></a>`name` | "load_selection_artifact" |
-| <a id="s-c9d7d9ed3e"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-6e8245cd16"></a>`unit` | "member" |
+- <a id="s-1d2058bac2"></a>`distribution`: `stove0-server`
+- <a id="s-8fdd7c7c72"></a>`module`: `stove0_core`
+- <a id="s-aaefd02768"></a>`name`: `load_selection_artifact`
+- <a id="s-c9d7d9ed3e"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-6e8245cd16"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-57b28c5254"></a>`kind`: `"method"`
+- <a id="s-552f26ea87"></a>`signature`: `"\"(self, selection_sha256: 'str', artifact_id: 'str') -> 'ArtifactSubject \| None'\""`
 
 ## Maintained corroboration
 

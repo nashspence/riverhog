@@ -14,13 +14,33 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b46635c802"></a>
-| Field | Shape |
+- <a id="s-4c45dd9185"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-403e0455b1"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-cc9088dc29"></a>`name`: `ReadPreparationRequest`
+- <a id="s-f6561e4d4e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-a19ce41695"></a>`kind`: `"class"`
+- <a id="s-38b6dfe6d9"></a>`signature`: `"'(*, objects: Annotated[tuple[riverhog_storage_adapter_protocol.protocol.ObjectLocator, ...], MinLen(min_length=1)]) -> None'"`
+
+#### Validated model schema
+
+<a id="s-f734e423ba"></a>
+- <a id="s-87f70f8c5e"></a>`title`: ReadPreparationRequest
+- <a id="s-6cdd10672d"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-17287bf84c"></a>`objects` | yes | type="array"; minItems=1; items=(#/$defs/ObjectLocator) |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-74c7f03bc6"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-4c45dd9185"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-403e0455b1"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-cc9088dc29"></a>`name` | "ReadPreparationRequest" |
-| <a id="s-f6561e4d4e"></a>`unit` | "export" |
+| <a id="s-e6685bce6c"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -52,13 +72,62 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d4aef917af36c1e1440cd78e0ff24035d24ef732d45373f457154c5f3cdc804d -->
+<!-- exact-contract-value: 415984950044c9b81ffbe6bb8ab8d0656d62d8381703f413b580fa9952164630 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "a1096dde3495131448c778944da805d24cbfabda7630aa9d927684235cb42635",
+    "schema": {
+      "$defs": {
+        "ObjectLocator": {
+          "additionalProperties": false,
+          "properties": {
+            "object_path": {
+              "maxLength": 4096,
+              "minLength": 1,
+              "title": "Object Path",
+              "type": "string"
+            },
+            "revision": {
+              "anyOf": [
+                {
+                  "maxLength": 2000,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Revision"
+            }
+          },
+          "required": [
+            "object_path"
+          ],
+          "title": "ObjectLocator",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "objects": {
+          "items": {
+            "$ref": "#/$defs/ObjectLocator"
+          },
+          "minItems": 1,
+          "title": "Objects",
+          "type": "array"
+        }
+      },
+      "required": [
+        "objects"
+      ],
+      "title": "ReadPreparationRequest",
+      "type": "object"
+    },
     "signature": "'(*, objects: Annotated[tuple[riverhog_storage_adapter_protocol.protocol.ObjectLocator, ...], MinLen(min_length=1)]) -> None'"
   },
   "distribution": "riverhog-storage-adapter-protocol",

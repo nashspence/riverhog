@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-048af0937d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-79fddf8536"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-31fb1cb97a"></a>`distribution` | "stove0-server" |
-| <a id="s-f2ed7122d0"></a>`module` | "stove0_core" |
-| <a id="s-ad1e59e454"></a>`name` | "list_processing_claim_disposition_outputs" |
-| <a id="s-6bbf455efa"></a>`owner` | "stove0_core.RiverhogApi" |
-| <a id="s-28e2834a5b"></a>`unit` | "member" |
+- <a id="s-31fb1cb97a"></a>`distribution`: `stove0-server`
+- <a id="s-f2ed7122d0"></a>`module`: `stove0_core`
+- <a id="s-ad1e59e454"></a>`name`: `list_processing_claim_disposition_outputs`
+- <a id="s-6bbf455efa"></a>`owner`: `stove0_core.RiverhogApi`
+- <a id="s-28e2834a5b"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e18577fb44"></a>`kind`: `"method"`
+- <a id="s-6f74bc2311"></a>`signature`: `"\"(self, claim_id: 'str', *, authority_sha256: 'str', start_ordinal: 'int' = 0) -> 'ArtifactDispositionOutputPageDocument'\""`
 
 ## Maintained corroboration
 

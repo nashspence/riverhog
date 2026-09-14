@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f65dc74270"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7f4fc83a0a"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-d6828d3baa"></a>`distribution` | "riverhog-application-access" |
-| <a id="s-f802e68f4b"></a>`module` | "riverhog_application_access" |
-| <a id="s-5fbbaed200"></a>`name` | "COLLECTION_TAGS_MANAGE" |
-| <a id="s-7e7226947a"></a>`unit` | "export" |
+- <a id="s-d6828d3baa"></a>`distribution`: `riverhog-application-access`
+- <a id="s-f802e68f4b"></a>`module`: `riverhog_application_access`
+- <a id="s-5fbbaed200"></a>`name`: `COLLECTION_TAGS_MANAGE`
+- <a id="s-7e7226947a"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-5cf6034abb"></a>`kind`: `"constant"`
+- <a id="s-947e6d1b79"></a>`value`: `"collection-tags:manage"`
 
 ## Governing policies
 

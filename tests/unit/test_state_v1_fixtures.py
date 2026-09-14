@@ -7,6 +7,7 @@ import tomllib
 from contextlib import closing
 from pathlib import Path
 
+import pytest
 from gogurt_listener_runtime import ListenerStore
 from mango_fish.relay import CursorState
 from mango_fish.schema import state_schema as mango_fish_state_schema
@@ -14,6 +15,8 @@ from piggity.local_state import state_schema as local_state_schema
 from riverhog_core.state_migrations.v1_ddl import POSTGRESQL_DDL
 from riverhog_provenance import load_or_create_installation_id
 from stove0_core.state_migrations.v1_ddl import POSTGRESQL_DDL as STOVE0_POSTGRESQL_DDL
+
+from scripts import state_contract
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = REPO_ROOT / "tests/fixtures/state/v1_0001"
@@ -139,6 +142,24 @@ def test_release_inventory_accounts_for_every_v1_state_fixture() -> None:
     assert inventory["schema"] == "riverhog-durable-state-inventory/v1"
     owners = inventory["owners"]
     assert all("classification" not in owner for owner in owners)
+    assert all(
+        set(owner)
+        == {
+            "id",
+            "distribution",
+            "format",
+            "head",
+            "transition",
+            "structure",
+            "fixtures",
+        }
+        for owner in owners
+    )
+    assert {owner["transition"] for owner in owners} == {
+        "forward-migration-chain",
+        "backward-readable-documents",
+        "immutable-identity",
+    }
     fixture_paths = {fixture for owner in owners for fixture in owner["fixtures"]}
     assert fixture_paths == {
         path.relative_to(REPO_ROOT).as_posix() for path in FIXTURES.rglob("*") if path.is_file()
@@ -147,6 +168,144 @@ def test_release_inventory_accounts_for_every_v1_state_fixture() -> None:
         len(hashlib.sha256((REPO_ROOT / path).read_bytes()).hexdigest()) == 64
         for path in fixture_paths
     )
+
+
+def test_every_v1_state_owner_projects_its_component_owned_exact_structure() -> None:
+    release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
+    projected = {
+        owner["id"]: state_contract.project_owner(owner) for owner in release["state"]["owners"]
+    }
+
+    catalog = projected["riverhog-catalog"]
+    assert "fixtures" not in catalog
+    catalog_structure = catalog["structure"]
+    collections = next(
+        table for table in catalog_structure["tables"] if table["name"] == "collections"
+    )
+    description_search = next(
+        column for column in collections["columns"] if column["name"] == "description_search"
+    )
+    assert description_search["nullable"] is False
+    assert description_search["default"] == "''"
+    assert any(
+        constraint.get("name") == "ck_collections_archive_root_sha256"
+        for constraint in collections["constraints"]
+    )
+    assert any(
+        index["name"] == "ux_app_keys_token_sha256" for index in catalog_structure["unique_indexes"]
+    )
+    assert not any(
+        index["name"] == "ix_retrieval_cache_objects_cleanup"
+        for index in catalog_structure["unique_indexes"]
+    )
+
+    target_documents = projected["stove0-target-jobs"]["structure"]["documents"]
+    assert {document["id"] for document in target_documents} == {
+        "AcceptedTargetJob",
+        "TargetJobStatus",
+    }
+    assert all(document["schema"]["type"] == "object" for document in target_documents)
+
+    ftp_units = projected["riverhog-ftp-custody"]["structure"]["units"]
+    assert {unit["id"] for unit in ftp_units} == {
+        "operational-database",
+        "completion-log",
+        "claim",
+        "receipt",
+        "payload",
+    }
+    assert (
+        next(unit for unit in ftp_units if unit["id"] == "operational-database")["kind"]
+        == "relational-schema"
+    )
+
+    assert projected["riverhog-provenance-installation"]["structure"] == {
+        "kind": "text-document",
+        "encoding": "ascii",
+        "line_count": 1,
+        "value": {
+            "kind": "canonical-uuid-urn",
+            "pattern": (
+                r"^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-"
+                r"[0-9a-f]{4}-[0-9a-f]{12}$"
+            ),
+        },
+        "terminator": "LF",
+    }
+
+
+def test_relational_state_projection_preserves_semantics_not_migration_operations() -> None:
+    projected = state_contract.relational_schema(
+        """
+        CREATE TABLE items (
+            id INTEGER PRIMARY KEY,
+            value TEXT DEFAULT 'new' NOT NULL,
+            parent_id INTEGER REFERENCES items(id),
+            CONSTRAINT ck_items_value CHECK (length(value) > 0)
+        );
+        INSERT INTO items (id, value) VALUES (1, 'backfill');
+        CREATE INDEX ix_items_value ON items (value);
+        CREATE UNIQUE INDEX ux_items_parent ON items (parent_id);
+        """,
+        dialect="sqlite",
+    )
+
+    assert projected == {
+        "kind": "relational-schema",
+        "dialect": "sqlite",
+        "tables": [
+            {
+                "name": "items",
+                "columns": [
+                    {
+                        "name": "id",
+                        "type": "INTEGER",
+                        "nullable": False,
+                        "definition": "id INTEGER PRIMARY KEY",
+                        "primary_key": True,
+                    },
+                    {
+                        "name": "value",
+                        "type": "TEXT",
+                        "nullable": False,
+                        "definition": "value TEXT DEFAULT 'new' NOT NULL",
+                        "default": "'new'",
+                    },
+                    {
+                        "name": "parent_id",
+                        "type": "INTEGER",
+                        "nullable": True,
+                        "definition": "parent_id INTEGER REFERENCES items(id)",
+                        "references": "items(id)",
+                    },
+                ],
+                "constraints": [
+                    {
+                        "kind": "check",
+                        "name": "ck_items_value",
+                        "definition": "CONSTRAINT ck_items_value CHECK (length(value) > 0)",
+                        "expression": "(length(value) > 0)",
+                    }
+                ],
+            }
+        ],
+        "unique_indexes": [
+            {
+                "name": "ux_items_parent",
+                "table": "items",
+                "columns": ["parent_id"],
+                "definition": "CREATE UNIQUE INDEX ux_items_parent ON items (parent_id)",
+            }
+        ],
+    }
+
+
+def test_relational_state_projection_fails_closed_on_an_unknown_schema_operation() -> None:
+    with pytest.raises(state_contract.StateContractError, match="unsupported SQL authority"):
+        state_contract.relational_schema(
+            "CREATE TABLE items (id INTEGER); ALTER TABLE items ADD COLUMN value TEXT;",
+            dialect="sqlite",
+        )
 
 
 def test_riverhog_postgresql_fixture_is_the_exact_current_migration_authority() -> None:

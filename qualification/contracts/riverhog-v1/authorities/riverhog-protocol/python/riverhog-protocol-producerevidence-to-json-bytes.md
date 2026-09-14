@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7a3f25cff9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ccb273e4aa"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ea1b7b1be0"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-cbe70bab24"></a>`module` | "riverhog_protocol" |
-| <a id="s-cef9493a18"></a>`name` | "to_json_bytes" |
-| <a id="s-3c8b98f2da"></a>`owner` | "riverhog_protocol.ProducerEvidence" |
-| <a id="s-899fe87af9"></a>`unit` | "member" |
+- <a id="s-ea1b7b1be0"></a>`distribution`: `riverhog-protocol`
+- <a id="s-cbe70bab24"></a>`module`: `riverhog_protocol`
+- <a id="s-cef9493a18"></a>`name`: `to_json_bytes`
+- <a id="s-3c8b98f2da"></a>`owner`: `riverhog_protocol.ProducerEvidence`
+- <a id="s-899fe87af9"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3538af7379"></a>`kind`: `"method"`
+- <a id="s-f448d4c0b0"></a>`signature`: `"\"(self) -> 'bytes'\""`
 
 ## Maintained corroboration
 

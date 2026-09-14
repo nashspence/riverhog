@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3857ec2c1e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-56c171cdbd"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-0b3835fae3"></a>`distribution` | "stove0-api-client" |
-| <a id="s-21cd6d751c"></a>`module` | "stove0_api_client" |
-| <a id="s-32ad71a68b"></a>`name` | "create_work" |
-| <a id="s-74f344f7ec"></a>`owner` | "stove0_api_client.Stove0ApiClient" |
-| <a id="s-8b712b0905"></a>`unit` | "member" |
+- <a id="s-0b3835fae3"></a>`distribution`: `stove0-api-client`
+- <a id="s-21cd6d751c"></a>`module`: `stove0_api_client`
+- <a id="s-32ad71a68b"></a>`name`: `create_work`
+- <a id="s-74f344f7ec"></a>`owner`: `stove0_api_client.Stove0ApiClient`
+- <a id="s-8b712b0905"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-f31cca831e"></a>`kind`: `"method"`
+- <a id="s-f304dcc33d"></a>`signature`: `"\"(self, recipe_id: 'str', inputs: 'Sequence[CollectionRootRef]', *, preview_sha256: 'str', recipe_revision: 'int \| None' = None, effective_intent: 'Mapping[str, Any] \| None' = None) -> 'WorkView'\""`
 
 ## Maintained corroboration
 

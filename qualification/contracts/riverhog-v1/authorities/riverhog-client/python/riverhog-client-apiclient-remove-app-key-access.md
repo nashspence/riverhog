@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-60965284ce"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-81c47cba13"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-76f9379033"></a>`distribution` | "riverhog-client" |
-| <a id="s-830d05130b"></a>`module` | "riverhog_client" |
-| <a id="s-b01e637ffd"></a>`name` | "remove_app_key_access" |
-| <a id="s-d3d2c70008"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-a324f4b686"></a>`unit` | "member" |
+- <a id="s-76f9379033"></a>`distribution`: `riverhog-client`
+- <a id="s-830d05130b"></a>`module`: `riverhog_client`
+- <a id="s-b01e637ffd"></a>`name`: `remove_app_key_access`
+- <a id="s-d3d2c70008"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-a324f4b686"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c9ef3338b7"></a>`kind`: `"method"`
+- <a id="s-7f69b05149"></a>`signature`: `"\"(self, app: 'ApplicationName', key_id: 'ApplicationKeyId', *, permission: 'ApplicationPermission', resource: 'ApplicationResource') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

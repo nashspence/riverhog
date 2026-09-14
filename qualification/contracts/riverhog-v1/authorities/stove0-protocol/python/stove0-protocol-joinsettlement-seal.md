@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1c15242147"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4072f57b3a"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-241b2c06fb"></a>`distribution` | "stove0-protocol" |
-| <a id="s-eadf40e3fd"></a>`module` | "stove0_protocol" |
-| <a id="s-d301d70284"></a>`name` | "seal" |
-| <a id="s-e3073ae6fa"></a>`owner` | "stove0_protocol.JoinSettlement" |
-| <a id="s-3a26c3d5c4"></a>`unit` | "member" |
+- <a id="s-241b2c06fb"></a>`distribution`: `stove0-protocol`
+- <a id="s-eadf40e3fd"></a>`module`: `stove0_protocol`
+- <a id="s-d301d70284"></a>`name`: `seal`
+- <a id="s-e3073ae6fa"></a>`owner`: `stove0_protocol.JoinSettlement`
+- <a id="s-3a26c3d5c4"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-04065caee6"></a>`kind`: `"classmethod"`
+- <a id="s-d325b1671d"></a>`signature`: `"\"(cls, *, plan: 'JoinPlan', derivation_sha256: 'str', producer_settlement_sha256: 'str', output_collection: 'CollectionRootRef', output_selection: 'ArtifactSelection') -> 'JoinSettlement'\""`
 
 ## Maintained corroboration
 

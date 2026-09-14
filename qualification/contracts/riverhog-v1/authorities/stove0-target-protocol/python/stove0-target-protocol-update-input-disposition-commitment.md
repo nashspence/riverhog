@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-dd61cec839"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ac7fd67d75"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-46b06a2a4b"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-f2d68ad3c8"></a>`module` | "stove0_target_protocol" |
-| <a id="s-a88d102c87"></a>`name` | "update_input_disposition_commitment" |
-| <a id="s-c4b434c435"></a>`unit` | "export" |
+- <a id="s-46b06a2a4b"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-f2d68ad3c8"></a>`module`: `stove0_target_protocol`
+- <a id="s-a88d102c87"></a>`name`: `update_input_disposition_commitment`
+- <a id="s-c4b434c435"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f706bafea6"></a>`kind`: `"function"`
+- <a id="s-fcb90488a4"></a>`signature`: `"\"(digest: 'Any', *, ordinal: 'int', disposition: 'InputDispositionDeclaration') -> 'None'\""`
 
 ## Governing policies
 

@@ -14,13 +14,29 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6cd1d09725"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-76b48b5278"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-bb2688b0a3"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-1420fa1540"></a>`module` | "stove0_target_protocol" |
-| <a id="s-6d3ed8d28e"></a>`name` | "TargetOutputBindingSetIdentity" |
-| <a id="s-ec6b4f922e"></a>`unit` | "export" |
+- <a id="s-bb2688b0a3"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-1420fa1540"></a>`module`: `stove0_target_protocol`
+- <a id="s-6d3ed8d28e"></a>`name`: `TargetOutputBindingSetIdentity`
+- <a id="s-ec6b4f922e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-76df4717bf"></a>`kind`: `"class"`
+- <a id="s-aeeac4ce25"></a>`signature`: `"\"(*, artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-2643fa4f62"></a>
+- <a id="s-ba5bb28ddc"></a>`title`: TargetOutputBindingSetIdentity
+- <a id="s-2fac1d1549"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-06360413e6"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-8d5abdd79a"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-fc9b3f7cc0"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
 
 ## Governing policies
 
@@ -46,13 +62,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: abc153f83ac1d194cf39f35dfd3d47efa0882923cabc7a827554e6e88802cba7 -->
+<!-- exact-contract-value: 54e45d2e2b0376308d457b37987facba669b1790c9af94fffe3a514801ebf035 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "daf38f19dc312122935afd84d58bf963fa26e233d8633d1f209196e4f92d8e9a",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_count": {
+          "minimum": 1,
+          "title": "Artifact Count",
+          "type": "integer"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "total_bytes": {
+          "minimum": 0,
+          "title": "Total Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "artifact_count",
+        "total_bytes",
+        "sha256"
+      ],
+      "title": "TargetOutputBindingSetIdentity",
+      "type": "object"
+    },
     "signature": "\"(*, artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-target-protocol",

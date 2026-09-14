@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-eb199953f9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-af12a898ea"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-02477b8039"></a>`distribution` | "riverhog-storage-adapter-s3-support" |
-| <a id="s-39b20aa3d1"></a>`module` | "riverhog_storage_adapter_s3_support" |
-| <a id="s-c11a784b39"></a>`name` | "put_small_object" |
-| <a id="s-124d7ec275"></a>`owner` | "riverhog_storage_adapter_s3_support.S3StorageAdapter" |
-| <a id="s-9b01a472da"></a>`unit` | "member" |
+- <a id="s-02477b8039"></a>`distribution`: `riverhog-storage-adapter-s3-support`
+- <a id="s-39b20aa3d1"></a>`module`: `riverhog_storage_adapter_s3_support`
+- <a id="s-c11a784b39"></a>`name`: `put_small_object`
+- <a id="s-124d7ec275"></a>`owner`: `riverhog_storage_adapter_s3_support.S3StorageAdapter`
+- <a id="s-9b01a472da"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-442b104167"></a>`kind`: `"method"`
+- <a id="s-3f17e9755a"></a>`signature`: `"\"(self, request: 'SmallObjectWriteRequest', content: 'BinaryContent') -> 'ImmutableObjectReceipt'\""`
 
 ## Maintained corroboration
 

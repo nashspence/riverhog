@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f0c9000c9d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-10a57624eb"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-3a3168aa43"></a>`distribution` | "stove0-server" |
-| <a id="s-f773addb55"></a>`module` | "stove0_core" |
-| <a id="s-675a44b3b3"></a>`name` | "iter_work" |
-| <a id="s-08792295d4"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-ca2a326c9a"></a>`unit` | "member" |
+- <a id="s-3a3168aa43"></a>`distribution`: `stove0-server`
+- <a id="s-f773addb55"></a>`module`: `stove0_core`
+- <a id="s-675a44b3b3"></a>`name`: `iter_work`
+- <a id="s-08792295d4"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-ca2a326c9a"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-24cf580f5a"></a>`kind`: `"method"`
+- <a id="s-8046dd4cde"></a>`signature`: `"\"(self, *, phase: 'str \| None' = None, query: 'str \| None' = None, sort: 'WorkSort' = 'updated_at', order: 'SortOrder' = 'desc') -> 'Iterator[WorkRecord]'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-91982d2eea"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-cd08b18b08"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-cd235c7262"></a>`distribution` | "gogurt-core" |
-| <a id="s-e97f45517b"></a>`module` | "gogurt_core" |
-| <a id="s-11cd9f5d58"></a>`name` | "GOGURT_ROUTES_SCHEMA" |
-| <a id="s-83bd343d54"></a>`unit` | "export" |
+- <a id="s-cd235c7262"></a>`distribution`: `gogurt-core`
+- <a id="s-e97f45517b"></a>`module`: `gogurt_core`
+- <a id="s-11cd9f5d58"></a>`name`: `GOGURT_ROUTES_SCHEMA`
+- <a id="s-83bd343d54"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-fe45923281"></a>`kind`: `"constant"`
+- <a id="s-853591b01f"></a>`value`: `{"$schema":"https://json-schema.org/draft/2020-12/schema","additionalProperties":false,"properties":{"kind":{"const":"gogurt.routes","type":"string"},"routes":{"additionalProperties":{"additionalProperties":false,"properties":{"command":{"items":{"minLength":1,"type":"string"},"minItems":1,"type":"array"},"enabled":{"type":"boolean"}},"required":["command"],"type":"object"},"propertyNames":{"pattern":"^[a-z0-9]&#40;?:[a-z0-9-]{0,61}[a-z0-9])?$"},"type":"object"},"schema_version":{"const":1,"type":"integer"}},"required":["schema_version","kind","routes"],"type":"object"}`
 
 ## Governing policies
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c3b2548aab"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e9cb23f307"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-539f2721ae"></a>`distribution` | "riverhog-client" |
-| <a id="s-4a36376610"></a>`module` | "riverhog_client" |
-| <a id="s-1a1d8dbe5a"></a>`name` | "put_collection_upload_session_unit" |
-| <a id="s-a94dfc964a"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-79e7cab08e"></a>`unit` | "member" |
+- <a id="s-539f2721ae"></a>`distribution`: `riverhog-client`
+- <a id="s-4a36376610"></a>`module`: `riverhog_client`
+- <a id="s-1a1d8dbe5a"></a>`name`: `put_collection_upload_session_unit`
+- <a id="s-a94dfc964a"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-79e7cab08e"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-acff0eae30"></a>`kind`: `"method"`
+- <a id="s-f75f6f1b6d"></a>`signature`: `"\"(self, collection_id: 'CollectionId', volume_id: 'CollectionUploadVolumeId', unit: 'CollectionUploadUnitNumber', *, plan_sha256: 'str', content: 'bytes') -> 'CollectionUploadUnitWorkDocument'\""`
 
 ## Maintained corroboration
 

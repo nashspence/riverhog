@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-91879d1fe9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-fcd6977b97"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-0ef0fc56a1"></a>`distribution` | "stove0-api-client" |
-| <a id="s-9b0487570c"></a>`module` | "stove0_api_client" |
-| <a id="s-3a58591061"></a>`name` | "HealthResponse" |
-| <a id="s-bef0b63b53"></a>`unit` | "export" |
+- <a id="s-0ef0fc56a1"></a>`distribution`: `stove0-api-client`
+- <a id="s-9b0487570c"></a>`module`: `stove0_api_client`
+- <a id="s-3a58591061"></a>`name`: `HealthResponse`
+- <a id="s-bef0b63b53"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-1304a11421"></a>`kind`: `"class"`
+- <a id="s-b30f38cc70"></a>`signature`: `"\"(*, service: Annotated[str, MinLen(min_length=1)], status: Literal['ok']) -> None\""`
+
+#### Validated model schema
+
+<a id="s-d70ecaecc6"></a>
+- <a id="s-8911550203"></a>`title`: HealthResponse
+- <a id="s-1dcc028803"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-8f1bae9549"></a>`service` | yes | type="string"; minLength=1 |  |
+| <a id="s-28c3bc43e4"></a>`status` | yes | type="string"; const="ok" |  |
 
 ## Governing policies
 
@@ -46,13 +61,33 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4c802b812bfdee54b26ab9af83212281fa40c81d1b03f193e1837ff432add37e -->
+<!-- exact-contract-value: 9a9fc9ddf3fd90f7038ca4a266dd9f096582a20b498a27d2f6b9aba450c42e65 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "873f58b65973a85d82bd4e352acd595a8f32f6058c4500f11514358669b42b31",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "service": {
+          "minLength": 1,
+          "title": "Service",
+          "type": "string"
+        },
+        "status": {
+          "const": "ok",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "service",
+        "status"
+      ],
+      "title": "HealthResponse",
+      "type": "object"
+    },
     "signature": "\"(*, service: Annotated[str, MinLen(min_length=1)], status: Literal['ok']) -> None\""
   },
   "distribution": "stove0-api-client",

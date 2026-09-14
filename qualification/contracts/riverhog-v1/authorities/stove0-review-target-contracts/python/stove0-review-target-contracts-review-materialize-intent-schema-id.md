@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-82491f4ec6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-bc9ff2b4a9"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-3994e79371"></a>`distribution` | "stove0-review-target-contracts" |
-| <a id="s-dbeedea2aa"></a>`module` | "stove0_review_target_contracts" |
-| <a id="s-41223c54ba"></a>`name` | "REVIEW_MATERIALIZE_INTENT_SCHEMA_ID" |
-| <a id="s-614a78e0cf"></a>`unit` | "export" |
+- <a id="s-3994e79371"></a>`distribution`: `stove0-review-target-contracts`
+- <a id="s-dbeedea2aa"></a>`module`: `stove0_review_target_contracts`
+- <a id="s-41223c54ba"></a>`name`: `REVIEW_MATERIALIZE_INTENT_SCHEMA_ID`
+- <a id="s-614a78e0cf"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-b79e626c3b"></a>`kind`: `"constant"`
+- <a id="s-7a7c376196"></a>`value`: `"stove0.review.materialize-intent/v1"`
 
 ## Governing policies
 

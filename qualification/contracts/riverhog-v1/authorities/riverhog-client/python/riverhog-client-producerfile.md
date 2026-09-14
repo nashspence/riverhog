@@ -14,13 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3bc5840053"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3fdc097b1f"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-9cb68b0288"></a>`distribution` | "riverhog-client" |
-| <a id="s-5e9e9dc26e"></a>`module` | "riverhog_client" |
-| <a id="s-dca662952e"></a>`name` | "ProducerFile" |
-| <a id="s-702821aa4a"></a>`unit` | "export" |
+- <a id="s-9cb68b0288"></a>`distribution`: `riverhog-client`
+- <a id="s-5e9e9dc26e"></a>`module`: `riverhog_client`
+- <a id="s-dca662952e"></a>`name`: `ProducerFile`
+- <a id="s-702821aa4a"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-6df1fb8cdc"></a>`kind`: `"class"`
+- <a id="s-0fb041a104"></a>`signature`: `"\"(source: 'Path', path: 'str', provenance: 'Mapping[str, object] \| None' = None) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-9daf0febaa"></a>`source` | `'Path'` | `required` |
+| <a id="s-019777a6f9"></a>`path` | `'str'` | `required` |
+| <a id="s-77ec0ed72c"></a>`provenance` | `'Mapping[str, object] \| None'` | `None` |
 
 ## Governing policies
 

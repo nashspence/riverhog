@@ -14,13 +14,25 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7db912252f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7281460679"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-01903aca70"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-9babce1b15"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-02603b4b69"></a>`name` | "CollectionArchiveTerminalDocument" |
-| <a id="s-058cfe15a3"></a>`unit` | "export" |
+- <a id="s-01903aca70"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-9babce1b15"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-02603b4b69"></a>`name`: `CollectionArchiveTerminalDocument`
+- <a id="s-058cfe15a3"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-02b399b148"></a>`kind`: `"class"`
+- <a id="s-787e3a245b"></a>`signature`: `"'(archive_generation: \\'str\\', archive_tree_sha256: \\'str\\', sequence: \\'int\\', kind: \"Literal[\\'terminal\\']\" = \\'terminal\\', schema: \\'str\\' = \\'collection-archive-terminal/v1\\') -> None'"`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-7e324b02a3"></a>`archive_generation` | `'str'` | `required` |
+| <a id="s-f7183fbb5c"></a>`archive_tree_sha256` | `'str'` | `required` |
+| <a id="s-228e783aac"></a>`sequence` | `'int'` | `required` |
+| <a id="s-5da90164e4"></a>`kind` | `"Literal['terminal']"` | `'terminal'` |
+| <a id="s-8cbd3a82cd"></a>`schema` | `'str'` | `'collection-archive-terminal/v1'` |
 
 ## Maintained corroboration
 

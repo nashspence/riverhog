@@ -14,13 +14,29 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4739bfe396"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5f7021a5c9"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-cd3f005fb9"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-aff1663f8b"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-a739a910a0"></a>`name` | "WriteSession" |
-| <a id="s-787c3950e7"></a>`unit` | "export" |
+- <a id="s-cd3f005fb9"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-aff1663f8b"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-a739a910a0"></a>`name`: `WriteSession`
+- <a id="s-787c3950e7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-d667f20b9e"></a>`kind`: `"class"`
+- <a id="s-4017fac2a6"></a>`signature`: `"'(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: Annotated[int, Ge(ge=1)], write_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)]) -> None'"`
+
+#### Validated model schema
+
+<a id="s-e98562805e"></a>
+- <a id="s-bfb844a3c6"></a>`title`: WriteSession
+- <a id="s-aeb525a1a5"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a3bee6e0ec"></a>`expected_bytes` | yes | type="integer"; minimum=1 | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
+| <a id="s-7927a255de"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-7803618695"></a>`write_token` | yes | type="string"; minLength=1; maxLength=4000 | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
 
 ## Maintained corroboration
 
@@ -52,13 +68,43 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 82d46fee34cd5390839e92811bee6b706dabce203750d964c07a954d97bcd157 -->
+<!-- exact-contract-value: ad19ebe26d930e906e94995542970576791bb4726104d007596b80d7b691fbdd -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "8273b4a0c12b6fa55f8669267e1ed4d9a0091e43944c85d6f7e1c16aa6e892ac",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_bytes": {
+          "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
+          "minimum": 1,
+          "title": "Expected Bytes",
+          "type": "integer"
+        },
+        "object_path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Object Path",
+          "type": "string"
+        },
+        "write_token": {
+          "description": "Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal.",
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Write Token",
+          "type": "string"
+        }
+      },
+      "required": [
+        "object_path",
+        "expected_bytes",
+        "write_token"
+      ],
+      "title": "WriteSession",
+      "type": "object"
+    },
     "signature": "'(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: Annotated[int, Ge(ge=1)], write_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)]) -> None'"
   },
   "distribution": "riverhog-storage-adapter-protocol",

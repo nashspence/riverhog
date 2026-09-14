@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-150740b395"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a26a5cd75f"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-f0d1cf8116"></a>`distribution` | "stove0-review-target-contracts" |
-| <a id="s-64155cfd7d"></a>`module` | "stove0_review_target_contracts" |
-| <a id="s-9fcd9d056e"></a>`name` | "REVIEW_INDEX_ROLE" |
-| <a id="s-04036e3585"></a>`unit` | "export" |
+- <a id="s-f0d1cf8116"></a>`distribution`: `stove0-review-target-contracts`
+- <a id="s-64155cfd7d"></a>`module`: `stove0_review_target_contracts`
+- <a id="s-9fcd9d056e"></a>`name`: `REVIEW_INDEX_ROLE`
+- <a id="s-04036e3585"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ecc88ecc08"></a>`kind`: `"constant"`
+- <a id="s-3f8ee0f389"></a>`value`: `"stove0.review.index/v1"`
 
 ## Governing policies
 

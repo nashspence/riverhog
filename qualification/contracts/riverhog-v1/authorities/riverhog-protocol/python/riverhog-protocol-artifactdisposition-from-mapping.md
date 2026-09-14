@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2bc258bb2c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9b42f81d72"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c65daf0afa"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-707521bd8c"></a>`module` | "riverhog_protocol" |
-| <a id="s-8c7dffb4f3"></a>`name` | "from_mapping" |
-| <a id="s-99848a40c8"></a>`owner` | "riverhog_protocol.ArtifactDisposition" |
-| <a id="s-9b6adfca63"></a>`unit` | "member" |
+- <a id="s-c65daf0afa"></a>`distribution`: `riverhog-protocol`
+- <a id="s-707521bd8c"></a>`module`: `riverhog_protocol`
+- <a id="s-8c7dffb4f3"></a>`name`: `from_mapping`
+- <a id="s-99848a40c8"></a>`owner`: `riverhog_protocol.ArtifactDisposition`
+- <a id="s-9b6adfca63"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-725dfee476"></a>`kind`: `"classmethod"`
+- <a id="s-b18d24b81f"></a>`signature`: `"\"(cls, value: 'Mapping[str, object]') -> 'ArtifactDisposition'\""`
 
 ## Maintained corroboration
 

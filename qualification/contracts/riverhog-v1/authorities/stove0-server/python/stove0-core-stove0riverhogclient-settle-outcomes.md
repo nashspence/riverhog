@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c49fa9a820"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3ff530d38c"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-a9a312b5e0"></a>`distribution` | "stove0-server" |
-| <a id="s-4464a94bb8"></a>`module` | "stove0_core" |
-| <a id="s-edcb445d94"></a>`name` | "settle_outcomes" |
-| <a id="s-ceae8f9eeb"></a>`owner` | "stove0_core.Stove0RiverhogClient" |
-| <a id="s-19422bfffb"></a>`unit` | "member" |
+- <a id="s-a9a312b5e0"></a>`distribution`: `stove0-server`
+- <a id="s-4464a94bb8"></a>`module`: `stove0_core`
+- <a id="s-edcb445d94"></a>`name`: `settle_outcomes`
+- <a id="s-ceae8f9eeb"></a>`owner`: `stove0_core.Stove0RiverhogClient`
+- <a id="s-19422bfffb"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-b43677000d"></a>`kind`: `"method"`
+- <a id="s-63f4bad0f0"></a>`signature`: `"\"(self, record: 'WorkRecord', evaluation: 'BranchSetEvaluation') -> 'bool'\""`
 
 ## Maintained corroboration
 

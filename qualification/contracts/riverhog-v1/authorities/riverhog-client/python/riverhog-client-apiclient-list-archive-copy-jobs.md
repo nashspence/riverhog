@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-40c6a76c39"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-68cfb6620d"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-8b1dc566b7"></a>`distribution` | "riverhog-client" |
-| <a id="s-f28f170d8f"></a>`module` | "riverhog_client" |
-| <a id="s-07738dcd36"></a>`name` | "list_archive_copy_jobs" |
-| <a id="s-ceadf12a0b"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-e375de2103"></a>`unit` | "member" |
+- <a id="s-8b1dc566b7"></a>`distribution`: `riverhog-client`
+- <a id="s-f28f170d8f"></a>`module`: `riverhog_client`
+- <a id="s-07738dcd36"></a>`name`: `list_archive_copy_jobs`
+- <a id="s-ceadf12a0b"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-e375de2103"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e0e56d772e"></a>`kind`: `"method"`
+- <a id="s-0de41dc32e"></a>`signature`: `"\"(self, *, page_size: 'int' = 25, page_token: 'str \| None' = None, q: 'str \| None' = None, state: 'ArchiveCopyState \| None' = None, sort: 'ArchiveCopySort' = 'requested_at', order: 'SortOrder' = 'desc') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

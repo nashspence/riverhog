@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-37c3559cf1"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ff904ed5ab"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-1a5b23cec9"></a>`distribution` | "riverhog-client" |
-| <a id="s-0623cb4c0f"></a>`module` | "riverhog_client.transform" |
-| <a id="s-49f76e4498"></a>`name` | "get_portable_collection_inventory" |
-| <a id="s-f9c21ae2d0"></a>`owner` | "riverhog_client.transform.ClaimedCollectionApi" |
-| <a id="s-cc147c32bb"></a>`unit` | "member" |
+- <a id="s-1a5b23cec9"></a>`distribution`: `riverhog-client`
+- <a id="s-0623cb4c0f"></a>`module`: `riverhog_client.transform`
+- <a id="s-49f76e4498"></a>`name`: `get_portable_collection_inventory`
+- <a id="s-f9c21ae2d0"></a>`owner`: `riverhog_client.transform.ClaimedCollectionApi`
+- <a id="s-cc147c32bb"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c8081d6bdc"></a>`kind`: `"method"`
+- <a id="s-a25bb7c417"></a>`signature`: `"\"(self, collection_id: 'CollectionId', *, cursor: 'str \| None' = None, limit: 'int' = 100, inventory_identity: 'str \| None' = None) -> 'PortableCollectionInventoryPage'\""`
 
 ## Maintained corroboration
 

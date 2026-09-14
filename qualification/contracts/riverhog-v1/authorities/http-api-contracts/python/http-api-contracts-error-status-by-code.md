@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-eb0c11ca71"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f72d8d831f"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-a60b1b6913"></a>`distribution` | "http-api-contracts" |
-| <a id="s-83ba7b67bc"></a>`module` | "http_api_contracts" |
-| <a id="s-b9e657f63f"></a>`name` | "ERROR_STATUS_BY_CODE" |
-| <a id="s-81891cbbfc"></a>`unit` | "export" |
+- <a id="s-a60b1b6913"></a>`distribution`: `http-api-contracts`
+- <a id="s-83ba7b67bc"></a>`module`: `http_api_contracts`
+- <a id="s-b9e657f63f"></a>`name`: `ERROR_STATUS_BY_CODE`
+- <a id="s-81891cbbfc"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-a203e97113"></a>`kind`: `"constant"`
+- <a id="s-a49a77fd41"></a>`value`: `{"bad_request":400,"catalog_sync_cursor_expired":410,"catalog_sync_history_expired":410,"catalog_sync_source_changed":409,"catalog_sync_view_changed":409,"conflict":409,"download_allowance_exceeded":429,"forbidden":403,"hash_mismatch":409,"ingress_failed":500,"input_upload_storage_hint_invalid":409,"insufficient_storage":507,"internal_error":500,"invalid_path":400,"invalid_range":416,"invalid_state":409,"invalid_target":400,"job_template_revision_conflict":409,"length_required":411,"method_not_allowed":405,"not_found":404,"precondition_failed":412,"precondition_required":428,"service_unavailable":503,"storage_hint_mismatch":409,"submission_conflict":409,"too_many_active_input_uploads":429,"unauthorized":401}`
 
 ## Governing policies
 

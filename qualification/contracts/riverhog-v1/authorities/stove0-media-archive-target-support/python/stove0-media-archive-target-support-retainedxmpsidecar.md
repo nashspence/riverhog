@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d6513df363"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-fd0ed8f15a"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-28a051c2fa"></a>`distribution` | "stove0-media-archive-target-support" |
-| <a id="s-913f255888"></a>`module` | "stove0_media_archive_target_support" |
-| <a id="s-144fa21554"></a>`name` | "RetainedXmpSidecar" |
-| <a id="s-6d84c5f1c0"></a>`unit` | "export" |
+- <a id="s-28a051c2fa"></a>`distribution`: `stove0-media-archive-target-support`
+- <a id="s-913f255888"></a>`module`: `stove0_media_archive_target_support`
+- <a id="s-144fa21554"></a>`name`: `RetainedXmpSidecar`
+- <a id="s-6d84c5f1c0"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-038c526b64"></a>`kind`: `"class"`
+- <a id="s-d6dc11ada1"></a>`signature`: `"'(*, input_artifact_id: str, output_path: str) -> None'"`
+
+#### Validated model schema
+
+<a id="s-94200ecc6c"></a>
+- <a id="s-c804423644"></a>`title`: RetainedXmpSidecar
+- <a id="s-aace336fbf"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-789057e36f"></a>`input_artifact_id` | yes | type="string" |  |
+| <a id="s-2097892712"></a>`output_path` | yes | type="string" |  |
 
 ## Maintained corroboration
 
@@ -52,13 +67,31 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1dc3d46bfc904a85af7f11c8720f9deeb3ce17676f2ea5f2117999255226696e -->
+<!-- exact-contract-value: 6c2fe90dbd4fe3d69bdc6b51f402963f064121a6b475b23c288c6caf3ec69dfb -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "bf5e283d3e6a8fd5d7e2d364e1f8b834199f2aeeb69f4664d31be4a46bbe6923",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "input_artifact_id": {
+          "title": "Input Artifact Id",
+          "type": "string"
+        },
+        "output_path": {
+          "title": "Output Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "input_artifact_id",
+        "output_path"
+      ],
+      "title": "RetainedXmpSidecar",
+      "type": "object"
+    },
     "signature": "'(*, input_artifact_id: str, output_path: str) -> None'"
   },
   "distribution": "stove0-media-archive-target-support",

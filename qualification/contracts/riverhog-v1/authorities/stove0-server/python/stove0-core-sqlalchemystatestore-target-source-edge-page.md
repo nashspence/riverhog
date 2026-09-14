@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6dcf999509"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-dc0a7a2719"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-8bc60b8142"></a>`distribution` | "stove0-server" |
-| <a id="s-7fffab3899"></a>`module` | "stove0_core" |
-| <a id="s-3529f0217e"></a>`name` | "target_source_edge_page" |
-| <a id="s-5784ddbaad"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-bca8f42859"></a>`unit` | "member" |
+- <a id="s-8bc60b8142"></a>`distribution`: `stove0-server`
+- <a id="s-7fffab3899"></a>`module`: `stove0_core`
+- <a id="s-3529f0217e"></a>`name`: `target_source_edge_page`
+- <a id="s-5784ddbaad"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-bca8f42859"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-23b0e331ad"></a>`kind`: `"method"`
+- <a id="s-bd87307f18"></a>`signature`: `"'(self, work_id: \\'str\\', job_id: \\'str\\', *, order: \"Literal[\\'output\\', \\'input\\']\", after_output_id: \\'str \| None\\', after_input_id: \\'str \| None\\', limit: \\'int\\') -> \\'tuple[OutputSourceEdge, ...]\\''"`
 
 ## Maintained corroboration
 

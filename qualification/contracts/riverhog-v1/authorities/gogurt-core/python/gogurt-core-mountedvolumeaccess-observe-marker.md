@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5e472d5bca"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-95da8bc807"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-5ae0fb51fc"></a>`distribution` | "gogurt-core" |
-| <a id="s-c006529db0"></a>`module` | "gogurt_core" |
-| <a id="s-e7e3ac0b77"></a>`name` | "observe_marker" |
-| <a id="s-f9bc1ddd52"></a>`owner` | "gogurt_core.MountedVolumeAccess" |
-| <a id="s-a82dff3dd1"></a>`unit` | "member" |
+- <a id="s-5ae0fb51fc"></a>`distribution`: `gogurt-core`
+- <a id="s-c006529db0"></a>`module`: `gogurt_core`
+- <a id="s-e7e3ac0b77"></a>`name`: `observe_marker`
+- <a id="s-f9bc1ddd52"></a>`owner`: `gogurt_core.MountedVolumeAccess`
+- <a id="s-a82dff3dd1"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-8ddf20a36b"></a>`kind`: `"method"`
+- <a id="s-ceb0183ba5"></a>`signature`: `"\"(self, mount_point: 'Path') -> 'MountedMarkerObservation \| None'\""`
 
 ## Maintained corroboration
 

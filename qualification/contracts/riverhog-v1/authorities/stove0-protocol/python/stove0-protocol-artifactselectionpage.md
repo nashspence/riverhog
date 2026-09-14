@@ -14,13 +14,41 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-cce11045fd"></a>
-| Field | Shape |
+- <a id="s-56d70c655b"></a>`distribution`: `stove0-protocol`
+- <a id="s-03e18b6dc0"></a>`module`: `stove0_protocol`
+- <a id="s-61c8bc0d62"></a>`name`: `ArtifactSelectionPage`
+- <a id="s-ac3d36c57f"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-fac086ee2c"></a>`kind`: `"class"`
+- <a id="s-224510dba9"></a>`signature`: `"\"(*, authority: stove0_protocol.fork_join.ArtifactSelectionRef, continuation: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, next_continuation: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, complete: bool, artifacts: Annotated[tuple[stove0_protocol.models.ArtifactSubject, ...], MaxLen(max_length=256)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-73808f3317"></a>
+- <a id="s-9b7dd68f2c"></a>`title`: ArtifactSelectionPage
+- <a id="s-703f7031f4"></a>`description`: One bounded continuation step through an immutable artifact selection.
+- <a id="s-cb61981483"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4228ab83c9"></a>`artifacts` | yes | type="array"; maxItems=256; items=(#/$defs/ArtifactSubject); additional keys=`x-riverhog-extent` |  |
+| <a id="s-a807dd959e"></a>`authority` | yes | #/$defs/ArtifactSelectionRef |  |
+| <a id="s-2460fa0fde"></a>`complete` | yes | type="boolean" |  |
+| <a id="s-c6f2138d13"></a>`continuation` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-5169754d6f"></a>`next_continuation` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-616596d88e"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-56d70c655b"></a>`distribution` | "stove0-protocol" |
-| <a id="s-03e18b6dc0"></a>`module` | "stove0_protocol" |
-| <a id="s-61c8bc0d62"></a>`name` | "ArtifactSelectionPage" |
-| <a id="s-ac3d36c57f"></a>`unit` | "export" |
+| <a id="s-4d88ccaa17"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
+| <a id="s-d3858e980e"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-9da40006db"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-283e8f0087"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -52,13 +80,188 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ccfb22d92a907fc9a80e0cdb093bf416514fe016d049f9cfdbee7b706f6d79c1 -->
+<!-- exact-contract-value: f24283c105fe985d40e8aff24902b7a6848010644a33654200f77fc502a66cb5 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "ab841b1329af4b9af6b96b651097d0aadeaf9e86a6033250b4a5a4a5f9d9712c",
+    "schema": {
+      "$defs": {
+        "ArtifactSelectionRef": {
+          "additionalProperties": false,
+          "description": "Closed reference to a separately retained selection document.",
+          "properties": {
+            "artifact_count": {
+              "minimum": 1,
+              "title": "Artifact Count",
+              "type": "integer"
+            },
+            "selection_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Selection Sha256",
+              "type": "string"
+            },
+            "total_bytes": {
+              "minimum": 0,
+              "title": "Total Bytes",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "selection_sha256",
+            "artifact_count",
+            "total_bytes"
+          ],
+          "title": "ArtifactSelectionRef",
+          "type": "object"
+        },
+        "ArtifactSubject": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "minimum": 0,
+              "title": "Bytes",
+              "type": "integer"
+            },
+            "collection": {
+              "$ref": "#/$defs/CollectionRootRef"
+            },
+            "id": {
+              "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "media_type": {
+              "anyOf": [
+                {
+                  "maxLength": 255,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Media Type"
+            },
+            "path": {
+              "maxLength": 4096,
+              "minLength": 1,
+              "title": "Path",
+              "type": "string"
+            },
+            "role": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Role",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "role",
+            "collection",
+            "path",
+            "bytes",
+            "sha256"
+          ],
+          "title": "ArtifactSubject",
+          "type": "object"
+        },
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "CollectionRootRef": {
+          "additionalProperties": false,
+          "properties": {
+            "archive_root_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Archive Root Sha256",
+              "type": "string"
+            },
+            "collection_id": {
+              "$ref": "#/$defs/CollectionId"
+            },
+            "content_identity": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Content Identity",
+              "type": "string"
+            }
+          },
+          "required": [
+            "collection_id",
+            "archive_root_sha256",
+            "content_identity"
+          ],
+          "title": "CollectionRootRef",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "One bounded continuation step through an immutable artifact selection.",
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/ArtifactSubject"
+          },
+          "maxItems": 256,
+          "title": "Artifacts",
+          "type": "array",
+          "x-riverhog-extent": {
+            "policy": "segmented_no_total_max",
+            "progression": "selection-bound-start_ordinal",
+            "reason": "bounded-artifact-selection-page"
+          }
+        },
+        "authority": {
+          "$ref": "#/$defs/ArtifactSelectionRef"
+        },
+        "complete": {
+          "title": "Complete",
+          "type": "boolean"
+        },
+        "continuation": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Continuation"
+        },
+        "next_continuation": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Next Continuation"
+        }
+      },
+      "required": [
+        "authority",
+        "complete",
+        "artifacts"
+      ],
+      "title": "ArtifactSelectionPage",
+      "type": "object"
+    },
     "signature": "\"(*, authority: stove0_protocol.fork_join.ArtifactSelectionRef, continuation: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, next_continuation: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, complete: bool, artifacts: Annotated[tuple[stove0_protocol.models.ArtifactSubject, ...], MaxLen(max_length=256)]) -> None\""
   },
   "distribution": "stove0-protocol",

@@ -14,13 +14,31 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a1d072f335"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-37a4543d63"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-d6ef84d860"></a>`distribution` | "stove0-server" |
-| <a id="s-2bd2b6be8a"></a>`module` | "stove0_core" |
-| <a id="s-ebf4a78d89"></a>`name` | "EvaluationReview" |
-| <a id="s-ee558774f9"></a>`unit` | "export" |
+- <a id="s-d6ef84d860"></a>`distribution`: `stove0-server`
+- <a id="s-2bd2b6be8a"></a>`module`: `stove0_core`
+- <a id="s-ebf4a78d89"></a>`name`: `EvaluationReview`
+- <a id="s-ee558774f9"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-00425a4db9"></a>`kind`: `"class"`
+- <a id="s-e30af7ae1a"></a>`signature`: `"'(*, variant_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], rating: Annotated[int \| None, Ge(ge=1), Le(le=5)] = None, note: Annotated[str \| None, MaxLen(max_length=4000)] = None, updated_by: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], updated_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=40)]) -> None'"`
+
+#### Validated model schema
+
+<a id="s-a4aaaab6d9"></a>
+- <a id="s-cf0c7ddf0d"></a>`title`: EvaluationReview
+- <a id="s-486af52e6d"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-86cd0fbc39"></a>`note` | no | anyOf=type="string"; maxLength=4000 \| type="null" |  |
+| <a id="s-1925280957"></a>`rating` | no | anyOf=type="integer"; minimum=1; maximum=5 \| type="null" |  |
+| <a id="s-33963925a9"></a>`updated_at` | yes | type="string"; minLength=1; maxLength=40 |  |
+| <a id="s-4bcd006ee3"></a>`updated_by` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-a03c66e0ad"></a>`variant_id` | yes | type="string"; minLength=1; maxLength=160 |  |
 
 ## Maintained corroboration
 
@@ -52,13 +70,69 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1801e3efe1daec985858eb9bb34146ee903aebda619f98940aa1f5f66c6967c6 -->
+<!-- exact-contract-value: 999f887fb9380d4cb7fd9ea154b929019def3483bc7c2ec485091cf4b447013a -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "c7ca0c39feb6bf6039a1307a6d0b77476adef3c5968e2de4fba9e0a9c646332c",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "note": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        },
+        "rating": {
+          "anyOf": [
+            {
+              "maximum": 5,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rating"
+        },
+        "updated_at": {
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Updated At",
+          "type": "string"
+        },
+        "updated_by": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Updated By",
+          "type": "string"
+        },
+        "variant_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Variant Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "variant_id",
+        "updated_by",
+        "updated_at"
+      ],
+      "title": "EvaluationReview",
+      "type": "object"
+    },
     "signature": "'(*, variant_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], rating: Annotated[int | None, Ge(ge=1), Le(le=5)] = None, note: Annotated[str | None, MaxLen(max_length=4000)] = None, updated_by: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], updated_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=40)]) -> None'"
   },
   "distribution": "stove0-server",

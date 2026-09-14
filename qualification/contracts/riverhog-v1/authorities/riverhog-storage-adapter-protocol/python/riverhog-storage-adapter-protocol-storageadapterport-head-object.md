@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c158ff9ac9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-dfa6f939e2"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-10760e6bbb"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-a09b190608"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-34627bc126"></a>`name` | "head_object" |
-| <a id="s-6323dbf082"></a>`owner` | "riverhog_storage_adapter_protocol.StorageAdapterPort" |
-| <a id="s-45c9cdd9a9"></a>`unit` | "member" |
+- <a id="s-10760e6bbb"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-a09b190608"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-34627bc126"></a>`name`: `head_object`
+- <a id="s-6323dbf082"></a>`owner`: `riverhog_storage_adapter_protocol.StorageAdapterPort`
+- <a id="s-45c9cdd9a9"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-8ff85de574"></a>`kind`: `"method"`
+- <a id="s-cbbd33e6c7"></a>`signature`: `"\"(self, request: 'ObjectHeadRequest') -> 'ObjectMetadataReceipt \| None'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b65d6ca4cb"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5554940c50"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d298a02325"></a>`distribution` | "stove0-review-rclone-effect-target" |
-| <a id="s-9eb7fc3cfd"></a>`module` | "stove0_review_rclone_effect_target" |
-| <a id="s-9c307cf45c"></a>`name` | "commit" |
-| <a id="s-cbc354c4bd"></a>`owner` | "stove0_review_rclone_effect_target.RcloneReviewDestination" |
-| <a id="s-f8d73c27fb"></a>`unit` | "member" |
+- <a id="s-d298a02325"></a>`distribution`: `stove0-review-rclone-effect-target`
+- <a id="s-9eb7fc3cfd"></a>`module`: `stove0_review_rclone_effect_target`
+- <a id="s-9c307cf45c"></a>`name`: `commit`
+- <a id="s-cbc354c4bd"></a>`owner`: `stove0_review_rclone_effect_target.RcloneReviewDestination`
+- <a id="s-f8d73c27fb"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ed51a5aec3"></a>`kind`: `"method"`
+- <a id="s-ca5a1b1f58"></a>`signature`: `"\"(self, *, delivery_id: 'str', output_root: 'Path', artifacts: 'Sequence[OutputArtifact]', manifest_path: 'Path') -> 'dict[str, JsonValue]'\""`
 
 ## Maintained corroboration
 

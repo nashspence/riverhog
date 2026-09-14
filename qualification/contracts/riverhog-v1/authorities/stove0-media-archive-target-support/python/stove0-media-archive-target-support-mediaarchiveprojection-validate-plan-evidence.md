@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f1f5c262a5"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1df8fb2312"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-db4842c697"></a>`distribution` | "stove0-media-archive-target-support" |
-| <a id="s-6afb572cae"></a>`module` | "stove0_media_archive_target_support" |
-| <a id="s-2618e60916"></a>`name` | "validate_plan_evidence" |
-| <a id="s-867946d7fd"></a>`owner` | "stove0_media_archive_target_support.MediaArchiveProjection" |
-| <a id="s-777fee86ca"></a>`unit` | "member" |
+- <a id="s-db4842c697"></a>`distribution`: `stove0-media-archive-target-support`
+- <a id="s-6afb572cae"></a>`module`: `stove0_media_archive_target_support`
+- <a id="s-2618e60916"></a>`name`: `validate_plan_evidence`
+- <a id="s-867946d7fd"></a>`owner`: `stove0_media_archive_target_support.MediaArchiveProjection`
+- <a id="s-777fee86ca"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-07ccb69245"></a>`kind`: `"method"`
+- <a id="s-a1dcd10759"></a>`signature`: `"\"(self, observation_result_sha256s: 'Sequence[str]') -> 'None'\""`
 
 ## Maintained corroboration
 

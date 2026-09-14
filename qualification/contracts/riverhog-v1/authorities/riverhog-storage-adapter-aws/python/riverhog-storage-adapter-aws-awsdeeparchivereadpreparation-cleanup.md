@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-58d78cbe7e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7515d83e18"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-819eed4349"></a>`distribution` | "riverhog-storage-adapter-aws" |
-| <a id="s-80e9a52b6b"></a>`module` | "riverhog_storage_adapter_aws" |
-| <a id="s-6a0982dfa2"></a>`name` | "cleanup" |
-| <a id="s-ffe6a6e19f"></a>`owner` | "riverhog_storage_adapter_aws.AwsDeepArchiveReadPreparation" |
-| <a id="s-9c779d52cd"></a>`unit` | "member" |
+- <a id="s-819eed4349"></a>`distribution`: `riverhog-storage-adapter-aws`
+- <a id="s-80e9a52b6b"></a>`module`: `riverhog_storage_adapter_aws`
+- <a id="s-6a0982dfa2"></a>`name`: `cleanup`
+- <a id="s-ffe6a6e19f"></a>`owner`: `riverhog_storage_adapter_aws.AwsDeepArchiveReadPreparation`
+- <a id="s-9c779d52cd"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-a449cacb5c"></a>`kind`: `"method"`
+- <a id="s-0083c55506"></a>`signature`: `"\"(self, *, client: 'Any', bucket: 'str', objects: 'tuple[tuple[str, str \| None], ...]') -> 'None'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d73474f03b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0e2742b431"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7fe7cac73f"></a>`distribution` | "state-schema" |
-| <a id="s-0dae4ef676"></a>`module` | "state_schema" |
-| <a id="s-a6d45282d8"></a>`name` | "StateSchema" |
-| <a id="s-b59b871120"></a>`unit` | "export" |
+- <a id="s-7fe7cac73f"></a>`distribution`: `state-schema`
+- <a id="s-0dae4ef676"></a>`module`: `state_schema`
+- <a id="s-a6d45282d8"></a>`name`: `StateSchema`
+- <a id="s-b59b871120"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f61ed91b3c"></a>`kind`: `"class"`
+- <a id="s-fd8982e026"></a>`signature`: `"\"(*, name: 'str', engine_factory: 'EngineFactory', script_location: 'Path', verify: 'SchemaVerify', prerequisite: 'SchemaVerify \| None' = None, is_empty: 'EmptyStateCheck \| None' = None, version_table: 'str' = 'state_schema_revision') -> 'None'\""`
 
 ## Maintained corroboration
 

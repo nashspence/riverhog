@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b809db080b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d79efb3af0"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-94c1857fc6"></a>`distribution` | "stove0-server" |
-| <a id="s-6c8880c007"></a>`module` | "stove0_core" |
-| <a id="s-7936ede901"></a>`name` | "ClaimBinding" |
-| <a id="s-222ae778d6"></a>`unit` | "export" |
+- <a id="s-94c1857fc6"></a>`distribution`: `stove0-server`
+- <a id="s-6c8880c007"></a>`module`: `stove0_core`
+- <a id="s-7936ede901"></a>`name`: `ClaimBinding`
+- <a id="s-222ae778d6"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-3d22409ed8"></a>`kind`: `"class"`
+- <a id="s-d9eb2f22ba"></a>`signature`: `"'(*, claim_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], fence: Annotated[int, Ge(ge=1)]) -> None'"`
+
+#### Validated model schema
+
+<a id="s-577bfcf6b0"></a>
+- <a id="s-ec33b82180"></a>`title`: ClaimBinding
+- <a id="s-5177d009da"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-897c4d7dda"></a>`claim_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-e99e03e44d"></a>`fence` | yes | type="integer"; minimum=1 |  |
 
 ## Governing policies
 
@@ -46,13 +61,34 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 221a244115ee6980aa1c65fe5976da9ef67bfaf5916f9944512c5ead5e1d4348 -->
+<!-- exact-contract-value: 35a78a2ecae184c142377f4ebf2fb20991e0280bd14e5b3355891c2b7e34683b -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "659936b8015faa931dac1f67ac09090a862453b08c01b2b835ee6c759c8b2a58",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "fence": {
+          "minimum": 1,
+          "title": "Fence",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "claim_id",
+        "fence"
+      ],
+      "title": "ClaimBinding",
+      "type": "object"
+    },
     "signature": "'(*, claim_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], fence: Annotated[int, Ge(ge=1)]) -> None'"
   },
   "distribution": "stove0-server",

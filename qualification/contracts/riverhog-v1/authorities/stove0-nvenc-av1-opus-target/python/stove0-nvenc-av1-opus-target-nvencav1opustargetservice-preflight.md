@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e212210f01"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f3e3d0e59b"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-99e537fbd5"></a>`distribution` | "stove0-nvenc-av1-opus-target" |
-| <a id="s-d4dd32cd03"></a>`module` | "stove0_nvenc_av1_opus_target" |
-| <a id="s-60cd03fd84"></a>`name` | "preflight" |
-| <a id="s-0fee6f741d"></a>`owner` | "stove0_nvenc_av1_opus_target.NvencAv1OpusTargetService" |
-| <a id="s-348096c690"></a>`unit` | "member" |
+- <a id="s-99e537fbd5"></a>`distribution`: `stove0-nvenc-av1-opus-target`
+- <a id="s-d4dd32cd03"></a>`module`: `stove0_nvenc_av1_opus_target`
+- <a id="s-60cd03fd84"></a>`name`: `preflight`
+- <a id="s-0fee6f741d"></a>`owner`: `stove0_nvenc_av1_opus_target.NvencAv1OpusTargetService`
+- <a id="s-348096c690"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-7562526ed1"></a>`kind`: `"method"`
+- <a id="s-68c328e9fc"></a>`signature`: `"\"(self, request: 'TargetPreflightRequest') -> 'TargetPreflightResponse'\""`
 
 ## Maintained corroboration
 

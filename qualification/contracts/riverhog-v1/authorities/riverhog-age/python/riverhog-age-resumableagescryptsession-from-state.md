@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-98c36a2933"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-57cd69ae07"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b00bd83645"></a>`distribution` | "riverhog-age" |
-| <a id="s-0aeae77edc"></a>`module` | "riverhog_age" |
-| <a id="s-e63491f34f"></a>`name` | "from_state" |
-| <a id="s-0067a4abfb"></a>`owner` | "riverhog_age.ResumableAgeScryptSession" |
-| <a id="s-590bcdcf11"></a>`unit` | "member" |
+- <a id="s-b00bd83645"></a>`distribution`: `riverhog-age`
+- <a id="s-0aeae77edc"></a>`module`: `riverhog_age`
+- <a id="s-e63491f34f"></a>`name`: `from_state`
+- <a id="s-0067a4abfb"></a>`owner`: `riverhog_age.ResumableAgeScryptSession`
+- <a id="s-590bcdcf11"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-72d4d903f9"></a>`kind`: `"classmethod"`
+- <a id="s-75590a15bd"></a>`signature`: `"\"(cls, passphrase: 'str \| bytes', state: 'UploadState \| bytes \| str \| Mapping[str, object]', *, scrypt_maxmem: 'int \| None' = None) -> 'ResumableAgeScryptSession'\""`
 
 ## Maintained corroboration
 

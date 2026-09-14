@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1decda76a8"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-01f33b01c1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-9dee43725c"></a>`distribution` | "stove0-protocol" |
-| <a id="s-7b842941b4"></a>`module` | "stove0_protocol" |
-| <a id="s-05476b71d3"></a>`name` | "canonical_branches" |
-| <a id="s-31c7ae0fb9"></a>`owner` | "stove0_protocol.BranchSetPlan" |
-| <a id="s-7c280807df"></a>`unit` | "member" |
+- <a id="s-9dee43725c"></a>`distribution`: `stove0-protocol`
+- <a id="s-7b842941b4"></a>`module`: `stove0_protocol`
+- <a id="s-05476b71d3"></a>`name`: `canonical_branches`
+- <a id="s-31c7ae0fb9"></a>`owner`: `stove0_protocol.BranchSetPlan`
+- <a id="s-7c280807df"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-d8836f8341"></a>`kind`: `"classmethod"`
+- <a id="s-69a1ff9d18"></a>`signature`: `"\"(cls, value: 'tuple[BranchDeclaration, ...]') -> 'tuple[BranchDeclaration, ...]'\""`
 
 ## Maintained corroboration
 

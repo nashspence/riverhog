@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ee2bc0293f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-565c48f623"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-996a615e3f"></a>`distribution` | "riverhog-ftp-adapter" |
-| <a id="s-08d482b701"></a>`module` | "riverhog_ftp_adapter" |
-| <a id="s-b28aaed3f6"></a>`name` | "accept_completed_file" |
-| <a id="s-be46b15db0"></a>`owner` | "riverhog_ftp_adapter.FtpAdapter" |
-| <a id="s-4b57426af8"></a>`unit` | "member" |
+- <a id="s-996a615e3f"></a>`distribution`: `riverhog-ftp-adapter`
+- <a id="s-08d482b701"></a>`module`: `riverhog_ftp_adapter`
+- <a id="s-b28aaed3f6"></a>`name`: `accept_completed_file`
+- <a id="s-be46b15db0"></a>`owner`: `riverhog_ftp_adapter.FtpAdapter`
+- <a id="s-4b57426af8"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ed932784ed"></a>`kind`: `"method"`
+- <a id="s-df727f6721"></a>`signature`: `"\"(self, source: 'SourceConfig', path: 'Path', *, relative_path: 'str', source_event_id: 'str', expected_bytes: 'int', expected_sha256: 'str', provenance: 'Mapping[str, object] \| None' = None, provenance_journals: 'Mapping[str, bytes] \| None' = None) -> 'ProducedCollection'\""`
 
 ## Maintained corroboration
 

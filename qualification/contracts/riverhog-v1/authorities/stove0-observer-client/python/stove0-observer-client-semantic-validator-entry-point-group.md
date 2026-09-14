@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3c7de7c7eb"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-082367d6f4"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-639c785c02"></a>`distribution` | "stove0-observer-client" |
-| <a id="s-5a874ada50"></a>`module` | "stove0_observer_client" |
-| <a id="s-e60c43ec74"></a>`name` | "SEMANTIC_VALIDATOR_ENTRY_POINT_GROUP" |
-| <a id="s-e96f5314cc"></a>`unit` | "export" |
+- <a id="s-639c785c02"></a>`distribution`: `stove0-observer-client`
+- <a id="s-5a874ada50"></a>`module`: `stove0_observer_client`
+- <a id="s-e60c43ec74"></a>`name`: `SEMANTIC_VALIDATOR_ENTRY_POINT_GROUP`
+- <a id="s-e96f5314cc"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-75747e5b8e"></a>`kind`: `"constant"`
+- <a id="s-2d23b4aa45"></a>`value`: `"stove0.observer-semantic-validators"`
 
 ## Governing policies
 

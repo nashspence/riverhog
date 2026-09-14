@@ -14,13 +14,29 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-86ef45c1c4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-24cb639c5c"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-c38840d457"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-4a37585a48"></a>`module` | "riverhog_protocol" |
-| <a id="s-702b52e103"></a>`name` | "ProcessingClaimOutcomesSettleDocument" |
-| <a id="s-7a6fcbbcd5"></a>`unit` | "export" |
+- <a id="s-c38840d457"></a>`distribution`: `riverhog-protocol`
+- <a id="s-4a37585a48"></a>`module`: `riverhog_protocol`
+- <a id="s-702b52e103"></a>`name`: `ProcessingClaimOutcomesSettleDocument`
+- <a id="s-7a6fcbbcd5"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-7732489520"></a>`kind`: `"class"`
+- <a id="s-fe913c20e8"></a>`signature`: `"\"(*, fence: Annotated[int, Ge(ge=1)], retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0) -> None\""`
+
+#### Validated model schema
+
+<a id="s-1deff4c44c"></a>
+- <a id="s-cb06f1de45"></a>`title`: ProcessingClaimOutcomesSettleDocument
+- <a id="s-da4e21848d"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-25bd6cd690"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-f582d95d9d"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0 |  |
+| <a id="s-75cba9ffc1"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"] |  |
 
 ## Maintained corroboration
 
@@ -52,13 +68,56 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 01e3b326263c31ab22f6b31e5099fc8c4ff26c2563c59b44d51554f4eafccfa7 -->
+<!-- exact-contract-value: 53ffd2f8f09630600e370f3968bd36b8f9a546996e8a2c688bf92df5fb7da037 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "52b850839b3d9d5f6dfb73fc055199f04030f6a5c9294298c368ae3bf1550d69",
+    "schema": {
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "retirement_policy": {
+            "const": "retain"
+          }
+        }
+      },
+      "properties": {
+        "fence": {
+          "minimum": 1,
+          "title": "Fence",
+          "type": "integer"
+        },
+        "retirement_grace_seconds": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Retirement Grace Seconds",
+          "type": "integer"
+        },
+        "retirement_policy": {
+          "default": "retain",
+          "enum": [
+            "retain",
+            "retire-after-verified-output"
+          ],
+          "title": "Retirement Policy",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fence"
+      ],
+      "then": {
+        "properties": {
+          "retirement_grace_seconds": {
+            "const": 0
+          }
+        }
+      },
+      "title": "ProcessingClaimOutcomesSettleDocument",
+      "type": "object"
+    },
     "signature": "\"(*, fence: Annotated[int, Ge(ge=1)], retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0) -> None\""
   },
   "distribution": "riverhog-protocol",

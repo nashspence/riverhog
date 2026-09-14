@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7ebcfed7a2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0bb517a45d"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c06cd0bcf8"></a>`distribution` | "stove0-review-target-support" |
-| <a id="s-a2d9b9f394"></a>`module` | "stove0_review_target_support" |
-| <a id="s-ccb2a66ae1"></a>`name` | "review_options_schema" |
-| <a id="s-7f25895c40"></a>`unit` | "export" |
+- <a id="s-c06cd0bcf8"></a>`distribution`: `stove0-review-target-support`
+- <a id="s-a2d9b9f394"></a>`module`: `stove0_review_target_support`
+- <a id="s-ccb2a66ae1"></a>`name`: `review_options_schema`
+- <a id="s-7f25895c40"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-6948f16fe8"></a>`kind`: `"function"`
+- <a id="s-d7b1d2723d"></a>`signature`: `"\"(schema_id: 'str', *, required: 'tuple[str, ...]' = (), properties: 'Mapping[str, JsonValue] \| None' = None) -> 'JsonSchemaDocument'\""`
 
 ## Governing policies
 

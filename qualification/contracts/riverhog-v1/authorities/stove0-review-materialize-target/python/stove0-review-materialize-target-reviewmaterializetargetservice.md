@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-16283bb630"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6d37f0c8c2"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-32dc84e17e"></a>`distribution` | "stove0-review-materialize-target" |
-| <a id="s-cdad2042d8"></a>`module` | "stove0_review_materialize_target" |
-| <a id="s-d7ec608664"></a>`name` | "ReviewMaterializeTargetService" |
-| <a id="s-a6d8f2171b"></a>`unit` | "export" |
+- <a id="s-32dc84e17e"></a>`distribution`: `stove0-review-materialize-target`
+- <a id="s-cdad2042d8"></a>`module`: `stove0_review_materialize_target`
+- <a id="s-d7ec608664"></a>`name`: `ReviewMaterializeTargetService`
+- <a id="s-a6d8f2171b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-83b8cf3dda"></a>`kind`: `"class"`
+- <a id="s-49e2d64d54"></a>`signature`: `"\"(*, state_root: 'Path', workspace_root: 'Path', samplers: 'tuple[SamplerRegistration, ...]', source_revision: 'str' = 'unknown', image_digest: 'str', implementation_version: 'str', terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""`
 
 ## Governing policies
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3aa20faf3f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-76733227c1"></a>`contract` | type="stove0_protocol.models.JsonSchemaDocument"; additional keys=`kind` |
-| <a id="s-c4e0cf35e5"></a>`distribution` | "stove0-review-target-contracts" |
-| <a id="s-bfa1cd7774"></a>`module` | "stove0_review_target_contracts" |
-| <a id="s-e6275da69e"></a>`name` | "REVIEW_RCLONE_RECEIPT_SCHEMA" |
-| <a id="s-3c8be64aeb"></a>`unit` | "export" |
+- <a id="s-c4e0cf35e5"></a>`distribution`: `stove0-review-target-contracts`
+- <a id="s-bfa1cd7774"></a>`module`: `stove0_review_target_contracts`
+- <a id="s-e6275da69e"></a>`name`: `REVIEW_RCLONE_RECEIPT_SCHEMA`
+- <a id="s-3c8be64aeb"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-aac419aa4f"></a>`kind`: `"object"`
+- <a id="s-5fc3efcffa"></a>`type`: `"stove0_protocol.models.JsonSchemaDocument"`
 
 ## Governing policies
 

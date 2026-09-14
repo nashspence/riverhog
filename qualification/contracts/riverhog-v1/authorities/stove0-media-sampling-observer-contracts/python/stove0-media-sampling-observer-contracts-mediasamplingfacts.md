@@ -14,13 +14,34 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-85e1d1eea3"></a>
-| Field | Shape |
+- <a id="s-dc30fb5161"></a>`distribution`: `stove0-media-sampling-observer-contracts`
+- <a id="s-cfacc32298"></a>`module`: `stove0_media_sampling_observer_contracts`
+- <a id="s-eadc555b52"></a>`name`: `MediaSamplingFacts`
+- <a id="s-0474688481"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-fbb641cb60"></a>`kind`: `"class"`
+- <a id="s-833ad1af84"></a>`signature`: `"'(*, artifacts: Annotated[tuple[stove0_media_sampling_observer_contracts.contracts.MediaSamplingArtifactFacts, ...], MinLen(min_length=1)]) -> None'"`
+
+#### Validated model schema
+
+<a id="s-7f78559b40"></a>
+- <a id="s-89a4637d2f"></a>`title`: MediaSamplingFacts
+- <a id="s-bceebe10e7"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-71eae395d0"></a>`artifacts` | yes | type="array"; minItems=1; items=(#/$defs/MediaSamplingArtifactFacts) |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-38d45e06bc"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-dc30fb5161"></a>`distribution` | "stove0-media-sampling-observer-contracts" |
-| <a id="s-cfacc32298"></a>`module` | "stove0_media_sampling_observer_contracts" |
-| <a id="s-eadc555b52"></a>`name` | "MediaSamplingFacts" |
-| <a id="s-0474688481"></a>`unit` | "export" |
+| <a id="s-57a6c63181"></a>`MediaSamplingArtifactFacts` | type="object"; fields=`artifact_id`, `duration_ms`, `sampleable_ranges`; additional keys=`additionalProperties`, `required` |
+| <a id="s-27ea6724f4"></a>`SampleableRange` | type="object"; fields=`duration_ms`, `start_ms`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -52,13 +73,84 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4f0d347a6c98a77ce5fbb0714816c3bd5e0c41936cba97fea63631fff12102b5 -->
+<!-- exact-contract-value: 9137b3c698d3833e1156b502a81cc92529afaa492181f7b8f4b8c584a44703c5 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "45f5c3bef4df9ef057e1a8a3dcee1ed2ba40debbda2c5eeba7cf216039c6d7f5",
+    "schema": {
+      "$defs": {
+        "MediaSamplingArtifactFacts": {
+          "additionalProperties": false,
+          "properties": {
+            "artifact_id": {
+              "maxLength": 160,
+              "minLength": 1,
+              "title": "Artifact Id",
+              "type": "string"
+            },
+            "duration_ms": {
+              "minimum": 1,
+              "title": "Duration Ms",
+              "type": "integer"
+            },
+            "sampleable_ranges": {
+              "items": {
+                "$ref": "#/$defs/SampleableRange"
+              },
+              "minItems": 1,
+              "title": "Sampleable Ranges",
+              "type": "array"
+            }
+          },
+          "required": [
+            "artifact_id",
+            "duration_ms",
+            "sampleable_ranges"
+          ],
+          "title": "MediaSamplingArtifactFacts",
+          "type": "object"
+        },
+        "SampleableRange": {
+          "additionalProperties": false,
+          "properties": {
+            "duration_ms": {
+              "minimum": 1,
+              "title": "Duration Ms",
+              "type": "integer"
+            },
+            "start_ms": {
+              "minimum": 0,
+              "title": "Start Ms",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "start_ms",
+            "duration_ms"
+          ],
+          "title": "SampleableRange",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/MediaSamplingArtifactFacts"
+          },
+          "minItems": 1,
+          "title": "Artifacts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifacts"
+      ],
+      "title": "MediaSamplingFacts",
+      "type": "object"
+    },
     "signature": "'(*, artifacts: Annotated[tuple[stove0_media_sampling_observer_contracts.contracts.MediaSamplingArtifactFacts, ...], MinLen(min_length=1)]) -> None'"
   },
   "distribution": "stove0-media-sampling-observer-contracts",

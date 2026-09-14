@@ -14,13 +14,32 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1d2597b3cb"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-28c0992d1e"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-6efb6d803a"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-48acf396cf"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-5ee1a04418"></a>`name` | "WriteStartRequest" |
-| <a id="s-c445dfbb70"></a>`unit` | "export" |
+- <a id="s-6efb6d803a"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-48acf396cf"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-5ee1a04418"></a>`name`: `WriteStartRequest`
+- <a id="s-c445dfbb70"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-7dbcaedcab"></a>`kind`: `"class"`
+- <a id="s-66089900c1"></a>`signature`: `"\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: Annotated[int, Ge(ge=1)], content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], placement: Literal['archive', 'immediate']) -> None\""`
+
+#### Validated model schema
+
+<a id="s-5718ecb230"></a>
+- <a id="s-022ad4e7b6"></a>`title`: WriteStartRequest
+- <a id="s-964f0af53b"></a>`description`: Exact authority for one idempotently established nonterminal write.  Repeating the same canonical request against the same configured adapter while the write remains nonterminal returns the same continuation session. Operational credentials used to realize that session remain adapter-private.
+- <a id="s-ca9f1d8fd4"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-66562d712e"></a>`content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
+| <a id="s-0920fe8051"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-cb6fed8c86"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-5911af9f98"></a>`placement` | yes | type="string"; enum=["archive","immediate"] |  |
+| <a id="s-f32bac3861"></a>`required_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
 
 ## Maintained corroboration
 
@@ -53,13 +72,66 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c69cb9e4fb63e00d86a2c35cddbe283e561e54d5d1409813a644ac4f08bb5846 -->
+<!-- exact-contract-value: 0723c65566bf2582d6a7655754220c1bad680d86f785fde599db10ce25b04576 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "4394746d6639230cabebf5d57a6e369f5e1401fe144a77641c7eb0aff144d2fa",
+    "schema": {
+      "additionalProperties": false,
+      "description": "Exact authority for one idempotently established nonterminal write.\n\nRepeating the same canonical request against the same configured adapter while the\nwrite remains nonterminal returns the same continuation session. Operational\ncredentials used to realize that session remain adapter-private.",
+      "properties": {
+        "content_type": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Content Type",
+          "type": "string"
+        },
+        "expected_bytes": {
+          "minimum": 1,
+          "title": "Expected Bytes",
+          "type": "integer"
+        },
+        "object_path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Object Path",
+          "type": "string"
+        },
+        "placement": {
+          "enum": [
+            "archive",
+            "immediate"
+          ],
+          "title": "Placement",
+          "type": "string"
+        },
+        "required_identity_assertions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions.",
+          "maxProperties": 64,
+          "title": "Required Identity Assertions",
+          "type": "object",
+          "x-riverhog-encoded-bytes-max": 16384,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-object-identity-assertion-envelope"
+          }
+        }
+      },
+      "required": [
+        "object_path",
+        "expected_bytes",
+        "content_type",
+        "required_identity_assertions",
+        "placement"
+      ],
+      "title": "WriteStartRequest",
+      "type": "object"
+    },
     "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: Annotated[int, Ge(ge=1)], content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], placement: Literal['archive', 'immediate']) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0264045b5e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-da775031ba"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-0c7ef3b74e"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-3fb209dcea"></a>`module` | "stove0_target_protocol" |
-| <a id="s-cd3ce4ebf0"></a>`name` | "seal" |
-| <a id="s-2c702075da"></a>`owner` | "stove0_target_protocol.TargetProductionAuthority" |
-| <a id="s-1614dd736c"></a>`unit` | "member" |
+- <a id="s-0c7ef3b74e"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-3fb209dcea"></a>`module`: `stove0_target_protocol`
+- <a id="s-cd3ce4ebf0"></a>`name`: `seal`
+- <a id="s-2c702075da"></a>`owner`: `stove0_target_protocol.TargetProductionAuthority`
+- <a id="s-1614dd736c"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-19f1fe4cd4"></a>`kind`: `"classmethod"`
+- <a id="s-60fc885171"></a>`signature`: `"\"(cls, payload: 'TargetProductionAuthorityPayload') -> 'TargetProductionAuthority'\""`
 
 ## Maintained corroboration
 

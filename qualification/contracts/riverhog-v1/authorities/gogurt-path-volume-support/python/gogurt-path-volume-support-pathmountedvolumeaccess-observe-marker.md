@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-15d19c4c66"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-503c2e981f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-89027a2bae"></a>`distribution` | "gogurt-path-volume-support" |
-| <a id="s-e31051d64b"></a>`module` | "gogurt_path_volume_support" |
-| <a id="s-74f7113728"></a>`name` | "observe_marker" |
-| <a id="s-17bc433432"></a>`owner` | "gogurt_path_volume_support.PathMountedVolumeAccess" |
-| <a id="s-c9b15fcbae"></a>`unit` | "member" |
+- <a id="s-89027a2bae"></a>`distribution`: `gogurt-path-volume-support`
+- <a id="s-e31051d64b"></a>`module`: `gogurt_path_volume_support`
+- <a id="s-74f7113728"></a>`name`: `observe_marker`
+- <a id="s-17bc433432"></a>`owner`: `gogurt_path_volume_support.PathMountedVolumeAccess`
+- <a id="s-c9b15fcbae"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3ced95bc96"></a>`kind`: `"method"`
+- <a id="s-7c811e559a"></a>`signature`: `"\"(self, mount_point: 'Path') -> 'MountedMarkerObservation \| None'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1bf3303742"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ecf3947334"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-42801fdee1"></a>`distribution` | "stove0-review-target-support" |
-| <a id="s-3b3786718d"></a>`module` | "stove0_review_target_support" |
-| <a id="s-af0176407b"></a>`name` | "ReviewTargetServiceBase" |
-| <a id="s-aa5ac1fc7c"></a>`unit` | "export" |
+- <a id="s-42801fdee1"></a>`distribution`: `stove0-review-target-support`
+- <a id="s-3b3786718d"></a>`module`: `stove0_review_target_support`
+- <a id="s-af0176407b"></a>`name`: `ReviewTargetServiceBase`
+- <a id="s-aa5ac1fc7c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-156920b352"></a>`kind`: `"class"`
+- <a id="s-256bced623"></a>`signature`: `"\"(*, state_root: 'Path', workspace_root: 'Path', samplers: 'tuple[SamplerRegistration, ...]', source_revision: 'str' = 'unknown', image_digest: 'str', implementation_version: 'str', protocol: 'TargetProtocol', implementation_id: 'str', operation: 'OperationContract', options_schema: 'JsonSchemaDocument', terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5b36a29450"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-05aa6a5966"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-35ddf8a589"></a>`distribution` | "stove0-recipe-config" |
-| <a id="s-be18bea8c9"></a>`module` | "stove0_recipe_config" |
-| <a id="s-dd425c3cf4"></a>`name` | "coordination_projections_target_intent_only" |
-| <a id="s-6548b5d330"></a>`owner` | "stove0_recipe_config.RecipeCoordinationRoute" |
-| <a id="s-46f4d87a22"></a>`unit` | "member" |
+- <a id="s-35ddf8a589"></a>`distribution`: `stove0-recipe-config`
+- <a id="s-be18bea8c9"></a>`module`: `stove0_recipe_config`
+- <a id="s-dd425c3cf4"></a>`name`: `coordination_projections_target_intent_only`
+- <a id="s-6548b5d330"></a>`owner`: `stove0_recipe_config.RecipeCoordinationRoute`
+- <a id="s-46f4d87a22"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-be4433e5e8"></a>`kind`: `"method"`
+- <a id="s-39367af9d1"></a>`signature`: `"\"(self) -> 'Self'\""`
 
 ## Maintained corroboration
 

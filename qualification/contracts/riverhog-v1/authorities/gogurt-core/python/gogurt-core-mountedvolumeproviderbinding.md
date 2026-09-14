@@ -14,13 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3fecbe809e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f40fb2eebb"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-06717b2ee9"></a>`distribution` | "gogurt-core" |
-| <a id="s-89ab919573"></a>`module` | "gogurt_core" |
-| <a id="s-58ca96509d"></a>`name` | "MountedVolumeProviderBinding" |
-| <a id="s-c6f14e34a3"></a>`unit` | "export" |
+- <a id="s-06717b2ee9"></a>`distribution`: `gogurt-core`
+- <a id="s-89ab919573"></a>`module`: `gogurt_core`
+- <a id="s-58ca96509d"></a>`name`: `MountedVolumeProviderBinding`
+- <a id="s-c6f14e34a3"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-5a5deba83b"></a>`kind`: `"class"`
+- <a id="s-08ea9d94c6"></a>`signature`: `"\"(provider_id: 'str', access: 'MountedVolumeAccess', format: 'str' = 'gogurt-mounted-volume-provider-binding/v1') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-30ba0047fe"></a>`provider_id` | `'str'` | `required` |
+| <a id="s-bb815156e3"></a>`access` | `'MountedVolumeAccess'` | `required` |
+| <a id="s-bdd423cb8a"></a>`format` | `'str'` | `'gogurt-mounted-volume-provider-binding/v1'` |
 
 ## Governing policies
 

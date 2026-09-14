@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fee7cf3780"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b7de59afbb"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-aafe365f43"></a>`distribution` | "stove0-server" |
-| <a id="s-ef5a938175"></a>`module` | "stove0_core" |
-| <a id="s-503c064197"></a>`name` | "get_collection_derivation" |
-| <a id="s-969cf5fcb8"></a>`owner` | "stove0_core.RiverhogApi" |
-| <a id="s-efee3a640f"></a>`unit` | "member" |
+- <a id="s-aafe365f43"></a>`distribution`: `stove0-server`
+- <a id="s-ef5a938175"></a>`module`: `stove0_core`
+- <a id="s-503c064197"></a>`name`: `get_collection_derivation`
+- <a id="s-969cf5fcb8"></a>`owner`: `stove0_core.RiverhogApi`
+- <a id="s-efee3a640f"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-7a405965c5"></a>`kind`: `"method"`
+- <a id="s-79388ed787"></a>`signature`: `"\"(self, collection_id: 'int') -> 'CollectionDerivationResponseDocument'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,29 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9f2bbb4146"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8db03f362d"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-77cec49fc7"></a>`distribution` | "stove0-protocol" |
-| <a id="s-97b6b20862"></a>`module` | "stove0_protocol" |
-| <a id="s-789d60d6d9"></a>`name` | "PreviewOutcome" |
-| <a id="s-f453d1dc75"></a>`unit` | "export" |
+- <a id="s-77cec49fc7"></a>`distribution`: `stove0-protocol`
+- <a id="s-97b6b20862"></a>`module`: `stove0_protocol`
+- <a id="s-789d60d6d9"></a>`name`: `PreviewOutcome`
+- <a id="s-f453d1dc75"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-d04d393373"></a>`kind`: `"class"`
+- <a id="s-1712de18ee"></a>`signature`: `"\"(*, code: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)], retryable: bool \| None = None) -> None\""`
+
+#### Validated model schema
+
+<a id="s-51109b7c24"></a>
+- <a id="s-29aadc37ba"></a>`title`: PreviewOutcome
+- <a id="s-3863944cf4"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2946b55f45"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-a7784c6ecf"></a>`message` | yes | type="string"; minLength=1; maxLength=1000 |  |
+| <a id="s-7a03ef4cce"></a>`retryable` | no | anyOf=type="boolean" \| type="null" |  |
 
 ## Governing policies
 
@@ -46,13 +62,46 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 06672add356b71346faf4214f1c158e4c18ea9d89eb39761ce6091cb9b97ae0f -->
+<!-- exact-contract-value: 1627579106744da864554a35aacf6a4d6380888f05142f4729633d9799029b22 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "83bbb579a08b1ff84c5c4771b7f20a911c71ba952de33cb6bc91c9db92b4f632",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "retryable": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retryable"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "PreviewOutcome",
+      "type": "object"
+    },
     "signature": "\"(*, code: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)], retryable: bool | None = None) -> None\""
   },
   "distribution": "stove0-protocol",

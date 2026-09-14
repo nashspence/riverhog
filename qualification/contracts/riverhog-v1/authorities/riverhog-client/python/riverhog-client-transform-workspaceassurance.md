@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-de0a986123"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-53d745cf2a"></a>`contract` | type="typing._LiteralGenericAlias"; additional keys=`kind` |
-| <a id="s-5e2fb41b38"></a>`distribution` | "riverhog-client" |
-| <a id="s-438fcb33f7"></a>`module` | "riverhog_client.transform" |
-| <a id="s-f7c6bfef88"></a>`name` | "WorkspaceAssurance" |
-| <a id="s-4755062df7"></a>`unit` | "export" |
+- <a id="s-5e2fb41b38"></a>`distribution`: `riverhog-client`
+- <a id="s-438fcb33f7"></a>`module`: `riverhog_client.transform`
+- <a id="s-f7c6bfef88"></a>`name`: `WorkspaceAssurance`
+- <a id="s-4755062df7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e5cbf54a1d"></a>`kind`: `"object"`
+- <a id="s-1a2c0ef0f0"></a>`type`: `"typing._LiteralGenericAlias"`
 
 ## Governing policies
 

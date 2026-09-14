@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-09631df0ca"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a018ef82c6"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-566710be10"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-212455ca34"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-0d128b01e6"></a>`name` | "SegmentArchiveVolume" |
-| <a id="s-ff00ada492"></a>`unit` | "export" |
+- <a id="s-566710be10"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-212455ca34"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-0d128b01e6"></a>`name`: `SegmentArchiveVolume`
+- <a id="s-ff00ada492"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-b5f7935799"></a>`kind`: `"class"`
+- <a id="s-e335e4153f"></a>`signature`: `"'(id: \\'str\\', sequence: \\'int\\', path: \\'str\\', plaintext_bytes: \\'int\\', age_state: \\'AgeUploadState\\', file: \\'SegmentFilePlacement\\', parts: \\'tuple[StoredPartIdentity, ...]\\', kind: \"Literal[\\'segment\\']\" = \\'segment\\') -> None'"`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-5eed6a67fe"></a>`id` | `'str'` | `required` |
+| <a id="s-d8f4f826b4"></a>`sequence` | `'int'` | `required` |
+| <a id="s-a89eb5ebab"></a>`path` | `'str'` | `required` |
+| <a id="s-970256a64c"></a>`plaintext_bytes` | `'int'` | `required` |
+| <a id="s-feb9e774cf"></a>`age_state` | `'AgeUploadState'` | `required` |
+| <a id="s-d4ac4696e3"></a>`file` | `'SegmentFilePlacement'` | `required` |
+| <a id="s-7275a8c259"></a>`parts` | `'tuple[StoredPartIdentity, ...]'` | `required` |
+| <a id="s-8aa481eb1c"></a>`kind` | `"Literal['segment']"` | `'segment'` |
 
 ## Maintained corroboration
 

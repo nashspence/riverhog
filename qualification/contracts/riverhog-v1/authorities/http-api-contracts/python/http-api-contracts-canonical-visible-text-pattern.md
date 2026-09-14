@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fd478e12ff"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2d93568bb3"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-712a1af91b"></a>`distribution` | "http-api-contracts" |
-| <a id="s-be762333dd"></a>`module` | "http_api_contracts" |
-| <a id="s-dcb71574a9"></a>`name` | "CANONICAL_VISIBLE_TEXT_PATTERN" |
-| <a id="s-08970d3935"></a>`unit` | "export" |
+- <a id="s-712a1af91b"></a>`distribution`: `http-api-contracts`
+- <a id="s-be762333dd"></a>`module`: `http_api_contracts`
+- <a id="s-dcb71574a9"></a>`name`: `CANONICAL_VISIBLE_TEXT_PATTERN`
+- <a id="s-08970d3935"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-4f84ad5ce8"></a>`kind`: `"constant"`
+- <a id="s-db0f46726c"></a>`value`: `"^\\S(?:[\\s\\S]*\\S)?$"`
 
 ## Governing policies
 

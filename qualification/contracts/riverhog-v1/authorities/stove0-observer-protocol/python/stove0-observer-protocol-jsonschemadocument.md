@@ -14,13 +14,37 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a557197c15"></a>
-| Field | Shape |
+- <a id="s-a0777ab8aa"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-6396f3290b"></a>`module`: `stove0_observer_protocol`
+- <a id="s-8bf4a9dc96"></a>`name`: `JsonSchemaDocument`
+- <a id="s-9c03c2d302"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-58514e2c06"></a>`kind`: `"class"`
+- <a id="s-75924628f7"></a>`signature`: `"\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], dialect: Literal['https://json-schema.org/draft/2020-12/schema'] = 'https://json-schema.org/draft/2020-12/schema', format_policy: Literal['annotation-only'] = 'annotation-only', schema: dict[str, JsonValue]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-770f88fa45"></a>
+- <a id="s-6b0d9c726c"></a>`title`: JsonSchemaDocument
+- <a id="s-60a4f94c9b"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0f909fb2ab"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-70eb458230"></a>`format_policy` | no | type="string"; const="annotation-only" |  |
+| <a id="s-b5de131dc4"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-e8b8df0b0d"></a>`schema` | yes | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-0510a15fa9"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-85a8e0e9c2"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-a0777ab8aa"></a>`distribution` | "stove0-observer-protocol" |
-| <a id="s-6396f3290b"></a>`module` | "stove0_observer_protocol" |
-| <a id="s-8bf4a9dc96"></a>`name` | "JsonSchemaDocument" |
-| <a id="s-9c03c2d302"></a>`unit` | "export" |
+| <a id="s-9b40aa03df"></a>`JsonValue` | empty object |
 
 ## Maintained corroboration
 
@@ -53,13 +77,56 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9df63af915086aa769046c8459fffb4e6f6b8c9c4e1e3b12b369804c871962d8 -->
+<!-- exact-contract-value: 6452f7799a4d36ee30c5e423f59c75c634ca58414422b6a9d9ff149d84143f00 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "044aac56d1ab78dca2a949caf25694292222a652e8b22484284cfd16c793e05f",
+    "schema": {
+      "$defs": {
+        "JsonValue": {}
+      },
+      "additionalProperties": false,
+      "properties": {
+        "dialect": {
+          "const": "https://json-schema.org/draft/2020-12/schema",
+          "default": "https://json-schema.org/draft/2020-12/schema",
+          "title": "Dialect",
+          "type": "string"
+        },
+        "format_policy": {
+          "const": "annotation-only",
+          "default": "annotation-only",
+          "title": "Format Policy",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "schema": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Schema",
+          "type": "object"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "sha256",
+        "schema"
+      ],
+      "title": "JsonSchemaDocument",
+      "type": "object"
+    },
     "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], dialect: Literal['https://json-schema.org/draft/2020-12/schema'] = 'https://json-schema.org/draft/2020-12/schema', format_policy: Literal['annotation-only'] = 'annotation-only', schema: dict[str, JsonValue]) -> None\""
   },
   "distribution": "stove0-observer-protocol",

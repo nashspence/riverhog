@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9d962726d9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6b5f05cd2c"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-fa26d65f49"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-345a50bb38"></a>`module` | "riverhog_provenance" |
-| <a id="s-7ca9ec4d5d"></a>`name` | "FileStateObserverFactory" |
-| <a id="s-1affb467f4"></a>`unit` | "export" |
+- <a id="s-fa26d65f49"></a>`distribution`: `riverhog-provenance`
+- <a id="s-345a50bb38"></a>`module`: `riverhog_provenance`
+- <a id="s-7ca9ec4d5d"></a>`name`: `FileStateObserverFactory`
+- <a id="s-1affb467f4"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-8c66292337"></a>`kind`: `"type-alias"`
+- <a id="s-57c8c4c40c"></a>`value`: `"collections.abc.Callable[[], riverhog_provenance.interface.FileStateObserver]"`
 
 ## Governing policies
 

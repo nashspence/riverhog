@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-582c2c6647"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-40eeb5c136"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e4bfdcc35b"></a>`distribution` | "state-schema" |
-| <a id="s-7c08b10604"></a>`module` | "state_schema" |
-| <a id="s-d9e048abb0"></a>`name` | "sqlite_engine" |
-| <a id="s-c07258d6b1"></a>`unit` | "export" |
+- <a id="s-e4bfdcc35b"></a>`distribution`: `state-schema`
+- <a id="s-7c08b10604"></a>`module`: `state_schema`
+- <a id="s-d9e048abb0"></a>`name`: `sqlite_engine`
+- <a id="s-c07258d6b1"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-c991771d03"></a>`kind`: `"function"`
+- <a id="s-a60c3e29d4"></a>`signature`: `"\"(path: 'Path') -> 'Engine'\""`
 
 ## Governing policies
 

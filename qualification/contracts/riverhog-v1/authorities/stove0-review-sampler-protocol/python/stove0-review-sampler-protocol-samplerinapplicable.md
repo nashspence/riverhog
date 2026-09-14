@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a0621baa7d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9de87ceea4"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-0b8cdcd6d6"></a>`distribution` | "stove0-review-sampler-protocol" |
-| <a id="s-04ab2173bc"></a>`module` | "stove0_review_sampler_protocol" |
-| <a id="s-955c6ca23c"></a>`name` | "SamplerInapplicable" |
-| <a id="s-551f4f6e32"></a>`unit` | "export" |
+- <a id="s-0b8cdcd6d6"></a>`distribution`: `stove0-review-sampler-protocol`
+- <a id="s-04ab2173bc"></a>`module`: `stove0_review_sampler_protocol`
+- <a id="s-955c6ca23c"></a>`name`: `SamplerInapplicable`
+- <a id="s-551f4f6e32"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e4dbe708f6"></a>`kind`: `"class"`
+- <a id="s-b9cb36022e"></a>`signature`: `"\"(*, code: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$')], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-ae4a061f26"></a>
+- <a id="s-0d681f05a4"></a>`title`: SamplerInapplicable
+- <a id="s-1a5c280bd2"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-621076a596"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-fb725f0ca2"></a>`message` | yes | type="string"; minLength=1; maxLength=1000 |  |
 
 ## Governing policies
 
@@ -46,13 +61,34 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: bb354d7fdeb66da25d3f80b0b463825f3ef4ba860d8642cbee46e0749131f675 -->
+<!-- exact-contract-value: f137556916f7f0e810ac07a0b75910716ba51d42bb8a6638e16bae73490e5d12 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "a5e2ccae9cf0dfad46fa94f700c6994dcc8fe643c1ae44cd945353e8d765ef51",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "SamplerInapplicable",
+      "type": "object"
+    },
     "signature": "\"(*, code: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$')], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None\""
   },
   "distribution": "stove0-review-sampler-protocol",

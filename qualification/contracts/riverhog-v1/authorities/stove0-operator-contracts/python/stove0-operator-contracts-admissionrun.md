@@ -14,13 +14,34 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fb4a406e6b"></a>
-| Field | Shape |
+- <a id="s-2037711a36"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-55d2cf5a48"></a>`module`: `stove0_operator_contracts`
+- <a id="s-a2f0c5be9f"></a>`name`: `AdmissionRun`
+- <a id="s-67f208d163"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0c6e627b36"></a>`kind`: `"class"`
+- <a id="s-172451afe0"></a>`signature`: `"'(*, progressed: tuple[str, ...], failures: tuple[stove0_operator_contracts.SchedulerFailure, ...] = ()) -> None'"`
+
+#### Validated model schema
+
+<a id="s-4205c86be7"></a>
+- <a id="s-6b7d234131"></a>`title`: AdmissionRun
+- <a id="s-121f3b37ec"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-90d835b272"></a>`failures` | no | type="array"; items=(#/$defs/SchedulerFailure) |  |
+| <a id="s-0a310f71eb"></a>`progressed` | yes | type="array"; items=(type="string") |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-f0e8417378"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-2037711a36"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-55d2cf5a48"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-a2f0c5be9f"></a>`name` | "AdmissionRun" |
-| <a id="s-67f208d163"></a>`unit` | "export" |
+| <a id="s-109f10b819"></a>`SchedulerFailure` | type="object"; fields=`error`, `event_id`, `work_id`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
@@ -46,13 +67,80 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fd437068801f1f43fe108935f2c7177407927ef1000c7f6908a5712ea26213b4 -->
+<!-- exact-contract-value: 16bc1b364a34e2812a4c8f8f2d71223e7cb90d5d3b9ac4a6bc2bbd9df33289ef -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "6025bbb477e8e9a478cc47dd8e7d4a3d3ff478a918d32d17a35ba24e2a32a9e8",
+    "schema": {
+      "$defs": {
+        "SchedulerFailure": {
+          "additionalProperties": false,
+          "properties": {
+            "error": {
+              "maxLength": 1000,
+              "minLength": 1,
+              "title": "Error",
+              "type": "string"
+            },
+            "event_id": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Event Id"
+            },
+            "work_id": {
+              "anyOf": [
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Work Id"
+            }
+          },
+          "required": [
+            "error"
+          ],
+          "title": "SchedulerFailure",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "failures": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/SchedulerFailure"
+          },
+          "title": "Failures",
+          "type": "array"
+        },
+        "progressed": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Progressed",
+          "type": "array"
+        }
+      },
+      "required": [
+        "progressed"
+      ],
+      "title": "AdmissionRun",
+      "type": "object"
+    },
     "signature": "'(*, progressed: tuple[str, ...], failures: tuple[stove0_operator_contracts.SchedulerFailure, ...] = ()) -> None'"
   },
   "distribution": "stove0-operator-contracts",

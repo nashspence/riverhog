@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-63fb240859"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3e3706ab5f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-63d5dfa899"></a>`distribution` | "stove0-protocol" |
-| <a id="s-d3526ae9a1"></a>`module` | "stove0_protocol" |
-| <a id="s-468ea23dd1"></a>`name` | "branch_result_kind" |
-| <a id="s-d1bef27194"></a>`unit` | "export" |
+- <a id="s-63d5dfa899"></a>`distribution`: `stove0-protocol`
+- <a id="s-d3526ae9a1"></a>`module`: `stove0_protocol`
+- <a id="s-468ea23dd1"></a>`name`: `branch_result_kind`
+- <a id="s-d1bef27194"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-00525a51f0"></a>`kind`: `"function"`
+- <a id="s-f9f9351aec"></a>`signature`: `"'(branch: \\'BranchDeclaration\\', branch_sets: \\'Mapping[str, BranchSetPlan]\\') -> \"Literal[\\'collection\\', \\'external-effect\\', \\'coordination\\']\"'"`
 
 ## Governing policies
 

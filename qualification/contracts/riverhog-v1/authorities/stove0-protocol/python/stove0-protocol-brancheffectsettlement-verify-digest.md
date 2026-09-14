@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3565583e10"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-42578510ee"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ff59428d10"></a>`distribution` | "stove0-protocol" |
-| <a id="s-d80c658ced"></a>`module` | "stove0_protocol" |
-| <a id="s-d2dec3817c"></a>`name` | "verify_digest" |
-| <a id="s-256c78439b"></a>`owner` | "stove0_protocol.BranchEffectSettlement" |
-| <a id="s-cc865d1542"></a>`unit` | "member" |
+- <a id="s-ff59428d10"></a>`distribution`: `stove0-protocol`
+- <a id="s-d80c658ced"></a>`module`: `stove0_protocol`
+- <a id="s-d2dec3817c"></a>`name`: `verify_digest`
+- <a id="s-256c78439b"></a>`owner`: `stove0_protocol.BranchEffectSettlement`
+- <a id="s-cc865d1542"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-cb89407682"></a>`kind`: `"method"`
+- <a id="s-ad1c3c9bd9"></a>`signature`: `"\"(self) -> 'Self'\""`
 
 ## Maintained corroboration
 

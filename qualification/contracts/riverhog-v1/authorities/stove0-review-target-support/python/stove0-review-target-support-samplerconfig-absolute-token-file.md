@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-52e4379aa5"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e02e0fe144"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-4dd6b153c0"></a>`distribution` | "stove0-review-target-support" |
-| <a id="s-4384df315b"></a>`module` | "stove0_review_target_support" |
-| <a id="s-8883366839"></a>`name` | "absolute_token_file" |
-| <a id="s-6f5d4dd288"></a>`owner` | "stove0_review_target_support.SamplerConfig" |
-| <a id="s-9ce6ea3588"></a>`unit` | "member" |
+- <a id="s-4dd6b153c0"></a>`distribution`: `stove0-review-target-support`
+- <a id="s-4384df315b"></a>`module`: `stove0_review_target_support`
+- <a id="s-8883366839"></a>`name`: `absolute_token_file`
+- <a id="s-6f5d4dd288"></a>`owner`: `stove0_review_target_support.SamplerConfig`
+- <a id="s-9ce6ea3588"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1acdae2c39"></a>`kind`: `"classmethod"`
+- <a id="s-e416855277"></a>`signature`: `"\"(cls, value: 'Path') -> 'Path'\""`
 
 ## Maintained corroboration
 

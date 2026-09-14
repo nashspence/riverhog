@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-434cff48da"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ff56a90111"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ac16c9f6eb"></a>`distribution` | "stove0-server" |
-| <a id="s-9ac7b319f4"></a>`module` | "stove0_core" |
-| <a id="s-9032112ce5"></a>`name` | "rebind_claim" |
-| <a id="s-5e1257757d"></a>`owner` | "stove0_core.Stove0WorkService" |
-| <a id="s-bc6b3ee9ce"></a>`unit` | "member" |
+- <a id="s-ac16c9f6eb"></a>`distribution`: `stove0-server`
+- <a id="s-9ac7b319f4"></a>`module`: `stove0_core`
+- <a id="s-9032112ce5"></a>`name`: `rebind_claim`
+- <a id="s-5e1257757d"></a>`owner`: `stove0_core.Stove0WorkService`
+- <a id="s-bc6b3ee9ce"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-28068c6916"></a>`kind`: `"method"`
+- <a id="s-57da5c5083"></a>`signature`: `"\"(self, work_id: 'str', *, claim_id: 'str', fence: 'int', expected_revision: 'int') -> 'WorkRecord'\""`
 
 ## Maintained corroboration
 

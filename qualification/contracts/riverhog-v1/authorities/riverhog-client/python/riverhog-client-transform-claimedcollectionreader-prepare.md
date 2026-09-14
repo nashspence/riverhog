@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fed2593c3c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-280ba51e5b"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-460a6e0a59"></a>`distribution` | "riverhog-client" |
-| <a id="s-96993fb1f4"></a>`module` | "riverhog_client.transform" |
-| <a id="s-58fd7c8379"></a>`name` | "prepare" |
-| <a id="s-11506c6560"></a>`owner` | "riverhog_client.transform.ClaimedCollectionReader" |
-| <a id="s-2139607fdc"></a>`unit` | "member" |
+- <a id="s-460a6e0a59"></a>`distribution`: `riverhog-client`
+- <a id="s-96993fb1f4"></a>`module`: `riverhog_client.transform`
+- <a id="s-58fd7c8379"></a>`name`: `prepare`
+- <a id="s-11506c6560"></a>`owner`: `riverhog_client.transform.ClaimedCollectionReader`
+- <a id="s-2139607fdc"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-4a1947f1e3"></a>`kind`: `"method"`
+- <a id="s-3ea4042239"></a>`signature`: `"\"(self, artifacts: 'Sequence[ClaimedArtifact] \| None' = None, *, lease_seconds: 'int' = 1800, restore_policy: 'RetrievalPolicy' = 'available-only', poll_seconds: 'float' = 2.0, timeout_seconds: 'float' = 86400) -> 'ClaimedRetrieval'\""`
 
 ## Maintained corroboration
 

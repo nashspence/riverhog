@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-68171345f5"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0d2f6b81e7"></a>`contract` | type="stove0_target_protocol.protocol.OperationContract"; additional keys=`kind` |
-| <a id="s-0e9bb7ac18"></a>`distribution` | "stove0-media-archive-target-contracts" |
-| <a id="s-ee21fe2e90"></a>`module` | "stove0_media_archive_target_contracts" |
-| <a id="s-c6f1dbfb2b"></a>`name` | "AUDIO_ARCHIVE_OPERATION" |
-| <a id="s-331a3278d7"></a>`unit` | "export" |
+- <a id="s-0e9bb7ac18"></a>`distribution`: `stove0-media-archive-target-contracts`
+- <a id="s-ee21fe2e90"></a>`module`: `stove0_media_archive_target_contracts`
+- <a id="s-c6f1dbfb2b"></a>`name`: `AUDIO_ARCHIVE_OPERATION`
+- <a id="s-331a3278d7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-d98780b44b"></a>`kind`: `"object"`
+- <a id="s-5f0faad5d2"></a>`type`: `"stove0_target_protocol.protocol.OperationContract"`
 
 ## Governing policies
 

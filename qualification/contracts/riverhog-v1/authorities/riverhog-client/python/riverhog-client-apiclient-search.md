@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ab763349ac"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6358787427"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ba37f0d411"></a>`distribution` | "riverhog-client" |
-| <a id="s-3d9e439043"></a>`module` | "riverhog_client" |
-| <a id="s-98e437423c"></a>`name` | "search" |
-| <a id="s-c5cc5c18ab"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-fcb30a7182"></a>`unit` | "member" |
+- <a id="s-ba37f0d411"></a>`distribution`: `riverhog-client`
+- <a id="s-3d9e439043"></a>`module`: `riverhog_client`
+- <a id="s-98e437423c"></a>`name`: `search`
+- <a id="s-c5cc5c18ab"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-fcb30a7182"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-6344cdd10a"></a>`kind`: `"method"`
+- <a id="s-dfa9fd3e8e"></a>`signature`: `"\"(self, query: 'str \| None' = None, *, page_size: 'int' = 25, page_token: 'str \| None' = None, sort: 'SearchSort' = 'file_ref', order: 'SortOrder' = 'asc', collection: 'CollectionId \| None' = None) -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

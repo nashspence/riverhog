@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-aba7712c9a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2baf6da1b6"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d4ff09d3ba"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-2bab3bb6df"></a>`module` | "riverhog_provenance" |
-| <a id="s-6d2c809a44"></a>`name` | "make_assertion_entry" |
-| <a id="s-eb3586f62c"></a>`owner` | "riverhog_provenance.ObservationResult" |
-| <a id="s-b0827fe298"></a>`unit` | "member" |
+- <a id="s-d4ff09d3ba"></a>`distribution`: `riverhog-provenance`
+- <a id="s-2bab3bb6df"></a>`module`: `riverhog_provenance`
+- <a id="s-6d2c809a44"></a>`name`: `make_assertion_entry`
+- <a id="s-eb3586f62c"></a>`owner`: `riverhog_provenance.ObservationResult`
+- <a id="s-b0827fe298"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-f7d1a6f305"></a>`kind`: `"method"`
+- <a id="s-77bc0d59d1"></a>`signature`: `"\"(self, *, journal_id: 'str', sequence: 'int', previous_entry_id: 'str', previous_entry_json_sha256: 'str', previous_sequence: 'int \| None' = None, entry_id: 'str \| None' = None, recorded_at: 'str \| None' = None, recorded_by_agent_id: 'str \| None' = None, notes: 'Sequence[str]' = (), omit_object_ids: 'Sequence[str]' = ()) -> 'JsonObject'\""`
 
 ## Maintained corroboration
 

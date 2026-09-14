@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ad852eba8f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7bb1fa82fb"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f01964fa70"></a>`distribution` | "state-schema" |
-| <a id="s-73f82f45c6"></a>`module` | "state_schema" |
-| <a id="s-5ecff73c4b"></a>`name` | "execute" |
-| <a id="s-acc34594fa"></a>`owner` | "state_schema.StateConnection" |
-| <a id="s-4f04a14e3c"></a>`unit` | "member" |
+- <a id="s-f01964fa70"></a>`distribution`: `state-schema`
+- <a id="s-73f82f45c6"></a>`module`: `state_schema`
+- <a id="s-5ecff73c4b"></a>`name`: `execute`
+- <a id="s-acc34594fa"></a>`owner`: `state_schema.StateConnection`
+- <a id="s-4f04a14e3c"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-eaa05d5311"></a>`kind`: `"method"`
+- <a id="s-9282fcf3e3"></a>`signature`: `"\"(self, statement: 'Executable', parameters: 'Optional[_CoreAnyExecuteParams]' = None, *, execution_options: 'Optional[CoreExecuteOptionsParameter]' = None) -> 'CursorResult[Any]'\""`
 
 ## Maintained corroboration
 

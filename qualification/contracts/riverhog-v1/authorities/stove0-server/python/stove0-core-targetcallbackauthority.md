@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-51e0a1cb34"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-10ae1b2e7b"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ede5e032d7"></a>`distribution` | "stove0-server" |
-| <a id="s-0b87a69cfd"></a>`module` | "stove0_core" |
-| <a id="s-c2c117030b"></a>`name` | "TargetCallbackAuthority" |
-| <a id="s-49ce5b6c5d"></a>`unit` | "export" |
+- <a id="s-ede5e032d7"></a>`distribution`: `stove0-server`
+- <a id="s-0b87a69cfd"></a>`module`: `stove0_core`
+- <a id="s-c2c117030b"></a>`name`: `TargetCallbackAuthority`
+- <a id="s-49ce5b6c5d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-7cdfcbabdd"></a>`kind`: `"class"`
+- <a id="s-2dac713eb9"></a>`signature`: `"\"(store: 'WorkStore', *, signing_key: 'str', base_url: 'str', allow_insecure_http: 'bool', ttl_seconds: 'int', operations: 'OperationAuthority \| None' = None, projector: 'ProductionProjector \| None' = None, seal_batch_size: 'int' = 100) -> 'None'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-43d4cd4d55"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5705642d49"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f40434153d"></a>`distribution` | "stove0-api-client" |
-| <a id="s-1e47186095"></a>`module` | "stove0_api_client" |
-| <a id="s-f3b2cbabb6"></a>`name` | "get_recipe" |
-| <a id="s-a817db1fd0"></a>`owner` | "stove0_api_client.Stove0ApiClient" |
-| <a id="s-149d46dfc9"></a>`unit` | "member" |
+- <a id="s-f40434153d"></a>`distribution`: `stove0-api-client`
+- <a id="s-1e47186095"></a>`module`: `stove0_api_client`
+- <a id="s-f3b2cbabb6"></a>`name`: `get_recipe`
+- <a id="s-a817db1fd0"></a>`owner`: `stove0_api_client.Stove0ApiClient`
+- <a id="s-149d46dfc9"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-0a7ffe03ad"></a>`kind`: `"method"`
+- <a id="s-aa3bca1e06"></a>`signature`: `"\"(self, recipe_id: 'str', *, revision: 'int \| None' = None) -> 'RecipeView'\""`
 
 ## Maintained corroboration
 

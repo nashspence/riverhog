@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6b69dbaee7"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-08a9407a72"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ea48b69c3f"></a>`distribution` | "stove0-opus-target" |
-| <a id="s-718414f4aa"></a>`module` | "stove0_opus_target" |
-| <a id="s-837dee7030"></a>`name` | "OpusTargetService" |
-| <a id="s-a7fcef65cb"></a>`unit` | "export" |
+- <a id="s-ea48b69c3f"></a>`distribution`: `stove0-opus-target`
+- <a id="s-718414f4aa"></a>`module`: `stove0_opus_target`
+- <a id="s-837dee7030"></a>`name`: `OpusTargetService`
+- <a id="s-a7fcef65cb"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-65e5f9af1d"></a>`kind`: `"class"`
+- <a id="s-38862c30fc"></a>`signature`: `"\"(*, state_root: 'Path', workspace_root: 'Path', ffmpeg: 'str' = 'ffmpeg', source_revision: 'str' = 'unknown', image_digest: 'str', terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""`
 
 ## Maintained corroboration
 

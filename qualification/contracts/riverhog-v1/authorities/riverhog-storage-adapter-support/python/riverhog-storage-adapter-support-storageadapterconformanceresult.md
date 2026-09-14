@@ -14,13 +14,39 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-18facb70da"></a>
-| Field | Shape |
+- <a id="s-ffedee9ffc"></a>`distribution`: `riverhog-storage-adapter-support`
+- <a id="s-384c5d2673"></a>`module`: `riverhog_storage_adapter_support`
+- <a id="s-d0a87d23b2"></a>`name`: `StorageAdapterConformanceResult`
+- <a id="s-d65496649d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f7179b75ef"></a>`kind`: `"class"`
+- <a id="s-4fdefd56d9"></a>`signature`: `"\"(*, format: Literal['riverhog-storage-adapter-conformance-result/v1'] = 'riverhog-storage-adapter-conformance-result/v1', protocol: Literal['riverhog-storage-adapter/v1'] = 'riverhog-storage-adapter/v1', status: Literal['conformant'] = 'conformant', coverage: Literal['complete'] = 'complete', descriptor: riverhog_storage_adapter_protocol.protocol.AdapterDescriptor, checks: tuple[str, ...]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-7e447d5c6b"></a>
+- <a id="s-df44d05f00"></a>`title`: StorageAdapterConformanceResult
+- <a id="s-4bdda5ff5e"></a>`description`: Stable positive evidence returned after the complete check set passes.
+- <a id="s-fcac4589b9"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f58fa7e12c"></a>`checks` | yes | type="array"; items=(type="string") |  |
+| <a id="s-463f28552f"></a>`coverage` | no | type="string"; const="complete" |  |
+| <a id="s-96e93d011c"></a>`descriptor` | yes | #/$defs/AdapterDescriptor |  |
+| <a id="s-1d41921394"></a>`format` | no | type="string"; const="riverhog-storage-adapter-conformance-result/v1" |  |
+| <a id="s-85ec9d5d4e"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1" |  |
+| <a id="s-7aadf18176"></a>`status` | no | type="string"; const="conformant" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-cb6b0404bf"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-ffedee9ffc"></a>`distribution` | "riverhog-storage-adapter-support" |
-| <a id="s-384c5d2673"></a>`module` | "riverhog_storage_adapter_support" |
-| <a id="s-d0a87d23b2"></a>`name` | "StorageAdapterConformanceResult" |
-| <a id="s-d65496649d"></a>`unit` | "export" |
+| <a id="s-4029f2ce9e"></a>`AdapterDescriptor` | type="object"; fields=`implementation_id`, `implementation_version`, `maximum_segment_bytes`, `maximum_segment_count`, `minimum_nonfinal_segment_bytes`, `protocol`, `read_mode`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -52,13 +78,129 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1079ccce0ad320671cb35a5a45a4960435d03bcd359f4076e3d5b987d4ad1054 -->
+<!-- exact-contract-value: b76cdafa86a79afb954dab586f3da40422d291ba2233785d623a6256e5b3b913 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "af805afd4d0dffb329ba08dde971222ad008eab2aec7afc4abc0303dd1956caf",
+    "schema": {
+      "$defs": {
+        "AdapterDescriptor": {
+          "additionalProperties": false,
+          "properties": {
+            "implementation_id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Implementation Id",
+              "type": "string"
+            },
+            "implementation_version": {
+              "maxLength": 120,
+              "minLength": 1,
+              "title": "Implementation Version",
+              "type": "string"
+            },
+            "maximum_segment_bytes": {
+              "anyOf": [
+                {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Maximum Segment Bytes"
+            },
+            "maximum_segment_count": {
+              "anyOf": [
+                {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Maximum Segment Count"
+            },
+            "minimum_nonfinal_segment_bytes": {
+              "minimum": 1,
+              "title": "Minimum Nonfinal Segment Bytes",
+              "type": "integer"
+            },
+            "protocol": {
+              "const": "riverhog-storage-adapter/v1",
+              "default": "riverhog-storage-adapter/v1",
+              "title": "Protocol",
+              "type": "string"
+            },
+            "read_mode": {
+              "enum": [
+                "immediate",
+                "restore_required"
+              ],
+              "title": "Read Mode",
+              "type": "string"
+            }
+          },
+          "required": [
+            "implementation_id",
+            "implementation_version",
+            "read_mode",
+            "minimum_nonfinal_segment_bytes"
+          ],
+          "title": "AdapterDescriptor",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Stable positive evidence returned after the complete check set passes.",
+      "properties": {
+        "checks": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Checks",
+          "type": "array"
+        },
+        "coverage": {
+          "const": "complete",
+          "default": "complete",
+          "title": "Coverage",
+          "type": "string"
+        },
+        "descriptor": {
+          "$ref": "#/$defs/AdapterDescriptor"
+        },
+        "format": {
+          "const": "riverhog-storage-adapter-conformance-result/v1",
+          "default": "riverhog-storage-adapter-conformance-result/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "protocol": {
+          "const": "riverhog-storage-adapter/v1",
+          "default": "riverhog-storage-adapter/v1",
+          "title": "Protocol",
+          "type": "string"
+        },
+        "status": {
+          "const": "conformant",
+          "default": "conformant",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "descriptor",
+        "checks"
+      ],
+      "title": "StorageAdapterConformanceResult",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['riverhog-storage-adapter-conformance-result/v1'] = 'riverhog-storage-adapter-conformance-result/v1', protocol: Literal['riverhog-storage-adapter/v1'] = 'riverhog-storage-adapter/v1', status: Literal['conformant'] = 'conformant', coverage: Literal['complete'] = 'complete', descriptor: riverhog_storage_adapter_protocol.protocol.AdapterDescriptor, checks: tuple[str, ...]) -> None\""
   },
   "distribution": "riverhog-storage-adapter-support",

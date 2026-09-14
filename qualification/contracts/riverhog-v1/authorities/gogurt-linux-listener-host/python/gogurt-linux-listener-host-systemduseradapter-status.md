@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a5786efa37"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-29dd2a4255"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-745d56619f"></a>`distribution` | "gogurt-linux-listener-host" |
-| <a id="s-605c50b1e2"></a>`module` | "gogurt_linux_listener_host" |
-| <a id="s-90fe141e90"></a>`name` | "status" |
-| <a id="s-8ed525654d"></a>`owner` | "gogurt_linux_listener_host.SystemdUserAdapter" |
-| <a id="s-7213d45ca9"></a>`unit` | "member" |
+- <a id="s-745d56619f"></a>`distribution`: `gogurt-linux-listener-host`
+- <a id="s-605c50b1e2"></a>`module`: `gogurt_linux_listener_host`
+- <a id="s-90fe141e90"></a>`name`: `status`
+- <a id="s-8ed525654d"></a>`owner`: `gogurt_linux_listener_host.SystemdUserAdapter`
+- <a id="s-7213d45ca9"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-4d3b25c2c1"></a>`kind`: `"method"`
+- <a id="s-bfc65129e4"></a>`signature`: `"\"(self, paths: 'ListenerRuntimePaths') -> 'NativeListenerStatus'\""`
 
 ## Maintained corroboration
 

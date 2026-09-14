@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c39c7f246c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f24c658c8b"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c6e8800025"></a>`distribution` | "stove0-exiftool-observer" |
-| <a id="s-02da3d1e3e"></a>`module` | "stove0_exiftool_observer" |
-| <a id="s-4efd0c04b8"></a>`name` | "execution_evidence" |
-| <a id="s-e549de2518"></a>`owner` | "stove0_exiftool_observer.ExiftoolObserver" |
-| <a id="s-78f39424b9"></a>`unit` | "member" |
+- <a id="s-c6e8800025"></a>`distribution`: `stove0-exiftool-observer`
+- <a id="s-02da3d1e3e"></a>`module`: `stove0_exiftool_observer`
+- <a id="s-4efd0c04b8"></a>`name`: `execution_evidence`
+- <a id="s-e549de2518"></a>`owner`: `stove0_exiftool_observer.ExiftoolObserver`
+- <a id="s-78f39424b9"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1a41b4c4c0"></a>`kind`: `"method"`
+- <a id="s-ed09f54c7a"></a>`signature`: `"\"(self) -> 'dict[str, str]'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-903c1f9a1a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-dfe904ebbf"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-4eb4e006a3"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-b23ec362e5"></a>`module` | "riverhog_protocol" |
-| <a id="s-c16fec3746"></a>`name` | "PortableCollectionFile" |
-| <a id="s-aa959ba59c"></a>`unit` | "export" |
+- <a id="s-4eb4e006a3"></a>`distribution`: `riverhog-protocol`
+- <a id="s-b23ec362e5"></a>`module`: `riverhog_protocol`
+- <a id="s-c16fec3746"></a>`name`: `PortableCollectionFile`
+- <a id="s-aa959ba59c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-3e5df00484"></a>`kind`: `"class"`
+- <a id="s-c95114c58d"></a>`signature`: `"\"(path: 'str', bytes: 'int', sha256: 'str') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-df02fc00a6"></a>`path` | `'str'` | `required` |
+| <a id="s-01244c8fb3"></a>`bytes` | `'int'` | `required` |
+| <a id="s-83e3a5924d"></a>`sha256` | `'str'` | `required` |
 
 ## Maintained corroboration
 

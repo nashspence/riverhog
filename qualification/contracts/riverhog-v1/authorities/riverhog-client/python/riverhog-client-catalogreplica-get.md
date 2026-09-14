@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-30423c416d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ef155d7831"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-feb2253482"></a>`distribution` | "riverhog-client" |
-| <a id="s-ca3ad27450"></a>`module` | "riverhog_client" |
-| <a id="s-4bd05a553c"></a>`name` | "get" |
-| <a id="s-1a77c53308"></a>`owner` | "riverhog_client.CatalogReplica" |
-| <a id="s-5a9ecb2669"></a>`unit` | "member" |
+- <a id="s-feb2253482"></a>`distribution`: `riverhog-client`
+- <a id="s-ca3ad27450"></a>`module`: `riverhog_client`
+- <a id="s-4bd05a553c"></a>`name`: `get`
+- <a id="s-1a77c53308"></a>`owner`: `riverhog_client.CatalogReplica`
+- <a id="s-5a9ecb2669"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ae0f34ce3d"></a>`kind`: `"method"`
+- <a id="s-4632c0718d"></a>`signature`: `"\"(self, collection_id: 'int') -> 'CatalogSyncDescriptor \| None'\""`
 
 ## Maintained corroboration
 

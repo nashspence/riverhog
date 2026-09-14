@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6f52733641"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-cead398895"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-554a0ed19c"></a>`distribution` | "stove0-api-client" |
-| <a id="s-cc163af94a"></a>`module` | "stove0_api_client" |
-| <a id="s-fddd46542b"></a>`name` | "inspect_work_coordination" |
-| <a id="s-1f65f40854"></a>`owner` | "stove0_api_client.Stove0ApiClient" |
-| <a id="s-62cdba4267"></a>`unit` | "member" |
+- <a id="s-554a0ed19c"></a>`distribution`: `stove0-api-client`
+- <a id="s-cc163af94a"></a>`module`: `stove0_api_client`
+- <a id="s-fddd46542b"></a>`name`: `inspect_work_coordination`
+- <a id="s-1f65f40854"></a>`owner`: `stove0_api_client.Stove0ApiClient`
+- <a id="s-62cdba4267"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-73d1a345b8"></a>`kind`: `"method"`
+- <a id="s-b0fe39e506"></a>`signature`: `"\"(self, work_id: 'str') -> 'BranchSetEvaluation'\""`
 
 ## Maintained corroboration
 

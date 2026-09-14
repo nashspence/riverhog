@@ -14,13 +14,30 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5caabc007e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-02c2c0d0ca"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-3e9871fa7f"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-fac16c3375"></a>`module` | "stove0_target_protocol" |
-| <a id="s-0d66396c1b"></a>`name` | "SemanticValidationProfilePayload" |
-| <a id="s-2aac0ba078"></a>`unit` | "export" |
+- <a id="s-3e9871fa7f"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-fac16c3375"></a>`module`: `stove0_target_protocol`
+- <a id="s-0d66396c1b"></a>`name`: `SemanticValidationProfilePayload`
+- <a id="s-2aac0ba078"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-aa08daed8c"></a>`kind`: `"class"`
+- <a id="s-61de8b9de9"></a>`signature`: `"\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], rules: Annotated[tuple[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...], MinLen(min_length=1)], conformance_vectors_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None) -> None\""`
+
+#### Validated model schema
+
+<a id="s-677a856b0a"></a>
+- <a id="s-019aa62894"></a>`title`: SemanticValidationProfilePayload
+- <a id="s-c71aba7357"></a>`description`: Portable identity for semantic rules not expressible by JSON Schema.
+- <a id="s-e4de1b9669"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-16e15b9239"></a>`conformance_vectors_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-07742f4e49"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-dc894d6a6d"></a>`rules` | yes | type="array"; minItems=1; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
 
 ## Maintained corroboration
 
@@ -52,13 +69,51 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 179545f8502a29f75b690178a76465410023fb4bf552dfcf111c592277651120 -->
+<!-- exact-contract-value: 7346e1cf5f9f04986c4dfb98726fdc08d62828193cb3e9e50b27a49cddb54b80 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "9feba86c6b0478a980740aa7d15a0534fd499479fc164ec3f3b3f3b72b5182f9",
+    "schema": {
+      "additionalProperties": false,
+      "description": "Portable identity for semantic rules not expressible by JSON Schema.",
+      "properties": {
+        "conformance_vectors_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Conformance Vectors Sha256"
+        },
+        "id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "rules": {
+          "items": {
+            "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Rules",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "rules"
+      ],
+      "title": "SemanticValidationProfilePayload",
+      "type": "object"
+    },
     "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], rules: Annotated[tuple[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...], MinLen(min_length=1)], conformance_vectors_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None) -> None\""
   },
   "distribution": "stove0-target-protocol",

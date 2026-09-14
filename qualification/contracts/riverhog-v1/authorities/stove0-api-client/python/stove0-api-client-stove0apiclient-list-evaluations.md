@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f4ac9535ab"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1ed24f7c50"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-cba58397d0"></a>`distribution` | "stove0-api-client" |
-| <a id="s-b903e8a746"></a>`module` | "stove0_api_client" |
-| <a id="s-74e325063f"></a>`name` | "list_evaluations" |
-| <a id="s-970b46300f"></a>`owner` | "stove0_api_client.Stove0ApiClient" |
-| <a id="s-b4e0ab3938"></a>`unit` | "member" |
+- <a id="s-cba58397d0"></a>`distribution`: `stove0-api-client`
+- <a id="s-b903e8a746"></a>`module`: `stove0_api_client`
+- <a id="s-74e325063f"></a>`name`: `list_evaluations`
+- <a id="s-970b46300f"></a>`owner`: `stove0_api_client.Stove0ApiClient`
+- <a id="s-b4e0ab3938"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-a83b5360b1"></a>`kind`: `"method"`
+- <a id="s-43ee3ed7b2"></a>`signature`: `"\"(self, *, page_size: 'int' = 25, page_token: 'str \| None' = None, phase: 'EvaluationPhase \| None' = None, query: 'str \| None' = None, sort: 'EvaluationSort' = 'updated_at', order: 'SortOrder' = 'desc') -> 'EvaluationPage'\""`
 
 ## Maintained corroboration
 

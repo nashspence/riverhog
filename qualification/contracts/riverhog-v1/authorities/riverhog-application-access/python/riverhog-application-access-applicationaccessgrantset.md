@@ -14,13 +14,30 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-20a2359614"></a>
-| Field | Shape |
+- <a id="s-356f252e2b"></a>`distribution`: `riverhog-application-access`
+- <a id="s-52e1c566f6"></a>`module`: `riverhog_application_access`
+- <a id="s-3b142ea758"></a>`name`: `ApplicationAccessGrantSet`
+- <a id="s-0d1940f3a2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-23691e3032"></a>`kind`: `"class"`
+- <a id="s-70601b24ee"></a>`signature`: `"\"(root: 'RootModelRootType' = PydanticUndefined) -> None\""`
+
+#### Validated model schema
+
+<a id="s-4421aea33c"></a>
+- <a id="s-8581130a3d"></a>`title`: ApplicationAccessGrantSet
+- <a id="s-9a8d3b8d52"></a>`description`: A nonempty, duplicate-free public grant set with canonical wildcard use.
+- <a id="s-a4e482d604"></a>`type`: array
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-aa2dee159a"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-356f252e2b"></a>`distribution` | "riverhog-application-access" |
-| <a id="s-52e1c566f6"></a>`module` | "riverhog_application_access" |
-| <a id="s-3b142ea758"></a>`name` | "ApplicationAccessGrantSet" |
-| <a id="s-0d1940f3a2"></a>`unit` | "export" |
+| <a id="s-50674c05ad"></a>`ApplicationAccessGrant` | type="object"; fields=`permission`, `resource`; allOf=oneOf=fields=`permission`, `resource`; additional keys=`required` \| fields=`permission`, `resource`; additional keys=`required` \| fields=`permission`, `resource`; additional keys=`required` \| fields=`permission`, `resource`; additional keys=`required`; additional keys=`additionalProperties`, `required` |
+| <a id="s-af1e2efa80"></a>`ApplicationPermission` | type="string"; enum=["*","catalog:read","retrieval:manage","collections:create","collection-descriptions:manage","collection-transforms:control","collection-transforms:execute","collection-tags:manage","collections:delete","archives:read","archives:manage","keys:manage","quotas:manage","events:read","events:read_all","provenance:read","provenance:export"] |
+| <a id="s-b149116dc2"></a>`ApplicationResource` | type="string"; pattern="^(?:\\*\|tag:.+\|collection:[1-9][0-9]*)$" |
 
 ## Maintained corroboration
 
@@ -52,13 +69,169 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: dbcdcc8f530b760715f6e8348067423e120d9c9e8d17424b2e3fbe62b9bb6d98 -->
+<!-- exact-contract-value: 63f75a662991a546383b7685d17451b34b05265efd7b1c4929c6874fdca7c27f -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "d10037ab0ccafe138959e093e3b62aeac69ae2b01271ebeabc7550a9ecc98897",
+    "schema": {
+      "$defs": {
+        "ApplicationAccessGrant": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "oneOf": [
+                {
+                  "properties": {
+                    "permission": {
+                      "const": "*"
+                    },
+                    "resource": {
+                      "const": "*"
+                    }
+                  },
+                  "required": [
+                    "permission"
+                  ]
+                },
+                {
+                  "properties": {
+                    "permission": {
+                      "const": "collections:create"
+                    },
+                    "resource": {
+                      "pattern": "^(?:\\*|tag:.+)$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "permission"
+                  ]
+                },
+                {
+                  "properties": {
+                    "permission": {
+                      "enum": [
+                        "archives:manage",
+                        "archives:read",
+                        "catalog:read",
+                        "collection-descriptions:manage",
+                        "collection-tags:manage",
+                        "collections:delete",
+                        "provenance:export",
+                        "provenance:read",
+                        "retrieval:manage"
+                      ]
+                    },
+                    "resource": {
+                      "pattern": "^(?:\\*|tag:.+|collection:[1-9][0-9]*)$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "permission"
+                  ]
+                },
+                {
+                  "properties": {
+                    "permission": {
+                      "enum": [
+                        "collection-transforms:control",
+                        "collection-transforms:execute",
+                        "events:read",
+                        "events:read_all",
+                        "keys:manage",
+                        "quotas:manage"
+                      ]
+                    },
+                    "resource": {
+                      "const": "*"
+                    }
+                  },
+                  "required": [
+                    "permission"
+                  ]
+                }
+              ]
+            }
+          ],
+          "description": "One canonical public application-access request or response grant.",
+          "properties": {
+            "permission": {
+              "$ref": "#/$defs/ApplicationPermission"
+            },
+            "resource": {
+              "$ref": "#/$defs/ApplicationResource",
+              "default": "*"
+            }
+          },
+          "required": [
+            "permission"
+          ],
+          "title": "ApplicationAccessGrant",
+          "type": "object"
+        },
+        "ApplicationPermission": {
+          "enum": [
+            "*",
+            "catalog:read",
+            "retrieval:manage",
+            "collections:create",
+            "collection-descriptions:manage",
+            "collection-transforms:control",
+            "collection-transforms:execute",
+            "collection-tags:manage",
+            "collections:delete",
+            "archives:read",
+            "archives:manage",
+            "keys:manage",
+            "quotas:manage",
+            "events:read",
+            "events:read_all",
+            "provenance:read",
+            "provenance:export"
+          ],
+          "type": "string"
+        },
+        "ApplicationResource": {
+          "pattern": "^(?:\\*|tag:.+|collection:[1-9][0-9]*)$",
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "contains": {
+              "properties": {
+                "permission": {
+                  "const": "*"
+                }
+              },
+              "required": [
+                "permission"
+              ],
+              "type": "object"
+            }
+          },
+          "then": {
+            "maxItems": 1,
+            "x-riverhog-extent": {
+              "policy": "contract_max",
+              "reason": "wildcard-access-grant-is-exclusive"
+            }
+          }
+        }
+      ],
+      "description": "A nonempty, duplicate-free public grant set with canonical wildcard use.",
+      "items": {
+        "$ref": "#/$defs/ApplicationAccessGrant"
+      },
+      "minItems": 1,
+      "title": "ApplicationAccessGrantSet",
+      "type": "array",
+      "uniqueItems": true
+    },
     "signature": "\"(root: 'RootModelRootType' = PydanticUndefined) -> None\""
   },
   "distribution": "riverhog-application-access",

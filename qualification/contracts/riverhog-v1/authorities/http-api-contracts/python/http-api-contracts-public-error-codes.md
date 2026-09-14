@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-acfaf814ab"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8d403ab795"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-83ee07ecd6"></a>`distribution` | "http-api-contracts" |
-| <a id="s-8291f601f3"></a>`module` | "http_api_contracts" |
-| <a id="s-a9785197f2"></a>`name` | "PUBLIC_ERROR_CODES" |
-| <a id="s-30aab8b80e"></a>`unit` | "export" |
+- <a id="s-83ee07ecd6"></a>`distribution`: `http-api-contracts`
+- <a id="s-8291f601f3"></a>`module`: `http_api_contracts`
+- <a id="s-a9785197f2"></a>`name`: `PUBLIC_ERROR_CODES`
+- <a id="s-30aab8b80e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-1963b02387"></a>`kind`: `"constant"`
+- <a id="s-b21efdef50"></a>`value`: `["bad_request","catalog_sync_cursor_expired","catalog_sync_history_expired","catalog_sync_source_changed","catalog_sync_view_changed","conflict","download_allowance_exceeded","forbidden","hash_mismatch","ingress_failed","input_upload_storage_hint_invalid","insufficient_storage","internal_error","invalid_path","invalid_range","invalid_state","invalid_target","job_template_revision_conflict","length_required","method_not_allowed","not_found","precondition_failed","precondition_required","service_unavailable","storage_hint_mismatch","submission_conflict","too_many_active_input_uploads","unauthorized"]`
 
 ## Governing policies
 

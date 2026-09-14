@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7d5883952d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b8480c34cf"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7771f2c8fc"></a>`distribution` | "riverhog-ftp-adapter-api-client" |
-| <a id="s-ab422f23d8"></a>`module` | "riverhog_ftp_adapter_api_client" |
-| <a id="s-5057853792"></a>`name` | "flush_ftp_adapter_source" |
-| <a id="s-45a16c29c9"></a>`owner` | "riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient" |
-| <a id="s-f385566b1a"></a>`unit` | "member" |
+- <a id="s-7771f2c8fc"></a>`distribution`: `riverhog-ftp-adapter-api-client`
+- <a id="s-ab422f23d8"></a>`module`: `riverhog_ftp_adapter_api_client`
+- <a id="s-5057853792"></a>`name`: `flush_ftp_adapter_source`
+- <a id="s-45a16c29c9"></a>`owner`: `riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient`
+- <a id="s-f385566b1a"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-42484cb4e4"></a>`kind`: `"method"`
+- <a id="s-60a73a23fe"></a>`signature`: `"\"(self, source_id: 'str') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

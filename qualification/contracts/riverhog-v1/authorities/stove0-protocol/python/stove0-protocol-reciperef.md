@@ -14,13 +14,29 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ff2a8e9869"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c129fec6ce"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-88ec72f004"></a>`distribution` | "stove0-protocol" |
-| <a id="s-af47c72582"></a>`module` | "stove0_protocol" |
-| <a id="s-d2319a6f09"></a>`name` | "RecipeRef" |
-| <a id="s-0b72ff65f5"></a>`unit` | "export" |
+- <a id="s-88ec72f004"></a>`distribution`: `stove0-protocol`
+- <a id="s-af47c72582"></a>`module`: `stove0_protocol`
+- <a id="s-d2319a6f09"></a>`name`: `RecipeRef`
+- <a id="s-0b72ff65f5"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0db2671be2"></a>`kind`: `"class"`
+- <a id="s-f348d33a34"></a>`signature`: `"\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], revision: Annotated[int, Ge(ge=1)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-511880ca2b"></a>
+- <a id="s-98a8c965cf"></a>`title`: RecipeRef
+- <a id="s-c10a188b0a"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-8436bc58e3"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-0d4a8994e1"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-f8ed8b65fc"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -53,13 +69,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: cf5370c550ff48bbdb66e6c9cdba6fbd3c7640a924930d1708d6b1f198247c45 -->
+<!-- exact-contract-value: 1285bab88e143fdb57edefa29f9e4fad85afc8af443e8d95da96ab1127069639 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "3790d8f811ebb13fed76cbd0a115a818961abe76707214c58706e9033077b650",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "revision": {
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "sha256"
+      ],
+      "title": "RecipeRef",
+      "type": "object"
+    },
     "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], revision: Annotated[int, Ge(ge=1)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-protocol",

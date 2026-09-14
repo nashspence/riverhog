@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7955888587"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-67a4f9527d"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-3e3ca77399"></a>`distribution` | "stove0-ffprobe-sampling-observer" |
-| <a id="s-793f2f6ad9"></a>`module` | "stove0_ffprobe_sampling_observer" |
-| <a id="s-511d8bd0cb"></a>`name` | "FfprobeSamplingObserver" |
-| <a id="s-ceed2a9b56"></a>`unit` | "export" |
+- <a id="s-3e3ca77399"></a>`distribution`: `stove0-ffprobe-sampling-observer`
+- <a id="s-793f2f6ad9"></a>`module`: `stove0_ffprobe_sampling_observer`
+- <a id="s-511d8bd0cb"></a>`name`: `FfprobeSamplingObserver`
+- <a id="s-ceed2a9b56"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-8e9039f1ae"></a>`kind`: `"class"`
+- <a id="s-fd70a821b2"></a>`signature`: `"\"(*, ffprobe: 'str' = 'ffprobe', workspace_root: 'Path \| None' = None, source_revision: 'str' = 'unknown', image_digest: 'str') -> 'None'\""`
 
 ## Maintained corroboration
 

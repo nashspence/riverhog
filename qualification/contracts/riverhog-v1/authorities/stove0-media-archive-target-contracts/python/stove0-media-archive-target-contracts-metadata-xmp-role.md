@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8344674d4e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b80af414e6"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-401fb30931"></a>`distribution` | "stove0-media-archive-target-contracts" |
-| <a id="s-5bc046d07b"></a>`module` | "stove0_media_archive_target_contracts" |
-| <a id="s-fd6417670b"></a>`name` | "METADATA_XMP_ROLE" |
-| <a id="s-2f09da51bf"></a>`unit` | "export" |
+- <a id="s-401fb30931"></a>`distribution`: `stove0-media-archive-target-contracts`
+- <a id="s-5bc046d07b"></a>`module`: `stove0_media_archive_target_contracts`
+- <a id="s-fd6417670b"></a>`name`: `METADATA_XMP_ROLE`
+- <a id="s-2f09da51bf"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ed3544d21c"></a>`kind`: `"constant"`
+- <a id="s-280bf42789"></a>`value`: `"stove0.media.metadata-xmp/v1"`
 
 ## Governing policies
 

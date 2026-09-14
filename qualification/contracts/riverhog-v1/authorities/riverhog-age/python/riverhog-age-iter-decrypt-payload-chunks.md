@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5a73dc7177"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f09c3bed1e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-a2ab22e7e1"></a>`distribution` | "riverhog-age" |
-| <a id="s-f0ce4bf5fd"></a>`module` | "riverhog_age" |
-| <a id="s-9401127bf4"></a>`name` | "iter_decrypt_payload_chunks" |
-| <a id="s-6fb26900a1"></a>`unit` | "export" |
+- <a id="s-a2ab22e7e1"></a>`distribution`: `riverhog-age`
+- <a id="s-f0ce4bf5fd"></a>`module`: `riverhog_age`
+- <a id="s-9401127bf4"></a>`name`: `iter_decrypt_payload_chunks`
+- <a id="s-6fb26900a1"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-bb5add9821"></a>`kind`: `"function"`
+- <a id="s-7a10b37a3b"></a>`signature`: `"\"(file_key: 'bytes', payload_nonce: 'bytes', ciphertext_chunks: 'Iterable[bytes]') -> 'Iterator[bytes]'\""`
 
 ## Governing policies
 

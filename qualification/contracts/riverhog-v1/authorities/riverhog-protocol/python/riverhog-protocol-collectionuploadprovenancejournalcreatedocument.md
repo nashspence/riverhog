@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d7b1943ecd"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f170f90846"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-62e4cb2e55"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-eeef49e8cb"></a>`module` | "riverhog_protocol" |
-| <a id="s-b857ba0be3"></a>`name` | "CollectionUploadProvenanceJournalCreateDocument" |
-| <a id="s-4627a295f9"></a>`unit` | "export" |
+- <a id="s-62e4cb2e55"></a>`distribution`: `riverhog-protocol`
+- <a id="s-eeef49e8cb"></a>`module`: `riverhog_protocol`
+- <a id="s-b857ba0be3"></a>`name`: `CollectionUploadProvenanceJournalCreateDocument`
+- <a id="s-4627a295f9"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-a9f5970ee2"></a>`kind`: `"class"`
+- <a id="s-90b646475e"></a>`signature`: `"\"(*, bytes: Annotated[int, Strict(strict=True), Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-c51483f666"></a>
+- <a id="s-b00b5898f2"></a>`title`: CollectionUploadProvenanceJournalCreateDocument
+- <a id="s-c4f786fc96"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-df109aae27"></a>`bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-dfdbc4641e"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Governing policies
 
@@ -46,13 +61,33 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 97ebfe02291f35f26d2d5a4a87aa9986baed9c5510e45411569dcbd17e5f7d2b -->
+<!-- exact-contract-value: e2239aeeeca9f1b8a47a1a569e5c08d081b9eb8ae18a1ce68d377a217ceff9c7 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "44d861666e69c14f866d6b8948c4fc7a9c7a1534b331276b15a5ec2117e26cf9",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 1,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "bytes",
+        "sha256"
+      ],
+      "title": "CollectionUploadProvenanceJournalCreateDocument",
+      "type": "object"
+    },
     "signature": "\"(*, bytes: Annotated[int, Strict(strict=True), Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
   },
   "distribution": "riverhog-protocol",

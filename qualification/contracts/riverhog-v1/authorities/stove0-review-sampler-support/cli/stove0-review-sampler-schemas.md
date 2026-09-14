@@ -33,7 +33,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-a6da464362"></a>`emitted` | <a id="s-37a58d85d0"></a>`{"kind":"schema-bundle-emitted"}` | <a id="s-9c0954e1dc"></a>`0` | <a id="s-fc7431ee35"></a>`json: stove0-review-sampler-schema-bundle/v1` | <a id="s-089e853279"></a>`all: empty` |
+| <a id="s-a6da464362"></a>`emitted` | <a id="s-37a58d85d0"></a>`{"kind":"schema-bundle-emitted"}` | <a id="s-9c0954e1dc"></a>`0` | <a id="s-fc7431ee35"></a>`json: document-authority` | <a id="s-089e853279"></a>`all: empty` |
 
 #### Failure outcomes
 
@@ -86,7 +86,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0-review-sampler-schemas/result_contract`
 
-<!-- exact-contract-value: 4e3149f34b4e3b1f6fa2f11cdb74d5868089410852e549ea5991616f13f514a8 -->
+<!-- exact-contract-value: 8973f6b156a39ab2bfb781f886f0f861bf48f9c82f7d616387b74ee7f56e89f9 -->
 
 ```json
 {
@@ -121,8 +121,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "stdout": {
         "json": {
-          "identity": "stove0-review-sampler-schema-bundle/v1",
-          "kind": "semantic-format"
+          "authority": "generated:stove0-review-sampler",
+          "kind": "document-authority"
         }
       }
     }

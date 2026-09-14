@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-37243998e6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ae27e6eaa1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e36d0b9181"></a>`distribution` | "state-schema" |
-| <a id="s-5dc3412484"></a>`module` | "state_schema" |
-| <a id="s-b593313463"></a>`name` | "scalars" |
-| <a id="s-687cf1776c"></a>`owner` | "state_schema.StateConnection" |
-| <a id="s-aaaf43667f"></a>`unit` | "member" |
+- <a id="s-e36d0b9181"></a>`distribution`: `state-schema`
+- <a id="s-5dc3412484"></a>`module`: `state_schema`
+- <a id="s-b593313463"></a>`name`: `scalars`
+- <a id="s-687cf1776c"></a>`owner`: `state_schema.StateConnection`
+- <a id="s-aaaf43667f"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1a8256e333"></a>`kind`: `"method"`
+- <a id="s-c128b298f0"></a>`signature`: `"\"(self, statement: 'Executable', parameters: 'Optional[_CoreAnyExecuteParams]' = None, *, execution_options: 'Optional[CoreExecuteOptionsParameter]' = None) -> 'ScalarResult[Any]'\""`
 
 ## Maintained corroboration
 

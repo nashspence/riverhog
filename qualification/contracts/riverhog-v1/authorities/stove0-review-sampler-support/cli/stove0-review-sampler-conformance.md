@@ -42,7 +42,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-151d33ac93"></a>`conformant` | <a id="s-b8d3fee4b1"></a>`{"kind":"conformance-completed"}` | <a id="s-3193d17a65"></a>`0` | <a id="s-7b6d3f9844"></a>`json: stove0-review-sampler-conformance-result/v1` | <a id="s-6d3f8cfee1"></a>`all: empty` |
+| <a id="s-151d33ac93"></a>`conformant` | <a id="s-b8d3fee4b1"></a>`{"kind":"conformance-completed"}` | <a id="s-3193d17a65"></a>`0` | <a id="s-7b6d3f9844"></a>`json: schema-authority` | <a id="s-6d3f8cfee1"></a>`all: empty` |
 
 #### Failure outcomes
 
@@ -144,7 +144,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0-review-sampler-conformance/result_contract`
 
-<!-- exact-contract-value: b796fd56b678d5fde4b11ff6fbc727c3d0693f185aa1bde77de00fd0f293acf8 -->
+<!-- exact-contract-value: fbf0f4f0f558bdfda8ef9d4363b1e9acc339c832149c676d78f9bb50554ef19d -->
 
 ```json
 {
@@ -179,8 +179,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "stdout": {
         "json": {
-          "identity": "stove0-review-sampler-conformance-result/v1",
-          "kind": "semantic-format"
+          "authority": "generated:stove0-review-sampler",
+          "definition": "SamplerConformanceResult",
+          "kind": "schema-authority"
         }
       }
     }

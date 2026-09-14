@@ -14,13 +14,44 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-dcd3714db2"></a>
-| Field | Shape |
+- <a id="s-ed5fae3176"></a>`distribution`: `stove0-protocol`
+- <a id="s-5f75ac3d4e"></a>`module`: `stove0_protocol`
+- <a id="s-d76249ec7a"></a>`name`: `JoinSettlement`
+- <a id="s-0cf8849cc9"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-a9fe769a35"></a>`kind`: `"class"`
+- <a id="s-202cfb6d6d"></a>`signature`: `"\"(*, format: Literal['stove0-join-settlement/v1'] = 'stove0-join-settlement/v1', work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], workflow_plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], join_plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], derivation_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], producer_settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], output_collection: stove0_protocol.models.CollectionRootRef, output_selection: stove0_protocol.fork_join.ArtifactSelectionRef, settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-0b32b7a2dc"></a>
+- <a id="s-87e6afdc58"></a>`title`: JoinSettlement
+- <a id="s-e93de8cf80"></a>`description`: Success-only, Riverhog-verified result of one resolved join plan.
+- <a id="s-c93221e533"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c5967c3618"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2bf52a28a7"></a>`format` | no | type="string"; const="stove0-join-settlement/v1" |  |
+| <a id="s-e8c99719c7"></a>`join_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b6641a0702"></a>`output_collection` | yes | #/$defs/CollectionRootRef |  |
+| <a id="s-0dffa823d1"></a>`output_selection` | yes | #/$defs/ArtifactSelectionRef |  |
+| <a id="s-468a4eb04b"></a>`producer_settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b849bc92a7"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c77cad58ef"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-030f98d42e"></a>`workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-88627ff3cc"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-ed5fae3176"></a>`distribution` | "stove0-protocol" |
-| <a id="s-5f75ac3d4e"></a>`module` | "stove0_protocol" |
-| <a id="s-d76249ec7a"></a>`name` | "JoinSettlement" |
-| <a id="s-0cf8849cc9"></a>`unit` | "export" |
+| <a id="s-09d3fb4dae"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
+| <a id="s-f30386e37f"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-314b13a04f"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -53,13 +84,131 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5e63a1fe62bb8a799cfe13cf31333051a4f0e0fe224dc90b006b112081af065c -->
+<!-- exact-contract-value: ae5fa3526cd17096a0c7eff13aaeb08e52c3b20aeac4bc1a9b1352cc153306d9 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "83bf96fc750c1f70c2d908703e2f4628e73de4371e64882d7f8421d19869db32",
+    "schema": {
+      "$defs": {
+        "ArtifactSelectionRef": {
+          "additionalProperties": false,
+          "description": "Closed reference to a separately retained selection document.",
+          "properties": {
+            "artifact_count": {
+              "minimum": 1,
+              "title": "Artifact Count",
+              "type": "integer"
+            },
+            "selection_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Selection Sha256",
+              "type": "string"
+            },
+            "total_bytes": {
+              "minimum": 0,
+              "title": "Total Bytes",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "selection_sha256",
+            "artifact_count",
+            "total_bytes"
+          ],
+          "title": "ArtifactSelectionRef",
+          "type": "object"
+        },
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "CollectionRootRef": {
+          "additionalProperties": false,
+          "properties": {
+            "archive_root_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Archive Root Sha256",
+              "type": "string"
+            },
+            "collection_id": {
+              "$ref": "#/$defs/CollectionId"
+            },
+            "content_identity": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Content Identity",
+              "type": "string"
+            }
+          },
+          "required": [
+            "collection_id",
+            "archive_root_sha256",
+            "content_identity"
+          ],
+          "title": "CollectionRootRef",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Success-only, Riverhog-verified result of one resolved join plan.",
+      "properties": {
+        "derivation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Derivation Sha256",
+          "type": "string"
+        },
+        "format": {
+          "const": "stove0-join-settlement/v1",
+          "default": "stove0-join-settlement/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "join_plan_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Join Plan Sha256",
+          "type": "string"
+        },
+        "output_collection": {
+          "$ref": "#/$defs/CollectionRootRef"
+        },
+        "output_selection": {
+          "$ref": "#/$defs/ArtifactSelectionRef"
+        },
+        "producer_settlement_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Producer Settlement Sha256",
+          "type": "string"
+        },
+        "settlement_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Settlement Sha256",
+          "type": "string"
+        },
+        "work_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Work Id",
+          "type": "string"
+        },
+        "workflow_plan_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Workflow Plan Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "work_id",
+        "workflow_plan_sha256",
+        "join_plan_sha256",
+        "derivation_sha256",
+        "producer_settlement_sha256",
+        "output_collection",
+        "output_selection",
+        "settlement_sha256"
+      ],
+      "title": "JoinSettlement",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['stove0-join-settlement/v1'] = 'stove0-join-settlement/v1', work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], workflow_plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], join_plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], derivation_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], producer_settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], output_collection: stove0_protocol.models.CollectionRootRef, output_selection: stove0_protocol.fork_join.ArtifactSelectionRef, settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-protocol",

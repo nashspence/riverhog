@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-00a00d4a94"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1402ef7676"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b4d16ea98d"></a>`distribution` | "stove0-target-client" |
-| <a id="s-5f088afc23"></a>`module` | "stove0_target_client" |
-| <a id="s-4ff4f2a0ef"></a>`name` | "declare_target_execution_output" |
-| <a id="s-3923715c52"></a>`owner` | "stove0_target_client.TargetCallbackClient" |
-| <a id="s-0e99e2a16f"></a>`unit` | "member" |
+- <a id="s-b4d16ea98d"></a>`distribution`: `stove0-target-client`
+- <a id="s-5f088afc23"></a>`module`: `stove0_target_client`
+- <a id="s-4ff4f2a0ef"></a>`name`: `declare_target_execution_output`
+- <a id="s-3923715c52"></a>`owner`: `stove0_target_client.TargetCallbackClient`
+- <a id="s-0e99e2a16f"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-8ae630c568"></a>`kind`: `"method"`
+- <a id="s-859ee0b212"></a>`signature`: `"\"(self, job_id: 'str', output: 'OutputArtifact') -> 'TargetCallbackAcknowledgement'\""`
 
 ## Maintained corroboration
 

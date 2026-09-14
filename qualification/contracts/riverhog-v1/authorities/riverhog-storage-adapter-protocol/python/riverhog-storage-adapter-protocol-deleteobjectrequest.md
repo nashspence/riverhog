@@ -14,13 +14,35 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-26e5feeb44"></a>
-| Field | Shape |
+- <a id="s-6f37a9ac53"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-ed3e32f0ef"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-81edd6c2a5"></a>`name`: `DeleteObjectRequest`
+- <a id="s-ddb332b4b6"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ab75bbf4c8"></a>`kind`: `"class"`
+- <a id="s-143da39a30"></a>`signature`: `"\"(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, mode: Literal['current', 'exact_revision', 'all_versions'], expected_current_stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None) -> None\""`
+
+#### Validated model schema
+
+<a id="s-81352d3efa"></a>
+- <a id="s-87c6137cb9"></a>`title`: DeleteObjectRequest
+- <a id="s-16fcf7c43b"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-72b1581637"></a>`expected_current_stored_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-ad0ae0858d"></a>`mode` | yes | type="string"; enum=["current","exact_revision","all_versions"] |  |
+| <a id="s-bfc55d9f82"></a>`object` | yes | #/$defs/ObjectLocator |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-e9f7340688"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-6f37a9ac53"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-ed3e32f0ef"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-81edd6c2a5"></a>`name` | "DeleteObjectRequest" |
-| <a id="s-ddb332b4b6"></a>`unit` | "export" |
+| <a id="s-d124e0a46a"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -52,13 +74,80 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 518cb19d6a1fe53605fcca36287bfc3134b795779ea50e432bff8f81609e4e40 -->
+<!-- exact-contract-value: d844b58f9d78fc9e59ab1d2019aae3664f37073aa25f1b5586d848e01604846f -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "46f15404c356f50e3a381b04f209d8f64b9114cce82ef9e8c42967f06b59fad8",
+    "schema": {
+      "$defs": {
+        "ObjectLocator": {
+          "additionalProperties": false,
+          "properties": {
+            "object_path": {
+              "maxLength": 4096,
+              "minLength": 1,
+              "title": "Object Path",
+              "type": "string"
+            },
+            "revision": {
+              "anyOf": [
+                {
+                  "maxLength": 2000,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Revision"
+            }
+          },
+          "required": [
+            "object_path"
+          ],
+          "title": "ObjectLocator",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "expected_current_stored_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Current Stored Sha256"
+        },
+        "mode": {
+          "enum": [
+            "current",
+            "exact_revision",
+            "all_versions"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "object": {
+          "$ref": "#/$defs/ObjectLocator"
+        }
+      },
+      "required": [
+        "object",
+        "mode"
+      ],
+      "title": "DeleteObjectRequest",
+      "type": "object"
+    },
     "signature": "\"(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, mode: Literal['current', 'exact_revision', 'all_versions'], expected_current_stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",

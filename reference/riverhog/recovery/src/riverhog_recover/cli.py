@@ -16,6 +16,55 @@ from riverhog_recover.recovery import (
     recover_collection_tags,
 )
 
+_RECOVERED_TAGS_OUTPUT = {
+    "kind": "cli-local-json-sequence",
+    "identity": "riverhog-recovered-collection-tags/v1-json-sequence",
+    "framing": "newline-delimited-json",
+    "records": {
+        "authority": {
+            "type": "object",
+            "additionalProperties": False,
+            "required": [
+                "format",
+                "record",
+                "revision",
+                "tag_set_identity",
+                "head_identity",
+            ],
+            "properties": {
+                "format": {"const": "riverhog-recovered-collection-tags/v1"},
+                "record": {"const": "authority"},
+                "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9_007_199_254_740_991,
+                },
+                "tag_set_identity": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+                "head_identity": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+            },
+        },
+        "tag": {
+            "type": "object",
+            "additionalProperties": False,
+            "required": ["record", "tag"],
+            "properties": {
+                "record": {"const": "tag"},
+                "tag": {"type": "string"},
+            },
+        },
+        "complete": {
+            "type": "object",
+            "additionalProperties": False,
+            "required": ["record", "tag_count"],
+            "properties": {
+                "record": {"const": "complete"},
+                "tag_count": {"type": "integer", "minimum": 0},
+            },
+        },
+    },
+    "sequence": {"start": "authority", "repeated": "tag", "end": "complete"},
+}
+
 _CLI_RESULT_CONTRACT = {
     "schema": "riverhog-cli-result-contract/v1",
     "identity_prefix": "riverhog-recover-cli-result",
@@ -35,13 +84,18 @@ _CLI_RESULT_CONTRACT = {
                 {
                     "id": "description-recovered",
                     "exit_status": 0,
-                    "stdout": {"json": "riverhog-collection-description/v1-or-null"},
+                    "stdout": {
+                        "json": {
+                            "kind": "schema-format-or-null",
+                            "identity": "riverhog-collection-description/v1",
+                        }
+                    },
                     "stderr": {"all": "empty"},
                 },
                 {
                     "id": "tags-recovered",
                     "exit_status": 0,
-                    "stdout": {"json": "riverhog-recovered-collection-tags/v1-json-sequence"},
+                    "stdout": {"json": _RECOVERED_TAGS_OUTPUT},
                     "stderr": {"all": "empty"},
                 },
             ],
@@ -56,7 +110,7 @@ _CLI_RESULT_CONTRACT = {
                     "id": "recovery",
                     "exit_status": 1,
                     "stdout": {"all": "empty"},
-                    "stderr": {"all": "riverhog-recover-diagnostic/v1"},
+                    "stderr": {"all": "noncontractual-diagnostic"},
                 },
             ],
         }

@@ -14,13 +14,29 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0fbefc0203"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f50f30f37e"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-237cd126d1"></a>`distribution` | "stove0-review-sampler-protocol" |
-| <a id="s-136ca337d9"></a>`module` | "stove0_review_sampler_protocol" |
-| <a id="s-9b85d292b1"></a>`name` | "SamplerFailure" |
-| <a id="s-e5a35d6939"></a>`unit` | "export" |
+- <a id="s-237cd126d1"></a>`distribution`: `stove0-review-sampler-protocol`
+- <a id="s-136ca337d9"></a>`module`: `stove0_review_sampler_protocol`
+- <a id="s-9b85d292b1"></a>`name`: `SamplerFailure`
+- <a id="s-e5a35d6939"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ffc8c95b37"></a>`kind`: `"class"`
+- <a id="s-e3c995e421"></a>`signature`: `"\"(*, code: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$')], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)], retryable: bool) -> None\""`
+
+#### Validated model schema
+
+<a id="s-3b518f82e8"></a>
+- <a id="s-f4fd3c5f5d"></a>`title`: SamplerFailure
+- <a id="s-6b515e02e8"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-134186608f"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-8fadfbfca5"></a>`message` | yes | type="string"; minLength=1; maxLength=1000 |  |
+| <a id="s-b354081984"></a>`retryable` | yes | type="boolean" |  |
 
 ## Governing policies
 
@@ -46,13 +62,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 38dc0b1f511452e3032b8cbc87b97881c47efd99d2cf202f89cf27ad298b8403 -->
+<!-- exact-contract-value: aada2989229bec3ebc207b47353d57e1aa375b0d80f110ef480928789398953c -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "463469db3cd89d3a6b04230ebb807a8b96ffdae48c5784517cce987ca9fe7ce5",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "retryable": {
+          "title": "Retryable",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "retryable"
+      ],
+      "title": "SamplerFailure",
+      "type": "object"
+    },
     "signature": "\"(*, code: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$')], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)], retryable: bool) -> None\""
   },
   "distribution": "stove0-review-sampler-protocol",

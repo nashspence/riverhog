@@ -46,7 +46,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-8c79485a28"></a>`usage` | <a id="s-97c69ee2f2"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-21688e16b9"></a>`2` | <a id="s-e6afc2507c"></a>`all: empty` | <a id="s-7560ccf2c1"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-c962263214"></a>`operational` | <a id="s-7ff6451ba8"></a>`{"kind":"application-error"}` | <a id="s-5a7852a0c1"></a>`1` | <a id="s-66bc85e664"></a>`all: empty` | <a id="s-90217cc27c"></a>`all: stove0-cli-diagnostic/v1` |
+| <a id="s-c962263214"></a>`operational` | <a id="s-7ff6451ba8"></a>`{"kind":"application-error"}` | <a id="s-5a7852a0c1"></a>`1` | <a id="s-66bc85e664"></a>`all: empty` | <a id="s-90217cc27c"></a>`all: noncontractual-diagnostic` |
 
 ### Progression, limits, and lifecycle
 
@@ -146,7 +146,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0/commands/recipe/commands/show/result_contract`
 
-<!-- exact-contract-value: 9b4b25810d4d35884807696523746e89437420ff30c19a2a351162d6d66b30d1 -->
+<!-- exact-contract-value: 0ccd416856e8d691287c3bc72e57b78cbeaace09009b9d3257acee7d0f67e08e -->
 
 ```json
 {
@@ -171,7 +171,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "kind": "application-error"
       },
       "stderr": {
-        "all": "stove0-cli-diagnostic/v1"
+        "all": "noncontractual-diagnostic"
       },
       "stdout": {
         "all": "empty"

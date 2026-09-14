@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-50733b2e64"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f3f783584c"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-eaf5ffeb49"></a>`distribution` | "stove0-protocol" |
-| <a id="s-d843b294ed"></a>`module` | "stove0_protocol" |
-| <a id="s-00d8dfa989"></a>`name` | "selection_documents" |
-| <a id="s-11803dca05"></a>`owner` | "stove0_protocol.BranchSetDecision" |
-| <a id="s-4562c9530a"></a>`unit` | "member" |
+- <a id="s-eaf5ffeb49"></a>`distribution`: `stove0-protocol`
+- <a id="s-d843b294ed"></a>`module`: `stove0_protocol`
+- <a id="s-00d8dfa989"></a>`name`: `selection_documents`
+- <a id="s-11803dca05"></a>`owner`: `stove0_protocol.BranchSetDecision`
+- <a id="s-4562c9530a"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-46c06398d0"></a>`kind`: `"property"`
+- <a id="s-9ae2501c72"></a>`signature`: `"\"(self) -> 'dict[str, ArtifactSelection]'\""`
 
 ## Maintained corroboration
 

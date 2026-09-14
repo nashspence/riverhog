@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-766bdbf174"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3e275e90e2"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-10ca79f743"></a>`distribution` | "riverhog-client" |
-| <a id="s-b4c05a12a3"></a>`module` | "riverhog_client" |
-| <a id="s-285a87dfb1"></a>`name` | "delete_collection" |
-| <a id="s-f8b6d183b2"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-2c00777964"></a>`unit` | "member" |
+- <a id="s-10ca79f743"></a>`distribution`: `riverhog-client`
+- <a id="s-b4c05a12a3"></a>`module`: `riverhog_client`
+- <a id="s-285a87dfb1"></a>`name`: `delete_collection`
+- <a id="s-f8b6d183b2"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-2c00777964"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-158bac1cef"></a>`kind`: `"method"`
+- <a id="s-7806312f9f"></a>`signature`: `"\"(self, collection_id: 'CollectionId', *, challenge: 'str', retirement_claim_id: 'ProcessingClaimId \| None' = None, event_context: 'Mapping[str, Any] \| None' = None) -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

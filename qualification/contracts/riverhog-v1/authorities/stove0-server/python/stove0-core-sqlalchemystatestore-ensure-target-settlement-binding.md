@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6ce0fd0e9d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-75e59b166c"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c713e4d44f"></a>`distribution` | "stove0-server" |
-| <a id="s-d764b7ce80"></a>`module` | "stove0_core" |
-| <a id="s-de9b304c6f"></a>`name` | "ensure_target_settlement_binding" |
-| <a id="s-d452240da2"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-8798669bb4"></a>`unit` | "member" |
+- <a id="s-c713e4d44f"></a>`distribution`: `stove0-server`
+- <a id="s-d764b7ce80"></a>`module`: `stove0_core`
+- <a id="s-de9b304c6f"></a>`name`: `ensure_target_settlement_binding`
+- <a id="s-d452240da2"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-8798669bb4"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-530cf48897"></a>`kind`: `"method"`
+- <a id="s-3d22d22475"></a>`signature`: `"\"(self, record: 'TargetSettlementSealRecord') -> 'TargetSettlementSealRecord'\""`
 
 ## Maintained corroboration
 

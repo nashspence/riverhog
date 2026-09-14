@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fed1e8aaf3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a1571ea86c"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-92e8ce2783"></a>`distribution` | "riverhog-client" |
-| <a id="s-d40f077218"></a>`module` | "riverhog_client" |
-| <a id="s-7a53ea0f47"></a>`name` | "list_tags" |
-| <a id="s-567bc70c89"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-9693eb54d8"></a>`unit` | "member" |
+- <a id="s-92e8ce2783"></a>`distribution`: `riverhog-client`
+- <a id="s-d40f077218"></a>`module`: `riverhog_client`
+- <a id="s-7a53ea0f47"></a>`name`: `list_tags`
+- <a id="s-567bc70c89"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-9693eb54d8"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-588d3c953c"></a>`kind`: `"method"`
+- <a id="s-15027e1462"></a>`signature`: `"\"(self, *, page_size: 'int' = 25, page_token: 'str \| None' = None, q: 'str \| None' = None) -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

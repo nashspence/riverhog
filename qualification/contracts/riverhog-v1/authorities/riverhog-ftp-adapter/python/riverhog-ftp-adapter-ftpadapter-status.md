@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1d88cff85e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e2dfcb7554"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-83a8eebf76"></a>`distribution` | "riverhog-ftp-adapter" |
-| <a id="s-41fd9e7263"></a>`module` | "riverhog_ftp_adapter" |
-| <a id="s-51315a0c8f"></a>`name` | "status" |
-| <a id="s-402b67cf40"></a>`owner` | "riverhog_ftp_adapter.FtpAdapter" |
-| <a id="s-7fda91e982"></a>`unit` | "member" |
+- <a id="s-83a8eebf76"></a>`distribution`: `riverhog-ftp-adapter`
+- <a id="s-41fd9e7263"></a>`module`: `riverhog_ftp_adapter`
+- <a id="s-51315a0c8f"></a>`name`: `status`
+- <a id="s-402b67cf40"></a>`owner`: `riverhog_ftp_adapter.FtpAdapter`
+- <a id="s-7fda91e982"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-273d36808c"></a>`kind`: `"method"`
+- <a id="s-bea58cf6d6"></a>`signature`: `"\"(self, *, page_size: 'int' = 25, page_token: 'str \| None' = None) -> 'dict[str, object]'\""`
 
 ## Maintained corroboration
 

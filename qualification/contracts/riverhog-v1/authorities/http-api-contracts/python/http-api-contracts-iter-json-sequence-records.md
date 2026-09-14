@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-dc5ca11dd0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e985d7b844"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-9fa6f5e933"></a>`distribution` | "http-api-contracts" |
-| <a id="s-c5b45a0861"></a>`module` | "http_api_contracts" |
-| <a id="s-b126678b09"></a>`name` | "iter_json_sequence_records" |
-| <a id="s-6923a87f60"></a>`unit` | "export" |
+- <a id="s-9fa6f5e933"></a>`distribution`: `http-api-contracts`
+- <a id="s-c5b45a0861"></a>`module`: `http_api_contracts`
+- <a id="s-b126678b09"></a>`name`: `iter_json_sequence_records`
+- <a id="s-6923a87f60"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-295b3b72e4"></a>`kind`: `"function"`
+- <a id="s-02b012f114"></a>`signature`: `"\"(chunks: 'Iterable[bytes]') -> 'Iterator[dict[str, Any]]'\""`
 
 ## Governing policies
 

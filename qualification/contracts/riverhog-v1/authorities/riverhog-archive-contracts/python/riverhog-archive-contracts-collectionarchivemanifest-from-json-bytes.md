@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d07670108e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2bd9b22493"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-3b7987e4b7"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-0ed5784e1e"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-e0af4bf9be"></a>`name` | "from_json_bytes" |
-| <a id="s-a55dc9685b"></a>`owner` | "riverhog_archive_contracts.CollectionArchiveManifest" |
-| <a id="s-6bdbdcf339"></a>`unit` | "member" |
+- <a id="s-3b7987e4b7"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-0ed5784e1e"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-e0af4bf9be"></a>`name`: `from_json_bytes`
+- <a id="s-a55dc9685b"></a>`owner`: `riverhog_archive_contracts.CollectionArchiveManifest`
+- <a id="s-6bdbdcf339"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e898d44299"></a>`kind`: `"classmethod"`
+- <a id="s-dfb6e63b05"></a>`signature`: `"\"(cls, content: 'bytes \| str') -> 'CollectionArchiveManifest'\""`
 
 ## Maintained corroboration
 

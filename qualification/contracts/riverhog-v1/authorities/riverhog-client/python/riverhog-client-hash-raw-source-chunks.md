@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-81d765d236"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c0bae68cda"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ba2eaa2c61"></a>`distribution` | "riverhog-client" |
-| <a id="s-b9326d7fa6"></a>`module` | "riverhog_client" |
-| <a id="s-5fc523249a"></a>`name` | "hash_raw_source_chunks" |
-| <a id="s-12e5fc102e"></a>`unit` | "export" |
+- <a id="s-ba2eaa2c61"></a>`distribution`: `riverhog-client`
+- <a id="s-b9326d7fa6"></a>`module`: `riverhog_client`
+- <a id="s-5fc523249a"></a>`name`: `hash_raw_source_chunks`
+- <a id="s-12e5fc102e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-566350f850"></a>`kind`: `"function"`
+- <a id="s-5af733dd8b"></a>`signature`: `"\"(*, path: 'str', chunks: 'Iterable[bytes]', expected_bytes: 'int', part_plaintext_bytes: 'int') -> 'RawSourceHash'\""`
 
 ## Governing policies
 

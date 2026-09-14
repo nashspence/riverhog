@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4301789d08"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f1830dd8d3"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-cdaa308b6f"></a>`distribution` | "gogurt-core" |
-| <a id="s-6b05bac8ab"></a>`module` | "gogurt_core" |
-| <a id="s-910ebc970e"></a>`name` | "MountDiscovery" |
-| <a id="s-4bd0bd0a3f"></a>`unit` | "export" |
+- <a id="s-cdaa308b6f"></a>`distribution`: `gogurt-core`
+- <a id="s-6b05bac8ab"></a>`module`: `gogurt_core`
+- <a id="s-910ebc970e"></a>`name`: `MountDiscovery`
+- <a id="s-4bd0bd0a3f"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-680f5e7d1a"></a>`kind`: `"type-alias"`
+- <a id="s-376b59fc72"></a>`value`: `"collections.abc.Callable[[], collections.abc.Sequence[pathlib.Path]]"`
 
 ## Governing policies
 

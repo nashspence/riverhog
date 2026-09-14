@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-22fe5c6922"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8c06202d53"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-4cb73e07dd"></a>`distribution` | "stove0-protocol" |
-| <a id="s-acadc16914"></a>`module` | "stove0_protocol" |
-| <a id="s-5a397ad8bf"></a>`name` | "seal" |
-| <a id="s-27c751fb9c"></a>`owner` | "stove0_protocol.BranchEffectSettlement" |
-| <a id="s-8326af1c53"></a>`unit` | "member" |
+- <a id="s-4cb73e07dd"></a>`distribution`: `stove0-protocol`
+- <a id="s-acadc16914"></a>`module`: `stove0_protocol`
+- <a id="s-5a397ad8bf"></a>`name`: `seal`
+- <a id="s-27c751fb9c"></a>`owner`: `stove0_protocol.BranchEffectSettlement`
+- <a id="s-8326af1c53"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-323d0bd194"></a>`kind`: `"classmethod"`
+- <a id="s-e314e7c777"></a>`signature`: `"\"(cls, *, branch: 'BranchPlan', effect_receipt_sha256: 'str') -> 'BranchEffectSettlement'\""`
 
 ## Maintained corroboration
 

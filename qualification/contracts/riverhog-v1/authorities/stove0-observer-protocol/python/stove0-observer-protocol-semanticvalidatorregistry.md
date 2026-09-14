@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d18fc077f0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2a74e9ffa6"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-48f3af9436"></a>`distribution` | "stove0-observer-protocol" |
-| <a id="s-d7c8a7f518"></a>`module` | "stove0_observer_protocol" |
-| <a id="s-cfe65c8332"></a>`name` | "SemanticValidatorRegistry" |
-| <a id="s-feadc64429"></a>`unit` | "export" |
+- <a id="s-48f3af9436"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-d7c8a7f518"></a>`module`: `stove0_observer_protocol`
+- <a id="s-cfe65c8332"></a>`name`: `SemanticValidatorRegistry`
+- <a id="s-feadc64429"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-137c1c4f15"></a>`kind`: `"class"`
+- <a id="s-877fcf40af"></a>`signature`: `"\"(bindings: 'Iterable[SemanticValidatorBinding]' = ()) -> 'None'\""`
 
 ## Maintained corroboration
 

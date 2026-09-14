@@ -14,13 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0692109b01"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1ddee6bb39"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-4076ec185d"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-1f5676adac"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-80147fb189"></a>`name` | "CollectionArchiveVolumeDocument" |
-| <a id="s-a61316f7a4"></a>`unit` | "export" |
+- <a id="s-4076ec185d"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-1f5676adac"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-80147fb189"></a>`name`: `CollectionArchiveVolumeDocument`
+- <a id="s-a61316f7a4"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-41d8cb5c9a"></a>`kind`: `"class"`
+- <a id="s-bb64e5154a"></a>`signature`: `"\"(archive_generation: 'str', archive_tree_sha256: 'str', volume: 'ArchiveVolume', schema: 'str' = 'collection-archive-volume/v1') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-0b6dfe1efc"></a>`archive_generation` | `'str'` | `required` |
+| <a id="s-ccd494cd45"></a>`archive_tree_sha256` | `'str'` | `required` |
+| <a id="s-aa6c76dea9"></a>`volume` | `'ArchiveVolume'` | `required` |
+| <a id="s-fe3b05b275"></a>`schema` | `'str'` | `'collection-archive-volume/v1'` |
 
 ## Maintained corroboration
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d060a7f5f9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-cf09b5af12"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-7eea30ad40"></a>`distribution` | "stove0-observer-protocol" |
-| <a id="s-d03d15f113"></a>`module` | "stove0_observer_protocol" |
-| <a id="s-0d01d4f2c4"></a>`name` | "OBSERVATION_REQUEST_FORMAT" |
-| <a id="s-329534f06e"></a>`unit` | "export" |
+- <a id="s-7eea30ad40"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-d03d15f113"></a>`module`: `stove0_observer_protocol`
+- <a id="s-0d01d4f2c4"></a>`name`: `OBSERVATION_REQUEST_FORMAT`
+- <a id="s-329534f06e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-a18e0b5cc5"></a>`kind`: `"constant"`
+- <a id="s-1d821905ff"></a>`value`: `"stove0-observation-request/v1"`
 
 ## Governing policies
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b9ef461aa1"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-394e21acdb"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-320e9bbc5d"></a>`distribution` | "riverhog-client" |
-| <a id="s-8f41cf0771"></a>`module` | "riverhog_client" |
-| <a id="s-278e3330e9"></a>`name` | "iter_batches" |
-| <a id="s-10ce27d1e7"></a>`owner` | "riverhog_client.RawSourceHash" |
-| <a id="s-3da2697508"></a>`unit` | "member" |
+- <a id="s-320e9bbc5d"></a>`distribution`: `riverhog-client`
+- <a id="s-8f41cf0771"></a>`module`: `riverhog_client`
+- <a id="s-278e3330e9"></a>`name`: `iter_batches`
+- <a id="s-10ce27d1e7"></a>`owner`: `riverhog_client.RawSourceHash`
+- <a id="s-3da2697508"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e6b41a5310"></a>`kind`: `"method"`
+- <a id="s-19c34da3d4"></a>`signature`: `"\"(self, *, limit: 'int' = 1024) -> 'Iterator[tuple[int, tuple[str, ...]]]'\""`
 
 ## Maintained corroboration
 

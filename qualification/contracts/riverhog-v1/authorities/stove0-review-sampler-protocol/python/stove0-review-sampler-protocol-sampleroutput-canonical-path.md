@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e5c26af118"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-55f071b0b8"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-657db3f338"></a>`distribution` | "stove0-review-sampler-protocol" |
-| <a id="s-4976125c19"></a>`module` | "stove0_review_sampler_protocol" |
-| <a id="s-284c83d310"></a>`name` | "canonical_path" |
-| <a id="s-24d6619918"></a>`owner` | "stove0_review_sampler_protocol.SamplerOutput" |
-| <a id="s-12d0e1b506"></a>`unit` | "member" |
+- <a id="s-657db3f338"></a>`distribution`: `stove0-review-sampler-protocol`
+- <a id="s-4976125c19"></a>`module`: `stove0_review_sampler_protocol`
+- <a id="s-284c83d310"></a>`name`: `canonical_path`
+- <a id="s-24d6619918"></a>`owner`: `stove0_review_sampler_protocol.SamplerOutput`
+- <a id="s-12d0e1b506"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c348205006"></a>`kind`: `"classmethod"`
+- <a id="s-4a4810f10b"></a>`signature`: `"\"(cls, value: 'str') -> 'str'\""`
 
 ## Maintained corroboration
 

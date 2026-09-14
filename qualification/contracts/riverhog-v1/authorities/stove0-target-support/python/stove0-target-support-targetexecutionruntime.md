@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4d678ee895"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-214facd0fb"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-14cff5ec57"></a>`distribution` | "stove0-target-support" |
-| <a id="s-f7a326839e"></a>`module` | "stove0_target_support" |
-| <a id="s-8e7f4c367c"></a>`name` | "TargetExecutionRuntime" |
-| <a id="s-4562ab88b5"></a>`unit` | "export" |
+- <a id="s-14cff5ec57"></a>`distribution`: `stove0-target-support`
+- <a id="s-f7a326839e"></a>`module`: `stove0_target_support`
+- <a id="s-8e7f4c367c"></a>`name`: `TargetExecutionRuntime`
+- <a id="s-4562ab88b5"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-1fd7af19b6"></a>`kind`: `"class"`
+- <a id="s-a1d01082e1"></a>`signature`: `"\"(request: 'TargetJobRequest', runtime: 'ClaimedCollectionRuntime \| CollectionTransformRuntime', *, session: 'TargetExecutionSession \| None' = None) -> 'None'\""`
 
 ## Maintained corroboration
 

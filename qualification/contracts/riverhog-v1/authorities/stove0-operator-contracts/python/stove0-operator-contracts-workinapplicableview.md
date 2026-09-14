@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4459cf90ae"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-89f1d8e816"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-5ca4613920"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-7fdfdcd881"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-ed2e15bd58"></a>`name` | "WorkInapplicableView" |
-| <a id="s-8abf7d6945"></a>`unit` | "export" |
+- <a id="s-5ca4613920"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-7fdfdcd881"></a>`module`: `stove0_operator_contracts`
+- <a id="s-ed2e15bd58"></a>`name`: `WorkInapplicableView`
+- <a id="s-8abf7d6945"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-26b196ed56"></a>`kind`: `"class"`
+- <a id="s-cdb4a41092"></a>`signature`: `"'(*, code: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None'"`
+
+#### Validated model schema
+
+<a id="s-50699efa8d"></a>
+- <a id="s-9fc39b9d05"></a>`title`: WorkInapplicableView
+- <a id="s-f8d3e81982"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-96f1dd28c2"></a>`code` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-28e85e685b"></a>`message` | yes | type="string"; minLength=1; maxLength=1000 |  |
 
 ## Governing policies
 
@@ -46,13 +61,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c3502f345e1d8f46b73dfd9cfb67b3191537fc7a5c8db7f823f29ea92017edda -->
+<!-- exact-contract-value: 28bdbff9d9db9036373fd140313013fcfa2ad0468868ec6729ef3fd530aa6c6e -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "6656e1447c29d937de4ad76ebaf92f3aee0431f6a1303726a004083da0376789",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "WorkInapplicableView",
+      "type": "object"
+    },
     "signature": "'(*, code: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None'"
   },
   "distribution": "stove0-operator-contracts",

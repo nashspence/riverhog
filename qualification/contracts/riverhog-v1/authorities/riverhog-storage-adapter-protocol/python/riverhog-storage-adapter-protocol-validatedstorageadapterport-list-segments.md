@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d98d684c36"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-28795d6af8"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-3e70b70b68"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-21e7a596c4"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-348089e2c5"></a>`name` | "list_segments" |
-| <a id="s-d1262938d0"></a>`owner` | "riverhog_storage_adapter_protocol.ValidatedStorageAdapterPort" |
-| <a id="s-a343013ec8"></a>`unit` | "member" |
+- <a id="s-3e70b70b68"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-21e7a596c4"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-348089e2c5"></a>`name`: `list_segments`
+- <a id="s-d1262938d0"></a>`owner`: `riverhog_storage_adapter_protocol.ValidatedStorageAdapterPort`
+- <a id="s-a343013ec8"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-9813e2bf51"></a>`kind`: `"method"`
+- <a id="s-e3f47d7ad8"></a>`signature`: `"\"(self, request: 'WriteSegmentListRequest') -> 'WriteSegmentPage'\""`
 
 ## Maintained corroboration
 

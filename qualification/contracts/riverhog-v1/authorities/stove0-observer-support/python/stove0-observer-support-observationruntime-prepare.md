@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c0d3978b17"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-26d562f04e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-3d580f4d54"></a>`distribution` | "stove0-observer-support" |
-| <a id="s-de816a8f53"></a>`module` | "stove0_observer_support" |
-| <a id="s-9f6cec31df"></a>`name` | "prepare" |
-| <a id="s-b87eb1e8c9"></a>`owner` | "stove0_observer_support.ObservationRuntime" |
-| <a id="s-2552794449"></a>`unit` | "member" |
+- <a id="s-3d580f4d54"></a>`distribution`: `stove0-observer-support`
+- <a id="s-de816a8f53"></a>`module`: `stove0_observer_support`
+- <a id="s-9f6cec31df"></a>`name`: `prepare`
+- <a id="s-b87eb1e8c9"></a>`owner`: `stove0_observer_support.ObservationRuntime`
+- <a id="s-2552794449"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-fafccf9b7d"></a>`kind`: `"method"`
+- <a id="s-96fe0aca78"></a>`signature`: `"\"(self, subjects: 'Sequence[ArtifactSubject] \| None' = None, **kwargs: 'Any') -> 'ClaimedRetrieval'\""`
 
 ## Maintained corroboration
 

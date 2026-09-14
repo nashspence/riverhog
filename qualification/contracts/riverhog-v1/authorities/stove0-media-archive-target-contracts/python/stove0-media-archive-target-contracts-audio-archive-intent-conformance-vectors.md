@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8a6231ac26"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a82dad2253"></a>`contract` | type="stove0_target_protocol.conformance.SemanticIntentConformanceVectors"; additional keys=`kind` |
-| <a id="s-f847e9d6f9"></a>`distribution` | "stove0-media-archive-target-contracts" |
-| <a id="s-7de43e5038"></a>`module` | "stove0_media_archive_target_contracts" |
-| <a id="s-51de19f827"></a>`name` | "AUDIO_ARCHIVE_INTENT_CONFORMANCE_VECTORS" |
-| <a id="s-443a284dd2"></a>`unit` | "export" |
+- <a id="s-f847e9d6f9"></a>`distribution`: `stove0-media-archive-target-contracts`
+- <a id="s-7de43e5038"></a>`module`: `stove0_media_archive_target_contracts`
+- <a id="s-51de19f827"></a>`name`: `AUDIO_ARCHIVE_INTENT_CONFORMANCE_VECTORS`
+- <a id="s-443a284dd2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ce13fa2f7a"></a>`kind`: `"object"`
+- <a id="s-8a2b0d7449"></a>`type`: `"stove0_target_protocol.conformance.SemanticIntentConformanceVectors"`
 
 ## Governing policies
 

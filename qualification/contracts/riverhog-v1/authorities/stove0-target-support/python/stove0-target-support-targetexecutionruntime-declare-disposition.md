@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-16420883c3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2542d94c17"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6c15f6de4f"></a>`distribution` | "stove0-target-support" |
-| <a id="s-51f3b10f3b"></a>`module` | "stove0_target_support" |
-| <a id="s-85704bc5d8"></a>`name` | "declare_disposition" |
-| <a id="s-7730075421"></a>`owner` | "stove0_target_support.TargetExecutionRuntime" |
-| <a id="s-d4b87f480f"></a>`unit` | "member" |
+- <a id="s-6c15f6de4f"></a>`distribution`: `stove0-target-support`
+- <a id="s-51f3b10f3b"></a>`module`: `stove0_target_support`
+- <a id="s-85704bc5d8"></a>`name`: `declare_disposition`
+- <a id="s-7730075421"></a>`owner`: `stove0_target_support.TargetExecutionRuntime`
+- <a id="s-d4b87f480f"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3c20cef201"></a>`kind`: `"method"`
+- <a id="s-b6cd7415b1"></a>`signature`: `"\"(self, input_id: 'str', status: 'InputDisposition') -> 'None'\""`
 
 ## Maintained corroboration
 

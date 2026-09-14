@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-324fc88ad1"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0852a04d1e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-9265dcee91"></a>`distribution` | "stove0-server" |
-| <a id="s-54f957ba81"></a>`module` | "stove0_core" |
-| <a id="s-078afe3699"></a>`name` | "seal_target_projection" |
-| <a id="s-f5f3d83d10"></a>`owner` | "stove0_core.Stove0RiverhogClient" |
-| <a id="s-fd0afe5575"></a>`unit` | "member" |
+- <a id="s-9265dcee91"></a>`distribution`: `stove0-server`
+- <a id="s-54f957ba81"></a>`module`: `stove0_core`
+- <a id="s-078afe3699"></a>`name`: `seal_target_projection`
+- <a id="s-f5f3d83d10"></a>`owner`: `stove0_core.Stove0RiverhogClient`
+- <a id="s-fd0afe5575"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-986a83a5a8"></a>`kind`: `"method"`
+- <a id="s-b31a0c3183"></a>`signature`: `"\"(self, record: 'WorkRecord') -> 'ArtifactDispositionSetIdentity \| None'\""`
 
 ## Maintained corroboration
 

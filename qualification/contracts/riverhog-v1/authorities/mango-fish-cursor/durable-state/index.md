@@ -2,8 +2,9 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
-Durable State contract owned by mango-fish-cursor.
+Persisted structures, schema heads, and v1 transition obligations.
 
 ## Semantic dossiers
 
-- [mango-fish-cursor durable state](mango-fish-cursor-durable-state.md)
+- [mango-fish-cursor durable-state identity](mango-fish-cursor-durable-state-identity.md)
+- [mango-fish-cursor: source_cursors](mango-fish-cursor-source-cursors.md)

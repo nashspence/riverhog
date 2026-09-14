@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-869bb3bfa0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-689a5cb0e2"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e61e8442ea"></a>`distribution` | "riverhog-ftp-adapter-api-client" |
-| <a id="s-f3d0dfe9a7"></a>`module` | "riverhog_ftp_adapter_api_client" |
-| <a id="s-472d5c96d1"></a>`name` | "ftp_adapter_health_ready" |
-| <a id="s-41e4ed0ef0"></a>`owner` | "riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient" |
-| <a id="s-c6b5019dc3"></a>`unit` | "member" |
+- <a id="s-e61e8442ea"></a>`distribution`: `riverhog-ftp-adapter-api-client`
+- <a id="s-f3d0dfe9a7"></a>`module`: `riverhog_ftp_adapter_api_client`
+- <a id="s-472d5c96d1"></a>`name`: `ftp_adapter_health_ready`
+- <a id="s-41e4ed0ef0"></a>`owner`: `riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient`
+- <a id="s-c6b5019dc3"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-9949701a92"></a>`kind`: `"method"`
+- <a id="s-51327af1cf"></a>`signature`: `"\"(self) -> 'HealthResponse'\""`
 
 ## Maintained corroboration
 

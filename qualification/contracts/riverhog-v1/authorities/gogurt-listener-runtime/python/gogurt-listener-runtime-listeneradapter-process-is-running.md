@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a4e648193f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b030028626"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-0f6dfd77f1"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-332c8fef54"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-e607e784c1"></a>`name` | "process_is_running" |
-| <a id="s-f731b91355"></a>`owner` | "gogurt_listener_runtime.ListenerAdapter" |
-| <a id="s-2f483ccadf"></a>`unit` | "member" |
+- <a id="s-0f6dfd77f1"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-332c8fef54"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-e607e784c1"></a>`name`: `process_is_running`
+- <a id="s-f731b91355"></a>`owner`: `gogurt_listener_runtime.ListenerAdapter`
+- <a id="s-2f483ccadf"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-7092be9c44"></a>`kind`: `"method"`
+- <a id="s-65c01bdadd"></a>`signature`: `"\"(self, pid: 'int') -> 'bool'\""`
 
 ## Maintained corroboration
 

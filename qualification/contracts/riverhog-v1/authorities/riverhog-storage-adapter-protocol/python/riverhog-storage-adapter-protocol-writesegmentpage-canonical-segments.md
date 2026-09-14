@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8c735a0ef0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-bd5f633b6a"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-548065ad86"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-368d4a87ec"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-e8e769f703"></a>`name` | "canonical_segments" |
-| <a id="s-1c0af1d29a"></a>`owner` | "riverhog_storage_adapter_protocol.WriteSegmentPage" |
-| <a id="s-b5b340c448"></a>`unit` | "member" |
+- <a id="s-548065ad86"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-368d4a87ec"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-e8e769f703"></a>`name`: `canonical_segments`
+- <a id="s-1c0af1d29a"></a>`owner`: `riverhog_storage_adapter_protocol.WriteSegmentPage`
+- <a id="s-b5b340c448"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-bb613106be"></a>`kind`: `"classmethod"`
+- <a id="s-caedc13a4f"></a>`signature`: `"\"(cls, value: 'tuple[WriteSegmentReceipt, ...]') -> 'tuple[WriteSegmentReceipt, ...]'\""`
 
 ## Maintained corroboration
 

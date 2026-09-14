@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7c401361c9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f25a48e743"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-52237d0f61"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-6928d01611"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-75c3f42f28"></a>`name` | "from_record" |
-| <a id="s-0a82da66c4"></a>`owner` | "stove0_operator_contracts.WorkView" |
-| <a id="s-6450dac131"></a>`unit` | "member" |
+- <a id="s-52237d0f61"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-6928d01611"></a>`module`: `stove0_operator_contracts`
+- <a id="s-75c3f42f28"></a>`name`: `from_record`
+- <a id="s-0a82da66c4"></a>`owner`: `stove0_operator_contracts.WorkView`
+- <a id="s-6450dac131"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ed35c3f2fc"></a>`kind`: `"classmethod"`
+- <a id="s-b6f904f855"></a>`signature`: `"\"(cls, record: 'BaseModel \| Mapping[str, Any]') -> 'WorkView'\""`
 
 ## Maintained corroboration
 

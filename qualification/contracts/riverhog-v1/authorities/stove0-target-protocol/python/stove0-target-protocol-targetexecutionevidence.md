@@ -14,13 +14,37 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7531911f3b"></a>
-| Field | Shape |
+- <a id="s-b118899cef"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-981d91cee3"></a>`module`: `stove0_target_protocol`
+- <a id="s-1ed001e35d"></a>`name`: `TargetExecutionEvidence`
+- <a id="s-2567df8b5b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-19bc54af31"></a>`kind`: `"class"`
+- <a id="s-2cfadf60a9"></a>`signature`: `"\"(*, target_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], execution_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], runtime: dict[str, JsonValue] = <factory>) -> None\""`
+
+#### Validated model schema
+
+<a id="s-51b7355edb"></a>
+- <a id="s-0da53eba4f"></a>`title`: TargetExecutionEvidence
+- <a id="s-90f5d3922e"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4d16064602"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-4d916ab645"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-fee76dc730"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c44325ea1e"></a>`runtime` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-f19fc299da"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-d1ef3b30fa"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-b118899cef"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-981d91cee3"></a>`module` | "stove0_target_protocol" |
-| <a id="s-1ed001e35d"></a>`name` | "TargetExecutionEvidence" |
-| <a id="s-2567df8b5b"></a>`unit` | "export" |
+| <a id="s-ceb5491814"></a>`JsonValue` | empty object |
 
 ## Governing policies
 
@@ -46,13 +70,55 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9144e2529751b18758189507b7b958dbef91336634bb70b05b19082de84ecd5c -->
+<!-- exact-contract-value: 539e828285aef6ae6a26783e30e79ed628534552b368f79577a7558fa70e3da3 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "f76617128b8960e01b2b657a4031d97d1632c188c092473b906be914186ef931",
+    "schema": {
+      "$defs": {
+        "JsonValue": {}
+      },
+      "additionalProperties": false,
+      "properties": {
+        "execution_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Execution Sha256",
+          "type": "string"
+        },
+        "operation_contract_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Operation Contract Sha256",
+          "type": "string"
+        },
+        "plan_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Plan Sha256",
+          "type": "string"
+        },
+        "runtime": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Runtime",
+          "type": "object"
+        },
+        "target_contract_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Target Contract Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_contract_sha256",
+        "operation_contract_sha256",
+        "plan_sha256",
+        "execution_sha256"
+      ],
+      "title": "TargetExecutionEvidence",
+      "type": "object"
+    },
     "signature": "\"(*, target_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], execution_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], runtime: dict[str, JsonValue] = <factory>) -> None\""
   },
   "distribution": "stove0-target-protocol",

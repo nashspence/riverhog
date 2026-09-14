@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-65afc375cc"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-632b2382f4"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-80a2263825"></a>`distribution` | "riverhog-client" |
-| <a id="s-af2be44f21"></a>`module` | "riverhog_client.transform" |
-| <a id="s-959e0f1b2c"></a>`name` | "finish" |
-| <a id="s-a0279d69d5"></a>`owner` | "riverhog_client.transform.IncrementalDerivedCollectionWriter" |
-| <a id="s-1067b6816f"></a>`unit` | "member" |
+- <a id="s-80a2263825"></a>`distribution`: `riverhog-client`
+- <a id="s-af2be44f21"></a>`module`: `riverhog_client.transform`
+- <a id="s-959e0f1b2c"></a>`name`: `finish`
+- <a id="s-a0279d69d5"></a>`owner`: `riverhog_client.transform.IncrementalDerivedCollectionWriter`
+- <a id="s-1067b6816f"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-97258c690f"></a>`kind`: `"method"`
+- <a id="s-fce43eb63c"></a>`signature`: `"\"(self, *, execution_sha256: 'str', disposition_set: 'ArtifactDispositionSetIdentity', poll_seconds: 'float' = 2.0, timeout_seconds: 'float' = 86400) -> 'DerivedCollectionReceipt'\""`
 
 ## Maintained corroboration
 

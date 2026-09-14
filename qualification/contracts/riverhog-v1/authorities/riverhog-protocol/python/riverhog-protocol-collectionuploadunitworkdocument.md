@@ -14,13 +14,38 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-dab1662726"></a>
-| Field | Shape |
+- <a id="s-2e33e51c02"></a>`distribution`: `riverhog-protocol`
+- <a id="s-b98beb79bc"></a>`module`: `riverhog_protocol`
+- <a id="s-ae8145032e"></a>`name`: `CollectionUploadUnitWorkDocument`
+- <a id="s-e700e9fd05"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-200c736c5f"></a>`kind`: `"class"`
+- <a id="s-1717b69867"></a>`signature`: `"\"(*, unit: Annotated[int, Ge(ge=0)], payload_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], plaintext_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], sources: Annotated[list[riverhog_protocol.collection_upload_transport.CollectionUploadUnitSourceDocument], MaxLen(max_length=1000)], state: Literal['pending', 'committed']) -> None\""`
+
+#### Validated model schema
+
+<a id="s-525cc598ba"></a>
+- <a id="s-c3736bd467"></a>`title`: CollectionUploadUnitWorkDocument
+- <a id="s-3931558fde"></a>`description`: One exact unit and its durable upload checkpoint state.
+- <a id="s-9b92b950d9"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f093d62ec0"></a>`payload_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-04dad5124f"></a>`plaintext_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-a58e9ea803"></a>`sources` | yes | type="array"; maxItems=1000; items=(#/$defs/CollectionUploadUnitSourceDocument); additional keys=`x-riverhog-extent` |  |
+| <a id="s-bd038539c2"></a>`state` | yes | type="string"; enum=["pending","committed"] |  |
+| <a id="s-e998ea77d3"></a>`unit` | yes | type="integer"; minimum=0 |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-131345231b"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-2e33e51c02"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-b98beb79bc"></a>`module` | "riverhog_protocol" |
-| <a id="s-ae8145032e"></a>`name` | "CollectionUploadUnitWorkDocument" |
-| <a id="s-e700e9fd05"></a>`unit` | "export" |
+| <a id="s-daf8b1a175"></a>`CollectionUploadUnitSourceDocument` | type="object"; fields=`artifact_sha256`, `bytes`, `offset`, `path`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
@@ -46,13 +71,98 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fd8567500348852b47a732c0b9425b4b654ddb9389e7001aff57626399afd72f -->
+<!-- exact-contract-value: 91f95d302d0010cf7a367e56ed96a36c493b7c0feab1077c46fc4b7ac972a142 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "5d13849f70a7f586536a938620d35d29a3d9ed0f21b372227d37457467cbc83a",
+    "schema": {
+      "$defs": {
+        "CollectionUploadUnitSourceDocument": {
+          "additionalProperties": false,
+          "description": "One exact source range supplied in a server-planned upload unit.",
+          "properties": {
+            "artifact_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Artifact Sha256",
+              "type": "string"
+            },
+            "bytes": {
+              "minimum": 0,
+              "title": "Bytes",
+              "type": "integer"
+            },
+            "offset": {
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            },
+            "path": {
+              "title": "Path",
+              "type": "string"
+            }
+          },
+          "required": [
+            "path",
+            "offset",
+            "bytes",
+            "artifact_sha256"
+          ],
+          "title": "CollectionUploadUnitSourceDocument",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "One exact unit and its durable upload checkpoint state.",
+      "properties": {
+        "payload_bytes": {
+          "minimum": 0,
+          "title": "Payload Bytes",
+          "type": "integer"
+        },
+        "plaintext_bytes": {
+          "minimum": 0,
+          "title": "Plaintext Bytes",
+          "type": "integer"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/CollectionUploadUnitSourceDocument"
+          },
+          "maxItems": 1000,
+          "title": "Sources",
+          "type": "array",
+          "x-riverhog-extent": {
+            "policy": "segmented_no_total_max",
+            "progression": "collection-volume-sequence",
+            "reason": "bounded-upload-unit-source-map"
+          }
+        },
+        "state": {
+          "enum": [
+            "pending",
+            "committed"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "unit": {
+          "minimum": 0,
+          "title": "Unit",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "unit",
+        "payload_bytes",
+        "plaintext_bytes",
+        "sources",
+        "state"
+      ],
+      "title": "CollectionUploadUnitWorkDocument",
+      "type": "object"
+    },
     "signature": "\"(*, unit: Annotated[int, Ge(ge=0)], payload_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], plaintext_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], sources: Annotated[list[riverhog_protocol.collection_upload_transport.CollectionUploadUnitSourceDocument], MaxLen(max_length=1000)], state: Literal['pending', 'committed']) -> None\""
   },
   "distribution": "riverhog-protocol",

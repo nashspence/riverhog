@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fc44503b13"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b555740b68"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-75c43ce0ed"></a>`distribution` | "stove0-server" |
-| <a id="s-56c41666d4"></a>`module` | "stove0_core" |
-| <a id="s-82be029fdb"></a>`name` | "workflow_plan" |
-| <a id="s-9342ab9d48"></a>`owner` | "stove0_core.RecipePlanner" |
-| <a id="s-febce2e2e1"></a>`unit` | "member" |
+- <a id="s-75c43ce0ed"></a>`distribution`: `stove0-server`
+- <a id="s-56c41666d4"></a>`module`: `stove0_core`
+- <a id="s-82be029fdb"></a>`name`: `workflow_plan`
+- <a id="s-9342ab9d48"></a>`owner`: `stove0_core.RecipePlanner`
+- <a id="s-febce2e2e1"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-327662281d"></a>`kind`: `"method"`
+- <a id="s-cea988f13e"></a>`signature`: `"\"(self, work: 'WorkIdentity', observations: 'tuple[ObservationEvidence, ...]', *, nested_observer: 'NestedObservation \| None' = None) -> 'BranchSetDecision \| WorkInapplicable'\""`
 
 ## Maintained corroboration
 

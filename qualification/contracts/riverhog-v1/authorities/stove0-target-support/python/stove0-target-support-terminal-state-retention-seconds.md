@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f68066444a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-50e582a869"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6b4186d8f3"></a>`distribution` | "stove0-target-support" |
-| <a id="s-6537236248"></a>`module` | "stove0_target_support" |
-| <a id="s-6076ecb003"></a>`name` | "terminal_state_retention_seconds" |
-| <a id="s-65f295c945"></a>`unit` | "export" |
+- <a id="s-6b4186d8f3"></a>`distribution`: `stove0-target-support`
+- <a id="s-6537236248"></a>`module`: `stove0_target_support`
+- <a id="s-6076ecb003"></a>`name`: `terminal_state_retention_seconds`
+- <a id="s-65f295c945"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-9917e892ae"></a>`kind`: `"function"`
+- <a id="s-b2a7c4a35f"></a>`signature`: `"\"(environ: 'Mapping[str, str] \| None' = None) -> 'int'\""`
 
 ## Governing policies
 

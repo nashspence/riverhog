@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c08ad18fb6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-fedb27bfd9"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c701b31ebd"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-046cdc0712"></a>`module` | "riverhog_protocol" |
-| <a id="s-a4e1d29b71"></a>`name` | "validate_distinct_stores" |
-| <a id="s-6e8b284650"></a>`owner` | "riverhog_protocol.ArchiveCopyStoreSelectionDocument" |
-| <a id="s-742f53f455"></a>`unit` | "member" |
+- <a id="s-c701b31ebd"></a>`distribution`: `riverhog-protocol`
+- <a id="s-046cdc0712"></a>`module`: `riverhog_protocol`
+- <a id="s-a4e1d29b71"></a>`name`: `validate_distinct_stores`
+- <a id="s-6e8b284650"></a>`owner`: `riverhog_protocol.ArchiveCopyStoreSelectionDocument`
+- <a id="s-742f53f455"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-da235e3924"></a>`kind`: `"method"`
+- <a id="s-cab7d155eb"></a>`signature`: `"\"(self) -> 'Self'\""`
 
 ## Maintained corroboration
 

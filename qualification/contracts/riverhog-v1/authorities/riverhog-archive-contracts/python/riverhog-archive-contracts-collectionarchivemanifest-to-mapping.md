@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0ac6ea45d3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6c6e1101e1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-76aec92081"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-a3fc64fd85"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-4f92e58881"></a>`name` | "to_mapping" |
-| <a id="s-43d37883af"></a>`owner` | "riverhog_archive_contracts.CollectionArchiveManifest" |
-| <a id="s-78938813f0"></a>`unit` | "member" |
+- <a id="s-76aec92081"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-a3fc64fd85"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-4f92e58881"></a>`name`: `to_mapping`
+- <a id="s-43d37883af"></a>`owner`: `riverhog_archive_contracts.CollectionArchiveManifest`
+- <a id="s-78938813f0"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-29cce85479"></a>`kind`: `"method"`
+- <a id="s-b0164cdc33"></a>`signature`: `"\"(self) -> 'dict[str, object]'\""`
 
 ## Maintained corroboration
 

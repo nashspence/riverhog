@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0fffc3de75"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-95a162768a"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-026d6af38b"></a>`distribution` | "stove0-observer-protocol" |
-| <a id="s-2ae561b038"></a>`module` | "stove0_observer_protocol" |
-| <a id="s-47132d199f"></a>`name` | "canonical_subjects" |
-| <a id="s-337dada5de"></a>`owner` | "stove0_observer_protocol.ObservationRequestPayload" |
-| <a id="s-7ecd2483f7"></a>`unit` | "member" |
+- <a id="s-026d6af38b"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-2ae561b038"></a>`module`: `stove0_observer_protocol`
+- <a id="s-47132d199f"></a>`name`: `canonical_subjects`
+- <a id="s-337dada5de"></a>`owner`: `stove0_observer_protocol.ObservationRequestPayload`
+- <a id="s-7ecd2483f7"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ffaaf74f82"></a>`kind`: `"classmethod"`
+- <a id="s-42a4709416"></a>`signature`: `"\"(cls, value: 'tuple[ArtifactSubject, ...]') -> 'tuple[ArtifactSubject, ...]'\""`
 
 ## Maintained corroboration
 

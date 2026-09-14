@@ -14,13 +14,31 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4697ee66fd"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9df0574623"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-3b6f6c83a4"></a>`distribution` | "http-api-contracts" |
-| <a id="s-1f3a479549"></a>`module` | "http_api_contracts" |
-| <a id="s-b780ffae35"></a>`name` | "HttpOperationContract" |
-| <a id="s-78eda8b34e"></a>`unit` | "export" |
+- <a id="s-3b6f6c83a4"></a>`distribution`: `http-api-contracts`
+- <a id="s-1f3a479549"></a>`module`: `http_api_contracts`
+- <a id="s-b780ffae35"></a>`name`: `HttpOperationContract`
+- <a id="s-78eda8b34e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f6586f5a41"></a>`kind`: `"class"`
+- <a id="s-8779856aba"></a>`signature`: `"'(method: \"Literal[\\'GET\\', \\'POST\\', \\'PUT\\', \\'DELETE\\', \\'PATCH\\']\", path: \\'str\\', request_type: \\'object \| None\\' = None, response_type: \\'object \| None\\' = None, request_kind: \\'HttpBodyKind\\' = \\'none\\', response_kind: \\'HttpBodyKind\\' = \\'json\\', success_statuses: \\'tuple[int, ...]\\' = (200,), errors: \\'tuple[HttpErrorContract, ...]\\' = (), path_parameters: \\'tuple[HttpPathParameterContract, ...]\\' = (), response_headers: \\'tuple[HttpResponseHeaderContract, ...]\\' = (), error_type: \\'type[BaseModel]\\' = <class \\'http_api_contracts.ErrorResponse\\'>) -> None'"`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-09f1413f71"></a>`method` | `"Literal['GET', 'POST', 'PUT', 'DELETE', 'PATCH']"` | `required` |
+| <a id="s-10bffcbb2e"></a>`path` | `'str'` | `required` |
+| <a id="s-b411f91fe8"></a>`request_type` | `'object \| None'` | `None` |
+| <a id="s-fa1f370fe1"></a>`response_type` | `'object \| None'` | `None` |
+| <a id="s-d662577c83"></a>`request_kind` | `'HttpBodyKind'` | `'none'` |
+| <a id="s-aa4ca0e78e"></a>`response_kind` | `'HttpBodyKind'` | `'json'` |
+| <a id="s-815928fe99"></a>`success_statuses` | `'tuple[int, ...]'` | `(200,)` |
+| <a id="s-846a9bb9ab"></a>`errors` | `'tuple[HttpErrorContract, ...]'` | `()` |
+| <a id="s-3b92073354"></a>`path_parameters` | `'tuple[HttpPathParameterContract, ...]'` | `()` |
+| <a id="s-e63129c26b"></a>`response_headers` | `'tuple[HttpResponseHeaderContract, ...]'` | `()` |
+| <a id="s-45f1ec21d4"></a>`error_type` | `'type[BaseModel]'` | `<class 'http_api_contracts.ErrorResponse'>` |
 
 ## Maintained corroboration
 

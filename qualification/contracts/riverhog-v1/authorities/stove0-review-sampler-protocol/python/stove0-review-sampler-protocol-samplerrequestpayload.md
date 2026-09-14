@@ -14,13 +14,43 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0352e93d68"></a>
-| Field | Shape |
+- <a id="s-30ef560e69"></a>`distribution`: `stove0-review-sampler-protocol`
+- <a id="s-a6ef43ebde"></a>`module`: `stove0_review_sampler_protocol`
+- <a id="s-55f65755cf"></a>`name`: `SamplerRequestPayload`
+- <a id="s-4dab40d57d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-59ea8e069a"></a>`kind`: `"class"`
+- <a id="s-90237354bf"></a>`signature`: `"\"(*, format: Literal['stove0-review-sampler-request/v1'] = 'stove0-review-sampler-request/v1', sampler_descriptor_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], workspace_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], inputs: Annotated[tuple[stove0_review_sampler_protocol.SamplerInput, ...], MinLen(min_length=1)], windows: Annotated[tuple[stove0_review_sampler_protocol.SamplerWindow, ...], MinLen(min_length=1)], portable_intent: dict[str, JsonValue], maximum_output_bytes: Annotated[int, Ge(ge=1), Le(le=1099511627776)], timeout_seconds: Annotated[int, Ge(ge=1), Le(le=86400)], cancellation_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-302a88143a"></a>
+- <a id="s-39a4221c6f"></a>`title`: SamplerRequestPayload
+- <a id="s-8f6c694853"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-1e14d51675"></a>`cancellation_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-67e22a6b8e"></a>`format` | no | type="string"; const="stove0-review-sampler-request/v1" |  |
+| <a id="s-b01b8d7f9f"></a>`inputs` | yes | type="array"; minItems=1; items=(#/$defs/SamplerInput) |  |
+| <a id="s-dc6349d1e9"></a>`maximum_output_bytes` | yes | type="integer"; minimum=1; maximum=1099511627776 |  |
+| <a id="s-10cbe86ef8"></a>`portable_intent` | yes | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-c3026b6ce3"></a>`sampler_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-8492466ba8"></a>`timeout_seconds` | yes | type="integer"; minimum=1; maximum=86400 |  |
+| <a id="s-68102daa11"></a>`windows` | yes | type="array"; minItems=1; items=(#/$defs/SamplerWindow) |  |
+| <a id="s-8a7e8541ef"></a>`workspace_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-d882fe9d9c"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-30ef560e69"></a>`distribution` | "stove0-review-sampler-protocol" |
-| <a id="s-a6ef43ebde"></a>`module` | "stove0_review_sampler_protocol" |
-| <a id="s-55f65755cf"></a>`name` | "SamplerRequestPayload" |
-| <a id="s-4dab40d57d"></a>`unit` | "export" |
+| <a id="s-7f2975c9a8"></a>`JsonValue` | empty object |
+| <a id="s-1b43c3a26a"></a>`SamplerInput` | type="object"; fields=`bytes`, `id`, `media_type`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-4420d87626"></a>`SamplerWindow` | type="object"; fields=`duration_ms`, `id`, `input_id`, `output_path`, `start_ms`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -55,13 +85,177 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 111abc7a7cc060023e1c4a0307359feead0a0996a0e0abe5c8ed8d29a5a78373 -->
+<!-- exact-contract-value: 2df02043eb57ae08a4af7b45a8a62b805b466edd07d32f4f30fd6248b097481f -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "72ab9541c3c2ca5d9d11df63bda09ee21d19c7d0f7aa7305749271d6162ac01d",
+    "schema": {
+      "$defs": {
+        "JsonValue": {},
+        "SamplerInput": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "minimum": 0,
+              "title": "Bytes",
+              "type": "integer"
+            },
+            "id": {
+              "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "media_type": {
+              "anyOf": [
+                {
+                  "maxLength": 255,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Media Type"
+            },
+            "path": {
+              "maxLength": 4096,
+              "minLength": 1,
+              "title": "Path",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "path",
+            "bytes",
+            "sha256"
+          ],
+          "title": "SamplerInput",
+          "type": "object"
+        },
+        "SamplerWindow": {
+          "additionalProperties": false,
+          "properties": {
+            "duration_ms": {
+              "minimum": 1,
+              "title": "Duration Ms",
+              "type": "integer"
+            },
+            "id": {
+              "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "input_id": {
+              "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
+              "title": "Input Id",
+              "type": "string"
+            },
+            "output_path": {
+              "maxLength": 4096,
+              "minLength": 1,
+              "title": "Output Path",
+              "type": "string"
+            },
+            "start_ms": {
+              "minimum": 0,
+              "title": "Start Ms",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "id",
+            "input_id",
+            "start_ms",
+            "duration_ms",
+            "output_path"
+          ],
+          "title": "SamplerWindow",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "cancellation_path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Cancellation Path",
+          "type": "string"
+        },
+        "format": {
+          "const": "stove0-review-sampler-request/v1",
+          "default": "stove0-review-sampler-request/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "inputs": {
+          "items": {
+            "$ref": "#/$defs/SamplerInput"
+          },
+          "minItems": 1,
+          "title": "Inputs",
+          "type": "array"
+        },
+        "maximum_output_bytes": {
+          "maximum": 1099511627776,
+          "minimum": 1,
+          "title": "Maximum Output Bytes",
+          "type": "integer"
+        },
+        "portable_intent": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Portable Intent",
+          "type": "object"
+        },
+        "sampler_descriptor_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sampler Descriptor Sha256",
+          "type": "string"
+        },
+        "timeout_seconds": {
+          "maximum": 86400,
+          "minimum": 1,
+          "title": "Timeout Seconds",
+          "type": "integer"
+        },
+        "windows": {
+          "items": {
+            "$ref": "#/$defs/SamplerWindow"
+          },
+          "minItems": 1,
+          "title": "Windows",
+          "type": "array"
+        },
+        "workspace_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Workspace Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sampler_descriptor_sha256",
+        "workspace_id",
+        "inputs",
+        "windows",
+        "portable_intent",
+        "maximum_output_bytes",
+        "timeout_seconds",
+        "cancellation_path"
+      ],
+      "title": "SamplerRequestPayload",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['stove0-review-sampler-request/v1'] = 'stove0-review-sampler-request/v1', sampler_descriptor_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], workspace_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], inputs: Annotated[tuple[stove0_review_sampler_protocol.SamplerInput, ...], MinLen(min_length=1)], windows: Annotated[tuple[stove0_review_sampler_protocol.SamplerWindow, ...], MinLen(min_length=1)], portable_intent: dict[str, JsonValue], maximum_output_bytes: Annotated[int, Ge(ge=1), Le(le=1099511627776)], timeout_seconds: Annotated[int, Ge(ge=1), Le(le=86400)], cancellation_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)]) -> None\""
   },
   "distribution": "stove0-review-sampler-protocol",

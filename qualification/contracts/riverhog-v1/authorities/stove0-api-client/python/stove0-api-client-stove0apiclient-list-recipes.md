@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6203ecfebc"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f872a996fd"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7f2236884e"></a>`distribution` | "stove0-api-client" |
-| <a id="s-7c24676ba6"></a>`module` | "stove0_api_client" |
-| <a id="s-71eb5702ee"></a>`name` | "list_recipes" |
-| <a id="s-f97a77496c"></a>`owner` | "stove0_api_client.Stove0ApiClient" |
-| <a id="s-240066d30c"></a>`unit` | "member" |
+- <a id="s-7f2236884e"></a>`distribution`: `stove0-api-client`
+- <a id="s-7c24676ba6"></a>`module`: `stove0_api_client`
+- <a id="s-71eb5702ee"></a>`name`: `list_recipes`
+- <a id="s-f97a77496c"></a>`owner`: `stove0_api_client.Stove0ApiClient`
+- <a id="s-240066d30c"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-63dfb3b104"></a>`kind`: `"method"`
+- <a id="s-45ca5eaa24"></a>`signature`: `"\"(self) -> 'RecipeCatalogView'\""`
 
 ## Maintained corroboration
 

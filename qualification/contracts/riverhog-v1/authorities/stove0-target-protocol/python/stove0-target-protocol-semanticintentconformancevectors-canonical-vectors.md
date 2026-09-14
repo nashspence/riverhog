@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e7fae839b5"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f22243a326"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-478d80d9e8"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-024398a09c"></a>`module` | "stove0_target_protocol" |
-| <a id="s-18f8f7d083"></a>`name` | "canonical_vectors" |
-| <a id="s-2cd8a8065c"></a>`owner` | "stove0_target_protocol.SemanticIntentConformanceVectors" |
-| <a id="s-04934c0064"></a>`unit` | "member" |
+- <a id="s-478d80d9e8"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-024398a09c"></a>`module`: `stove0_target_protocol`
+- <a id="s-18f8f7d083"></a>`name`: `canonical_vectors`
+- <a id="s-2cd8a8065c"></a>`owner`: `stove0_target_protocol.SemanticIntentConformanceVectors`
+- <a id="s-04934c0064"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-6408ab3fef"></a>`kind`: `"classmethod"`
+- <a id="s-da280568e1"></a>`signature`: `"\"(cls, value: 'tuple[SemanticIntentConformanceVector, ...]') -> 'tuple[SemanticIntentConformanceVector, ...]'\""`
 
 ## Maintained corroboration
 

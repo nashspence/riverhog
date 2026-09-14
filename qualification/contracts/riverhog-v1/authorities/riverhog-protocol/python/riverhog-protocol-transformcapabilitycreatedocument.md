@@ -14,13 +14,30 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d6e7d0fcc2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d71b5b3cc4"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-382ca82e8a"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-8f590c17c3"></a>`module` | "riverhog_protocol" |
-| <a id="s-c22c117ca3"></a>`name` | "TransformCapabilityCreateDocument" |
-| <a id="s-866d47f293"></a>`unit` | "export" |
+- <a id="s-382ca82e8a"></a>`distribution`: `riverhog-protocol`
+- <a id="s-8f590c17c3"></a>`module`: `riverhog_protocol`
+- <a id="s-c22c117ca3"></a>`name`: `TransformCapabilityCreateDocument`
+- <a id="s-866d47f293"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-5a1a97b314"></a>`kind`: `"class"`
+- <a id="s-d171fa4ee0"></a>`signature`: `"\"(*, fence: Annotated[int, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9][a-z0-9._:/-]{0,299}$')], actions: Annotated[list[Literal['read-inputs', 'write-output']], MinLen(min_length=1)] = <factory>, ttl_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 900) -> None\""`
+
+#### Validated model schema
+
+<a id="s-6b6311c3b3"></a>
+- <a id="s-725e511fa9"></a>`title`: TransformCapabilityCreateDocument
+- <a id="s-8c8dc28740"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7b3788c2b2"></a>`actions` | no | type="array"; minItems=1; items=(type="string"; enum=["read-inputs","write-output"]); oneOf=const=["read-inputs"] \| const=["read-inputs","write-output"] |  |
+| <a id="s-3677aee9dc"></a>`audience` | yes | type="string"; pattern="^[a-z0-9][a-z0-9._:/-]{0,299}$" |  |
+| <a id="s-517200eda4"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-fbbcc79c6e"></a>`ttl_seconds` | no | type="integer"; minimum=30; maximum=86400 |  |
 
 ## Maintained corroboration
 
@@ -52,13 +69,65 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b662ed67da5623d19ccd74ee389b5ad0c1b5ec0204f7d95d4629845a9ce13ba3 -->
+<!-- exact-contract-value: 1c2246839c70de4b98eccf8240bcfbb3768f1977dc0a7aa73fc31f9ee1ab5d72 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "017e09367938982b92e94f62bb0ccb5a6249b1f8a8ecf328be4883bbd0b76738",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "actions": {
+          "items": {
+            "enum": [
+              "read-inputs",
+              "write-output"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "oneOf": [
+            {
+              "const": [
+                "read-inputs"
+              ]
+            },
+            {
+              "const": [
+                "read-inputs",
+                "write-output"
+              ]
+            }
+          ],
+          "title": "Actions",
+          "type": "array"
+        },
+        "audience": {
+          "pattern": "^[a-z0-9][a-z0-9._:/-]{0,299}$",
+          "title": "Audience",
+          "type": "string"
+        },
+        "fence": {
+          "minimum": 1,
+          "title": "Fence",
+          "type": "integer"
+        },
+        "ttl_seconds": {
+          "default": 900,
+          "maximum": 86400,
+          "minimum": 30,
+          "title": "Ttl Seconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "fence",
+        "audience"
+      ],
+      "title": "TransformCapabilityCreateDocument",
+      "type": "object"
+    },
     "signature": "\"(*, fence: Annotated[int, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9][a-z0-9._:/-]{0,299}$')], actions: Annotated[list[Literal['read-inputs', 'write-output']], MinLen(min_length=1)] = <factory>, ttl_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 900) -> None\""
   },
   "distribution": "riverhog-protocol",

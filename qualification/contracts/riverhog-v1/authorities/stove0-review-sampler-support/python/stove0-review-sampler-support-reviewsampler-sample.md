@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f59a6b1129"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-af47a96270"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e9311ac2cd"></a>`distribution` | "stove0-review-sampler-support" |
-| <a id="s-9e2b03b462"></a>`module` | "stove0_review_sampler_support" |
-| <a id="s-96c797f3cb"></a>`name` | "sample" |
-| <a id="s-3ab32db323"></a>`owner` | "stove0_review_sampler_support.ReviewSampler" |
-| <a id="s-c08ad55170"></a>`unit` | "member" |
+- <a id="s-e9311ac2cd"></a>`distribution`: `stove0-review-sampler-support`
+- <a id="s-9e2b03b462"></a>`module`: `stove0_review_sampler_support`
+- <a id="s-96c797f3cb"></a>`name`: `sample`
+- <a id="s-3ab32db323"></a>`owner`: `stove0_review_sampler_support.ReviewSampler`
+- <a id="s-c08ad55170"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ce275c0323"></a>`kind`: `"method"`
+- <a id="s-491f1245cd"></a>`signature`: `"\"(self, request: 'SamplerRequest') -> 'SamplerResult'\""`
 
 ## Maintained corroboration
 

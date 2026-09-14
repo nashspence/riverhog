@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-092394fbd7"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-09d87f9725"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-804d544af8"></a>`distribution` | "riverhog-client" |
-| <a id="s-cf71573a65"></a>`module` | "riverhog_client.transform" |
-| <a id="s-7a303e1e49"></a>`name` | "publish" |
-| <a id="s-d427df50d5"></a>`owner` | "riverhog_client.transform.DerivedCollectionWriter" |
-| <a id="s-5cd14b57d0"></a>`unit` | "member" |
+- <a id="s-804d544af8"></a>`distribution`: `riverhog-client`
+- <a id="s-cf71573a65"></a>`module`: `riverhog_client.transform`
+- <a id="s-7a303e1e49"></a>`name`: `publish`
+- <a id="s-d427df50d5"></a>`owner`: `riverhog_client.transform.DerivedCollectionWriter`
+- <a id="s-5cd14b57d0"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c31cd52f83"></a>`kind`: `"method"`
+- <a id="s-e6f23ea3ac"></a>`signature`: `"\"(self, outputs: 'Sequence[ProducerInput]', *, execution_envelope_sha256: 'str', execution_sha256: 'str', disposition_set: 'ArtifactDispositionSetIdentity', source_context: 'Mapping[str, object] \| None' = None, poll_seconds: 'float' = 2.0, timeout_seconds: 'float' = 86400) -> 'DerivedCollectionReceipt'\""`
 
 ## Maintained corroboration
 

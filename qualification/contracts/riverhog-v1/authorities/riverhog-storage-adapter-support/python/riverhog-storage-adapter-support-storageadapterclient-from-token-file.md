@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fe28e1a91e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2132ee14a4"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d11ef85f32"></a>`distribution` | "riverhog-storage-adapter-support" |
-| <a id="s-94ed5676aa"></a>`module` | "riverhog_storage_adapter_support" |
-| <a id="s-116cc0211f"></a>`name` | "from_token_file" |
-| <a id="s-92885c5b03"></a>`owner` | "riverhog_storage_adapter_support.StorageAdapterClient" |
-| <a id="s-c1eabf1b97"></a>`unit` | "member" |
+- <a id="s-d11ef85f32"></a>`distribution`: `riverhog-storage-adapter-support`
+- <a id="s-94ed5676aa"></a>`module`: `riverhog_storage_adapter_support`
+- <a id="s-116cc0211f"></a>`name`: `from_token_file`
+- <a id="s-92885c5b03"></a>`owner`: `riverhog_storage_adapter_support.StorageAdapterClient`
+- <a id="s-c1eabf1b97"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1e595238f0"></a>`kind`: `"classmethod"`
+- <a id="s-cf2491e7bc"></a>`signature`: `"\"(cls, base_url: 'str', *, token_file: 'Path', allow_insecure_http: 'bool' = False, timeout: 'float \| httpx.Timeout \| None' = 300.0, maximum_connections: 'int' = 32, client: 'httpx.Client \| None' = None) -> 'StorageAdapterClient'\""`
 
 ## Maintained corroboration
 

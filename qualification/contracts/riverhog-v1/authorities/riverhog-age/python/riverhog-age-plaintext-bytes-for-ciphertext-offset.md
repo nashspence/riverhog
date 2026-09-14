@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1db72bebc5"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8abcd2aecb"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-0ce1822be3"></a>`distribution` | "riverhog-age" |
-| <a id="s-18b90c0857"></a>`module` | "riverhog_age" |
-| <a id="s-d1446d10d1"></a>`name` | "plaintext_bytes_for_ciphertext_offset" |
-| <a id="s-70cd7e0a70"></a>`unit` | "export" |
+- <a id="s-0ce1822be3"></a>`distribution`: `riverhog-age`
+- <a id="s-18b90c0857"></a>`module`: `riverhog_age`
+- <a id="s-d1446d10d1"></a>`name`: `plaintext_bytes_for_ciphertext_offset`
+- <a id="s-70cd7e0a70"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-3f99d2b429"></a>`kind`: `"function"`
+- <a id="s-110611364c"></a>`signature`: `"\"(*, state: 'UploadState \| bytes \| str \| Mapping[str, object]', plaintext_bytes: 'int', ciphertext_bytes: 'int', ciphertext_offset: 'int') -> 'int'\""`
 
 ## Governing policies
 

@@ -14,13 +14,35 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bf6aadfc13"></a>
-| Field | Shape |
+- <a id="s-ccbef6b4ec"></a>`distribution`: `riverhog-protocol`
+- <a id="s-d866eb54b7"></a>`module`: `riverhog_protocol`
+- <a id="s-0a9d4140f8"></a>`name`: `CatalogSyncDelete`
+- <a id="s-86b99a8281"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-b839f8b8b8"></a>`kind`: `"class"`
+- <a id="s-d52850d684"></a>`signature`: `"\"(*, operation: Literal['delete'] = 'delete', collection_id: CollectionId, revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern='^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-79de46c8fb"></a>
+- <a id="s-ae669fe636"></a>`title`: CatalogSyncDelete
+- <a id="s-2a14510f0c"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e49e26afec"></a>`collection_id` | yes | #/$defs/CollectionId |  |
+| <a id="s-158b4ec8c7"></a>`operation` | no | type="string"; const="delete" |  |
+| <a id="s-1a3a7c99bf"></a>`revision` | yes | type="string"; minLength=1; maxLength=19; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-49fabeb945"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-ccbef6b4ec"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-d866eb54b7"></a>`module` | "riverhog_protocol" |
-| <a id="s-0a9d4140f8"></a>`name` | "CatalogSyncDelete" |
-| <a id="s-86b99a8281"></a>`unit` | "export" |
+| <a id="s-de7607d230"></a>`CollectionId` | type="integer"; minimum=1 |
 
 ## Governing policies
 
@@ -46,13 +68,45 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7c03d9719f14e2dadec0bf40568486198a1f802a66572ff16e317671eb9bcdef -->
+<!-- exact-contract-value: 872bc9c9c399500bd4d1d17900b48eb31a5d44130cfff6664735d752602dc50d -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "157cdc75cb1f1a98f27527f0afef0cbf357b327e6096118a624d7e2a4c011b7c",
+    "schema": {
+      "$defs": {
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "collection_id": {
+          "$ref": "#/$defs/CollectionId"
+        },
+        "operation": {
+          "const": "delete",
+          "default": "delete",
+          "title": "Operation",
+          "type": "string"
+        },
+        "revision": {
+          "maxLength": 19,
+          "minLength": 1,
+          "pattern": "^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$",
+          "title": "Revision",
+          "type": "string"
+        }
+      },
+      "required": [
+        "collection_id",
+        "revision"
+      ],
+      "title": "CatalogSyncDelete",
+      "type": "object"
+    },
     "signature": "\"(*, operation: Literal['delete'] = 'delete', collection_id: CollectionId, revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern='^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$', ascii_only=None)]) -> None\""
   },
   "distribution": "riverhog-protocol",

@@ -14,13 +14,35 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-97fc9498e1"></a>
-| Field | Shape |
+- <a id="s-97815d04e4"></a>`distribution`: `lifecycle-events`
+- <a id="s-88319aa5d7"></a>`module`: `lifecycle_events`
+- <a id="s-7ff3a644d0"></a>`name`: `EventPage`
+- <a id="s-b44473440b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-b00e398e69"></a>`kind`: `"class"`
+- <a id="s-8a9f74e0cb"></a>`signature`: `"'(*, events: list[lifecycle_events.models.CloudEvent], next_cursor: str, has_more: bool) -> None'"`
+
+#### Validated model schema
+
+<a id="s-0d4a6f7d8e"></a>
+- <a id="s-aaa4901933"></a>`title`: EventPage
+- <a id="s-fcff02be4e"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0facf2cec7"></a>`events` | yes | type="array"; items=(#/$defs/CloudEvent) |  |
+| <a id="s-3c6245566d"></a>`has_more` | yes | type="boolean" |  |
+| <a id="s-98ac6308d7"></a>`next_cursor` | yes | type="string" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-5c94c6f57d"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-97815d04e4"></a>`distribution` | "lifecycle-events" |
-| <a id="s-88319aa5d7"></a>`module` | "lifecycle_events" |
-| <a id="s-7ff3a644d0"></a>`name` | "EventPage" |
-| <a id="s-b44473440b"></a>`unit` | "export" |
+| <a id="s-d72037c6f5"></a>`CloudEvent` | type="object"; fields=`data`, `datacontenttype`, `id`, `source`, `specversion`, `subject`, `time`, `type`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -52,13 +74,103 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fa478a43c4c8007ca18cb5f7a9f95352c1f432e2bcf76389afb467dc7b34a2c6 -->
+<!-- exact-contract-value: e00ab568de1db4278d9c28f682a4463ffc8701730ca0057adabb83ea8b33b758 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "8847c9798649b25d96f5d871b15ead3ffee87f978f685526fc5b91476d6a03e9",
+    "schema": {
+      "$defs": {
+        "CloudEvent": {
+          "additionalProperties": false,
+          "properties": {
+            "data": {
+              "additionalProperties": true,
+              "title": "Data",
+              "type": "object"
+            },
+            "datacontenttype": {
+              "const": "application/json",
+              "default": "application/json",
+              "title": "Datacontenttype",
+              "type": "string"
+            },
+            "id": {
+              "minLength": 1,
+              "title": "Id",
+              "type": "string"
+            },
+            "source": {
+              "minLength": 1,
+              "title": "Source",
+              "type": "string"
+            },
+            "specversion": {
+              "const": "1.0",
+              "default": "1.0",
+              "title": "Specversion",
+              "type": "string"
+            },
+            "subject": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Subject"
+            },
+            "time": {
+              "title": "Time",
+              "type": "string"
+            },
+            "type": {
+              "minLength": 1,
+              "title": "Type",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "source",
+            "type",
+            "time"
+          ],
+          "title": "CloudEvent",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "events": {
+          "items": {
+            "$ref": "#/$defs/CloudEvent"
+          },
+          "title": "Events",
+          "type": "array"
+        },
+        "has_more": {
+          "title": "Has More",
+          "type": "boolean"
+        },
+        "next_cursor": {
+          "title": "Next Cursor",
+          "type": "string"
+        }
+      },
+      "required": [
+        "events",
+        "next_cursor",
+        "has_more"
+      ],
+      "title": "EventPage",
+      "type": "object"
+    },
     "signature": "'(*, events: list[lifecycle_events.models.CloudEvent], next_cursor: str, has_more: bool) -> None'"
   },
   "distribution": "lifecycle-events",

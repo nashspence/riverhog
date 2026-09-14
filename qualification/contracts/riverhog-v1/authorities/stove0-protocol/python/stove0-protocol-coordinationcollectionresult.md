@@ -14,13 +14,40 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fa965f5bc0"></a>
-| Field | Shape |
+- <a id="s-ed71943913"></a>`distribution`: `stove0-protocol`
+- <a id="s-98d8031b1c"></a>`module`: `stove0_protocol`
+- <a id="s-bfc2a73cdc"></a>`name`: `CoordinationCollectionResult`
+- <a id="s-9465c59ef7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f118c7617e"></a>`kind`: `"class"`
+- <a id="s-167d14ca6b"></a>`signature`: `"\"(*, producer_work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], join_settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], derivation_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], output_collection: stove0_protocol.models.CollectionRootRef, output_selection: stove0_protocol.fork_join.ArtifactSelectionRef) -> None\""`
+
+#### Validated model schema
+
+<a id="s-34b10d7254"></a>
+- <a id="s-ea11bbd5ae"></a>`title`: CoordinationCollectionResult
+- <a id="s-c0db0f5a56"></a>`description`: Parent-visible collection produced by the coordinator's actual join leaf.
+- <a id="s-11c104ce99"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cc9f456d3c"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c86826f870"></a>`join_settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2b815340a1"></a>`output_collection` | yes | #/$defs/CollectionRootRef |  |
+| <a id="s-03cda085c4"></a>`output_selection` | yes | #/$defs/ArtifactSelectionRef |  |
+| <a id="s-5848a46fac"></a>`producer_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-c8b53bb0d5"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-ed71943913"></a>`distribution` | "stove0-protocol" |
-| <a id="s-98d8031b1c"></a>`module` | "stove0_protocol" |
-| <a id="s-bfc2a73cdc"></a>`name` | "CoordinationCollectionResult" |
-| <a id="s-9465c59ef7"></a>`unit` | "export" |
+| <a id="s-1a5436700c"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
+| <a id="s-1343125861"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-a8c5328325"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
@@ -46,13 +73,107 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 38bcab70ee5c422d4730aca848d9cd745ef73c23f7d3ef199b8991409fb7edb4 -->
+<!-- exact-contract-value: 72e7b54891b84c95f9b2b2171293ea1ba8feea609b98ef573740f2d6c3695091 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "5fd6c013e6da69ffca712f53a43fde736783250dd5dda7a0a176a2a9f4eeb5bf",
+    "schema": {
+      "$defs": {
+        "ArtifactSelectionRef": {
+          "additionalProperties": false,
+          "description": "Closed reference to a separately retained selection document.",
+          "properties": {
+            "artifact_count": {
+              "minimum": 1,
+              "title": "Artifact Count",
+              "type": "integer"
+            },
+            "selection_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Selection Sha256",
+              "type": "string"
+            },
+            "total_bytes": {
+              "minimum": 0,
+              "title": "Total Bytes",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "selection_sha256",
+            "artifact_count",
+            "total_bytes"
+          ],
+          "title": "ArtifactSelectionRef",
+          "type": "object"
+        },
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "CollectionRootRef": {
+          "additionalProperties": false,
+          "properties": {
+            "archive_root_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Archive Root Sha256",
+              "type": "string"
+            },
+            "collection_id": {
+              "$ref": "#/$defs/CollectionId"
+            },
+            "content_identity": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Content Identity",
+              "type": "string"
+            }
+          },
+          "required": [
+            "collection_id",
+            "archive_root_sha256",
+            "content_identity"
+          ],
+          "title": "CollectionRootRef",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Parent-visible collection produced by the coordinator's actual join leaf.",
+      "properties": {
+        "derivation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Derivation Sha256",
+          "type": "string"
+        },
+        "join_settlement_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Join Settlement Sha256",
+          "type": "string"
+        },
+        "output_collection": {
+          "$ref": "#/$defs/CollectionRootRef"
+        },
+        "output_selection": {
+          "$ref": "#/$defs/ArtifactSelectionRef"
+        },
+        "producer_work_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Producer Work Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "producer_work_id",
+        "join_settlement_sha256",
+        "derivation_sha256",
+        "output_collection",
+        "output_selection"
+      ],
+      "title": "CoordinationCollectionResult",
+      "type": "object"
+    },
     "signature": "\"(*, producer_work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], join_settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], derivation_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], output_collection: stove0_protocol.models.CollectionRootRef, output_selection: stove0_protocol.fork_join.ArtifactSelectionRef) -> None\""
   },
   "distribution": "stove0-protocol",

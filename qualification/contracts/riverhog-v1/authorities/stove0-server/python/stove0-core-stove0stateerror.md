@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3090c70020"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1312931ac2"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f35b09f26d"></a>`distribution` | "stove0-server" |
-| <a id="s-2feedf68fd"></a>`module` | "stove0_core" |
-| <a id="s-cc61bcbd57"></a>`name` | "Stove0StateError" |
-| <a id="s-d0b004aa98"></a>`unit` | "export" |
+- <a id="s-f35b09f26d"></a>`distribution`: `stove0-server`
+- <a id="s-2feedf68fd"></a>`module`: `stove0_core`
+- <a id="s-cc61bcbd57"></a>`name`: `Stove0StateError`
+- <a id="s-d0b004aa98"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f087a2e828"></a>`kind`: `"class"`
+- <a id="s-0e0168f2cb"></a>`signature`: `"unavailable"`
 
 ## Governing policies
 

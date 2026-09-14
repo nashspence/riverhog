@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-117782c4a6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ceb3c28307"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-62fbd37746"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-9421bb731f"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-340afac0e3"></a>`name` | "from_mapping" |
-| <a id="s-0c8542446e"></a>`owner` | "riverhog_archive_contracts.ArchiveProvenanceIdentity" |
-| <a id="s-db39646cfb"></a>`unit` | "member" |
+- <a id="s-62fbd37746"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-9421bb731f"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-340afac0e3"></a>`name`: `from_mapping`
+- <a id="s-0c8542446e"></a>`owner`: `riverhog_archive_contracts.ArchiveProvenanceIdentity`
+- <a id="s-db39646cfb"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-7d71b3aa25"></a>`kind`: `"classmethod"`
+- <a id="s-70e0412aab"></a>`signature`: `"\"(cls, value: 'object') -> 'ArchiveProvenanceIdentity'\""`
 
 ## Maintained corroboration
 

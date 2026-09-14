@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f35caa74d9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d132e11bc3"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-8e3c623741"></a>`distribution` | "stove0-server" |
-| <a id="s-f6bea64cce"></a>`module` | "stove0_core" |
-| <a id="s-a521ce6161"></a>`name` | "target_preflight_request" |
-| <a id="s-7c3887cb3c"></a>`owner` | "stove0_core.PlanningPort" |
-| <a id="s-6254f01d60"></a>`unit` | "member" |
+- <a id="s-8e3c623741"></a>`distribution`: `stove0-server`
+- <a id="s-f6bea64cce"></a>`module`: `stove0_core`
+- <a id="s-a521ce6161"></a>`name`: `target_preflight_request`
+- <a id="s-7c3887cb3c"></a>`owner`: `stove0_core.PlanningPort`
+- <a id="s-6254f01d60"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-a2cee59484"></a>`kind`: `"method"`
+- <a id="s-ab7d3b0128"></a>`signature`: `"\"(self, plan: 'WorkflowPlan', selections: 'dict[str, ArtifactSelection]') -> 'TargetPreflightRequest'\""`
 
 ## Maintained corroboration
 

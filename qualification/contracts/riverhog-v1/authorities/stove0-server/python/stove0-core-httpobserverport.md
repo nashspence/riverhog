@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-63cd70f1f9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a148a6b8b4"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-40c06f568f"></a>`distribution` | "stove0-server" |
-| <a id="s-f1a60cdb6b"></a>`module` | "stove0_core" |
-| <a id="s-c1604bd159"></a>`name` | "HttpObserverPort" |
-| <a id="s-f18f35f134"></a>`unit` | "export" |
+- <a id="s-40c06f568f"></a>`distribution`: `stove0-server`
+- <a id="s-f1a60cdb6b"></a>`module`: `stove0_core`
+- <a id="s-c1604bd159"></a>`name`: `HttpObserverPort`
+- <a id="s-f18f35f134"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f9a61f303c"></a>`kind`: `"class"`
+- <a id="s-e7f428eaa8"></a>`signature`: `"\"(registrations: 'dict[str, ContentObserverClient]') -> 'None'\""`
 
 ## Maintained corroboration
 

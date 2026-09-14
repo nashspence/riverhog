@@ -14,13 +14,35 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1350e31c69"></a>
-| Field | Shape |
+- <a id="s-ad57446dae"></a>`distribution`: `stove0-review-planning`
+- <a id="s-2ce265330e"></a>`module`: `stove0_review_planning`
+- <a id="s-7e7ebb9ff8"></a>`name`: `ReviewVariant`
+- <a id="s-6f254cb7fe"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-59131906e2"></a>`kind`: `"class"`
+- <a id="s-84d3614ab2"></a>`signature`: `"\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]&#40;?:[a-z0-9._-]{0,158}[a-z0-9])?$')], portable_intent: dict[str, JsonValue] = <factory>, target_options: dict[str, JsonValue] = <factory>) -> None\""`
+
+#### Validated model schema
+
+<a id="s-119f275b32"></a>
+- <a id="s-0f1a7c4977"></a>`title`: ReviewVariant
+- <a id="s-fa72432407"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c33ed454d4"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-0b5d6934d6"></a>`portable_intent` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-917c3968f0"></a>`target_options` | no | type="object"; additional keys=`additionalProperties` |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-d6ad71f5fd"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-ad57446dae"></a>`distribution` | "stove0-review-planning" |
-| <a id="s-2ce265330e"></a>`module` | "stove0_review_planning" |
-| <a id="s-7e7ebb9ff8"></a>`name` | "ReviewVariant" |
-| <a id="s-6f254cb7fe"></a>`unit` | "export" |
+| <a id="s-126b5d9bd8"></a>`JsonValue` | empty object |
 
 ## Governing policies
 
@@ -46,13 +68,44 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 538cccd6f1ecd7f7a443cf06f09cc8129ca41996cf0a77305f5ca6395d81c08c -->
+<!-- exact-contract-value: efc258067c7dc3441dd308000b78138df908acf3c7c73e5ee88d692cbf5b3dfa -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "4d9480938840f87d7b1881952c04480a5d339ff1a809971d9445974dcc07287b",
+    "schema": {
+      "$defs": {
+        "JsonValue": {}
+      },
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,158}[a-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "portable_intent": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Portable Intent",
+          "type": "object"
+        },
+        "target_options": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Target Options",
+          "type": "object"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "ReviewVariant",
+      "type": "object"
+    },
     "signature": "\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._-]{0,158}[a-z0-9])?$')], portable_intent: dict[str, JsonValue] = <factory>, target_options: dict[str, JsonValue] = <factory>) -> None\""
   },
   "distribution": "stove0-review-planning",

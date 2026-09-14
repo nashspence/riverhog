@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c086949aac"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-27bda23f3f"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-61740d85b0"></a>`distribution` | "http-api-contracts" |
-| <a id="s-a0ee19967c"></a>`module` | "http_api_contracts" |
-| <a id="s-38e35b295a"></a>`name` | "HealthResponse" |
-| <a id="s-3898c814ba"></a>`unit` | "export" |
+- <a id="s-61740d85b0"></a>`distribution`: `http-api-contracts`
+- <a id="s-a0ee19967c"></a>`module`: `http_api_contracts`
+- <a id="s-38e35b295a"></a>`name`: `HealthResponse`
+- <a id="s-3898c814ba"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-32679821a8"></a>`kind`: `"class"`
+- <a id="s-a75875effc"></a>`signature`: `"\"(*, service: Annotated[str, MinLen(min_length=1)], status: Literal['ok']) -> None\""`
+
+#### Validated model schema
+
+<a id="s-a6a5fbcb59"></a>
+- <a id="s-aa98feb88c"></a>`title`: HealthResponse
+- <a id="s-c36814c318"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-1a5a243fe3"></a>`service` | yes | type="string"; minLength=1 |  |
+| <a id="s-aa328af297"></a>`status` | yes | type="string"; const="ok" |  |
 
 ## Governing policies
 
@@ -46,13 +61,33 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fbf28f0cbfd13a115985825a3c520b07c65a27348d5d2d4ffc693e99b0df8cd7 -->
+<!-- exact-contract-value: b5522fc8549ae3b4d6ef471dd61f9b19c84a80cea1eedeb417da6ad64dfe76ab -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "873f58b65973a85d82bd4e352acd595a8f32f6058c4500f11514358669b42b31",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "service": {
+          "minLength": 1,
+          "title": "Service",
+          "type": "string"
+        },
+        "status": {
+          "const": "ok",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "service",
+        "status"
+      ],
+      "title": "HealthResponse",
+      "type": "object"
+    },
     "signature": "\"(*, service: Annotated[str, MinLen(min_length=1)], status: Literal['ok']) -> None\""
   },
   "distribution": "http-api-contracts",

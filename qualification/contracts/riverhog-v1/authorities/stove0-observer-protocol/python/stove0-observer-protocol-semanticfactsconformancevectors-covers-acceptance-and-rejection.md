@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d5e3388c4c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-70ec5508e0"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-954170e3e1"></a>`distribution` | "stove0-observer-protocol" |
-| <a id="s-24d58b0a91"></a>`module` | "stove0_observer_protocol" |
-| <a id="s-2e76278b8c"></a>`name` | "covers_acceptance_and_rejection" |
-| <a id="s-faaf3670a5"></a>`owner` | "stove0_observer_protocol.SemanticFactsConformanceVectors" |
-| <a id="s-7a636cff36"></a>`unit` | "member" |
+- <a id="s-954170e3e1"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-24d58b0a91"></a>`module`: `stove0_observer_protocol`
+- <a id="s-2e76278b8c"></a>`name`: `covers_acceptance_and_rejection`
+- <a id="s-faaf3670a5"></a>`owner`: `stove0_observer_protocol.SemanticFactsConformanceVectors`
+- <a id="s-7a636cff36"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-f3eeb7a06c"></a>`kind`: `"method"`
+- <a id="s-271976871d"></a>`signature`: `"\"(self) -> 'Self'\""`
 
 ## Maintained corroboration
 

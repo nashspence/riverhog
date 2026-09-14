@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0227d44d56"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c6e819a89c"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-67d42169ef"></a>`distribution` | "riverhog-client" |
-| <a id="s-d3d8cb5414"></a>`module` | "riverhog_client.transform" |
-| <a id="s-035fa63ff0"></a>`name` | "DerivedCollectionWriter" |
-| <a id="s-0604f50062"></a>`unit` | "export" |
+- <a id="s-67d42169ef"></a>`distribution`: `riverhog-client`
+- <a id="s-d3d8cb5414"></a>`module`: `riverhog_client.transform`
+- <a id="s-035fa63ff0"></a>`name`: `DerivedCollectionWriter`
+- <a id="s-0604f50062"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-4259e9def4"></a>`kind`: `"class"`
+- <a id="s-7d52663eeb"></a>`signature`: `"\"(api: 'Any', *, spec: 'DerivedCollectionSpec', claim_id: 'str', fence: 'int', work_id: 'str', execution_id: 'str', controller_evidence: 'Mapping[str, object]', producer_app: 'str', producer_version: 'str' = 'development') -> 'None'\""`
 
 ## Maintained corroboration
 

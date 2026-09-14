@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3c2be362c2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-132a0b4693"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d9ac4f5bff"></a>`distribution` | "riverhog-client" |
-| <a id="s-a6bf8f9ed6"></a>`module` | "riverhog_client.transform" |
-| <a id="s-b34b87fd43"></a>`name` | "stream_retrieval_file" |
-| <a id="s-1d919ab048"></a>`owner` | "riverhog_client.transform.ClaimedCollectionApi" |
-| <a id="s-445d8e06a7"></a>`unit` | "member" |
+- <a id="s-d9ac4f5bff"></a>`distribution`: `riverhog-client`
+- <a id="s-a6bf8f9ed6"></a>`module`: `riverhog_client.transform`
+- <a id="s-b34b87fd43"></a>`name`: `stream_retrieval_file`
+- <a id="s-1d919ab048"></a>`owner`: `riverhog_client.transform.ClaimedCollectionApi`
+- <a id="s-445d8e06a7"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3d64b9cc81"></a>`kind`: `"method"`
+- <a id="s-bbf27be1b8"></a>`signature`: `"\"(self, job_id: 'str', *, collection_id: 'CollectionId', path: 'str', expected_bytes: 'int', expected_sha256: 'str', start: 'int' = 0, end: 'int \| None' = None, chunk_size: 'int' = 8388608) -> 'AbstractContextManager[Iterator[bytes]]'\""`
 
 ## Maintained corroboration
 

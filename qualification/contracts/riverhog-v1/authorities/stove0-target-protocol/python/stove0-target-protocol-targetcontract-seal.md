@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5b01589cc6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ec3afb1406"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-2ff8bedc0c"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-7eca700251"></a>`module` | "stove0_target_protocol" |
-| <a id="s-092d8a1e07"></a>`name` | "seal" |
-| <a id="s-57635dfc6c"></a>`owner` | "stove0_target_protocol.TargetContract" |
-| <a id="s-a0922bff43"></a>`unit` | "member" |
+- <a id="s-2ff8bedc0c"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-7eca700251"></a>`module`: `stove0_target_protocol`
+- <a id="s-092d8a1e07"></a>`name`: `seal`
+- <a id="s-57635dfc6c"></a>`owner`: `stove0_target_protocol.TargetContract`
+- <a id="s-a0922bff43"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-9f7ff1cd9e"></a>`kind`: `"classmethod"`
+- <a id="s-6b0aafd046"></a>`signature`: `"\"(cls, payload: 'TargetContractPayload') -> 'TargetContract'\""`
 
 ## Maintained corroboration
 

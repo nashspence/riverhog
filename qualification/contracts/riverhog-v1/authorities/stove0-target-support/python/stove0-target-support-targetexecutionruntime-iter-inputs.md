@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b92a33abf3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-962ee6e623"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-eca64faa57"></a>`distribution` | "stove0-target-support" |
-| <a id="s-e0dd7a8ee5"></a>`module` | "stove0_target_support" |
-| <a id="s-8ab01c6ae7"></a>`name` | "iter_inputs" |
-| <a id="s-7bad1a3979"></a>`owner` | "stove0_target_support.TargetExecutionRuntime" |
-| <a id="s-a2ada5fa4a"></a>`unit` | "member" |
+- <a id="s-eca64faa57"></a>`distribution`: `stove0-target-support`
+- <a id="s-e0dd7a8ee5"></a>`module`: `stove0_target_support`
+- <a id="s-8ab01c6ae7"></a>`name`: `iter_inputs`
+- <a id="s-7bad1a3979"></a>`owner`: `stove0_target_support.TargetExecutionRuntime`
+- <a id="s-a2ada5fa4a"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c5c746ef1e"></a>`kind`: `"method"`
+- <a id="s-a58da3d58b"></a>`signature`: `"\"(self) -> 'Iterator[tuple[InputArtifact, ClaimedArtifact]]'\""`
 
 ## Maintained corroboration
 

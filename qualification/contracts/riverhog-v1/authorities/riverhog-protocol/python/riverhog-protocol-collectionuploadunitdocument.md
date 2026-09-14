@@ -14,13 +14,37 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-203eb98a36"></a>
-| Field | Shape |
+- <a id="s-8567377bf2"></a>`distribution`: `riverhog-protocol`
+- <a id="s-6dc76405e5"></a>`module`: `riverhog_protocol`
+- <a id="s-92121b4355"></a>`name`: `CollectionUploadUnitDocument`
+- <a id="s-05ba1be1a8"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-7739825a4e"></a>`kind`: `"class"`
+- <a id="s-5d2ef7790e"></a>`signature`: `"'(*, unit: Annotated[int, Ge(ge=0)], payload_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], plaintext_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], sources: Annotated[list[riverhog_protocol.collection_upload_transport.CollectionUploadUnitSourceDocument], MaxLen(max_length=1000)]) -> None'"`
+
+#### Validated model schema
+
+<a id="s-2718db9f9d"></a>
+- <a id="s-8451e2e8ba"></a>`title`: CollectionUploadUnitDocument
+- <a id="s-0b9b4c4860"></a>`description`: Protocol-owned identity of one server-planned plaintext upload unit.
+- <a id="s-b2ba19c19e"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e4325beb51"></a>`payload_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-ec15f49a7a"></a>`plaintext_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-951531c70a"></a>`sources` | yes | type="array"; maxItems=1000; items=(#/$defs/CollectionUploadUnitSourceDocument); additional keys=`x-riverhog-extent` |  |
+| <a id="s-b5b9e2d464"></a>`unit` | yes | type="integer"; minimum=0 |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-be59ee01cc"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-8567377bf2"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-6dc76405e5"></a>`module` | "riverhog_protocol" |
-| <a id="s-92121b4355"></a>`name` | "CollectionUploadUnitDocument" |
-| <a id="s-05ba1be1a8"></a>`unit` | "export" |
+| <a id="s-802970dc2d"></a>`CollectionUploadUnitSourceDocument` | type="object"; fields=`artifact_sha256`, `bytes`, `offset`, `path`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -52,13 +76,89 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 334c21143a3676d8d2e0e72879717d02d1f624b7399cecd6b91b81df0f3371cc -->
+<!-- exact-contract-value: e47c40e4cca17f3a666c02e77cbd746b10a4fba21eeef08496cfb6375e5e72ce -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "140a215e31b017d029bdc313c3d6ed9fd5c86eae5501e54e66a121ea513e71df",
+    "schema": {
+      "$defs": {
+        "CollectionUploadUnitSourceDocument": {
+          "additionalProperties": false,
+          "description": "One exact source range supplied in a server-planned upload unit.",
+          "properties": {
+            "artifact_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Artifact Sha256",
+              "type": "string"
+            },
+            "bytes": {
+              "minimum": 0,
+              "title": "Bytes",
+              "type": "integer"
+            },
+            "offset": {
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            },
+            "path": {
+              "title": "Path",
+              "type": "string"
+            }
+          },
+          "required": [
+            "path",
+            "offset",
+            "bytes",
+            "artifact_sha256"
+          ],
+          "title": "CollectionUploadUnitSourceDocument",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Protocol-owned identity of one server-planned plaintext upload unit.",
+      "properties": {
+        "payload_bytes": {
+          "minimum": 0,
+          "title": "Payload Bytes",
+          "type": "integer"
+        },
+        "plaintext_bytes": {
+          "minimum": 0,
+          "title": "Plaintext Bytes",
+          "type": "integer"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/CollectionUploadUnitSourceDocument"
+          },
+          "maxItems": 1000,
+          "title": "Sources",
+          "type": "array",
+          "x-riverhog-extent": {
+            "policy": "segmented_no_total_max",
+            "progression": "collection-volume-sequence",
+            "reason": "bounded-upload-unit-source-map"
+          }
+        },
+        "unit": {
+          "minimum": 0,
+          "title": "Unit",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "unit",
+        "payload_bytes",
+        "plaintext_bytes",
+        "sources"
+      ],
+      "title": "CollectionUploadUnitDocument",
+      "type": "object"
+    },
     "signature": "'(*, unit: Annotated[int, Ge(ge=0)], payload_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], plaintext_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], sources: Annotated[list[riverhog_protocol.collection_upload_transport.CollectionUploadUnitSourceDocument], MaxLen(max_length=1000)]) -> None'"
   },
   "distribution": "riverhog-protocol",

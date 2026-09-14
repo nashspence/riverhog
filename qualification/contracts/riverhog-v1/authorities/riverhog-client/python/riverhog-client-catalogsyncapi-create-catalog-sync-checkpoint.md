@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-091f5e6a9a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2b4869a56c"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-2ed37c783c"></a>`distribution` | "riverhog-client" |
-| <a id="s-11fd346636"></a>`module` | "riverhog_client" |
-| <a id="s-f44d6f8099"></a>`name` | "create_catalog_sync_checkpoint" |
-| <a id="s-1c479a6621"></a>`owner` | "riverhog_client.CatalogSyncApi" |
-| <a id="s-acf7ea9ba6"></a>`unit` | "member" |
+- <a id="s-2ed37c783c"></a>`distribution`: `riverhog-client`
+- <a id="s-11fd346636"></a>`module`: `riverhog_client`
+- <a id="s-f44d6f8099"></a>`name`: `create_catalog_sync_checkpoint`
+- <a id="s-1c479a6621"></a>`owner`: `riverhog_client.CatalogSyncApi`
+- <a id="s-acf7ea9ba6"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-bb284cdf21"></a>`kind`: `"method"`
+- <a id="s-60405b0557"></a>`signature`: `"\"(self) -> 'CatalogSyncCheckpoint'\""`
 
 ## Maintained corroboration
 

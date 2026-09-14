@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b50f8b95e4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-020e939efd"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-9ce69f0efe"></a>`distribution` | "riverhog-client" |
-| <a id="s-c717a1105d"></a>`module` | "riverhog_client" |
-| <a id="s-ab27e744e5"></a>`name` | "collection_provenance_journal_metadata" |
-| <a id="s-4c478e5bf9"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-df88a54f38"></a>`unit` | "member" |
+- <a id="s-9ce69f0efe"></a>`distribution`: `riverhog-client`
+- <a id="s-c717a1105d"></a>`module`: `riverhog_client`
+- <a id="s-ab27e744e5"></a>`name`: `collection_provenance_journal_metadata`
+- <a id="s-4c478e5bf9"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-df88a54f38"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-d7ad9a33dc"></a>`kind`: `"method"`
+- <a id="s-f16d48e3bb"></a>`signature`: `"\"(self, collection_id: 'CollectionId', journal_id: 'ProvenanceJournalId') -> 'tuple[int, str]'\""`
 
 ## Maintained corroboration
 

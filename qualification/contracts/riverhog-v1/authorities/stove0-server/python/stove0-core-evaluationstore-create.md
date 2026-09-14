@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e6176cdf78"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-57ccd41e17"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-2395b6da11"></a>`distribution` | "stove0-server" |
-| <a id="s-946693d462"></a>`module` | "stove0_core" |
-| <a id="s-339f5b600a"></a>`name` | "create" |
-| <a id="s-10af7bce06"></a>`owner` | "stove0_core.EvaluationStore" |
-| <a id="s-5c718617d9"></a>`unit` | "member" |
+- <a id="s-2395b6da11"></a>`distribution`: `stove0-server`
+- <a id="s-946693d462"></a>`module`: `stove0_core`
+- <a id="s-339f5b600a"></a>`name`: `create`
+- <a id="s-10af7bce06"></a>`owner`: `stove0_core.EvaluationStore`
+- <a id="s-5c718617d9"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e8e0f4d0d5"></a>`kind`: `"method"`
+- <a id="s-5a1a803f81"></a>`signature`: `"\"(self, record: 'EvaluationRecord') -> 'EvaluationRecord'\""`
 
 ## Maintained corroboration
 

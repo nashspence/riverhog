@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3c3ff0e24c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8e7ba31d6d"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c2190e207a"></a>`distribution` | "stove0-api-client" |
-| <a id="s-e37ef72a87"></a>`module` | "stove0_api_client" |
-| <a id="s-828cc629fe"></a>`name` | "get_artifact_selection" |
-| <a id="s-af81dad56c"></a>`owner` | "stove0_api_client.Stove0ApiClient" |
-| <a id="s-cf6369b3f1"></a>`unit` | "member" |
+- <a id="s-c2190e207a"></a>`distribution`: `stove0-api-client`
+- <a id="s-e37ef72a87"></a>`module`: `stove0_api_client`
+- <a id="s-828cc629fe"></a>`name`: `get_artifact_selection`
+- <a id="s-af81dad56c"></a>`owner`: `stove0_api_client.Stove0ApiClient`
+- <a id="s-cf6369b3f1"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-be56137fee"></a>`kind`: `"method"`
+- <a id="s-0c9d5e143d"></a>`signature`: `"\"(self, selection_sha256: 'str', *, continuation: 'str \| None' = None) -> 'ArtifactSelectionPage'\""`
 
 ## Maintained corroboration
 

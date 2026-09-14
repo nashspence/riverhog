@@ -14,13 +14,27 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ed8d421fa7"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1a793910d3"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-939249e3ca"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-26af95f59e"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-5e932f383e"></a>`name` | "MaintenanceResult" |
-| <a id="s-f628dee5c7"></a>`unit` | "export" |
+- <a id="s-939249e3ca"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-26af95f59e"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-5e932f383e"></a>`name`: `MaintenanceResult`
+- <a id="s-f628dee5c7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e361dbeb5e"></a>`kind`: `"class"`
+- <a id="s-33909c3c6d"></a>`signature`: `"'(*, affected: Annotated[int, Ge(ge=0)]) -> None'"`
+
+#### Validated model schema
+
+<a id="s-ac14e0db41"></a>
+- <a id="s-fe3e1f5f94"></a>`title`: MaintenanceResult
+- <a id="s-8724fd62cc"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-17e08d246a"></a>`affected` | yes | type="integer"; minimum=0 |  |
 
 ## Governing policies
 
@@ -46,13 +60,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 791c2072a052da8aaf0dfe25cf27efea76c988e5b11563b0f093b3832e6b71b9 -->
+<!-- exact-contract-value: 776624a3bfe8bd2c9c60c3b08998977705a5409d75890277a598676f2454185f -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "1b8ad376bb41a2eb81c64450d4ccb99a09150f8f1c72f6203ecdad2b933a565c",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "affected": {
+          "minimum": 0,
+          "title": "Affected",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "affected"
+      ],
+      "title": "MaintenanceResult",
+      "type": "object"
+    },
     "signature": "'(*, affected: Annotated[int, Ge(ge=0)]) -> None'"
   },
   "distribution": "riverhog-storage-adapter-protocol",

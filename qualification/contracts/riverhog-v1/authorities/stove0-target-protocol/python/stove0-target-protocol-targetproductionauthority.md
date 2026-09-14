@@ -14,13 +14,44 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3500257307"></a>
-| Field | Shape |
+- <a id="s-f4cae559bd"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-bbc83daa53"></a>`module`: `stove0_target_protocol`
+- <a id="s-13bec5d0df"></a>`name`: `TargetProductionAuthority`
+- <a id="s-2a882066c4"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-bdd628abe8"></a>`kind`: `"class"`
+- <a id="s-cff4a68762"></a>`signature`: `"\"(*, format: Literal['stove0-target-production/v1'] = 'stove0-target-production/v1', job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], outputs: stove0_target_protocol.protocol.OutputArtifactSetIdentity, disposition_count: Annotated[int, Ge(ge=1)], disposition_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], source_edge_count: Annotated[int, Ge(ge=1)], source_edge_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], riverhog_disposition_set: riverhog_protocol.collection_workflows.ArtifactDispositionSetIdentity, production_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-f5ebeab6a0"></a>
+- <a id="s-4e324f4439"></a>`title`: TargetProductionAuthority
+- <a id="s-1ffcb617c3"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f92593ed06"></a>`disposition_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-68ce05550c"></a>`disposition_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1e4d7d8e91"></a>`format` | no | type="string"; const="stove0-target-production/v1" |  |
+| <a id="s-396e979e8a"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-0498c0b75a"></a>`outputs` | yes | #/$defs/OutputArtifactSetIdentity |  |
+| <a id="s-b044cb5bfe"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1537270c7d"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-79a13546f8"></a>`riverhog_disposition_set` | yes | #/$defs/ArtifactDispositionSetIdentity |  |
+| <a id="s-6572928216"></a>`source_edge_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-a963d7e7ac"></a>`source_edge_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-50711ba80f"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-f4cae559bd"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-bbc83daa53"></a>`module` | "stove0_target_protocol" |
-| <a id="s-13bec5d0df"></a>`name` | "TargetProductionAuthority" |
-| <a id="s-2a882066c4"></a>`unit` | "export" |
+| <a id="s-d6279287da"></a>`ArtifactDispositionSetIdentity` | type="object"; fields=`disposition_count`, `output_artifact_count`, `output_edge_count`, `sha256`; additional keys=`required` |
+| <a id="s-7fea261e65"></a>`OutputArtifactRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
+| <a id="s-e500020a28"></a>`OutputArtifactSetIdentity` | type="object"; fields=`artifact_count`, `roles`, `sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -53,13 +84,166 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7a84908b862f589211ab93865dc3168d6ed5da6894b3bba6f4f153ecee250d66 -->
+<!-- exact-contract-value: 9f16408adaecfbaaa4b91be9908cfc09b47abf4be8f4c8c31f84c03cad8233f6 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "955edae0149fdeb8c282f51dd1687bbaab9a525e46b05d22ef13f7fd5a9fc423",
+    "schema": {
+      "$defs": {
+        "ArtifactDispositionSetIdentity": {
+          "description": "Small identity for one sealed claim-scoped relational disposition set.",
+          "properties": {
+            "disposition_count": {
+              "title": "Disposition Count",
+              "type": "integer"
+            },
+            "output_artifact_count": {
+              "title": "Output Artifact Count",
+              "type": "integer"
+            },
+            "output_edge_count": {
+              "title": "Output Edge Count",
+              "type": "integer"
+            },
+            "sha256": {
+              "title": "Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "disposition_count",
+            "output_edge_count",
+            "output_artifact_count",
+            "sha256"
+          ],
+          "title": "ArtifactDispositionSetIdentity",
+          "type": "object"
+        },
+        "OutputArtifactRoleCount": {
+          "additionalProperties": false,
+          "properties": {
+            "count": {
+              "minimum": 1,
+              "title": "Count",
+              "type": "integer"
+            },
+            "role": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Role",
+              "type": "string"
+            }
+          },
+          "required": [
+            "role",
+            "count"
+          ],
+          "title": "OutputArtifactRoleCount",
+          "type": "object"
+        },
+        "OutputArtifactSetIdentity": {
+          "additionalProperties": false,
+          "description": "Small identity for target outputs already registered with Riverhog.",
+          "properties": {
+            "artifact_count": {
+              "minimum": 1,
+              "title": "Artifact Count",
+              "type": "integer"
+            },
+            "roles": {
+              "items": {
+                "$ref": "#/$defs/OutputArtifactRoleCount"
+              },
+              "minItems": 1,
+              "title": "Roles",
+              "type": "array"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sha256",
+              "type": "string"
+            },
+            "total_bytes": {
+              "minimum": 0,
+              "title": "Total Bytes",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "artifact_count",
+            "total_bytes",
+            "roles",
+            "sha256"
+          ],
+          "title": "OutputArtifactSetIdentity",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "disposition_count": {
+          "minimum": 1,
+          "title": "Disposition Count",
+          "type": "integer"
+        },
+        "disposition_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Disposition Sha256",
+          "type": "string"
+        },
+        "format": {
+          "const": "stove0-target-production/v1",
+          "default": "stove0-target-production/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "job_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Job Id",
+          "type": "string"
+        },
+        "outputs": {
+          "$ref": "#/$defs/OutputArtifactSetIdentity"
+        },
+        "plan_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Plan Sha256",
+          "type": "string"
+        },
+        "production_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Production Sha256",
+          "type": "string"
+        },
+        "riverhog_disposition_set": {
+          "$ref": "#/$defs/ArtifactDispositionSetIdentity"
+        },
+        "source_edge_count": {
+          "minimum": 1,
+          "title": "Source Edge Count",
+          "type": "integer"
+        },
+        "source_edge_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Edge Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "job_id",
+        "plan_sha256",
+        "outputs",
+        "disposition_count",
+        "disposition_sha256",
+        "source_edge_count",
+        "source_edge_sha256",
+        "riverhog_disposition_set",
+        "production_sha256"
+      ],
+      "title": "TargetProductionAuthority",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['stove0-target-production/v1'] = 'stove0-target-production/v1', job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], outputs: stove0_target_protocol.protocol.OutputArtifactSetIdentity, disposition_count: Annotated[int, Ge(ge=1)], disposition_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], source_edge_count: Annotated[int, Ge(ge=1)], source_edge_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], riverhog_disposition_set: riverhog_protocol.collection_workflows.ArtifactDispositionSetIdentity, production_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-target-protocol",

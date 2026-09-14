@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b38b10edf4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-bf310d0322"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-05be943411"></a>`distribution` | "stove0-media-metadata-observer-contracts" |
-| <a id="s-c68672e22b"></a>`module` | "stove0_media_metadata_observer_contracts" |
-| <a id="s-151c95e971"></a>`name` | "validate_media_metadata_observation" |
-| <a id="s-9ab7a8e26d"></a>`unit` | "export" |
+- <a id="s-05be943411"></a>`distribution`: `stove0-media-metadata-observer-contracts`
+- <a id="s-c68672e22b"></a>`module`: `stove0_media_metadata_observer_contracts`
+- <a id="s-151c95e971"></a>`name`: `validate_media_metadata_observation`
+- <a id="s-9ab7a8e26d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-1f435129ec"></a>`kind`: `"function"`
+- <a id="s-d42dbb4859"></a>`signature`: `"\"(request: 'ObservationRequest', facts: 'Mapping[str, object]') -> 'None'\""`
 
 ## Governing policies
 

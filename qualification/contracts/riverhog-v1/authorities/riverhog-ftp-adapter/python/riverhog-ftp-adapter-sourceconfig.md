@@ -14,13 +14,45 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-99d467f9fb"></a>
-| Field | Shape |
+- <a id="s-d64b48fa7d"></a>`distribution`: `riverhog-ftp-adapter`
+- <a id="s-617284a63c"></a>`module`: `riverhog_ftp_adapter`
+- <a id="s-55281d26bd"></a>`name`: `SourceConfig`
+- <a id="s-7cd33da652"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-3df8b27b82"></a>`kind`: `"class"`
+- <a id="s-4d6f2904a1"></a>`signature`: `"\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$')], root: pathlib.Path, ingest_source: Annotated[str, MinLen(min_length=1), MaxLen(max_length=512)], archive_store: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=160)] = None, description: CollectionDescription \| None = None, tags: tuple[CollectionTag, ...] = (), close_mode: Literal['stable', 'explicit-flush'] = 'stable', max_files: Annotated[int, Ge(ge=1)] = 1000, max_bytes: Annotated[int, Ge(ge=1)] = 107374182400, provenance: Literal['capture', 'omit'] = 'capture', provenance_omission_reason: Annotated[str \| None, MaxLen(max_length=1000)] = None) -> None\""`
+
+#### Validated model schema
+
+<a id="s-3abecbca66"></a>
+- <a id="s-ac2d5743ff"></a>`title`: SourceConfig
+- <a id="s-e31373e40f"></a>`description`: One deployment-owned, content-opaque intake source.
+- <a id="s-e0685f4790"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a2f6e360bd"></a>`archive_store` | no | anyOf=type="string"; minLength=1; maxLength=160 \| type="null" |  |
+| <a id="s-61be86a337"></a>`close_mode` | no | type="string"; enum=["stable","explicit-flush"] |  |
+| <a id="s-aa5b361399"></a>`description` | no | anyOf=#/$defs/CollectionDescription \| type="null" |  |
+| <a id="s-91145a9ec7"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$" |  |
+| <a id="s-4eac7856d0"></a>`ingest_source` | yes | type="string"; minLength=1; maxLength=512 |  |
+| <a id="s-20a31ed4e5"></a>`max_bytes` | no | type="integer"; minimum=1 |  |
+| <a id="s-d1f237a26c"></a>`max_files` | no | type="integer"; minimum=1 |  |
+| <a id="s-45fe0b309b"></a>`provenance` | no | type="string"; enum=["capture","omit"] |  |
+| <a id="s-61c3fd440f"></a>`provenance_omission_reason` | no | anyOf=type="string"; maxLength=1000 \| type="null" |  |
+| <a id="s-23579dbc50"></a>`root` | yes | type="string"; format="path" |  |
+| <a id="s-75b01acf3e"></a>`tags` | no | type="array"; items=(#/$defs/CollectionTag) |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-d47739d2d9"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-d64b48fa7d"></a>`distribution` | "riverhog-ftp-adapter" |
-| <a id="s-617284a63c"></a>`module` | "riverhog_ftp_adapter" |
-| <a id="s-55281d26bd"></a>`name` | "SourceConfig" |
-| <a id="s-7cd33da652"></a>`unit` | "export" |
+| <a id="s-f5f291f15b"></a>`CollectionDescription` | type="string"; minLength=1; maxLength=32768; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
+| <a id="s-7aafaec44c"></a>`CollectionTag` | type="string"; minLength=1; maxLength=65536; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
 
 ## Maintained corroboration
 
@@ -53,13 +85,141 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: dd0fda2f43e9a210e0f3956a2f20aba9adf7a66f7300614170d049b745a47d04 -->
+<!-- exact-contract-value: 4cdc55640376f7950fd0780a135b6f4b8c97282e53505be6196a461b4c0f2d3f -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "814e86c57a33d78f0992459b58d920b897b9707c9376143172c9d60d967cd496",
+    "schema": {
+      "$defs": {
+        "CollectionDescription": {
+          "maxLength": 32768,
+          "minLength": 1,
+          "type": "string",
+          "x-riverhog-encoded-bytes-max": 32768,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-human-authored-catalog-description"
+          },
+          "x-unicode-normalization": "NFC"
+        },
+        "CollectionTag": {
+          "maxLength": 65536,
+          "minLength": 1,
+          "type": "string",
+          "x-riverhog-encoded-bytes-max": 65536,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-human-authored-collection-tag"
+          },
+          "x-unicode-normalization": "NFC"
+        }
+      },
+      "additionalProperties": false,
+      "description": "One deployment-owned, content-opaque intake source.",
+      "properties": {
+        "archive_store": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Archive Store"
+        },
+        "close_mode": {
+          "default": "stable",
+          "enum": [
+            "stable",
+            "explicit-flush"
+          ],
+          "title": "Close Mode",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CollectionDescription"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,118}[a-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "ingest_source": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Ingest Source",
+          "type": "string"
+        },
+        "max_bytes": {
+          "default": 107374182400,
+          "minimum": 1,
+          "title": "Max Bytes",
+          "type": "integer"
+        },
+        "max_files": {
+          "default": 1000,
+          "minimum": 1,
+          "title": "Max Files",
+          "type": "integer"
+        },
+        "provenance": {
+          "default": "capture",
+          "enum": [
+            "capture",
+            "omit"
+          ],
+          "title": "Provenance",
+          "type": "string"
+        },
+        "provenance_omission_reason": {
+          "anyOf": [
+            {
+              "maxLength": 1000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provenance Omission Reason"
+        },
+        "root": {
+          "format": "path",
+          "title": "Root",
+          "type": "string"
+        },
+        "tags": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/CollectionTag"
+          },
+          "title": "Tags",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "root",
+        "ingest_source"
+      ],
+      "title": "SourceConfig",
+      "type": "object"
+    },
     "signature": "\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._-]{0,118}[a-z0-9])?$')], root: pathlib.Path, ingest_source: Annotated[str, MinLen(min_length=1), MaxLen(max_length=512)], archive_store: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=160)] = None, description: CollectionDescription | None = None, tags: tuple[CollectionTag, ...] = (), close_mode: Literal['stable', 'explicit-flush'] = 'stable', max_files: Annotated[int, Ge(ge=1)] = 1000, max_bytes: Annotated[int, Ge(ge=1)] = 107374182400, provenance: Literal['capture', 'omit'] = 'capture', provenance_omission_reason: Annotated[str | None, MaxLen(max_length=1000)] = None) -> None\""
   },
   "distribution": "riverhog-ftp-adapter",

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2e95753161"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-92df931841"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-3e39d9b473"></a>`distribution` | "stove0-nvenc-av1-opus-review-sampler" |
-| <a id="s-c07781ca4d"></a>`module` | "stove0_nvenc_av1_opus_review_sampler" |
-| <a id="s-c861155dcb"></a>`name` | "NvencAv1OpusReviewSampler" |
-| <a id="s-bd43e666a7"></a>`unit` | "export" |
+- <a id="s-3e39d9b473"></a>`distribution`: `stove0-nvenc-av1-opus-review-sampler`
+- <a id="s-c07781ca4d"></a>`module`: `stove0_nvenc_av1_opus_review_sampler`
+- <a id="s-c861155dcb"></a>`name`: `NvencAv1OpusReviewSampler`
+- <a id="s-bd43e666a7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-855b635492"></a>`kind`: `"class"`
+- <a id="s-5776c4ce4c"></a>`signature`: `"\"(*, workspace_root: 'Path', ffmpeg: 'str' = 'ffmpeg', source_revision: 'str' = 'unknown', image_digest: 'str') -> 'None'\""`
 
 ## Maintained corroboration
 

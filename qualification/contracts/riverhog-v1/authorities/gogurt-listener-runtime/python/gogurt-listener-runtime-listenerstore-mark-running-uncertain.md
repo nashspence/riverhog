@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7cbcf98e17"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-560f648c44"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f88a1be4c9"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-38cbda9448"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-14465a1715"></a>`name` | "mark_running_uncertain" |
-| <a id="s-284c036e51"></a>`owner` | "gogurt_listener_runtime.ListenerStore" |
-| <a id="s-6db91584dd"></a>`unit` | "member" |
+- <a id="s-f88a1be4c9"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-38cbda9448"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-14465a1715"></a>`name`: `mark_running_uncertain`
+- <a id="s-284c036e51"></a>`owner`: `gogurt_listener_runtime.ListenerStore`
+- <a id="s-6db91584dd"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-4c8a669c3b"></a>`kind`: `"method"`
+- <a id="s-913ad5be2d"></a>`signature`: `"\"(self, dispatch_id: 'str', *, error: 'str', now: 'float') -> 'None'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1350d8dae1"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-edbdce5e94"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-8c868ab062"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-4e0785031d"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-bfa03d462d"></a>`name` | "canonical_policies" |
-| <a id="s-c710c1bf13"></a>`owner` | "stove0_operator_contracts.AdmissionCatalog" |
-| <a id="s-160d7b6852"></a>`unit` | "member" |
+- <a id="s-8c868ab062"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-4e0785031d"></a>`module`: `stove0_operator_contracts`
+- <a id="s-bfa03d462d"></a>`name`: `canonical_policies`
+- <a id="s-c710c1bf13"></a>`owner`: `stove0_operator_contracts.AdmissionCatalog`
+- <a id="s-160d7b6852"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-cd89c07dc0"></a>`kind`: `"classmethod"`
+- <a id="s-79aa11baae"></a>`signature`: `"\"(cls, value: 'tuple[AdmissionPolicy, ...]') -> 'tuple[AdmissionPolicy, ...]'\""`
 
 ## Maintained corroboration
 

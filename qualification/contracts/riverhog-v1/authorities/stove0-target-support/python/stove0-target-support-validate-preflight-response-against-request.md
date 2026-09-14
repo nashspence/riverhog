@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-aa3f95cdf5"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7d71ebf2f4"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-654dd83060"></a>`distribution` | "stove0-target-support" |
-| <a id="s-5b9789292c"></a>`module` | "stove0_target_support" |
-| <a id="s-7608327ec7"></a>`name` | "validate_preflight_response_against_request" |
-| <a id="s-82a0673fe2"></a>`unit` | "export" |
+- <a id="s-654dd83060"></a>`distribution`: `stove0-target-support`
+- <a id="s-5b9789292c"></a>`module`: `stove0_target_support`
+- <a id="s-7608327ec7"></a>`name`: `validate_preflight_response_against_request`
+- <a id="s-82a0673fe2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-5d10ff2d40"></a>`kind`: `"function"`
+- <a id="s-dd5cb93398"></a>`signature`: `"\"(response: 'TargetPreflightResponse', request: 'TargetPreflightRequest') -> 'None'\""`
 
 ## Governing policies
 

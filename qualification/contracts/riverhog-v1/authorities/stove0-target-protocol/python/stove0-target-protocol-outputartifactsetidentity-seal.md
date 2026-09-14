@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6e92ded363"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-57794aa335"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-15dcc94dee"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-cfd9781ec3"></a>`module` | "stove0_target_protocol" |
-| <a id="s-e827d4376e"></a>`name` | "seal" |
-| <a id="s-7cca3dfa45"></a>`owner` | "stove0_target_protocol.OutputArtifactSetIdentity" |
-| <a id="s-898d31e6b7"></a>`unit` | "member" |
+- <a id="s-15dcc94dee"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-cfd9781ec3"></a>`module`: `stove0_target_protocol`
+- <a id="s-e827d4376e"></a>`name`: `seal`
+- <a id="s-7cca3dfa45"></a>`owner`: `stove0_target_protocol.OutputArtifactSetIdentity`
+- <a id="s-898d31e6b7"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-80d3f3f746"></a>`kind`: `"classmethod"`
+- <a id="s-242018fb9f"></a>`signature`: `"\"(cls, artifacts: 'tuple[OutputArtifact, ...]') -> 'OutputArtifactSetIdentity'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-98749d3527"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9f2b24cb5e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c24b6b2510"></a>`distribution` | "riverhog-storage-adapter-support" |
-| <a id="s-c0691c0a0f"></a>`module` | "riverhog_storage_adapter_support" |
-| <a id="s-ee4b42df4f"></a>`name` | "delete_object" |
-| <a id="s-d5b8b2c8ab"></a>`owner` | "riverhog_storage_adapter_support.StorageAdapterClient" |
-| <a id="s-58b21f882a"></a>`unit` | "member" |
+- <a id="s-c24b6b2510"></a>`distribution`: `riverhog-storage-adapter-support`
+- <a id="s-c0691c0a0f"></a>`module`: `riverhog_storage_adapter_support`
+- <a id="s-ee4b42df4f"></a>`name`: `delete_object`
+- <a id="s-d5b8b2c8ab"></a>`owner`: `riverhog_storage_adapter_support.StorageAdapterClient`
+- <a id="s-58b21f882a"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-918efe89ea"></a>`kind`: `"method"`
+- <a id="s-1e3670a761"></a>`signature`: `"\"(self, request: 'DeleteObjectRequest') -> 'None'\""`
 
 ## Maintained corroboration
 

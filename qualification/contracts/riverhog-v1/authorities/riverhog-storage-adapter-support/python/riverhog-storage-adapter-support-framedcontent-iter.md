@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-81db5faaec"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-dc673e9c5c"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-3f4c70dbc4"></a>`distribution` | "riverhog-storage-adapter-support" |
-| <a id="s-37816e645b"></a>`module` | "riverhog_storage_adapter_support" |
-| <a id="s-65a66af3e9"></a>`name` | "__iter__" |
-| <a id="s-58537e9475"></a>`owner` | "riverhog_storage_adapter_support.FramedContent" |
-| <a id="s-8887d8c782"></a>`unit` | "member" |
+- <a id="s-3f4c70dbc4"></a>`distribution`: `riverhog-storage-adapter-support`
+- <a id="s-37816e645b"></a>`module`: `riverhog_storage_adapter_support`
+- <a id="s-65a66af3e9"></a>`name`: `__iter__`
+- <a id="s-58537e9475"></a>`owner`: `riverhog_storage_adapter_support.FramedContent`
+- <a id="s-8887d8c782"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-564b7453d5"></a>`kind`: `"method"`
+- <a id="s-b9703302c9"></a>`signature`: `"\"(self) -> 'FramedContent'\""`
 
 ## Maintained corroboration
 

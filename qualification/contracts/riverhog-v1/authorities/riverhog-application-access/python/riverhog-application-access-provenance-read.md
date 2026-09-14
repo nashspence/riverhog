@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0014c4a8ed"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5ab3fb1ab5"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-fb5a342d8b"></a>`distribution` | "riverhog-application-access" |
-| <a id="s-ca00633e8d"></a>`module` | "riverhog_application_access" |
-| <a id="s-d813e7af54"></a>`name` | "PROVENANCE_READ" |
-| <a id="s-619fe0f010"></a>`unit` | "export" |
+- <a id="s-fb5a342d8b"></a>`distribution`: `riverhog-application-access`
+- <a id="s-ca00633e8d"></a>`module`: `riverhog_application_access`
+- <a id="s-d813e7af54"></a>`name`: `PROVENANCE_READ`
+- <a id="s-619fe0f010"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ff1e76b24c"></a>`kind`: `"constant"`
+- <a id="s-ac061f991b"></a>`value`: `"provenance:read"`
 
 ## Governing policies
 

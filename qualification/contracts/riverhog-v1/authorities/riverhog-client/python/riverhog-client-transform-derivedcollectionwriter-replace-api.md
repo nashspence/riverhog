@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-dde0313542"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9c91d08809"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c6e22f6ef9"></a>`distribution` | "riverhog-client" |
-| <a id="s-a4bd3004bc"></a>`module` | "riverhog_client.transform" |
-| <a id="s-3a6e81aa2d"></a>`name` | "replace_api" |
-| <a id="s-44b082d0e3"></a>`owner` | "riverhog_client.transform.DerivedCollectionWriter" |
-| <a id="s-87c4e47543"></a>`unit` | "member" |
+- <a id="s-c6e22f6ef9"></a>`distribution`: `riverhog-client`
+- <a id="s-a4bd3004bc"></a>`module`: `riverhog_client.transform`
+- <a id="s-3a6e81aa2d"></a>`name`: `replace_api`
+- <a id="s-44b082d0e3"></a>`owner`: `riverhog_client.transform.DerivedCollectionWriter`
+- <a id="s-87c4e47543"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-2e1f167242"></a>`kind`: `"method"`
+- <a id="s-f6a036ac09"></a>`signature`: `"\"(self, api: 'Any') -> 'None'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0036740015"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-77f333ea79"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-164d8f8923"></a>`distribution` | "riverhog-client" |
-| <a id="s-59e93f1b21"></a>`module` | "riverhog_client.transform" |
-| <a id="s-81e6b0c2fb"></a>`name` | "TransformWorkspace" |
-| <a id="s-962c4776c3"></a>`unit` | "export" |
+- <a id="s-164d8f8923"></a>`distribution`: `riverhog-client`
+- <a id="s-59e93f1b21"></a>`module`: `riverhog_client.transform`
+- <a id="s-81e6b0c2fb"></a>`name`: `TransformWorkspace`
+- <a id="s-962c4776c3"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-a40ea62101"></a>`kind`: `"class"`
+- <a id="s-1dbacd25ce"></a>`signature`: `"\"(root: 'Path', execution_id: 'str', assurance: 'WorkspaceAssurance') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-6db8a21458"></a>`root` | `'Path'` | `required` |
+| <a id="s-ddbe6f07e9"></a>`execution_id` | `'str'` | `required` |
+| <a id="s-fa68e4e302"></a>`assurance` | `'WorkspaceAssurance'` | `required` |
 
 ## Maintained corroboration
 

@@ -39,7 +39,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-aec3abea41"></a>`emitted` | <a id="s-9db66ee58f"></a>`{"kind":"option-absent","parameter":"output"}` | <a id="s-942cd6dca7"></a>`0` | <a id="s-4d0cbf1ffb"></a>`json: stove0-observer-schema-bundle/v1` | <a id="s-662f32dea5"></a>`all: empty` |
+| <a id="s-aec3abea41"></a>`emitted` | <a id="s-9db66ee58f"></a>`{"kind":"option-absent","parameter":"output"}` | <a id="s-942cd6dca7"></a>`0` | <a id="s-4d0cbf1ffb"></a>`json: document-authority` | <a id="s-662f32dea5"></a>`all: empty` |
 | <a id="s-69f512bf20"></a>`written` | <a id="s-8ae887f5fe"></a>`{"kind":"option-present","parameter":"output"}` | <a id="s-0f78699ef3"></a>`0` | <a id="s-2880b7e871"></a>`all: empty` | <a id="s-dca9ab393e"></a>`all: empty` |
 
 #### Failure outcomes
@@ -125,7 +125,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0-observer-schemas/result_contract`
 
-<!-- exact-contract-value: 42f882f131fabcf275d1d553464c5bdd72d4ee1ee5052ec37e51ed7cfbf8575e -->
+<!-- exact-contract-value: e4c56c4220f9d15d55d9e33042c7d7a12557a052a47a5ee8a64871b43e2adc43 -->
 
 ```json
 {
@@ -161,8 +161,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "stdout": {
         "json": {
-          "identity": "stove0-observer-schema-bundle/v1",
-          "kind": "semantic-format"
+          "authority": "generated:stove0-observer",
+          "kind": "document-authority"
         }
       }
     },

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-61c4f50d3b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a1ef025d0a"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-9eed603993"></a>`distribution` | "stove0-observer-protocol" |
-| <a id="s-f167c0f1a1"></a>`module` | "stove0_observer_protocol" |
-| <a id="s-4539ab8397"></a>`name` | "from_profile" |
-| <a id="s-efd059d231"></a>`owner` | "stove0_observer_protocol.SemanticValidatorBinding" |
-| <a id="s-a0dc5706e2"></a>`unit` | "member" |
+- <a id="s-9eed603993"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-f167c0f1a1"></a>`module`: `stove0_observer_protocol`
+- <a id="s-4539ab8397"></a>`name`: `from_profile`
+- <a id="s-efd059d231"></a>`owner`: `stove0_observer_protocol.SemanticValidatorBinding`
+- <a id="s-a0dc5706e2"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-00c2b2372f"></a>`kind`: `"classmethod"`
+- <a id="s-0b7551e907"></a>`signature`: `"\"(cls, profile: 'SemanticValidationProfile', validator: 'FactsSemanticValidator') -> 'SemanticValidatorBinding'\""`
 
 ## Maintained corroboration
 

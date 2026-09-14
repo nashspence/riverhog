@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a0df3e2b48"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-246c12fe45"></a>`contract` | type="types.UnionType"; additional keys=`kind` |
-| <a id="s-100da8ef68"></a>`distribution` | "riverhog-client" |
-| <a id="s-4cf98fa0a2"></a>`module` | "riverhog_client" |
-| <a id="s-26969ade16"></a>`name` | "ProducerInput" |
-| <a id="s-be6e67d4ac"></a>`unit` | "export" |
+- <a id="s-100da8ef68"></a>`distribution`: `riverhog-client`
+- <a id="s-4cf98fa0a2"></a>`module`: `riverhog_client`
+- <a id="s-26969ade16"></a>`name`: `ProducerInput`
+- <a id="s-be6e67d4ac"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-2d0d93d389"></a>`kind`: `"object"`
+- <a id="s-7fa9ff03d7"></a>`type`: `"types.UnionType"`
 
 ## Governing policies
 

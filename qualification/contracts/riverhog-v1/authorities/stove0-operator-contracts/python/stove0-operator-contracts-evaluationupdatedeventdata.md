@@ -14,13 +14,29 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8621a40e56"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-dc298e2657"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-64150470d7"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-f11b35e119"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-ea15c17811"></a>`name` | "EvaluationUpdatedEventData" |
-| <a id="s-5f20d84bf6"></a>`unit` | "export" |
+- <a id="s-64150470d7"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-f11b35e119"></a>`module`: `stove0_operator_contracts`
+- <a id="s-ea15c17811"></a>`name`: `EvaluationUpdatedEventData`
+- <a id="s-5f20d84bf6"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e699378557"></a>`kind`: `"class"`
+- <a id="s-d06bc7b0ee"></a>`signature`: `"\"(*, evaluation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], phase: Literal['planning', 'running', 'partially_complete', 'complete', 'failed', 'canceled'], revision: Annotated[int, Ge(ge=2)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-77969a9546"></a>
+- <a id="s-5ab54d703b"></a>`title`: EvaluationUpdatedEventData
+- <a id="s-98bb941528"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a0c4d5b694"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-9dfc5dfc90"></a>`phase` | yes | type="string"; enum=["planning","running","partially_complete","complete","failed","canceled"] |  |
+| <a id="s-c11da2d2fd"></a>`revision` | yes | type="integer"; minimum=2 |  |
 
 ## Governing policies
 
@@ -46,13 +62,46 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0295a12c05cf8f06d6083f44a6423fbcaa801e2f5973c4744610c7252fa4b7b8 -->
+<!-- exact-contract-value: 64b4bf505ed4284fe0af528eecdaef243337bd4db7199c149544e5c55b041b2d -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "564ef285d77d3c9dad1bf60136e69ab8f2b535cfdc729c7830aa6ecdb46fd671",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "evaluation_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evaluation Id",
+          "type": "string"
+        },
+        "phase": {
+          "enum": [
+            "planning",
+            "running",
+            "partially_complete",
+            "complete",
+            "failed",
+            "canceled"
+          ],
+          "title": "Phase",
+          "type": "string"
+        },
+        "revision": {
+          "minimum": 2,
+          "title": "Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "evaluation_id",
+        "phase",
+        "revision"
+      ],
+      "title": "EvaluationUpdatedEventData",
+      "type": "object"
+    },
     "signature": "\"(*, evaluation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], phase: Literal['planning', 'running', 'partially_complete', 'complete', 'failed', 'canceled'], revision: Annotated[int, Ge(ge=2)]) -> None\""
   },
   "distribution": "stove0-operator-contracts",

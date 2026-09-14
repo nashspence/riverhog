@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2c06e84525"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b7006829d1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-36621a2d6a"></a>`distribution` | "riverhog-storage-adapter-support" |
-| <a id="s-ce4d1a81dd"></a>`module` | "riverhog_storage_adapter_support" |
-| <a id="s-5f107e3237"></a>`name` | "read_object" |
-| <a id="s-5f069b5109"></a>`owner` | "riverhog_storage_adapter_support.StorageAdapterClient" |
-| <a id="s-801cf31a99"></a>`unit` | "member" |
+- <a id="s-36621a2d6a"></a>`distribution`: `riverhog-storage-adapter-support`
+- <a id="s-ce4d1a81dd"></a>`module`: `riverhog_storage_adapter_support`
+- <a id="s-5f107e3237"></a>`name`: `read_object`
+- <a id="s-5f069b5109"></a>`owner`: `riverhog_storage_adapter_support.StorageAdapterClient`
+- <a id="s-801cf31a99"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-189a955f3b"></a>`kind`: `"method"`
+- <a id="s-398e6160f2"></a>`signature`: `"\"(self, request: 'ObjectReadRequest') -> 'ObjectReadStream'\""`
 
 ## Maintained corroboration
 

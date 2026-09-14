@@ -14,13 +14,38 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e9beca85e7"></a>
-| Field | Shape |
+- <a id="s-68944ba22b"></a>`distribution`: `stove0-media-archive-target-contracts`
+- <a id="s-b998bed64a"></a>`module`: `stove0_media_archive_target_contracts`
+- <a id="s-d7a71a48ad"></a>`name`: `AudioArchiveIntent`
+- <a id="s-ad85ad5df2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-397da9f871"></a>`kind`: `"class"`
+- <a id="s-0faca004dc"></a>`signature`: `"\"(*, codec: Literal['opus'] = 'opus', container: Literal['opus'] = 'opus', bitrate_kbps: Annotated[int, Ge(ge=16), Le(le=512)] = 128, metadata_projection: stove0_media_archive_target_contracts.projection_policy.MediaProjectionPolicy = <factory>) -> None\""`
+
+#### Validated model schema
+
+<a id="s-cd9f857894"></a>
+- <a id="s-325b217539"></a>`title`: AudioArchiveIntent
+- <a id="s-2301185882"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4de69062e4"></a>`bitrate_kbps` | no | type="integer"; minimum=16; maximum=512 |  |
+| <a id="s-63c15502f4"></a>`codec` | no | type="string"; const="opus" |  |
+| <a id="s-ad463d6aa3"></a>`container` | no | type="string"; const="opus" |  |
+| <a id="s-8cc72d3b41"></a>`metadata_projection` | no | #/$defs/MediaProjectionPolicy |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-88b5316569"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-68944ba22b"></a>`distribution` | "stove0-media-archive-target-contracts" |
-| <a id="s-b998bed64a"></a>`module` | "stove0_media_archive_target_contracts" |
-| <a id="s-d7a71a48ad"></a>`name` | "AudioArchiveIntent" |
-| <a id="s-ad85ad5df2"></a>`unit` | "export" |
+| <a id="s-e222d648c9"></a>`MediaFieldPreference` | type="object"; fields=`fields`, `name`; additional keys=`additionalProperties`, `required` |
+| <a id="s-08ab823d60"></a>`MediaGps` | type="object"; fields=`latitude`, `longitude`; additional keys=`additionalProperties`, `required` |
+| <a id="s-89c84af88a"></a>`MediaProjectionPolicy` | type="object"; fields=`creators`, `device_make`, `device_model`, `field_preferences`, `format`, `gps`, `tags`; additional keys=`additionalProperties` |
 
 ## Governing policies
 
@@ -46,13 +71,166 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 75851b38204f57103e1a8f87c4d7343cac5b343549b0c286c83c6ba5dcc189c0 -->
+<!-- exact-contract-value: f027c9af9b34b3f85926674632ac72dce9ce39c1695d3a985e1caa5a590dd5e6 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "ca8f0aa963958b27701a2b5a59429d23e242d2315c6d5361a9177c5a69d52456",
+    "schema": {
+      "$defs": {
+        "MediaFieldPreference": {
+          "additionalProperties": false,
+          "properties": {
+            "fields": {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "title": "Fields",
+              "type": "array"
+            },
+            "name": {
+              "enum": [
+                "capture-time",
+                "creator",
+                "device-make",
+                "device-model",
+                "gps-latitude",
+                "gps-longitude"
+              ],
+              "title": "Name",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "fields"
+          ],
+          "title": "MediaFieldPreference",
+          "type": "object"
+        },
+        "MediaGps": {
+          "additionalProperties": false,
+          "properties": {
+            "latitude": {
+              "title": "Latitude",
+              "type": "number"
+            },
+            "longitude": {
+              "title": "Longitude",
+              "type": "number"
+            }
+          },
+          "required": [
+            "latitude",
+            "longitude"
+          ],
+          "title": "MediaGps",
+          "type": "object"
+        },
+        "MediaProjectionPolicy": {
+          "additionalProperties": false,
+          "description": "Portable recipe-owned choices; omitted values are never manufactured.",
+          "properties": {
+            "creators": {
+              "default": [],
+              "items": {
+                "type": "string"
+              },
+              "title": "Creators",
+              "type": "array"
+            },
+            "device_make": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Device Make"
+            },
+            "device_model": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Device Model"
+            },
+            "field_preferences": {
+              "default": [],
+              "items": {
+                "$ref": "#/$defs/MediaFieldPreference"
+              },
+              "title": "Field Preferences",
+              "type": "array"
+            },
+            "format": {
+              "const": "stove0-media-projection-policy/v1",
+              "default": "stove0-media-projection-policy/v1",
+              "title": "Format",
+              "type": "string"
+            },
+            "gps": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/MediaGps"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "tags": {
+              "default": [],
+              "items": {
+                "type": "string"
+              },
+              "title": "Tags",
+              "type": "array"
+            }
+          },
+          "title": "MediaProjectionPolicy",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "bitrate_kbps": {
+          "default": 128,
+          "maximum": 512,
+          "minimum": 16,
+          "title": "Bitrate Kbps",
+          "type": "integer"
+        },
+        "codec": {
+          "const": "opus",
+          "default": "opus",
+          "title": "Codec",
+          "type": "string"
+        },
+        "container": {
+          "const": "opus",
+          "default": "opus",
+          "title": "Container",
+          "type": "string"
+        },
+        "metadata_projection": {
+          "$ref": "#/$defs/MediaProjectionPolicy"
+        }
+      },
+      "title": "AudioArchiveIntent",
+      "type": "object"
+    },
     "signature": "\"(*, codec: Literal['opus'] = 'opus', container: Literal['opus'] = 'opus', bitrate_kbps: Annotated[int, Ge(ge=16), Le(le=512)] = 128, metadata_projection: stove0_media_archive_target_contracts.projection_policy.MediaProjectionPolicy = <factory>) -> None\""
   },
   "distribution": "stove0-media-archive-target-contracts",

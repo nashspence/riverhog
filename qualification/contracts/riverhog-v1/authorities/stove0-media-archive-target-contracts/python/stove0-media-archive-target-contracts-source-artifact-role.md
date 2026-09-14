@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8f63e8a770"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-93f3f07eb9"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-a931a7e423"></a>`distribution` | "stove0-media-archive-target-contracts" |
-| <a id="s-bf80800bdf"></a>`module` | "stove0_media_archive_target_contracts" |
-| <a id="s-684b2b8014"></a>`name` | "SOURCE_ARTIFACT_ROLE" |
-| <a id="s-8c3f6ca3e0"></a>`unit` | "export" |
+- <a id="s-a931a7e423"></a>`distribution`: `stove0-media-archive-target-contracts`
+- <a id="s-bf80800bdf"></a>`module`: `stove0_media_archive_target_contracts`
+- <a id="s-684b2b8014"></a>`name`: `SOURCE_ARTIFACT_ROLE`
+- <a id="s-8c3f6ca3e0"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e58446982a"></a>`kind`: `"constant"`
+- <a id="s-2cf188b418"></a>`value`: `"stove0.media.source-artifact/v1"`
 
 ## Governing policies
 

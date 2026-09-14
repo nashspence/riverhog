@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c3cbfc7c5e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0b5ee47c4e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7f95405715"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-f21a6a60eb"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-75fbdf2114"></a>`name` | "finish_dispatch" |
-| <a id="s-a0d1f5930a"></a>`owner` | "gogurt_listener_runtime.ListenerStore" |
-| <a id="s-46055ae503"></a>`unit` | "member" |
+- <a id="s-7f95405715"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-f21a6a60eb"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-75fbdf2114"></a>`name`: `finish_dispatch`
+- <a id="s-a0d1f5930a"></a>`owner`: `gogurt_listener_runtime.ListenerStore`
+- <a id="s-46055ae503"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-93cc797ddd"></a>`kind`: `"method"`
+- <a id="s-1244d7e0d5"></a>`signature`: `"\"(self, dispatch_id: 'str', *, return_code: 'int \| None', error: 'str \| None', uncertain: 'bool' = False, now: 'float') -> 'str'\""`
 
 ## Maintained corroboration
 

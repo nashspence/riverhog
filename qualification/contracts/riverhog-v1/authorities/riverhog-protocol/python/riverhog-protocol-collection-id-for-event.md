@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-cb014d3fb8"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c4a1e8061e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-984990ea21"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-4b6c3bb021"></a>`module` | "riverhog_protocol" |
-| <a id="s-1d72cf6d9c"></a>`name` | "collection_id_for_event" |
-| <a id="s-c122b298df"></a>`unit` | "export" |
+- <a id="s-984990ea21"></a>`distribution`: `riverhog-protocol`
+- <a id="s-4b6c3bb021"></a>`module`: `riverhog_protocol`
+- <a id="s-1d72cf6d9c"></a>`name`: `collection_id_for_event`
+- <a id="s-c122b298df"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e362c6097b"></a>`kind`: `"function"`
+- <a id="s-31ae953f7b"></a>`signature`: `"\"(value: 'CloudEvent \| dict[str, Any]') -> 'int'\""`
 
 ## Governing policies
 

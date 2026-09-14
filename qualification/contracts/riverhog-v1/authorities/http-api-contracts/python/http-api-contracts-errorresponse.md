@@ -14,13 +14,33 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-91b204b1ab"></a>
-| Field | Shape |
+- <a id="s-40574b2b62"></a>`distribution`: `http-api-contracts`
+- <a id="s-2848a82eae"></a>`module`: `http_api_contracts`
+- <a id="s-10efc4a45b"></a>`name`: `ErrorResponse`
+- <a id="s-860b8705fd"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-7a8fdbdd4c"></a>`kind`: `"class"`
+- <a id="s-b9a54b73f4"></a>`signature`: `"'(*, error: http_api_contracts.ErrorBody) -> None'"`
+
+#### Validated model schema
+
+<a id="s-5b3e1a093f"></a>
+- <a id="s-422e6a11d7"></a>`title`: ErrorResponse
+- <a id="s-e6222fce40"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-d48d2b6fd4"></a>`error` | yes | #/$defs/ErrorBody |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-8e99f32aba"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-40574b2b62"></a>`distribution` | "http-api-contracts" |
-| <a id="s-2848a82eae"></a>`module` | "http_api_contracts" |
-| <a id="s-10efc4a45b"></a>`name` | "ErrorResponse" |
-| <a id="s-860b8705fd"></a>`unit` | "export" |
+| <a id="s-7a9b318d90"></a>`ErrorBody` | type="object"; fields=`code`, `details`, `message`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
@@ -46,13 +66,61 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5cf688b23ae41757f21715b9ab51108b320f636ae6b2026017c4287735e0d5bf -->
+<!-- exact-contract-value: 8a8d3a4316aad3edceefbbaf4bb74d7650843d8a12cbb43cd7eab76065d2af3f -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "d60b687f27e4869742bff79f639b284dc47aeb1f716d9e75178e79b171ac4f9f",
+    "schema": {
+      "$defs": {
+        "ErrorBody": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "minLength": 1,
+              "title": "Code",
+              "type": "string"
+            },
+            "details": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Details"
+            },
+            "message": {
+              "minLength": 1,
+              "title": "Message",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code",
+            "message"
+          ],
+          "title": "ErrorBody",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/ErrorBody"
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "title": "ErrorResponse",
+      "type": "object"
+    },
     "signature": "'(*, error: http_api_contracts.ErrorBody) -> None'"
   },
   "distribution": "http-api-contracts",

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6d8f7aa1aa"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-146f9b80b3"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-28f6891c47"></a>`distribution` | "state-schema" |
-| <a id="s-d529883f2c"></a>`module` | "state_schema" |
-| <a id="s-705efbaa2c"></a>`name` | "default_isolation_level" |
-| <a id="s-c311b7ffbe"></a>`owner` | "state_schema.StateConnection" |
-| <a id="s-313ee9cf74"></a>`unit` | "member" |
+- <a id="s-28f6891c47"></a>`distribution`: `state-schema`
+- <a id="s-d529883f2c"></a>`module`: `state_schema`
+- <a id="s-705efbaa2c"></a>`name`: `default_isolation_level`
+- <a id="s-c311b7ffbe"></a>`owner`: `state_schema.StateConnection`
+- <a id="s-313ee9cf74"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-2069068a48"></a>`kind`: `"property"`
+- <a id="s-6ed51013b2"></a>`signature`: `"\"(self) -> 'Optional[IsolationLevel]'\""`
 
 ## Maintained corroboration
 

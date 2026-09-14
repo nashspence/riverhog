@@ -14,13 +14,42 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-784433f1d0"></a>
-| Field | Shape |
+- <a id="s-98056499f6"></a>`distribution`: `riverhog-protocol`
+- <a id="s-e576aa7c08"></a>`module`: `riverhog_protocol`
+- <a id="s-9a667e7ee4"></a>`name`: `CatalogSyncChangePage`
+- <a id="s-03688897b7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-01561c04e8"></a>`kind`: `"class"`
+- <a id="s-09a60b0417"></a>`signature`: `"\"(*, format: Literal['riverhog-catalog-sync/v1'] = 'riverhog-catalog-sync/v1', source_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], authorization_view_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], changes: Annotated[list[Annotated[riverhog_protocol.catalog_sync.CatalogSyncUpsert \| riverhog_protocol.catalog_sync.CatalogSyncDelete, FieldInfo(annotation=NoneType, required=True, discriminator='operation')]], MaxLen(max_length=100)], next_cursor: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=4096, pattern=None, ascii_only=None)], caught_up: bool, through_revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern='^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18})$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-41e3ad29a6"></a>
+- <a id="s-fbbe2f9f5c"></a>`title`: CatalogSyncChangePage
+- <a id="s-af3d3bf176"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0a4585062d"></a>`authorization_view_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-41c8947328"></a>`caught_up` | yes | type="boolean" |  |
+| <a id="s-c2575cc1c5"></a>`changes` | yes | type="array"; maxItems=100; items=(oneOf=#/$defs/CatalogSyncUpsert \| #/$defs/CatalogSyncDelete; additional keys=`discriminator`) |  |
+| <a id="s-abca29af81"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1" |  |
+| <a id="s-708ac3cf38"></a>`next_cursor` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-d0e9a7990f"></a>`source_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b4ec350e94"></a>`through_revision` | yes | type="string"; minLength=1; maxLength=19; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-8d17193348"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-98056499f6"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-e576aa7c08"></a>`module` | "riverhog_protocol" |
-| <a id="s-9a667e7ee4"></a>`name` | "CatalogSyncChangePage" |
-| <a id="s-03688897b7"></a>`unit` | "export" |
+| <a id="s-168dffbf4b"></a>`CatalogSyncDelete` | type="object"; fields=`collection_id`, `operation`, `revision`; additional keys=`additionalProperties`, `required` |
+| <a id="s-4015421cfa"></a>`CatalogSyncUpsert` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`, `description`, `description_identity`, `description_revision`, `operation`, `revision`, `tag_revision`, `tag_set_identity`; additional keys=`additionalProperties`, `required` |
+| <a id="s-aafc0c1ae8"></a>`CollectionDescription` | type="string"; minLength=1; maxLength=32768; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
+| <a id="s-389380939c"></a>`CollectionId` | type="integer"; minimum=1 |
 
 ## Governing policies
 
@@ -46,13 +75,214 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 17b141a9765eb01193fd0109a312b3cc2500c5427c8901f321a030655d1c7989 -->
+<!-- exact-contract-value: 02adeb32420be216240759ad9ddb024ca34d5c0a2f338a0340b867656c60e76c -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "94d26d8fe010c743e6db365252c8393aa01f6b8fe84a47fc389091754e4c9bd1",
+    "schema": {
+      "$defs": {
+        "CatalogSyncDelete": {
+          "additionalProperties": false,
+          "properties": {
+            "collection_id": {
+              "$ref": "#/$defs/CollectionId"
+            },
+            "operation": {
+              "const": "delete",
+              "default": "delete",
+              "title": "Operation",
+              "type": "string"
+            },
+            "revision": {
+              "maxLength": 19,
+              "minLength": 1,
+              "pattern": "^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$",
+              "title": "Revision",
+              "type": "string"
+            }
+          },
+          "required": [
+            "collection_id",
+            "revision"
+          ],
+          "title": "CatalogSyncDelete",
+          "type": "object"
+        },
+        "CatalogSyncUpsert": {
+          "additionalProperties": false,
+          "properties": {
+            "archive_root_sha256": {
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Archive Root Sha256",
+              "type": "string"
+            },
+            "collection_id": {
+              "$ref": "#/$defs/CollectionId"
+            },
+            "content_identity": {
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Content Identity",
+              "type": "string"
+            },
+            "description": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/CollectionDescription"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "description_identity": {
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Description Identity",
+              "type": "string"
+            },
+            "description_revision": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "title": "Description Revision",
+              "type": "integer"
+            },
+            "operation": {
+              "const": "upsert",
+              "default": "upsert",
+              "title": "Operation",
+              "type": "string"
+            },
+            "revision": {
+              "maxLength": 19,
+              "minLength": 1,
+              "pattern": "^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$",
+              "title": "Revision",
+              "type": "string"
+            },
+            "tag_revision": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "title": "Tag Revision",
+              "type": "integer"
+            },
+            "tag_set_identity": {
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Tag Set Identity",
+              "type": "string"
+            }
+          },
+          "required": [
+            "collection_id",
+            "archive_root_sha256",
+            "content_identity",
+            "description",
+            "description_revision",
+            "description_identity",
+            "tag_revision",
+            "tag_set_identity",
+            "revision"
+          ],
+          "title": "CatalogSyncUpsert",
+          "type": "object"
+        },
+        "CollectionDescription": {
+          "maxLength": 32768,
+          "minLength": 1,
+          "type": "string",
+          "x-riverhog-encoded-bytes-max": 32768,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-human-authored-catalog-description"
+          },
+          "x-unicode-normalization": "NFC"
+        },
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "authorization_view_identity": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Authorization View Identity",
+          "type": "string"
+        },
+        "caught_up": {
+          "title": "Caught Up",
+          "type": "boolean"
+        },
+        "changes": {
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "delete": "#/$defs/CatalogSyncDelete",
+                "upsert": "#/$defs/CatalogSyncUpsert"
+              },
+              "propertyName": "operation"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/CatalogSyncUpsert"
+              },
+              {
+                "$ref": "#/$defs/CatalogSyncDelete"
+              }
+            ]
+          },
+          "maxItems": 100,
+          "title": "Changes",
+          "type": "array"
+        },
+        "format": {
+          "const": "riverhog-catalog-sync/v1",
+          "default": "riverhog-catalog-sync/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "next_cursor": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Next Cursor",
+          "type": "string"
+        },
+        "source_identity": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Identity",
+          "type": "string"
+        },
+        "through_revision": {
+          "maxLength": 19,
+          "minLength": 1,
+          "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18})$",
+          "title": "Through Revision",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_identity",
+        "authorization_view_identity",
+        "changes",
+        "next_cursor",
+        "caught_up",
+        "through_revision"
+      ],
+      "title": "CatalogSyncChangePage",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['riverhog-catalog-sync/v1'] = 'riverhog-catalog-sync/v1', source_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], authorization_view_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], changes: Annotated[list[Annotated[riverhog_protocol.catalog_sync.CatalogSyncUpsert | riverhog_protocol.catalog_sync.CatalogSyncDelete, FieldInfo(annotation=NoneType, required=True, discriminator='operation')]], MaxLen(max_length=100)], next_cursor: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=4096, pattern=None, ascii_only=None)], caught_up: bool, through_revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern='^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18})$', ascii_only=None)]) -> None\""
   },
   "distribution": "riverhog-protocol",

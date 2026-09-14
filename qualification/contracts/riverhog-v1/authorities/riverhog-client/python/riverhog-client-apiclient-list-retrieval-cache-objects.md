@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-164b1757e3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-778dd31e92"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-dda78e7985"></a>`distribution` | "riverhog-client" |
-| <a id="s-d3c1e9cf77"></a>`module` | "riverhog_client" |
-| <a id="s-180ddaa7e9"></a>`name` | "list_retrieval_cache_objects" |
-| <a id="s-6f4f8258fa"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-107b57ec79"></a>`unit` | "member" |
+- <a id="s-dda78e7985"></a>`distribution`: `riverhog-client`
+- <a id="s-d3c1e9cf77"></a>`module`: `riverhog_client`
+- <a id="s-180ddaa7e9"></a>`name`: `list_retrieval_cache_objects`
+- <a id="s-6f4f8258fa"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-107b57ec79"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e736bc6e8a"></a>`kind`: `"method"`
+- <a id="s-e72fe3f39f"></a>`signature`: `"\"(self, *, page_size: 'int' = 25, page_token: 'str \| None' = None, q: 'str \| None' = None, collection_id: 'CollectionId \| None' = None, source_store: 'ArchiveStoreName \| None' = None, cache_store: 'RetrievalCacheStoreName \| None' = None, state: 'RetrievalCacheState \| None' = None, protection: 'RetrievalCacheProtection \| None' = None, expires_before: 'str \| None' = None, expires_after: 'str \| None' = None, sort: 'RetrievalCacheSort' = 'cached_at', order: 'SortOrder' = 'desc') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

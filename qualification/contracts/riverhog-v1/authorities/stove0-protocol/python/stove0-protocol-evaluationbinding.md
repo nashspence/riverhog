@@ -14,13 +14,37 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-85742ed1cf"></a>
-| Field | Shape |
+- <a id="s-9624ade0c2"></a>`distribution`: `stove0-protocol`
+- <a id="s-72e34ef8c2"></a>`module`: `stove0_protocol`
+- <a id="s-a2b2f59211"></a>`name`: `EvaluationBinding`
+- <a id="s-2865ef9298"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-66d0fe08ba"></a>`kind`: `"class"`
+- <a id="s-ed645dcc66"></a>`signature`: `"\"(*, evaluation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], matrix_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], variant_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], parameters: dict[str, JsonValue] = <factory>) -> None\""`
+
+#### Validated model schema
+
+<a id="s-58bd82e15d"></a>
+- <a id="s-a94adbbb93"></a>`title`: EvaluationBinding
+- <a id="s-c4eb81c0b1"></a>`description`: Immutable membership of one work item in a trial/evaluation matrix.
+- <a id="s-fcda911618"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0610837ba5"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-84cc98a5db"></a>`matrix_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-154234d6dc"></a>`parameters` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-669f145fcd"></a>`variant_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-ed4dfd436e"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-9624ade0c2"></a>`distribution` | "stove0-protocol" |
-| <a id="s-72e34ef8c2"></a>`module` | "stove0_protocol" |
-| <a id="s-a2b2f59211"></a>`name` | "EvaluationBinding" |
-| <a id="s-2865ef9298"></a>`unit` | "export" |
+| <a id="s-4aba2ae1bc"></a>`JsonValue` | empty object |
 
 ## Governing policies
 
@@ -46,13 +70,50 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ee455c55e1751e0dd70b90b668560baddc1e36107b6ae5872ff1163e41d3016b -->
+<!-- exact-contract-value: 682781e16dbfdbb06a700b90e7cb0382a80b11aa671171d450bc9210da1c38b9 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "88e9c364a4a75880b79baef14a38f00d4aed59886831937d8bad72f471a5b04b",
+    "schema": {
+      "$defs": {
+        "JsonValue": {}
+      },
+      "additionalProperties": false,
+      "description": "Immutable membership of one work item in a trial/evaluation matrix.",
+      "properties": {
+        "evaluation_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evaluation Id",
+          "type": "string"
+        },
+        "matrix_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Matrix Sha256",
+          "type": "string"
+        },
+        "parameters": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Parameters",
+          "type": "object"
+        },
+        "variant_id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Variant Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evaluation_id",
+        "matrix_sha256",
+        "variant_id"
+      ],
+      "title": "EvaluationBinding",
+      "type": "object"
+    },
     "signature": "\"(*, evaluation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], matrix_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], variant_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], parameters: dict[str, JsonValue] = <factory>) -> None\""
   },
   "distribution": "stove0-protocol",

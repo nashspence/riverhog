@@ -14,13 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-234916118d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5bfe752208"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-5f3a5c3612"></a>`distribution` | "riverhog-client" |
-| <a id="s-71420844ff"></a>`module` | "riverhog_client" |
-| <a id="s-fea8021875"></a>`name` | "RawSourceHash" |
-| <a id="s-d473814d63"></a>`unit` | "export" |
+- <a id="s-5f3a5c3612"></a>`distribution`: `riverhog-client`
+- <a id="s-71420844ff"></a>`module`: `riverhog_client`
+- <a id="s-fea8021875"></a>`name`: `RawSourceHash`
+- <a id="s-d473814d63"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-03aaae173b"></a>`kind`: `"class"`
+- <a id="s-400b765554"></a>`signature`: `"\"(summary: 'RawSourceDigestSummary', _parts: 'BinaryIO') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-6401482012"></a>`summary` | `'RawSourceDigestSummary'` | `required` |
+| <a id="s-0d2167a1dc"></a>`_parts` | `'BinaryIO'` | `required` |
 
 ## Maintained corroboration
 

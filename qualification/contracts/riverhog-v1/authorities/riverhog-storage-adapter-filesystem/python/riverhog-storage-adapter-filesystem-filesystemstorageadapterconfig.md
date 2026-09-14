@@ -14,13 +14,26 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-24685130e9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ba0433faaa"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-77ec06b05b"></a>`distribution` | "riverhog-storage-adapter-filesystem" |
-| <a id="s-d4acde7d9c"></a>`module` | "riverhog_storage_adapter_filesystem" |
-| <a id="s-702600b7c8"></a>`name` | "FilesystemStorageAdapterConfig" |
-| <a id="s-8f2245110e"></a>`unit` | "export" |
+- <a id="s-77ec06b05b"></a>`distribution`: `riverhog-storage-adapter-filesystem`
+- <a id="s-d4acde7d9c"></a>`module`: `riverhog_storage_adapter_filesystem`
+- <a id="s-702600b7c8"></a>`name`: `FilesystemStorageAdapterConfig`
+- <a id="s-8f2245110e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f994fb64a6"></a>`kind`: `"class"`
+- <a id="s-9374821503"></a>`signature`: `"\"(root: 'Path', implementation_id: 'str' = 'riverhog.filesystem/v1', implementation_version: 'str' = '0.1.0', segment_bytes: 'int' = 67108864, read_chunk_bytes: 'int' = 8388608, minimum_free_bytes: 'int' = 268435456) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-ba243b10d5"></a>`root` | `'Path'` | `required` |
+| <a id="s-f4d3819d2d"></a>`implementation_id` | `'str'` | `'riverhog.filesystem/v1'` |
+| <a id="s-877eb9afd4"></a>`implementation_version` | `'str'` | `'0.1.0'` |
+| <a id="s-e76ee9a28f"></a>`segment_bytes` | `'int'` | `67108864` |
+| <a id="s-33b1f6b07b"></a>`read_chunk_bytes` | `'int'` | `8388608` |
+| <a id="s-1d62bf467e"></a>`minimum_free_bytes` | `'int'` | `268435456` |
 
 ## Governing policies
 

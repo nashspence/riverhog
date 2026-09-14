@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-63e29c9597"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-fa04bd1960"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-b3df149366"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-1494aa5b74"></a>`module` | "stove0_target_protocol" |
-| <a id="s-eacab8333a"></a>`name` | "TargetCallbackAcknowledgement" |
-| <a id="s-42e2d9e38b"></a>`unit` | "export" |
+- <a id="s-b3df149366"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-1494aa5b74"></a>`module`: `stove0_target_protocol`
+- <a id="s-eacab8333a"></a>`name`: `TargetCallbackAcknowledgement`
+- <a id="s-42e2d9e38b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ce185c3dc9"></a>`kind`: `"class"`
+- <a id="s-5b90fa8011"></a>`signature`: `"'(*, accepted: Literal[True] = True) -> None'"`
+
+#### Validated model schema
+
+<a id="s-efa050e563"></a>
+- <a id="s-89836dd228"></a>`title`: TargetCallbackAcknowledgement
+- <a id="s-43b4c25a1e"></a>`description`: Idempotent acceptance of one execution-scoped declaration.
+- <a id="s-869849d3f0"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-9052757ae9"></a>`accepted` | no | type="boolean"; const=true |  |
 
 ## Governing policies
 
@@ -46,13 +61,26 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3dacb85bd9f7d3451a823d80d47ed1b0212ebab6cb2967d0c56dc899308872e5 -->
+<!-- exact-contract-value: a44381871442c8de9bbd3be8bf45fa7a85bdd958cf90b154211b08e40952e13a -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "888aeb6259ebbfb946fb389f43530f2e7f42b0aaa47127fc93cde9b46c06ccfc",
+    "schema": {
+      "additionalProperties": false,
+      "description": "Idempotent acceptance of one execution-scoped declaration.",
+      "properties": {
+        "accepted": {
+          "const": true,
+          "default": true,
+          "title": "Accepted",
+          "type": "boolean"
+        }
+      },
+      "title": "TargetCallbackAcknowledgement",
+      "type": "object"
+    },
     "signature": "'(*, accepted: Literal[True] = True) -> None'"
   },
   "distribution": "stove0-target-protocol",

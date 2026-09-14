@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-408787ee18"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b7fab9eea6"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-80dac40847"></a>`distribution` | "lifecycle-events" |
-| <a id="s-238c795757"></a>`module` | "lifecycle_events" |
-| <a id="s-1e3dc91d5f"></a>`name` | "CLOUDEVENTS_JSON_CONTENT_TYPE" |
-| <a id="s-36d056f44b"></a>`unit` | "export" |
+- <a id="s-80dac40847"></a>`distribution`: `lifecycle-events`
+- <a id="s-238c795757"></a>`module`: `lifecycle_events`
+- <a id="s-1e3dc91d5f"></a>`name`: `CLOUDEVENTS_JSON_CONTENT_TYPE`
+- <a id="s-36d056f44b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e79085553f"></a>`kind`: `"constant"`
+- <a id="s-f70857584f"></a>`value`: `"application/cloudevents+json"`
 
 ## Governing policies
 

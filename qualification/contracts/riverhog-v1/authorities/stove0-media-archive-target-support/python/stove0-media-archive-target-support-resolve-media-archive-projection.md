@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-585f8335bb"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a314affdbc"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-99737cbd14"></a>`distribution` | "stove0-media-archive-target-support" |
-| <a id="s-dad3198b4c"></a>`module` | "stove0_media_archive_target_support" |
-| <a id="s-ffce416e15"></a>`name` | "resolve_media_archive_projection" |
-| <a id="s-46fac491cd"></a>`unit` | "export" |
+- <a id="s-99737cbd14"></a>`distribution`: `stove0-media-archive-target-support`
+- <a id="s-dad3198b4c"></a>`module`: `stove0_media_archive_target_support`
+- <a id="s-ffce416e15"></a>`name`: `resolve_media_archive_projection`
+- <a id="s-46fac491cd"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f2d7ea5079"></a>`kind`: `"function"`
+- <a id="s-fa1d001476"></a>`signature`: `"\"(*, inputs: 'Sequence[InputArtifact]', observations: 'Sequence[ObservationEvidence]', policy: 'MediaProjectionPolicy', archive_directory: 'str', archive_suffix: 'str') -> 'MediaArchiveProjection'\""`
 
 ## Governing policies
 

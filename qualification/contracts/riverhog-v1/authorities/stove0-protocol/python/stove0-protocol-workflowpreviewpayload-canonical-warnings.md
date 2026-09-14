@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1168f33382"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-468e420add"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-605881e59b"></a>`distribution` | "stove0-protocol" |
-| <a id="s-9d26cd6f7f"></a>`module` | "stove0_protocol" |
-| <a id="s-bb398c7b13"></a>`name` | "canonical_warnings" |
-| <a id="s-fc8f60dda4"></a>`owner` | "stove0_protocol.WorkflowPreviewPayload" |
-| <a id="s-59fc76ae33"></a>`unit` | "member" |
+- <a id="s-605881e59b"></a>`distribution`: `stove0-protocol`
+- <a id="s-9d26cd6f7f"></a>`module`: `stove0_protocol`
+- <a id="s-bb398c7b13"></a>`name`: `canonical_warnings`
+- <a id="s-fc8f60dda4"></a>`owner`: `stove0_protocol.WorkflowPreviewPayload`
+- <a id="s-59fc76ae33"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-4ea28265d2"></a>`kind`: `"classmethod"`
+- <a id="s-8aee995c9a"></a>`signature`: `"\"(cls, value: 'tuple[str, ...]') -> 'tuple[str, ...]'\""`
 
 ## Maintained corroboration
 

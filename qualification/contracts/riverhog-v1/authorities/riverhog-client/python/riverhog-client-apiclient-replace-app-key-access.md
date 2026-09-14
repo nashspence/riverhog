@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ee7f16fca9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e09e41e2f7"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7fa65928d4"></a>`distribution` | "riverhog-client" |
-| <a id="s-65d9629cff"></a>`module` | "riverhog_client" |
-| <a id="s-425a76a5a9"></a>`name` | "replace_app_key_access" |
-| <a id="s-48b4009295"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-18148ac8ca"></a>`unit` | "member" |
+- <a id="s-7fa65928d4"></a>`distribution`: `riverhog-client`
+- <a id="s-65d9629cff"></a>`module`: `riverhog_client`
+- <a id="s-425a76a5a9"></a>`name`: `replace_app_key_access`
+- <a id="s-48b4009295"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-18148ac8ca"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-549ec6e31b"></a>`kind`: `"method"`
+- <a id="s-f027e65a56"></a>`signature`: `"\"(self, app: 'ApplicationName', key_id: 'ApplicationKeyId', *, access: 'Sequence[Mapping[str, str]]') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

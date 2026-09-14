@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-877d2dd0a3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d432e85fab"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-5c8bbfa5ce"></a>`distribution` | "stove0-protocol" |
-| <a id="s-3e180c16f0"></a>`module` | "stove0_protocol" |
-| <a id="s-fb0dbe7feb"></a>`name` | "materialize" |
-| <a id="s-bde966a94e"></a>`owner` | "stove0_protocol.WorkflowPlanIntent" |
-| <a id="s-1a7441c936"></a>`unit` | "member" |
+- <a id="s-5c8bbfa5ce"></a>`distribution`: `stove0-protocol`
+- <a id="s-3e180c16f0"></a>`module`: `stove0_protocol`
+- <a id="s-fb0dbe7feb"></a>`name`: `materialize`
+- <a id="s-bde966a94e"></a>`owner`: `stove0_protocol.WorkflowPlanIntent`
+- <a id="s-1a7441c936"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e7e2b961da"></a>`kind`: `"method"`
+- <a id="s-e9530dca67"></a>`signature`: `"\"(self, *, work: 'WorkIdentity', observations: 'tuple[ObservationEvidence, ...]' = ()) -> 'WorkflowPlan'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-436ba14a71"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3b0434e005"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-211cde19c1"></a>`distribution` | "stove0-protocol" |
-| <a id="s-96e2a30ec8"></a>`module` | "stove0_protocol" |
-| <a id="s-6e9e39a81c"></a>`name` | "canonical_members" |
-| <a id="s-5806442fd4"></a>`owner` | "stove0_protocol.JoinWorkBinding" |
-| <a id="s-f83c6b3a48"></a>`unit` | "member" |
+- <a id="s-211cde19c1"></a>`distribution`: `stove0-protocol`
+- <a id="s-96e2a30ec8"></a>`module`: `stove0_protocol`
+- <a id="s-6e9e39a81c"></a>`name`: `canonical_members`
+- <a id="s-5806442fd4"></a>`owner`: `stove0_protocol.JoinWorkBinding`
+- <a id="s-f83c6b3a48"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-bddeed0eb9"></a>`kind`: `"classmethod"`
+- <a id="s-7d5efc95de"></a>`signature`: `"\"(cls, value: 'tuple[JoinWorkMemberBinding, ...]') -> 'tuple[JoinWorkMemberBinding, ...]'\""`
 
 ## Maintained corroboration
 

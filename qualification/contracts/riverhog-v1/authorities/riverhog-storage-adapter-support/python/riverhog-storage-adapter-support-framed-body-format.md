@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3a55e34712"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-030252b703"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-d750213a8b"></a>`distribution` | "riverhog-storage-adapter-support" |
-| <a id="s-4aa8114566"></a>`module` | "riverhog_storage_adapter_support" |
-| <a id="s-4e92a28835"></a>`name` | "FRAMED_BODY_FORMAT" |
-| <a id="s-b59c0091b1"></a>`unit` | "export" |
+- <a id="s-d750213a8b"></a>`distribution`: `riverhog-storage-adapter-support`
+- <a id="s-4aa8114566"></a>`module`: `riverhog_storage_adapter_support`
+- <a id="s-4e92a28835"></a>`name`: `FRAMED_BODY_FORMAT`
+- <a id="s-b59c0091b1"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-91d33feebf"></a>`kind`: `"constant"`
+- <a id="s-be533dda06"></a>`value`: `"riverhog-json-opaque-framing/v1"`
 
 ## Governing policies
 

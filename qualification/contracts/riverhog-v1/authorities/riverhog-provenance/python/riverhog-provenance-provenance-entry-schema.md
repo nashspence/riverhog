@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0eb5a276f3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9ee1bdb014"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-57ab225a6e"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-ebe22ce997"></a>`module` | "riverhog_provenance" |
-| <a id="s-59fb6d252c"></a>`name` | "PROVENANCE_ENTRY_SCHEMA" |
-| <a id="s-ab11138b82"></a>`unit` | "export" |
+- <a id="s-57ab225a6e"></a>`distribution`: `riverhog-provenance`
+- <a id="s-ebe22ce997"></a>`module`: `riverhog_provenance`
+- <a id="s-59fb6d252c"></a>`name`: `PROVENANCE_ENTRY_SCHEMA`
+- <a id="s-ab11138b82"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-7da3d3f8c2"></a>`kind`: `"constant"`
+- <a id="s-2435528f52"></a>`value`: `"https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json"`
 
 ## Governing policies
 

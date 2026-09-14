@@ -14,13 +14,35 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-30c690a6e0"></a>
-| Field | Shape |
+- <a id="s-e3c19e20cd"></a>`distribution`: `riverhog-protocol`
+- <a id="s-70ce011605"></a>`module`: `riverhog_protocol`
+- <a id="s-5943d1a0e0"></a>`name`: `ArchiveCopyStoreSelectionDocument`
+- <a id="s-f6a197f9d5"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f3c6168d36"></a>`kind`: `"class"`
+- <a id="s-07649ea83b"></a>`signature`: `"'(*, destination_store: ArchiveStoreName, source_store: ArchiveStoreName \| None = None) -> None'"`
+
+#### Validated model schema
+
+<a id="s-81572973e4"></a>
+- <a id="s-bcefea3c05"></a>`title`: ArchiveCopyStoreSelectionDocument
+- <a id="s-611a5338c9"></a>`description`: Canonical logical stores participating in one Riverhog archive copy.
+- <a id="s-ceffc5fb57"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-95af627683"></a>`destination_store` | yes | #/$defs/ArchiveStoreName |  |
+| <a id="s-3ebeef1a2b"></a>`source_store` | no | anyOf=#/$defs/ArchiveStoreName \| type="null" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-d046463cac"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-e3c19e20cd"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-70ce011605"></a>`module` | "riverhog_protocol" |
-| <a id="s-5943d1a0e0"></a>`name` | "ArchiveCopyStoreSelectionDocument" |
-| <a id="s-f6a197f9d5"></a>`unit` | "export" |
+| <a id="s-49e2d5d755"></a>`ArchiveStoreName` | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
 
 ## Maintained corroboration
 
@@ -52,13 +74,43 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 27ebfed4073d06517a067efb74a7eb057a161a73dc03accda04ad5613ec8cb7b -->
+<!-- exact-contract-value: 1d3c8cfea962ebbcc10e2d9a549c10a43baaf76b2dfa3d822969b8d1a94cb660 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "aa1475d23f33700b5b904b55f5cbd41fb7870cbfac5bfd49a98febfbba5dd246",
+    "schema": {
+      "$defs": {
+        "ArchiveStoreName": {
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Canonical logical stores participating in one Riverhog archive copy.",
+      "properties": {
+        "destination_store": {
+          "$ref": "#/$defs/ArchiveStoreName"
+        },
+        "source_store": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArchiveStoreName"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "destination_store"
+      ],
+      "title": "ArchiveCopyStoreSelectionDocument",
+      "type": "object"
+    },
     "signature": "'(*, destination_store: ArchiveStoreName, source_store: ArchiveStoreName | None = None) -> None'"
   },
   "distribution": "riverhog-protocol",

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9382e0d66d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2197fb9b06"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-c2e96e2941"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-c2c6fbdb25"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-e422236dd9"></a>`name` | "WORK_UPDATED" |
-| <a id="s-e19661f1ac"></a>`unit` | "export" |
+- <a id="s-c2e96e2941"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-c2c6fbdb25"></a>`module`: `stove0_operator_contracts`
+- <a id="s-e422236dd9"></a>`name`: `WORK_UPDATED`
+- <a id="s-e19661f1ac"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-cf2a3b31ee"></a>`kind`: `"constant"`
+- <a id="s-0403c28f02"></a>`value`: `"io.riverhog.stove0.work.updated"`
 
 ## Governing policies
 

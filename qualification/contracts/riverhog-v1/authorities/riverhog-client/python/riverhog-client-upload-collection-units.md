@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5e32dfab90"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-137c10e5b4"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ee39d23aa3"></a>`distribution` | "riverhog-client" |
-| <a id="s-fb7b417af9"></a>`module` | "riverhog_client" |
-| <a id="s-17a4293067"></a>`name` | "upload_collection_units" |
-| <a id="s-3ae7b657a1"></a>`unit` | "export" |
+- <a id="s-ee39d23aa3"></a>`distribution`: `riverhog-client`
+- <a id="s-fb7b417af9"></a>`module`: `riverhog_client`
+- <a id="s-17a4293067"></a>`name`: `upload_collection_units`
+- <a id="s-3ae7b657a1"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-c4fbdc4a8b"></a>`kind`: `"function"`
+- <a id="s-8bf2a668a3"></a>`signature`: `"\"(api: 'CollectionUnitApi', collection_id: 'CollectionId', *, content_for_unit: 'UnitContent', concurrency: 'int', window: 'int', client_factory: 'Callable[[], CollectionUnitApi] \| None' = None, on_committed: 'UploadProgress \| None' = None, on_resumed: 'UploadProgress \| None' = None, retry_notice: 'RetryNotice \| None' = None, cancel_check: 'Callable[[], None] \| None' = None) -> 'int'\""`
 
 ## Governing policies
 

@@ -14,13 +14,41 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-088a252182"></a>
-| Field | Shape |
+- <a id="s-fe7d236555"></a>`distribution`: `riverhog-protocol`
+- <a id="s-f190b93197"></a>`module`: `riverhog_protocol`
+- <a id="s-e1b1f2d405"></a>`name`: `CollectionUploadArtifactCustodyReceiptDocument`
+- <a id="s-be3dd24fac"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-dc166b4040"></a>`kind`: `"class"`
+- <a id="s-79c6d52e85"></a>`signature`: `"\"(*, format: Literal['riverhog-artifact-custody-receipt/v1'] = 'riverhog-artifact-custody-receipt/v1', collection_id: CollectionId, path: str, bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], archive_object_count: Annotated[int, Strict(strict=True), Ge(ge=1)], archive_object_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-e4009535b1"></a>
+- <a id="s-5466c819a5"></a>`title`: CollectionUploadArtifactCustodyReceiptDocument
+- <a id="s-ee696f5ce1"></a>`description`: Exact safe-release evidence for one artifact in construction state.
+- <a id="s-5af6e0eda3"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-5f24861dbc"></a>`archive_object_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-4697eb4666"></a>`archive_object_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-098d868844"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-5d89499379"></a>`collection_id` | yes | #/$defs/CollectionId |  |
+| <a id="s-cb6df9e360"></a>`format` | no | type="string"; const="riverhog-artifact-custody-receipt/v1" |  |
+| <a id="s-62de67a206"></a>`path` | yes | type="string" |  |
+| <a id="s-dcf7b7c59d"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-fdea4a93de"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-c77b9e9f16"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-fe7d236555"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-f190b93197"></a>`module` | "riverhog_protocol" |
-| <a id="s-e1b1f2d405"></a>`name` | "CollectionUploadArtifactCustodyReceiptDocument" |
-| <a id="s-be3dd24fac"></a>`unit` | "export" |
+| <a id="s-08f619d576"></a>`CollectionId` | type="integer"; minimum=1 |
 
 ## Maintained corroboration
 
@@ -55,13 +83,73 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 604a73fde5b26678b60dfe2ef2af82ee188ca2e039159c91782b391118a703f4 -->
+<!-- exact-contract-value: 7397631fbe6af7c3afeecec2bdea8dfe931c9dbd9dbe31308a6481957e19e356 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "ca6c2ec6a435c6e5819f60a47a7a093f2368aaba5af7fdecda499cf6235fbec3",
+    "schema": {
+      "$defs": {
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Exact safe-release evidence for one artifact in construction state.",
+      "properties": {
+        "archive_object_count": {
+          "minimum": 1,
+          "title": "Archive Object Count",
+          "type": "integer"
+        },
+        "archive_object_set_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Archive Object Set Sha256",
+          "type": "string"
+        },
+        "bytes": {
+          "minimum": 0,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "collection_id": {
+          "$ref": "#/$defs/CollectionId"
+        },
+        "format": {
+          "const": "riverhog-artifact-custody-receipt/v1",
+          "default": "riverhog-artifact-custody-receipt/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Receipt Sha256",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "collection_id",
+        "path",
+        "bytes",
+        "sha256",
+        "archive_object_count",
+        "archive_object_set_sha256",
+        "receipt_sha256"
+      ],
+      "title": "CollectionUploadArtifactCustodyReceiptDocument",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['riverhog-artifact-custody-receipt/v1'] = 'riverhog-artifact-custody-receipt/v1', collection_id: CollectionId, path: str, bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], archive_object_count: Annotated[int, Strict(strict=True), Ge(ge=1)], archive_object_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
   },
   "distribution": "riverhog-protocol",

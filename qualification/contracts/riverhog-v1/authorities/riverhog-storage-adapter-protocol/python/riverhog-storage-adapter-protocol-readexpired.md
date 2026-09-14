@@ -14,13 +14,27 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6b9cbbcc9f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6a3324f20b"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-c5489728a3"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-61ef9f8be6"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-0d9a6017ff"></a>`name` | "ReadExpired" |
-| <a id="s-ff88e97bd4"></a>`unit` | "export" |
+- <a id="s-c5489728a3"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-61ef9f8be6"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-0d9a6017ff"></a>`name`: `ReadExpired`
+- <a id="s-ff88e97bd4"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-7bdec347b7"></a>`kind`: `"class"`
+- <a id="s-4139e553fa"></a>`signature`: `"\"(*, state: Literal['expired'] = 'expired') -> None\""`
+
+#### Validated model schema
+
+<a id="s-9d8f3b8f83"></a>
+- <a id="s-866a59bc2e"></a>`title`: ReadExpired
+- <a id="s-4b7db32ec7"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-efdd766f55"></a>`state` | no | type="string"; const="expired" |  |
 
 ## Governing policies
 
@@ -46,13 +60,25 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4d654151f8dc06c02848901da875d312ac90b67a77cd5cf6d6573ed951b49d91 -->
+<!-- exact-contract-value: d0860963a73527837000174e7f6938d980e35c5de704f38cc887d7df6256509e -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "3a7d5d1ad6056eb379318b3aba88c1d36fb5a6cfea9d6b2bb1675751cf4bd2c2",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "const": "expired",
+          "default": "expired",
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "title": "ReadExpired",
+      "type": "object"
+    },
     "signature": "\"(*, state: Literal['expired'] = 'expired') -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",

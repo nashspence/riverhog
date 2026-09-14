@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f7d6c64c89"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-897989b55d"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-375e0c86c8"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-9cd74f19aa"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-af22ab3dcb"></a>`name` | "validate_write_segment_request" |
-| <a id="s-340546188a"></a>`unit` | "export" |
+- <a id="s-375e0c86c8"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-9cd74f19aa"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-af22ab3dcb"></a>`name`: `validate_write_segment_request`
+- <a id="s-340546188a"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-17bab439ab"></a>`kind`: `"function"`
+- <a id="s-b3997bb51e"></a>`signature`: `"\"(request: 'WriteSegmentRequest', descriptor: 'AdapterDescriptor') -> 'None'\""`
 
 ## Governing policies
 

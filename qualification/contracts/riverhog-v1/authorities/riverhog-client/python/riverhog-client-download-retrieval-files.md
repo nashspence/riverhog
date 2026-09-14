@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8ad8baa981"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3840525114"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-250e12d9b7"></a>`distribution` | "riverhog-client" |
-| <a id="s-6466fe3c6c"></a>`module` | "riverhog_client" |
-| <a id="s-d42b7c2fc9"></a>`name` | "download_retrieval_files" |
-| <a id="s-34c88f7cc0"></a>`unit` | "export" |
+- <a id="s-250e12d9b7"></a>`distribution`: `riverhog-client`
+- <a id="s-6466fe3c6c"></a>`module`: `riverhog_client`
+- <a id="s-d42b7c2fc9"></a>`name`: `download_retrieval_files`
+- <a id="s-34c88f7cc0"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-d96a9402d8"></a>`kind`: `"function"`
+- <a id="s-5e581618c5"></a>`signature`: `"\"(api: 'RetrievalDownloadApi', job_id: 'str', downloads: 'Sequence[RetrievalDownload]', *, concurrency: 'int', window: 'int', client_factory: 'Callable[[], RetrievalDownloadApi] \| None' = None, on_downloaded: 'DownloadProgress \| None' = None, heartbeat: 'DownloadHeartbeat \| None' = None, heartbeat_interval_seconds: 'float' = 60.0) -> 'int'\""`
 
 ## Governing policies
 

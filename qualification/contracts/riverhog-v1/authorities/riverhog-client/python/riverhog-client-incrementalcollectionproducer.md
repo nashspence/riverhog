@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bf3a9d8781"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-517ac577e4"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-8030e5d2ff"></a>`distribution` | "riverhog-client" |
-| <a id="s-f611532634"></a>`module` | "riverhog_client" |
-| <a id="s-6e81ab5019"></a>`name` | "IncrementalCollectionProducer" |
-| <a id="s-5c906749d3"></a>`unit` | "export" |
+- <a id="s-8030e5d2ff"></a>`distribution`: `riverhog-client`
+- <a id="s-f611532634"></a>`module`: `riverhog_client`
+- <a id="s-6e81ab5019"></a>`name`: `IncrementalCollectionProducer`
+- <a id="s-5c906749d3"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-793bc55af1"></a>`kind`: `"class"`
+- <a id="s-df3b24c778"></a>`signature`: `"'(api: \\'ApiClient\\', *, producer_app: \\'str\\', adapter_id: \\'str\\', adapter_version: \\'str\\', ingest_source: \\'str\\', source_event_id: \\'str\\', source_context: \\'Mapping[str, object] \| None\\' = None, idempotency_key: \\'str \| None\\' = None, archive_store: \\'ArchiveStoreName \| None\\' = None, description: \\'CollectionDescription \| None\\' = None, tags: \\'Sequence[CollectionTag]\\' = (), event_context: \\'Mapping[str, object] \| None\\' = None, provenance_mode: \"Literal[\\'captured\\', \\'omitted\\']\" = \\'omitted\\', server_generated_provenance: \\'bool\\' = False, provenance_omission_reason: \\'str\\' = \\'Producer did not receive host provenance; immutable producer evidence records the source boundary.\\', progress: \\'ReadProgress \| None\\' = None) -> \\'None\\''"`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6b01c2c179"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3c5388a5ea"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f75529596e"></a>`distribution` | "stove0-protocol" |
-| <a id="s-0bc56c5cf2"></a>`module` | "stove0_protocol" |
-| <a id="s-e2536a2a7e"></a>`name` | "canonical_variants" |
-| <a id="s-f6efb0ae84"></a>`owner` | "stove0_protocol.EvaluationMatrixPayload" |
-| <a id="s-b444d097c9"></a>`unit` | "member" |
+- <a id="s-f75529596e"></a>`distribution`: `stove0-protocol`
+- <a id="s-0bc56c5cf2"></a>`module`: `stove0_protocol`
+- <a id="s-e2536a2a7e"></a>`name`: `canonical_variants`
+- <a id="s-f6efb0ae84"></a>`owner`: `stove0_protocol.EvaluationMatrixPayload`
+- <a id="s-b444d097c9"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-77071d7fd3"></a>`kind`: `"classmethod"`
+- <a id="s-d452791ab2"></a>`signature`: `"\"(cls, value: 'tuple[EvaluationVariant, ...]') -> 'tuple[EvaluationVariant, ...]'\""`
 
 ## Maintained corroboration
 

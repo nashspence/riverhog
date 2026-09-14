@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ad2def45b5"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c913b4a605"></a>`contract` | type="builtins.tuple"; additional keys=`kind` |
-| <a id="s-bea56393d9"></a>`distribution` | "stove0-observer-support" |
-| <a id="s-1b7c2e36c4"></a>`module` | "stove0_observer_support" |
-| <a id="s-878af131bd"></a>`name` | "OBSERVER_HTTP_OPERATIONS" |
-| <a id="s-623fe61a7e"></a>`unit` | "export" |
+- <a id="s-bea56393d9"></a>`distribution`: `stove0-observer-support`
+- <a id="s-1b7c2e36c4"></a>`module`: `stove0_observer_support`
+- <a id="s-878af131bd"></a>`name`: `OBSERVER_HTTP_OPERATIONS`
+- <a id="s-623fe61a7e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-bfb8ffcf3b"></a>`kind`: `"object"`
+- <a id="s-d50c7d1fec"></a>`type`: `"builtins.tuple"`
 
 ## Governing policies
 

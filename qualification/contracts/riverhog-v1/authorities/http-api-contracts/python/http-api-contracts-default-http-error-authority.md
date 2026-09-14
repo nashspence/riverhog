@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5ebc797fbd"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-158ffecd12"></a>`contract` | type="http_api_contracts.HttpOperationErrorAuthority"; additional keys=`kind` |
-| <a id="s-3f3baa07fa"></a>`distribution` | "http-api-contracts" |
-| <a id="s-4cb321579b"></a>`module` | "http_api_contracts" |
-| <a id="s-c501b6aa17"></a>`name` | "DEFAULT_HTTP_ERROR_AUTHORITY" |
-| <a id="s-90547a2384"></a>`unit` | "export" |
+- <a id="s-3f3baa07fa"></a>`distribution`: `http-api-contracts`
+- <a id="s-4cb321579b"></a>`module`: `http_api_contracts`
+- <a id="s-c501b6aa17"></a>`name`: `DEFAULT_HTTP_ERROR_AUTHORITY`
+- <a id="s-90547a2384"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-bbcf93aa79"></a>`kind`: `"object"`
+- <a id="s-3db5b773af"></a>`type`: `"http_api_contracts.HttpOperationErrorAuthority"`
 
 ## Governing policies
 

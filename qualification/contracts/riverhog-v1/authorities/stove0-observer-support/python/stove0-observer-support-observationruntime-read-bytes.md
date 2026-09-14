@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6aa9d9c88b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0f033ffadd"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-60a7f7c886"></a>`distribution` | "stove0-observer-support" |
-| <a id="s-9efc75cea0"></a>`module` | "stove0_observer_support" |
-| <a id="s-c146473310"></a>`name` | "read_bytes" |
-| <a id="s-8861b4faa9"></a>`owner` | "stove0_observer_support.ObservationRuntime" |
-| <a id="s-b6a444e564"></a>`unit` | "member" |
+- <a id="s-60a7f7c886"></a>`distribution`: `stove0-observer-support`
+- <a id="s-9efc75cea0"></a>`module`: `stove0_observer_support`
+- <a id="s-c146473310"></a>`name`: `read_bytes`
+- <a id="s-8861b4faa9"></a>`owner`: `stove0_observer_support.ObservationRuntime`
+- <a id="s-b6a444e564"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-4e3cde45d6"></a>`kind`: `"method"`
+- <a id="s-27fedbdc58"></a>`signature`: `"\"(self, subject: 'ArtifactSubject', *, maximum_bytes: 'int', **prepare_kwargs: 'Any') -> 'bytes'\""`
 
 ## Maintained corroboration
 

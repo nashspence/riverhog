@@ -14,13 +14,30 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-caafd157a0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8e04ae3ef0"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-f5661eecd8"></a>`distribution` | "stove0-target-support" |
-| <a id="s-260ec80b64"></a>`module` | "stove0_target_support" |
-| <a id="s-2c517c6f3b"></a>`name` | "TargetRuntimeAuthority" |
-| <a id="s-2a53a0bb3e"></a>`unit` | "export" |
+- <a id="s-f5661eecd8"></a>`distribution`: `stove0-target-support`
+- <a id="s-260ec80b64"></a>`module`: `stove0_target_support`
+- <a id="s-2c517c6f3b"></a>`name`: `TargetRuntimeAuthority`
+- <a id="s-2a53a0bb3e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-1e39d72788"></a>`kind`: `"class"`
+- <a id="s-9d69363bf0"></a>`signature`: `"\"(*, transport: Literal['riverhog-capability/v1'] = 'riverhog-capability/v1', riverhog_base_url: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2048)], capability_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], allow_insecure_http: bool = False) -> None\""`
+
+#### Validated model schema
+
+<a id="s-81ceb3a42f"></a>
+- <a id="s-b10ef374dd"></a>`title`: TargetRuntimeAuthority
+- <a id="s-ba6047ccc5"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-53a0f1c39f"></a>`allow_insecure_http` | no | type="boolean" |  |
+| <a id="s-b980a9ecfc"></a>`capability_token` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-47781fdfae"></a>`riverhog_base_url` | yes | type="string"; minLength=1; maxLength=2048 |  |
+| <a id="s-11a75faf89"></a>`transport` | no | type="string"; const="riverhog-capability/v1" |  |
 
 ## Governing policies
 
@@ -46,13 +63,46 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ff95c7441d56eb236d73e1c3d9cb7b3b9ef27bcc859cc0f76eb4309b60bdf800 -->
+<!-- exact-contract-value: 677fd109ad5dff2f28567c54c6f002fcdf584ad2f7e9561185e1518aaa1b7661 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "6ac4b25b7019574c8a208af672bd8cd7caa8a1b22ac48d6ddf6946379a4bafa7",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_insecure_http": {
+          "default": false,
+          "title": "Allow Insecure Http",
+          "type": "boolean"
+        },
+        "capability_token": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Capability Token",
+          "type": "string"
+        },
+        "riverhog_base_url": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Riverhog Base Url",
+          "type": "string"
+        },
+        "transport": {
+          "const": "riverhog-capability/v1",
+          "default": "riverhog-capability/v1",
+          "title": "Transport",
+          "type": "string"
+        }
+      },
+      "required": [
+        "riverhog_base_url",
+        "capability_token"
+      ],
+      "title": "TargetRuntimeAuthority",
+      "type": "object"
+    },
     "signature": "\"(*, transport: Literal['riverhog-capability/v1'] = 'riverhog-capability/v1', riverhog_base_url: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2048)], capability_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], allow_insecure_http: bool = False) -> None\""
   },
   "distribution": "stove0-target-support",

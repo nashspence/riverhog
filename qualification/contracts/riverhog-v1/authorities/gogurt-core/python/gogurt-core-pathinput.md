@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f7c96f36b6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-37bf4fbb0b"></a>`contract` | type="types.UnionType"; additional keys=`kind` |
-| <a id="s-1b864c8d6d"></a>`distribution` | "gogurt-core" |
-| <a id="s-0422a00dff"></a>`module` | "gogurt_core" |
-| <a id="s-638e2d45e1"></a>`name` | "PathInput" |
-| <a id="s-f5f0b89883"></a>`unit` | "export" |
+- <a id="s-1b864c8d6d"></a>`distribution`: `gogurt-core`
+- <a id="s-0422a00dff"></a>`module`: `gogurt_core`
+- <a id="s-638e2d45e1"></a>`name`: `PathInput`
+- <a id="s-f5f0b89883"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-88fc1a315c"></a>`kind`: `"object"`
+- <a id="s-fd4d0da4a3"></a>`type`: `"types.UnionType"`
 
 ## Governing policies
 

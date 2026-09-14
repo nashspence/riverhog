@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5d72f63109"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-beb0f42b19"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-e68d2873bc"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-56f05940ea"></a>`module` | "riverhog_protocol" |
-| <a id="s-e7a0dd8b4a"></a>`name` | "COLLECTION_UPLOAD_WORK_BATCH_MAX" |
-| <a id="s-19b9e17e67"></a>`unit` | "export" |
+- <a id="s-e68d2873bc"></a>`distribution`: `riverhog-protocol`
+- <a id="s-56f05940ea"></a>`module`: `riverhog_protocol`
+- <a id="s-e7a0dd8b4a"></a>`name`: `COLLECTION_UPLOAD_WORK_BATCH_MAX`
+- <a id="s-19b9e17e67"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-929b05ab3a"></a>`kind`: `"constant"`
+- <a id="s-90eb1d1d72"></a>`value`: `64`
 
 ## Governing policies
 

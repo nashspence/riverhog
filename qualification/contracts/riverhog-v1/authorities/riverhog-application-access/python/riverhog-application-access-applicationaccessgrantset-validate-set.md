@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a9dc66e331"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-be261be0bd"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b6a10f6fd6"></a>`distribution` | "riverhog-application-access" |
-| <a id="s-af139ae376"></a>`module` | "riverhog_application_access" |
-| <a id="s-0f15215d37"></a>`name` | "validate_set" |
-| <a id="s-8397e991cb"></a>`owner` | "riverhog_application_access.ApplicationAccessGrantSet" |
-| <a id="s-dfcd04dd0c"></a>`unit` | "member" |
+- <a id="s-b6a10f6fd6"></a>`distribution`: `riverhog-application-access`
+- <a id="s-af139ae376"></a>`module`: `riverhog_application_access`
+- <a id="s-0f15215d37"></a>`name`: `validate_set`
+- <a id="s-8397e991cb"></a>`owner`: `riverhog_application_access.ApplicationAccessGrantSet`
+- <a id="s-dfcd04dd0c"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-628e293bb6"></a>`kind`: `"method"`
+- <a id="s-9377db3056"></a>`signature`: `"\"(self) -> 'ApplicationAccessGrantSet'\""`
 
 ## Maintained corroboration
 

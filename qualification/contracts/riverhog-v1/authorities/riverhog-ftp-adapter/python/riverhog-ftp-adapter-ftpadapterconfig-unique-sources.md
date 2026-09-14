@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f60fee0c54"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e48bedb9a4"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f0fd4589e4"></a>`distribution` | "riverhog-ftp-adapter" |
-| <a id="s-5b28692da7"></a>`module` | "riverhog_ftp_adapter" |
-| <a id="s-6f86ba0851"></a>`name` | "unique_sources" |
-| <a id="s-2a8be80b35"></a>`owner` | "riverhog_ftp_adapter.FtpAdapterConfig" |
-| <a id="s-94938b57ec"></a>`unit` | "member" |
+- <a id="s-f0fd4589e4"></a>`distribution`: `riverhog-ftp-adapter`
+- <a id="s-5b28692da7"></a>`module`: `riverhog_ftp_adapter`
+- <a id="s-6f86ba0851"></a>`name`: `unique_sources`
+- <a id="s-2a8be80b35"></a>`owner`: `riverhog_ftp_adapter.FtpAdapterConfig`
+- <a id="s-94938b57ec"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-b24f0118ff"></a>`kind`: `"classmethod"`
+- <a id="s-b9871af2a2"></a>`signature`: `"\"(cls, value: 'tuple[SourceConfig, ...]') -> 'tuple[SourceConfig, ...]'\""`
 
 ## Maintained corroboration
 

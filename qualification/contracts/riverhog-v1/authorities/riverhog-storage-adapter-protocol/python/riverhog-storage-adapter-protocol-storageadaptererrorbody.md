@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-94ec0395e6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a899e753de"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-faf3548d4e"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-434e48163d"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-043b5a4df8"></a>`name` | "StorageAdapterErrorBody" |
-| <a id="s-edfc672dd1"></a>`unit` | "export" |
+- <a id="s-faf3548d4e"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-434e48163d"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-043b5a4df8"></a>`name`: `StorageAdapterErrorBody`
+- <a id="s-edfc672dd1"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-4abc68288a"></a>`kind`: `"class"`
+- <a id="s-8f05acc617"></a>`signature`: `"\"(*, code: Literal['unauthorized', 'invalid_request', 'not_found', 'method_not_allowed', 'length_required', 'request_too_large', 'insufficient_storage', 'identity_conflict', 'traversal_invalidated', 'invalid_path', 'invalid_range', 'read_not_ready', 'read_expired', 'integrity_failure', 'provider_unavailable', 'internal_failure'], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2000)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-1a5d69d0bf"></a>
+- <a id="s-c3598a96c2"></a>`title`: StorageAdapterErrorBody
+- <a id="s-d1d501532c"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-56f4b8c0ab"></a>`code` | yes | type="string"; enum=["unauthorized","invalid_request","not_found","method_not_allowed","length_required","request_too_large","insufficient_storage","identity_conflict","traversal_invalidated","invalid_path","invalid_range","read_not_ready","read_expired","integrity_failure","provider_unavailable","internal_failure"] |  |
+| <a id="s-588324d384"></a>`message` | yes | type="string"; minLength=1; maxLength=2000 |  |
 
 ## Governing policies
 
@@ -46,13 +61,51 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e73d7ef34e552c7c3f57a9ab030577eb5e8cfb0e005ca089ceb0886d9f077fb0 -->
+<!-- exact-contract-value: 0b5ba47ad973361f7698389c5e2c1014ad04353dd3464c146f79684a9dbd062e -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "9c6d2bb482f12292a4cb9eca4a79d1e6c953362f34ba69a7f5009bf0d394616d",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "enum": [
+            "unauthorized",
+            "invalid_request",
+            "not_found",
+            "method_not_allowed",
+            "length_required",
+            "request_too_large",
+            "insufficient_storage",
+            "identity_conflict",
+            "traversal_invalidated",
+            "invalid_path",
+            "invalid_range",
+            "read_not_ready",
+            "read_expired",
+            "integrity_failure",
+            "provider_unavailable",
+            "internal_failure"
+          ],
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "StorageAdapterErrorBody",
+      "type": "object"
+    },
     "signature": "\"(*, code: Literal['unauthorized', 'invalid_request', 'not_found', 'method_not_allowed', 'length_required', 'request_too_large', 'insufficient_storage', 'identity_conflict', 'traversal_invalidated', 'invalid_path', 'invalid_range', 'read_not_ready', 'read_expired', 'integrity_failure', 'provider_unavailable', 'internal_failure'], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2000)]) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",

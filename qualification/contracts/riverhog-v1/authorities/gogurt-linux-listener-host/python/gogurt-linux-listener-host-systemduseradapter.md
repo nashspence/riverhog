@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-434a19fe2b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-cca32a721e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-4fa0c6f749"></a>`distribution` | "gogurt-linux-listener-host" |
-| <a id="s-37aa751729"></a>`module` | "gogurt_linux_listener_host" |
-| <a id="s-8921b46033"></a>`name` | "SystemdUserAdapter" |
-| <a id="s-eb59ef285e"></a>`unit` | "export" |
+- <a id="s-4fa0c6f749"></a>`distribution`: `gogurt-linux-listener-host`
+- <a id="s-37aa751729"></a>`module`: `gogurt_linux_listener_host`
+- <a id="s-8921b46033"></a>`name`: `SystemdUserAdapter`
+- <a id="s-eb59ef285e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-99aa78344d"></a>`kind`: `"class"`
+- <a id="s-1748aabdbb"></a>`signature`: `"\"(registration_file: 'Path') -> 'None'\""`
 
 ## Maintained corroboration
 

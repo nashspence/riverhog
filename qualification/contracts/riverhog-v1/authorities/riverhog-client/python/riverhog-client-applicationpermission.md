@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-762665986e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8cd38ef040"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-9e041794f6"></a>`distribution` | "riverhog-client" |
-| <a id="s-af2c4f5a25"></a>`module` | "riverhog_client" |
-| <a id="s-cc42a8146d"></a>`name` | "ApplicationPermission" |
-| <a id="s-13979a10f9"></a>`unit` | "export" |
+- <a id="s-9e041794f6"></a>`distribution`: `riverhog-client`
+- <a id="s-af2c4f5a25"></a>`module`: `riverhog_client`
+- <a id="s-cc42a8146d"></a>`name`: `ApplicationPermission`
+- <a id="s-13979a10f9"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-d74da0cc96"></a>`kind`: `"type-alias"`
+- <a id="s-8fdbcc2f3c"></a>`value`: `"typing.Literal['*', 'catalog:read', 'retrieval:manage', 'collections:create', 'collection-descriptions:manage', 'collection-transforms:control', 'collection-transforms:execute', 'collection-tags:manage', 'collections:delete', 'archives:read', 'archives:manage', 'keys:manage', 'quotas:manage', 'events:read', 'events:read_all', 'provenance:read', 'provenance:export']"`
 
 ## Governing policies
 

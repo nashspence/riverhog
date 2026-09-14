@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-287d4b6b0a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2156fa47a9"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b4217334fb"></a>`distribution` | "riverhog-client" |
-| <a id="s-c76f95d696"></a>`module` | "riverhog_client.transform" |
-| <a id="s-1ab0df14ec"></a>`name` | "ClaimedCollectionRuntime" |
-| <a id="s-fdaf4f575e"></a>`unit` | "export" |
+- <a id="s-b4217334fb"></a>`distribution`: `riverhog-client`
+- <a id="s-c76f95d696"></a>`module`: `riverhog_client.transform`
+- <a id="s-1ab0df14ec"></a>`name`: `ClaimedCollectionRuntime`
+- <a id="s-fdaf4f575e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0397d0be25"></a>`kind`: `"class"`
+- <a id="s-d05b69bbde"></a>`signature`: `"'(api: \\'Any\\', *, inputs: \\'Sequence[CollectionRootIdentity]\\', claim_id: \\'str\\', fence: \\'int\\', work_id: \\'str\\', execution_id: \\'str\\', cancellation_check: \\'CancellationCheck \| None\\' = None, input_retrieval_policy: \"Literal[\\'available-only\\', \\'allow\\']\" = \\'available-only\\', owned_api: \\'bool\\' = False) -> \\'None\\''"`
 
 ## Maintained corroboration
 

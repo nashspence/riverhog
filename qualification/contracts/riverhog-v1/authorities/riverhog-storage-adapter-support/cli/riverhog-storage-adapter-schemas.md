@@ -39,7 +39,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-c1a8bb97d5"></a>`emitted` | <a id="s-8bded2382d"></a>`{"kind":"option-absent","parameter":"output"}` | <a id="s-6198931a89"></a>`0` | <a id="s-4e5ccf02c2"></a>`json: riverhog-storage-adapter-schema-bundle/v1` | <a id="s-b3f13bd5e3"></a>`all: empty` |
+| <a id="s-c1a8bb97d5"></a>`emitted` | <a id="s-8bded2382d"></a>`{"kind":"option-absent","parameter":"output"}` | <a id="s-6198931a89"></a>`0` | <a id="s-4e5ccf02c2"></a>`json: document-authority` | <a id="s-b3f13bd5e3"></a>`all: empty` |
 | <a id="s-3ce2798c93"></a>`written` | <a id="s-f819f64438"></a>`{"kind":"option-present","parameter":"output"}` | <a id="s-3920cf9c82"></a>`0` | <a id="s-3f62ca3ca0"></a>`all: empty` | <a id="s-edaca0f659"></a>`all: empty` |
 
 #### Failure outcomes
@@ -125,7 +125,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/riverhog-storage-adapter-schemas/result_contract`
 
-<!-- exact-contract-value: 6033d0e31528cbcf6ad59cace331d07b30cec08ab95d970cc09b0bcbbc21a716 -->
+<!-- exact-contract-value: f6d14ceb0402df76a98586c3d73643c76aecefd5b83f0b80760368870f499dd3 -->
 
 ```json
 {
@@ -161,8 +161,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "stdout": {
         "json": {
-          "identity": "riverhog-storage-adapter-schema-bundle/v1",
-          "kind": "semantic-format"
+          "authority": "generated:riverhog-storage-adapter",
+          "kind": "document-authority"
         }
       }
     },

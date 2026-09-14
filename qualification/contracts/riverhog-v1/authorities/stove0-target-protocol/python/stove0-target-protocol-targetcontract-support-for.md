@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-674a97d618"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b5009391a4"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-05752a7906"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-f33b06ca40"></a>`module` | "stove0_target_protocol" |
-| <a id="s-8c21bde371"></a>`name` | "support_for" |
-| <a id="s-2caee7806e"></a>`owner` | "stove0_target_protocol.TargetContract" |
-| <a id="s-7fedcd42c6"></a>`unit` | "member" |
+- <a id="s-05752a7906"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-f33b06ca40"></a>`module`: `stove0_target_protocol`
+- <a id="s-8c21bde371"></a>`name`: `support_for`
+- <a id="s-2caee7806e"></a>`owner`: `stove0_target_protocol.TargetContract`
+- <a id="s-7fedcd42c6"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c3fa030e17"></a>`kind`: `"method"`
+- <a id="s-03fc1d86c0"></a>`signature`: `"\"(self, operation_id: 'str') -> 'TargetOperationSupport'\""`
 
 ## Maintained corroboration
 

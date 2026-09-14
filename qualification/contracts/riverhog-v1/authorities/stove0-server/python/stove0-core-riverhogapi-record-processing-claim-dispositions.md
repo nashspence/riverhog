@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-048ef09666"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-17b959b9f2"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b7ba4e8b86"></a>`distribution` | "stove0-server" |
-| <a id="s-d3dab9a7f1"></a>`module` | "stove0_core" |
-| <a id="s-a28aca684b"></a>`name` | "record_processing_claim_dispositions" |
-| <a id="s-608cd56833"></a>`owner` | "stove0_core.RiverhogApi" |
-| <a id="s-2c91b6666c"></a>`unit` | "member" |
+- <a id="s-b7ba4e8b86"></a>`distribution`: `stove0-server`
+- <a id="s-d3dab9a7f1"></a>`module`: `stove0_core`
+- <a id="s-a28aca684b"></a>`name`: `record_processing_claim_dispositions`
+- <a id="s-608cd56833"></a>`owner`: `stove0_core.RiverhogApi`
+- <a id="s-2c91b6666c"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ed18ccae39"></a>`kind`: `"method"`
+- <a id="s-ab8090a93c"></a>`signature`: `"\"(self, claim_id: 'str', *, fence: 'int', dispositions: 'Sequence[Mapping[str, Any]]') -> 'ArtifactDispositionSetDocument'\""`
 
 ## Maintained corroboration
 

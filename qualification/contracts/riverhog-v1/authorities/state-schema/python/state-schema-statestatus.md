@@ -14,13 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-127c338f48"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9f514a525b"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-e0382f5e7e"></a>`distribution` | "state-schema" |
-| <a id="s-57f8e46533"></a>`module` | "state_schema" |
-| <a id="s-17dcadbffb"></a>`name` | "StateStatus" |
-| <a id="s-6ab48f9a50"></a>`unit` | "export" |
+- <a id="s-e0382f5e7e"></a>`distribution`: `state-schema`
+- <a id="s-57f8e46533"></a>`module`: `state_schema`
+- <a id="s-17dcadbffb"></a>`name`: `StateStatus`
+- <a id="s-6ab48f9a50"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ef6ca01db9"></a>`kind`: `"class"`
+- <a id="s-78221ea4f0"></a>`signature`: `"\"(name: 'str', condition: 'StateCondition', current_revision: 'str \| None', head_revision: 'str') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-86e8a0ae89"></a>`name` | `'str'` | `required` |
+| <a id="s-2208cbd498"></a>`condition` | `'StateCondition'` | `required` |
+| <a id="s-147f0376af"></a>`current_revision` | `'str \| None'` | `required` |
+| <a id="s-2cf3a063de"></a>`head_revision` | `'str'` | `required` |
 
 ## Maintained corroboration
 

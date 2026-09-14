@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d9da029486"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-58e551a646"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-106d611bfe"></a>`distribution` | "riverhog-storage-adapter-s3-support" |
-| <a id="s-fa9289f897"></a>`module` | "riverhog_storage_adapter_s3_support" |
-| <a id="s-3175926e69"></a>`name` | "create_s3_client" |
-| <a id="s-e5981352dd"></a>`unit` | "export" |
+- <a id="s-106d611bfe"></a>`distribution`: `riverhog-storage-adapter-s3-support`
+- <a id="s-fa9289f897"></a>`module`: `riverhog_storage_adapter_s3_support`
+- <a id="s-3175926e69"></a>`name`: `create_s3_client`
+- <a id="s-e5981352dd"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-fe3c687516"></a>`kind`: `"function"`
+- <a id="s-b32724c17e"></a>`signature`: `"\"(config: 'S3ClientConfig', *, tuning: 'S3TransportTuning \| None' = None) -> 'Any'\""`
 
 ## Governing policies
 

@@ -14,13 +14,30 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c6da2b1c45"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2edb3c9b4a"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-23cd7fdc5b"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-e6ce3e095e"></a>`module` | "riverhog_provenance" |
-| <a id="s-5dae5de5c8"></a>`name` | "IncrementalJournalEntry" |
-| <a id="s-713e1bf334"></a>`unit` | "export" |
+- <a id="s-23cd7fdc5b"></a>`distribution`: `riverhog-provenance`
+- <a id="s-e6ce3e095e"></a>`module`: `riverhog_provenance`
+- <a id="s-5dae5de5c8"></a>`name`: `IncrementalJournalEntry`
+- <a id="s-713e1bf334"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-7886b61dc1"></a>`kind`: `"class"`
+- <a id="s-0f2a441906"></a>`signature`: `"\"(frame: 'JournalFrame', journal_id: 'str', primary_lineage_id: 'str \| None', agents: 'tuple[str, ...]', events: 'tuple[str, ...]', states: 'tuple[tuple[str, str], ...]', entities: 'tuple[tuple[str, str, str], ...]', entity_counts: 'tuple[tuple[str, int], ...]', bindings: 'tuple[tuple[str, str, str], ...]', external_states: 'tuple[ExternalStateReference, ...]') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-c518805059"></a>`frame` | `'JournalFrame'` | `required` |
+| <a id="s-4f7018c2f3"></a>`journal_id` | `'str'` | `required` |
+| <a id="s-56a3ad8fb9"></a>`primary_lineage_id` | `'str \| None'` | `required` |
+| <a id="s-7075f8e0a2"></a>`agents` | `'tuple[str, ...]'` | `required` |
+| <a id="s-2cf65bfca7"></a>`events` | `'tuple[str, ...]'` | `required` |
+| <a id="s-8c172c4a09"></a>`states` | `'tuple[tuple[str, str], ...]'` | `required` |
+| <a id="s-6f2146e31d"></a>`entities` | `'tuple[tuple[str, str, str], ...]'` | `required` |
+| <a id="s-fed65375f1"></a>`entity_counts` | `'tuple[tuple[str, int], ...]'` | `required` |
+| <a id="s-ac5fc6a231"></a>`bindings` | `'tuple[tuple[str, str, str], ...]'` | `required` |
+| <a id="s-46943cee8b"></a>`external_states` | `'tuple[ExternalStateReference, ...]'` | `required` |
 
 ## Governing policies
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c5cd267500"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-594294a970"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-fb0d1c0291"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-e09ac10c4d"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-b24f8a760a"></a>`name` | "ADMISSION_POLICY_COUNT_MAX" |
-| <a id="s-96c0d6c14d"></a>`unit` | "export" |
+- <a id="s-fb0d1c0291"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-e09ac10c4d"></a>`module`: `stove0_operator_contracts`
+- <a id="s-b24f8a760a"></a>`name`: `ADMISSION_POLICY_COUNT_MAX`
+- <a id="s-96c0d6c14d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-4d269b061e"></a>`kind`: `"constant"`
+- <a id="s-0f5af25989"></a>`value`: `100`
 
 ## Governing policies
 

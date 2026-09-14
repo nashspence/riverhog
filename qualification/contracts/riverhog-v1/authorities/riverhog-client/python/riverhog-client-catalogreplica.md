@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-af43f6603a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-edb397bc41"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-da3a6c4018"></a>`distribution` | "riverhog-client" |
-| <a id="s-7bcbd914a3"></a>`module` | "riverhog_client" |
-| <a id="s-33b215fbc6"></a>`name` | "CatalogReplica" |
-| <a id="s-24084a2bea"></a>`unit` | "export" |
+- <a id="s-da3a6c4018"></a>`distribution`: `riverhog-client`
+- <a id="s-7bcbd914a3"></a>`module`: `riverhog_client`
+- <a id="s-33b215fbc6"></a>`name`: `CatalogReplica`
+- <a id="s-24084a2bea"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e0ddc54451"></a>`kind`: `"class"`
+- <a id="s-3c9b764061"></a>`signature`: `"\"(database: 'str \| Path') -> 'None'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-976a747a4c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f2fb74f526"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-150c20e099"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-518257f9d1"></a>`module` | "riverhog_provenance" |
-| <a id="s-3ef699f064"></a>`name` | "validate_incremental_journal_entry" |
-| <a id="s-f9fafb8134"></a>`unit` | "export" |
+- <a id="s-150c20e099"></a>`distribution`: `riverhog-provenance`
+- <a id="s-518257f9d1"></a>`module`: `riverhog_provenance`
+- <a id="s-3ef699f064"></a>`name`: `validate_incremental_journal_entry`
+- <a id="s-f9fafb8134"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-c31840db7b"></a>`kind`: `"function"`
+- <a id="s-35b30d0a00"></a>`signature`: `"\"(encoded: 'bytes', *, sequence: 'int', journal_id: 'str', previous_entry_id: 'str \| None', previous_json_sha256: 'str \| None') -> 'IncrementalJournalEntry'\""`
 
 ## Governing policies
 

@@ -45,7 +45,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-e6ffcd91df"></a>`archive-recovered` | <a id="s-b3f25cf921"></a>`{"kind":"options-absent","parameters":["description_only","tags_only"]}` | <a id="s-cc80a4f4a0"></a>`0` | <a id="s-82103433e9"></a>`human: noncontractual-recovery-summary` | <a id="s-1b310db431"></a>`all: empty` |
-| <a id="s-1cd6f69133"></a>`description-recovered` | <a id="s-228b200272"></a>`{"kind":"option-equals","parameter":"description_only","value":true}` | <a id="s-e8bbbcc49c"></a>`0` | <a id="s-bdf9e5feff"></a>`json: riverhog-collection-description/v1-or-null` | <a id="s-018043ff9a"></a>`all: empty` |
+| <a id="s-1cd6f69133"></a>`description-recovered` | <a id="s-228b200272"></a>`{"kind":"option-equals","parameter":"description_only","value":true}` | <a id="s-e8bbbcc49c"></a>`0` | <a id="s-bdf9e5feff"></a>`json: schema-authority` | <a id="s-018043ff9a"></a>`all: empty` |
 | <a id="s-b4a66c971c"></a>`tags-recovered` | <a id="s-191ff5ecba"></a>`{"kind":"option-equals","parameter":"tags_only","value":true}` | <a id="s-70c0bd4c11"></a>`0` | <a id="s-d382d2c367"></a>`json: riverhog-recovered-collection-tags/v1-json-sequence` | <a id="s-cb2e774c6f"></a>`all: empty` |
 
 #### Failure outcomes
@@ -53,7 +53,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-f02faf7dad"></a>`usage` | <a id="s-140eafc026"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-33edb1b1ec"></a>`2` | <a id="s-19f9334bbd"></a>`all: empty` | <a id="s-2dfd45a472"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-4b8e5acd9d"></a>`recovery` | <a id="s-7253334adc"></a>`{"kind":"recovery-error"}` | <a id="s-3c2553c1f0"></a>`1` | <a id="s-664d5b2d56"></a>`all: empty` | <a id="s-8ca9ad09a8"></a>`all: riverhog-recover-diagnostic/v1` |
+| <a id="s-4b8e5acd9d"></a>`recovery` | <a id="s-7253334adc"></a>`{"kind":"recovery-error"}` | <a id="s-3c2553c1f0"></a>`1` | <a id="s-664d5b2d56"></a>`all: empty` | <a id="s-8ca9ad09a8"></a>`all: noncontractual-diagnostic` |
 
 ### Progression, limits, and lifecycle
 
@@ -169,7 +169,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/riverhog-recover/result_contract`
 
-<!-- exact-contract-value: 051dcbc4c634d2280bcc82fdd9404df206ca730fe37b72075de50a18921333a3 -->
+<!-- exact-contract-value: b6c201503259a4db3fc0548159441df7e4ed64ddeed8a9af5f3ea2f75e573aff -->
 
 ```json
 {
@@ -194,7 +194,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "kind": "recovery-error"
       },
       "stderr": {
-        "all": "riverhog-recover-diagnostic/v1"
+        "all": "noncontractual-diagnostic"
       },
       "stdout": {
         "all": "empty"
@@ -236,8 +236,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "stdout": {
         "json": {
-          "identity": "riverhog-collection-description/v1-or-null",
-          "kind": "semantic-format"
+          "authority": "https://nashspence.github.io/riverhog/v1/schemas/riverhog-collection-description-v1.schema.json",
+          "kind": "schema-authority",
+          "nullable": true
         }
       }
     },
@@ -254,8 +255,81 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "stdout": {
         "json": {
+          "framing": "newline-delimited-json",
           "identity": "riverhog-recovered-collection-tags/v1-json-sequence",
-          "kind": "semantic-format"
+          "kind": "cli-local-json-sequence",
+          "records": {
+            "authority": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "const": "riverhog-recovered-collection-tags/v1"
+                },
+                "head_identity": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "record": {
+                  "const": "authority"
+                },
+                "revision": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "tag_set_identity": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "format",
+                "record",
+                "revision",
+                "tag_set_identity",
+                "head_identity"
+              ],
+              "type": "object"
+            },
+            "complete": {
+              "additionalProperties": false,
+              "properties": {
+                "record": {
+                  "const": "complete"
+                },
+                "tag_count": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "record",
+                "tag_count"
+              ],
+              "type": "object"
+            },
+            "tag": {
+              "additionalProperties": false,
+              "properties": {
+                "record": {
+                  "const": "tag"
+                },
+                "tag": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "record",
+                "tag"
+              ],
+              "type": "object"
+            }
+          },
+          "sequence": {
+            "end": "complete",
+            "repeated": "tag",
+            "start": "authority"
+          }
         }
       }
     }

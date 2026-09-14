@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1a70bf78aa"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-47197706f7"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-43ecc6f5c0"></a>`distribution` | "stove0-review-sampler-client" |
-| <a id="s-8f8e73654d"></a>`module` | "stove0_review_sampler_client" |
-| <a id="s-f112cff23d"></a>`name` | "SamplerProtocolError" |
-| <a id="s-e3145a0bce"></a>`unit` | "export" |
+- <a id="s-43ecc6f5c0"></a>`distribution`: `stove0-review-sampler-client`
+- <a id="s-8f8e73654d"></a>`module`: `stove0_review_sampler_client`
+- <a id="s-f112cff23d"></a>`name`: `SamplerProtocolError`
+- <a id="s-e3145a0bce"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-af43dd7005"></a>`kind`: `"class"`
+- <a id="s-24ac5e3a78"></a>`signature`: `"'(message: \\'str\\', *, failure_kind: \"Literal[\\'remote_rejection\\', \\'transport\\', \\'invalid_response\\']\", code: \\'str \| None\\' = None, observed_status: \\'int \| None\\' = None, details: \\'Mapping[str, Any] \| None\\' = None) -> \\'None\\''"`
 
 ## Governing policies
 

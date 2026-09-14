@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a6ed37379c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2e611a93a4"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-68b67127e9"></a>`distribution` | "riverhog-client" |
-| <a id="s-ba2371d0bc"></a>`module` | "riverhog_client" |
-| <a id="s-9b3c20ca38"></a>`name` | "create_app_key" |
-| <a id="s-848357a4d6"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-f5264611a6"></a>`unit` | "member" |
+- <a id="s-68b67127e9"></a>`distribution`: `riverhog-client`
+- <a id="s-ba2371d0bc"></a>`module`: `riverhog_client`
+- <a id="s-9b3c20ca38"></a>`name`: `create_app_key`
+- <a id="s-848357a4d6"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-f5264611a6"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ce328d90af"></a>`kind`: `"method"`
+- <a id="s-46afd4b393"></a>`signature`: `"\"(self, app: 'ApplicationName', *, access: 'Sequence[Mapping[str, str]]', expires_in_seconds: 'int \| None' = None) -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

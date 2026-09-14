@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6926a79d1e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-731227f4c1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b2e18c5279"></a>`distribution` | "http-api-contracts" |
-| <a id="s-388bde1283"></a>`module` | "http_api_contracts" |
-| <a id="s-199ebc5c54"></a>`name` | "issue" |
-| <a id="s-5b5cc624b5"></a>`owner` | "http_api_contracts.BrowseTokenCodec" |
-| <a id="s-e93aa00a70"></a>`unit` | "member" |
+- <a id="s-b2e18c5279"></a>`distribution`: `http-api-contracts`
+- <a id="s-388bde1283"></a>`module`: `http_api_contracts`
+- <a id="s-199ebc5c54"></a>`name`: `issue`
+- <a id="s-5b5cc624b5"></a>`owner`: `http_api_contracts.BrowseTokenCodec`
+- <a id="s-e93aa00a70"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-68cbb77b4d"></a>`kind`: `"method"`
+- <a id="s-034a6796c3"></a>`signature`: `"\"(self, *, operation: 'str', principal: 'object', selectors: 'Mapping[str, object]', position: 'Sequence[BrowseScalar]') -> 'str'\""`
 
 ## Maintained corroboration
 

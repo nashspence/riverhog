@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-85046865fc"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9bec0f7ed6"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-423e0f8e15"></a>`distribution` | "state-schema" |
-| <a id="s-1647b5d865"></a>`module` | "state_schema" |
-| <a id="s-5374a10fb8"></a>`name` | "read_snapshot" |
-| <a id="s-da040639a2"></a>`unit` | "export" |
+- <a id="s-423e0f8e15"></a>`distribution`: `state-schema`
+- <a id="s-1647b5d865"></a>`module`: `state_schema`
+- <a id="s-5374a10fb8"></a>`name`: `read_snapshot`
+- <a id="s-da040639a2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-324fa0634d"></a>`kind`: `"function"`
+- <a id="s-ab5051712a"></a>`signature`: `"\"(session_factory: 'SessionFactory') -> 'CollectionsIterator[Session]'\""`
 
 ## Governing policies
 

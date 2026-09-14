@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-09886340b1"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-cd3a9a9719"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-4c41564a0e"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-8e4591e3df"></a>`module` | "stove0_target_protocol" |
-| <a id="s-8f74bc8600"></a>`name` | "seal" |
-| <a id="s-e84dc57540"></a>`owner` | "stove0_target_protocol.TargetJobRequest" |
-| <a id="s-e7c1029840"></a>`unit` | "member" |
+- <a id="s-4c41564a0e"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-8e4591e3df"></a>`module`: `stove0_target_protocol`
+- <a id="s-8f74bc8600"></a>`name`: `seal`
+- <a id="s-e84dc57540"></a>`owner`: `stove0_target_protocol.TargetJobRequest`
+- <a id="s-e7c1029840"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-879ce95e35"></a>`kind`: `"classmethod"`
+- <a id="s-c6c8632f2b"></a>`signature`: `"\"(cls, declaration: 'TargetJobDeclaration', runtime: 'TargetRuntimeAuthority', callback_access: 'TargetCallbackAccess') -> 'TargetJobRequest'\""`
 
 ## Maintained corroboration
 

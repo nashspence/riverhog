@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bee7cfb201"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1351337130"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c14c6ffe1f"></a>`distribution` | "stove0-media-archive-target-support" |
-| <a id="s-394d8dc318"></a>`module` | "stove0_media_archive_target_support" |
-| <a id="s-3641682eb4"></a>`name` | "item_for" |
-| <a id="s-b0ad204cee"></a>`owner` | "stove0_media_archive_target_support.MediaArchiveProjection" |
-| <a id="s-0dae90c6fd"></a>`unit` | "member" |
+- <a id="s-c14c6ffe1f"></a>`distribution`: `stove0-media-archive-target-support`
+- <a id="s-394d8dc318"></a>`module`: `stove0_media_archive_target_support`
+- <a id="s-3641682eb4"></a>`name`: `item_for`
+- <a id="s-b0ad204cee"></a>`owner`: `stove0_media_archive_target_support.MediaArchiveProjection`
+- <a id="s-0dae90c6fd"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-fa56d82264"></a>`kind`: `"method"`
+- <a id="s-192ae2c0f3"></a>`signature`: `"\"(self, artifact_id: 'str') -> 'MediaProjectionItem'\""`
 
 ## Maintained corroboration
 

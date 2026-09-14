@@ -14,13 +14,33 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d87acca02f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-741874542b"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-2f08781b6f"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-34e21bc7ea"></a>`module` | "riverhog_protocol" |
-| <a id="s-54b5e7f799"></a>`name` | "CollectionTagHeadDocument" |
-| <a id="s-2318c138cc"></a>`unit` | "export" |
+- <a id="s-2f08781b6f"></a>`distribution`: `riverhog-protocol`
+- <a id="s-34e21bc7ea"></a>`module`: `riverhog_protocol`
+- <a id="s-54b5e7f799"></a>`name`: `CollectionTagHeadDocument`
+- <a id="s-2318c138cc"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-33070c9f88"></a>`kind`: `"class"`
+- <a id="s-9a2ec9f60b"></a>`signature`: `"\"(*, format: Literal['riverhog-collection-tag-head/v1'] = 'riverhog-collection-tag-head/v1', archive_root_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], revision: Annotated[int, Strict(strict=True), Ge(ge=1), Le(le=9007199254740991)], root_sha256: Annotated[str \| None, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')] = None, tag_set_identity: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], head_identity: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-ce4ab1a01c"></a>
+- <a id="s-e2cb62eb00"></a>`title`: CollectionTagHeadDocument
+- <a id="s-6b15665534"></a>`description`: Canonical mutable head for one recoverable collection tag authority.
+- <a id="s-6ca05613b3"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a1c9e422b3"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6d8f707f07"></a>`format` | no | type="string"; const="riverhog-collection-tag-head/v1" |  |
+| <a id="s-ce95c34a50"></a>`head_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c714f6110c"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
+| <a id="s-1381339e01"></a>`root_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-1f359cc827"></a>`tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -55,13 +75,66 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c4a75cc082ec10f6337ce4f07937d6be38193906fd3ac6865cc8144cab8298fb -->
+<!-- exact-contract-value: f859b6e0ad55a64e002dcd0e7da486cc82becd1ff1ac0eca986666a2f8917f0a -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "5bfbd73e084b27df7a341016b42ceb6b1e832cd53927e2f27a1d983a1e927bbe",
+    "schema": {
+      "additionalProperties": false,
+      "description": "Canonical mutable head for one recoverable collection tag authority.",
+      "properties": {
+        "archive_root_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Archive Root Sha256",
+          "type": "string"
+        },
+        "format": {
+          "const": "riverhog-collection-tag-head/v1",
+          "default": "riverhog-collection-tag-head/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "head_identity": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Head Identity",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "root_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Root Sha256"
+        },
+        "tag_set_identity": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Tag Set Identity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "archive_root_sha256",
+        "revision",
+        "tag_set_identity",
+        "head_identity"
+      ],
+      "title": "CollectionTagHeadDocument",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['riverhog-collection-tag-head/v1'] = 'riverhog-collection-tag-head/v1', archive_root_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], revision: Annotated[int, Strict(strict=True), Ge(ge=1), Le(le=9007199254740991)], root_sha256: Annotated[str | None, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')] = None, tag_set_identity: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], head_identity: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
   },
   "distribution": "riverhog-protocol",

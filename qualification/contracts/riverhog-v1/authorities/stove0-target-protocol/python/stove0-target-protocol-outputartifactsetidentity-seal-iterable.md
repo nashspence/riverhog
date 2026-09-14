@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c16d86d3b8"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3b2dbafdbb"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-4786a14b7c"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-8d66141654"></a>`module` | "stove0_target_protocol" |
-| <a id="s-0512013674"></a>`name` | "seal_iterable" |
-| <a id="s-4f37a43919"></a>`owner` | "stove0_target_protocol.OutputArtifactSetIdentity" |
-| <a id="s-0195ae3756"></a>`unit` | "member" |
+- <a id="s-4786a14b7c"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-8d66141654"></a>`module`: `stove0_target_protocol`
+- <a id="s-0512013674"></a>`name`: `seal_iterable`
+- <a id="s-4f37a43919"></a>`owner`: `stove0_target_protocol.OutputArtifactSetIdentity`
+- <a id="s-0195ae3756"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-9609bc6e6b"></a>`kind`: `"classmethod"`
+- <a id="s-dd3fbe5b7b"></a>`signature`: `"\"(cls, artifacts: 'Iterable[OutputArtifact]') -> 'OutputArtifactSetIdentity'\""`
 
 ## Maintained corroboration
 

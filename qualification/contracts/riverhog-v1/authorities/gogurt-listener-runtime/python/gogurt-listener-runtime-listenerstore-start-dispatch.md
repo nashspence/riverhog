@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bd0839019d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4843e44208"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d4b5e7ff63"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-d3dda617da"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-904363caf7"></a>`name` | "start_dispatch" |
-| <a id="s-6d1e9ab40d"></a>`owner` | "gogurt_listener_runtime.ListenerStore" |
-| <a id="s-7e3744ec6a"></a>`unit` | "member" |
+- <a id="s-d4b5e7ff63"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-d3dda617da"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-904363caf7"></a>`name`: `start_dispatch`
+- <a id="s-6d1e9ab40d"></a>`owner`: `gogurt_listener_runtime.ListenerStore`
+- <a id="s-7e3744ec6a"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ceb2847f9b"></a>`kind`: `"method"`
+- <a id="s-fd467ca77b"></a>`signature`: `"\"(self, dispatch_id: 'str', *, now: 'float') -> 'dict[str, object] \| None'\""`
 
 ## Maintained corroboration
 

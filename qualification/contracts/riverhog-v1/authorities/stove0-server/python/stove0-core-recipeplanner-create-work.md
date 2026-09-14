@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-172e3ffe0e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-30f3a4b8aa"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f5dfb070cd"></a>`distribution` | "stove0-server" |
-| <a id="s-44fa50fb3d"></a>`module` | "stove0_core" |
-| <a id="s-16b6be9563"></a>`name` | "create_work" |
-| <a id="s-801b611672"></a>`owner` | "stove0_core.RecipePlanner" |
-| <a id="s-f4784696b3"></a>`unit` | "member" |
+- <a id="s-f5dfb070cd"></a>`distribution`: `stove0-server`
+- <a id="s-44fa50fb3d"></a>`module`: `stove0_core`
+- <a id="s-16b6be9563"></a>`name`: `create_work`
+- <a id="s-801b611672"></a>`owner`: `stove0_core.RecipePlanner`
+- <a id="s-f4784696b3"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-a877b11054"></a>`kind`: `"method"`
+- <a id="s-d4e50622c7"></a>`signature`: `"\"(self, recipe_id: 'str', roots: 'Sequence[CollectionRootRef]', *, revision: 'int \| None' = None, effective_intent: 'Mapping[str, JsonValue] \| None' = None) -> 'WorkIdentity'\""`
 
 ## Maintained corroboration
 

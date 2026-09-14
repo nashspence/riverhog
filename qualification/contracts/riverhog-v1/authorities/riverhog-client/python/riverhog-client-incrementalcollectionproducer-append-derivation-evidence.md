@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-25aeca38b2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2f5b9c2468"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-82af551fc2"></a>`distribution` | "riverhog-client" |
-| <a id="s-b6c03f23ff"></a>`module` | "riverhog_client" |
-| <a id="s-432baf3fd8"></a>`name` | "append_derivation_evidence" |
-| <a id="s-a85dad704f"></a>`owner` | "riverhog_client.IncrementalCollectionProducer" |
-| <a id="s-0823927dac"></a>`unit` | "member" |
+- <a id="s-82af551fc2"></a>`distribution`: `riverhog-client`
+- <a id="s-b6c03f23ff"></a>`module`: `riverhog_client`
+- <a id="s-432baf3fd8"></a>`name`: `append_derivation_evidence`
+- <a id="s-a85dad704f"></a>`owner`: `riverhog_client.IncrementalCollectionProducer`
+- <a id="s-0823927dac"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1ecdd198f8"></a>`kind`: `"method"`
+- <a id="s-c00443161f"></a>`signature`: `"\"(self, path: 'str', content: 'bytes') -> 'ProducerArtifactCustody \| None'\""`
 
 ## Maintained corroboration
 

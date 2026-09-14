@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-791cd74e36"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0ba26ac4a5"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e3137ac6b5"></a>`distribution` | "stove0-target-support" |
-| <a id="s-9deed0d5c9"></a>`module` | "stove0_target_support" |
-| <a id="s-78a538db62"></a>`name` | "canonical_path" |
-| <a id="s-35c23455d5"></a>`owner` | "stove0_target_support.OutputArtifact" |
-| <a id="s-38d5dda9db"></a>`unit` | "member" |
+- <a id="s-e3137ac6b5"></a>`distribution`: `stove0-target-support`
+- <a id="s-9deed0d5c9"></a>`module`: `stove0_target_support`
+- <a id="s-78a538db62"></a>`name`: `canonical_path`
+- <a id="s-35c23455d5"></a>`owner`: `stove0_target_support.OutputArtifact`
+- <a id="s-38d5dda9db"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-01e8ecd713"></a>`kind`: `"classmethod"`
+- <a id="s-a5bc38ba93"></a>`signature`: `"\"(cls, value: 'str') -> 'str'\""`
 
 ## Maintained corroboration
 

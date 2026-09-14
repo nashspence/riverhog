@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bb4a2f292a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-08393f6fe5"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-a5a49e2c4e"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-7dde2d8300"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-16a199e55a"></a>`name` | "RECOVERY_DESCRIPTOR_PATH" |
-| <a id="s-3ddc827695"></a>`unit` | "export" |
+- <a id="s-a5a49e2c4e"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-7dde2d8300"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-16a199e55a"></a>`name`: `RECOVERY_DESCRIPTOR_PATH`
+- <a id="s-3ddc827695"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-1adb7b5554"></a>`kind`: `"constant"`
+- <a id="s-a9780a8694"></a>`value`: `"recovery.json"`
 
 ## Governing policies
 

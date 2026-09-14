@@ -14,13 +14,39 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-071ecf24c0"></a>
-| Field | Shape |
+- <a id="s-f320099d6d"></a>`distribution`: `riverhog-protocol`
+- <a id="s-ef581ea454"></a>`module`: `riverhog_protocol`
+- <a id="s-4ba730e043"></a>`name`: `ProcessingClaimPlanSealDocument`
+- <a id="s-73111f7c5a"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e30f6c29f8"></a>`kind`: `"class"`
+- <a id="s-b97d8a7237"></a>`signature`: `"\"(*, fence: Annotated[int, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], controller_evidence: dict[str, typing.Any], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0) -> None\""`
+
+#### Validated model schema
+
+<a id="s-5166053768"></a>
+- <a id="s-cbeb352a5d"></a>`title`: ProcessingClaimPlanSealDocument
+- <a id="s-2cf7e6847f"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-24f056ab1a"></a>`controller_evidence` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| <a id="s-bae704d1c6"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-18261de791"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6fbb64b834"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-2549d87071"></a>`operation` | yes | #/$defs/OperationIdentityDocument |  |
+| <a id="s-3a0b445d63"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0 |  |
+| <a id="s-e1c4c56d90"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"] |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-0afd73e868"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-f320099d6d"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-ef581ea454"></a>`module` | "riverhog_protocol" |
-| <a id="s-4ba730e043"></a>`name` | "ProcessingClaimPlanSealDocument" |
-| <a id="s-73111f7c5a"></a>`unit` | "export" |
+| <a id="s-fa7d9bfff2"></a>`OperationIdentityDocument` | type="object"; fields=`id`, `sha256`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -52,13 +78,106 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f6686baae605a6b15cc7ed9b2ca8f5a7aaea14f7631ea321f6a7e25d7d5265a5 -->
+<!-- exact-contract-value: db923612286d40e422909a44f3aa8c689a5a1fa35a864284054adf4506c2df3c -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "82794bf5f22623cf0b02535380c1f3d2dcd94c0857007c80ffc82c2c87ceb392",
+    "schema": {
+      "$defs": {
+        "OperationIdentityDocument": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sha256"
+          ],
+          "title": "OperationIdentityDocument",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "retirement_policy": {
+            "const": "retain"
+          }
+        }
+      },
+      "properties": {
+        "controller_evidence": {
+          "additionalProperties": true,
+          "title": "Controller Evidence",
+          "type": "object",
+          "x-riverhog-encoded-bytes-max": 16777216,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-controller-evidence-envelope"
+          }
+        },
+        "controller_evidence_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Controller Evidence Sha256",
+          "type": "string"
+        },
+        "execution_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Execution Id",
+          "type": "string"
+        },
+        "fence": {
+          "minimum": 1,
+          "title": "Fence",
+          "type": "integer"
+        },
+        "operation": {
+          "$ref": "#/$defs/OperationIdentityDocument"
+        },
+        "retirement_grace_seconds": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Retirement Grace Seconds",
+          "type": "integer"
+        },
+        "retirement_policy": {
+          "default": "retain",
+          "enum": [
+            "retain",
+            "retire-after-verified-output"
+          ],
+          "title": "Retirement Policy",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fence",
+        "execution_id",
+        "controller_evidence",
+        "controller_evidence_sha256",
+        "operation"
+      ],
+      "then": {
+        "properties": {
+          "retirement_grace_seconds": {
+            "const": 0
+          }
+        }
+      },
+      "title": "ProcessingClaimPlanSealDocument",
+      "type": "object"
+    },
     "signature": "\"(*, fence: Annotated[int, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], controller_evidence: dict[str, typing.Any], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0) -> None\""
   },
   "distribution": "riverhog-protocol",

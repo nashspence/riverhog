@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9523845453"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7ef81bfd83"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6aa158af51"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-36483db858"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-9b64438131"></a>`name` | "from_record" |
-| <a id="s-3f7dda719f"></a>`owner` | "stove0_operator_contracts.EvaluationView" |
-| <a id="s-f8fff9bf8c"></a>`unit` | "member" |
+- <a id="s-6aa158af51"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-36483db858"></a>`module`: `stove0_operator_contracts`
+- <a id="s-9b64438131"></a>`name`: `from_record`
+- <a id="s-3f7dda719f"></a>`owner`: `stove0_operator_contracts.EvaluationView`
+- <a id="s-f8fff9bf8c"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e7df48c170"></a>`kind`: `"classmethod"`
+- <a id="s-57673fff90"></a>`signature`: `"\"(cls, record: 'BaseModel \| Mapping[str, Any]') -> 'EvaluationView'\""`
 
 ## Maintained corroboration
 

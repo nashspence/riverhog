@@ -14,13 +14,43 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8bfe62c4fa"></a>
-| Field | Shape |
+- <a id="s-daf485e9af"></a>`distribution`: `riverhog-protocol`
+- <a id="s-e3a4ebd778"></a>`module`: `riverhog_protocol`
+- <a id="s-d67eebe5c4"></a>`name`: `CatalogSyncUpsert`
+- <a id="s-07c0932b3a"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-4978b40f75"></a>`kind`: `"class"`
+- <a id="s-d291987a70"></a>`signature`: `"\"(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], content_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], description: CollectionDescription \| None, description_revision: Annotated[int, Strict(strict=True), Ge(ge=0), Le(le=9007199254740991)], description_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], tag_revision: Annotated[int, Strict(strict=True), Ge(ge=1), Le(le=9007199254740991)], tag_set_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern='^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$', ascii_only=None)], operation: Literal['upsert'] = 'upsert') -> None\""`
+
+#### Validated model schema
+
+<a id="s-1fc0874d41"></a>
+- <a id="s-49715c90b7"></a>`title`: CatalogSyncUpsert
+- <a id="s-4259efb4da"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2ccfa8abaa"></a>`archive_root_sha256` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-cdb7d0178e"></a>`collection_id` | yes | #/$defs/CollectionId |  |
+| <a id="s-93685e44c6"></a>`content_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-cb158b751e"></a>`description` | yes | anyOf=#/$defs/CollectionDescription \| type="null" |  |
+| <a id="s-2de72a865a"></a>`description_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-53fc15196d"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
+| <a id="s-054311f13c"></a>`operation` | no | type="string"; const="upsert" |  |
+| <a id="s-09a5e95bd3"></a>`revision` | yes | type="string"; minLength=1; maxLength=19; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+| <a id="s-95f1646936"></a>`tag_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
+| <a id="s-7b843e6437"></a>`tag_set_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-4fafc591b7"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-daf485e9af"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-e3a4ebd778"></a>`module` | "riverhog_protocol" |
-| <a id="s-d67eebe5c4"></a>`name` | "CatalogSyncUpsert" |
-| <a id="s-07c0932b3a"></a>`unit` | "export" |
+| <a id="s-95ff3511b7"></a>`CollectionDescription` | type="string"; minLength=1; maxLength=32768; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
+| <a id="s-99e4ae8314"></a>`CollectionId` | type="integer"; minimum=1 |
 
 ## Governing policies
 
@@ -46,13 +76,113 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a3729a208ed5d682d7246712e7a9e5c3bf32b76cbe58d7be81123a001a908ebe -->
+<!-- exact-contract-value: e1448cb371e2cc1bcdfa5767783778e90607332bf9a4a8b84c08bc3319b484d9 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "c8bec3519ce9b7c983b8046bbe8f9f5e620dabd0a61f18d3a43e2a899263680e",
+    "schema": {
+      "$defs": {
+        "CollectionDescription": {
+          "maxLength": 32768,
+          "minLength": 1,
+          "type": "string",
+          "x-riverhog-encoded-bytes-max": 32768,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-human-authored-catalog-description"
+          },
+          "x-unicode-normalization": "NFC"
+        },
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "archive_root_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Archive Root Sha256",
+          "type": "string"
+        },
+        "collection_id": {
+          "$ref": "#/$defs/CollectionId"
+        },
+        "content_identity": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Identity",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CollectionDescription"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "description_identity": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Description Identity",
+          "type": "string"
+        },
+        "description_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Description Revision",
+          "type": "integer"
+        },
+        "operation": {
+          "const": "upsert",
+          "default": "upsert",
+          "title": "Operation",
+          "type": "string"
+        },
+        "revision": {
+          "maxLength": 19,
+          "minLength": 1,
+          "pattern": "^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$",
+          "title": "Revision",
+          "type": "string"
+        },
+        "tag_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Tag Revision",
+          "type": "integer"
+        },
+        "tag_set_identity": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Tag Set Identity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "collection_id",
+        "archive_root_sha256",
+        "content_identity",
+        "description",
+        "description_revision",
+        "description_identity",
+        "tag_revision",
+        "tag_set_identity",
+        "revision"
+      ],
+      "title": "CatalogSyncUpsert",
+      "type": "object"
+    },
     "signature": "\"(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], content_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], description: CollectionDescription | None, description_revision: Annotated[int, Strict(strict=True), Ge(ge=0), Le(le=9007199254740991)], description_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], tag_revision: Annotated[int, Strict(strict=True), Ge(ge=1), Le(le=9007199254740991)], tag_set_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern='^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$', ascii_only=None)], operation: Literal['upsert'] = 'upsert') -> None\""
   },
   "distribution": "riverhog-protocol",

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7e52965530"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-04a0c9dee2"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-9822b4afa2"></a>`distribution` | "stove0-server" |
-| <a id="s-f84704fcb6"></a>`module` | "stove0_core" |
-| <a id="s-e4c87d889d"></a>`name` | "Stove0RiverhogClient" |
-| <a id="s-df38f04afd"></a>`unit` | "export" |
+- <a id="s-9822b4afa2"></a>`distribution`: `stove0-server`
+- <a id="s-f84704fcb6"></a>`module`: `stove0_core`
+- <a id="s-e4c87d889d"></a>`name`: `Stove0RiverhogClient`
+- <a id="s-df38f04afd"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-1c0c05238e"></a>`kind`: `"class"`
+- <a id="s-4c7369adc7"></a>`signature`: `"\"(api: 'RiverhogApi', *, claim_lease_seconds: 'int' = 1800, capability_ttl_seconds: 'int' = 900, workspace_assurance: 'WorkspaceAssurance' = 'encrypted', claim_purpose: 'str' = 'stove0-collection-work/v1', state: 'WorkStore \| None' = None, authority_batch_size: 'int' = 100) -> 'None'\""`
 
 ## Maintained corroboration
 

@@ -10,8 +10,9 @@ Policies are defined once here and referenced from every dossier where they are 
 |---|---:|
 | [compatibility/archive/v1](#p-915b8756ae) | 1 |
 | [compatibility/cli/v1](#p-48a89776de) | 168 |
-| [compatibility/components/v1](#p-95e9a12259) | 221 |
+| [compatibility/components/v1](#p-95e9a12259) | 213 |
 | [compatibility/configuration/v1](#p-8dc08bb461) | 260 |
+| [compatibility/durable-state/v1](#p-214a49c2de) | 138 |
 | [compatibility/http-api/v1](#p-5bc717c2c0) | 547 |
 | [compatibility/python-api/v1](#p-e574772ba5) | 2641 |
 | [compatibility/recovery/v1](#p-04aa4508f1) | 1 |
@@ -177,16 +178,8 @@ A supported deployment runs components from one coordinated product version.
   - [release-installation:planner](../evidence/sources.md#src-d1a927fc4b)
   - [release-publication:planner](../evidence/sources.md#src-03a2f48338)
   - [release:release.toml](../evidence/sources.md#src-c5380dbe5f)
-  - [state:gogurt-listener](../evidence/sources.md#src-6b3ecfced3)
-  - [state:mango-fish-cursor](../evidence/sources.md#src-b1cc215b8d)
-  - [state:piggity-local](../evidence/sources.md#src-f6a1289f67)
-  - [state:riverhog-catalog](../evidence/sources.md#src-d8b4a14670)
-  - [state:riverhog-ftp-custody](../evidence/sources.md#src-54f88a3a47)
-  - [state:riverhog-provenance-installation](../evidence/sources.md#src-080b970190)
-  - [state:stove0-control](../evidence/sources.md#src-45e44b17fd)
-  - [state:stove0-target-jobs](../evidence/sources.md#src-7b4138829a)
 
-Applications: **221**
+Applications: **213**
 <a id="p-8dc08bb461"></a>
 #### `compatibility/configuration/v1`
 
@@ -458,6 +451,26 @@ Accepted v1 configuration remains valid throughout v1 unless an unsafe value mus
   - [release:release.toml](../evidence/sources.md#src-c5380dbe5f)
 
 Applications: **260**
+<a id="p-214a49c2de"></a>
+#### `compatibility/durable-state/v1`
+
+Every later v1 release applies each durable-state authority's declared transition rule to state created by every earlier v1 release; this does not promise downgrade support or earlier software reading later state.
+
+- Applicability: `["/external_contract/release/compatibility/durable_state"]`
+- Observable result or violation: `{"conforming_result": "the observable surface satisfies the stated meaning", "violation": "the observable surface contradicts the stated meaning"}`
+- Executable authorities:
+  - [generator:contract-projection](../evidence/sources.md#src-47381a6c4f)
+  - [release:release.toml](../evidence/sources.md#src-c5380dbe5f)
+  - [state:gogurt-listener](../evidence/sources.md#src-6b3ecfced3)
+  - [state:mango-fish-cursor](../evidence/sources.md#src-b1cc215b8d)
+  - [state:piggity-local](../evidence/sources.md#src-f6a1289f67)
+  - [state:riverhog-catalog](../evidence/sources.md#src-d8b4a14670)
+  - [state:riverhog-ftp-custody](../evidence/sources.md#src-54f88a3a47)
+  - [state:riverhog-provenance-installation](../evidence/sources.md#src-080b970190)
+  - [state:stove0-control](../evidence/sources.md#src-45e44b17fd)
+  - [state:stove0-target-jobs](../evidence/sources.md#src-7b4138829a)
+
+Applications: **138**
 <a id="p-5bc717c2c0"></a>
 #### `compatibility/http-api/v1`
 
@@ -477,7 +490,7 @@ Applications: **547**
 <a id="p-e574772ba5"></a>
 #### `compatibility/python-api/v1`
 
-Freeze-protected declared public-module exports and public signatures remain backward compatible throughout v1; importable packages explicitly excluded from the Python surface are not Python API promises.
+Freeze-protected declared public-module exports, callable signatures, selected constants, enum members and values, and selected public model and dataclass structures remain backward compatible throughout v1; arbitrary implementation attributes and importable packages explicitly excluded from the Python surface are not Python API promises.
 
 - Applicability: `["/external_contract/release/compatibility/python_api"]`
 - Observable result or violation: `{"conforming_result": "the observable surface satisfies the stated meaning", "violation": "the observable surface contradicts the stated meaning"}`

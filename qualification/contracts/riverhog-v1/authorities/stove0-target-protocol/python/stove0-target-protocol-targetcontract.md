@@ -14,13 +14,42 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d5596ca47f"></a>
-| Field | Shape |
+- <a id="s-b56dc1bb94"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-68f1106cf9"></a>`module`: `stove0_target_protocol`
+- <a id="s-8f8898d0f4"></a>`name`: `TargetContract`
+- <a id="s-b1c40daa90"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e992d47615"></a>`kind`: `"class"`
+- <a id="s-4ad7429574"></a>`signature`: `"\"(*, protocol: Literal['stove0-transform-target/v1', 'stove0-effect-target/v1'] = 'stove0-transform-target/v1', implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], source_revision: Annotated[str, MinLen(min_length=1), MaxLen(max_length=200)], image_digest: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], transport: Literal['riverhog-capability/v1'] = 'riverhog-capability/v1', operations: Annotated[tuple[stove0_target_protocol.protocol.TargetOperationSupport, ...], MinLen(min_length=1)], contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-703604e65f"></a>
+- <a id="s-e6a5e9fc7b"></a>`title`: TargetContract
+- <a id="s-34a5246052"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cd4c51a884"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6a4aa67232"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6918c92a9c"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-731c816c56"></a>`implementation_version` | yes | type="string"; minLength=1; maxLength=120 |  |
+| <a id="s-f59ea25a41"></a>`operations` | yes | type="array"; minItems=1; items=(#/$defs/TargetOperationSupport) |  |
+| <a id="s-770b081a3b"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"] |  |
+| <a id="s-a9c8091da1"></a>`source_revision` | yes | type="string"; minLength=1; maxLength=200 |  |
+| <a id="s-c1e259f419"></a>`transport` | no | type="string"; const="riverhog-capability/v1" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-0db1e90965"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-b56dc1bb94"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-68f1106cf9"></a>`module` | "stove0_target_protocol" |
-| <a id="s-8f8898d0f4"></a>`name` | "TargetContract" |
-| <a id="s-b1c40daa90"></a>`unit` | "export" |
+| <a id="s-5989b7d72d"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-a2e687a8b9"></a>`JsonValue` | empty object |
+| <a id="s-9747df7429"></a>`TargetOperationSupport` | type="object"; fields=`operation_contract_sha256`, `operation_id`, `options_schema`, `result_kind`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -54,13 +83,155 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 252e41c978ee8d62e02d806d9d2d693c2a320fd1fd9383ad629dbf30cc32b712 -->
+<!-- exact-contract-value: fd82ce4e99f552b19732b2a8197c0a43082fcfda617d2d97af71c9eef3b3de5c -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "444d776c4e61c75ff1edfdfeac88aa1e2ca815679fc44af9eae1992e4dde5bf0",
+    "schema": {
+      "$defs": {
+        "JsonSchemaDocument": {
+          "additionalProperties": false,
+          "properties": {
+            "dialect": {
+              "const": "https://json-schema.org/draft/2020-12/schema",
+              "default": "https://json-schema.org/draft/2020-12/schema",
+              "title": "Dialect",
+              "type": "string"
+            },
+            "format_policy": {
+              "const": "annotation-only",
+              "default": "annotation-only",
+              "title": "Format Policy",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "schema": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "title": "Schema",
+              "type": "object"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sha256",
+            "schema"
+          ],
+          "title": "JsonSchemaDocument",
+          "type": "object"
+        },
+        "JsonValue": {},
+        "TargetOperationSupport": {
+          "additionalProperties": false,
+          "properties": {
+            "operation_contract_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Operation Contract Sha256",
+              "type": "string"
+            },
+            "operation_id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Operation Id",
+              "type": "string"
+            },
+            "options_schema": {
+              "$ref": "#/$defs/JsonSchemaDocument"
+            },
+            "result_kind": {
+              "default": "collection",
+              "enum": [
+                "collection",
+                "external-effect"
+              ],
+              "title": "Result Kind",
+              "type": "string"
+            }
+          },
+          "required": [
+            "operation_id",
+            "operation_contract_sha256",
+            "options_schema"
+          ],
+          "title": "TargetOperationSupport",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "contract_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Contract Sha256",
+          "type": "string"
+        },
+        "image_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Image Digest",
+          "type": "string"
+        },
+        "implementation_id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Implementation Id",
+          "type": "string"
+        },
+        "implementation_version": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Implementation Version",
+          "type": "string"
+        },
+        "operations": {
+          "items": {
+            "$ref": "#/$defs/TargetOperationSupport"
+          },
+          "minItems": 1,
+          "title": "Operations",
+          "type": "array"
+        },
+        "protocol": {
+          "default": "stove0-transform-target/v1",
+          "enum": [
+            "stove0-transform-target/v1",
+            "stove0-effect-target/v1"
+          ],
+          "title": "Protocol",
+          "type": "string"
+        },
+        "source_revision": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Source Revision",
+          "type": "string"
+        },
+        "transport": {
+          "const": "riverhog-capability/v1",
+          "default": "riverhog-capability/v1",
+          "title": "Transport",
+          "type": "string"
+        }
+      },
+      "required": [
+        "implementation_id",
+        "implementation_version",
+        "source_revision",
+        "image_digest",
+        "operations",
+        "contract_sha256"
+      ],
+      "title": "TargetContract",
+      "type": "object"
+    },
     "signature": "\"(*, protocol: Literal['stove0-transform-target/v1', 'stove0-effect-target/v1'] = 'stove0-transform-target/v1', implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], source_revision: Annotated[str, MinLen(min_length=1), MaxLen(max_length=200)], image_digest: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], transport: Literal['riverhog-capability/v1'] = 'riverhog-capability/v1', operations: Annotated[tuple[stove0_target_protocol.protocol.TargetOperationSupport, ...], MinLen(min_length=1)], contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-target-protocol",

@@ -10,10 +10,10 @@ This page is intentionally an alphabetical reconciliation inventory, not another
 |---|---:|
 | `artifact-verification` | 3 |
 | `cli` | 167 |
-| `compatibility-guarantees` | 7 |
+| `compatibility-guarantees` | 8 |
 | `configuration` | 7 |
 | `configuration-environment` | 252 |
-| `durable-state` | 8 |
+| `durable-state` | 137 |
 | `extent` | 12 |
 | `http-operations` | 147 |
 | `http-schemas` | 394 |
@@ -64,7 +64,7 @@ These values remain in the exact machine projection for validation, but do not o
 | [gogurt-core](../authorities/gogurt-core/index.md) | 41 | configuration, python |
 | [gogurt-linux-listener-host](../authorities/gogurt-linux-listener-host/index.md) | 14 | configuration-environment, python |
 | [gogurt-linux-mounted-volume](../authorities/gogurt-linux-mounted-volume/index.md) | 3 | python |
-| [gogurt-listener](../authorities/gogurt-listener/index.md) | 1 | durable-state |
+| [gogurt-listener](../authorities/gogurt-listener/index.md) | 4 | durable-state |
 | [gogurt-listener-runtime](../authorities/gogurt-listener-runtime/index.md) | 53 | python |
 | [gogurt-macos-listener-host](../authorities/gogurt-macos-listener-host/index.md) | 12 | python |
 | [gogurt-macos-mounted-volume](../authorities/gogurt-macos-mounted-volume/index.md) | 3 | python |
@@ -74,19 +74,19 @@ These values remain in the exact machine projection for validation, but do not o
 | [http-api-contracts](../authorities/http-api-contracts/index.md) | 63 | python |
 | [lifecycle-events](../authorities/lifecycle-events/index.md) | 26 | python |
 | [mango-fish](../authorities/mango-fish/index.md) | 6 | cli, configuration |
-| [mango-fish-cursor](../authorities/mango-fish-cursor/index.md) | 1 | durable-state |
+| [mango-fish-cursor](../authorities/mango-fish-cursor/index.md) | 2 | durable-state |
 | [piggity](../authorities/piggity/index.md) | 93 | cli, configuration-environment |
-| [piggity-local](../authorities/piggity-local/index.md) | 1 | durable-state |
-| [release](../authorities/release/index.md) | 117 | artifact-verification, compatibility-guarantees, installation-roots, publication-locations, python-distributions, release-artifacts, runtime-images, versioning-tags |
+| [piggity-local](../authorities/piggity-local/index.md) | 7 | durable-state |
+| [release](../authorities/release/index.md) | 118 | artifact-verification, compatibility-guarantees, installation-roots, publication-locations, python-distributions, release-artifacts, runtime-images, versioning-tags |
 | [riverhog](../authorities/riverhog/index.md) | 364 | http-operations, http-schemas, http-security-schemes, http-service-declaration |
 | [riverhog-age](../authorities/riverhog-age/index.md) | 34 | python |
 | [riverhog-application-access](../authorities/riverhog-application-access/index.md) | 47 | python |
 | [riverhog-archive-contracts](../authorities/riverhog-archive-contracts/index.md) | 76 | python, schema |
-| [riverhog-catalog](../authorities/riverhog-catalog/index.md) | 1 | durable-state |
+| [riverhog-catalog](../authorities/riverhog-catalog/index.md) | 91 | durable-state |
 | [riverhog-client](../authorities/riverhog-client/index.md) | 250 | configuration-environment, python |
 | [riverhog-ftp-adapter](../authorities/riverhog-ftp-adapter/index.md) | 37 | cli, configuration, configuration-environment, http-operations, http-schemas, http-security-schemes, http-service-declaration, python |
 | [riverhog-ftp-adapter-api-client](../authorities/riverhog-ftp-adapter-api-client/index.md) | 16 | configuration-environment, python |
-| [riverhog-ftp-custody](../authorities/riverhog-ftp-custody/index.md) | 1 | durable-state |
+| [riverhog-ftp-custody](../authorities/riverhog-ftp-custody/index.md) | 6 | durable-state |
 | [riverhog-protocol](../authorities/riverhog-protocol/index.md) | 279 | python, schema |
 | [riverhog-provenance](../authorities/riverhog-provenance/index.md) | 115 | configuration-environment, python, schema |
 | [riverhog-provenance-contracts](../authorities/riverhog-provenance-contracts/index.md) | 16 | python |
@@ -107,7 +107,7 @@ These values remain in the exact machine projection for validation, but do not o
 | [stove0](../authorities/stove0/index.md) | 170 | http-operations, http-schemas, http-service-declaration |
 | [stove0-api-client](../authorities/stove0-api-client/index.md) | 39 | configuration-environment, python |
 | [stove0-client](../authorities/stove0-client/index.md) | 37 | cli |
-| [stove0-control](../authorities/stove0-control/index.md) | 1 | durable-state |
+| [stove0-control](../authorities/stove0-control/index.md) | 23 | durable-state |
 | [stove0-exiftool-observer](../authorities/stove0-exiftool-observer/index.md) | 12 | configuration-environment, python |
 | [stove0-ffprobe-sampling-observer](../authorities/stove0-ffprobe-sampling-observer/index.md) | 12 | configuration-environment, python |
 | [stove0-media-archive-target-contracts](../authorities/stove0-media-archive-target-contracts/index.md) | 30 | python |
@@ -134,6 +134,6 @@ These values remain in the exact machine projection for validation, but do not o
 | [stove0-review-target-support](../authorities/stove0-review-target-support/index.md) | 16 | configuration, python |
 | [stove0-server](../authorities/stove0-server/index.md) | 349 | configuration-environment, python |
 | [stove0-target-client](../authorities/stove0-target-client/index.md) | 15 | python |
-| [stove0-target-jobs](../authorities/stove0-target-jobs/index.md) | 1 | durable-state |
+| [stove0-target-jobs](../authorities/stove0-target-jobs/index.md) | 3 | durable-state |
 | [stove0-target-protocol](../authorities/stove0-target-protocol/index.md) | 129 | python |
 | [stove0-target-support](../authorities/stove0-target-support/index.md) | 162 | cli, configuration-environment, process-protocol, process-protocol-operations, process-protocol-schemas, python |

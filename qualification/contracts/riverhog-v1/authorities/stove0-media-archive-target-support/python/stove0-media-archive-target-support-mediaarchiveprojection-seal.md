@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7ea3cc54ec"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d9907b4dcd"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-8bb770c7b4"></a>`distribution` | "stove0-media-archive-target-support" |
-| <a id="s-a6f6bda93e"></a>`module` | "stove0_media_archive_target_support" |
-| <a id="s-188df304dd"></a>`name` | "seal" |
-| <a id="s-2631f438b9"></a>`owner` | "stove0_media_archive_target_support.MediaArchiveProjection" |
-| <a id="s-97bfca854e"></a>`unit` | "member" |
+- <a id="s-8bb770c7b4"></a>`distribution`: `stove0-media-archive-target-support`
+- <a id="s-a6f6bda93e"></a>`module`: `stove0_media_archive_target_support`
+- <a id="s-188df304dd"></a>`name`: `seal`
+- <a id="s-2631f438b9"></a>`owner`: `stove0_media_archive_target_support.MediaArchiveProjection`
+- <a id="s-97bfca854e"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-6d721c315a"></a>`kind`: `"classmethod"`
+- <a id="s-f1e67f956e"></a>`signature`: `"\"(cls, payload: 'MediaArchiveProjectionPayload') -> 'MediaArchiveProjection'\""`
 
 ## Maintained corroboration
 

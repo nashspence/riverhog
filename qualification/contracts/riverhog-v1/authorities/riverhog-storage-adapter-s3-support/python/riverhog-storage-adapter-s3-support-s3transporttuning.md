@@ -14,13 +14,26 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-831b825a2e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5863fa8975"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-16c3e40039"></a>`distribution` | "riverhog-storage-adapter-s3-support" |
-| <a id="s-df11edf9c1"></a>`module` | "riverhog_storage_adapter_s3_support" |
-| <a id="s-157b783649"></a>`name` | "S3TransportTuning" |
-| <a id="s-77d36ab0af"></a>`unit` | "export" |
+- <a id="s-16c3e40039"></a>`distribution`: `riverhog-storage-adapter-s3-support`
+- <a id="s-df11edf9c1"></a>`module`: `riverhog_storage_adapter_s3_support`
+- <a id="s-157b783649"></a>`name`: `S3TransportTuning`
+- <a id="s-77d36ab0af"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-40958c2a9d"></a>`kind`: `"class"`
+- <a id="s-96b54c041f"></a>`signature`: `"'(max_pool_connections: \\'int\\' = 32, connect_timeout_seconds: \\'float\\' = 10.0, read_timeout_seconds: \\'float\\' = 300.0, max_attempts: \\'int\\' = 8, retry_mode: \"Literal[\\'standard\\', \\'adaptive\\']\" = \\'standard\\', tcp_keepalive: \\'bool\\' = True) -> None'"`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-906b59ca62"></a>`max_pool_connections` | `'int'` | `32` |
+| <a id="s-585a3a7c55"></a>`connect_timeout_seconds` | `'float'` | `10.0` |
+| <a id="s-a9182458e0"></a>`read_timeout_seconds` | `'float'` | `300.0` |
+| <a id="s-1358dc5058"></a>`max_attempts` | `'int'` | `8` |
+| <a id="s-3a2a404f94"></a>`retry_mode` | `"Literal['standard', 'adaptive']"` | `'standard'` |
+| <a id="s-3145cd5b7e"></a>`tcp_keepalive` | `'bool'` | `True` |
 
 ## Governing policies
 

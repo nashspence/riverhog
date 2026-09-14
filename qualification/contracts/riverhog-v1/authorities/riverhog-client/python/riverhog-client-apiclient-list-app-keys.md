@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d2bb3b497b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-67569839e6"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e31d0413fb"></a>`distribution` | "riverhog-client" |
-| <a id="s-550376d77e"></a>`module` | "riverhog_client" |
-| <a id="s-da68833f3c"></a>`name` | "list_app_keys" |
-| <a id="s-63c10dcf76"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-4ed7ea3e07"></a>`unit` | "member" |
+- <a id="s-e31d0413fb"></a>`distribution`: `riverhog-client`
+- <a id="s-550376d77e"></a>`module`: `riverhog_client`
+- <a id="s-da68833f3c"></a>`name`: `list_app_keys`
+- <a id="s-63c10dcf76"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-4ed7ea3e07"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c6e5f8396e"></a>`kind`: `"method"`
+- <a id="s-b1e9afed00"></a>`signature`: `"\"(self, app: 'ApplicationName', *, page_size: 'int' = 25, page_token: 'str \| None' = None, q: 'str \| None' = None, sort: 'ApplicationKeySort' = 'created_at', order: 'SortOrder' = 'desc', active: 'bool \| None' = None) -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

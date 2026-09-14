@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e6c6ee20c4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0f3dfe0010"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ff6363661f"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-8fa00fd9f8"></a>`module` | "riverhog_protocol" |
-| <a id="s-3aa65a1f0e"></a>`name` | "from_mapping" |
-| <a id="s-39160ff0aa"></a>`owner` | "riverhog_protocol.CollectionDerivation" |
-| <a id="s-aeff24d2c9"></a>`unit` | "member" |
+- <a id="s-ff6363661f"></a>`distribution`: `riverhog-protocol`
+- <a id="s-8fa00fd9f8"></a>`module`: `riverhog_protocol`
+- <a id="s-3aa65a1f0e"></a>`name`: `from_mapping`
+- <a id="s-39160ff0aa"></a>`owner`: `riverhog_protocol.CollectionDerivation`
+- <a id="s-aeff24d2c9"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-2725c2e163"></a>`kind`: `"classmethod"`
+- <a id="s-059ae6a367"></a>`signature`: `"\"(cls, value: 'Mapping[str, object]') -> 'CollectionDerivation'\""`
 
 ## Maintained corroboration
 

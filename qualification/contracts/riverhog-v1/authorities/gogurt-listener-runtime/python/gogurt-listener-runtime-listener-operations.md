@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3654075802"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1e614ad12b"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-01edcd986c"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-92e8360a61"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-98169919a1"></a>`name` | "LISTENER_OPERATIONS" |
-| <a id="s-4010108c2b"></a>`unit` | "export" |
+- <a id="s-01edcd986c"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-92e8360a61"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-98169919a1"></a>`name`: `LISTENER_OPERATIONS`
+- <a id="s-4010108c2b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-4db5ce591d"></a>`kind`: `"constant"`
+- <a id="s-c247d8ac5d"></a>`value`: `["install","status","start","stop","restart","uninstall"]`
 
 ## Governing policies
 

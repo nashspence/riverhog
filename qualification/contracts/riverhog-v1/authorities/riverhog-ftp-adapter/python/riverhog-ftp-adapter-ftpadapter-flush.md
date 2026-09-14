@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-414cd28c54"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-76d5612824"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-904a249fc9"></a>`distribution` | "riverhog-ftp-adapter" |
-| <a id="s-b289c64c82"></a>`module` | "riverhog_ftp_adapter" |
-| <a id="s-e5deb90e60"></a>`name` | "flush" |
-| <a id="s-630c90cb80"></a>`owner` | "riverhog_ftp_adapter.FtpAdapter" |
-| <a id="s-53e219b182"></a>`unit` | "member" |
+- <a id="s-904a249fc9"></a>`distribution`: `riverhog-ftp-adapter`
+- <a id="s-b289c64c82"></a>`module`: `riverhog_ftp_adapter`
+- <a id="s-e5deb90e60"></a>`name`: `flush`
+- <a id="s-630c90cb80"></a>`owner`: `riverhog_ftp_adapter.FtpAdapter`
+- <a id="s-53e219b182"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-f467de5ec7"></a>`kind`: `"method"`
+- <a id="s-c89290d1c9"></a>`signature`: `"\"(self, source_id: 'str') -> 'dict[str, object]'\""`
 
 ## Maintained corroboration
 

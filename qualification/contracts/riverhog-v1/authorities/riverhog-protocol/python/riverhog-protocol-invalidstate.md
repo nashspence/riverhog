@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3ee5f40fae"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-209b00ad8d"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-a905071161"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-16287d2f58"></a>`module` | "riverhog_protocol" |
-| <a id="s-792ea5beb9"></a>`name` | "InvalidState" |
-| <a id="s-7f02c3ced0"></a>`unit` | "export" |
+- <a id="s-a905071161"></a>`distribution`: `riverhog-protocol`
+- <a id="s-16287d2f58"></a>`module`: `riverhog_protocol`
+- <a id="s-792ea5beb9"></a>`name`: `InvalidState`
+- <a id="s-7f02c3ced0"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-24bb53ea59"></a>`kind`: `"class"`
+- <a id="s-675d0265df"></a>`signature`: `"\"(message: 'str', *, code: 'str \| None' = None, observed_status: 'int \| None' = None, details: 'dict[str, Any] \| None' = None) -> 'None'\""`
 
 ## Governing policies
 

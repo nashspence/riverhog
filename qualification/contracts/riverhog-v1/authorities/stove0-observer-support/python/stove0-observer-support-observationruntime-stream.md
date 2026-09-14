@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5e67e97701"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-918b03edd1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-9a97ed5d0b"></a>`distribution` | "stove0-observer-support" |
-| <a id="s-6f847b17ed"></a>`module` | "stove0_observer_support" |
-| <a id="s-eb7cae3ace"></a>`name` | "stream" |
-| <a id="s-4dd2efea0f"></a>`owner` | "stove0_observer_support.ObservationRuntime" |
-| <a id="s-ea86811f6b"></a>`unit` | "member" |
+- <a id="s-9a97ed5d0b"></a>`distribution`: `stove0-observer-support`
+- <a id="s-6f847b17ed"></a>`module`: `stove0_observer_support`
+- <a id="s-eb7cae3ace"></a>`name`: `stream`
+- <a id="s-4dd2efea0f"></a>`owner`: `stove0_observer_support.ObservationRuntime`
+- <a id="s-ea86811f6b"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-03ec3cbda2"></a>`kind`: `"method"`
+- <a id="s-625f05c8f3"></a>`signature`: `"\"(self, subject: 'ArtifactSubject', *, start: 'int' = 0, end: 'int \| None' = None, chunk_size: 'int' = 8388608, **prepare_kwargs: 'Any') -> 'Iterator[Iterator[bytes]]'\""`
 
 ## Maintained corroboration
 

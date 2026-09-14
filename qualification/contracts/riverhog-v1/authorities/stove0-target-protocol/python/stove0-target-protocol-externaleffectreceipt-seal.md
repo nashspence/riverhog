@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-dfb3597290"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b637a32103"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7796d7d42f"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-7fd88acb7e"></a>`module` | "stove0_target_protocol" |
-| <a id="s-ceac229e87"></a>`name` | "seal" |
-| <a id="s-38cdf37ef2"></a>`owner` | "stove0_target_protocol.ExternalEffectReceipt" |
-| <a id="s-db53130318"></a>`unit` | "member" |
+- <a id="s-7796d7d42f"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-7fd88acb7e"></a>`module`: `stove0_target_protocol`
+- <a id="s-ceac229e87"></a>`name`: `seal`
+- <a id="s-38cdf37ef2"></a>`owner`: `stove0_target_protocol.ExternalEffectReceipt`
+- <a id="s-db53130318"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-6becfc66a6"></a>`kind`: `"classmethod"`
+- <a id="s-a83b22151c"></a>`signature`: `"\"(cls, payload: 'ExternalEffectReceiptPayload') -> 'ExternalEffectReceipt'\""`
 
 ## Maintained corroboration
 

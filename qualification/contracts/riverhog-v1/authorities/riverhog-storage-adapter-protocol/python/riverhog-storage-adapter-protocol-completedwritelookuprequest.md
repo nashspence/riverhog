@@ -14,13 +14,31 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d3d0e65ce0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f4da3af53b"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-bd89ea24e3"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-f837b0436c"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-aa8062fbd2"></a>`name` | "CompletedWriteLookupRequest" |
-| <a id="s-d71c948c8c"></a>`unit` | "export" |
+- <a id="s-bd89ea24e3"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-f837b0436c"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-aa8062fbd2"></a>`name`: `CompletedWriteLookupRequest`
+- <a id="s-d71c948c8c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-151f9f31e1"></a>`kind`: `"class"`
+- <a id="s-4e102cc2fb"></a>`signature`: `"\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: Annotated[int, Ge(ge=1)], expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""`
+
+#### Validated model schema
+
+<a id="s-4836c37ef0"></a>
+- <a id="s-73db76c286"></a>`title`: CompletedWriteLookupRequest
+- <a id="s-ac31600127"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-5a818e43f0"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-4065844c2e"></a>`expected_content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
+| <a id="s-eb7521c9e8"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
+| <a id="s-83c616d94c"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-f23981c971"></a>`required_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
 
 ## Maintained corroboration
 
@@ -53,13 +71,65 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2a1b5bce30803450477a753a1cd9379868d7e4474b3177d770b926c5f0e9d9b9 -->
+<!-- exact-contract-value: cf6803868fc763c19f7bfed73d05149f05a6f65a58a13bda67819a1cd5e31008 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "3f6289ea7cdb8562a130c3d3df28e4217ae0490a38d84f2f2158dafb98e18689",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_bytes": {
+          "minimum": 1,
+          "title": "Expected Bytes",
+          "type": "integer"
+        },
+        "expected_content_type": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Expected Content Type",
+          "type": "string"
+        },
+        "expected_placement": {
+          "enum": [
+            "archive",
+            "immediate"
+          ],
+          "title": "Expected Placement",
+          "type": "string"
+        },
+        "object_path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Object Path",
+          "type": "string"
+        },
+        "required_identity_assertions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions.",
+          "maxProperties": 64,
+          "title": "Required Identity Assertions",
+          "type": "object",
+          "x-riverhog-encoded-bytes-max": 16384,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-object-identity-assertion-envelope"
+          }
+        }
+      },
+      "required": [
+        "object_path",
+        "expected_bytes",
+        "expected_content_type",
+        "required_identity_assertions",
+        "expected_placement"
+      ],
+      "title": "CompletedWriteLookupRequest",
+      "type": "object"
+    },
     "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: Annotated[int, Ge(ge=1)], expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",

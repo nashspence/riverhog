@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c6be5efbc6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-33c1ab6cc6"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-024093c891"></a>`distribution` | "http-api-contracts" |
-| <a id="s-d182ba93b7"></a>`module` | "http_api_contracts" |
-| <a id="s-f41da24663"></a>`name` | "BrowseQuery" |
-| <a id="s-7f8f1b0c00"></a>`unit` | "export" |
+- <a id="s-024093c891"></a>`distribution`: `http-api-contracts`
+- <a id="s-d182ba93b7"></a>`module`: `http_api_contracts`
+- <a id="s-f41da24663"></a>`name`: `BrowseQuery`
+- <a id="s-7f8f1b0c00"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-7bb8fddbdf"></a>`kind`: `"type-alias"`
+- <a id="s-a4ba8027aa"></a>`value`: `"typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=4096, pattern='^\\\\S(?:[\\\\s\\\\S]*\\\\S)?$', ascii_only=None), AfterValidator(func=<function validate_browse_query>)]"`
 
 ## Governing policies
 

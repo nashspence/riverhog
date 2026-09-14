@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-345c4b585a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1627cd0850"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-bb9242f69f"></a>`distribution` | "riverhog-ftp-adapter-api-client" |
-| <a id="s-a90c20256d"></a>`module` | "riverhog_ftp_adapter_api_client" |
-| <a id="s-ac5d117821"></a>`name` | "FtpAdapterApiError" |
-| <a id="s-e3f11d7f45"></a>`unit` | "export" |
+- <a id="s-bb9242f69f"></a>`distribution`: `riverhog-ftp-adapter-api-client`
+- <a id="s-a90c20256d"></a>`module`: `riverhog_ftp_adapter_api_client`
+- <a id="s-ac5d117821"></a>`name`: `FtpAdapterApiError`
+- <a id="s-e3f11d7f45"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-73608848af"></a>`kind`: `"class"`
+- <a id="s-f54630b999"></a>`signature`: `"\"(message: 'str', *, code: 'str' = 'ftp_adapter_error', status: 'int \| None' = None) -> 'None'\""`
 
 ## Governing policies
 

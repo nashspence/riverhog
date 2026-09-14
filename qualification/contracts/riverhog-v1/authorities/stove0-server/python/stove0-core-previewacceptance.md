@@ -14,13 +14,36 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-be8dfb6f49"></a>
-| Field | Shape |
+- <a id="s-0edf74d29c"></a>`distribution`: `stove0-server`
+- <a id="s-b61610a0b6"></a>`module`: `stove0_core`
+- <a id="s-d072a55126"></a>`name`: `PreviewAcceptance`
+- <a id="s-64ded84d2d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e0771aec12"></a>`kind`: `"class"`
+- <a id="s-a2d551b8d1"></a>`signature`: `"\"(*, preview_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], branch_set_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], target_plans: tuple[stove0_core.work_state.PreviewTargetExpectation, ...]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-bd69fedff3"></a>
+- <a id="s-b855166675"></a>`title`: PreviewAcceptance
+- <a id="s-c40bbfa62b"></a>`description`: Exact preview identities accepted when operator work is initiated.
+- <a id="s-848c16a168"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-9ba93024fb"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-09b6390989"></a>`preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-98dac4a244"></a>`target_plans` | yes | type="array"; items=(#/$defs/PreviewTargetExpectation) |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-396c55f71f"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-0edf74d29c"></a>`distribution` | "stove0-server" |
-| <a id="s-b61610a0b6"></a>`module` | "stove0_core" |
-| <a id="s-d072a55126"></a>`name` | "PreviewAcceptance" |
-| <a id="s-64ded84d2d"></a>`unit` | "export" |
+| <a id="s-72283ea66c"></a>`PreviewTargetExpectation` | type="object"; fields=`branch_id`, `plan_sha256`, `work_id`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -53,13 +76,73 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3d5a3404abd8a6a7ec552a6496cd1bd0584780ff872ac9bb52a0fa14e5f996dc -->
+<!-- exact-contract-value: 5766525002508f53e087997d3b088eaaf73e9f090817bad686d7306157a4140d -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "20a99f60eb42afdb3b4dcf73b8a47e422e2b26c60fdb64e420990ff78c34da8c",
+    "schema": {
+      "$defs": {
+        "PreviewTargetExpectation": {
+          "additionalProperties": false,
+          "description": "Compact target-plan identity approved by one workflow preview.",
+          "properties": {
+            "branch_id": {
+              "maxLength": 160,
+              "minLength": 1,
+              "title": "Branch Id",
+              "type": "string"
+            },
+            "plan_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Plan Sha256",
+              "type": "string"
+            },
+            "work_id": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Work Id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "branch_id",
+            "work_id",
+            "plan_sha256"
+          ],
+          "title": "PreviewTargetExpectation",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Exact preview identities accepted when operator work is initiated.",
+      "properties": {
+        "branch_set_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Branch Set Sha256",
+          "type": "string"
+        },
+        "preview_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Preview Sha256",
+          "type": "string"
+        },
+        "target_plans": {
+          "items": {
+            "$ref": "#/$defs/PreviewTargetExpectation"
+          },
+          "title": "Target Plans",
+          "type": "array"
+        }
+      },
+      "required": [
+        "preview_sha256",
+        "branch_set_sha256",
+        "target_plans"
+      ],
+      "title": "PreviewAcceptance",
+      "type": "object"
+    },
     "signature": "\"(*, preview_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], branch_set_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], target_plans: tuple[stove0_core.work_state.PreviewTargetExpectation, ...]) -> None\""
   },
   "distribution": "stove0-server",

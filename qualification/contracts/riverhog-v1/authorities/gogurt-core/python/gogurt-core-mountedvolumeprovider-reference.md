@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-13a73ab366"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-30281bef17"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e9775d0cbd"></a>`distribution` | "gogurt-core" |
-| <a id="s-f7a6bdabda"></a>`module` | "gogurt_core" |
-| <a id="s-3bb5dddcbd"></a>`name` | "reference" |
-| <a id="s-03ce566616"></a>`owner` | "gogurt_core.MountedVolumeProvider" |
-| <a id="s-236075b76f"></a>`unit` | "member" |
+- <a id="s-e9775d0cbd"></a>`distribution`: `gogurt-core`
+- <a id="s-f7a6bdabda"></a>`module`: `gogurt_core`
+- <a id="s-3bb5dddcbd"></a>`name`: `reference`
+- <a id="s-03ce566616"></a>`owner`: `gogurt_core.MountedVolumeProvider`
+- <a id="s-236075b76f"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-72d5f8ed7f"></a>`kind`: `"property"`
+- <a id="s-007798be0b"></a>`signature`: `"\"(self) -> 'GogurtProviderReference'\""`
 
 ## Maintained corroboration
 

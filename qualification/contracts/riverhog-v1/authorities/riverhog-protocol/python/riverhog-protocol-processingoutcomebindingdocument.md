@@ -14,13 +14,29 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-036f962df3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6fecdc83cc"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-70a71c9379"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-6609b97483"></a>`module` | "riverhog_protocol" |
-| <a id="s-c868405ca9"></a>`name` | "ProcessingOutcomeBindingDocument" |
-| <a id="s-2f9ad98ba9"></a>`unit` | "export" |
+- <a id="s-70a71c9379"></a>`distribution`: `riverhog-protocol`
+- <a id="s-6609b97483"></a>`module`: `riverhog_protocol`
+- <a id="s-c868405ca9"></a>`name`: `ProcessingOutcomeBindingDocument`
+- <a id="s-2f9ad98ba9"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-8eea9d483e"></a>`kind`: `"class"`
+- <a id="s-7d1b4e0abb"></a>`signature`: `"\"(*, claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], fence: Annotated[int, Ge(ge=1)], outcome_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$')]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-a5785b1757"></a>
+- <a id="s-6d4fb8493a"></a>`title`: ProcessingOutcomeBindingDocument
+- <a id="s-20e2ed49f4"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cc2bff4b33"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-78fcecbf52"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-280acd085f"></a>`outcome_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ## Governing policies
 
@@ -46,13 +62,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a89cf1abf68d3bfb232579394088d1af3356dcea5785ad89937696c51a6c1f48 -->
+<!-- exact-contract-value: 1c23a06dd4710266059d756ac0c48c512aa2dd2cb5d3994bff410c999f52958f -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "53b400e47c4282f39ca9413347f8cd65db26d06e70dab9ef036d89feaa731635",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "fence": {
+          "minimum": 1,
+          "title": "Fence",
+          "type": "integer"
+        },
+        "outcome_id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Outcome Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "claim_id",
+        "fence",
+        "outcome_id"
+      ],
+      "title": "ProcessingOutcomeBindingDocument",
+      "type": "object"
+    },
     "signature": "\"(*, claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], fence: Annotated[int, Ge(ge=1)], outcome_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$')]) -> None\""
   },
   "distribution": "riverhog-protocol",

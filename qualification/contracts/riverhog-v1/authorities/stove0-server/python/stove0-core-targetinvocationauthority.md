@@ -14,13 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ff0f2b9c06"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-80321ebb61"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-861887ced6"></a>`distribution` | "stove0-server" |
-| <a id="s-8a33b7a78f"></a>`module` | "stove0_core" |
-| <a id="s-b4cbefde73"></a>`name` | "TargetInvocationAuthority" |
-| <a id="s-17bb16cbfd"></a>`unit` | "export" |
+- <a id="s-861887ced6"></a>`distribution`: `stove0-server`
+- <a id="s-8a33b7a78f"></a>`module`: `stove0_core`
+- <a id="s-b4cbefde73"></a>`name`: `TargetInvocationAuthority`
+- <a id="s-17bb16cbfd"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0b9a0cec77"></a>`kind`: `"class"`
+- <a id="s-4302ea9d23"></a>`signature`: `"\"(runtime: 'TargetRuntimeAuthority', workspace_assurance: 'WorkspaceAssurance') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-2ef66a97b7"></a>`runtime` | `'TargetRuntimeAuthority'` | `required` |
+| <a id="s-279d26143b"></a>`workspace_assurance` | `'WorkspaceAssurance'` | `required` |
 
 ## Governing policies
 

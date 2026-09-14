@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b4fc160a6d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-00c0ee2806"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-929807faaa"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-f05964176f"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-e7b6c43aaa"></a>`name` | "validate_evaluation_review_shape" |
-| <a id="s-68fdfa29b6"></a>`unit` | "export" |
+- <a id="s-929807faaa"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-f05964176f"></a>`module`: `stove0_operator_contracts`
+- <a id="s-e7b6c43aaa"></a>`name`: `validate_evaluation_review_shape`
+- <a id="s-68fdfa29b6"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-932ae8aa88"></a>`kind`: `"function"`
+- <a id="s-d501a58503"></a>`signature`: `"\"(rating: 'int \| None', note: 'str \| None') -> 'None'\""`
 
 ## Governing policies
 

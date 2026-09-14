@@ -14,13 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-93be890247"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-176a543d6b"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-03c581e788"></a>`distribution` | "riverhog-storage-adapter-support" |
-| <a id="s-5265c1b843"></a>`module` | "riverhog_storage_adapter_support" |
-| <a id="s-4e6aa2f9da"></a>`name` | "StorageAdapterHttpResponse" |
-| <a id="s-ee21374f34"></a>`unit` | "export" |
+- <a id="s-03c581e788"></a>`distribution`: `riverhog-storage-adapter-support`
+- <a id="s-5265c1b843"></a>`module`: `riverhog_storage_adapter_support`
+- <a id="s-4e6aa2f9da"></a>`name`: `StorageAdapterHttpResponse`
+- <a id="s-ee21374f34"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-35fed12dcc"></a>`kind`: `"class"`
+- <a id="s-aaf21a9637"></a>`signature`: `"\"(status: 'int', headers: 'tuple[tuple[str, str], ...]', body: 'bytes \| Iterator[bytes]') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-0c980a9c30"></a>`status` | `'int'` | `required` |
+| <a id="s-ad09a2025c"></a>`headers` | `'tuple[tuple[str, str], ...]'` | `required` |
+| <a id="s-b76dc09268"></a>`body` | `'bytes \| Iterator[bytes]'` | `required` |
 
 ## Governing policies
 

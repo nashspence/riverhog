@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8ddc1e7871"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-cceb3604ef"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d721140fb8"></a>`distribution` | "stove0-server" |
-| <a id="s-a45825de46"></a>`module` | "stove0_core" |
-| <a id="s-a3687bbe9f"></a>`name` | "seal_processing_claim_dispositions" |
-| <a id="s-e69c000894"></a>`owner` | "stove0_core.RiverhogApi" |
-| <a id="s-cc536f710e"></a>`unit` | "member" |
+- <a id="s-d721140fb8"></a>`distribution`: `stove0-server`
+- <a id="s-a45825de46"></a>`module`: `stove0_core`
+- <a id="s-a3687bbe9f"></a>`name`: `seal_processing_claim_dispositions`
+- <a id="s-e69c000894"></a>`owner`: `stove0_core.RiverhogApi`
+- <a id="s-cc536f710e"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-dd4b812924"></a>`kind`: `"method"`
+- <a id="s-dd798ff7dd"></a>`signature`: `"\"(self, claim_id: 'str', *, fence: 'int') -> 'ArtifactDispositionSetDocument'\""`
 
 ## Maintained corroboration
 

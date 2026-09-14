@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-67eede741b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4ca6923ce4"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-43c0a00233"></a>`distribution` | "riverhog-age" |
-| <a id="s-ffbe9bbcba"></a>`module` | "riverhog_age" |
-| <a id="s-5da201c355"></a>`name` | "plaintext_len" |
-| <a id="s-1a551cd34b"></a>`owner` | "riverhog_age.AgeAlignedUnitPlan" |
-| <a id="s-8b98990e72"></a>`unit` | "member" |
+- <a id="s-43c0a00233"></a>`distribution`: `riverhog-age`
+- <a id="s-ffbe9bbcba"></a>`module`: `riverhog_age`
+- <a id="s-5da201c355"></a>`name`: `plaintext_len`
+- <a id="s-1a551cd34b"></a>`owner`: `riverhog_age.AgeAlignedUnitPlan`
+- <a id="s-8b98990e72"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-8d5163d455"></a>`kind`: `"property"`
+- <a id="s-1186339bae"></a>`signature`: `"\"(self) -> 'int'\""`
 
 ## Maintained corroboration
 

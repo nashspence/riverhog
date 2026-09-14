@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-af843b3356"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3220e10ba5"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-a12c41affa"></a>`distribution` | "stove0-server" |
-| <a id="s-355e399df1"></a>`module` | "stove0_core" |
-| <a id="s-3ca322a063"></a>`name` | "project_coordination" |
-| <a id="s-b452c9b1db"></a>`unit` | "export" |
+- <a id="s-a12c41affa"></a>`distribution`: `stove0-server`
+- <a id="s-355e399df1"></a>`module`: `stove0_core`
+- <a id="s-3ca322a063"></a>`name`: `project_coordination`
+- <a id="s-b452c9b1db"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-19449faaee"></a>`kind`: `"function"`
+- <a id="s-3275b73f78"></a>`signature`: `"\"(parent: 'WorkRecord', store: 'WorkStore') -> 'CoordinationProjection'\""`
 
 ## Governing policies
 

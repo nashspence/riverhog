@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f2a0cd77c2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a6a8b31a31"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-c61ad7270b"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-881d4698c2"></a>`module` | "riverhog_protocol" |
-| <a id="s-64309115a1"></a>`name` | "ProcessingClaimAbandonDocument" |
-| <a id="s-e9841ed690"></a>`unit` | "export" |
+- <a id="s-c61ad7270b"></a>`distribution`: `riverhog-protocol`
+- <a id="s-881d4698c2"></a>`module`: `riverhog_protocol`
+- <a id="s-64309115a1"></a>`name`: `ProcessingClaimAbandonDocument`
+- <a id="s-e9841ed690"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-b2de200749"></a>`kind`: `"class"`
+- <a id="s-429fb78411"></a>`signature`: `"'(*, fence: Annotated[int, Ge(ge=1)], reason: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None'"`
+
+#### Validated model schema
+
+<a id="s-dcd71186ec"></a>
+- <a id="s-a2b2eb9be5"></a>`title`: ProcessingClaimAbandonDocument
+- <a id="s-46ae7b32f3"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a8233096bd"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-929d3be474"></a>`reason` | yes | type="string"; minLength=1; maxLength=1000 |  |
 
 ## Governing policies
 
@@ -46,13 +61,34 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: cf9e29cbd6b36e4c8d78b5db1c4d487678af165a9e09d9f64fa78cc135164371 -->
+<!-- exact-contract-value: f6a2d48b9ca1bffb051f88f6bfdcd2623f41785d82ba14a4a45ef43c292648a0 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "db2136a2c3b36883b975822f17c927e5ac2386f19c8c8c8fa80ac47af99be5f0",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "fence": {
+          "minimum": 1,
+          "title": "Fence",
+          "type": "integer"
+        },
+        "reason": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fence",
+        "reason"
+      ],
+      "title": "ProcessingClaimAbandonDocument",
+      "type": "object"
+    },
     "signature": "'(*, fence: Annotated[int, Ge(ge=1)], reason: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None'"
   },
   "distribution": "riverhog-protocol",

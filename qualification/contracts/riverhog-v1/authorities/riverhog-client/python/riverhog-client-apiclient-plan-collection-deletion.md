@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2383a8690b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b0467f3aab"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-61b2579d58"></a>`distribution` | "riverhog-client" |
-| <a id="s-f555182716"></a>`module` | "riverhog_client" |
-| <a id="s-837d1f843b"></a>`name` | "plan_collection_deletion" |
-| <a id="s-354a532ca8"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-b43dd212a1"></a>`unit` | "member" |
+- <a id="s-61b2579d58"></a>`distribution`: `riverhog-client`
+- <a id="s-f555182716"></a>`module`: `riverhog_client`
+- <a id="s-837d1f843b"></a>`name`: `plan_collection_deletion`
+- <a id="s-354a532ca8"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-b43dd212a1"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3a4af06192"></a>`kind`: `"method"`
+- <a id="s-61fa4ae3ec"></a>`signature`: `"\"(self, collection_id: 'CollectionId', *, retirement_claim_id: 'ProcessingClaimId \| None' = None) -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

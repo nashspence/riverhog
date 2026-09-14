@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0e523dba47"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b9c812636f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7cf383f18d"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-ac7c52a178"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-054e8b3535"></a>`name` | "normalize_object_path" |
-| <a id="s-d0eb5362a9"></a>`unit` | "export" |
+- <a id="s-7cf383f18d"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-ac7c52a178"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-054e8b3535"></a>`name`: `normalize_object_path`
+- <a id="s-d0eb5362a9"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0e0c2ae099"></a>`kind`: `"function"`
+- <a id="s-f5b40ec64b"></a>`signature`: `"\"(value: 'str', *, allow_prefix: 'bool' = False) -> 'str'\""`
 
 ## Governing policies
 

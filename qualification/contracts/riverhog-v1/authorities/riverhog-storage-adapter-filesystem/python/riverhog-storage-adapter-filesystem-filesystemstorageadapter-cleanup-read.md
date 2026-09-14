@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bba8f5cd56"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-23ad0f59f4"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-4c30e85acd"></a>`distribution` | "riverhog-storage-adapter-filesystem" |
-| <a id="s-810379a52c"></a>`module` | "riverhog_storage_adapter_filesystem" |
-| <a id="s-20d395fc04"></a>`name` | "cleanup_read" |
-| <a id="s-03dc323bd9"></a>`owner` | "riverhog_storage_adapter_filesystem.FilesystemStorageAdapter" |
-| <a id="s-4580cd47ae"></a>`unit` | "member" |
+- <a id="s-4c30e85acd"></a>`distribution`: `riverhog-storage-adapter-filesystem`
+- <a id="s-810379a52c"></a>`module`: `riverhog_storage_adapter_filesystem`
+- <a id="s-20d395fc04"></a>`name`: `cleanup_read`
+- <a id="s-03dc323bd9"></a>`owner`: `riverhog_storage_adapter_filesystem.FilesystemStorageAdapter`
+- <a id="s-4580cd47ae"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-5574ab6d55"></a>`kind`: `"method"`
+- <a id="s-621b144335"></a>`signature`: `"\"(self, request: 'ReadPreparationRequest') -> 'None'\""`
 
 ## Maintained corroboration
 

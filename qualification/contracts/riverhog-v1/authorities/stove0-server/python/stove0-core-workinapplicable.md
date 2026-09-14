@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e895c0cf56"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-82cf1aa770"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-1932af15f3"></a>`distribution` | "stove0-server" |
-| <a id="s-0e6fafe095"></a>`module` | "stove0_core" |
-| <a id="s-7f1b51dd48"></a>`name` | "WorkInapplicable" |
-| <a id="s-27f12592d0"></a>`unit` | "export" |
+- <a id="s-1932af15f3"></a>`distribution`: `stove0-server`
+- <a id="s-0e6fafe095"></a>`module`: `stove0_core`
+- <a id="s-7f1b51dd48"></a>`name`: `WorkInapplicable`
+- <a id="s-27f12592d0"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-23d67b11c1"></a>`kind`: `"class"`
+- <a id="s-b889ef54ab"></a>`signature`: `"'(*, code: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None'"`
+
+#### Validated model schema
+
+<a id="s-ce5f60173b"></a>
+- <a id="s-9489fe918a"></a>`title`: WorkInapplicable
+- <a id="s-0382d6e91f"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-78cb8ceb83"></a>`code` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-195db13795"></a>`message` | yes | type="string"; minLength=1; maxLength=1000 |  |
 
 ## Governing policies
 
@@ -46,13 +61,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 04f24942807d58d436fc6712e8e1f6a431479eaecf27a3d29424df390fd3be65 -->
+<!-- exact-contract-value: 08f0f808e00c5762f9200b78eae4b049b6efe51082dc7d2e3cd9d85ab0802b7b -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "842871cfa20a4e6af7501b4980d0c168945e538de5f72d10eaa49ebb577909cb",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "WorkInapplicable",
+      "type": "object"
+    },
     "signature": "'(*, code: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None'"
   },
   "distribution": "stove0-server",

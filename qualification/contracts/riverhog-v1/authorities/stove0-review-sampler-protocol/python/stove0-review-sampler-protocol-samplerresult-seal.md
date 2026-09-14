@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-44d37923b2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-67091f9458"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6a61538436"></a>`distribution` | "stove0-review-sampler-protocol" |
-| <a id="s-13865a3606"></a>`module` | "stove0_review_sampler_protocol" |
-| <a id="s-be624d551f"></a>`name` | "seal" |
-| <a id="s-c0249317c7"></a>`owner` | "stove0_review_sampler_protocol.SamplerResult" |
-| <a id="s-465c577a92"></a>`unit` | "member" |
+- <a id="s-6a61538436"></a>`distribution`: `stove0-review-sampler-protocol`
+- <a id="s-13865a3606"></a>`module`: `stove0_review_sampler_protocol`
+- <a id="s-be624d551f"></a>`name`: `seal`
+- <a id="s-c0249317c7"></a>`owner`: `stove0_review_sampler_protocol.SamplerResult`
+- <a id="s-465c577a92"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-6e19191d48"></a>`kind`: `"classmethod"`
+- <a id="s-e2e12a70cd"></a>`signature`: `"\"(cls, payload: 'SamplerResultPayload') -> 'SamplerResult'\""`
 
 ## Maintained corroboration
 

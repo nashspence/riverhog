@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e701a450b6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f8d95ea998"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-5a72020f4a"></a>`distribution` | "stove0-target-support" |
-| <a id="s-8b1fa02ee9"></a>`module` | "stove0_target_support" |
-| <a id="s-d600325e01"></a>`name` | "from_request" |
-| <a id="s-22bad59c90"></a>`owner` | "stove0_target_support.TargetExecutionRuntime" |
-| <a id="s-fc7bd87d61"></a>`unit` | "member" |
+- <a id="s-5a72020f4a"></a>`distribution`: `stove0-target-support`
+- <a id="s-8b1fa02ee9"></a>`module`: `stove0_target_support`
+- <a id="s-d600325e01"></a>`name`: `from_request`
+- <a id="s-22bad59c90"></a>`owner`: `stove0_target_support.TargetExecutionRuntime`
+- <a id="s-fc7bd87d61"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-68bbf14704"></a>`kind`: `"classmethod"`
+- <a id="s-3c2bed23b2"></a>`signature`: `"\"(cls, request: 'TargetJobRequest', *, cancellation_check: 'CancellationCheck \| None' = None, producer_version: 'str' = 'development', session: 'TargetExecutionSession \| None' = None) -> 'TargetExecutionRuntime'\""`
 
 ## Maintained corroboration
 

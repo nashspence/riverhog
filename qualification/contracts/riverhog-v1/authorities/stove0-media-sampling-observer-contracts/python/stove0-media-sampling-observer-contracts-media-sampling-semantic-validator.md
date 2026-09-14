@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2591a8f41d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ba01e25788"></a>`contract` | type="stove0_observer_protocol.validation.SemanticValidatorBinding"; additional keys=`kind` |
-| <a id="s-bc2b7d94ac"></a>`distribution` | "stove0-media-sampling-observer-contracts" |
-| <a id="s-d6a93798e7"></a>`module` | "stove0_media_sampling_observer_contracts" |
-| <a id="s-78f5ed896e"></a>`name` | "MEDIA_SAMPLING_SEMANTIC_VALIDATOR" |
-| <a id="s-b1a23521db"></a>`unit` | "export" |
+- <a id="s-bc2b7d94ac"></a>`distribution`: `stove0-media-sampling-observer-contracts`
+- <a id="s-d6a93798e7"></a>`module`: `stove0_media_sampling_observer_contracts`
+- <a id="s-78f5ed896e"></a>`name`: `MEDIA_SAMPLING_SEMANTIC_VALIDATOR`
+- <a id="s-b1a23521db"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-27623306ef"></a>`kind`: `"object"`
+- <a id="s-08009647d0"></a>`type`: `"stove0_observer_protocol.validation.SemanticValidatorBinding"`
 
 ## Governing policies
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-50ef5ae46a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ddda25838e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-8f913d06e5"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-a20c9c4f91"></a>`module` | "riverhog_protocol" |
-| <a id="s-d214383217"></a>`name` | "collection_upload_raw_digest_summary" |
-| <a id="s-c4ff6460c5"></a>`unit` | "export" |
+- <a id="s-8f913d06e5"></a>`distribution`: `riverhog-protocol`
+- <a id="s-a20c9c4f91"></a>`module`: `riverhog_protocol`
+- <a id="s-d214383217"></a>`name`: `collection_upload_raw_digest_summary`
+- <a id="s-c4ff6460c5"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-3eb500aa7b"></a>`kind`: `"function"`
+- <a id="s-fcdf440076"></a>`signature`: `"\"(item: 'CollectionUploadFileIn', constraints: 'CollectionUploadRegistrationConstraintsDocument') -> 'RawSourceDigestSummary \| None'\""`
 
 ## Governing policies
 

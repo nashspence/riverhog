@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8f0012cbb6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-315412e2d8"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d16a3faf1c"></a>`distribution` | "stove0-server" |
-| <a id="s-dda8ffdcb0"></a>`module` | "stove0_core" |
-| <a id="s-e4b8c6512e"></a>`name` | "operation_contract" |
-| <a id="s-879e8d2ae5"></a>`owner` | "stove0_core.PlanningPort" |
-| <a id="s-0d79cd78d5"></a>`unit` | "member" |
+- <a id="s-d16a3faf1c"></a>`distribution`: `stove0-server`
+- <a id="s-dda8ffdcb0"></a>`module`: `stove0_core`
+- <a id="s-e4b8c6512e"></a>`name`: `operation_contract`
+- <a id="s-879e8d2ae5"></a>`owner`: `stove0_core.PlanningPort`
+- <a id="s-0d79cd78d5"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1be84de22c"></a>`kind`: `"method"`
+- <a id="s-be95d8f406"></a>`signature`: `"\"(self, operation: 'OperationRef') -> 'OperationContract'\""`
 
 ## Maintained corroboration
 

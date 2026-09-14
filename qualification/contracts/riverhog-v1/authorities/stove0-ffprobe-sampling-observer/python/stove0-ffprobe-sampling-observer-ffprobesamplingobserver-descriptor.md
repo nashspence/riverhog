@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bd9b9f612c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-73e84ee5ef"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e51f73ff44"></a>`distribution` | "stove0-ffprobe-sampling-observer" |
-| <a id="s-c866971436"></a>`module` | "stove0_ffprobe_sampling_observer" |
-| <a id="s-36c550f91b"></a>`name` | "descriptor" |
-| <a id="s-feb41e928c"></a>`owner` | "stove0_ffprobe_sampling_observer.FfprobeSamplingObserver" |
-| <a id="s-b6eb41ab5a"></a>`unit` | "member" |
+- <a id="s-e51f73ff44"></a>`distribution`: `stove0-ffprobe-sampling-observer`
+- <a id="s-c866971436"></a>`module`: `stove0_ffprobe_sampling_observer`
+- <a id="s-36c550f91b"></a>`name`: `descriptor`
+- <a id="s-feb41e928c"></a>`owner`: `stove0_ffprobe_sampling_observer.FfprobeSamplingObserver`
+- <a id="s-b6eb41ab5a"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-d02816b8bf"></a>`kind`: `"method"`
+- <a id="s-f09c4bad41"></a>`signature`: `"\"(self) -> 'ObserverDescriptor'\""`
 
 ## Maintained corroboration
 

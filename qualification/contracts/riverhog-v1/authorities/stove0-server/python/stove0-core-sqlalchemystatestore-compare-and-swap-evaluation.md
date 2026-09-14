@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-042606a068"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-124a7280dc"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-720310bd60"></a>`distribution` | "stove0-server" |
-| <a id="s-07769fbce0"></a>`module` | "stove0_core" |
-| <a id="s-887c3bc35d"></a>`name` | "compare_and_swap_evaluation" |
-| <a id="s-162c6e3ffe"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-1cb6f30ca9"></a>`unit` | "member" |
+- <a id="s-720310bd60"></a>`distribution`: `stove0-server`
+- <a id="s-07769fbce0"></a>`module`: `stove0_core`
+- <a id="s-887c3bc35d"></a>`name`: `compare_and_swap_evaluation`
+- <a id="s-162c6e3ffe"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-1cb6f30ca9"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ed6d15a847"></a>`kind`: `"method"`
+- <a id="s-41b0e93ab9"></a>`signature`: `"\"(self, evaluation_id: 'str', *, expected_revision: 'int', replacement: 'EvaluationRecord') -> 'EvaluationRecord'\""`
 
 ## Maintained corroboration
 

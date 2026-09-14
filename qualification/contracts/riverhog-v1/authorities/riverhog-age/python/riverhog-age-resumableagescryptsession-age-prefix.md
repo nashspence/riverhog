@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5fa5a1c6ee"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7fd4ae86a9"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-8be6440654"></a>`distribution` | "riverhog-age" |
-| <a id="s-efa8156bfd"></a>`module` | "riverhog_age" |
-| <a id="s-aa165fc5b1"></a>`name` | "age_prefix" |
-| <a id="s-582a40a069"></a>`owner` | "riverhog_age.ResumableAgeScryptSession" |
-| <a id="s-cf6bfc6c97"></a>`unit` | "member" |
+- <a id="s-8be6440654"></a>`distribution`: `riverhog-age`
+- <a id="s-efa8156bfd"></a>`module`: `riverhog_age`
+- <a id="s-aa165fc5b1"></a>`name`: `age_prefix`
+- <a id="s-582a40a069"></a>`owner`: `riverhog_age.ResumableAgeScryptSession`
+- <a id="s-cf6bfc6c97"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-94498fee51"></a>`kind`: `"property"`
+- <a id="s-83e2df4527"></a>`signature`: `"\"(self) -> 'bytes'\""`
 
 ## Maintained corroboration
 

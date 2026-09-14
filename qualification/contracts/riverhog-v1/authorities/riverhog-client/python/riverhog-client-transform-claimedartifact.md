@@ -14,13 +14,25 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f0435acf79"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0ac4fcb953"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-2e5618de40"></a>`distribution` | "riverhog-client" |
-| <a id="s-cd07b452a3"></a>`module` | "riverhog_client.transform" |
-| <a id="s-811ee427d5"></a>`name` | "ClaimedArtifact" |
-| <a id="s-a7755924cf"></a>`unit` | "export" |
+- <a id="s-2e5618de40"></a>`distribution`: `riverhog-client`
+- <a id="s-cd07b452a3"></a>`module`: `riverhog_client.transform`
+- <a id="s-811ee427d5"></a>`name`: `ClaimedArtifact`
+- <a id="s-a7755924cf"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-c7ae2fd555"></a>`kind`: `"class"`
+- <a id="s-c00661eb6d"></a>`signature`: `"\"(root: 'CollectionRootIdentity', path: 'str', bytes: 'int', sha256: 'str', control: 'bool' = False) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-03e2d183f7"></a>`root` | `'CollectionRootIdentity'` | `required` |
+| <a id="s-8984551785"></a>`path` | `'str'` | `required` |
+| <a id="s-51bb22be61"></a>`bytes` | `'int'` | `required` |
+| <a id="s-93c943d620"></a>`sha256` | `'str'` | `required` |
+| <a id="s-8ddfebd03e"></a>`control` | `'bool'` | `False` |
 
 ## Maintained corroboration
 

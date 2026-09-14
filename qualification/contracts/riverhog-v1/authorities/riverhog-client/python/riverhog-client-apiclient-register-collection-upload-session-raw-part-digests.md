@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2631c7b201"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-db599ef280"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-be28fd10f5"></a>`distribution` | "riverhog-client" |
-| <a id="s-638d1e84de"></a>`module` | "riverhog_client" |
-| <a id="s-f8ac9599a5"></a>`name` | "register_collection_upload_session_raw_part_digests" |
-| <a id="s-5bd68eaed3"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-56b97ef062"></a>`unit` | "member" |
+- <a id="s-be28fd10f5"></a>`distribution`: `riverhog-client`
+- <a id="s-638d1e84de"></a>`module`: `riverhog_client`
+- <a id="s-f8ac9599a5"></a>`name`: `register_collection_upload_session_raw_part_digests`
+- <a id="s-5bd68eaed3"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-56b97ef062"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-09c6c42bd8"></a>`kind`: `"method"`
+- <a id="s-ce220afa68"></a>`signature`: `"\"(self, collection_id: 'CollectionId', batch: 'CollectionUploadRawDigestBatchDocument \| Mapping[str, Any]') -> 'CollectionUploadRawDigestProgressDocument'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-181ac68f4e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-284dcc5c5a"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c8a48c25e7"></a>`distribution` | "stove0-protocol" |
-| <a id="s-4df7a773a4"></a>`module` | "stove0_protocol" |
-| <a id="s-8901bb2313"></a>`name` | "build" |
-| <a id="s-7729befbf8"></a>`owner` | "stove0_protocol.CoordinationBranchPlan" |
-| <a id="s-36424a43c7"></a>`unit` | "member" |
+- <a id="s-c8a48c25e7"></a>`distribution`: `stove0-protocol`
+- <a id="s-4df7a773a4"></a>`module`: `stove0_protocol`
+- <a id="s-8901bb2313"></a>`name`: `build`
+- <a id="s-7729befbf8"></a>`owner`: `stove0_protocol.CoordinationBranchPlan`
+- <a id="s-36424a43c7"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e419aa05a2"></a>`kind`: `"classmethod"`
+- <a id="s-f79077973a"></a>`signature`: `"\"(cls, *, parent_work: 'WorkIdentity', branch_id: 'str', decision_sha256: 'str', selection: 'ArtifactSelection', recipe: 'RecipeRef', effective_intent: 'Mapping[str, JsonValue]', branch_set_sha256: 'str') -> 'CoordinationBranchPlan'\""`
 
 ## Maintained corroboration
 

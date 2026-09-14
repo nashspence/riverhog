@@ -14,13 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6286966b5a"></a>
-| Field | Shape |
+- <a id="s-5913808b38"></a>`distribution`: `riverhog-provenance`
+- <a id="s-cf185b20a8"></a>`module`: `riverhog_provenance`
+- <a id="s-7a9b3385cf"></a>`name`: `LargeValueDisposition`
+- <a id="s-fdb441ed80"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-95f0e50c15"></a>`kind`: `"class"`
+- <a id="s-60e3eee41c"></a>`signature`: `"'(*values)'"`
+
+#### Enum members
+
+| Member | Value |
 |---|---|
-| <a id="s-8293b0d502"></a>`contract` | additional keys=`enum_values`, `kind`, `signature` |
-| <a id="s-5913808b38"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-cf185b20a8"></a>`module` | "riverhog_provenance" |
-| <a id="s-7a9b3385cf"></a>`name` | "LargeValueDisposition" |
-| <a id="s-fdb441ed80"></a>`unit` | "export" |
+| <a id="s-df86f32025"></a>`DIGEST_ONLY` | `"digest_only"` |
+| <a id="s-32ce385652"></a>`FAIL` | `"fail"` |
+| <a id="s-8db9a4023b"></a>`NOT_RETAINED` | `"not_retained"` |
 
 ## Maintained corroboration
 

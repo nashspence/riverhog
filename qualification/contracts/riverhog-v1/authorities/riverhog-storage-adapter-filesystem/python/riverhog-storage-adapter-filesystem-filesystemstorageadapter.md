@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2868267751"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2744c5586c"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6455d35423"></a>`distribution` | "riverhog-storage-adapter-filesystem" |
-| <a id="s-51848400d3"></a>`module` | "riverhog_storage_adapter_filesystem" |
-| <a id="s-b1c5bfecb8"></a>`name` | "FilesystemStorageAdapter" |
-| <a id="s-f7e8981ed7"></a>`unit` | "export" |
+- <a id="s-6455d35423"></a>`distribution`: `riverhog-storage-adapter-filesystem`
+- <a id="s-51848400d3"></a>`module`: `riverhog_storage_adapter_filesystem`
+- <a id="s-b1c5bfecb8"></a>`name`: `FilesystemStorageAdapter`
+- <a id="s-f7e8981ed7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-6b8d53fd21"></a>`kind`: `"class"`
+- <a id="s-dc3b75f083"></a>`signature`: `"\"(config: 'FilesystemStorageAdapterConfig') -> 'None'\""`
 
 ## Maintained corroboration
 

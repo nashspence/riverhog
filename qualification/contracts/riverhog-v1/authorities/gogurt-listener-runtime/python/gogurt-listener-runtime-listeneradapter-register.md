@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-220d399221"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-afeae722a0"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-52ced17516"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-5598887821"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-3feabfc720"></a>`name` | "register" |
-| <a id="s-68ccd045a9"></a>`owner` | "gogurt_listener_runtime.ListenerAdapter" |
-| <a id="s-225639bdcd"></a>`unit` | "member" |
+- <a id="s-52ced17516"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-5598887821"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-3feabfc720"></a>`name`: `register`
+- <a id="s-68ccd045a9"></a>`owner`: `gogurt_listener_runtime.ListenerAdapter`
+- <a id="s-225639bdcd"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-0c542a1585"></a>`kind`: `"method"`
+- <a id="s-e99f0283ff"></a>`signature`: `"\"(self, paths: 'ListenerRuntimePaths', command: 'Sequence[str]') -> 'None'\""`
 
 ## Maintained corroboration
 

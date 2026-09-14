@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d72565c267"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-bd23de1fb1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ace1134905"></a>`distribution` | "stove0-media-sampling-observer-contracts" |
-| <a id="s-ee2d09c295"></a>`module` | "stove0_media_sampling_observer_contracts" |
-| <a id="s-194d061467"></a>`name` | "validate_media_sampling_facts" |
-| <a id="s-b8c28b9b59"></a>`unit` | "export" |
+- <a id="s-ace1134905"></a>`distribution`: `stove0-media-sampling-observer-contracts`
+- <a id="s-ee2d09c295"></a>`module`: `stove0_media_sampling_observer_contracts`
+- <a id="s-194d061467"></a>`name`: `validate_media_sampling_facts`
+- <a id="s-b8c28b9b59"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-b8670c51c5"></a>`kind`: `"function"`
+- <a id="s-fa3a73de36"></a>`signature`: `"\"(facts: 'Mapping[str, object]', subjects: 'Sequence[ArtifactSubject]') -> 'MediaSamplingFacts'\""`
 
 ## Governing policies
 

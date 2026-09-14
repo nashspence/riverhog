@@ -14,13 +14,41 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5f18e790e7"></a>
-| Field | Shape |
+- <a id="s-fb119dc711"></a>`distribution`: `stove0-media-archive-target-contracts`
+- <a id="s-fb1bdaf9bf"></a>`module`: `stove0_media_archive_target_contracts`
+- <a id="s-a2a7fab6c6"></a>`name`: `Av1OpusArchiveIntent`
+- <a id="s-42fb7b448c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-cfc1ffc5e0"></a>`kind`: `"class"`
+- <a id="s-ab7445351c"></a>`signature`: `"\"(*, codec: Literal['av1'] = 'av1', container: Literal['mkv'] = 'mkv', quality: Annotated[int, Ge(ge=0), Le(le=63)] = 23, max_height: Annotated[int \| None, Ge(ge=144), Le(le=8640)] = None, audio_bitrate_kbps: Annotated[int, Ge(ge=16), Le(le=512)] = 128, salvage: Literal['off', 'safe-remux'] = 'safe-remux', metadata_projection: stove0_media_archive_target_contracts.projection_policy.MediaProjectionPolicy = <factory>) -> None\""`
+
+#### Validated model schema
+
+<a id="s-bfb36d5ba0"></a>
+- <a id="s-42dba9bd30"></a>`title`: Av1OpusArchiveIntent
+- <a id="s-e538c4d645"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-527bd6fca4"></a>`audio_bitrate_kbps` | no | type="integer"; minimum=16; maximum=512 |  |
+| <a id="s-579d91578b"></a>`codec` | no | type="string"; const="av1" |  |
+| <a id="s-afc309307b"></a>`container` | no | type="string"; const="mkv" |  |
+| <a id="s-2f6ab42ea9"></a>`max_height` | no | anyOf=type="integer"; minimum=144; maximum=8640 \| type="null" |  |
+| <a id="s-f4d052b61f"></a>`metadata_projection` | no | #/$defs/MediaProjectionPolicy |  |
+| <a id="s-2a49dccf2a"></a>`quality` | no | type="integer"; minimum=0; maximum=63 |  |
+| <a id="s-3eed4de269"></a>`salvage` | no | type="string"; enum=["off","safe-remux"] |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-542842c3fa"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-fb119dc711"></a>`distribution` | "stove0-media-archive-target-contracts" |
-| <a id="s-fb1bdaf9bf"></a>`module` | "stove0_media_archive_target_contracts" |
-| <a id="s-a2a7fab6c6"></a>`name` | "Av1OpusArchiveIntent" |
-| <a id="s-42fb7b448c"></a>`unit` | "export" |
+| <a id="s-c28d2d6e04"></a>`MediaFieldPreference` | type="object"; fields=`fields`, `name`; additional keys=`additionalProperties`, `required` |
+| <a id="s-09e1a4a6da"></a>`MediaGps` | type="object"; fields=`latitude`, `longitude`; additional keys=`additionalProperties`, `required` |
+| <a id="s-0fb0ae795e"></a>`MediaProjectionPolicy` | type="object"; fields=`creators`, `device_make`, `device_model`, `field_preferences`, `format`, `gps`, `tags`; additional keys=`additionalProperties` |
 
 ## Governing policies
 
@@ -46,13 +74,196 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: da55139e6b5c4f95ba61b855bfd67513533f0a6fea8fd966d1de27d98e1da59e -->
+<!-- exact-contract-value: 219beadb7f78819b54dad0f04ceefad9d4dec62f433145b8dc088548f7b24cd0 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "3f8fff646a6b9081f6724972b146e71d8f20995d9a96c6da30e53b9bcb18094e",
+    "schema": {
+      "$defs": {
+        "MediaFieldPreference": {
+          "additionalProperties": false,
+          "properties": {
+            "fields": {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "title": "Fields",
+              "type": "array"
+            },
+            "name": {
+              "enum": [
+                "capture-time",
+                "creator",
+                "device-make",
+                "device-model",
+                "gps-latitude",
+                "gps-longitude"
+              ],
+              "title": "Name",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "fields"
+          ],
+          "title": "MediaFieldPreference",
+          "type": "object"
+        },
+        "MediaGps": {
+          "additionalProperties": false,
+          "properties": {
+            "latitude": {
+              "title": "Latitude",
+              "type": "number"
+            },
+            "longitude": {
+              "title": "Longitude",
+              "type": "number"
+            }
+          },
+          "required": [
+            "latitude",
+            "longitude"
+          ],
+          "title": "MediaGps",
+          "type": "object"
+        },
+        "MediaProjectionPolicy": {
+          "additionalProperties": false,
+          "description": "Portable recipe-owned choices; omitted values are never manufactured.",
+          "properties": {
+            "creators": {
+              "default": [],
+              "items": {
+                "type": "string"
+              },
+              "title": "Creators",
+              "type": "array"
+            },
+            "device_make": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Device Make"
+            },
+            "device_model": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Device Model"
+            },
+            "field_preferences": {
+              "default": [],
+              "items": {
+                "$ref": "#/$defs/MediaFieldPreference"
+              },
+              "title": "Field Preferences",
+              "type": "array"
+            },
+            "format": {
+              "const": "stove0-media-projection-policy/v1",
+              "default": "stove0-media-projection-policy/v1",
+              "title": "Format",
+              "type": "string"
+            },
+            "gps": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/MediaGps"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "tags": {
+              "default": [],
+              "items": {
+                "type": "string"
+              },
+              "title": "Tags",
+              "type": "array"
+            }
+          },
+          "title": "MediaProjectionPolicy",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "audio_bitrate_kbps": {
+          "default": 128,
+          "maximum": 512,
+          "minimum": 16,
+          "title": "Audio Bitrate Kbps",
+          "type": "integer"
+        },
+        "codec": {
+          "const": "av1",
+          "default": "av1",
+          "title": "Codec",
+          "type": "string"
+        },
+        "container": {
+          "const": "mkv",
+          "default": "mkv",
+          "title": "Container",
+          "type": "string"
+        },
+        "max_height": {
+          "anyOf": [
+            {
+              "maximum": 8640,
+              "minimum": 144,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Height"
+        },
+        "metadata_projection": {
+          "$ref": "#/$defs/MediaProjectionPolicy"
+        },
+        "quality": {
+          "default": 23,
+          "maximum": 63,
+          "minimum": 0,
+          "title": "Quality",
+          "type": "integer"
+        },
+        "salvage": {
+          "default": "safe-remux",
+          "enum": [
+            "off",
+            "safe-remux"
+          ],
+          "title": "Salvage",
+          "type": "string"
+        }
+      },
+      "title": "Av1OpusArchiveIntent",
+      "type": "object"
+    },
     "signature": "\"(*, codec: Literal['av1'] = 'av1', container: Literal['mkv'] = 'mkv', quality: Annotated[int, Ge(ge=0), Le(le=63)] = 23, max_height: Annotated[int | None, Ge(ge=144), Le(le=8640)] = None, audio_bitrate_kbps: Annotated[int, Ge(ge=16), Le(le=512)] = 128, salvage: Literal['off', 'safe-remux'] = 'safe-remux', metadata_projection: stove0_media_archive_target_contracts.projection_policy.MediaProjectionPolicy = <factory>) -> None\""
   },
   "distribution": "stove0-media-archive-target-contracts",

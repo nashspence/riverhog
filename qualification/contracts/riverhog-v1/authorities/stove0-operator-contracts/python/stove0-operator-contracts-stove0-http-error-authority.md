@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e3ac4c2f98"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-795a484790"></a>`contract` | type="http_api_contracts.HttpOperationErrorAuthority"; additional keys=`kind` |
-| <a id="s-6bef9e6620"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-126605e807"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-40aae4ccc9"></a>`name` | "STOVE0_HTTP_ERROR_AUTHORITY" |
-| <a id="s-6a6e304c98"></a>`unit` | "export" |
+- <a id="s-6bef9e6620"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-126605e807"></a>`module`: `stove0_operator_contracts`
+- <a id="s-40aae4ccc9"></a>`name`: `STOVE0_HTTP_ERROR_AUTHORITY`
+- <a id="s-6a6e304c98"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0c9faf3584"></a>`kind`: `"object"`
+- <a id="s-fed6d0a5d8"></a>`type`: `"http_api_contracts.HttpOperationErrorAuthority"`
 
 ## Governing policies
 

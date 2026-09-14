@@ -14,13 +14,26 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9823f1528d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ea3d6b226a"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-a967310afa"></a>`distribution` | "riverhog-recover" |
-| <a id="s-b9db601456"></a>`module` | "riverhog_recover" |
-| <a id="s-c6edfe0d73"></a>`name` | "RecoverySummary" |
-| <a id="s-a251472e15"></a>`unit` | "export" |
+- <a id="s-a967310afa"></a>`distribution`: `riverhog-recover`
+- <a id="s-b9db601456"></a>`module`: `riverhog_recover`
+- <a id="s-c6edfe0d73"></a>`name`: `RecoverySummary`
+- <a id="s-a251472e15"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-19da8f8947"></a>`kind`: `"class"`
+- <a id="s-68b17cb4ba"></a>`signature`: `"\"(output: 'Path', files: 'int', bytes: 'int', volumes: 'int', provenance_mode: 'str' = 'omitted', provenance_journals: 'int' = 0) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-1f64fde4b2"></a>`output` | `'Path'` | `required` |
+| <a id="s-c714379559"></a>`files` | `'int'` | `required` |
+| <a id="s-d8ea05a84e"></a>`bytes` | `'int'` | `required` |
+| <a id="s-c8b4cf4e48"></a>`volumes` | `'int'` | `required` |
+| <a id="s-04f26cf34e"></a>`provenance_mode` | `'str'` | `'omitted'` |
+| <a id="s-b086924dee"></a>`provenance_journals` | `'int'` | `0` |
 
 ## Governing policies
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d4bce886ed"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-008c9b37b7"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-00b61ed775"></a>`distribution` | "stove0-media-archive-target-contracts" |
-| <a id="s-dd05534bea"></a>`module` | "stove0_media_archive_target_contracts" |
-| <a id="s-00b5ada46b"></a>`name` | "AV1_OPUS_ARCHIVE_ROLE" |
-| <a id="s-22af43a19c"></a>`unit` | "export" |
+- <a id="s-00b61ed775"></a>`distribution`: `stove0-media-archive-target-contracts`
+- <a id="s-dd05534bea"></a>`module`: `stove0_media_archive_target_contracts`
+- <a id="s-00b5ada46b"></a>`name`: `AV1_OPUS_ARCHIVE_ROLE`
+- <a id="s-22af43a19c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-d663e6d60e"></a>`kind`: `"constant"`
+- <a id="s-09484952f0"></a>`value`: `"stove0.media.av1-opus-archive/v1"`
 
 ## Governing policies
 

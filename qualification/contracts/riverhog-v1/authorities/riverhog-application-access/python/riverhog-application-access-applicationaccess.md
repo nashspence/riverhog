@@ -14,13 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e1a5baa7fd"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-29f3fc5d5f"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-dd295d2924"></a>`distribution` | "riverhog-application-access" |
-| <a id="s-f79b9a47b8"></a>`module` | "riverhog_application_access" |
-| <a id="s-0049b8cfe6"></a>`name` | "ApplicationAccess" |
-| <a id="s-17fe8de5d7"></a>`unit` | "export" |
+- <a id="s-dd295d2924"></a>`distribution`: `riverhog-application-access`
+- <a id="s-f79b9a47b8"></a>`module`: `riverhog_application_access`
+- <a id="s-0049b8cfe6"></a>`name`: `ApplicationAccess`
+- <a id="s-17fe8de5d7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-5a6c73869d"></a>`kind`: `"class"`
+- <a id="s-0415b15022"></a>`signature`: `"\"(permission: 'ApplicationPermission', resource: 'ApplicationResource' = '*') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-d85c5ca7a3"></a>`permission` | `'ApplicationPermission'` | `required` |
+| <a id="s-7a4054370c"></a>`resource` | `'ApplicationResource'` | `'*'` |
 
 ## Governing policies
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2859a8919e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5deafd629d"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-76051858a8"></a>`distribution` | "stove0-target-support" |
-| <a id="s-cbe4f4dea8"></a>`module` | "stove0_target_support" |
-| <a id="s-173a9a7a8a"></a>`name` | "canonical_derivation" |
-| <a id="s-00ed773770"></a>`owner` | "stove0_target_support.TargetJobStatus" |
-| <a id="s-cf67d37f81"></a>`unit` | "member" |
+- <a id="s-76051858a8"></a>`distribution`: `stove0-target-support`
+- <a id="s-cbe4f4dea8"></a>`module`: `stove0_target_support`
+- <a id="s-173a9a7a8a"></a>`name`: `canonical_derivation`
+- <a id="s-00ed773770"></a>`owner`: `stove0_target_support.TargetJobStatus`
+- <a id="s-cf67d37f81"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-6afe679ec8"></a>`kind`: `"classmethod"`
+- <a id="s-9c4731113f"></a>`signature`: `"\"(cls, value: 'dict[str, Any] \| None') -> 'dict[str, Any] \| None'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6e34e05de8"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-cdd0e22cb0"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-9a02fbee63"></a>`distribution` | "stove0-observer-protocol" |
-| <a id="s-14bf247ed3"></a>`module` | "stove0_observer_protocol" |
-| <a id="s-5bf2014b92"></a>`name` | "accept_observation_result" |
-| <a id="s-70e93568e4"></a>`unit` | "export" |
+- <a id="s-9a02fbee63"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-14bf247ed3"></a>`module`: `stove0_observer_protocol`
+- <a id="s-5bf2014b92"></a>`name`: `accept_observation_result`
+- <a id="s-70e93568e4"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-10562f83f1"></a>`kind`: `"function"`
+- <a id="s-238e5e0e27"></a>`signature`: `"\"(result: 'ObservationResult', request: 'ObservationRequest', descriptor: 'ObserverDescriptor', semantic_validators: 'SemanticValidatorProvider \| None' = None) -> 'None'\""`
 
 ## Governing policies
 

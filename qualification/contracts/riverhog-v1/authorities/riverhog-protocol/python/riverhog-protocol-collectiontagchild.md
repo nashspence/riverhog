@@ -14,13 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9df3c8aa6c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9e26f1abe6"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-1d1496de87"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-234a17bc18"></a>`module` | "riverhog_protocol" |
-| <a id="s-bbaffe8399"></a>`name` | "CollectionTagChild" |
-| <a id="s-d747464133"></a>`unit` | "export" |
+- <a id="s-1d1496de87"></a>`distribution`: `riverhog-protocol`
+- <a id="s-234a17bc18"></a>`module`: `riverhog_protocol`
+- <a id="s-bbaffe8399"></a>`name`: `CollectionTagChild`
+- <a id="s-d747464133"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-98d1e1c23e"></a>`kind`: `"class"`
+- <a id="s-a90f3a4478"></a>`signature`: `"\"(label: 'int', digest: 'str') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-471d0811d9"></a>`label` | `'int'` | `required` |
+| <a id="s-39201efc69"></a>`digest` | `'str'` | `required` |
 
 ## Governing policies
 

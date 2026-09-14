@@ -14,13 +14,29 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1df2f7325c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1c9ba5f607"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-2e88b5d7a5"></a>`distribution` | "stove0-server" |
-| <a id="s-a52d535c83"></a>`module` | "stove0_core" |
-| <a id="s-a9ee4ec0d2"></a>`name` | "WorkFailure" |
-| <a id="s-5b867c9f0e"></a>`unit` | "export" |
+- <a id="s-2e88b5d7a5"></a>`distribution`: `stove0-server`
+- <a id="s-a52d535c83"></a>`module`: `stove0_core`
+- <a id="s-a9ee4ec0d2"></a>`name`: `WorkFailure`
+- <a id="s-5b867c9f0e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-6b51d5584f"></a>`kind`: `"class"`
+- <a id="s-937c6ab6e4"></a>`signature`: `"'(*, code: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)], retryable: bool) -> None'"`
+
+#### Validated model schema
+
+<a id="s-0796b14e91"></a>
+- <a id="s-49236aa56a"></a>`title`: WorkFailure
+- <a id="s-c5285e142b"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-adb56d0389"></a>`code` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-fa7d1c534e"></a>`message` | yes | type="string"; minLength=1; maxLength=1000 |  |
+| <a id="s-c51f03aaba"></a>`retryable` | yes | type="boolean" |  |
 
 ## Governing policies
 
@@ -46,13 +62,40 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7980135649a2dfa85c3b9f667e3ffc5eaa74328ea73a8af6a69e560c8220415c -->
+<!-- exact-contract-value: d4d311d57efa3db3d24ebfa5147c87eff3531179b2054ff2594aa44fca6d697d -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "1a48038aecad573b33ff882ab5b826265a854efe9f115ab1e115d1864ec2c4d0",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "retryable": {
+          "title": "Retryable",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "retryable"
+      ],
+      "title": "WorkFailure",
+      "type": "object"
+    },
     "signature": "'(*, code: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)], retryable: bool) -> None'"
   },
   "distribution": "stove0-server",

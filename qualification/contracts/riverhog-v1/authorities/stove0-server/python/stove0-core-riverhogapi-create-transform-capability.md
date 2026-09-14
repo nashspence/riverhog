@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bf8e0a6a82"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-26f2a9fcad"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b24f7a409e"></a>`distribution` | "stove0-server" |
-| <a id="s-86fe5cbb31"></a>`module` | "stove0_core" |
-| <a id="s-379d242c90"></a>`name` | "create_transform_capability" |
-| <a id="s-9ab9b0f75e"></a>`owner` | "stove0_core.RiverhogApi" |
-| <a id="s-74ae4389ce"></a>`unit` | "member" |
+- <a id="s-b24f7a409e"></a>`distribution`: `stove0-server`
+- <a id="s-86fe5cbb31"></a>`module`: `stove0_core`
+- <a id="s-379d242c90"></a>`name`: `create_transform_capability`
+- <a id="s-9ab9b0f75e"></a>`owner`: `stove0_core.RiverhogApi`
+- <a id="s-74ae4389ce"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-d3fff814e3"></a>`kind`: `"method"`
+- <a id="s-52c1ef11df"></a>`signature`: `"\"(self, claim_id: 'str', *, fence: 'int', audience: 'str', actions: 'Sequence[CapabilityAction]' = ('read-inputs',), artifacts: 'Iterable[Mapping[str, Any]]', ttl_seconds: 'int' = 900) -> 'TransformCapabilityDocument'\""`
 
 ## Maintained corroboration
 

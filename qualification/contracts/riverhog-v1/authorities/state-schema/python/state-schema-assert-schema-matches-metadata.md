@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b990d30c78"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0ee74ddb6a"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-49c9995e2b"></a>`distribution` | "state-schema" |
-| <a id="s-9f355b6d06"></a>`module` | "state_schema" |
-| <a id="s-2a8ba0350a"></a>`name` | "assert_schema_matches_metadata" |
-| <a id="s-b58531d645"></a>`unit` | "export" |
+- <a id="s-49c9995e2b"></a>`distribution`: `state-schema`
+- <a id="s-9f355b6d06"></a>`module`: `state_schema`
+- <a id="s-2a8ba0350a"></a>`name`: `assert_schema_matches_metadata`
+- <a id="s-b58531d645"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-8a8eb7758c"></a>`kind`: `"function"`
+- <a id="s-df7356f58f"></a>`signature`: `"\"(bind: 'Connection \| Engine', metadata: 'MetaData', *, version_table: 'str') -> 'None'\""`
 
 ## Governing policies
 

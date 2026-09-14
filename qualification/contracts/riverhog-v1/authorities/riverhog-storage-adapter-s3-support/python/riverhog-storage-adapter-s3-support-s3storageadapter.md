@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6871f3d17b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-48f91609c5"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-5e5dd8006f"></a>`distribution` | "riverhog-storage-adapter-s3-support" |
-| <a id="s-a47476af2f"></a>`module` | "riverhog_storage_adapter_s3_support" |
-| <a id="s-6e09d2c4b3"></a>`name` | "S3StorageAdapter" |
-| <a id="s-d367ca6c1a"></a>`unit` | "export" |
+- <a id="s-5e5dd8006f"></a>`distribution`: `riverhog-storage-adapter-s3-support`
+- <a id="s-a47476af2f"></a>`module`: `riverhog_storage_adapter_s3_support`
+- <a id="s-6e09d2c4b3"></a>`name`: `S3StorageAdapter`
+- <a id="s-d367ca6c1a"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e33effa157"></a>`kind`: `"class"`
+- <a id="s-6eb96acebd"></a>`signature`: `"\"(client: 'Any', config: 'S3StorageAdapterConfig', *, read_preparation: 'S3ReadPreparation \| None' = None, object_reader: 'S3ObjectReader \| None' = None) -> 'None'\""`
 
 ## Maintained corroboration
 

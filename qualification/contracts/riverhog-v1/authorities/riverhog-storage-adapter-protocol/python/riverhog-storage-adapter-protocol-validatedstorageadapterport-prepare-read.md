@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a8b8a7dfdc"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1d4e3c0c50"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7bf3a1d57c"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-81c549164c"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-bfd7dae284"></a>`name` | "prepare_read" |
-| <a id="s-8feb7e0d20"></a>`owner` | "riverhog_storage_adapter_protocol.ValidatedStorageAdapterPort" |
-| <a id="s-58cb4e1360"></a>`unit` | "member" |
+- <a id="s-7bf3a1d57c"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-81c549164c"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-bfd7dae284"></a>`name`: `prepare_read`
+- <a id="s-8feb7e0d20"></a>`owner`: `riverhog_storage_adapter_protocol.ValidatedStorageAdapterPort`
+- <a id="s-58cb4e1360"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-6669026047"></a>`kind`: `"method"`
+- <a id="s-73c77c4407"></a>`signature`: `"\"(self, request: 'ReadPreparationRequest') -> 'ReadStatus'\""`
 
 ## Maintained corroboration
 

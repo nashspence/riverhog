@@ -14,13 +14,35 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-589662a388"></a>
-| Field | Shape |
+- <a id="s-91516b4bec"></a>`distribution`: `stove0-protocol`
+- <a id="s-e5f5987ede"></a>`module`: `stove0_protocol`
+- <a id="s-3b1c9676b7"></a>`name`: `EvaluationMatrixPayload`
+- <a id="s-3cf1f5b531"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-6643c61491"></a>`kind`: `"class"`
+- <a id="s-5ff191501f"></a>`signature`: `"\"(*, format: Literal['stove0-evaluation-matrix/v1'] = 'stove0-evaluation-matrix/v1', variants: Annotated[tuple[stove0_protocol.models.EvaluationVariant, ...], MinLen(min_length=1)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-6c92a201ba"></a>
+- <a id="s-b76f7c543b"></a>`title`: EvaluationMatrixPayload
+- <a id="s-0193dc5767"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7d9792edab"></a>`format` | no | type="string"; const="stove0-evaluation-matrix/v1" |  |
+| <a id="s-669002b757"></a>`variants` | yes | type="array"; minItems=1; items=(#/$defs/EvaluationVariant) |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-4fa63e406f"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-91516b4bec"></a>`distribution` | "stove0-protocol" |
-| <a id="s-e5f5987ede"></a>`module` | "stove0_protocol" |
-| <a id="s-3b1c9676b7"></a>`name` | "EvaluationMatrixPayload" |
-| <a id="s-3cf1f5b531"></a>`unit` | "export" |
+| <a id="s-bc8dc94e3b"></a>`EvaluationVariant` | type="object"; fields=`id`, `parameters`; additional keys=`additionalProperties`, `required` |
+| <a id="s-09ae6204e9"></a>`JsonValue` | empty object |
 
 ## Maintained corroboration
 
@@ -52,13 +74,61 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: cd4513f4c3b5fc084aad7ffd94e85234e6d1b903414553207351207332d12157 -->
+<!-- exact-contract-value: 60a30caaca0f07e1755366e9eb6d94365a5a6a5624d12ef57af706618d4a30cd -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "f729430d8ae4e5c0ba3f436617b5f23f042b6dc238ae5f68a8b5b035ff853614",
+    "schema": {
+      "$defs": {
+        "EvaluationVariant": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "parameters": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "title": "Parameters",
+              "type": "object"
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "title": "EvaluationVariant",
+          "type": "object"
+        },
+        "JsonValue": {}
+      },
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "const": "stove0-evaluation-matrix/v1",
+          "default": "stove0-evaluation-matrix/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "variants": {
+          "items": {
+            "$ref": "#/$defs/EvaluationVariant"
+          },
+          "minItems": 1,
+          "title": "Variants",
+          "type": "array"
+        }
+      },
+      "required": [
+        "variants"
+      ],
+      "title": "EvaluationMatrixPayload",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['stove0-evaluation-matrix/v1'] = 'stove0-evaluation-matrix/v1', variants: Annotated[tuple[stove0_protocol.models.EvaluationVariant, ...], MinLen(min_length=1)]) -> None\""
   },
   "distribution": "stove0-protocol",

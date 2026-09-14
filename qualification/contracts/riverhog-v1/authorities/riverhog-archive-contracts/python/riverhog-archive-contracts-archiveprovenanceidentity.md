@@ -14,13 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2469377a32"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1b6b6f7c12"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-f8b9f1bffb"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-5903669145"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-8bcbded1c2"></a>`name` | "ArchiveProvenanceIdentity" |
-| <a id="s-02e371ce40"></a>`unit` | "export" |
+- <a id="s-f8b9f1bffb"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-5903669145"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-8bcbded1c2"></a>`name`: `ArchiveProvenanceIdentity`
+- <a id="s-02e371ce40"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-2bdde06115"></a>`kind`: `"class"`
+- <a id="s-e16b148b28"></a>`signature`: `"\"(identity: 'str', root: 'ProvenanceRootIdentity') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-fc59b16b96"></a>`identity` | `'str'` | `required` |
+| <a id="s-2fa234dd81"></a>`root` | `'ProvenanceRootIdentity'` | `required` |
 
 ## Maintained corroboration
 

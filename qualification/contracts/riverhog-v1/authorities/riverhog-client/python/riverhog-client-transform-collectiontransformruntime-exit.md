@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d9602ce7c6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-000f9fb91d"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-51756d1aae"></a>`distribution` | "riverhog-client" |
-| <a id="s-f1b1285974"></a>`module` | "riverhog_client.transform" |
-| <a id="s-bd04ca947c"></a>`name` | "__exit__" |
-| <a id="s-7287fbe6de"></a>`owner` | "riverhog_client.transform.CollectionTransformRuntime" |
-| <a id="s-586c754eac"></a>`unit` | "member" |
+- <a id="s-51756d1aae"></a>`distribution`: `riverhog-client`
+- <a id="s-f1b1285974"></a>`module`: `riverhog_client.transform`
+- <a id="s-bd04ca947c"></a>`name`: `__exit__`
+- <a id="s-7287fbe6de"></a>`owner`: `riverhog_client.transform.CollectionTransformRuntime`
+- <a id="s-586c754eac"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3368e995c8"></a>`kind`: `"method"`
+- <a id="s-4061770a2c"></a>`signature`: `"\"(self, _exc_type: 'object', _exc: 'object', _tb: 'object') -> 'None'\""`
 
 ## Maintained corroboration
 

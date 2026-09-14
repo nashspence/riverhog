@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9ac2f8ed07"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2cca0a4cd1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-5b59b424d7"></a>`distribution` | "gogurt-linux-mounted-volume" |
-| <a id="s-4775fc8291"></a>`module` | "gogurt_linux_mounted_volume" |
-| <a id="s-1260a2a4f0"></a>`name` | "linux_mount_points" |
-| <a id="s-0b1f4622c6"></a>`unit` | "export" |
+- <a id="s-5b59b424d7"></a>`distribution`: `gogurt-linux-mounted-volume`
+- <a id="s-4775fc8291"></a>`module`: `gogurt_linux_mounted_volume`
+- <a id="s-1260a2a4f0"></a>`name`: `linux_mount_points`
+- <a id="s-0b1f4622c6"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-cb7bf96e58"></a>`kind`: `"function"`
+- <a id="s-8f47e119d3"></a>`signature`: `"\"(mountinfo: 'str') -> 'tuple[Path, ...]'\""`
 
 ## Governing policies
 

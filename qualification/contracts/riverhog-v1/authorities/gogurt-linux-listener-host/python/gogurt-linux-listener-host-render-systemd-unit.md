@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-cbd8173a9d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-27adf249dc"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-1e086694a1"></a>`distribution` | "gogurt-linux-listener-host" |
-| <a id="s-823cc552f5"></a>`module` | "gogurt_linux_listener_host" |
-| <a id="s-c0ca252a69"></a>`name` | "render_systemd_unit" |
-| <a id="s-e770c1d8c2"></a>`unit` | "export" |
+- <a id="s-1e086694a1"></a>`distribution`: `gogurt-linux-listener-host`
+- <a id="s-823cc552f5"></a>`module`: `gogurt_linux_listener_host`
+- <a id="s-c0ca252a69"></a>`name`: `render_systemd_unit`
+- <a id="s-e770c1d8c2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-770cfb76c9"></a>`kind`: `"function"`
+- <a id="s-04346f0b04"></a>`signature`: `"\"(command: 'Sequence[str]') -> 'bytes'\""`
 
 ## Governing policies
 

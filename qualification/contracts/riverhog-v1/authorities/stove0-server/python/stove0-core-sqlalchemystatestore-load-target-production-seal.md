@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-77565e396e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-09fad42c20"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b57f1f17f6"></a>`distribution` | "stove0-server" |
-| <a id="s-6c06305b7c"></a>`module` | "stove0_core" |
-| <a id="s-1acd8bd4b1"></a>`name` | "load_target_production_seal" |
-| <a id="s-ef4eb2e23e"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-04a63c2d54"></a>`unit` | "member" |
+- <a id="s-b57f1f17f6"></a>`distribution`: `stove0-server`
+- <a id="s-6c06305b7c"></a>`module`: `stove0_core`
+- <a id="s-1acd8bd4b1"></a>`name`: `load_target_production_seal`
+- <a id="s-ef4eb2e23e"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-04a63c2d54"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e79b6a28b8"></a>`kind`: `"method"`
+- <a id="s-5d624eb01a"></a>`signature`: `"\"(self, work_id: 'str', job_id: 'str') -> 'TargetProductionSealRecord \| None'\""`
 
 ## Maintained corroboration
 

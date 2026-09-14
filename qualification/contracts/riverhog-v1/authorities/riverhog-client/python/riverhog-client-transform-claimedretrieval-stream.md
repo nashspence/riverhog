@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-43a9ca7c5f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7e9f69164c"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-0f09077829"></a>`distribution` | "riverhog-client" |
-| <a id="s-5638591368"></a>`module` | "riverhog_client.transform" |
-| <a id="s-df8b6583fa"></a>`name` | "stream" |
-| <a id="s-3c24ebe83b"></a>`owner` | "riverhog_client.transform.ClaimedRetrieval" |
-| <a id="s-c8cd2073ff"></a>`unit` | "member" |
+- <a id="s-0f09077829"></a>`distribution`: `riverhog-client`
+- <a id="s-5638591368"></a>`module`: `riverhog_client.transform`
+- <a id="s-df8b6583fa"></a>`name`: `stream`
+- <a id="s-3c24ebe83b"></a>`owner`: `riverhog_client.transform.ClaimedRetrieval`
+- <a id="s-c8cd2073ff"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c1a9917487"></a>`kind`: `"method"`
+- <a id="s-fa69443864"></a>`signature`: `"\"(self, artifact: 'ClaimedArtifact', *, start: 'int' = 0, end: 'int \| None' = None, chunk_size: 'int' = 8388608) -> 'Iterator[Iterator[bytes]]'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ca3be777b2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d8854bacf3"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-e11a314824"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-9e6bb8a0ae"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-d693daaa52"></a>`name` | "BRANCH_SET_ADMITTED" |
-| <a id="s-2567a8406b"></a>`unit` | "export" |
+- <a id="s-e11a314824"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-9e6bb8a0ae"></a>`module`: `stove0_operator_contracts`
+- <a id="s-d693daaa52"></a>`name`: `BRANCH_SET_ADMITTED`
+- <a id="s-2567a8406b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-fa1f9cac90"></a>`kind`: `"constant"`
+- <a id="s-c2a02c9f08"></a>`value`: `"io.riverhog.stove0.branch-set.admitted"`
 
 ## Governing policies
 

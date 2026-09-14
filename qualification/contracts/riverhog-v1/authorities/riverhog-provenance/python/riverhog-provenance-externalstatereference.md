@@ -14,13 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5b623c3ac9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-310cf3cb57"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-21deabb02c"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-6248b188c7"></a>`module` | "riverhog_provenance" |
-| <a id="s-be08584cb1"></a>`name` | "ExternalStateReference" |
-| <a id="s-18c91c103d"></a>`unit` | "export" |
+- <a id="s-21deabb02c"></a>`distribution`: `riverhog-provenance`
+- <a id="s-6248b188c7"></a>`module`: `riverhog_provenance`
+- <a id="s-be08584cb1"></a>`name`: `ExternalStateReference`
+- <a id="s-18c91c103d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-15bc04f494"></a>`kind`: `"class"`
+- <a id="s-e7354317cc"></a>`signature`: `"\"(journal_id: 'str', entry_id: 'str', entry_json_sha256: 'str', state_id: 'str') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-7f4bd51c6d"></a>`journal_id` | `'str'` | `required` |
+| <a id="s-5cc239c8cc"></a>`entry_id` | `'str'` | `required` |
+| <a id="s-b2b0188238"></a>`entry_json_sha256` | `'str'` | `required` |
+| <a id="s-d82efb6524"></a>`state_id` | `'str'` | `required` |
 
 ## Governing policies
 

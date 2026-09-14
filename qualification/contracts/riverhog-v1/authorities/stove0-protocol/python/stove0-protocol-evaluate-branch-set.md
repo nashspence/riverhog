@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b31859ea0c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-cee15d78e5"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-19cb811b5d"></a>`distribution` | "stove0-protocol" |
-| <a id="s-25f2893bd3"></a>`module` | "stove0_protocol" |
-| <a id="s-53dc57fd2a"></a>`name` | "evaluate_branch_set" |
-| <a id="s-03789c8702"></a>`unit` | "export" |
+- <a id="s-19cb811b5d"></a>`distribution`: `stove0-protocol`
+- <a id="s-25f2893bd3"></a>`module`: `stove0_protocol`
+- <a id="s-53dc57fd2a"></a>`name`: `evaluate_branch_set`
+- <a id="s-03789c8702"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-7f6e4041cc"></a>`kind`: `"function"`
+- <a id="s-e2c728cc7e"></a>`signature`: `"\"(plan: 'BranchSetPlan', selections: 'SelectionDocuments', *, branch_sets: 'Mapping[str, BranchSetPlan] \| None' = None, branch_settlements: 'Sequence[BranchSettlement]' = (), branch_effect_settlements: 'Sequence[BranchEffectSettlement]' = (), branch_coordination_settlements: 'Sequence[CoordinationSettlement]' = (), branch_outcomes: 'Sequence[BranchOutcome]' = (), join_settlement: 'JoinSettlement \| None' = None, join_outcome: 'JoinOutcome \| None' = None) -> 'BranchSetEvaluation'\""`
 
 ## Governing policies
 

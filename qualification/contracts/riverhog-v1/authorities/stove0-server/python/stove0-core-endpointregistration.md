@@ -14,13 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-64d81eeac3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-fd6721553e"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-4061ff675d"></a>`distribution` | "stove0-server" |
-| <a id="s-062b4aed0c"></a>`module` | "stove0_core" |
-| <a id="s-d7f746a550"></a>`name` | "EndpointRegistration" |
-| <a id="s-d1b14516f7"></a>`unit` | "export" |
+- <a id="s-4061ff675d"></a>`distribution`: `stove0-server`
+- <a id="s-062b4aed0c"></a>`module`: `stove0_core`
+- <a id="s-d7f746a550"></a>`name`: `EndpointRegistration`
+- <a id="s-d1b14516f7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-3ea49415db"></a>`kind`: `"class"`
+- <a id="s-4322c05eac"></a>`signature`: `"\"(base_url: 'str', token: 'str \| None', allow_insecure_http: 'bool', semantic_validator_providers: 'tuple[str, ...]' = ()) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-4711216a31"></a>`base_url` | `'str'` | `required` |
+| <a id="s-47b9cca219"></a>`token` | `'str \| None'` | `required` |
+| <a id="s-55e8352986"></a>`allow_insecure_http` | `'bool'` | `required` |
+| <a id="s-36c20374c5"></a>`semantic_validator_providers` | `'tuple[str, ...]'` | `()` |
 
 ## Governing policies
 

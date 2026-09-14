@@ -14,13 +14,40 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c1ee207cf0"></a>
-| Field | Shape |
+- <a id="s-fba0b778d8"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-6f0ed47037"></a>`module`: `stove0_target_protocol`
+- <a id="s-2f38e4e74e"></a>`name`: `TargetSettlementAuthority`
+- <a id="s-b4bacbc001"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-3f5932068e"></a>`kind`: `"class"`
+- <a id="s-dbe5061253"></a>`signature`: `"\"(*, format: Literal['stove0-target-settlement/v1'] = 'stove0-target-settlement/v1', job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], production_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], output_collection: stove0_target_protocol.protocol.OutputCollectionRef, output_bindings: stove0_target_protocol.protocol.TargetOutputBindingSetIdentity, settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-d59596236e"></a>
+- <a id="s-228dedbf12"></a>`title`: TargetSettlementAuthority
+- <a id="s-3416372493"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3b5e1f8f22"></a>`format` | no | type="string"; const="stove0-target-settlement/v1" |  |
+| <a id="s-3a5cb0c379"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-8112ee66f8"></a>`output_bindings` | yes | #/$defs/TargetOutputBindingSetIdentity |  |
+| <a id="s-ae05f04ff3"></a>`output_collection` | yes | #/$defs/OutputCollectionRef |  |
+| <a id="s-769b87df8c"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-5f8d947e62"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-f35753aa1a"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-fba0b778d8"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-6f0ed47037"></a>`module` | "stove0_target_protocol" |
-| <a id="s-2f38e4e74e"></a>`name` | "TargetSettlementAuthority" |
-| <a id="s-b4bacbc001"></a>`unit` | "export" |
+| <a id="s-9bdbe25a31"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-41ab79e924"></a>`OutputCollectionRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`, `derivation_sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-dba58e77b2"></a>`TargetOutputBindingSetIdentity` | type="object"; fields=`artifact_count`, `sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -53,13 +80,117 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 86a81b603ce31319f323c485bdeeb13d7e52143b6d4c024c4fc05f94ea345748 -->
+<!-- exact-contract-value: 9537651c7825ef17748f348de5d7eb72dace586653386a786f19889f2129d62a -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "27d5c82cd51c2f39dfd46a39cd6be0c7ba647be6162e468f45697fca4d1964de",
+    "schema": {
+      "$defs": {
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "OutputCollectionRef": {
+          "additionalProperties": false,
+          "properties": {
+            "archive_root_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Archive Root Sha256",
+              "type": "string"
+            },
+            "collection_id": {
+              "$ref": "#/$defs/CollectionId"
+            },
+            "content_identity": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Content Identity",
+              "type": "string"
+            },
+            "derivation_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Derivation Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "collection_id",
+            "archive_root_sha256",
+            "content_identity",
+            "derivation_sha256"
+          ],
+          "title": "OutputCollectionRef",
+          "type": "object"
+        },
+        "TargetOutputBindingSetIdentity": {
+          "additionalProperties": false,
+          "properties": {
+            "artifact_count": {
+              "minimum": 1,
+              "title": "Artifact Count",
+              "type": "integer"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sha256",
+              "type": "string"
+            },
+            "total_bytes": {
+              "minimum": 0,
+              "title": "Total Bytes",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "artifact_count",
+            "total_bytes",
+            "sha256"
+          ],
+          "title": "TargetOutputBindingSetIdentity",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "const": "stove0-target-settlement/v1",
+          "default": "stove0-target-settlement/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "job_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Job Id",
+          "type": "string"
+        },
+        "output_bindings": {
+          "$ref": "#/$defs/TargetOutputBindingSetIdentity"
+        },
+        "output_collection": {
+          "$ref": "#/$defs/OutputCollectionRef"
+        },
+        "production_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Production Sha256",
+          "type": "string"
+        },
+        "settlement_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Settlement Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "job_id",
+        "production_sha256",
+        "output_collection",
+        "output_bindings",
+        "settlement_sha256"
+      ],
+      "title": "TargetSettlementAuthority",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['stove0-target-settlement/v1'] = 'stove0-target-settlement/v1', job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], production_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], output_collection: stove0_target_protocol.protocol.OutputCollectionRef, output_bindings: stove0_target_protocol.protocol.TargetOutputBindingSetIdentity, settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-target-protocol",

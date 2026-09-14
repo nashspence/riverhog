@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2a561065f5"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-70a80e6002"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-8ab175af5d"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-0c55f604b2"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-e467f731b7"></a>`name` | "ARCHIVE_ENCRYPTION_FORMAT" |
-| <a id="s-9450ecb15f"></a>`unit` | "export" |
+- <a id="s-8ab175af5d"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-0c55f604b2"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-e467f731b7"></a>`name`: `ARCHIVE_ENCRYPTION_FORMAT`
+- <a id="s-9450ecb15f"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-b0b32c9a9c"></a>`kind`: `"constant"`
+- <a id="s-7a7a43b57d"></a>`value`: `"age-v1-scrypt"`
 
 ## Governing policies
 

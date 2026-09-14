@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4e2d80c3c1"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c0b89b8571"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b18b208575"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-bab0a16904"></a>`module` | "riverhog_protocol" |
-| <a id="s-8839218385"></a>`name` | "seal" |
-| <a id="s-d1e359579d"></a>`owner` | "riverhog_protocol.TransformIntent" |
-| <a id="s-4d6b1acbb5"></a>`unit` | "member" |
+- <a id="s-b18b208575"></a>`distribution`: `riverhog-protocol`
+- <a id="s-bab0a16904"></a>`module`: `riverhog_protocol`
+- <a id="s-8839218385"></a>`name`: `seal`
+- <a id="s-d1e359579d"></a>`owner`: `riverhog_protocol.TransformIntent`
+- <a id="s-4d6b1acbb5"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-b4594be164"></a>`kind`: `"classmethod"`
+- <a id="s-ac1d0a6590"></a>`signature`: `"\"(cls, *, recipe: 'RecipeIdentity', operation: 'OperationIdentity', inputs: 'Sequence[CollectionRootIdentity]', effective_intent: 'Mapping[str, object]', retirement_policy: 'RetirementPolicy' = 'retain', retirement_grace_seconds: 'int' = 0) -> 'TransformIntent'\""`
 
 ## Maintained corroboration
 

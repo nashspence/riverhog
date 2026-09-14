@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d838ca2a61"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-96909dccb7"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d5ecf51db1"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-9937f6be27"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-0c6dbb5b34"></a>`name` | "install_listener" |
-| <a id="s-66ce4d3ec2"></a>`unit` | "export" |
+- <a id="s-d5ecf51db1"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-9937f6be27"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-0c6dbb5b34"></a>`name`: `install_listener`
+- <a id="s-66ce4d3ec2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-31910e51cd"></a>`kind`: `"function"`
+- <a id="s-0219032c18"></a>`signature`: `"\"(routes_file: 'Path', *, actions_dir: 'Path \| None', interval_seconds: 'float' = 2.0, executable: 'Path', paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str', mounted_volume_provider: 'GogurtProviderReference', listener_host_provider: 'GogurtProviderReference', wait_for_health: 'bool' = True) -> 'dict[str, object]'\""`
 
 ## Governing policies
 

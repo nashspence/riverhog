@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-69dbba0617"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-17540f0c4b"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-1b6d389222"></a>`distribution` | "stove0-api-client" |
-| <a id="s-8d0e42e38b"></a>`module` | "stove0_api_client" |
-| <a id="s-82793badcd"></a>`name` | "list_work" |
-| <a id="s-ddf4aa0d74"></a>`owner` | "stove0_api_client.Stove0ApiClient" |
-| <a id="s-f2a7ba40b0"></a>`unit` | "member" |
+- <a id="s-1b6d389222"></a>`distribution`: `stove0-api-client`
+- <a id="s-8d0e42e38b"></a>`module`: `stove0_api_client`
+- <a id="s-82793badcd"></a>`name`: `list_work`
+- <a id="s-ddf4aa0d74"></a>`owner`: `stove0_api_client.Stove0ApiClient`
+- <a id="s-f2a7ba40b0"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-bad7a73e00"></a>`kind`: `"method"`
+- <a id="s-eaece0e346"></a>`signature`: `"\"(self, *, page_size: 'int' = 25, page_token: 'str \| None' = None, phase: 'WorkPhase \| None' = None, query: 'str \| None' = None, sort: 'WorkSort' = 'updated_at', order: 'SortOrder' = 'desc') -> 'WorkPage'\""`
 
 ## Maintained corroboration
 

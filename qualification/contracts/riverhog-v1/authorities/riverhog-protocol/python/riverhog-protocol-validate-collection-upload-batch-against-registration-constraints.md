@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-14e814f435"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3244ef67df"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-9d147647bd"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-9e2d9f4015"></a>`module` | "riverhog_protocol" |
-| <a id="s-8de028b5c8"></a>`name` | "validate_collection_upload_batch_against_registration_constraints" |
-| <a id="s-757165a854"></a>`unit` | "export" |
+- <a id="s-9d147647bd"></a>`distribution`: `riverhog-protocol`
+- <a id="s-9e2d9f4015"></a>`module`: `riverhog_protocol`
+- <a id="s-8de028b5c8"></a>`name`: `validate_collection_upload_batch_against_registration_constraints`
+- <a id="s-757165a854"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ab12a8d0a6"></a>`kind`: `"function"`
+- <a id="s-9e42ba41a2"></a>`signature`: `"\"(batch: 'CollectionUploadFileBatchDocument', constraints: 'CollectionUploadRegistrationConstraintsDocument') -> 'CollectionUploadFileBatchDocument'\""`
 
 ## Governing policies
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2b5d98b310"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-892e034384"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-49414b7c0a"></a>`distribution` | "riverhog-client" |
-| <a id="s-fffeb8bd10"></a>`module` | "riverhog_client" |
-| <a id="s-983479ea99"></a>`name` | "list_collections" |
-| <a id="s-341faaf2e8"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-6c327123ec"></a>`unit` | "member" |
+- <a id="s-49414b7c0a"></a>`distribution`: `riverhog-client`
+- <a id="s-fffeb8bd10"></a>`module`: `riverhog_client`
+- <a id="s-983479ea99"></a>`name`: `list_collections`
+- <a id="s-341faaf2e8"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-6c327123ec"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-88ac85bbff"></a>`kind`: `"method"`
+- <a id="s-6ef780e14a"></a>`signature`: `"\"(self, *, page_size: 'int' = 25, page_token: 'str \| None' = None, q: 'str \| None' = None, tags: 'Sequence[CollectionTag]' = (), encryption_format: 'str \| None' = None, passphrase_id: 'str \| None' = None, sort: 'CollectionSort' = 'id', order: 'SortOrder' = 'asc') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-81ce9c5056"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e41a529ed5"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-441d0abb9c"></a>`distribution` | "stove0-server" |
-| <a id="s-c8f0d76dec"></a>`module` | "stove0_core" |
-| <a id="s-39748a1e5d"></a>`name` | "load_target_production_seal" |
-| <a id="s-102922a4e4"></a>`owner` | "stove0_core.InMemoryWorkStore" |
-| <a id="s-e482d9d597"></a>`unit` | "member" |
+- <a id="s-441d0abb9c"></a>`distribution`: `stove0-server`
+- <a id="s-c8f0d76dec"></a>`module`: `stove0_core`
+- <a id="s-39748a1e5d"></a>`name`: `load_target_production_seal`
+- <a id="s-102922a4e4"></a>`owner`: `stove0_core.InMemoryWorkStore`
+- <a id="s-e482d9d597"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-2ab5dc7d64"></a>`kind`: `"method"`
+- <a id="s-b4c9463c33"></a>`signature`: `"\"(self, work_id: 'str', job_id: 'str') -> 'TargetProductionSealRecord \| None'\""`
 
 ## Maintained corroboration
 

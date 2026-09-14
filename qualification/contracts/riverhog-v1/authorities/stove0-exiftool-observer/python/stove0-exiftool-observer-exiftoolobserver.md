@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-af263598fd"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-84a5fa5d3c"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-dec08ca6a2"></a>`distribution` | "stove0-exiftool-observer" |
-| <a id="s-cac672472d"></a>`module` | "stove0_exiftool_observer" |
-| <a id="s-ecc5d68877"></a>`name` | "ExiftoolObserver" |
-| <a id="s-ad6bf94f09"></a>`unit` | "export" |
+- <a id="s-dec08ca6a2"></a>`distribution`: `stove0-exiftool-observer`
+- <a id="s-cac672472d"></a>`module`: `stove0_exiftool_observer`
+- <a id="s-ecc5d68877"></a>`name`: `ExiftoolObserver`
+- <a id="s-ad6bf94f09"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-26c896080f"></a>`kind`: `"class"`
+- <a id="s-facbfcdd8a"></a>`signature`: `"\"(*, exiftool: 'str' = 'exiftool', workspace_root: 'Path \| None' = None, source_revision: 'str' = 'unknown', image_digest: 'str') -> 'None'\""`
 
 ## Maintained corroboration
 

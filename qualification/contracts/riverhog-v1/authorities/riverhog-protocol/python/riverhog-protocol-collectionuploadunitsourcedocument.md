@@ -14,13 +14,31 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5a17be18e2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7e68d8b98c"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-4be13710e8"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-760abd5d8b"></a>`module` | "riverhog_protocol" |
-| <a id="s-86bb11ff9f"></a>`name` | "CollectionUploadUnitSourceDocument" |
-| <a id="s-32196e6fd1"></a>`unit` | "export" |
+- <a id="s-4be13710e8"></a>`distribution`: `riverhog-protocol`
+- <a id="s-760abd5d8b"></a>`module`: `riverhog_protocol`
+- <a id="s-86bb11ff9f"></a>`name`: `CollectionUploadUnitSourceDocument`
+- <a id="s-32196e6fd1"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-106002169d"></a>`kind`: `"class"`
+- <a id="s-b092a380f0"></a>`signature`: `"\"(*, path: str, offset: Annotated[int, Strict(strict=True), Ge(ge=0)], bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], artifact_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-9fe1c6a09c"></a>
+- <a id="s-6b6181b8cb"></a>`title`: CollectionUploadUnitSourceDocument
+- <a id="s-688c70f247"></a>`description`: One exact source range supplied in a server-planned upload unit.
+- <a id="s-8c1af34a92"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4d7d590e2b"></a>`artifact_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c10dc15699"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-390f55d49f"></a>`offset` | yes | type="integer"; minimum=0 |  |
+| <a id="s-86048297b7"></a>`path` | yes | type="string" |  |
 
 ## Maintained corroboration
 
@@ -52,13 +70,45 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f329c7313d5faeb3ab251e757a81393f46d52be73a6dd726555060764d31b67b -->
+<!-- exact-contract-value: d12a694f52f58d1959a4b32c3711c133aaf2b486bc340e7236bc171faf8957f5 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "3870870a9e0b96323d9a6bb59e3124806d4f2cbfd6db047e34765004a7c96160",
+    "schema": {
+      "additionalProperties": false,
+      "description": "One exact source range supplied in a server-planned upload unit.",
+      "properties": {
+        "artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Sha256",
+          "type": "string"
+        },
+        "bytes": {
+          "minimum": 0,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "offset": {
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "offset",
+        "bytes",
+        "artifact_sha256"
+      ],
+      "title": "CollectionUploadUnitSourceDocument",
+      "type": "object"
+    },
     "signature": "\"(*, path: str, offset: Annotated[int, Strict(strict=True), Ge(ge=0)], bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], artifact_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
   },
   "distribution": "riverhog-protocol",

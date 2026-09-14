@@ -14,13 +14,44 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1937071e44"></a>
-| Field | Shape |
+- <a id="s-eab39ec1e6"></a>`distribution`: `stove0-protocol`
+- <a id="s-1c3a591e24"></a>`module`: `stove0_protocol`
+- <a id="s-d4bfa72105"></a>`name`: `EvaluationDefinition`
+- <a id="s-37e10fc1cd"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-a1d27d342f"></a>`kind`: `"class"`
+- <a id="s-88ddd34ca8"></a>`signature`: `"\"(*, format: Literal['stove0-evaluation-definition/v1'] = 'stove0-evaluation-definition/v1', purpose: Literal['trial', 'evaluation'] = 'evaluation', recipe: stove0_protocol.models.RecipeRef, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootRef, ...], MinLen(min_length=1)], common_intent: dict[str, JsonValue] = <factory>, matrix: stove0_protocol.models.EvaluationMatrix, evaluation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-a80ac8a32a"></a>
+- <a id="s-ef39558857"></a>`title`: EvaluationDefinition
+- <a id="s-9ca6faacf7"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ab8f045ab1"></a>`common_intent` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-444381c456"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1329820d22"></a>`format` | no | type="string"; const="stove0-evaluation-definition/v1" |  |
+| <a id="s-914f6dd691"></a>`inputs` | yes | type="array"; minItems=1; items=(#/$defs/CollectionRootRef) |  |
+| <a id="s-b30fdc8921"></a>`matrix` | yes | #/$defs/EvaluationMatrix |  |
+| <a id="s-82cd0c8b05"></a>`purpose` | no | type="string"; enum=["trial","evaluation"] |  |
+| <a id="s-57ae92593f"></a>`recipe` | yes | #/$defs/RecipeRef |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-b87e1fc1d1"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-eab39ec1e6"></a>`distribution` | "stove0-protocol" |
-| <a id="s-1c3a591e24"></a>`module` | "stove0_protocol" |
-| <a id="s-d4bfa72105"></a>`name` | "EvaluationDefinition" |
-| <a id="s-37e10fc1cd"></a>`unit` | "export" |
+| <a id="s-b734067b50"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-369a50d278"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
+| <a id="s-b12f948340"></a>`EvaluationMatrix` | type="object"; fields=`format`, `matrix_sha256`, `variants`; additional keys=`additionalProperties`, `required` |
+| <a id="s-19aadbf995"></a>`EvaluationVariant` | type="object"; fields=`id`, `parameters`; additional keys=`additionalProperties`, `required` |
+| <a id="s-3d3dab1600"></a>`JsonValue` | empty object |
+| <a id="s-af298ee2e5"></a>`RecipeRef` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -55,13 +86,177 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8d36989787991a0a3704b7a09211011a7528aaf296983d76535c5323b83da144 -->
+<!-- exact-contract-value: 3f144e8c7771d7d28ba3c5a3b68b72414d4b83840224e3609fa8681033643942 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "73dde42300b8d2864bca552e753011ebc0e62eac66f6181892291fd37f0e7977",
+    "schema": {
+      "$defs": {
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "CollectionRootRef": {
+          "additionalProperties": false,
+          "properties": {
+            "archive_root_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Archive Root Sha256",
+              "type": "string"
+            },
+            "collection_id": {
+              "$ref": "#/$defs/CollectionId"
+            },
+            "content_identity": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Content Identity",
+              "type": "string"
+            }
+          },
+          "required": [
+            "collection_id",
+            "archive_root_sha256",
+            "content_identity"
+          ],
+          "title": "CollectionRootRef",
+          "type": "object"
+        },
+        "EvaluationMatrix": {
+          "additionalProperties": false,
+          "properties": {
+            "format": {
+              "const": "stove0-evaluation-matrix/v1",
+              "default": "stove0-evaluation-matrix/v1",
+              "title": "Format",
+              "type": "string"
+            },
+            "matrix_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Matrix Sha256",
+              "type": "string"
+            },
+            "variants": {
+              "items": {
+                "$ref": "#/$defs/EvaluationVariant"
+              },
+              "minItems": 1,
+              "title": "Variants",
+              "type": "array"
+            }
+          },
+          "required": [
+            "variants",
+            "matrix_sha256"
+          ],
+          "title": "EvaluationMatrix",
+          "type": "object"
+        },
+        "EvaluationVariant": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "parameters": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "title": "Parameters",
+              "type": "object"
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "title": "EvaluationVariant",
+          "type": "object"
+        },
+        "JsonValue": {},
+        "RecipeRef": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "revision": {
+              "minimum": 1,
+              "title": "Revision",
+              "type": "integer"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "revision",
+            "sha256"
+          ],
+          "title": "RecipeRef",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "common_intent": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Common Intent",
+          "type": "object"
+        },
+        "evaluation_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evaluation Id",
+          "type": "string"
+        },
+        "format": {
+          "const": "stove0-evaluation-definition/v1",
+          "default": "stove0-evaluation-definition/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "inputs": {
+          "items": {
+            "$ref": "#/$defs/CollectionRootRef"
+          },
+          "minItems": 1,
+          "title": "Inputs",
+          "type": "array"
+        },
+        "matrix": {
+          "$ref": "#/$defs/EvaluationMatrix"
+        },
+        "purpose": {
+          "default": "evaluation",
+          "enum": [
+            "trial",
+            "evaluation"
+          ],
+          "title": "Purpose",
+          "type": "string"
+        },
+        "recipe": {
+          "$ref": "#/$defs/RecipeRef"
+        }
+      },
+      "required": [
+        "recipe",
+        "inputs",
+        "matrix",
+        "evaluation_id"
+      ],
+      "title": "EvaluationDefinition",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['stove0-evaluation-definition/v1'] = 'stove0-evaluation-definition/v1', purpose: Literal['trial', 'evaluation'] = 'evaluation', recipe: stove0_protocol.models.RecipeRef, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootRef, ...], MinLen(min_length=1)], common_intent: dict[str, JsonValue] = <factory>, matrix: stove0_protocol.models.EvaluationMatrix, evaluation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-protocol",

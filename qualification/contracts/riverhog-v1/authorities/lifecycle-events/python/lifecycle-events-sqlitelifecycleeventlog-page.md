@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7112d1666f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-15853eaca6"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-2aaddbce76"></a>`distribution` | "lifecycle-events" |
-| <a id="s-0a581b6c41"></a>`module` | "lifecycle_events" |
-| <a id="s-78432f2e37"></a>`name` | "page" |
-| <a id="s-c7bd81cccb"></a>`owner` | "lifecycle_events.SQLiteLifecycleEventLog" |
-| <a id="s-066a7c15ae"></a>`unit` | "member" |
+- <a id="s-2aaddbce76"></a>`distribution`: `lifecycle-events`
+- <a id="s-0a581b6c41"></a>`module`: `lifecycle_events`
+- <a id="s-78432f2e37"></a>`name`: `page`
+- <a id="s-c7bd81cccb"></a>`owner`: `lifecycle_events.SQLiteLifecycleEventLog`
+- <a id="s-066a7c15ae"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c183755f25"></a>`kind`: `"method"`
+- <a id="s-39c2f081b9"></a>`signature`: `"\"(self, *, after: 'str \| None', limit: 'int', owner: 'str \| None' = None) -> 'EventPage'\""`
 
 ## Maintained corroboration
 

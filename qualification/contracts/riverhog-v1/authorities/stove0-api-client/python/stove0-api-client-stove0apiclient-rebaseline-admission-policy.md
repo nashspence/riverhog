@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f955ee3928"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-165a11ae92"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-cff293e499"></a>`distribution` | "stove0-api-client" |
-| <a id="s-e7908b61cc"></a>`module` | "stove0_api_client" |
-| <a id="s-916c56241e"></a>`name` | "rebaseline_admission_policy" |
-| <a id="s-aa9e58d98f"></a>`owner` | "stove0_api_client.Stove0ApiClient" |
-| <a id="s-c9c08bab08"></a>`unit` | "member" |
+- <a id="s-cff293e499"></a>`distribution`: `stove0-api-client`
+- <a id="s-e7908b61cc"></a>`module`: `stove0_api_client`
+- <a id="s-916c56241e"></a>`name`: `rebaseline_admission_policy`
+- <a id="s-aa9e58d98f"></a>`owner`: `stove0_api_client.Stove0ApiClient`
+- <a id="s-c9c08bab08"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-5da1e1c574"></a>`kind`: `"method"`
+- <a id="s-c109846237"></a>`signature`: `"\"(self, policy_id: 'str') -> 'AdmissionPolicyStatus'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,25 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1e1b0901c9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-16605ca5ae"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-f3f44e097f"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-595fd20e74"></a>`module` | "riverhog_provenance" |
-| <a id="s-cff6f66984"></a>`name` | "ProvenanceTerminalDocument" |
-| <a id="s-60867fea06"></a>`unit` | "export" |
+- <a id="s-f3f44e097f"></a>`distribution`: `riverhog-provenance`
+- <a id="s-595fd20e74"></a>`module`: `riverhog_provenance`
+- <a id="s-cff6f66984"></a>`name`: `ProvenanceTerminalDocument`
+- <a id="s-60867fea06"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-4f020bbea7"></a>`kind`: `"class"`
+- <a id="s-8925fc373b"></a>`signature`: `"'(archive_generation: \\'str\\', archive_tree_sha256: \\'str\\', sequence: \\'int\\', kind: \"Literal[\\'terminal\\']\" = \\'terminal\\', schema: \\'str\\' = \\'riverhog-provenance-terminal/v1\\') -> None'"`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-0154483c1a"></a>`archive_generation` | `'str'` | `required` |
+| <a id="s-75a53efc6e"></a>`archive_tree_sha256` | `'str'` | `required` |
+| <a id="s-e5c8eff3da"></a>`sequence` | `'int'` | `required` |
+| <a id="s-c10bedec76"></a>`kind` | `"Literal['terminal']"` | `'terminal'` |
+| <a id="s-63a03ebea6"></a>`schema` | `'str'` | `'riverhog-provenance-terminal/v1'` |
 
 ## Maintained corroboration
 

@@ -14,13 +14,40 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5d3a77d787"></a>
-| Field | Shape |
+- <a id="s-8d7acc02ee"></a>`distribution`: `stove0-target-support`
+- <a id="s-fd683a4f72"></a>`module`: `stove0_target_support`
+- <a id="s-7e1236e72f"></a>`name`: `InputArtifact`
+- <a id="s-6593f2a2d3"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-3675c59dba"></a>`kind`: `"class"`
+- <a id="s-fc6dc65f0a"></a>`signature`: `"\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], collection: stove0_protocol.models.CollectionRootRef, path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], media_type: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=255)] = None) -> None\""`
+
+#### Validated model schema
+
+<a id="s-f24d12856c"></a>
+- <a id="s-f9e3463730"></a>`title`: InputArtifact
+- <a id="s-ee4ea5a73b"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-423fdbfa4f"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-3eccc3d782"></a>`collection` | yes | #/$defs/CollectionRootRef |  |
+| <a id="s-31d96da027"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-b1801a1b02"></a>`media_type` | no | anyOf=type="string"; minLength=1; maxLength=255 \| type="null" |  |
+| <a id="s-741cfd9b81"></a>`path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-728df2b37e"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-0d88b332bf"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-6d1d6689eb"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-8d7acc02ee"></a>`distribution` | "stove0-target-support" |
-| <a id="s-fd683a4f72"></a>`module` | "stove0_target_support" |
-| <a id="s-7e1236e72f"></a>`name` | "InputArtifact" |
-| <a id="s-6593f2a2d3"></a>`unit` | "export" |
+| <a id="s-304b07ec89"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-e3bd443526"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -52,13 +79,101 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2b135bfc51972bc1ed12e2f979c02e1211d4f70bf73747faf924568002df1ff5 -->
+<!-- exact-contract-value: 25d969ccf89df792463905d9dc50af3d54d2bf80f385d9db6d82a0da1040ff8d -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "6bae5bc6fdacfc380db9fd5107b64cf18ed580f1888a45a1b1a6e37731e60168",
+    "schema": {
+      "$defs": {
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "CollectionRootRef": {
+          "additionalProperties": false,
+          "properties": {
+            "archive_root_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Archive Root Sha256",
+              "type": "string"
+            },
+            "collection_id": {
+              "$ref": "#/$defs/CollectionId"
+            },
+            "content_identity": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Content Identity",
+              "type": "string"
+            }
+          },
+          "required": [
+            "collection_id",
+            "archive_root_sha256",
+            "content_identity"
+          ],
+          "title": "CollectionRootRef",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 0,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "collection": {
+          "$ref": "#/$defs/CollectionRootRef"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "media_type": {
+          "anyOf": [
+            {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Media Type"
+        },
+        "path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "role": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Role",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "collection",
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "title": "InputArtifact",
+      "type": "object"
+    },
     "signature": "\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], collection: stove0_protocol.models.CollectionRootRef, path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], media_type: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=255)] = None) -> None\""
   },
   "distribution": "stove0-target-support",

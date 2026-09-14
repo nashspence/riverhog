@@ -14,13 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c1a505007b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-097969419e"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-daf5bf6ae1"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-4a167c1d1a"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-8be523ead0"></a>`name` | "CollectionEncryptionBinding" |
-| <a id="s-00c6c4d499"></a>`unit` | "export" |
+- <a id="s-daf5bf6ae1"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-4a167c1d1a"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-8be523ead0"></a>`name`: `CollectionEncryptionBinding`
+- <a id="s-00c6c4d499"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-efec42dbb7"></a>`kind`: `"class"`
+- <a id="s-d3a7efe28f"></a>`signature`: `"\"(format: 'str', passphrase_id: 'str') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-30d8d87857"></a>`format` | `'str'` | `required` |
+| <a id="s-21ebc2cddf"></a>`passphrase_id` | `'str'` | `required` |
 
 ## Governing policies
 

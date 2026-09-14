@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-23573a8d6d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-697c63c8e1"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-16a1379c7a"></a>`distribution` | "stove0-review-target-contracts" |
-| <a id="s-bf202c3f4a"></a>`module` | "stove0_review_target_contracts" |
-| <a id="s-fccf24349e"></a>`name` | "REVIEW_AUDIO_ROLE" |
-| <a id="s-1285b4e3ae"></a>`unit` | "export" |
+- <a id="s-16a1379c7a"></a>`distribution`: `stove0-review-target-contracts`
+- <a id="s-bf202c3f4a"></a>`module`: `stove0_review_target_contracts`
+- <a id="s-fccf24349e"></a>`name`: `REVIEW_AUDIO_ROLE`
+- <a id="s-1285b4e3ae"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0cb8de11b6"></a>`kind`: `"constant"`
+- <a id="s-edfe61681b"></a>`value`: `"stove0.review.audio/v1"`
 
 ## Governing policies
 

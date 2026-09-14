@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2d0434fe53"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4a0e1e24e2"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e7e58d9e2d"></a>`distribution` | "riverhog-client" |
-| <a id="s-ae49714776"></a>`module` | "riverhog_client.transform" |
-| <a id="s-58819a886d"></a>`name` | "read_bytes" |
-| <a id="s-2ab8724aa6"></a>`owner` | "riverhog_client.transform.ClaimedRetrieval" |
-| <a id="s-b69117db73"></a>`unit` | "member" |
+- <a id="s-e7e58d9e2d"></a>`distribution`: `riverhog-client`
+- <a id="s-ae49714776"></a>`module`: `riverhog_client.transform`
+- <a id="s-58819a886d"></a>`name`: `read_bytes`
+- <a id="s-2ab8724aa6"></a>`owner`: `riverhog_client.transform.ClaimedRetrieval`
+- <a id="s-b69117db73"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-18d6790d78"></a>`kind`: `"method"`
+- <a id="s-68f07c5844"></a>`signature`: `"\"(self, artifact: 'ClaimedArtifact', *, maximum_bytes: 'int') -> 'bytes'\""`
 
 ## Maintained corroboration
 

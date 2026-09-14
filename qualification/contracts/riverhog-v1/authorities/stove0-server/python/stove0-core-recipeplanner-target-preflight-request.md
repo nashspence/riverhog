@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-25c895314b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8c4831e3a6"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-96f6782021"></a>`distribution` | "stove0-server" |
-| <a id="s-3c73ce6c03"></a>`module` | "stove0_core" |
-| <a id="s-0e2d58afa3"></a>`name` | "target_preflight_request" |
-| <a id="s-7ec1c45862"></a>`owner` | "stove0_core.RecipePlanner" |
-| <a id="s-6b64f650c5"></a>`unit` | "member" |
+- <a id="s-96f6782021"></a>`distribution`: `stove0-server`
+- <a id="s-3c73ce6c03"></a>`module`: `stove0_core`
+- <a id="s-0e2d58afa3"></a>`name`: `target_preflight_request`
+- <a id="s-7ec1c45862"></a>`owner`: `stove0_core.RecipePlanner`
+- <a id="s-6b64f650c5"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ad95bfdf6a"></a>`kind`: `"method"`
+- <a id="s-cf935e889a"></a>`signature`: `"\"(self, plan: 'WorkflowPlan', selections: 'Mapping[str, ArtifactSelection]') -> 'TargetPreflightRequest'\""`
 
 ## Maintained corroboration
 

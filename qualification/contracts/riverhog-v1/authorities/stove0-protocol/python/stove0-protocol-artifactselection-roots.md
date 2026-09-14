@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-48db7397d2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-539afb7374"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-4d6400bb26"></a>`distribution` | "stove0-protocol" |
-| <a id="s-34ad09c61a"></a>`module` | "stove0_protocol" |
-| <a id="s-03333e0438"></a>`name` | "roots" |
-| <a id="s-ce6540067c"></a>`owner` | "stove0_protocol.ArtifactSelection" |
-| <a id="s-7e2c65456f"></a>`unit` | "member" |
+- <a id="s-4d6400bb26"></a>`distribution`: `stove0-protocol`
+- <a id="s-34ad09c61a"></a>`module`: `stove0_protocol`
+- <a id="s-03333e0438"></a>`name`: `roots`
+- <a id="s-ce6540067c"></a>`owner`: `stove0_protocol.ArtifactSelection`
+- <a id="s-7e2c65456f"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-4078b39add"></a>`kind`: `"method"`
+- <a id="s-3c674eb0ab"></a>`signature`: `"\"(self) -> 'tuple[CollectionRootRef, ...]'\""`
 
 ## Maintained corroboration
 

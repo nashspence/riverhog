@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ca4c9ede9a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e585adb55f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-364b6f9ce1"></a>`distribution` | "stove0-observer-protocol" |
-| <a id="s-4182981ec0"></a>`module` | "stove0_observer_protocol" |
-| <a id="s-f648e63a97"></a>`name` | "from_identity" |
-| <a id="s-6c58cd36dc"></a>`owner` | "stove0_observer_protocol.CollectionRootRef" |
-| <a id="s-ec313b7805"></a>`unit` | "member" |
+- <a id="s-364b6f9ce1"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-4182981ec0"></a>`module`: `stove0_observer_protocol`
+- <a id="s-f648e63a97"></a>`name`: `from_identity`
+- <a id="s-6c58cd36dc"></a>`owner`: `stove0_observer_protocol.CollectionRootRef`
+- <a id="s-ec313b7805"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c88ad7d97c"></a>`kind`: `"classmethod"`
+- <a id="s-de91a71499"></a>`signature`: `"\"(cls, value: 'CollectionRootIdentity') -> 'CollectionRootRef'\""`
 
 ## Maintained corroboration
 

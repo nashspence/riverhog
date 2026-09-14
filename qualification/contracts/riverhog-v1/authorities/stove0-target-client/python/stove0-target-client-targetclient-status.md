@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-24f5276af6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0620e0d2b1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ccbf3a3fbd"></a>`distribution` | "stove0-target-client" |
-| <a id="s-a66c3f3ad0"></a>`module` | "stove0_target_client" |
-| <a id="s-29126d36ae"></a>`name` | "status" |
-| <a id="s-e2b95f086b"></a>`owner` | "stove0_target_client.TargetClient" |
-| <a id="s-d35d1db8ee"></a>`unit` | "member" |
+- <a id="s-ccbf3a3fbd"></a>`distribution`: `stove0-target-client`
+- <a id="s-a66c3f3ad0"></a>`module`: `stove0_target_client`
+- <a id="s-29126d36ae"></a>`name`: `status`
+- <a id="s-e2b95f086b"></a>`owner`: `stove0_target_client.TargetClient`
+- <a id="s-d35d1db8ee"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-8ce9386079"></a>`kind`: `"method"`
+- <a id="s-e572b5e0f8"></a>`signature`: `"\"(self, request: 'TargetJobRequest \| AcceptedTargetJob', *, operation: 'OperationContract') -> 'TargetJobStatus'\""`
 
 ## Maintained corroboration
 

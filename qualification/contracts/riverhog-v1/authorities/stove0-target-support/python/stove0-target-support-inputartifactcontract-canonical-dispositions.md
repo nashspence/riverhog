@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4346df3327"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-20892d9f1a"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f7d80d0f8c"></a>`distribution` | "stove0-target-support" |
-| <a id="s-19e377207b"></a>`module` | "stove0_target_support" |
-| <a id="s-869cb26190"></a>`name` | "canonical_dispositions" |
-| <a id="s-aa70368728"></a>`owner` | "stove0_target_support.InputArtifactContract" |
-| <a id="s-f058809ff6"></a>`unit` | "member" |
+- <a id="s-f7d80d0f8c"></a>`distribution`: `stove0-target-support`
+- <a id="s-19e377207b"></a>`module`: `stove0_target_support`
+- <a id="s-869cb26190"></a>`name`: `canonical_dispositions`
+- <a id="s-aa70368728"></a>`owner`: `stove0_target_support.InputArtifactContract`
+- <a id="s-f058809ff6"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-7a4710533e"></a>`kind`: `"classmethod"`
+- <a id="s-f102e30e0f"></a>`signature`: `"\"(cls, value: 'tuple[InputDisposition, ...] \| None') -> 'tuple[InputDisposition, ...] \| None'\""`
 
 ## Maintained corroboration
 

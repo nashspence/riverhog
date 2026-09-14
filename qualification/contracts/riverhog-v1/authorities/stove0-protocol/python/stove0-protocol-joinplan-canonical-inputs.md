@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e056f53f44"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-22d4d90895"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-22e4cfe5d5"></a>`distribution` | "stove0-protocol" |
-| <a id="s-1491136702"></a>`module` | "stove0_protocol" |
-| <a id="s-6476f98bd3"></a>`name` | "canonical_inputs" |
-| <a id="s-9def46b343"></a>`owner` | "stove0_protocol.JoinPlan" |
-| <a id="s-8d822c8da0"></a>`unit` | "member" |
+- <a id="s-22e4cfe5d5"></a>`distribution`: `stove0-protocol`
+- <a id="s-1491136702"></a>`module`: `stove0_protocol`
+- <a id="s-6476f98bd3"></a>`name`: `canonical_inputs`
+- <a id="s-9def46b343"></a>`owner`: `stove0_protocol.JoinPlan`
+- <a id="s-8d822c8da0"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-462493112d"></a>`kind`: `"classmethod"`
+- <a id="s-641889a3ca"></a>`signature`: `"\"(cls, value: 'tuple[JoinInputPlan, ...]') -> 'tuple[JoinInputPlan, ...]'\""`
 
 ## Maintained corroboration
 

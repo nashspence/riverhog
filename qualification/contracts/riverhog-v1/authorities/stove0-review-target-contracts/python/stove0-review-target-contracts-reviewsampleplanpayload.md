@@ -14,13 +14,37 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c26a2b702f"></a>
-| Field | Shape |
+- <a id="s-7a724c46a7"></a>`distribution`: `stove0-review-target-contracts`
+- <a id="s-adf911076e"></a>`module`: `stove0_review_target_contracts`
+- <a id="s-9e73fecc70"></a>`name`: `ReviewSamplePlanPayload`
+- <a id="s-e478ca86a6"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-008c3201a8"></a>`kind`: `"class"`
+- <a id="s-32a2d106b4"></a>`signature`: `"\"(*, format: Literal['stove0-review-sample-plan/v1'] = 'stove0-review-sample-plan/v1', selection_method: Literal['evenly-spaced/v1'] = 'evenly-spaced/v1', samples_per_artifact: Annotated[int, Ge(ge=1)], window_duration_ms: Annotated[int, Ge(ge=1)], windows: Annotated[tuple[stove0_review_target_contracts.models.ReviewSampleWindow, ...], MinLen(min_length=1)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-2634f1ca5e"></a>
+- <a id="s-97fe5b1c24"></a>`title`: ReviewSamplePlanPayload
+- <a id="s-edef076a79"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-39c68a4c3a"></a>`format` | no | type="string"; const="stove0-review-sample-plan/v1" |  |
+| <a id="s-ba72ad0a30"></a>`samples_per_artifact` | yes | type="integer"; minimum=1 |  |
+| <a id="s-251300e0e5"></a>`selection_method` | no | type="string"; const="evenly-spaced/v1" |  |
+| <a id="s-959d642cbd"></a>`window_duration_ms` | yes | type="integer"; minimum=1 |  |
+| <a id="s-29c539549f"></a>`windows` | yes | type="array"; minItems=1; items=(#/$defs/ReviewSampleWindow) |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-b45f7e3474"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-7a724c46a7"></a>`distribution` | "stove0-review-target-contracts" |
-| <a id="s-adf911076e"></a>`module` | "stove0_review_target_contracts" |
-| <a id="s-9e73fecc70"></a>`name` | "ReviewSamplePlanPayload" |
-| <a id="s-e478ca86a6"></a>`unit` | "export" |
+| <a id="s-cd64eb8571"></a>`ReviewSampleWindow` | type="object"; fields=`artifact_id`, `duration_ms`, `start_ms`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -53,13 +77,84 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0a879118c87e0030598d7f36fae5762945d6c13378856ab4231ec50fb30abc9a -->
+<!-- exact-contract-value: a92b06ca2c4859f5aee4f0c15e3adf9f3c4663c77295060169e82ab4beb9ce87 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "d44be71fa4e1e60918c17a8a6f73a93632ad718254b63595c6484604c69262f2",
+    "schema": {
+      "$defs": {
+        "ReviewSampleWindow": {
+          "additionalProperties": false,
+          "properties": {
+            "artifact_id": {
+              "maxLength": 160,
+              "minLength": 1,
+              "title": "Artifact Id",
+              "type": "string"
+            },
+            "duration_ms": {
+              "minimum": 1,
+              "title": "Duration Ms",
+              "type": "integer"
+            },
+            "start_ms": {
+              "minimum": 0,
+              "title": "Start Ms",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "artifact_id",
+            "start_ms",
+            "duration_ms"
+          ],
+          "title": "ReviewSampleWindow",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "const": "stove0-review-sample-plan/v1",
+          "default": "stove0-review-sample-plan/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "samples_per_artifact": {
+          "minimum": 1,
+          "title": "Samples Per Artifact",
+          "type": "integer"
+        },
+        "selection_method": {
+          "const": "evenly-spaced/v1",
+          "default": "evenly-spaced/v1",
+          "title": "Selection Method",
+          "type": "string"
+        },
+        "window_duration_ms": {
+          "minimum": 1,
+          "title": "Window Duration Ms",
+          "type": "integer"
+        },
+        "windows": {
+          "items": {
+            "$ref": "#/$defs/ReviewSampleWindow"
+          },
+          "minItems": 1,
+          "title": "Windows",
+          "type": "array"
+        }
+      },
+      "required": [
+        "samples_per_artifact",
+        "window_duration_ms",
+        "windows"
+      ],
+      "title": "ReviewSamplePlanPayload",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['stove0-review-sample-plan/v1'] = 'stove0-review-sample-plan/v1', selection_method: Literal['evenly-spaced/v1'] = 'evenly-spaced/v1', samples_per_artifact: Annotated[int, Ge(ge=1)], window_duration_ms: Annotated[int, Ge(ge=1)], windows: Annotated[tuple[stove0_review_target_contracts.models.ReviewSampleWindow, ...], MinLen(min_length=1)]) -> None\""
   },
   "distribution": "stove0-review-target-contracts",

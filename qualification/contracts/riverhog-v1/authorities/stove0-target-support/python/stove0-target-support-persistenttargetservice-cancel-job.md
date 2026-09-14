@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-413676c6d6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c4d2e22d24"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f635640c6f"></a>`distribution` | "stove0-target-support" |
-| <a id="s-e2fa947605"></a>`module` | "stove0_target_support" |
-| <a id="s-78bdf517bc"></a>`name` | "cancel_job" |
-| <a id="s-0def453b5b"></a>`owner` | "stove0_target_support.PersistentTargetService" |
-| <a id="s-54cdac881b"></a>`unit` | "member" |
+- <a id="s-f635640c6f"></a>`distribution`: `stove0-target-support`
+- <a id="s-e2fa947605"></a>`module`: `stove0_target_support`
+- <a id="s-78bdf517bc"></a>`name`: `cancel_job`
+- <a id="s-0def453b5b"></a>`owner`: `stove0_target_support.PersistentTargetService`
+- <a id="s-54cdac881b"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-263d5b0324"></a>`kind`: `"method"`
+- <a id="s-2554db0a99"></a>`signature`: `"\"(self, job_id: 'str') -> 'TargetJobStatus'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,27 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d33d6037e6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4d88da5a70"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-3eec109d1d"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-d3d7fe3923"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-5ff2d04b5a"></a>`name` | "ListenerRuntimePaths" |
-| <a id="s-be1ae60a41"></a>`unit` | "export" |
+- <a id="s-3eec109d1d"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-d3d7fe3923"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-5ff2d04b5a"></a>`name`: `ListenerRuntimePaths`
+- <a id="s-be1ae60a41"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-4d2c826d77"></a>`kind`: `"class"`
+- <a id="s-ef3880a2d5"></a>`signature`: `"\"(state_dir: 'Path', config_file: 'Path', database_file: 'Path', heartbeat_file: 'Path', lock_file: 'Path', log_file: 'Path', stop_file: 'Path') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-cd0256208d"></a>`state_dir` | `'Path'` | `required` |
+| <a id="s-cfc4c6600a"></a>`config_file` | `'Path'` | `required` |
+| <a id="s-c933935c4b"></a>`database_file` | `'Path'` | `required` |
+| <a id="s-f44055412a"></a>`heartbeat_file` | `'Path'` | `required` |
+| <a id="s-980de31586"></a>`lock_file` | `'Path'` | `required` |
+| <a id="s-8b14738bbd"></a>`log_file` | `'Path'` | `required` |
+| <a id="s-88fd9bbf7a"></a>`stop_file` | `'Path'` | `required` |
 
 ## Governing policies
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-cb469fa582"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f2937d28ec"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-aad472e5c7"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-19780ca25a"></a>`module` | "stove0_target_protocol" |
-| <a id="s-1e779bc9a7"></a>`name` | "EFFECT_RECEIPT_FORMAT" |
-| <a id="s-925d76f73d"></a>`unit` | "export" |
+- <a id="s-aad472e5c7"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-19780ca25a"></a>`module`: `stove0_target_protocol`
+- <a id="s-1e779bc9a7"></a>`name`: `EFFECT_RECEIPT_FORMAT`
+- <a id="s-925d76f73d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-de72ca6c4a"></a>`kind`: `"constant"`
+- <a id="s-b79657af80"></a>`value`: `"stove0-external-effect-receipt/v1"`
 
 ## Governing policies
 

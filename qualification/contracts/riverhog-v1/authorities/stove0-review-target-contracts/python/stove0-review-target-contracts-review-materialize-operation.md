@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-196f391f9e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-cc6fa2b351"></a>`contract` | type="stove0_target_protocol.protocol.OperationContract"; additional keys=`kind` |
-| <a id="s-5414787d71"></a>`distribution` | "stove0-review-target-contracts" |
-| <a id="s-d6dbbe29a6"></a>`module` | "stove0_review_target_contracts" |
-| <a id="s-1c2e9e73b0"></a>`name` | "REVIEW_MATERIALIZE_OPERATION" |
-| <a id="s-4dd06e25a2"></a>`unit` | "export" |
+- <a id="s-5414787d71"></a>`distribution`: `stove0-review-target-contracts`
+- <a id="s-d6dbbe29a6"></a>`module`: `stove0_review_target_contracts`
+- <a id="s-1c2e9e73b0"></a>`name`: `REVIEW_MATERIALIZE_OPERATION`
+- <a id="s-4dd06e25a2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-02e7bffe5b"></a>`kind`: `"object"`
+- <a id="s-9b43eb0fa3"></a>`type`: `"stove0_target_protocol.protocol.OperationContract"`
 
 ## Governing policies
 

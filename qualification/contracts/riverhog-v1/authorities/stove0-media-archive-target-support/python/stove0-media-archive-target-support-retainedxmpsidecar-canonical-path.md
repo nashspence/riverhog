@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-dd5c2518f8"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-26bf1a6c37"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e4e492c01f"></a>`distribution` | "stove0-media-archive-target-support" |
-| <a id="s-2e94e70f19"></a>`module` | "stove0_media_archive_target_support" |
-| <a id="s-29c0802a75"></a>`name` | "canonical_path" |
-| <a id="s-bb899fd07b"></a>`owner` | "stove0_media_archive_target_support.RetainedXmpSidecar" |
-| <a id="s-db9d8dc65f"></a>`unit` | "member" |
+- <a id="s-e4e492c01f"></a>`distribution`: `stove0-media-archive-target-support`
+- <a id="s-2e94e70f19"></a>`module`: `stove0_media_archive_target_support`
+- <a id="s-29c0802a75"></a>`name`: `canonical_path`
+- <a id="s-bb899fd07b"></a>`owner`: `stove0_media_archive_target_support.RetainedXmpSidecar`
+- <a id="s-db9d8dc65f"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-18428d9f61"></a>`kind`: `"classmethod"`
+- <a id="s-c06b73a353"></a>`signature`: `"\"(cls, value: 'str') -> 'str'\""`
 
 ## Maintained corroboration
 

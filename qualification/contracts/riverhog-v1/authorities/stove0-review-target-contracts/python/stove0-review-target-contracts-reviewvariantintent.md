@@ -14,13 +14,34 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ffae67ccc1"></a>
-| Field | Shape |
+- <a id="s-6ef4539618"></a>`distribution`: `stove0-review-target-contracts`
+- <a id="s-11f199b36d"></a>`module`: `stove0_review_target_contracts`
+- <a id="s-396f300eb6"></a>`name`: `ReviewVariantIntent`
+- <a id="s-6b17f90506"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-48323d2955"></a>`kind`: `"class"`
+- <a id="s-15ac1ac2d2"></a>`signature`: `"\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]&#40;?:[a-z0-9._-]{0,158}[a-z0-9])?$')], portable_intent: dict[str, JsonValue]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-666bc3eeb8"></a>
+- <a id="s-a0e70c0769"></a>`title`: ReviewVariantIntent
+- <a id="s-9815c3e42e"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-59bea9f38b"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-4348b9ab56"></a>`portable_intent` | yes | type="object"; additional keys=`additionalProperties` |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-d8402f5a9a"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-6ef4539618"></a>`distribution` | "stove0-review-target-contracts" |
-| <a id="s-11f199b36d"></a>`module` | "stove0_review_target_contracts" |
-| <a id="s-396f300eb6"></a>`name` | "ReviewVariantIntent" |
-| <a id="s-6b17f90506"></a>`unit` | "export" |
+| <a id="s-c0ce23da39"></a>`JsonValue` | empty object |
 
 ## Governing policies
 
@@ -46,13 +67,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 09cbb9e33ce096b9f4ea72415efb43c1d3ab311445bd37941573b3bff31f34e7 -->
+<!-- exact-contract-value: 8ec98267eebcc927909ae6ffa1b6d0cdb4f8ed6f6d638e866ace1a717f34d288 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "d26261ea6d361ae2b8625cc13db4d644be76e5e3746048643ecbdc2463708e92",
+    "schema": {
+      "$defs": {
+        "JsonValue": {}
+      },
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,158}[a-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "portable_intent": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Portable Intent",
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "portable_intent"
+      ],
+      "title": "ReviewVariantIntent",
+      "type": "object"
+    },
     "signature": "\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._-]{0,158}[a-z0-9])?$')], portable_intent: dict[str, JsonValue]) -> None\""
   },
   "distribution": "stove0-review-target-contracts",

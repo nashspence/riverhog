@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-31c870addf"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-909c96a993"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-70ce7079ac"></a>`distribution` | "gogurt-windows-listener-host" |
-| <a id="s-f52cdd5247"></a>`module` | "gogurt_windows_listener_host" |
-| <a id="s-973691462c"></a>`name` | "start" |
-| <a id="s-10e595a836"></a>`owner` | "gogurt_windows_listener_host.TaskSchedulerUserAdapter" |
-| <a id="s-eb3bff6a49"></a>`unit` | "member" |
+- <a id="s-70ce7079ac"></a>`distribution`: `gogurt-windows-listener-host`
+- <a id="s-f52cdd5247"></a>`module`: `gogurt_windows_listener_host`
+- <a id="s-973691462c"></a>`name`: `start`
+- <a id="s-10e595a836"></a>`owner`: `gogurt_windows_listener_host.TaskSchedulerUserAdapter`
+- <a id="s-eb3bff6a49"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-5a694787ea"></a>`kind`: `"method"`
+- <a id="s-aea633dc54"></a>`signature`: `"\"(self, paths: 'ListenerRuntimePaths') -> 'None'\""`
 
 ## Maintained corroboration
 

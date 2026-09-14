@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-615ebc3c77"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ff012f0b73"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-85408b0f9d"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-af5478e0e1"></a>`module` | "riverhog_provenance" |
-| <a id="s-1fe5430229"></a>`name` | "create_derivative_source_entry" |
-| <a id="s-adaa644021"></a>`unit` | "export" |
+- <a id="s-85408b0f9d"></a>`distribution`: `riverhog-provenance`
+- <a id="s-af5478e0e1"></a>`module`: `riverhog_provenance`
+- <a id="s-1fe5430229"></a>`name`: `create_derivative_source_entry`
+- <a id="s-adaa644021"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0c452a28ad"></a>`kind`: `"function"`
+- <a id="s-a5fb4cd0cd"></a>`signature`: `"\"(*, seed: 'DerivativeJournalSeed', references: 'Sequence[ExternalStateReference]', sequence: 'int', previous_entry_id: 'str', previous_entry_json_sha256: 'str', recorded_at: 'str') -> 'bytes'\""`
 
 ## Governing policies
 

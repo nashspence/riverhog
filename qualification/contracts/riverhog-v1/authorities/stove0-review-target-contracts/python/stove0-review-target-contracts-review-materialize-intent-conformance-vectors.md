@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b575d68838"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-bbc9d87581"></a>`contract` | type="stove0_target_protocol.conformance.SemanticIntentConformanceVectors"; additional keys=`kind` |
-| <a id="s-11744af710"></a>`distribution` | "stove0-review-target-contracts" |
-| <a id="s-7e62f66d98"></a>`module` | "stove0_review_target_contracts" |
-| <a id="s-8d3865b40e"></a>`name` | "REVIEW_MATERIALIZE_INTENT_CONFORMANCE_VECTORS" |
-| <a id="s-ccb84aca04"></a>`unit` | "export" |
+- <a id="s-11744af710"></a>`distribution`: `stove0-review-target-contracts`
+- <a id="s-7e62f66d98"></a>`module`: `stove0_review_target_contracts`
+- <a id="s-8d3865b40e"></a>`name`: `REVIEW_MATERIALIZE_INTENT_CONFORMANCE_VECTORS`
+- <a id="s-ccb84aca04"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-4b70342592"></a>`kind`: `"object"`
+- <a id="s-c456ebc189"></a>`type`: `"stove0_target_protocol.conformance.SemanticIntentConformanceVectors"`
 
 ## Governing policies
 

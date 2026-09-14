@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c47dac668c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-10c61eddd7"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d33f96e792"></a>`distribution` | "stove0-protocol" |
-| <a id="s-1fc3cc4482"></a>`module` | "stove0_protocol" |
-| <a id="s-5f58dbf0f5"></a>`name` | "to_identity" |
-| <a id="s-65121453fd"></a>`owner` | "stove0_protocol.CollectionRootRef" |
-| <a id="s-db516929e3"></a>`unit` | "member" |
+- <a id="s-d33f96e792"></a>`distribution`: `stove0-protocol`
+- <a id="s-1fc3cc4482"></a>`module`: `stove0_protocol`
+- <a id="s-5f58dbf0f5"></a>`name`: `to_identity`
+- <a id="s-65121453fd"></a>`owner`: `stove0_protocol.CollectionRootRef`
+- <a id="s-db516929e3"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-cd0892adaa"></a>`kind`: `"method"`
+- <a id="s-f9276bb547"></a>`signature`: `"\"(self) -> 'CollectionRootIdentity'\""`
 
 ## Maintained corroboration
 

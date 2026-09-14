@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-261f4f0d6d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-095647ad2d"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-4c1d185be2"></a>`distribution` | "riverhog-age" |
-| <a id="s-4cd9788b46"></a>`module` | "riverhog_age" |
-| <a id="s-9ac38c95f0"></a>`name` | "create" |
-| <a id="s-6bbfeefb23"></a>`owner` | "riverhog_age.ResumableAgeScryptSession" |
-| <a id="s-1e5b3487e6"></a>`unit` | "member" |
+- <a id="s-4c1d185be2"></a>`distribution`: `riverhog-age`
+- <a id="s-4cd9788b46"></a>`module`: `riverhog_age`
+- <a id="s-9ac38c95f0"></a>`name`: `create`
+- <a id="s-6bbfeefb23"></a>`owner`: `riverhog_age.ResumableAgeScryptSession`
+- <a id="s-1e5b3487e6"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ac5f7e24e4"></a>`kind`: `"classmethod"`
+- <a id="s-234387167e"></a>`signature`: `"\"(cls, passphrase: 'str \| bytes', *, log_n: 'int' = 18, plaintext_size: 'int \| None' = None, file_key: 'bytes \| None' = None, scrypt_salt: 'bytes \| None' = None, payload_nonce: 'bytes \| None' = None, scrypt_maxmem: 'int \| None' = None) -> 'ResumableAgeScryptSession'\""`
 
 ## Maintained corroboration
 

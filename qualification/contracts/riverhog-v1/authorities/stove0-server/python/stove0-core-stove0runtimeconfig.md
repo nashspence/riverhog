@@ -14,13 +14,40 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0b07556930"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d97746b4d4"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-dae93ab445"></a>`distribution` | "stove0-server" |
-| <a id="s-358c9bd4a0"></a>`module` | "stove0_core" |
-| <a id="s-772368c8bb"></a>`name` | "Stove0RuntimeConfig" |
-| <a id="s-77867083e5"></a>`unit` | "export" |
+- <a id="s-dae93ab445"></a>`distribution`: `stove0-server`
+- <a id="s-358c9bd4a0"></a>`module`: `stove0_core`
+- <a id="s-772368c8bb"></a>`name`: `Stove0RuntimeConfig`
+- <a id="s-77867083e5"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-27b721241f"></a>`kind`: `"class"`
+- <a id="s-7065095398"></a>`signature`: `"'(database_url: \\'str\\', api_token: \\'str \| None\\', riverhog_base_url: \\'str\\', riverhog_token: \\'str\\', riverhog_allow_insecure_http: \\'bool\\', recipes_path: \\'Path\\', observers: \\'dict[str, EndpointRegistration]\\', targets: \\'dict[str, EndpointRegistration]\\', target_callback_base_url: \\'str\\', target_callback_allow_insecure_http: \\'bool\\', target_callback_signing_key: \\'str\\', target_authority_batch_size: \\'int\\', workspace_assurance: \"Literal[\\'encrypted\\', \\'ephemeral\\']\", claim_lease_seconds: \\'int\\', capability_ttl_seconds: \\'int\\', scheduler_interval_seconds: \\'float\\', operational_state_retention_seconds: \\'int\\', browse_token_signing_key: \\'str\\', admissions: \\'AdmissionCatalog\\' = AdmissionCatalog(format=\\'stove0-admissions/v1\\', policies=()), browse_token_lifetime_seconds: \\'int\\' = 86400) -> None'"`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-8f70e0e8f6"></a>`database_url` | `'str'` | `required` |
+| <a id="s-837325d921"></a>`api_token` | `'str \| None'` | `required` |
+| <a id="s-767512f5c0"></a>`riverhog_base_url` | `'str'` | `required` |
+| <a id="s-a6def3844c"></a>`riverhog_token` | `'str'` | `required` |
+| <a id="s-c7810b455c"></a>`riverhog_allow_insecure_http` | `'bool'` | `required` |
+| <a id="s-34ff4ac11b"></a>`recipes_path` | `'Path'` | `required` |
+| <a id="s-8d22ebcb0b"></a>`observers` | `'dict[str, EndpointRegistration]'` | `required` |
+| <a id="s-43dfcd4128"></a>`targets` | `'dict[str, EndpointRegistration]'` | `required` |
+| <a id="s-bfa40386df"></a>`target_callback_base_url` | `'str'` | `required` |
+| <a id="s-9cbe66812a"></a>`target_callback_allow_insecure_http` | `'bool'` | `required` |
+| <a id="s-8000246d58"></a>`target_callback_signing_key` | `'str'` | `required` |
+| <a id="s-12cf879f0d"></a>`target_authority_batch_size` | `'int'` | `required` |
+| <a id="s-da2857413f"></a>`workspace_assurance` | `"Literal['encrypted', 'ephemeral']"` | `required` |
+| <a id="s-c6d71379fa"></a>`claim_lease_seconds` | `'int'` | `required` |
+| <a id="s-a8de851b2c"></a>`capability_ttl_seconds` | `'int'` | `required` |
+| <a id="s-8e3863b3e5"></a>`scheduler_interval_seconds` | `'float'` | `required` |
+| <a id="s-a06e8b15d4"></a>`operational_state_retention_seconds` | `'int'` | `required` |
+| <a id="s-afef706c39"></a>`browse_token_signing_key` | `'str'` | `required` |
+| <a id="s-279cf0be2a"></a>`admissions` | `'AdmissionCatalog'` | `AdmissionCatalog(format='stove0-admissions/v1', policies=())` |
+| <a id="s-da08bd651f"></a>`browse_token_lifetime_seconds` | `'int'` | `86400` |
 
 ## Maintained corroboration
 

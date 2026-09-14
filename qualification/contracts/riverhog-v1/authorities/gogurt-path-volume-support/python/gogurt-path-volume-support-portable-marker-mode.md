@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7ec39800a4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f4ce702407"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-dc968f426b"></a>`distribution` | "gogurt-path-volume-support" |
-| <a id="s-8690847334"></a>`module` | "gogurt_path_volume_support" |
-| <a id="s-5f3d5c0645"></a>`name` | "PORTABLE_MARKER_MODE" |
-| <a id="s-02352c143c"></a>`unit` | "export" |
+- <a id="s-dc968f426b"></a>`distribution`: `gogurt-path-volume-support`
+- <a id="s-8690847334"></a>`module`: `gogurt_path_volume_support`
+- <a id="s-5f3d5c0645"></a>`name`: `PORTABLE_MARKER_MODE`
+- <a id="s-02352c143c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-3e433a67fe"></a>`kind`: `"constant"`
+- <a id="s-37dae5670d"></a>`value`: `420`
 
 ## Governing policies
 

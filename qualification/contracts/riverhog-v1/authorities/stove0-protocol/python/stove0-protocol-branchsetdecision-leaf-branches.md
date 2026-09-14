@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-550caf4d79"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-865dfab2b1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7873ecebaf"></a>`distribution` | "stove0-protocol" |
-| <a id="s-b48428990a"></a>`module` | "stove0_protocol" |
-| <a id="s-b282f8e68a"></a>`name` | "leaf_branches" |
-| <a id="s-8742c9d896"></a>`owner` | "stove0_protocol.BranchSetDecision" |
-| <a id="s-25d68fe093"></a>`unit` | "member" |
+- <a id="s-7873ecebaf"></a>`distribution`: `stove0-protocol`
+- <a id="s-b48428990a"></a>`module`: `stove0_protocol`
+- <a id="s-b282f8e68a"></a>`name`: `leaf_branches`
+- <a id="s-8742c9d896"></a>`owner`: `stove0_protocol.BranchSetDecision`
+- <a id="s-25d68fe093"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c8bf7c10d1"></a>`kind`: `"method"`
+- <a id="s-f3c4b47cf0"></a>`signature`: `"\"(self) -> 'tuple[BranchPlan, ...]'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-efcad74a6b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ed0062784f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-92b034c9ea"></a>`distribution` | "riverhog-age" |
-| <a id="s-7656d1215b"></a>`module` | "riverhog_age" |
-| <a id="s-36783c838e"></a>`name` | "decrypt_chunk" |
-| <a id="s-7a5fd6c357"></a>`owner` | "riverhog_age.ResumableAgeScryptSession" |
-| <a id="s-216c96c3e2"></a>`unit` | "member" |
+- <a id="s-92b034c9ea"></a>`distribution`: `riverhog-age`
+- <a id="s-7656d1215b"></a>`module`: `riverhog_age`
+- <a id="s-36783c838e"></a>`name`: `decrypt_chunk`
+- <a id="s-7a5fd6c357"></a>`owner`: `riverhog_age.ResumableAgeScryptSession`
+- <a id="s-216c96c3e2"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-67f2d59552"></a>`kind`: `"method"`
+- <a id="s-3d9c93e729"></a>`signature`: `"\"(self, chunk_index: 'int', ciphertext: 'bytes', *, final: 'bool') -> 'bytes'\""`
 
 ## Maintained corroboration
 

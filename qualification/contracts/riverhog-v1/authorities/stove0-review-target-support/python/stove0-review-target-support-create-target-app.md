@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ff3a20d8c7"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-fff20404d3"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-55d248c43d"></a>`distribution` | "stove0-review-target-support" |
-| <a id="s-614929fd1c"></a>`module` | "stove0_review_target_support" |
-| <a id="s-d1c5fd686e"></a>`name` | "create_target_app" |
-| <a id="s-d7c70f1a1c"></a>`unit` | "export" |
+- <a id="s-55d248c43d"></a>`distribution`: `stove0-review-target-support`
+- <a id="s-614929fd1c"></a>`module`: `stove0_review_target_support`
+- <a id="s-d1c5fd686e"></a>`name`: `create_target_app`
+- <a id="s-d7c70f1a1c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-5744bfd398"></a>`kind`: `"function"`
+- <a id="s-01d326d31d"></a>`signature`: `"\"(*, service: 'str', title: 'str', token: 'str', target: 'ReviewTarget') -> 'FastAPI'\""`
 
 ## Governing policies
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1114a4a074"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e0722c0de6"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d7c9de9689"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-a7a1b2a7aa"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-e32c8a26ff"></a>`name` | "runnable" |
-| <a id="s-cdd75bb6db"></a>`owner` | "gogurt_listener_runtime.ListenerStore" |
-| <a id="s-67a242cc83"></a>`unit` | "member" |
+- <a id="s-d7c9de9689"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-a7a1b2a7aa"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-e32c8a26ff"></a>`name`: `runnable`
+- <a id="s-cdd75bb6db"></a>`owner`: `gogurt_listener_runtime.ListenerStore`
+- <a id="s-67a242cc83"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1e65d0822d"></a>`kind`: `"method"`
+- <a id="s-f8b84c3bf4"></a>`signature`: `"\"(self, *, now: 'float', limit: 'int') -> 'list[str]'\""`
 
 ## Maintained corroboration
 

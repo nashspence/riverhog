@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-db1ef58fe2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-14c74fd07b"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-9b61b0b679"></a>`distribution` | "stove0-target-client" |
-| <a id="s-040ac06413"></a>`module` | "stove0_target_client" |
-| <a id="s-53db9e964e"></a>`name` | "get_target_execution_inputs" |
-| <a id="s-1a04ead143"></a>`owner` | "stove0_target_client.TargetCallbackClient" |
-| <a id="s-a112bbed18"></a>`unit` | "member" |
+- <a id="s-9b61b0b679"></a>`distribution`: `stove0-target-client`
+- <a id="s-040ac06413"></a>`module`: `stove0_target_client`
+- <a id="s-53db9e964e"></a>`name`: `get_target_execution_inputs`
+- <a id="s-1a04ead143"></a>`owner`: `stove0_target_client.TargetCallbackClient`
+- <a id="s-a112bbed18"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3cfb514a65"></a>`kind`: `"method"`
+- <a id="s-90784e6b05"></a>`signature`: `"\"(self, job_id: 'str', *, continuation: 'str \| None' = None) -> 'TargetInputPage'\""`
 
 ## Maintained corroboration
 

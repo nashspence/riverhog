@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fe23ae84be"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-dcfe97c1a3"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b0cdb4e63d"></a>`distribution` | "stove0-server" |
-| <a id="s-f9c97418c8"></a>`module` | "stove0_core" |
-| <a id="s-92d4e22c86"></a>`name` | "target_source_edge_page" |
-| <a id="s-d0b3a9c525"></a>`owner` | "stove0_core.WorkStore" |
-| <a id="s-6b2b2ef9c7"></a>`unit` | "member" |
+- <a id="s-b0cdb4e63d"></a>`distribution`: `stove0-server`
+- <a id="s-f9c97418c8"></a>`module`: `stove0_core`
+- <a id="s-92d4e22c86"></a>`name`: `target_source_edge_page`
+- <a id="s-d0b3a9c525"></a>`owner`: `stove0_core.WorkStore`
+- <a id="s-6b2b2ef9c7"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-9a1acc1583"></a>`kind`: `"method"`
+- <a id="s-ea8c376a37"></a>`signature`: `"'(self, work_id: \\'str\\', job_id: \\'str\\', *, order: \"Literal[\\'output\\', \\'input\\']\", after_output_id: \\'str \| None\\', after_input_id: \\'str \| None\\', limit: \\'int\\') -> \\'tuple[OutputSourceEdge, ...]\\''"`
 
 ## Maintained corroboration
 

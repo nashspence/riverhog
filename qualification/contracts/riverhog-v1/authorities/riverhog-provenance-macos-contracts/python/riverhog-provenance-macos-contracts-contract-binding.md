@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8cea55c3f1"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2716447de8"></a>`contract` | type="riverhog_provenance_contracts.ProvenanceContractBinding"; additional keys=`kind` |
-| <a id="s-1c3e4849e5"></a>`distribution` | "riverhog-provenance-macos-contracts" |
-| <a id="s-3b24792d1c"></a>`module` | "riverhog_provenance_macos_contracts" |
-| <a id="s-12cf986f2e"></a>`name` | "CONTRACT_BINDING" |
-| <a id="s-0e81c1215d"></a>`unit` | "export" |
+- <a id="s-1c3e4849e5"></a>`distribution`: `riverhog-provenance-macos-contracts`
+- <a id="s-3b24792d1c"></a>`module`: `riverhog_provenance_macos_contracts`
+- <a id="s-12cf986f2e"></a>`name`: `CONTRACT_BINDING`
+- <a id="s-0e81c1215d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-9ee3d45447"></a>`kind`: `"object"`
+- <a id="s-eea49602e4"></a>`type`: `"riverhog_provenance_contracts.ProvenanceContractBinding"`
 
 ## Governing policies
 

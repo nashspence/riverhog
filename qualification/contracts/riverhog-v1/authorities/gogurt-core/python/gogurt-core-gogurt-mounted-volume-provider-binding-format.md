@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1d013336e4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-07e6ffd8b2"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-2c3dbf39cd"></a>`distribution` | "gogurt-core" |
-| <a id="s-9bb823edd8"></a>`module` | "gogurt_core" |
-| <a id="s-2be77ac710"></a>`name` | "GOGURT_MOUNTED_VOLUME_PROVIDER_BINDING_FORMAT" |
-| <a id="s-478273b381"></a>`unit` | "export" |
+- <a id="s-2c3dbf39cd"></a>`distribution`: `gogurt-core`
+- <a id="s-9bb823edd8"></a>`module`: `gogurt_core`
+- <a id="s-2be77ac710"></a>`name`: `GOGURT_MOUNTED_VOLUME_PROVIDER_BINDING_FORMAT`
+- <a id="s-478273b381"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-92e03c3196"></a>`kind`: `"constant"`
+- <a id="s-d687eb70d4"></a>`value`: `"gogurt-mounted-volume-provider-binding/v1"`
 
 ## Governing policies
 

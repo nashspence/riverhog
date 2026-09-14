@@ -14,13 +14,36 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2dcd6baa30"></a>
-| Field | Shape |
+- <a id="s-896760fd5b"></a>`distribution`: `stove0-protocol`
+- <a id="s-ae4c33ab8f"></a>`module`: `stove0_protocol`
+- <a id="s-064a110e4f"></a>`name`: `EvaluationMatrix`
+- <a id="s-2d539792ce"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-217ad60626"></a>`kind`: `"class"`
+- <a id="s-e93ec15483"></a>`signature`: `"\"(*, format: Literal['stove0-evaluation-matrix/v1'] = 'stove0-evaluation-matrix/v1', variants: Annotated[tuple[stove0_protocol.models.EvaluationVariant, ...], MinLen(min_length=1)], matrix_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-12db0e5e34"></a>
+- <a id="s-a227a4f590"></a>`title`: EvaluationMatrix
+- <a id="s-33e6ff0eac"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ef0e66d82d"></a>`format` | no | type="string"; const="stove0-evaluation-matrix/v1" |  |
+| <a id="s-faffe2f543"></a>`matrix_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c45debe1cd"></a>`variants` | yes | type="array"; minItems=1; items=(#/$defs/EvaluationVariant) |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-a8e95a3e3e"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-896760fd5b"></a>`distribution` | "stove0-protocol" |
-| <a id="s-ae4c33ab8f"></a>`module` | "stove0_protocol" |
-| <a id="s-064a110e4f"></a>`name` | "EvaluationMatrix" |
-| <a id="s-2d539792ce"></a>`unit` | "export" |
+| <a id="s-690953775a"></a>`EvaluationVariant` | type="object"; fields=`id`, `parameters`; additional keys=`additionalProperties`, `required` |
+| <a id="s-61da80a26e"></a>`JsonValue` | empty object |
 
 ## Maintained corroboration
 
@@ -53,13 +76,67 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3285df8eb64930ffebe016dbd7fe779754a0ea9b0786e63df9e75d9b44a2c8c3 -->
+<!-- exact-contract-value: 7e9e31eb72b1dca45a0ddf357340b6dec1ce9a2d7d8078a67a88a69caf8e2697 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "2d0bb04bdfeb8d3e6f9fab1b20a84df01677032f669043d7d567d690230c8960",
+    "schema": {
+      "$defs": {
+        "EvaluationVariant": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "parameters": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "title": "Parameters",
+              "type": "object"
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "title": "EvaluationVariant",
+          "type": "object"
+        },
+        "JsonValue": {}
+      },
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "const": "stove0-evaluation-matrix/v1",
+          "default": "stove0-evaluation-matrix/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "matrix_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Matrix Sha256",
+          "type": "string"
+        },
+        "variants": {
+          "items": {
+            "$ref": "#/$defs/EvaluationVariant"
+          },
+          "minItems": 1,
+          "title": "Variants",
+          "type": "array"
+        }
+      },
+      "required": [
+        "variants",
+        "matrix_sha256"
+      ],
+      "title": "EvaluationMatrix",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['stove0-evaluation-matrix/v1'] = 'stove0-evaluation-matrix/v1', variants: Annotated[tuple[stove0_protocol.models.EvaluationVariant, ...], MinLen(min_length=1)], matrix_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-protocol",

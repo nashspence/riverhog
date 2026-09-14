@@ -14,13 +14,27 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7e9c3fb5e0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c5fc669d00"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-d774b48fcc"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-20f0f1e79b"></a>`module` | "riverhog_protocol" |
-| <a id="s-145e9046b9"></a>`name` | "ProcessingClaimFenceDocument" |
-| <a id="s-153b43a728"></a>`unit` | "export" |
+- <a id="s-d774b48fcc"></a>`distribution`: `riverhog-protocol`
+- <a id="s-20f0f1e79b"></a>`module`: `riverhog_protocol`
+- <a id="s-145e9046b9"></a>`name`: `ProcessingClaimFenceDocument`
+- <a id="s-153b43a728"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-6e4f5a087f"></a>`kind`: `"class"`
+- <a id="s-fd249713d4"></a>`signature`: `"'(*, fence: Annotated[int, Ge(ge=1)]) -> None'"`
+
+#### Validated model schema
+
+<a id="s-79182f253c"></a>
+- <a id="s-5b766fe5e1"></a>`title`: ProcessingClaimFenceDocument
+- <a id="s-e838297b11"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-9eaab391aa"></a>`fence` | yes | type="integer"; minimum=1 |  |
 
 ## Governing policies
 
@@ -46,13 +60,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4a75e4142b71d8f6e1d2868670d3fe3c3c8dc73d1a40a24cd43aeaa300eb7d3f -->
+<!-- exact-contract-value: 46d3bebe10e851c824d84704f59f565e5e5fb1d9e3ce3f43e038a2c54367a12e -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "eabbed4a890891c7bfbd4c978da08de3bbd73ad40fb1a9fb9249a8a5ccf814d4",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "fence": {
+          "minimum": 1,
+          "title": "Fence",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "fence"
+      ],
+      "title": "ProcessingClaimFenceDocument",
+      "type": "object"
+    },
     "signature": "'(*, fence: Annotated[int, Ge(ge=1)]) -> None'"
   },
   "distribution": "riverhog-protocol",

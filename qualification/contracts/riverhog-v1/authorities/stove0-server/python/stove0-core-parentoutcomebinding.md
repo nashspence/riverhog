@@ -14,13 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-58777b0240"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-688f9744bb"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-164442d04a"></a>`distribution` | "stove0-server" |
-| <a id="s-e77ca8c35a"></a>`module` | "stove0_core" |
-| <a id="s-d30da87dbe"></a>`name` | "ParentOutcomeBinding" |
-| <a id="s-a0cd4aa86e"></a>`unit` | "export" |
+- <a id="s-164442d04a"></a>`distribution`: `stove0-server`
+- <a id="s-e77ca8c35a"></a>`module`: `stove0_core`
+- <a id="s-d30da87dbe"></a>`name`: `ParentOutcomeBinding`
+- <a id="s-a0cd4aa86e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-61e240ca6b"></a>`kind`: `"class"`
+- <a id="s-253a91d7f4"></a>`signature`: `"\"(claim: 'ClaimBinding', outcome_id: 'str') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-6b22789dcf"></a>`claim` | `'ClaimBinding'` | `required` |
+| <a id="s-54307e3733"></a>`outcome_id` | `'str'` | `required` |
 
 ## Governing policies
 

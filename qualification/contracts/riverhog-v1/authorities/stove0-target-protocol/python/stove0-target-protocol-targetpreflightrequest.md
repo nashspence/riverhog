@@ -14,13 +14,52 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f3b6918081"></a>
-| Field | Shape |
+- <a id="s-3f980450f2"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-1835afa490"></a>`module`: `stove0_target_protocol`
+- <a id="s-7274214529"></a>`name`: `TargetPreflightRequest`
+- <a id="s-40f58e04fd"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-6a911c9089"></a>`kind`: `"class"`
+- <a id="s-96e6a1e1b5"></a>`signature`: `"\"(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = <factory>, protocol: Literal['stove0-transform-target/v1', 'stove0-effect-target/v1'] = 'stove0-transform-target/v1', observations: tuple[stove0_protocol.models.ObservationEvidence, ...] = ()) -> None\""`
+
+#### Validated model schema
+
+<a id="s-3e1c3d234e"></a>
+- <a id="s-e72ca906c4"></a>`title`: TargetPreflightRequest
+- <a id="s-ff92c76dba"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-55681a8912"></a>`inputs` | yes | #/$defs/TargetInputAuthority |  |
+| <a id="s-f5822bf4ee"></a>`intent` | yes | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-0a4aff42ad"></a>`observations` | no | type="array"; items=(#/$defs/ObservationEvidence) |  |
+| <a id="s-c20eea393c"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-afd1762ae2"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-5189f32a95"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"] |  |
+| <a id="s-15c2d13618"></a>`target_options` | no | type="object"; additional keys=`additionalProperties` |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-d2c9e6dfc4"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-3f980450f2"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-1835afa490"></a>`module` | "stove0_target_protocol" |
-| <a id="s-7274214529"></a>`name` | "TargetPreflightRequest" |
-| <a id="s-40f58e04fd"></a>`unit` | "export" |
+| <a id="s-70244300ef"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
+| <a id="s-52cd136326"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-e10c464c86"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-52f3dd709e"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
+| <a id="s-ec8f26e7ff"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-b07bd79b40"></a>`JsonValue` | empty object |
+| <a id="s-c071276504"></a>`ObservationEvidence` | type="object"; fields=`request`, `result`; additional keys=`additionalProperties`, `required` |
+| <a id="s-6643934188"></a>`ObservationFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
+| <a id="s-619805b038"></a>`ObservationInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
+| <a id="s-af21cf6bdf"></a>`ObservationRequest` | type="object"; fields=`format`, `maximum_result_bytes`, `observer_contract_id`, `observer_contract_sha256`, `observer_descriptor_sha256`, `observer_registration_id`, `options`, `request_id`, `retrieval_policy`, `subjects`, `timeout_seconds`, `work_id`; additional keys=`additionalProperties`, `required` |
+| <a id="s-0cdbd450c7"></a>`ObservationResult` | type="object"; fields=`execution_evidence`, `facts`, `facts_schema`, `facts_sha256`, `failure`, `format`, `inapplicable`, `observer`, `observer_contract_id`, `observer_contract_sha256`, `request_id`, `result_sha256`, `state`, `subjects`; additional keys=`additionalProperties`, `required` |
+| <a id="s-de422889e2"></a>`ObserverImplementation` | type="object"; fields=`descriptor_sha256`, `id`, `protocol`, `source_revision`, `version`; additional keys=`additionalProperties`, `required` |
+| <a id="s-4bcd34a677"></a>`TargetInputAuthority` | type="object"; fields=`roles`, `selection`; additional keys=`additionalProperties`, `required` |
+| <a id="s-6d18b2604a"></a>`TargetInputRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -52,13 +91,601 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9d1dfb2f42488717eb6bf571617a3bffd8e580ce70507c6fe214f94f0d9753be -->
+<!-- exact-contract-value: b5baf80c29dd08f7bb24ac5e794307f00070351d0d9df8ce0ae34b628b1436f4 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "c8edfde8d715a2d94c2d913d1e5e0d71a5b583830587bb7712098fa3b1ce301f",
+    "schema": {
+      "$defs": {
+        "ArtifactSelectionRef": {
+          "additionalProperties": false,
+          "description": "Closed reference to a separately retained selection document.",
+          "properties": {
+            "artifact_count": {
+              "minimum": 1,
+              "title": "Artifact Count",
+              "type": "integer"
+            },
+            "selection_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Selection Sha256",
+              "type": "string"
+            },
+            "total_bytes": {
+              "minimum": 0,
+              "title": "Total Bytes",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "selection_sha256",
+            "artifact_count",
+            "total_bytes"
+          ],
+          "title": "ArtifactSelectionRef",
+          "type": "object"
+        },
+        "ArtifactSubject": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "minimum": 0,
+              "title": "Bytes",
+              "type": "integer"
+            },
+            "collection": {
+              "$ref": "#/$defs/CollectionRootRef"
+            },
+            "id": {
+              "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "media_type": {
+              "anyOf": [
+                {
+                  "maxLength": 255,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Media Type"
+            },
+            "path": {
+              "maxLength": 4096,
+              "minLength": 1,
+              "title": "Path",
+              "type": "string"
+            },
+            "role": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Role",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "role",
+            "collection",
+            "path",
+            "bytes",
+            "sha256"
+          ],
+          "title": "ArtifactSubject",
+          "type": "object"
+        },
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "CollectionRootRef": {
+          "additionalProperties": false,
+          "properties": {
+            "archive_root_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Archive Root Sha256",
+              "type": "string"
+            },
+            "collection_id": {
+              "$ref": "#/$defs/CollectionId"
+            },
+            "content_identity": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Content Identity",
+              "type": "string"
+            }
+          },
+          "required": [
+            "collection_id",
+            "archive_root_sha256",
+            "content_identity"
+          ],
+          "title": "CollectionRootRef",
+          "type": "object"
+        },
+        "JsonSchemaDocument": {
+          "additionalProperties": false,
+          "properties": {
+            "dialect": {
+              "const": "https://json-schema.org/draft/2020-12/schema",
+              "default": "https://json-schema.org/draft/2020-12/schema",
+              "title": "Dialect",
+              "type": "string"
+            },
+            "format_policy": {
+              "const": "annotation-only",
+              "default": "annotation-only",
+              "title": "Format Policy",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "schema": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "title": "Schema",
+              "type": "object"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sha256",
+            "schema"
+          ],
+          "title": "JsonSchemaDocument",
+          "type": "object"
+        },
+        "JsonValue": {},
+        "ObservationEvidence": {
+          "additionalProperties": false,
+          "description": "Complete routing evidence: immutable request plus accepted result.",
+          "properties": {
+            "request": {
+              "$ref": "#/$defs/ObservationRequest"
+            },
+            "result": {
+              "$ref": "#/$defs/ObservationResult"
+            }
+          },
+          "required": [
+            "request",
+            "result"
+          ],
+          "title": "ObservationEvidence",
+          "type": "object"
+        },
+        "ObservationFailure": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Code",
+              "type": "string"
+            },
+            "message": {
+              "maxLength": 1000,
+              "minLength": 1,
+              "title": "Message",
+              "type": "string"
+            },
+            "retryable": {
+              "title": "Retryable",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "retryable"
+          ],
+          "title": "ObservationFailure",
+          "type": "object"
+        },
+        "ObservationInapplicable": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Code",
+              "type": "string"
+            },
+            "message": {
+              "maxLength": 1000,
+              "minLength": 1,
+              "title": "Message",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code",
+            "message"
+          ],
+          "title": "ObservationInapplicable",
+          "type": "object"
+        },
+        "ObservationRequest": {
+          "additionalProperties": false,
+          "properties": {
+            "format": {
+              "const": "stove0-observation-request/v1",
+              "default": "stove0-observation-request/v1",
+              "title": "Format",
+              "type": "string"
+            },
+            "maximum_result_bytes": {
+              "default": 1048576,
+              "maximum": 67108864,
+              "minimum": 1,
+              "title": "Maximum Result Bytes",
+              "type": "integer"
+            },
+            "observer_contract_id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Observer Contract Id",
+              "type": "string"
+            },
+            "observer_contract_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Observer Contract Sha256",
+              "type": "string"
+            },
+            "observer_descriptor_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Observer Descriptor Sha256",
+              "type": "string"
+            },
+            "observer_registration_id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$",
+              "title": "Observer Registration Id",
+              "type": "string"
+            },
+            "options": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "title": "Options",
+              "type": "object"
+            },
+            "request_id": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Request Id",
+              "type": "string"
+            },
+            "retrieval_policy": {
+              "default": "available-only",
+              "enum": [
+                "available-only",
+                "allow"
+              ],
+              "title": "Retrieval Policy",
+              "type": "string"
+            },
+            "subjects": {
+              "items": {
+                "$ref": "#/$defs/ArtifactSubject"
+              },
+              "minItems": 1,
+              "title": "Subjects",
+              "type": "array"
+            },
+            "timeout_seconds": {
+              "default": 300,
+              "maximum": 86400,
+              "minimum": 1,
+              "title": "Timeout Seconds",
+              "type": "integer"
+            },
+            "work_id": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Work Id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "work_id",
+            "observer_registration_id",
+            "observer_descriptor_sha256",
+            "observer_contract_id",
+            "observer_contract_sha256",
+            "subjects",
+            "request_id"
+          ],
+          "title": "ObservationRequest",
+          "type": "object"
+        },
+        "ObservationResult": {
+          "additionalProperties": false,
+          "properties": {
+            "execution_evidence": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "title": "Execution Evidence",
+              "type": "object"
+            },
+            "facts": {
+              "anyOf": [
+                {
+                  "additionalProperties": {
+                    "$ref": "#/$defs/JsonValue"
+                  },
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Facts"
+            },
+            "facts_schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/JsonSchemaDocument"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "facts_sha256": {
+              "anyOf": [
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Facts Sha256"
+            },
+            "failure": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ObservationFailure"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "format": {
+              "const": "stove0-observation-result/v1",
+              "default": "stove0-observation-result/v1",
+              "title": "Format",
+              "type": "string"
+            },
+            "inapplicable": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ObservationInapplicable"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "observer": {
+              "$ref": "#/$defs/ObserverImplementation"
+            },
+            "observer_contract_id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Observer Contract Id",
+              "type": "string"
+            },
+            "observer_contract_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Observer Contract Sha256",
+              "type": "string"
+            },
+            "request_id": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Request Id",
+              "type": "string"
+            },
+            "result_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Result Sha256",
+              "type": "string"
+            },
+            "state": {
+              "enum": [
+                "observed",
+                "inapplicable",
+                "failed",
+                "canceled"
+              ],
+              "title": "State",
+              "type": "string"
+            },
+            "subjects": {
+              "items": {
+                "$ref": "#/$defs/ArtifactSubject"
+              },
+              "minItems": 1,
+              "title": "Subjects",
+              "type": "array"
+            }
+          },
+          "required": [
+            "request_id",
+            "state",
+            "observer",
+            "observer_contract_id",
+            "observer_contract_sha256",
+            "subjects",
+            "result_sha256"
+          ],
+          "title": "ObservationResult",
+          "type": "object"
+        },
+        "ObserverImplementation": {
+          "additionalProperties": false,
+          "properties": {
+            "descriptor_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Descriptor Sha256",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "protocol": {
+              "const": "stove0-content-observer/v1",
+              "default": "stove0-content-observer/v1",
+              "title": "Protocol",
+              "type": "string"
+            },
+            "source_revision": {
+              "maxLength": 200,
+              "minLength": 1,
+              "title": "Source Revision",
+              "type": "string"
+            },
+            "version": {
+              "maxLength": 120,
+              "minLength": 1,
+              "title": "Version",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "version",
+            "source_revision",
+            "descriptor_sha256"
+          ],
+          "title": "ObserverImplementation",
+          "type": "object"
+        },
+        "TargetInputAuthority": {
+          "additionalProperties": false,
+          "description": "Small exact input authority retained by Stove0 and traversed in bounded pages.",
+          "properties": {
+            "roles": {
+              "items": {
+                "$ref": "#/$defs/TargetInputRoleCount"
+              },
+              "minItems": 1,
+              "title": "Roles",
+              "type": "array"
+            },
+            "selection": {
+              "$ref": "#/$defs/ArtifactSelectionRef"
+            }
+          },
+          "required": [
+            "selection",
+            "roles"
+          ],
+          "title": "TargetInputAuthority",
+          "type": "object"
+        },
+        "TargetInputRoleCount": {
+          "additionalProperties": false,
+          "properties": {
+            "count": {
+              "minimum": 1,
+              "title": "Count",
+              "type": "integer"
+            },
+            "role": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Role",
+              "type": "string"
+            }
+          },
+          "required": [
+            "role",
+            "count"
+          ],
+          "title": "TargetInputRoleCount",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "inputs": {
+          "$ref": "#/$defs/TargetInputAuthority"
+        },
+        "intent": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Intent",
+          "type": "object"
+        },
+        "observations": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ObservationEvidence"
+          },
+          "title": "Observations",
+          "type": "array"
+        },
+        "operation_contract_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Operation Contract Sha256",
+          "type": "string"
+        },
+        "operation_id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "protocol": {
+          "default": "stove0-transform-target/v1",
+          "enum": [
+            "stove0-transform-target/v1",
+            "stove0-effect-target/v1"
+          ],
+          "title": "Protocol",
+          "type": "string"
+        },
+        "target_options": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Target Options",
+          "type": "object"
+        }
+      },
+      "required": [
+        "operation_id",
+        "operation_contract_sha256",
+        "inputs",
+        "intent"
+      ],
+      "title": "TargetPreflightRequest",
+      "type": "object"
+    },
     "signature": "\"(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = <factory>, protocol: Literal['stove0-transform-target/v1', 'stove0-effect-target/v1'] = 'stove0-transform-target/v1', observations: tuple[stove0_protocol.models.ObservationEvidence, ...] = ()) -> None\""
   },
   "distribution": "stove0-target-protocol",

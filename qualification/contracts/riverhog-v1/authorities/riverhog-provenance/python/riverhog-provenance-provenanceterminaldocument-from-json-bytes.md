@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-155a7da907"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f7e89336cb"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-624241a1a7"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-408cab9645"></a>`module` | "riverhog_provenance" |
-| <a id="s-8db9902d40"></a>`name` | "from_json_bytes" |
-| <a id="s-b80866d48c"></a>`owner` | "riverhog_provenance.ProvenanceTerminalDocument" |
-| <a id="s-524a90e0b1"></a>`unit` | "member" |
+- <a id="s-624241a1a7"></a>`distribution`: `riverhog-provenance`
+- <a id="s-408cab9645"></a>`module`: `riverhog_provenance`
+- <a id="s-8db9902d40"></a>`name`: `from_json_bytes`
+- <a id="s-b80866d48c"></a>`owner`: `riverhog_provenance.ProvenanceTerminalDocument`
+- <a id="s-524a90e0b1"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-4df03b731f"></a>`kind`: `"classmethod"`
+- <a id="s-d26a139a3c"></a>`signature`: `"\"(cls, content: 'bytes') -> 'ProvenanceTerminalDocument'\""`
 
 ## Maintained corroboration
 

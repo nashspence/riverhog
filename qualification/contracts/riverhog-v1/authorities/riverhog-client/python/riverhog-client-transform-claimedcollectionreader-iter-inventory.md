@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-de82d995f0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9e3361eed9"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e53229ba7e"></a>`distribution` | "riverhog-client" |
-| <a id="s-c34dbf840e"></a>`module` | "riverhog_client.transform" |
-| <a id="s-8c8c6a370f"></a>`name` | "iter_inventory" |
-| <a id="s-0e3dec6a40"></a>`owner` | "riverhog_client.transform.ClaimedCollectionReader" |
-| <a id="s-e035252645"></a>`unit` | "member" |
+- <a id="s-e53229ba7e"></a>`distribution`: `riverhog-client`
+- <a id="s-c34dbf840e"></a>`module`: `riverhog_client.transform`
+- <a id="s-8c8c6a370f"></a>`name`: `iter_inventory`
+- <a id="s-0e3dec6a40"></a>`owner`: `riverhog_client.transform.ClaimedCollectionReader`
+- <a id="s-e035252645"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-7623f441c2"></a>`kind`: `"method"`
+- <a id="s-412271181e"></a>`signature`: `"\"(self, *, include_control: 'bool' = False) -> 'Iterator[ClaimedArtifact]'\""`
 
 ## Maintained corroboration
 

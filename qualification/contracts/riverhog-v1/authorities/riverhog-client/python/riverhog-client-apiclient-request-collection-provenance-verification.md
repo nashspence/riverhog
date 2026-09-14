@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e8043dc4f0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-dae5dbe9e8"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-1a6960f6e1"></a>`distribution` | "riverhog-client" |
-| <a id="s-62608e3d79"></a>`module` | "riverhog_client" |
-| <a id="s-29b8aae373"></a>`name` | "request_collection_provenance_verification" |
-| <a id="s-3c5af8bf07"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-cea757c29e"></a>`unit` | "member" |
+- <a id="s-1a6960f6e1"></a>`distribution`: `riverhog-client`
+- <a id="s-62608e3d79"></a>`module`: `riverhog_client`
+- <a id="s-29b8aae373"></a>`name`: `request_collection_provenance_verification`
+- <a id="s-3c5af8bf07"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-cea757c29e"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-972b915957"></a>`kind`: `"method"`
+- <a id="s-7ee368aba5"></a>`signature`: `"\"(self, collection_id: 'CollectionId') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

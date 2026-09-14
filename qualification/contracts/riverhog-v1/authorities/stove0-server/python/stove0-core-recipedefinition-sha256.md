@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0f64476f94"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-bbd1617e05"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-1a057462c0"></a>`distribution` | "stove0-server" |
-| <a id="s-0fe404cb28"></a>`module` | "stove0_core" |
-| <a id="s-4274322b1f"></a>`name` | "sha256" |
-| <a id="s-8efc32656a"></a>`owner` | "stove0_core.RecipeDefinition" |
-| <a id="s-a9601e69fb"></a>`unit` | "member" |
+- <a id="s-1a057462c0"></a>`distribution`: `stove0-server`
+- <a id="s-0fe404cb28"></a>`module`: `stove0_core`
+- <a id="s-4274322b1f"></a>`name`: `sha256`
+- <a id="s-8efc32656a"></a>`owner`: `stove0_core.RecipeDefinition`
+- <a id="s-a9601e69fb"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-f3c161b4a2"></a>`kind`: `"property"`
+- <a id="s-d4cb382ee8"></a>`signature`: `"\"(self) -> 'str'\""`
 
 ## Maintained corroboration
 

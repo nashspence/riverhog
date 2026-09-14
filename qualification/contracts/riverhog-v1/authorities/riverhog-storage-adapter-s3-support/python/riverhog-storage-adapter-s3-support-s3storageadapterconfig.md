@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-409a9414cc"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9c4ffb9031"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-6514d080eb"></a>`distribution` | "riverhog-storage-adapter-s3-support" |
-| <a id="s-f343aab2a3"></a>`module` | "riverhog_storage_adapter_s3_support" |
-| <a id="s-547121c938"></a>`name` | "S3StorageAdapterConfig" |
-| <a id="s-6c0a9a89f2"></a>`unit` | "export" |
+- <a id="s-6514d080eb"></a>`distribution`: `riverhog-storage-adapter-s3-support`
+- <a id="s-f343aab2a3"></a>`module`: `riverhog_storage_adapter_s3_support`
+- <a id="s-547121c938"></a>`name`: `S3StorageAdapterConfig`
+- <a id="s-6c0a9a89f2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0362c5cbd3"></a>`kind`: `"class"`
+- <a id="s-02e980e7ec"></a>`signature`: `"\"(implementation_id: 'str', implementation_version: 'str', bucket: 'str', root_prefix: 'str' = '', read_mode: 'ReadMode' = 'immediate', archive_storage_class: 'str \| None' = None, immediate_storage_class: 'str \| None' = None, read_chunk_bytes: 'int' = 8388608) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-558c0673b3"></a>`implementation_id` | `'str'` | `required` |
+| <a id="s-62239367d9"></a>`implementation_version` | `'str'` | `required` |
+| <a id="s-d1c2e9b5b9"></a>`bucket` | `'str'` | `required` |
+| <a id="s-68853aeb54"></a>`root_prefix` | `'str'` | `''` |
+| <a id="s-23d31ff1ab"></a>`read_mode` | `'ReadMode'` | `'immediate'` |
+| <a id="s-42a248ba5b"></a>`archive_storage_class` | `'str \| None'` | `None` |
+| <a id="s-f7f1196297"></a>`immediate_storage_class` | `'str \| None'` | `None` |
+| <a id="s-c88970db05"></a>`read_chunk_bytes` | `'int'` | `8388608` |
 
 ## Governing policies
 

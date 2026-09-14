@@ -14,13 +14,32 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f1b276e508"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7e83f9ee4c"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-39e7eb9d24"></a>`distribution` | "stove0-target-support" |
-| <a id="s-57cabfc967"></a>`module` | "stove0_target_support" |
-| <a id="s-a24d9c077e"></a>`name` | "OutputArtifact" |
-| <a id="s-68c2a94333"></a>`unit` | "export" |
+- <a id="s-39e7eb9d24"></a>`distribution`: `stove0-target-support`
+- <a id="s-57cabfc967"></a>`module`: `stove0_target_support`
+- <a id="s-a24d9c077e"></a>`name`: `OutputArtifact`
+- <a id="s-68c2a94333"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-d9df0d9346"></a>`kind`: `"class"`
+- <a id="s-b795e1ad57"></a>`signature`: `"\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], media_type: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=255)] = None) -> None\""`
+
+#### Validated model schema
+
+<a id="s-2c07b215d8"></a>
+- <a id="s-f369511cc0"></a>`title`: OutputArtifact
+- <a id="s-52553755ea"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-14c608fd22"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-af54bd7d6a"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-24276f6634"></a>`media_type` | no | anyOf=type="string"; minLength=1; maxLength=255 \| type="null" |  |
+| <a id="s-d7e8e5723b"></a>`path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-91ddac3026"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-f6c5c79519"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -52,13 +71,66 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 42112e1f0d6fe184237b5b2c97df0700167c9d9cf238b0a377ce3d664e56c45b -->
+<!-- exact-contract-value: ab83eacc8fd10b120acebdccb0fab1edb662858f9a6f8701c3463b4135aa85e9 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "199abbe3d7d9a3ea586f4c18283a58e117b7bb43bdd4897f373220d08ee83dc1",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 0,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "media_type": {
+          "anyOf": [
+            {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Media Type"
+        },
+        "path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "role": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Role",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "title": "OutputArtifact",
+      "type": "object"
+    },
     "signature": "\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], media_type: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=255)] = None) -> None\""
   },
   "distribution": "stove0-target-support",

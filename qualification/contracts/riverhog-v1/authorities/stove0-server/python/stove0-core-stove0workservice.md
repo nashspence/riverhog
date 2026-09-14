@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-07024b6917"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7a3e27896e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-8386afdc42"></a>`distribution` | "stove0-server" |
-| <a id="s-21cbf7115b"></a>`module` | "stove0_core" |
-| <a id="s-def8a1d6a7"></a>`name` | "Stove0WorkService" |
-| <a id="s-db8d6796ee"></a>`unit` | "export" |
+- <a id="s-8386afdc42"></a>`distribution`: `stove0-server`
+- <a id="s-21cbf7115b"></a>`module`: `stove0_core`
+- <a id="s-def8a1d6a7"></a>`name`: `Stove0WorkService`
+- <a id="s-db8d6796ee"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-a114f12d76"></a>`kind`: `"class"`
+- <a id="s-2c327c1bfd"></a>`signature`: `"\"(store: 'WorkStore') -> 'None'\""`
 
 ## Maintained corroboration
 

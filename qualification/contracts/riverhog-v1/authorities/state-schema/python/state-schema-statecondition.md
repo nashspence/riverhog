@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-afc85e35b6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ec0671b347"></a>`contract` | type="typing._LiteralGenericAlias"; additional keys=`kind` |
-| <a id="s-e0e6499c24"></a>`distribution` | "state-schema" |
-| <a id="s-d59ce41003"></a>`module` | "state_schema" |
-| <a id="s-9080cc8b1d"></a>`name` | "StateCondition" |
-| <a id="s-fdd4378040"></a>`unit` | "export" |
+- <a id="s-e0e6499c24"></a>`distribution`: `state-schema`
+- <a id="s-d59ce41003"></a>`module`: `state_schema`
+- <a id="s-9080cc8b1d"></a>`name`: `StateCondition`
+- <a id="s-fdd4378040"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-166d44a9e0"></a>`kind`: `"object"`
+- <a id="s-6a0e1068bf"></a>`type`: `"typing._LiteralGenericAlias"`
 
 ## Governing policies
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-976fc5dd91"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-58ed1ba378"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f763297755"></a>`distribution` | "stove0-media-archive-target-support" |
-| <a id="s-741d0377e1"></a>`module` | "stove0_media_archive_target_support" |
-| <a id="s-e4f0ef3d82"></a>`name` | "canonical_sidecars" |
-| <a id="s-01aed5e63b"></a>`owner` | "stove0_media_archive_target_support.MediaProjectionItem" |
-| <a id="s-eecbe0aa8b"></a>`unit` | "member" |
+- <a id="s-f763297755"></a>`distribution`: `stove0-media-archive-target-support`
+- <a id="s-741d0377e1"></a>`module`: `stove0_media_archive_target_support`
+- <a id="s-e4f0ef3d82"></a>`name`: `canonical_sidecars`
+- <a id="s-01aed5e63b"></a>`owner`: `stove0_media_archive_target_support.MediaProjectionItem`
+- <a id="s-eecbe0aa8b"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-a7b3b57e48"></a>`kind`: `"classmethod"`
+- <a id="s-85ed09bd85"></a>`signature`: `"\"(cls, value: 'tuple[str, ...]') -> 'tuple[str, ...]'\""`
 
 ## Maintained corroboration
 

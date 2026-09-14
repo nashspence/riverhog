@@ -14,13 +14,31 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7ba4643c35"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-637db50c86"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-91e95c1a69"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-2237439c7c"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-b581a0f43d"></a>`name` | "PackArchiveVolume" |
-| <a id="s-05777ad172"></a>`unit` | "export" |
+- <a id="s-91e95c1a69"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-2237439c7c"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-b581a0f43d"></a>`name`: `PackArchiveVolume`
+- <a id="s-05777ad172"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-7e688e6b95"></a>`kind`: `"class"`
+- <a id="s-1ed2491f73"></a>`signature`: `"'(id: \\'str\\', sequence: \\'int\\', path: \\'str\\', files: \\'int\\', source_bytes: \\'int\\', plaintext_bytes: \\'int\\', age_state: \\'AgeUploadState\\', index_sha256: \\'str\\', plan_sha256: \\'str\\', parts: \\'tuple[StoredPartIdentity, ...]\\', kind: \"Literal[\\'pack\\']\" = \\'pack\\') -> None'"`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-a41a550698"></a>`id` | `'str'` | `required` |
+| <a id="s-c8064eb622"></a>`sequence` | `'int'` | `required` |
+| <a id="s-6ee9c7dd83"></a>`path` | `'str'` | `required` |
+| <a id="s-8bcad68d63"></a>`files` | `'int'` | `required` |
+| <a id="s-5208695108"></a>`source_bytes` | `'int'` | `required` |
+| <a id="s-e6fe6e5946"></a>`plaintext_bytes` | `'int'` | `required` |
+| <a id="s-2571f9d9e8"></a>`age_state` | `'AgeUploadState'` | `required` |
+| <a id="s-92066040d3"></a>`index_sha256` | `'str'` | `required` |
+| <a id="s-1e4fa51b7f"></a>`plan_sha256` | `'str'` | `required` |
+| <a id="s-a722bcbd39"></a>`parts` | `'tuple[StoredPartIdentity, ...]'` | `required` |
+| <a id="s-86da2977c0"></a>`kind` | `"Literal['pack']"` | `'pack'` |
 
 ## Maintained corroboration
 

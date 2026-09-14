@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f67b705ea1"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-566103bd35"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-b218287a3f"></a>`distribution` | "http-api-contracts" |
-| <a id="s-2ba394caf0"></a>`module` | "http_api_contracts" |
-| <a id="s-4e9ff3fe60"></a>`name` | "FRAMED_BODY_MEDIA_TYPE" |
-| <a id="s-d477653232"></a>`unit` | "export" |
+- <a id="s-b218287a3f"></a>`distribution`: `http-api-contracts`
+- <a id="s-2ba394caf0"></a>`module`: `http_api_contracts`
+- <a id="s-4e9ff3fe60"></a>`name`: `FRAMED_BODY_MEDIA_TYPE`
+- <a id="s-d477653232"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-01ad930323"></a>`kind`: `"constant"`
+- <a id="s-eada3a5f3a"></a>`value`: `"application/vnd.riverhog.json-opaque-framing"`
 
 ## Governing policies
 

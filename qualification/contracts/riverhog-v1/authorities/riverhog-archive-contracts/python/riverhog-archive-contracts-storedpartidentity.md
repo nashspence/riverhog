@@ -14,13 +14,26 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-69d4a57857"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-dc6fb593f1"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-c52d63e601"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-c12451a567"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-91b1ceee6e"></a>`name` | "StoredPartIdentity" |
-| <a id="s-8f97a51f7f"></a>`unit` | "export" |
+- <a id="s-c52d63e601"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-c12451a567"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-91b1ceee6e"></a>`name`: `StoredPartIdentity`
+- <a id="s-8f97a51f7f"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-7aed00623a"></a>`kind`: `"class"`
+- <a id="s-56355540bd"></a>`signature`: `"\"(number: 'int', plaintext_start: 'int', plaintext_bytes: 'int', plaintext_sha256: 'str', stored_bytes: 'int', stored_sha256: 'str') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-11e0beb019"></a>`number` | `'int'` | `required` |
+| <a id="s-51e25e430c"></a>`plaintext_start` | `'int'` | `required` |
+| <a id="s-2b74ed3097"></a>`plaintext_bytes` | `'int'` | `required` |
+| <a id="s-4ee6e878bf"></a>`plaintext_sha256` | `'str'` | `required` |
+| <a id="s-f70ee87132"></a>`stored_bytes` | `'int'` | `required` |
+| <a id="s-7a17fca63e"></a>`stored_sha256` | `'str'` | `required` |
 
 ## Maintained corroboration
 

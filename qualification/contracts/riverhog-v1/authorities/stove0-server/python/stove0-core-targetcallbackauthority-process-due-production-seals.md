@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-572679f538"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4252e16b69"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b5a62d54b4"></a>`distribution` | "stove0-server" |
-| <a id="s-c95fec8bd7"></a>`module` | "stove0_core" |
-| <a id="s-c43a37bfe2"></a>`name` | "process_due_production_seals" |
-| <a id="s-2e87b542b0"></a>`owner` | "stove0_core.TargetCallbackAuthority" |
-| <a id="s-c3d178d025"></a>`unit` | "member" |
+- <a id="s-b5a62d54b4"></a>`distribution`: `stove0-server`
+- <a id="s-c95fec8bd7"></a>`module`: `stove0_core`
+- <a id="s-c43a37bfe2"></a>`name`: `process_due_production_seals`
+- <a id="s-2e87b542b0"></a>`owner`: `stove0_core.TargetCallbackAuthority`
+- <a id="s-c3d178d025"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ba54374383"></a>`kind`: `"method"`
+- <a id="s-a9ba9aed77"></a>`signature`: `"\"(self, *, limit: 'int' = 1) -> 'int'\""`
 
 ## Maintained corroboration
 

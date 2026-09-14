@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9faba20c71"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-fd2bfdbfdb"></a>`contract` | type="stove0_observer_protocol.conformance.SemanticFactsConformanceVectors"; additional keys=`kind` |
-| <a id="s-2662cffe6b"></a>`distribution` | "stove0-media-metadata-observer-contracts" |
-| <a id="s-57c4c4dfcb"></a>`module` | "stove0_media_metadata_observer_contracts" |
-| <a id="s-82b59626e8"></a>`name` | "MEDIA_METADATA_FACTS_CONFORMANCE_VECTORS" |
-| <a id="s-fdf106228b"></a>`unit` | "export" |
+- <a id="s-2662cffe6b"></a>`distribution`: `stove0-media-metadata-observer-contracts`
+- <a id="s-57c4c4dfcb"></a>`module`: `stove0_media_metadata_observer_contracts`
+- <a id="s-82b59626e8"></a>`name`: `MEDIA_METADATA_FACTS_CONFORMANCE_VECTORS`
+- <a id="s-fdf106228b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-6cbab02343"></a>`kind`: `"object"`
+- <a id="s-b09a530850"></a>`type`: `"stove0_observer_protocol.conformance.SemanticFactsConformanceVectors"`
 
 ## Governing policies
 

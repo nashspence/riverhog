@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f63e4c88ac"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b547afd00a"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-4a5d2657f5"></a>`distribution` | "stove0-server" |
-| <a id="s-cce9d7e581"></a>`module` | "stove0_core" |
-| <a id="s-231b4661cd"></a>`name` | "from_environment" |
-| <a id="s-d32e990a1f"></a>`owner` | "stove0_core.Stove0RuntimeConfig" |
-| <a id="s-5b1e129eea"></a>`unit` | "member" |
+- <a id="s-4a5d2657f5"></a>`distribution`: `stove0-server`
+- <a id="s-cce9d7e581"></a>`module`: `stove0_core`
+- <a id="s-231b4661cd"></a>`name`: `from_environment`
+- <a id="s-d32e990a1f"></a>`owner`: `stove0_core.Stove0RuntimeConfig`
+- <a id="s-5b1e129eea"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-cedbf4048f"></a>`kind`: `"classmethod"`
+- <a id="s-0b1dfc68c1"></a>`signature`: `"\"(cls, environ: 'Mapping[str, str] \| None' = None, *, require_api_token: 'bool' = True) -> 'Stove0RuntimeConfig'\""`
 
 ## Maintained corroboration
 

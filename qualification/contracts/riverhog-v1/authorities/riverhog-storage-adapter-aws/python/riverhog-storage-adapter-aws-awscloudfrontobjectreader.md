@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1360ed7a0f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7932f93f74"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ce1d91859e"></a>`distribution` | "riverhog-storage-adapter-aws" |
-| <a id="s-d49a248e6f"></a>`module` | "riverhog_storage_adapter_aws" |
-| <a id="s-50f65a3358"></a>`name` | "AwsCloudFrontObjectReader" |
-| <a id="s-d1e73da5f0"></a>`unit` | "export" |
+- <a id="s-ce1d91859e"></a>`distribution`: `riverhog-storage-adapter-aws`
+- <a id="s-d49a248e6f"></a>`module`: `riverhog_storage_adapter_aws`
+- <a id="s-50f65a3358"></a>`name`: `AwsCloudFrontObjectReader`
+- <a id="s-d1e73da5f0"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-4b0bd9e755"></a>`kind`: `"class"`
+- <a id="s-07abe25a48"></a>`signature`: `"\"(config: 'AwsCloudFrontConfig', *, client: 'httpx.Client \| None' = None) -> 'None'\""`
 
 ## Maintained corroboration
 

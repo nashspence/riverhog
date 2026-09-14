@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-77c92b57df"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-355c90a66b"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-2f0e669f33"></a>`distribution` | "stove0-server" |
-| <a id="s-a18c0c5046"></a>`module` | "stove0_core" |
-| <a id="s-8a504478bb"></a>`name` | "list_admissions" |
-| <a id="s-c0466ca7f3"></a>`owner` | "stove0_core.ClassificationAdmissionService" |
-| <a id="s-d4b0fcdcc6"></a>`unit` | "member" |
+- <a id="s-2f0e669f33"></a>`distribution`: `stove0-server`
+- <a id="s-a18c0c5046"></a>`module`: `stove0_core`
+- <a id="s-8a504478bb"></a>`name`: `list_admissions`
+- <a id="s-c0466ca7f3"></a>`owner`: `stove0_core.ClassificationAdmissionService`
+- <a id="s-d4b0fcdcc6"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-03dadb905f"></a>`kind`: `"method"`
+- <a id="s-37643df7b5"></a>`signature`: `"\"(self, *, page_size: 'int', position: 'tuple[str \| int \| bool \| bytes \| None, ...] \| None', policy_id: 'str \| None', state: 'AdmissionState \| None', query: 'str \| None', sort: 'AdmissionSort', order: 'SortOrder') -> 'dict[str, object]'\""`
 
 ## Maintained corroboration
 

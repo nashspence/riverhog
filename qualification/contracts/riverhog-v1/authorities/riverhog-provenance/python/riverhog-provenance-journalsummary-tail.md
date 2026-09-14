@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4d78ed2aa3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8c53820161"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-17a920afa7"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-ecaafa823c"></a>`module` | "riverhog_provenance" |
-| <a id="s-b860c8be3e"></a>`name` | "tail" |
-| <a id="s-35764c50cf"></a>`owner` | "riverhog_provenance.JournalSummary" |
-| <a id="s-4026666702"></a>`unit` | "member" |
+- <a id="s-17a920afa7"></a>`distribution`: `riverhog-provenance`
+- <a id="s-ecaafa823c"></a>`module`: `riverhog_provenance`
+- <a id="s-b860c8be3e"></a>`name`: `tail`
+- <a id="s-35764c50cf"></a>`owner`: `riverhog_provenance.JournalSummary`
+- <a id="s-4026666702"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-cbda314257"></a>`kind`: `"property"`
+- <a id="s-005639fc61"></a>`signature`: `"\"(self) -> 'JournalFrame'\""`
 
 ## Maintained corroboration
 

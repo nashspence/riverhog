@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9c186e5e70"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f123fabd48"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6f5916fbd7"></a>`distribution` | "stove0-review-sampler-support" |
-| <a id="s-a49e263d23"></a>`module` | "stove0_review_sampler_support" |
-| <a id="s-c9d03fbe4e"></a>`name` | "verify_input" |
-| <a id="s-28ff26f491"></a>`owner` | "stove0_review_sampler_support.SamplerWorkspace" |
-| <a id="s-8ff0fe6ff4"></a>`unit` | "member" |
+- <a id="s-6f5916fbd7"></a>`distribution`: `stove0-review-sampler-support`
+- <a id="s-a49e263d23"></a>`module`: `stove0_review_sampler_support`
+- <a id="s-c9d03fbe4e"></a>`name`: `verify_input`
+- <a id="s-28ff26f491"></a>`owner`: `stove0_review_sampler_support.SamplerWorkspace`
+- <a id="s-8ff0fe6ff4"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-bebc37de5e"></a>`kind`: `"method"`
+- <a id="s-94f141cb15"></a>`signature`: `"\"(self, declared: 'SamplerInput') -> 'Path'\""`
 
 ## Maintained corroboration
 

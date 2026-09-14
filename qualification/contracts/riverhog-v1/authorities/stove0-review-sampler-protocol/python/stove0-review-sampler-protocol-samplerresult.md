@@ -14,13 +14,44 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-cfd5b77ea0"></a>
-| Field | Shape |
+- <a id="s-58cef6fb15"></a>`distribution`: `stove0-review-sampler-protocol`
+- <a id="s-bea57ff4d1"></a>`module`: `stove0_review_sampler_protocol`
+- <a id="s-5052e9afe7"></a>`name`: `SamplerResult`
+- <a id="s-981a05f65c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-7ed6a0cb37"></a>`kind`: `"class"`
+- <a id="s-af299ea1c9"></a>`signature`: `"\"(*, format: Literal['stove0-review-sampler-result/v1'] = 'stove0-review-sampler-result/v1', request_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], sampler_descriptor_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], state: Literal['succeeded', 'inapplicable', 'failed', 'canceled'], outputs: tuple[stove0_review_sampler_protocol.SamplerOutput, ...] = (), execution_evidence: dict[str, JsonValue] = <factory>, failure: stove0_review_sampler_protocol.SamplerFailure \| None = None, inapplicable: stove0_review_sampler_protocol.SamplerInapplicable \| None = None, result_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-ddc2d47429"></a>
+- <a id="s-2119bbcd88"></a>`title`: SamplerResult
+- <a id="s-f39c926409"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-394f8f303a"></a>`execution_evidence` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-b97311fe39"></a>`failure` | no | anyOf=#/$defs/SamplerFailure \| type="null" |  |
+| <a id="s-10227530d7"></a>`format` | no | type="string"; const="stove0-review-sampler-result/v1" |  |
+| <a id="s-1b23e0cc50"></a>`inapplicable` | no | anyOf=#/$defs/SamplerInapplicable \| type="null" |  |
+| <a id="s-6f7900bd15"></a>`outputs` | no | type="array"; items=(#/$defs/SamplerOutput) |  |
+| <a id="s-3edc1cd2b7"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-afc9400c13"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-86c3302f37"></a>`sampler_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2a7a30c5f9"></a>`state` | yes | type="string"; enum=["succeeded","inapplicable","failed","canceled"] |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-44d8066cae"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-58cef6fb15"></a>`distribution` | "stove0-review-sampler-protocol" |
-| <a id="s-bea57ff4d1"></a>`module` | "stove0_review_sampler_protocol" |
-| <a id="s-5052e9afe7"></a>`name` | "SamplerResult" |
-| <a id="s-981a05f65c"></a>`unit` | "export" |
+| <a id="s-6a3e7e56cf"></a>`JsonValue` | empty object |
+| <a id="s-a17aaf3980"></a>`SamplerFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
+| <a id="s-6e25d47d69"></a>`SamplerInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
+| <a id="s-256a9177b4"></a>`SamplerOutput` | type="object"; fields=`bytes`, `derived_from`, `id`, `media_type`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -53,13 +84,195 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8c553c9954a7e754c81c9ec36e72552c9de2d621f60e574450d77ff5f3f560e2 -->
+<!-- exact-contract-value: 87048e09bc0539196b56059ede0d30574a7823a19564b5ea3a1dc69199416852 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "21f6b9d3f23551988794e5c55d6db07545900c3d9b5dfc7b2372acc553d8e0d3",
+    "schema": {
+      "$defs": {
+        "JsonValue": {},
+        "SamplerFailure": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Code",
+              "type": "string"
+            },
+            "message": {
+              "maxLength": 1000,
+              "minLength": 1,
+              "title": "Message",
+              "type": "string"
+            },
+            "retryable": {
+              "title": "Retryable",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "retryable"
+          ],
+          "title": "SamplerFailure",
+          "type": "object"
+        },
+        "SamplerInapplicable": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Code",
+              "type": "string"
+            },
+            "message": {
+              "maxLength": 1000,
+              "minLength": 1,
+              "title": "Message",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code",
+            "message"
+          ],
+          "title": "SamplerInapplicable",
+          "type": "object"
+        },
+        "SamplerOutput": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "minimum": 0,
+              "title": "Bytes",
+              "type": "integer"
+            },
+            "derived_from": {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "title": "Derived From",
+              "type": "array"
+            },
+            "id": {
+              "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "media_type": {
+              "maxLength": 255,
+              "minLength": 1,
+              "title": "Media Type",
+              "type": "string"
+            },
+            "path": {
+              "maxLength": 4096,
+              "minLength": 1,
+              "title": "Path",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "path",
+            "bytes",
+            "sha256",
+            "media_type",
+            "derived_from"
+          ],
+          "title": "SamplerOutput",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "execution_evidence": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Execution Evidence",
+          "type": "object"
+        },
+        "failure": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SamplerFailure"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "format": {
+          "const": "stove0-review-sampler-result/v1",
+          "default": "stove0-review-sampler-result/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "inapplicable": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SamplerInapplicable"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "outputs": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/SamplerOutput"
+          },
+          "title": "Outputs",
+          "type": "array"
+        },
+        "request_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Request Sha256",
+          "type": "string"
+        },
+        "result_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Result Sha256",
+          "type": "string"
+        },
+        "sampler_descriptor_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sampler Descriptor Sha256",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "succeeded",
+            "inapplicable",
+            "failed",
+            "canceled"
+          ],
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "request_sha256",
+        "sampler_descriptor_sha256",
+        "state",
+        "result_sha256"
+      ],
+      "title": "SamplerResult",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['stove0-review-sampler-result/v1'] = 'stove0-review-sampler-result/v1', request_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], sampler_descriptor_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], state: Literal['succeeded', 'inapplicable', 'failed', 'canceled'], outputs: tuple[stove0_review_sampler_protocol.SamplerOutput, ...] = (), execution_evidence: dict[str, JsonValue] = <factory>, failure: stove0_review_sampler_protocol.SamplerFailure | None = None, inapplicable: stove0_review_sampler_protocol.SamplerInapplicable | None = None, result_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
   },
   "distribution": "stove0-review-sampler-protocol",

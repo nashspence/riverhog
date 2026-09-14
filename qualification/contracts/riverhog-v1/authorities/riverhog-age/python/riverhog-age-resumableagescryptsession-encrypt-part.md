@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c8b95bd532"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9ca9e26679"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-9b2e9b4206"></a>`distribution` | "riverhog-age" |
-| <a id="s-35207d38c2"></a>`module` | "riverhog_age" |
-| <a id="s-df92abf75e"></a>`name` | "encrypt_part" |
-| <a id="s-795a97e56f"></a>`owner` | "riverhog_age.ResumableAgeScryptSession" |
-| <a id="s-5ee562fa70"></a>`unit` | "member" |
+- <a id="s-9b2e9b4206"></a>`distribution`: `riverhog-age`
+- <a id="s-35207d38c2"></a>`module`: `riverhog_age`
+- <a id="s-df92abf75e"></a>`name`: `encrypt_part`
+- <a id="s-795a97e56f"></a>`owner`: `riverhog_age.ResumableAgeScryptSession`
+- <a id="s-5ee562fa70"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3e7b9bf650"></a>`kind`: `"method"`
+- <a id="s-99c3c7892a"></a>`signature`: `"\"(self, plan: 'AgeAlignedUnitPlan', plaintext_chunk_provider: 'Callable[[int, int, int], bytes]', *, plaintext_size: 'int') -> 'bytes'\""`
 
 ## Maintained corroboration
 

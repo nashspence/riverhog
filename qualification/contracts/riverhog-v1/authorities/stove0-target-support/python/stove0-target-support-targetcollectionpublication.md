@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-789d2e92bb"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ba21178d28"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-848c605abb"></a>`distribution` | "stove0-target-support" |
-| <a id="s-72ae20d8c8"></a>`module` | "stove0_target_support" |
-| <a id="s-6993df32d1"></a>`name` | "TargetCollectionPublication" |
-| <a id="s-2564e236fe"></a>`unit` | "export" |
+- <a id="s-848c605abb"></a>`distribution`: `stove0-target-support`
+- <a id="s-72ae20d8c8"></a>`module`: `stove0_target_support`
+- <a id="s-6993df32d1"></a>`name`: `TargetCollectionPublication`
+- <a id="s-2564e236fe"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-af84fd7d9d"></a>`kind`: `"class"`
+- <a id="s-0e9f7663d9"></a>`signature`: `"\"(execution: 'TargetExecutionRuntime', writer: 'IncrementalDerivedCollectionWriter') -> 'None'\""`
 
 ## Maintained corroboration
 

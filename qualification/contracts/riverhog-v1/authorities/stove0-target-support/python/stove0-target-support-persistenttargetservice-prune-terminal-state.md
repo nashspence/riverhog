@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-aee85ef525"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f330e13d63"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-27dab9d940"></a>`distribution` | "stove0-target-support" |
-| <a id="s-abab2743a1"></a>`module` | "stove0_target_support" |
-| <a id="s-a8f2fd7e53"></a>`name` | "prune_terminal_state" |
-| <a id="s-afd8153d7a"></a>`owner` | "stove0_target_support.PersistentTargetService" |
-| <a id="s-3882d4dbd8"></a>`unit` | "member" |
+- <a id="s-27dab9d940"></a>`distribution`: `stove0-target-support`
+- <a id="s-abab2743a1"></a>`module`: `stove0_target_support`
+- <a id="s-a8f2fd7e53"></a>`name`: `prune_terminal_state`
+- <a id="s-afd8153d7a"></a>`owner`: `stove0_target_support.PersistentTargetService`
+- <a id="s-3882d4dbd8"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-25bc6182ba"></a>`kind`: `"method"`
+- <a id="s-8440598f1d"></a>`signature`: `"\"(self, *, now: 'float \| None' = None) -> 'dict[str, int]'\""`
 
 ## Maintained corroboration
 

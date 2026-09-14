@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-de2ef7f6cf"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-aa691e0418"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e36ef5dcd7"></a>`distribution` | "stove0-server" |
-| <a id="s-50582f052a"></a>`module` | "stove0_core" |
-| <a id="s-42fc4bf8dc"></a>`name` | "iter_target_outputs" |
-| <a id="s-1d19ca7fb3"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-101842ce64"></a>`unit` | "member" |
+- <a id="s-e36ef5dcd7"></a>`distribution`: `stove0-server`
+- <a id="s-50582f052a"></a>`module`: `stove0_core`
+- <a id="s-42fc4bf8dc"></a>`name`: `iter_target_outputs`
+- <a id="s-1d19ca7fb3"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-101842ce64"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ab5e2777d7"></a>`kind`: `"method"`
+- <a id="s-d15c9e5bdb"></a>`signature`: `"\"(self, work_id: 'str', job_id: 'str') -> 'Iterator[OutputArtifact]'\""`
 
 ## Maintained corroboration
 

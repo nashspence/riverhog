@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d1b7f4aacf"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b3e856081e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6cc8083b07"></a>`distribution` | "stove0-observer-support" |
-| <a id="s-400c67cc35"></a>`module` | "stove0_observer_support" |
-| <a id="s-54663e0ae5"></a>`name` | "observed" |
-| <a id="s-e54434e276"></a>`owner` | "stove0_observer_support.ObservationResultBuilder" |
-| <a id="s-37fd7ea1c1"></a>`unit` | "member" |
+- <a id="s-6cc8083b07"></a>`distribution`: `stove0-observer-support`
+- <a id="s-400c67cc35"></a>`module`: `stove0_observer_support`
+- <a id="s-54663e0ae5"></a>`name`: `observed`
+- <a id="s-e54434e276"></a>`owner`: `stove0_observer_support.ObservationResultBuilder`
+- <a id="s-37fd7ea1c1"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-65b324cf4a"></a>`kind`: `"method"`
+- <a id="s-b0d861813d"></a>`signature`: `"\"(self, facts: 'Mapping[str, JsonValue]', *, execution_evidence: 'Mapping[str, JsonValue] \| None' = None) -> 'ObservationResult'\""`
 
 ## Maintained corroboration
 

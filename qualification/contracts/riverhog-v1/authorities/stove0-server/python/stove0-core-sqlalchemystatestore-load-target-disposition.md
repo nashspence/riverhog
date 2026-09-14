@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7b34ec85ed"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-03b1fda6a9"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c917c8bb32"></a>`distribution` | "stove0-server" |
-| <a id="s-8d9a610457"></a>`module` | "stove0_core" |
-| <a id="s-b8fae6d5cd"></a>`name` | "load_target_disposition" |
-| <a id="s-1811ced41e"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-381b92879d"></a>`unit` | "member" |
+- <a id="s-c917c8bb32"></a>`distribution`: `stove0-server`
+- <a id="s-8d9a610457"></a>`module`: `stove0_core`
+- <a id="s-b8fae6d5cd"></a>`name`: `load_target_disposition`
+- <a id="s-1811ced41e"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-381b92879d"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-4f89f79400"></a>`kind`: `"method"`
+- <a id="s-b0bbb140b3"></a>`signature`: `"\"(self, work_id: 'str', job_id: 'str', input_id: 'str') -> 'InputDispositionDeclaration \| None'\""`
 
 ## Maintained corroboration
 

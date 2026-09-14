@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d4df22b01d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7203bcb66c"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-fd4512aaa4"></a>`distribution` | "stove0-server" |
-| <a id="s-dcec504006"></a>`module` | "stove0_core" |
-| <a id="s-92fc8bfd5a"></a>`name` | "observation_authority" |
-| <a id="s-e106f0850c"></a>`owner` | "stove0_core.PreviewRiverhogPort" |
-| <a id="s-1b55c94a87"></a>`unit` | "member" |
+- <a id="s-fd4512aaa4"></a>`distribution`: `stove0-server`
+- <a id="s-dcec504006"></a>`module`: `stove0_core`
+- <a id="s-92fc8bfd5a"></a>`name`: `observation_authority`
+- <a id="s-e106f0850c"></a>`owner`: `stove0_core.PreviewRiverhogPort`
+- <a id="s-1b55c94a87"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-221452c417"></a>`kind`: `"method"`
+- <a id="s-a7f55bf1c4"></a>`signature`: `"\"(self, claim: 'ClaimBinding', request: 'ObservationRequest') -> 'ObserverRuntimeAuthority'\""`
 
 ## Maintained corroboration
 

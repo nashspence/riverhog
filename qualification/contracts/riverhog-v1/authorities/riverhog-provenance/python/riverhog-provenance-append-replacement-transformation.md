@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fe9f82eb95"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-38eb46cf6c"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-0c6d8a38d1"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-04cdfe922d"></a>`module` | "riverhog_provenance" |
-| <a id="s-f87b73c2fc"></a>`name` | "append_replacement_transformation" |
-| <a id="s-6f30e6c4fb"></a>`unit` | "export" |
+- <a id="s-0c6d8a38d1"></a>`distribution`: `riverhog-provenance`
+- <a id="s-04cdfe922d"></a>`module`: `riverhog_provenance`
+- <a id="s-f87b73c2fc"></a>`name`: `append_replacement_transformation`
+- <a id="s-6f30e6c4fb"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-6baa098047"></a>`kind`: `"function"`
+- <a id="s-5d71714a27"></a>`signature`: `"\"(content: 'bytes', output_path: 'Path', *, relative_path: 'str', host_id: 'str', agent_name: 'str', agent_version: 'str', event_label: 'str', started_at: 'str', ended_at: 'str', observer: 'FileStateObserver', evidence: 'Sequence[Mapping[str, Any]]' = (), policy: 'ObservationPolicy \| None' = None) -> 'bytes'\""`
 
 ## Governing policies
 

@@ -14,13 +14,29 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9d85b8fcc4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ff2f79badb"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-744391c4fd"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-ab919852d7"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-da05acebf9"></a>`name` | "SchedulerStatus" |
-| <a id="s-506bb2f405"></a>`unit` | "export" |
+- <a id="s-744391c4fd"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-ab919852d7"></a>`module`: `stove0_operator_contracts`
+- <a id="s-da05acebf9"></a>`name`: `SchedulerStatus`
+- <a id="s-506bb2f405"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-c563c0d6d5"></a>`kind`: `"class"`
+- <a id="s-1f5029262b"></a>`signature`: `"\"(*, running: bool, interval_seconds: Annotated[float, Gt(gt=0)], roles: tuple[typing.Literal['controller', 'worker', 'combined'], ...]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-cf090b61a4"></a>
+- <a id="s-15cb55d163"></a>`title`: SchedulerStatus
+- <a id="s-0684c55048"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6fb25e8804"></a>`interval_seconds` | yes | type="number"; additional keys=`exclusiveMinimum` |  |
+| <a id="s-c938f628bc"></a>`roles` | yes | type="array"; items=(type="string"; enum=["controller","worker","combined"]) |  |
+| <a id="s-f4889d9b36"></a>`running` | yes | type="boolean" |  |
 
 ## Governing policies
 
@@ -46,13 +62,45 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 06f28a88a0571775564c7d533048a07a1e6bf04b4c138d3fa589ebebeaea35bf -->
+<!-- exact-contract-value: e9596a28250c4c1025dc5342bcc2cccc75450386d6ae49d43371ea6f2b9d5843 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "7a4eac0cdfe53ec109a9dd097dd163c7a16e9c52f9f04684ef04035f8d303bd5",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "interval_seconds": {
+          "exclusiveMinimum": 0,
+          "title": "Interval Seconds",
+          "type": "number"
+        },
+        "roles": {
+          "items": {
+            "enum": [
+              "controller",
+              "worker",
+              "combined"
+            ],
+            "type": "string"
+          },
+          "title": "Roles",
+          "type": "array"
+        },
+        "running": {
+          "title": "Running",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "running",
+        "interval_seconds",
+        "roles"
+      ],
+      "title": "SchedulerStatus",
+      "type": "object"
+    },
     "signature": "\"(*, running: bool, interval_seconds: Annotated[float, Gt(gt=0)], roles: tuple[typing.Literal['controller', 'worker', 'combined'], ...]) -> None\""
   },
   "distribution": "stove0-operator-contracts",

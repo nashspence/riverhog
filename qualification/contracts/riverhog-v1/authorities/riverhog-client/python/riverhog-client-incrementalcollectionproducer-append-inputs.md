@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-acf4404862"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-aad95832a3"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-425e814bd9"></a>`distribution` | "riverhog-client" |
-| <a id="s-f10c2879f3"></a>`module` | "riverhog_client" |
-| <a id="s-b535a0b96f"></a>`name` | "append_inputs" |
-| <a id="s-762428b61a"></a>`owner` | "riverhog_client.IncrementalCollectionProducer" |
-| <a id="s-3e85dfe839"></a>`unit` | "member" |
+- <a id="s-425e814bd9"></a>`distribution`: `riverhog-client`
+- <a id="s-f10c2879f3"></a>`module`: `riverhog_client`
+- <a id="s-b535a0b96f"></a>`name`: `append_inputs`
+- <a id="s-762428b61a"></a>`owner`: `riverhog_client.IncrementalCollectionProducer`
+- <a id="s-3e85dfe839"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-2c7e274ba2"></a>`kind`: `"method"`
+- <a id="s-8f96435fbb"></a>`signature`: `"\"(self, inputs: 'Sequence[ProducerInput]', *, provenance_journals: 'Mapping[str, bytes] \| None' = None, expected_identities: 'Mapping[str, ProducerArtifactIdentity] \| None' = None) -> 'tuple[ProducerArtifactCustody, ...]'\""`
 
 ## Maintained corroboration
 

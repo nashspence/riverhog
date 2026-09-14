@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c7adab7053"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ae82931ff8"></a>`contract` | type="collections.abc._CallableGenericAlias"; additional keys=`kind` |
-| <a id="s-cc8731226b"></a>`distribution` | "riverhog-client" |
-| <a id="s-346f546dca"></a>`module` | "riverhog_client" |
-| <a id="s-70d51f9955"></a>`name` | "RangeReader" |
-| <a id="s-c213c4a65c"></a>`unit` | "export" |
+- <a id="s-cc8731226b"></a>`distribution`: `riverhog-client`
+- <a id="s-346f546dca"></a>`module`: `riverhog_client`
+- <a id="s-70d51f9955"></a>`name`: `RangeReader`
+- <a id="s-c213c4a65c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-d5b41212eb"></a>`kind`: `"object"`
+- <a id="s-52f76a2af9"></a>`type`: `"collections.abc._CallableGenericAlias"`
 
 ## Governing policies
 

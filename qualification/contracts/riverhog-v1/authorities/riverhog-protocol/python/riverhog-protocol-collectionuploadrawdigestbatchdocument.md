@@ -14,13 +14,30 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-55069b7ab0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6adc0d5402"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-a88c1544b6"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-4ed6434195"></a>`module` | "riverhog_protocol" |
-| <a id="s-85798758e2"></a>`name` | "CollectionUploadRawDigestBatchDocument" |
-| <a id="s-d6e05578ec"></a>`unit` | "export" |
+- <a id="s-a88c1544b6"></a>`distribution`: `riverhog-protocol`
+- <a id="s-4ed6434195"></a>`module`: `riverhog_protocol`
+- <a id="s-85798758e2"></a>`name`: `CollectionUploadRawDigestBatchDocument`
+- <a id="s-d6e05578ec"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e9c655a6f8"></a>`kind`: `"class"`
+- <a id="s-598182523e"></a>`signature`: `"\"(*, path: str, first_part: Annotated[int, Strict(strict=True), Ge(ge=0)], sha256s: Annotated[list[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')])]], MinLen(min_length=1), MaxLen(max_length=1024)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-0916434e96"></a>
+- <a id="s-aa6328eeb8"></a>`title`: CollectionUploadRawDigestBatchDocument
+- <a id="s-808c4ce74d"></a>`description`: One append-only bounded slice of a registered raw source digest sequence.
+- <a id="s-c7c5a50ae9"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ac6b8dd81c"></a>`first_part` | yes | type="integer"; minimum=0 |  |
+| <a id="s-a44cdb5394"></a>`path` | yes | type="string" |  |
+| <a id="s-4ea3a086a9"></a>`sha256s` | yes | type="array"; minItems=1; maxItems=1024; items=(type="string"; pattern="^[0-9a-f]{64}$"); additional keys=`x-riverhog-extent` |  |
 
 ## Maintained corroboration
 
@@ -52,13 +69,49 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3c9bc98c3437bda01ba192cc838ae94bc101ca77695b59dae1ec84252daf7541 -->
+<!-- exact-contract-value: b5b943e5aa6e155a0070302d55a38aff936627c6219fc4da41eeaae7305b3e0a -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "b3e9c783bf5afec4ecfc01d05a15564e73cead5a37ad60e657d59c0a4e586f01",
+    "schema": {
+      "additionalProperties": false,
+      "description": "One append-only bounded slice of a registered raw source digest sequence.",
+      "properties": {
+        "first_part": {
+          "minimum": 0,
+          "title": "First Part",
+          "type": "integer"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256s": {
+          "items": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "maxItems": 1024,
+          "minItems": 1,
+          "title": "Sha256S",
+          "type": "array",
+          "x-riverhog-extent": {
+            "policy": "segmented_no_total_max",
+            "progression": "first_part",
+            "reason": "bounded-raw-digest-append"
+          }
+        }
+      },
+      "required": [
+        "path",
+        "first_part",
+        "sha256s"
+      ],
+      "title": "CollectionUploadRawDigestBatchDocument",
+      "type": "object"
+    },
     "signature": "\"(*, path: str, first_part: Annotated[int, Strict(strict=True), Ge(ge=0)], sha256s: Annotated[list[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')])]], MinLen(min_length=1), MaxLen(max_length=1024)]) -> None\""
   },
   "distribution": "riverhog-protocol",

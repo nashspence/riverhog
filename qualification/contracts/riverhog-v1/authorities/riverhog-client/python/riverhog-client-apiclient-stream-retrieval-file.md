@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-10e27c5822"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-cd19e9e633"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-64d07e634a"></a>`distribution` | "riverhog-client" |
-| <a id="s-dcd0f732ca"></a>`module` | "riverhog_client" |
-| <a id="s-4e010c6359"></a>`name` | "stream_retrieval_file" |
-| <a id="s-13bedae82f"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-43ffb68bcd"></a>`unit` | "member" |
+- <a id="s-64d07e634a"></a>`distribution`: `riverhog-client`
+- <a id="s-dcd0f732ca"></a>`module`: `riverhog_client`
+- <a id="s-4e010c6359"></a>`name`: `stream_retrieval_file`
+- <a id="s-13bedae82f"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-43ffb68bcd"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-52f6e84121"></a>`kind`: `"method"`
+- <a id="s-cb63031f03"></a>`signature`: `"\"(self, job_id: 'str', *, collection_id: 'CollectionId', path: 'str', expected_bytes: 'int', expected_sha256: 'str', start: 'int' = 0, end: 'int \| None' = None, chunk_size: 'int' = 8388608) -> 'Iterator[Iterator[bytes]]'\""`
 
 ## Maintained corroboration
 

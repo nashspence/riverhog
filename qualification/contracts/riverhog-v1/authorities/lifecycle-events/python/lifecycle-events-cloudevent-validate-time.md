@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7b28b00b37"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-458a8bf699"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-70fb18ea27"></a>`distribution` | "lifecycle-events" |
-| <a id="s-aacad80f6d"></a>`module` | "lifecycle_events" |
-| <a id="s-e1d68b87cf"></a>`name` | "validate_time" |
-| <a id="s-8da3dfb573"></a>`owner` | "lifecycle_events.CloudEvent" |
-| <a id="s-e4f10e08bc"></a>`unit` | "member" |
+- <a id="s-70fb18ea27"></a>`distribution`: `lifecycle-events`
+- <a id="s-aacad80f6d"></a>`module`: `lifecycle_events`
+- <a id="s-e1d68b87cf"></a>`name`: `validate_time`
+- <a id="s-8da3dfb573"></a>`owner`: `lifecycle_events.CloudEvent`
+- <a id="s-e4f10e08bc"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-d2eca65f24"></a>`kind`: `"classmethod"`
+- <a id="s-cda912e8ec"></a>`signature`: `"\"(cls, value: 'str') -> 'str'\""`
 
 ## Maintained corroboration
 

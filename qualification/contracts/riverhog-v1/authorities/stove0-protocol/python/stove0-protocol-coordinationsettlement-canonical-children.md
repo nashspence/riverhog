@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-05b2fc5bd4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ddb6e90852"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-5d17808642"></a>`distribution` | "stove0-protocol" |
-| <a id="s-214fbddf34"></a>`module` | "stove0_protocol" |
-| <a id="s-0abdcce096"></a>`name` | "canonical_children" |
-| <a id="s-68adca8a0f"></a>`owner` | "stove0_protocol.CoordinationSettlement" |
-| <a id="s-0dcf36014b"></a>`unit` | "member" |
+- <a id="s-5d17808642"></a>`distribution`: `stove0-protocol`
+- <a id="s-214fbddf34"></a>`module`: `stove0_protocol`
+- <a id="s-0abdcce096"></a>`name`: `canonical_children`
+- <a id="s-68adca8a0f"></a>`owner`: `stove0_protocol.CoordinationSettlement`
+- <a id="s-0dcf36014b"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-9daa459ee4"></a>`kind`: `"classmethod"`
+- <a id="s-7e1c6e4faf"></a>`signature`: `"\"(cls, value: 'tuple[CoordinationChildSettlementRef, ...]') -> 'tuple[CoordinationChildSettlementRef, ...]'\""`
 
 ## Maintained corroboration
 

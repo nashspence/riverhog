@@ -14,13 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a1e432c91d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8430b4e23f"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-c2d6878f1a"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-4f252a60f6"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-070575567d"></a>`name` | "NativeListenerStatus" |
-| <a id="s-86140ff676"></a>`unit` | "export" |
+- <a id="s-c2d6878f1a"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-4f252a60f6"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-070575567d"></a>`name`: `NativeListenerStatus`
+- <a id="s-86140ff676"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-c47886004f"></a>`kind`: `"class"`
+- <a id="s-e9d52d8769"></a>`signature`: `"\"(installed: 'bool', enabled: 'bool', running: 'bool') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-525bc35ded"></a>`installed` | `'bool'` | `required` |
+| <a id="s-9aceb0d064"></a>`enabled` | `'bool'` | `required` |
+| <a id="s-112b7aef7b"></a>`running` | `'bool'` | `required` |
 
 ## Governing policies
 

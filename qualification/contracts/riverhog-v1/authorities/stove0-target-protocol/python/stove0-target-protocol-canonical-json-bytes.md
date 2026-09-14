@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ff942a5cf7"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1b978e57b1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-fb3072176f"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-7b322a2b7f"></a>`module` | "stove0_target_protocol" |
-| <a id="s-17583f94c8"></a>`name` | "canonical_json_bytes" |
-| <a id="s-072ce0ac23"></a>`unit` | "export" |
+- <a id="s-fb3072176f"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-7b322a2b7f"></a>`module`: `stove0_target_protocol`
+- <a id="s-17583f94c8"></a>`name`: `canonical_json_bytes`
+- <a id="s-072ce0ac23"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-dc0e776293"></a>`kind`: `"function"`
+- <a id="s-29659f08fd"></a>`signature`: `"\"(value: 'object') -> 'bytes'\""`
 
 ## Governing policies
 

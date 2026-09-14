@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4630829dca"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-707cd3e86f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d8dd028084"></a>`distribution` | "stove0-recipe-config" |
-| <a id="s-90fcb2aa2d"></a>`module` | "stove0_recipe_config" |
-| <a id="s-dbbd0b6d20"></a>`name` | "canonical_roles" |
-| <a id="s-66ec0e3d5f"></a>`owner` | "stove0_recipe_config.ArtifactAssociation" |
-| <a id="s-300731674d"></a>`unit` | "member" |
+- <a id="s-d8dd028084"></a>`distribution`: `stove0-recipe-config`
+- <a id="s-90fcb2aa2d"></a>`module`: `stove0_recipe_config`
+- <a id="s-dbbd0b6d20"></a>`name`: `canonical_roles`
+- <a id="s-66ec0e3d5f"></a>`owner`: `stove0_recipe_config.ArtifactAssociation`
+- <a id="s-300731674d"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-93f9d6db79"></a>`kind`: `"classmethod"`
+- <a id="s-8f173d50f6"></a>`signature`: `"\"(cls, value: 'tuple[str, ...]') -> 'tuple[str, ...]'\""`
 
 ## Maintained corroboration
 

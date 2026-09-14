@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-362d505ea3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-faae6bcf82"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c2978c1fd4"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-eb1df57fb0"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-2da35c1c10"></a>`name` | "ObjectReadStream" |
-| <a id="s-6d4ec53de4"></a>`unit` | "export" |
+- <a id="s-c2978c1fd4"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-eb1df57fb0"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-2da35c1c10"></a>`name`: `ObjectReadStream`
+- <a id="s-6d4ec53de4"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-c5988b9ad6"></a>`kind`: `"class"`
+- <a id="s-baa29335b4"></a>`signature`: `"\"(*, receipt: 'ObjectReadReceipt', content: 'Iterator[bytes]', close: 'Callable[[], None] \| None' = None) -> 'None'\""`
 
 ## Maintained corroboration
 

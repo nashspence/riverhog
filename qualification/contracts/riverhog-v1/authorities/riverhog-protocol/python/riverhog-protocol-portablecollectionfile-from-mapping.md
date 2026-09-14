@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c0458cf4c6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d949a8f71e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-51fa7fc5d4"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-356cf0e82d"></a>`module` | "riverhog_protocol" |
-| <a id="s-e8e9432033"></a>`name` | "from_mapping" |
-| <a id="s-0995d205cc"></a>`owner` | "riverhog_protocol.PortableCollectionFile" |
-| <a id="s-d84412aa8d"></a>`unit` | "member" |
+- <a id="s-51fa7fc5d4"></a>`distribution`: `riverhog-protocol`
+- <a id="s-356cf0e82d"></a>`module`: `riverhog_protocol`
+- <a id="s-e8e9432033"></a>`name`: `from_mapping`
+- <a id="s-0995d205cc"></a>`owner`: `riverhog_protocol.PortableCollectionFile`
+- <a id="s-d84412aa8d"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-4f60acd2b7"></a>`kind`: `"classmethod"`
+- <a id="s-3ed7406805"></a>`signature`: `"\"(cls, value: 'object') -> 'PortableCollectionFile'\""`
 
 ## Maintained corroboration
 

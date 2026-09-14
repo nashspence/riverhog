@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bb9d308d87"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-43e1c0af09"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6f676b2f90"></a>`distribution` | "state-schema" |
-| <a id="s-1e17c11185"></a>`module` | "state_schema" |
-| <a id="s-d6e84b5cae"></a>`name` | "StateEngine" |
-| <a id="s-6862ffd2d3"></a>`unit` | "export" |
+- <a id="s-6f676b2f90"></a>`distribution`: `state-schema`
+- <a id="s-1e17c11185"></a>`module`: `state_schema`
+- <a id="s-d6e84b5cae"></a>`name`: `StateEngine`
+- <a id="s-6862ffd2d3"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-917b21bb1d"></a>`kind`: `"class"`
+- <a id="s-49945bb1b5"></a>`signature`: `"\"(pool: 'Pool', dialect: 'Dialect', url: 'URL', logging_name: 'Optional[str]' = None, echo: 'Optional[_EchoFlagType]' = None, query_cache_size: 'int' = 500, execution_options: 'Optional[Mapping[str, Any]]' = None, hide_parameters: 'bool' = False)\""`
 
 ## Maintained corroboration
 

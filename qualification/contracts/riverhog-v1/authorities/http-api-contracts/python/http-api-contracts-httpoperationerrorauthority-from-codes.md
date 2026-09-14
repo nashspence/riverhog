@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-94a612992f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-bcc8daf39f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6294812e46"></a>`distribution` | "http-api-contracts" |
-| <a id="s-149e2b5aef"></a>`module` | "http_api_contracts" |
-| <a id="s-6ec9466642"></a>`name` | "from_codes" |
-| <a id="s-a590c13ddc"></a>`owner` | "http_api_contracts.HttpOperationErrorAuthority" |
-| <a id="s-bb4821831b"></a>`unit` | "member" |
+- <a id="s-6294812e46"></a>`distribution`: `http-api-contracts`
+- <a id="s-149e2b5aef"></a>`module`: `http_api_contracts`
+- <a id="s-6ec9466642"></a>`name`: `from_codes`
+- <a id="s-a590c13ddc"></a>`owner`: `http_api_contracts.HttpOperationErrorAuthority`
+- <a id="s-bb4821831b"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-aaa40fdb46"></a>`kind`: `"classmethod"`
+- <a id="s-d23bf5a9e7"></a>`signature`: `"\"(cls, *, common: 'Collection[str]', operation: 'Mapping[str, Collection[str]]', exact: 'Mapping[str, Collection[str]] \| None' = None) -> 'HttpOperationErrorAuthority'\""`
 
 ## Maintained corroboration
 

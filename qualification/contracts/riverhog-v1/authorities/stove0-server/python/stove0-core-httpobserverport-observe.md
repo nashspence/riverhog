@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fce71a7ea8"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ddb281c0b6"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-1317e1f559"></a>`distribution` | "stove0-server" |
-| <a id="s-127de79353"></a>`module` | "stove0_core" |
-| <a id="s-d7dcd1c461"></a>`name` | "observe" |
-| <a id="s-8ebb0b11a6"></a>`owner` | "stove0_core.HttpObserverPort" |
-| <a id="s-957cd57f29"></a>`unit` | "member" |
+- <a id="s-1317e1f559"></a>`distribution`: `stove0-server`
+- <a id="s-127de79353"></a>`module`: `stove0_core`
+- <a id="s-d7dcd1c461"></a>`name`: `observe`
+- <a id="s-8ebb0b11a6"></a>`owner`: `stove0_core.HttpObserverPort`
+- <a id="s-957cd57f29"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3ded940e0b"></a>`kind`: `"method"`
+- <a id="s-7ff3f23a83"></a>`signature`: `"\"(self, registration_id: 'str', invocation: 'ObservationInvocation', *, descriptor: 'ObserverDescriptor') -> 'ObservationResult'\""`
 
 ## Maintained corroboration
 

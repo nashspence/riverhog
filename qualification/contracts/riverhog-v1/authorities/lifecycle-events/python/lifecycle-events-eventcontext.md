@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ddcc113296"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b6f4fda2a6"></a>`contract` | type="typing._AnnotatedAlias"; additional keys=`kind` |
-| <a id="s-d1f7eb1015"></a>`distribution` | "lifecycle-events" |
-| <a id="s-db38169b37"></a>`module` | "lifecycle_events" |
-| <a id="s-74c2748614"></a>`name` | "EventContext" |
-| <a id="s-c51640b612"></a>`unit` | "export" |
+- <a id="s-d1f7eb1015"></a>`distribution`: `lifecycle-events`
+- <a id="s-db38169b37"></a>`module`: `lifecycle_events`
+- <a id="s-74c2748614"></a>`name`: `EventContext`
+- <a id="s-c51640b612"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-82b01b51e8"></a>`kind`: `"object"`
+- <a id="s-5c85c8ac10"></a>`type`: `"typing._AnnotatedAlias"`
 
 ## Governing policies
 

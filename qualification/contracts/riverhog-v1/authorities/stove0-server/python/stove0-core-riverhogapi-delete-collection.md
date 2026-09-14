@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7be61dfd4e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-396a00f3db"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-9a4384f54c"></a>`distribution` | "stove0-server" |
-| <a id="s-8bd97719f0"></a>`module` | "stove0_core" |
-| <a id="s-12cc622224"></a>`name` | "delete_collection" |
-| <a id="s-acc8a5379a"></a>`owner` | "stove0_core.RiverhogApi" |
-| <a id="s-fed00c7994"></a>`unit` | "member" |
+- <a id="s-9a4384f54c"></a>`distribution`: `stove0-server`
+- <a id="s-8bd97719f0"></a>`module`: `stove0_core`
+- <a id="s-12cc622224"></a>`name`: `delete_collection`
+- <a id="s-acc8a5379a"></a>`owner`: `stove0_core.RiverhogApi`
+- <a id="s-fed00c7994"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1416ac4874"></a>`kind`: `"method"`
+- <a id="s-b78a7510da"></a>`signature`: `"\"(self, collection_id: 'int', *, challenge: 'str', retirement_claim_id: 'str \| None' = None, event_context: 'Mapping[str, Any] \| None' = None) -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

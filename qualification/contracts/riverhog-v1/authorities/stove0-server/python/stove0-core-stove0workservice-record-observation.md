@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-dbe30c8956"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3119725db5"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-3420ccfe3b"></a>`distribution` | "stove0-server" |
-| <a id="s-e760a78374"></a>`module` | "stove0_core" |
-| <a id="s-cbc9a10774"></a>`name` | "record_observation" |
-| <a id="s-2d7555fe4b"></a>`owner` | "stove0_core.Stove0WorkService" |
-| <a id="s-abf295f15f"></a>`unit` | "member" |
+- <a id="s-3420ccfe3b"></a>`distribution`: `stove0-server`
+- <a id="s-e760a78374"></a>`module`: `stove0_core`
+- <a id="s-cbc9a10774"></a>`name`: `record_observation`
+- <a id="s-2d7555fe4b"></a>`owner`: `stove0_core.Stove0WorkService`
+- <a id="s-abf295f15f"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-53f3c2e3e2"></a>`kind`: `"method"`
+- <a id="s-032d904ec7"></a>`signature`: `"\"(self, work_id: 'str', result: 'ObservationResult', *, expected_revision: 'int') -> 'WorkRecord'\""`
 
 ## Maintained corroboration
 

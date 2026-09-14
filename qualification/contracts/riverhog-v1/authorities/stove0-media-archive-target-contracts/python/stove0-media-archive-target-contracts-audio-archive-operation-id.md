@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-875330b5cd"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7e57409a4d"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-2164fd3cf5"></a>`distribution` | "stove0-media-archive-target-contracts" |
-| <a id="s-e64ab60c28"></a>`module` | "stove0_media_archive_target_contracts" |
-| <a id="s-3b8bc69f60"></a>`name` | "AUDIO_ARCHIVE_OPERATION_ID" |
-| <a id="s-da7c27534c"></a>`unit` | "export" |
+- <a id="s-2164fd3cf5"></a>`distribution`: `stove0-media-archive-target-contracts`
+- <a id="s-e64ab60c28"></a>`module`: `stove0_media_archive_target_contracts`
+- <a id="s-3b8bc69f60"></a>`name`: `AUDIO_ARCHIVE_OPERATION_ID`
+- <a id="s-da7c27534c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-38b1f9f63e"></a>`kind`: `"constant"`
+- <a id="s-c96808a8a7"></a>`value`: `"stove0.media.audio-archive/v1"`
 
 ## Governing policies
 

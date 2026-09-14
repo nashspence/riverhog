@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3eb68acdc0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-da236042e0"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-cb405da28a"></a>`distribution` | "lifecycle-events" |
-| <a id="s-d1e7d49e9f"></a>`module` | "lifecycle_events" |
-| <a id="s-d8de066d2e"></a>`name` | "require_progress_after" |
-| <a id="s-61eb7450f4"></a>`owner` | "lifecycle_events.EventPage" |
-| <a id="s-af3364df4a"></a>`unit` | "member" |
+- <a id="s-cb405da28a"></a>`distribution`: `lifecycle-events`
+- <a id="s-d1e7d49e9f"></a>`module`: `lifecycle_events`
+- <a id="s-d8de066d2e"></a>`name`: `require_progress_after`
+- <a id="s-61eb7450f4"></a>`owner`: `lifecycle_events.EventPage`
+- <a id="s-af3364df4a"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-05502e3bb1"></a>`kind`: `"method"`
+- <a id="s-249606859a"></a>`signature`: `"\"(self, cursor: 'str') -> 'None'\""`
 
 ## Maintained corroboration
 

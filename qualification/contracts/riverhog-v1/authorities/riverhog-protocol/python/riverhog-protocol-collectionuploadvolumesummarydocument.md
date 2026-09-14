@@ -14,13 +14,30 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-350a9f3b05"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-98f05048ff"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-6cd4e3c695"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-d5f334369b"></a>`module` | "riverhog_protocol" |
-| <a id="s-93a975870e"></a>`name` | "CollectionUploadVolumeSummaryDocument" |
-| <a id="s-797c32bc18"></a>`unit` | "export" |
+- <a id="s-6cd4e3c695"></a>`distribution`: `riverhog-protocol`
+- <a id="s-d5f334369b"></a>`module`: `riverhog_protocol`
+- <a id="s-93a975870e"></a>`name`: `CollectionUploadVolumeSummaryDocument`
+- <a id="s-797c32bc18"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-dff4d3736d"></a>`kind`: `"class"`
+- <a id="s-e7769164e0"></a>`signature`: `"\"(*, volume_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^(?:pack\|segment)-[0-9a-f]{64}$', ascii_only=None)], sequence: Annotated[int, Strict(strict=True), Ge(ge=0)], kind: Literal['pack', 'segment']) -> None\""`
+
+#### Validated model schema
+
+<a id="s-a547b4b86b"></a>
+- <a id="s-2df68ba161"></a>`title`: CollectionUploadVolumeSummaryDocument
+- <a id="s-dbf32b8d83"></a>`description`: Protocol-owned identity of one immutable collection archive volume.
+- <a id="s-39556d1024"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2eca180978"></a>`kind` | yes | type="string"; enum=["pack","segment"] |  |
+| <a id="s-de746b69ba"></a>`sequence` | yes | type="integer"; minimum=0 |  |
+| <a id="s-516fc5994f"></a>`volume_id` | yes | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -52,13 +69,43 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7b287ef53045640f5bfc8315489f8abbd600cdd19517bb2c182fcac14eaa17a4 -->
+<!-- exact-contract-value: f98466950307a79ce73cddf101c4820fd82a15fea49652e6f36d14a2c93fcd1a -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "1ac7efaa0bbffcab4fff943fbbab4f3ed050c499a9fe1520ac38e1ccb0e6d859",
+    "schema": {
+      "additionalProperties": false,
+      "description": "Protocol-owned identity of one immutable collection archive volume.",
+      "properties": {
+        "kind": {
+          "enum": [
+            "pack",
+            "segment"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "volume_id": {
+          "pattern": "^(?:pack|segment)-[0-9a-f]{64}$",
+          "title": "Volume Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "volume_id",
+        "sequence",
+        "kind"
+      ],
+      "title": "CollectionUploadVolumeSummaryDocument",
+      "type": "object"
+    },
     "signature": "\"(*, volume_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^(?:pack|segment)-[0-9a-f]{64}$', ascii_only=None)], sequence: Annotated[int, Strict(strict=True), Ge(ge=0)], kind: Literal['pack', 'segment']) -> None\""
   },
   "distribution": "riverhog-protocol",

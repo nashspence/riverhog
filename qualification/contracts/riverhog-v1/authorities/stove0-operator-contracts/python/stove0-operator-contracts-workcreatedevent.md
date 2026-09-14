@@ -14,13 +14,40 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3b09e77382"></a>
-| Field | Shape |
+- <a id="s-e7ae0e2909"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-6df2c46ea2"></a>`module`: `stove0_operator_contracts`
+- <a id="s-dfe6c0a4e6"></a>`name`: `WorkCreatedEvent`
+- <a id="s-423b9c3071"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f6c2162c8c"></a>`kind`: `"class"`
+- <a id="s-7e91262c9b"></a>`signature`: `"\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.work.created'], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.WorkCreatedEventData) -> None\""`
+
+#### Validated model schema
+
+<a id="s-8371a97cbe"></a>
+- <a id="s-13141b831f"></a>`title`: WorkCreatedEvent
+- <a id="s-c2445c347d"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-bb5df1c628"></a>`data` | yes | #/$defs/WorkCreatedEventData |  |
+| <a id="s-6c65f4588c"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-2007241504"></a>`id` | yes | type="string"; minLength=1 |  |
+| <a id="s-2c356c6a6d"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
+| <a id="s-0a6b3e077e"></a>`specversion` | no | type="string"; const="1.0" |  |
+| <a id="s-0fa46ef090"></a>`subject` | yes | type="string"; minLength=1 |  |
+| <a id="s-4e263b1025"></a>`time` | yes | type="string" |  |
+| <a id="s-18839a3c6a"></a>`type` | yes | type="string"; const="io.riverhog.stove0.work.created" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-4468de22d4"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-e7ae0e2909"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-6df2c46ea2"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-dfe6c0a4e6"></a>`name` | "WorkCreatedEvent" |
-| <a id="s-423b9c3071"></a>`unit` | "export" |
+| <a id="s-6085de5cba"></a>`WorkCreatedEventData` | type="object"; fields=`branch_set_sha256`, `join_plan_sha256`, `parent_work_id`, `phase`, `work_id`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
@@ -46,13 +73,146 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c9362f3baf451fe81dfcf73763304ce5fa7761e43b9d3808d62628cf2e158a6c -->
+<!-- exact-contract-value: d23252ca36df232c82068279f076641bacdd8d551700252ee4c2ebdc5fc008c6 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "14ba98a6cc43790e66a7c554f5956f029ada8c5216b7d5d71455bbf86d3500bf",
+    "schema": {
+      "$defs": {
+        "WorkCreatedEventData": {
+          "additionalProperties": false,
+          "properties": {
+            "branch_set_sha256": {
+              "anyOf": [
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Branch Set Sha256"
+            },
+            "join_plan_sha256": {
+              "anyOf": [
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Join Plan Sha256"
+            },
+            "parent_work_id": {
+              "anyOf": [
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Parent Work Id"
+            },
+            "phase": {
+              "enum": [
+                "eligible",
+                "claimed",
+                "observing",
+                "planning",
+                "target_preflight",
+                "queued",
+                "executing",
+                "output_finalizing",
+                "verifying",
+                "settled",
+                "retirement_pending",
+                "coordinating",
+                "abandon_pending",
+                "complete",
+                "inapplicable",
+                "failed",
+                "canceled"
+              ],
+              "title": "Phase",
+              "type": "string"
+            },
+            "work_id": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Work Id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "work_id",
+            "phase"
+          ],
+          "title": "WorkCreatedEventData",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "$ref": "#/$defs/WorkCreatedEventData"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "title": "Datacontenttype",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "const": "urn:riverhog:stove0",
+          "title": "Source",
+          "type": "string"
+        },
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Specversion",
+          "type": "string"
+        },
+        "subject": {
+          "minLength": 1,
+          "title": "Subject",
+          "type": "string"
+        },
+        "time": {
+          "title": "Time",
+          "type": "string"
+        },
+        "type": {
+          "const": "io.riverhog.stove0.work.created",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "type",
+        "subject",
+        "time",
+        "data"
+      ],
+      "title": "WorkCreatedEvent",
+      "type": "object"
+    },
     "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.work.created'], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.WorkCreatedEventData) -> None\""
   },
   "distribution": "stove0-operator-contracts",

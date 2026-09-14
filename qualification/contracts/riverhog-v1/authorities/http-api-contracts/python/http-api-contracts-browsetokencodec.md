@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d677806ed6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6a0c0cf655"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-5b488df88b"></a>`distribution` | "http-api-contracts" |
-| <a id="s-0d7bc776ee"></a>`module` | "http_api_contracts" |
-| <a id="s-b2291e5a5a"></a>`name` | "BrowseTokenCodec" |
-| <a id="s-5db93dd9f7"></a>`unit` | "export" |
+- <a id="s-5b488df88b"></a>`distribution`: `http-api-contracts`
+- <a id="s-0d7bc776ee"></a>`module`: `http_api_contracts`
+- <a id="s-b2291e5a5a"></a>`name`: `BrowseTokenCodec`
+- <a id="s-5db93dd9f7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-547626b272"></a>`kind`: `"class"`
+- <a id="s-0e13a06a5b"></a>`signature`: `"\"(signing_key: 'str \| bytes', *, lifetime_seconds: 'int', clock: 'Callable[[], float]' = <built-in function time>) -> 'None'\""`
 
 ## Maintained corroboration
 

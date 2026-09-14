@@ -14,13 +14,35 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d6bd7e4662"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-737b818316"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-4b684e98e6"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-310b6feb81"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-9e04636697"></a>`name` | "ObjectMetadataReceipt" |
-| <a id="s-d077994d56"></a>`unit` | "export" |
+- <a id="s-4b684e98e6"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-310b6feb81"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-9e04636697"></a>`name`: `ObjectMetadataReceipt`
+- <a id="s-d077994d56"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-8f29a8307d"></a>`kind`: `"class"`
+- <a id="s-916130124e"></a>`signature`: `"\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=2000)] = None, entity_token: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, content_type: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=255)] = None, stored_bytes: Annotated[int, Ge(ge=0)], stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, observed_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], verified_placement: Literal['archive', 'immediate'], completed_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=100)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-fc35800db0"></a>
+- <a id="s-2d9edd2c5a"></a>`title`: ObjectMetadataReceipt
+- <a id="s-c5b1d384c5"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-00acfbcadc"></a>`completed_at` | yes | type="string"; minLength=1; maxLength=100 |  |
+| <a id="s-cde06a44fe"></a>`content_type` | no | anyOf=type="string"; minLength=1; maxLength=255 \| type="null" |  |
+| <a id="s-9677d60952"></a>`entity_token` | no | anyOf=type="string"; minLength=1; maxLength=4000 \| type="null" |  |
+| <a id="s-c3f8823a41"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-cd09a53850"></a>`observed_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
+| <a id="s-066c38dc7c"></a>`revision` | no | anyOf=type="string"; minLength=1; maxLength=2000 \| type="null" |  |
+| <a id="s-e2d56684bf"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-c7938f3880"></a>`stored_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-749f31ee61"></a>`verified_placement` | yes | type="string"; enum=["archive","immediate"] |  |
 
 ## Maintained corroboration
 
@@ -54,13 +76,120 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ef9612e281a90be2250ce6a7159ade0098a3dfee1ff8dd3b36c64f2d151cfa51 -->
+<!-- exact-contract-value: a741de2b5466b605cae0d6591dea61880c0c8e1191799069512e5063e8d8195d -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "10fe081f0530594bffeb9d17545b2652dd8db57725461bb29fe06922e61a7c67",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "completed_at": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Completed At",
+          "type": "string"
+        },
+        "content_type": {
+          "anyOf": [
+            {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Type"
+        },
+        "entity_token": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entity Token"
+        },
+        "object_path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Object Path",
+          "type": "string"
+        },
+        "observed_identity_assertions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions.",
+          "maxProperties": 64,
+          "title": "Observed Identity Assertions",
+          "type": "object",
+          "x-riverhog-encoded-bytes-max": 16384,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-object-identity-assertion-envelope"
+          }
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Revision"
+        },
+        "stored_bytes": {
+          "minimum": 0,
+          "title": "Stored Bytes",
+          "type": "integer"
+        },
+        "stored_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stored Sha256"
+        },
+        "verified_placement": {
+          "enum": [
+            "archive",
+            "immediate"
+          ],
+          "title": "Verified Placement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "object_path",
+        "stored_bytes",
+        "observed_identity_assertions",
+        "verified_placement",
+        "completed_at"
+      ],
+      "title": "ObjectMetadataReceipt",
+      "type": "object"
+    },
     "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=2000)] = None, entity_token: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, content_type: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=255)] = None, stored_bytes: Annotated[int, Ge(ge=0)], stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, observed_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], verified_placement: Literal['archive', 'immediate'], completed_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=100)]) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",

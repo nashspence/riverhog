@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-df807d96be"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-fe310bf94d"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-38d39dc385"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-9217945c53"></a>`module` | "riverhog_protocol" |
-| <a id="s-1ebe74839b"></a>`name` | "from_mapping" |
-| <a id="s-c955a8314c"></a>`owner` | "riverhog_protocol.ProducerEvidence" |
-| <a id="s-7b99bd6c78"></a>`unit` | "member" |
+- <a id="s-38d39dc385"></a>`distribution`: `riverhog-protocol`
+- <a id="s-9217945c53"></a>`module`: `riverhog_protocol`
+- <a id="s-1ebe74839b"></a>`name`: `from_mapping`
+- <a id="s-c955a8314c"></a>`owner`: `riverhog_protocol.ProducerEvidence`
+- <a id="s-7b99bd6c78"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e8a67062c5"></a>`kind`: `"classmethod"`
+- <a id="s-01dc808275"></a>`signature`: `"\"(cls, value: 'Mapping[str, object]') -> 'ProducerEvidence'\""`
 
 ## Maintained corroboration
 

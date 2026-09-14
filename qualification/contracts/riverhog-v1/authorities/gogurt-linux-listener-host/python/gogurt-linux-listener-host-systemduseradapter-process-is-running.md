@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-98d9e5c8e2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-93e50d5e5e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c4dc4e1b66"></a>`distribution` | "gogurt-linux-listener-host" |
-| <a id="s-b9751d1bf5"></a>`module` | "gogurt_linux_listener_host" |
-| <a id="s-fe46dd6bc2"></a>`name` | "process_is_running" |
-| <a id="s-e35f3a8b56"></a>`owner` | "gogurt_linux_listener_host.SystemdUserAdapter" |
-| <a id="s-0033c16a76"></a>`unit` | "member" |
+- <a id="s-c4dc4e1b66"></a>`distribution`: `gogurt-linux-listener-host`
+- <a id="s-b9751d1bf5"></a>`module`: `gogurt_linux_listener_host`
+- <a id="s-fe46dd6bc2"></a>`name`: `process_is_running`
+- <a id="s-e35f3a8b56"></a>`owner`: `gogurt_linux_listener_host.SystemdUserAdapter`
+- <a id="s-0033c16a76"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-36ebed12a4"></a>`kind`: `"staticmethod"`
+- <a id="s-bc1b632352"></a>`signature`: `"\"(pid: 'int') -> 'bool'\""`
 
 ## Maintained corroboration
 

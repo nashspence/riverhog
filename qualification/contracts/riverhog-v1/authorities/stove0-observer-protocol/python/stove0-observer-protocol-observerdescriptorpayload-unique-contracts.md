@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-74dbcd74c6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8a19100558"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e116c7ebef"></a>`distribution` | "stove0-observer-protocol" |
-| <a id="s-480d6fdb38"></a>`module` | "stove0_observer_protocol" |
-| <a id="s-87308674ec"></a>`name` | "unique_contracts" |
-| <a id="s-c2650c4796"></a>`owner` | "stove0_observer_protocol.ObserverDescriptorPayload" |
-| <a id="s-b18dfbdd7e"></a>`unit` | "member" |
+- <a id="s-e116c7ebef"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-480d6fdb38"></a>`module`: `stove0_observer_protocol`
+- <a id="s-87308674ec"></a>`name`: `unique_contracts`
+- <a id="s-c2650c4796"></a>`owner`: `stove0_observer_protocol.ObserverDescriptorPayload`
+- <a id="s-b18dfbdd7e"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-32eaf57a36"></a>`kind`: `"classmethod"`
+- <a id="s-9148fca75b"></a>`signature`: `"\"(cls, value: 'tuple[ObserverContractSupport, ...]') -> 'tuple[ObserverContractSupport, ...]'\""`
 
 ## Maintained corroboration
 

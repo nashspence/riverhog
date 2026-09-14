@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-207f689cc8"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-19a8c39136"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-40d3a7aea2"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-a5b91b6f27"></a>`module` | "riverhog_protocol" |
-| <a id="s-a4112facf7"></a>`name` | "validate_capability" |
-| <a id="s-e26381c781"></a>`owner` | "riverhog_protocol.TransformCapabilityCreateDocument" |
-| <a id="s-2bad4ca673"></a>`unit` | "member" |
+- <a id="s-40d3a7aea2"></a>`distribution`: `riverhog-protocol`
+- <a id="s-a5b91b6f27"></a>`module`: `riverhog_protocol`
+- <a id="s-a4112facf7"></a>`name`: `validate_capability`
+- <a id="s-e26381c781"></a>`owner`: `riverhog_protocol.TransformCapabilityCreateDocument`
+- <a id="s-2bad4ca673"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-930d6cd13c"></a>`kind`: `"method"`
+- <a id="s-7b92b3d3fa"></a>`signature`: `"\"(self) -> 'Self'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3d1cd5ee41"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3c9f337064"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-652921bea5"></a>`distribution` | "riverhog-client" |
-| <a id="s-c660099922"></a>`module` | "riverhog_client" |
-| <a id="s-f087c8edb3"></a>`name` | "CollectionProducer" |
-| <a id="s-3b1d6ae227"></a>`unit` | "export" |
+- <a id="s-652921bea5"></a>`distribution`: `riverhog-client`
+- <a id="s-c660099922"></a>`module`: `riverhog_client`
+- <a id="s-f087c8edb3"></a>`name`: `CollectionProducer`
+- <a id="s-3b1d6ae227"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-57d5cd4579"></a>`kind`: `"class"`
+- <a id="s-b1b9b3f77c"></a>`signature`: `"'(api: \\'ApiClient\\', *, producer_app: \\'str\\', adapter_id: \\'str\\', adapter_version: \\'str\\', ingest_source: \\'str\\', archive_store: \\'ArchiveStoreName \| None\\' = None, description: \\'CollectionDescription \| None\\' = None, tags: \\'Sequence[CollectionTag]\\' = (), provenance_mode: \"Literal[\\'captured\\', \\'omitted\\']\" = \\'omitted\\', provenance_omission_reason: \\'str\\' = \\'Producer did not receive host provenance; immutable producer evidence records the source boundary.\\', server_generated_provenance: \\'bool\\' = False) -> \\'None\\''"`
 
 ## Maintained corroboration
 

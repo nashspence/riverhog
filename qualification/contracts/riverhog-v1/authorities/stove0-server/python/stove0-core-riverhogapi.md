@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-98caf50b83"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d7c45a3137"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6a147e7e7d"></a>`distribution` | "stove0-server" |
-| <a id="s-8aeb64117c"></a>`module` | "stove0_core" |
-| <a id="s-4d27c2ed7b"></a>`name` | "RiverhogApi" |
-| <a id="s-8866b57f13"></a>`unit` | "export" |
+- <a id="s-6a147e7e7d"></a>`distribution`: `stove0-server`
+- <a id="s-8aeb64117c"></a>`module`: `stove0_core`
+- <a id="s-4d27c2ed7b"></a>`name`: `RiverhogApi`
+- <a id="s-8866b57f13"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-c8638c0a35"></a>`kind`: `"class"`
+- <a id="s-c6c41c5885"></a>`signature`: `"'(*args, **kwargs)'"`
 
 ## Maintained corroboration
 

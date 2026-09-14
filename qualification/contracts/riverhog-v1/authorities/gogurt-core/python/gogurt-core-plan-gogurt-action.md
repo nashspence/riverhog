@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f63babb7a0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2455052f2a"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d75b490e5a"></a>`distribution` | "gogurt-core" |
-| <a id="s-dbb9468a77"></a>`module` | "gogurt_core" |
-| <a id="s-452a9dacf9"></a>`name` | "plan_gogurt_action" |
-| <a id="s-bfad8acaa5"></a>`unit` | "export" |
+- <a id="s-d75b490e5a"></a>`distribution`: `gogurt-core`
+- <a id="s-dbb9468a77"></a>`module`: `gogurt_core`
+- <a id="s-452a9dacf9"></a>`name`: `plan_gogurt_action`
+- <a id="s-bfad8acaa5"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e3aaddae20"></a>`kind`: `"function"`
+- <a id="s-b5024bce1c"></a>`signature`: `"\"(config_file: 'PathInput', mount_point: 'PathInput', *, provider: 'MountedVolumeProvider', actions_dir: 'PathInput \| None' = None) -> 'dict[str, object]'\""`
 
 ## Governing policies
 

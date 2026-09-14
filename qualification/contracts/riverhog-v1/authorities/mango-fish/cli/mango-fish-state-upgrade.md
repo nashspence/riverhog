@@ -45,7 +45,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-205080976d"></a>`usage` | <a id="s-c0da708f52"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-9607183810"></a>`2` | <a id="s-3b217d607e"></a>`all: empty` | <a id="s-74b01bcee7"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-f375f7e14a"></a>`state-schema` | <a id="s-944d8f1499"></a>`{"kind":"state-schema-error"}` | <a id="s-58d1bc86e3"></a>`1` | <a id="s-b86235213d"></a>`all: empty` | <a id="s-9c8df75786"></a>`all: mango-fish-state-schema-diagnostic/v1` |
+| <a id="s-f375f7e14a"></a>`state-schema` | <a id="s-944d8f1499"></a>`{"kind":"state-schema-error"}` | <a id="s-58d1bc86e3"></a>`1` | <a id="s-b86235213d"></a>`all: empty` | <a id="s-9c8df75786"></a>`all: noncontractual-diagnostic` |
 
 ### Progression, limits, and lifecycle
 
@@ -114,7 +114,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/mango-fish/commands/state/commands/upgrade/result_contract`
 
-<!-- exact-contract-value: 7e43e182e07a648c8d9f4e5208fd0cff4a27d655f6ad4529fd10ad02fd2a5174 -->
+<!-- exact-contract-value: 0b0356f8eded4b37b727d55f405c3f150cda259e50fbdbb6739c22125c5b6d47 -->
 
 ```json
 {
@@ -139,7 +139,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "kind": "state-schema-error"
       },
       "stderr": {
-        "all": "mango-fish-state-schema-diagnostic/v1"
+        "all": "noncontractual-diagnostic"
       },
       "stdout": {
         "all": "empty"

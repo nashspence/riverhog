@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e62100e1ee"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f133c05e56"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ca71fc76ad"></a>`distribution` | "riverhog-storage-adapter-asgi-support" |
-| <a id="s-79809375ec"></a>`module` | "riverhog_storage_adapter_asgi_support" |
-| <a id="s-6e37d8f9f6"></a>`name` | "create_storage_adapter_app" |
-| <a id="s-8df0ae50ff"></a>`unit` | "export" |
+- <a id="s-ca71fc76ad"></a>`distribution`: `riverhog-storage-adapter-asgi-support`
+- <a id="s-79809375ec"></a>`module`: `riverhog_storage_adapter_asgi_support`
+- <a id="s-6e37d8f9f6"></a>`name`: `create_storage_adapter_app`
+- <a id="s-8df0ae50ff"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-348ea3b9b3"></a>`kind`: `"function"`
+- <a id="s-10cbb069ac"></a>`signature`: `"\"(*, service: 'str', token: 'str', adapter: 'StorageAdapterPort', readiness: 'Callable[[], None] \| None' = None) -> 'FastAPI'\""`
 
 ## Governing policies
 

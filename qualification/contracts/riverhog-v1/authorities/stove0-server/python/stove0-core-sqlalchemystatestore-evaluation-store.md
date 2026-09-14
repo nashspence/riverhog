@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c616276187"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-339f22e3df"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6207d38502"></a>`distribution` | "stove0-server" |
-| <a id="s-7b9e052363"></a>`module` | "stove0_core" |
-| <a id="s-57eae8dfa0"></a>`name` | "evaluation_store" |
-| <a id="s-8a26f75ba8"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-b58a290441"></a>`unit` | "member" |
+- <a id="s-6207d38502"></a>`distribution`: `stove0-server`
+- <a id="s-7b9e052363"></a>`module`: `stove0_core`
+- <a id="s-57eae8dfa0"></a>`name`: `evaluation_store`
+- <a id="s-8a26f75ba8"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-b58a290441"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-6741565fa3"></a>`kind`: `"method"`
+- <a id="s-ea61467e15"></a>`signature`: `"\"(self) -> '_EvaluationStoreView'\""`
 
 ## Maintained corroboration
 

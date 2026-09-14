@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-72a4fe6338"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8360db0040"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-58ea483e11"></a>`distribution` | "http-api-contracts" |
-| <a id="s-d54915aa8b"></a>`module` | "http_api_contracts" |
-| <a id="s-d593416880"></a>`name` | "operation_interface" |
-| <a id="s-bb485d8836"></a>`unit` | "export" |
+- <a id="s-58ea483e11"></a>`distribution`: `http-api-contracts`
+- <a id="s-d54915aa8b"></a>`module`: `http_api_contracts`
+- <a id="s-d593416880"></a>`name`: `operation_interface`
+- <a id="s-bb485d8836"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-93fd31cc83"></a>`kind`: `"function"`
+- <a id="s-42a2746fc8"></a>`signature`: `"\"(value: 'OperationInterface') -> 'dict[str, str]'\""`
 
 ## Governing policies
 

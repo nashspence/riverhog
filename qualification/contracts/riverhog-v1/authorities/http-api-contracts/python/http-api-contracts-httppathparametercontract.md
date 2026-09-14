@@ -14,13 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-76c0cb9671"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-81b6b78f79"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-aa65265e83"></a>`distribution` | "http-api-contracts" |
-| <a id="s-3d3d563b23"></a>`module` | "http_api_contracts" |
-| <a id="s-9083d97508"></a>`name` | "HttpPathParameterContract" |
-| <a id="s-24d6c3e209"></a>`unit` | "export" |
+- <a id="s-aa65265e83"></a>`distribution`: `http-api-contracts`
+- <a id="s-3d3d563b23"></a>`module`: `http_api_contracts`
+- <a id="s-9083d97508"></a>`name`: `HttpPathParameterContract`
+- <a id="s-24d6c3e209"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-07ffca84ab"></a>`kind`: `"class"`
+- <a id="s-bc98cc5b0b"></a>`signature`: `"\"(name: 'str', value_type: 'object') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-74d0e7f0e0"></a>`name` | `'str'` | `required` |
+| <a id="s-bc487d005a"></a>`value_type` | `'object'` | `required` |
 
 ## Governing policies
 

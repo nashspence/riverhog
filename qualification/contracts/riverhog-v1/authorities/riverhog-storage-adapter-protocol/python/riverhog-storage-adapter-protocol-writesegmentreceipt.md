@@ -14,13 +14,30 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4981821f64"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-626db68127"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-23c4d39d68"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-68537c251b"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-40e101eb69"></a>`name` | "WriteSegmentReceipt" |
-| <a id="s-3b42ed9c50"></a>`unit` | "export" |
+- <a id="s-23c4d39d68"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-68537c251b"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-40e101eb69"></a>`name`: `WriteSegmentReceipt`
+- <a id="s-3b42ed9c50"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-3443b7a8ad"></a>`kind`: `"class"`
+- <a id="s-e987d5edeb"></a>`signature`: `"\"(*, number: Annotated[int, Ge(ge=1)], segment_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)], stored_bytes: Annotated[int, Ge(ge=1)], stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None) -> None\""`
+
+#### Validated model schema
+
+<a id="s-50b14a6c22"></a>
+- <a id="s-1e3b5c9add"></a>`title`: WriteSegmentReceipt
+- <a id="s-875bd83b21"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-41111b1770"></a>`number` | yes | type="integer"; minimum=1 |  |
+| <a id="s-8e844b4616"></a>`segment_token` | yes | type="string"; minLength=1; maxLength=4000 |  |
+| <a id="s-2114107bd7"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-a22f06e6d5"></a>`stored_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
 
 ## Governing policies
 
@@ -46,13 +63,53 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 90e6ce5f008f94676a6e3c573e2fbe6695787892247d7027bcc2659f16346227 -->
+<!-- exact-contract-value: c461951433cf2e8eb3b039f4d6cd313eebe0ba7499a56c80d9e1a4d4fd3c58d6 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "78f82d84ff68316a37a5d4d95d212d082ea0eada74506b6745aee67978f169da",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "number": {
+          "minimum": 1,
+          "title": "Number",
+          "type": "integer"
+        },
+        "segment_token": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Segment Token",
+          "type": "string"
+        },
+        "stored_bytes": {
+          "minimum": 1,
+          "title": "Stored Bytes",
+          "type": "integer"
+        },
+        "stored_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stored Sha256"
+        }
+      },
+      "required": [
+        "number",
+        "segment_token",
+        "stored_bytes"
+      ],
+      "title": "WriteSegmentReceipt",
+      "type": "object"
+    },
     "signature": "\"(*, number: Annotated[int, Ge(ge=1)], segment_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)], stored_bytes: Annotated[int, Ge(ge=1)], stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",

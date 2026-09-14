@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-094fedb532"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-852b15542f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-980501278b"></a>`distribution` | "riverhog-client" |
-| <a id="s-14b887b058"></a>`module` | "riverhog_client.transform" |
-| <a id="s-5ab0863f9e"></a>`name` | "from_capability" |
-| <a id="s-07509f9823"></a>`owner` | "riverhog_client.transform.ClaimedCollectionRuntime" |
-| <a id="s-f25c4774dd"></a>`unit` | "member" |
+- <a id="s-980501278b"></a>`distribution`: `riverhog-client`
+- <a id="s-14b887b058"></a>`module`: `riverhog_client.transform`
+- <a id="s-5ab0863f9e"></a>`name`: `from_capability`
+- <a id="s-07509f9823"></a>`owner`: `riverhog_client.transform.ClaimedCollectionRuntime`
+- <a id="s-f25c4774dd"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-27e27141e9"></a>`kind`: `"classmethod"`
+- <a id="s-bffcbea85f"></a>`signature`: `"\"(cls, *, base_url: 'str', capability_token: 'str', inputs: 'Sequence[CollectionRootIdentity]', claim_id: 'str', fence: 'int', work_id: 'str', execution_id: 'str', allow_insecure_http: 'bool' = False, **kwargs: 'Any') -> 'ClaimedCollectionRuntime'\""`
 
 ## Maintained corroboration
 

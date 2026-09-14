@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f442e2e5ae"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-85dc31a051"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b903b852ca"></a>`distribution` | "stove0-server" |
-| <a id="s-3500cd78fd"></a>`module` | "stove0_core" |
-| <a id="s-612c30f081"></a>`name` | "input_page" |
-| <a id="s-d464e4221c"></a>`owner` | "stove0_core.TargetCallbackAuthority" |
-| <a id="s-ff5fcceca9"></a>`unit` | "member" |
+- <a id="s-b903b852ca"></a>`distribution`: `stove0-server`
+- <a id="s-3500cd78fd"></a>`module`: `stove0_core`
+- <a id="s-612c30f081"></a>`name`: `input_page`
+- <a id="s-d464e4221c"></a>`owner`: `stove0_core.TargetCallbackAuthority`
+- <a id="s-ff5fcceca9"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-b32118fc61"></a>`kind`: `"method"`
+- <a id="s-112c6f113d"></a>`signature`: `"\"(self, token: 'str', *, job_id: 'str', continuation: 'str \| None', limit: 'int') -> 'TargetInputPage'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fe4125ac8a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ad0b4d489b"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-2c6b121d6a"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-e065d5e7a1"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-ccbc60b58e"></a>`name` | "ensure_private_directory" |
-| <a id="s-bd59c3227d"></a>`unit` | "export" |
+- <a id="s-2c6b121d6a"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-e065d5e7a1"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-ccbc60b58e"></a>`name`: `ensure_private_directory`
+- <a id="s-bd59c3227d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-d614a0358f"></a>`kind`: `"function"`
+- <a id="s-c409400dd4"></a>`signature`: `"\"(path: 'Path') -> 'None'\""`
 
 ## Governing policies
 

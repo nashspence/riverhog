@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bd44e49725"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9d31408075"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-a28a3e041d"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-3da0597115"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-d5046414da"></a>`name` | "ListenerRuntime" |
-| <a id="s-fcbd115fbe"></a>`unit` | "export" |
+- <a id="s-a28a3e041d"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-3da0597115"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-d5046414da"></a>`name`: `ListenerRuntime`
+- <a id="s-fcbd115fbe"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-12b1ae6980"></a>`kind`: `"class"`
+- <a id="s-7e9acd5629"></a>`signature`: `"\"(config: 'ListenerConfig', paths: 'ListenerRuntimePaths', *, mounted_volume_provider: 'MountedVolumeProvider', product_version: 'str', clock: 'Callable[[], float]' = <built-in function time>, sleep: 'Callable[[float], None]' = <built-in function sleep>, logger: 'logging.Logger \| None' = None) -> 'None'\""`
 
 ## Maintained corroboration
 

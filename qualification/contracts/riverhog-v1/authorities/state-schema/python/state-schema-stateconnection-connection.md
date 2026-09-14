@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6161fdc6ed"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-99f3b6ab8e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-775e5c2f8a"></a>`distribution` | "state-schema" |
-| <a id="s-644b957c43"></a>`module` | "state_schema" |
-| <a id="s-ab0e4313b3"></a>`name` | "connection" |
-| <a id="s-61d814071f"></a>`owner` | "state_schema.StateConnection" |
-| <a id="s-df04787170"></a>`unit` | "member" |
+- <a id="s-775e5c2f8a"></a>`distribution`: `state-schema`
+- <a id="s-644b957c43"></a>`module`: `state_schema`
+- <a id="s-ab0e4313b3"></a>`name`: `connection`
+- <a id="s-61d814071f"></a>`owner`: `state_schema.StateConnection`
+- <a id="s-df04787170"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-afa33a8c9d"></a>`kind`: `"property"`
+- <a id="s-14fa9da823"></a>`signature`: `"\"(self) -> 'PoolProxiedConnection'\""`
 
 ## Maintained corroboration
 

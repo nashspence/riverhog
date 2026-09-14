@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ca7bec5e38"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0f9eb7cced"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ccc590ae5e"></a>`distribution` | "stove0-server" |
-| <a id="s-6582e2db28"></a>`module` | "stove0_core" |
-| <a id="s-aec20ca02d"></a>`name` | "restart_claim" |
-| <a id="s-4d80f2cf55"></a>`owner` | "stove0_core.Stove0RiverhogClient" |
-| <a id="s-386ab4210a"></a>`unit` | "member" |
+- <a id="s-ccc590ae5e"></a>`distribution`: `stove0-server`
+- <a id="s-6582e2db28"></a>`module`: `stove0_core`
+- <a id="s-aec20ca02d"></a>`name`: `restart_claim`
+- <a id="s-4d80f2cf55"></a>`owner`: `stove0_core.Stove0RiverhogClient`
+- <a id="s-386ab4210a"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-114a0542fb"></a>`kind`: `"method"`
+- <a id="s-58ad0f1d6d"></a>`signature`: `"\"(self, work: 'WorkIdentity', claim: 'ClaimBinding') -> 'ClaimBinding'\""`
 
 ## Maintained corroboration
 

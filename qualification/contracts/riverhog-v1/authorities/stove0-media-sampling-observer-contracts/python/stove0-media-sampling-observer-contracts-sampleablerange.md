@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9c87acab97"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-18aa440fb4"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-ca6c5bba05"></a>`distribution` | "stove0-media-sampling-observer-contracts" |
-| <a id="s-cab3e5577d"></a>`module` | "stove0_media_sampling_observer_contracts" |
-| <a id="s-8b9011fb4d"></a>`name` | "SampleableRange" |
-| <a id="s-08637c79bd"></a>`unit` | "export" |
+- <a id="s-ca6c5bba05"></a>`distribution`: `stove0-media-sampling-observer-contracts`
+- <a id="s-cab3e5577d"></a>`module`: `stove0_media_sampling_observer_contracts`
+- <a id="s-8b9011fb4d"></a>`name`: `SampleableRange`
+- <a id="s-08637c79bd"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-6c17b3396d"></a>`kind`: `"class"`
+- <a id="s-d2ca5c2857"></a>`signature`: `"'(*, start_ms: Annotated[int, Ge(ge=0)], duration_ms: Annotated[int, Ge(ge=1)]) -> None'"`
+
+#### Validated model schema
+
+<a id="s-1db9d030a4"></a>
+- <a id="s-a0b240086f"></a>`title`: SampleableRange
+- <a id="s-78c3c2776f"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7399363eaa"></a>`duration_ms` | yes | type="integer"; minimum=1 |  |
+| <a id="s-8c0f3519ce"></a>`start_ms` | yes | type="integer"; minimum=0 |  |
 
 ## Governing policies
 
@@ -46,13 +61,33 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e7862da27f5a9e7c2945f2b6280249e5f2d1e04d7e8cf65268cc1bc75106fb68 -->
+<!-- exact-contract-value: 9d2a74811235f9621ae1a3e948e9d418d9e117e6f90b1082e65835a16eb88200 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "0f6c17a4144ba9bfacd01e668546fd8d744823cf27a929ea5e9a11839f6be09d",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "duration_ms": {
+          "minimum": 1,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "start_ms": {
+          "minimum": 0,
+          "title": "Start Ms",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "start_ms",
+        "duration_ms"
+      ],
+      "title": "SampleableRange",
+      "type": "object"
+    },
     "signature": "'(*, start_ms: Annotated[int, Ge(ge=0)], duration_ms: Annotated[int, Ge(ge=1)]) -> None'"
   },
   "distribution": "stove0-media-sampling-observer-contracts",

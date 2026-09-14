@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-965b2c5054"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2bef8a6b25"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-fabddae0ed"></a>`distribution` | "riverhog-storage-adapter-filesystem" |
-| <a id="s-36d71c5127"></a>`module` | "riverhog_storage_adapter_filesystem" |
-| <a id="s-19d708d903"></a>`name` | "write_segment" |
-| <a id="s-03f2b2e25a"></a>`owner` | "riverhog_storage_adapter_filesystem.FilesystemStorageAdapter" |
-| <a id="s-6a0517dd31"></a>`unit` | "member" |
+- <a id="s-fabddae0ed"></a>`distribution`: `riverhog-storage-adapter-filesystem`
+- <a id="s-36d71c5127"></a>`module`: `riverhog_storage_adapter_filesystem`
+- <a id="s-19d708d903"></a>`name`: `write_segment`
+- <a id="s-03f2b2e25a"></a>`owner`: `riverhog_storage_adapter_filesystem.FilesystemStorageAdapter`
+- <a id="s-6a0517dd31"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-12c00a6cc5"></a>`kind`: `"method"`
+- <a id="s-ff90c05c1e"></a>`signature`: `"\"(self, *, session: 'WriteSession', number: 'int', stored_bytes: 'int', content: 'BinaryContent') -> 'WriteSegmentReceipt'\""`
 
 ## Maintained corroboration
 

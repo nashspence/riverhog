@@ -14,13 +14,37 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-119d3c48aa"></a>
-| Field | Shape |
+- <a id="s-049185a14a"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-de74da1e28"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-f331165b3f"></a>`name`: `ReadStatus`
+- <a id="s-f701940259"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-3b0060e15d"></a>`kind`: `"class"`
+- <a id="s-6a9cd63ba0"></a>`signature`: `"'(*, objects: Annotated[tuple[riverhog_storage_adapter_protocol.protocol.ObjectLocator, ...], MinLen(min_length=1)], readiness: riverhog_storage_adapter_protocol.protocol.ReadRequested \| riverhog_storage_adapter_protocol.protocol.ReadReady \| riverhog_storage_adapter_protocol.protocol.ReadExpired) -> None'"`
+
+#### Validated model schema
+
+<a id="s-d40a7ea33e"></a>
+- <a id="s-6dab95ed54"></a>`title`: ReadStatus
+- <a id="s-b80a47717f"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0cf2e8a02f"></a>`objects` | yes | type="array"; minItems=1; items=(#/$defs/ObjectLocator) |  |
+| <a id="s-126151cd38"></a>`readiness` | yes | oneOf=#/$defs/ReadRequested \| #/$defs/ReadReady \| #/$defs/ReadExpired; additional keys=`discriminator` |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-5c4a04c649"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-049185a14a"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-de74da1e28"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-f331165b3f"></a>`name` | "ReadStatus" |
-| <a id="s-f701940259"></a>`unit` | "export" |
+| <a id="s-f5cb8a00e4"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
+| <a id="s-89cf76aaa6"></a>`ReadExpired` | type="object"; fields=`state`; additional keys=`additionalProperties` |
+| <a id="s-eb22b97e33"></a>`ReadReady` | type="object"; fields=`available_until`, `state`; additional keys=`additionalProperties` |
+| <a id="s-8fc985c6ca"></a>`ReadRequested` | type="object"; fields=`estimated_ready_at`, `state`; additional keys=`additionalProperties` |
 
 ## Maintained corroboration
 
@@ -52,13 +76,152 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1406d98478b6c12ff7d8e9c863a408c9539ab53c4fa3879f27befd9ab8a59cdb -->
+<!-- exact-contract-value: ce3f6a8a79b8b257dcb21887980c51702b946db63693656d5ca34003bb0f4eb5 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "c2e15c25cf8ffc82c41b134eb06692ae3c3138226cfdc381c64e277774f403a6",
+    "schema": {
+      "$defs": {
+        "ObjectLocator": {
+          "additionalProperties": false,
+          "properties": {
+            "object_path": {
+              "maxLength": 4096,
+              "minLength": 1,
+              "title": "Object Path",
+              "type": "string"
+            },
+            "revision": {
+              "anyOf": [
+                {
+                  "maxLength": 2000,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Revision"
+            }
+          },
+          "required": [
+            "object_path"
+          ],
+          "title": "ObjectLocator",
+          "type": "object"
+        },
+        "ReadExpired": {
+          "additionalProperties": false,
+          "properties": {
+            "state": {
+              "const": "expired",
+              "default": "expired",
+              "title": "State",
+              "type": "string"
+            }
+          },
+          "title": "ReadExpired",
+          "type": "object"
+        },
+        "ReadReady": {
+          "additionalProperties": false,
+          "properties": {
+            "available_until": {
+              "anyOf": [
+                {
+                  "maxLength": 100,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Available Until"
+            },
+            "state": {
+              "const": "ready",
+              "default": "ready",
+              "title": "State",
+              "type": "string"
+            }
+          },
+          "title": "ReadReady",
+          "type": "object"
+        },
+        "ReadRequested": {
+          "additionalProperties": false,
+          "properties": {
+            "estimated_ready_at": {
+              "anyOf": [
+                {
+                  "maxLength": 100,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Estimated Ready At"
+            },
+            "state": {
+              "const": "requested",
+              "default": "requested",
+              "title": "State",
+              "type": "string"
+            }
+          },
+          "title": "ReadRequested",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "objects": {
+          "items": {
+            "$ref": "#/$defs/ObjectLocator"
+          },
+          "minItems": 1,
+          "title": "Objects",
+          "type": "array"
+        },
+        "readiness": {
+          "discriminator": {
+            "mapping": {
+              "expired": "#/$defs/ReadExpired",
+              "ready": "#/$defs/ReadReady",
+              "requested": "#/$defs/ReadRequested"
+            },
+            "propertyName": "state"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ReadRequested"
+            },
+            {
+              "$ref": "#/$defs/ReadReady"
+            },
+            {
+              "$ref": "#/$defs/ReadExpired"
+            }
+          ],
+          "title": "Readiness"
+        }
+      },
+      "required": [
+        "objects",
+        "readiness"
+      ],
+      "title": "ReadStatus",
+      "type": "object"
+    },
     "signature": "'(*, objects: Annotated[tuple[riverhog_storage_adapter_protocol.protocol.ObjectLocator, ...], MinLen(min_length=1)], readiness: riverhog_storage_adapter_protocol.protocol.ReadRequested | riverhog_storage_adapter_protocol.protocol.ReadReady | riverhog_storage_adapter_protocol.protocol.ReadExpired) -> None'"
   },
   "distribution": "riverhog-storage-adapter-protocol",

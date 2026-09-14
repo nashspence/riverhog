@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f97abbb68a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-083bdb01ab"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-09dcabcaf2"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-3ea5a903e1"></a>`module` | "riverhog_protocol" |
-| <a id="s-1733064083"></a>`name` | "seal" |
-| <a id="s-a377cd26bf"></a>`owner` | "riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument" |
-| <a id="s-c1da251fc0"></a>`unit` | "member" |
+- <a id="s-09dcabcaf2"></a>`distribution`: `riverhog-protocol`
+- <a id="s-3ea5a903e1"></a>`module`: `riverhog_protocol`
+- <a id="s-1733064083"></a>`name`: `seal`
+- <a id="s-a377cd26bf"></a>`owner`: `riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument`
+- <a id="s-c1da251fc0"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-40953a74e1"></a>`kind`: `"classmethod"`
+- <a id="s-e6d77a77da"></a>`signature`: `"\"(cls, *, collection_id: 'int', path: 'str', bytes: 'int', sha256: 'str', archive_objects: 'Sequence[CollectionUploadCustodyObjectDocument]') -> 'CollectionUploadArtifactCustodyReceiptDocument'\""`
 
 ## Maintained corroboration
 

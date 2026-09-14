@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6687a1fdfa"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e7f8ecd77b"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ef7ab9a008"></a>`distribution` | "stove0-protocol" |
-| <a id="s-b4d3eaacaa"></a>`module` | "stove0_protocol" |
-| <a id="s-3f155a0b5d"></a>`name` | "seal" |
-| <a id="s-18a987bd93"></a>`owner` | "stove0_protocol.JoinPlan" |
-| <a id="s-2c843de7d4"></a>`unit` | "member" |
+- <a id="s-ef7ab9a008"></a>`distribution`: `stove0-protocol`
+- <a id="s-b4d3eaacaa"></a>`module`: `stove0_protocol`
+- <a id="s-3f155a0b5d"></a>`name`: `seal`
+- <a id="s-18a987bd93"></a>`owner`: `stove0_protocol.JoinPlan`
+- <a id="s-2c843de7d4"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-380d7f519f"></a>`kind`: `"classmethod"`
+- <a id="s-138e6e9cec"></a>`signature`: `"\"(cls, *, parent_work_id: 'str', branch_set_sha256: 'str', declaration: 'JoinDeclaration', inputs: 'Sequence[JoinInputPlan]', work: 'WorkIdentity', workflow_plan: 'WorkflowPlan') -> 'JoinPlan'\""`
 
 ## Maintained corroboration
 

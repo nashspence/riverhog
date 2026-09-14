@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8978cf4334"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-01a8b86eb4"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f102051e3a"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-04340be555"></a>`module` | "riverhog_protocol" |
-| <a id="s-b4787f172f"></a>`name` | "canonical_collection_id" |
-| <a id="s-c57abd6bb6"></a>`owner` | "riverhog_protocol.CollectionUploadWorkBatchDocument" |
-| <a id="s-50864a3511"></a>`unit` | "member" |
+- <a id="s-f102051e3a"></a>`distribution`: `riverhog-protocol`
+- <a id="s-04340be555"></a>`module`: `riverhog_protocol`
+- <a id="s-b4787f172f"></a>`name`: `canonical_collection_id`
+- <a id="s-c57abd6bb6"></a>`owner`: `riverhog_protocol.CollectionUploadWorkBatchDocument`
+- <a id="s-50864a3511"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-d5f984d1bd"></a>`kind`: `"classmethod"`
+- <a id="s-74c333ab6f"></a>`signature`: `"\"(cls, value: 'int') -> 'int'\""`
 
 ## Maintained corroboration
 

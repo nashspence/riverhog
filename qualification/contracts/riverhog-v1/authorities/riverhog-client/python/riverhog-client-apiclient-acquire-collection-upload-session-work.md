@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ee21cbea4b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-36527eed8b"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-2a549796ab"></a>`distribution` | "riverhog-client" |
-| <a id="s-ba499159fc"></a>`module` | "riverhog_client" |
-| <a id="s-61047c8560"></a>`name` | "acquire_collection_upload_session_work" |
-| <a id="s-2d7bab63a7"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-7eb84a7944"></a>`unit` | "member" |
+- <a id="s-2a549796ab"></a>`distribution`: `riverhog-client`
+- <a id="s-ba499159fc"></a>`module`: `riverhog_client`
+- <a id="s-61047c8560"></a>`name`: `acquire_collection_upload_session_work`
+- <a id="s-2d7bab63a7"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-7eb84a7944"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-b20643b503"></a>`kind`: `"method"`
+- <a id="s-659fde9054"></a>`signature`: `"\"(self, collection_id: 'CollectionId', *, limit: 'int' = 16) -> 'CollectionUploadWorkBatchDocument'\""`
 
 ## Maintained corroboration
 

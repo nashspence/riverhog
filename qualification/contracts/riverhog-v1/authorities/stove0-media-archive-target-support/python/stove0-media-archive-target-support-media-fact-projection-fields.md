@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d7e9427450"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9c460117cd"></a>`contract` | type="builtins.dict"; additional keys=`kind` |
-| <a id="s-0ad0460ba7"></a>`distribution` | "stove0-media-archive-target-support" |
-| <a id="s-cf9b54ac28"></a>`module` | "stove0_media_archive_target_support" |
-| <a id="s-e6ff0b847d"></a>`name` | "MEDIA_FACT_PROJECTION_FIELDS" |
-| <a id="s-a86ef41218"></a>`unit` | "export" |
+- <a id="s-0ad0460ba7"></a>`distribution`: `stove0-media-archive-target-support`
+- <a id="s-cf9b54ac28"></a>`module`: `stove0_media_archive_target_support`
+- <a id="s-e6ff0b847d"></a>`name`: `MEDIA_FACT_PROJECTION_FIELDS`
+- <a id="s-a86ef41218"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-8d189d60f3"></a>`kind`: `"object"`
+- <a id="s-cb7dc472a8"></a>`type`: `"builtins.dict"`
 
 ## Governing policies
 

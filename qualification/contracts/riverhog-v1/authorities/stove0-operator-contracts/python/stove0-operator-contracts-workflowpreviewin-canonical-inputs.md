@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-227ecb895f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-62b32d58ae"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-532f23b015"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-665a784285"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-a67cb1e91f"></a>`name` | "canonical_inputs" |
-| <a id="s-ba6af64ad5"></a>`owner` | "stove0_operator_contracts.WorkflowPreviewIn" |
-| <a id="s-67d54a2b66"></a>`unit` | "member" |
+- <a id="s-532f23b015"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-665a784285"></a>`module`: `stove0_operator_contracts`
+- <a id="s-a67cb1e91f"></a>`name`: `canonical_inputs`
+- <a id="s-ba6af64ad5"></a>`owner`: `stove0_operator_contracts.WorkflowPreviewIn`
+- <a id="s-67d54a2b66"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-af1afc1731"></a>`kind`: `"classmethod"`
+- <a id="s-b38e119cdc"></a>`signature`: `"\"(cls, value: 'tuple[CollectionRootRef, ...]') -> 'tuple[CollectionRootRef, ...]'\""`
 
 ## Maintained corroboration
 

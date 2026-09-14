@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-177432427e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2f6d0f6c20"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-9fa6755289"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-f6e57340d6"></a>`module` | "riverhog_protocol" |
-| <a id="s-3fec6b9bdc"></a>`name` | "PRODUCER_EVIDENCE_PATH" |
-| <a id="s-e5ffa90d92"></a>`unit` | "export" |
+- <a id="s-9fa6755289"></a>`distribution`: `riverhog-protocol`
+- <a id="s-f6e57340d6"></a>`module`: `riverhog_protocol`
+- <a id="s-3fec6b9bdc"></a>`name`: `PRODUCER_EVIDENCE_PATH`
+- <a id="s-e5ffa90d92"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-97a8e65006"></a>`kind`: `"constant"`
+- <a id="s-a6c13c19c7"></a>`value`: `"riverhog/producer-evidence.json"`
 
 ## Governing policies
 

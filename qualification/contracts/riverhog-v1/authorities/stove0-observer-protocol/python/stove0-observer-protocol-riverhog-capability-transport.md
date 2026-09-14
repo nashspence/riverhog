@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5111571e6e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-30e37e427b"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-ec14a05968"></a>`distribution` | "stove0-observer-protocol" |
-| <a id="s-d4b3403148"></a>`module` | "stove0_observer_protocol" |
-| <a id="s-c47b8aa4d5"></a>`name` | "RIVERHOG_CAPABILITY_TRANSPORT" |
-| <a id="s-4c77cb1b12"></a>`unit` | "export" |
+- <a id="s-ec14a05968"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-d4b3403148"></a>`module`: `stove0_observer_protocol`
+- <a id="s-c47b8aa4d5"></a>`name`: `RIVERHOG_CAPABILITY_TRANSPORT`
+- <a id="s-4c77cb1b12"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ee86ae6ac2"></a>`kind`: `"constant"`
+- <a id="s-8b176a5db4"></a>`value`: `"riverhog-capability/v1"`
 
 ## Governing policies
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4b7d9e397d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-79c02d0e0c"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d6fffbc286"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-df503f0f95"></a>`module` | "riverhog_provenance" |
-| <a id="s-a25d5ca052"></a>`name` | "binding_segment_bytes" |
-| <a id="s-c8bd6d56c1"></a>`unit` | "export" |
+- <a id="s-d6fffbc286"></a>`distribution`: `riverhog-provenance`
+- <a id="s-df503f0f95"></a>`module`: `riverhog_provenance`
+- <a id="s-a25d5ca052"></a>`name`: `binding_segment_bytes`
+- <a id="s-c8bd6d56c1"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-5066b67eed"></a>`kind`: `"function"`
+- <a id="s-07bfe56d6b"></a>`signature`: `"\"(*, first_file_order: 'int', files: 'list[Mapping[str, object]]') -> 'bytes'\""`
 
 ## Governing policies
 

@@ -14,13 +14,30 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-76d31e65e9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5f37398935"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-5c837da626"></a>`distribution` | "stove0-protocol" |
-| <a id="s-036e387cb3"></a>`module` | "stove0_protocol" |
-| <a id="s-ed6d230550"></a>`name` | "CoordinationChildSettlementRef" |
-| <a id="s-4e938f4980"></a>`unit` | "export" |
+- <a id="s-5c837da626"></a>`distribution`: `stove0-protocol`
+- <a id="s-036e387cb3"></a>`module`: `stove0_protocol`
+- <a id="s-ed6d230550"></a>`name`: `CoordinationChildSettlementRef`
+- <a id="s-4e938f4980"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ab1955912a"></a>`kind`: `"class"`
+- <a id="s-9fbb249525"></a>`signature`: `"\"(*, branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], kind: Literal['collection', 'external-effect', 'coordination'], settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-3bb007e3e4"></a>
+- <a id="s-bdd2ef89c4"></a>`title`: CoordinationChildSettlementRef
+- <a id="s-922593b247"></a>`description`: Exact direct-child success included in a coordination settlement.
+- <a id="s-9720e0599d"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-9770e1598c"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-d2c17491ef"></a>`kind` | yes | type="string"; enum=["collection","external-effect","coordination"] |  |
+| <a id="s-57e5fc45be"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Governing policies
 
@@ -46,13 +63,44 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b77fc9c9afd62445da1052371e04eead19708ac5d55aa8da24c00aa5c5299f41 -->
+<!-- exact-contract-value: 53254c79dcca66d23081f1d2912719d17775ac354d71f8037b2413ded1d265de -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "7bd31023cc09897af3321f85d7438ce508e1093e2abf51326d29362ab02bb869",
+    "schema": {
+      "additionalProperties": false,
+      "description": "Exact direct-child success included in a coordination settlement.",
+      "properties": {
+        "branch_id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Branch Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "collection",
+            "external-effect",
+            "coordination"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "settlement_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Settlement Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "branch_id",
+        "kind",
+        "settlement_sha256"
+      ],
+      "title": "CoordinationChildSettlementRef",
+      "type": "object"
+    },
     "signature": "\"(*, branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], kind: Literal['collection', 'external-effect', 'coordination'], settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-protocol",

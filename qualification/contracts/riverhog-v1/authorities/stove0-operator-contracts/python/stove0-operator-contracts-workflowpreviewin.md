@@ -14,13 +14,38 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-09bdb29e6d"></a>
-| Field | Shape |
+- <a id="s-76c97a5b30"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-9b585e3eaa"></a>`module`: `stove0_operator_contracts`
+- <a id="s-8846457f5f"></a>`name`: `WorkflowPreviewIn`
+- <a id="s-ad054de7e7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-fdeee8e80a"></a>`kind`: `"class"`
+- <a id="s-25f393fa2c"></a>`signature`: `"'(*, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[int \| None, Ge(ge=1)] = None, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootRef, ...], MinLen(min_length=1)], effective_intent: dict[str, JsonValue] = <factory>) -> None'"`
+
+#### Validated model schema
+
+<a id="s-d04d5dab91"></a>
+- <a id="s-aff25da1ca"></a>`title`: WorkflowPreviewIn
+- <a id="s-3caace8cca"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2d9430f995"></a>`effective_intent` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-21bef1f98d"></a>`inputs` | yes | type="array"; minItems=1; items=(#/$defs/CollectionRootRef) |  |
+| <a id="s-f25e9c76e6"></a>`recipe_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-0a6f3ccb15"></a>`recipe_revision` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-74ed0bcbc1"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-76c97a5b30"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-9b585e3eaa"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-8846457f5f"></a>`name` | "WorkflowPreviewIn" |
-| <a id="s-ad054de7e7"></a>`unit` | "export" |
+| <a id="s-01b0583462"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-c90b432181"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
+| <a id="s-e10ebafa23"></a>`JsonValue` | empty object |
 
 ## Maintained corroboration
 
@@ -52,13 +77,89 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a226e5f81eeb25759ac3faa0b5fd682aca2a8214ce8136fa5ed0d32780de2279 -->
+<!-- exact-contract-value: 9568f50c91c076701589bace9234ff6e6e50f1f18feaf0ce2725c46057ad79ab -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "d481dd8506429b4854eac08e0da41af254197bca3e7951499e90d837ad076ba9",
+    "schema": {
+      "$defs": {
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "CollectionRootRef": {
+          "additionalProperties": false,
+          "properties": {
+            "archive_root_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Archive Root Sha256",
+              "type": "string"
+            },
+            "collection_id": {
+              "$ref": "#/$defs/CollectionId"
+            },
+            "content_identity": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Content Identity",
+              "type": "string"
+            }
+          },
+          "required": [
+            "collection_id",
+            "archive_root_sha256",
+            "content_identity"
+          ],
+          "title": "CollectionRootRef",
+          "type": "object"
+        },
+        "JsonValue": {}
+      },
+      "additionalProperties": false,
+      "properties": {
+        "effective_intent": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Effective Intent",
+          "type": "object"
+        },
+        "inputs": {
+          "items": {
+            "$ref": "#/$defs/CollectionRootRef"
+          },
+          "minItems": 1,
+          "title": "Inputs",
+          "type": "array"
+        },
+        "recipe_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Recipe Id",
+          "type": "string"
+        },
+        "recipe_revision": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Recipe Revision"
+        }
+      },
+      "required": [
+        "recipe_id",
+        "inputs"
+      ],
+      "title": "WorkflowPreviewIn",
+      "type": "object"
+    },
     "signature": "'(*, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[int | None, Ge(ge=1)] = None, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootRef, ...], MinLen(min_length=1)], effective_intent: dict[str, JsonValue] = <factory>) -> None'"
   },
   "distribution": "stove0-operator-contracts",

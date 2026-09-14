@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5d904b10b5"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-09417d2643"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f3bc3a7524"></a>`distribution` | "riverhog-client" |
-| <a id="s-1e0b87df51"></a>`module` | "riverhog_client" |
-| <a id="s-27afda93b0"></a>`name` | "create_or_resume_collection_upload_session" |
-| <a id="s-3d4c7ee6dd"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-5005d0beb3"></a>`unit` | "member" |
+- <a id="s-f3bc3a7524"></a>`distribution`: `riverhog-client`
+- <a id="s-1e0b87df51"></a>`module`: `riverhog_client`
+- <a id="s-27afda93b0"></a>`name`: `create_or_resume_collection_upload_session`
+- <a id="s-3d4c7ee6dd"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-5005d0beb3"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e1a4baa9ca"></a>`kind`: `"method"`
+- <a id="s-c2d3a9347f"></a>`signature`: `"\"(self, idempotency_key: 'CollectionUploadIdempotencyKey', *, ingest_source: 'str \| None' = None, description: 'CollectionDescription \| None' = None, tags: 'Sequence[CollectionTag]' = (), initial_tag_set_identity: 'str', archive_store: 'ArchiveStoreName \| None' = None, event_context: 'Mapping[str, Any] \| None' = None, provenance_mode: 'ProvenanceMode' = 'captured', provenance_omission_reason: 'str \| None' = None, custody_mode: 'CollectionUploadCustodyMode' = 'producer-retained') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

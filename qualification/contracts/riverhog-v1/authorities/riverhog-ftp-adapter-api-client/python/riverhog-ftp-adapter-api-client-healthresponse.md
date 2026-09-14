@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-66acadb477"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9edebfa6c4"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-1da8c0b112"></a>`distribution` | "riverhog-ftp-adapter-api-client" |
-| <a id="s-8e7d9a8a94"></a>`module` | "riverhog_ftp_adapter_api_client" |
-| <a id="s-d93e03a287"></a>`name` | "HealthResponse" |
-| <a id="s-0cd7f2fb27"></a>`unit` | "export" |
+- <a id="s-1da8c0b112"></a>`distribution`: `riverhog-ftp-adapter-api-client`
+- <a id="s-8e7d9a8a94"></a>`module`: `riverhog_ftp_adapter_api_client`
+- <a id="s-d93e03a287"></a>`name`: `HealthResponse`
+- <a id="s-0cd7f2fb27"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-25af24a126"></a>`kind`: `"class"`
+- <a id="s-3beacfae47"></a>`signature`: `"\"(*, service: Annotated[str, MinLen(min_length=1)], status: Literal['ok']) -> None\""`
+
+#### Validated model schema
+
+<a id="s-c741b5c1c6"></a>
+- <a id="s-331e442b16"></a>`title`: HealthResponse
+- <a id="s-023c15e755"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-942d1ada33"></a>`service` | yes | type="string"; minLength=1 |  |
+| <a id="s-293b9c823c"></a>`status` | yes | type="string"; const="ok" |  |
 
 ## Governing policies
 
@@ -46,13 +61,33 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a096e555a76e0b271de3a8f75d2aa6cbabb33b26861922a9d2bba7b4f9af470c -->
+<!-- exact-contract-value: 37a6de2dbbb1b02319035af19273ff9a311b294c8070514d172e379c9cb80967 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "873f58b65973a85d82bd4e352acd595a8f32f6058c4500f11514358669b42b31",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "service": {
+          "minLength": 1,
+          "title": "Service",
+          "type": "string"
+        },
+        "status": {
+          "const": "ok",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "service",
+        "status"
+      ],
+      "title": "HealthResponse",
+      "type": "object"
+    },
     "signature": "\"(*, service: Annotated[str, MinLen(min_length=1)], status: Literal['ok']) -> None\""
   },
   "distribution": "riverhog-ftp-adapter-api-client",

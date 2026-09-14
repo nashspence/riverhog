@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-abedd7dfda"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5553d095d1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-300c376912"></a>`distribution` | "stove0-target-support" |
-| <a id="s-93ff9c63b6"></a>`module` | "stove0_target_support" |
-| <a id="s-2f73e138f0"></a>`name` | "open_workspace" |
-| <a id="s-64348cf858"></a>`owner` | "stove0_target_support.TargetExecutionRuntime" |
-| <a id="s-4180fab5ff"></a>`unit` | "member" |
+- <a id="s-300c376912"></a>`distribution`: `stove0-target-support`
+- <a id="s-93ff9c63b6"></a>`module`: `stove0_target_support`
+- <a id="s-2f73e138f0"></a>`name`: `open_workspace`
+- <a id="s-64348cf858"></a>`owner`: `stove0_target_support.TargetExecutionRuntime`
+- <a id="s-4180fab5ff"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-8d2ac63b02"></a>`kind`: `"method"`
+- <a id="s-9435df7d85"></a>`signature`: `"\"(self, root: 'Path') -> 'TransformWorkspace'\""`
 
 ## Maintained corroboration
 

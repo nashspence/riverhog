@@ -14,13 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-392a67b1f6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-398c8d4a0c"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-a19e580965"></a>`distribution` | "riverhog-storage-adapter-aws" |
-| <a id="s-73818d255e"></a>`module` | "riverhog_storage_adapter_aws" |
-| <a id="s-4ad1319636"></a>`name` | "AwsDeepArchiveReadPreparation" |
-| <a id="s-fcb574aee7"></a>`unit` | "export" |
+- <a id="s-a19e580965"></a>`distribution`: `riverhog-storage-adapter-aws`
+- <a id="s-73818d255e"></a>`module`: `riverhog_storage_adapter_aws`
+- <a id="s-4ad1319636"></a>`name`: `AwsDeepArchiveReadPreparation`
+- <a id="s-fcb574aee7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-fbce24ac71"></a>`kind`: `"class"`
+- <a id="s-c1e2d3c5c2"></a>`signature`: `"\"(tier: 'str' = 'Bulk', days: 'int' = 3) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-4fb4d52c9d"></a>`tier` | `'str'` | `'Bulk'` |
+| <a id="s-41a95ffa62"></a>`days` | `'int'` | `3` |
 
 ## Maintained corroboration
 

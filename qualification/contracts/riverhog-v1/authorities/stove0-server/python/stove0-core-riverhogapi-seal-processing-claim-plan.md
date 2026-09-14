@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-570d0f39b9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7f3bc291bc"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-123d1ba726"></a>`distribution` | "stove0-server" |
-| <a id="s-407e89e3ff"></a>`module` | "stove0_core" |
-| <a id="s-6169869ba8"></a>`name` | "seal_processing_claim_plan" |
-| <a id="s-9aa249f4cc"></a>`owner` | "stove0_core.RiverhogApi" |
-| <a id="s-8be09261e9"></a>`unit` | "member" |
+- <a id="s-123d1ba726"></a>`distribution`: `stove0-server`
+- <a id="s-407e89e3ff"></a>`module`: `stove0_core`
+- <a id="s-6169869ba8"></a>`name`: `seal_processing_claim_plan`
+- <a id="s-9aa249f4cc"></a>`owner`: `stove0_core.RiverhogApi`
+- <a id="s-8be09261e9"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e3b359c9af"></a>`kind`: `"method"`
+- <a id="s-a4c933340a"></a>`signature`: `"\"(self, claim_id: 'str', *, fence: 'int', execution_id: 'str', controller_evidence: 'Mapping[str, Any]', controller_evidence_sha256: 'str', operation_id: 'str', operation_sha256: 'str', input_artifacts: 'Iterable[Mapping[str, Any]]', retirement_policy: 'RetirementPolicy' = 'retain', retirement_grace_seconds: 'int' = 0) -> 'ProcessingClaimDocument'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,37 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-61e469f9ee"></a>
-| Field | Shape |
+- <a id="s-8675565fed"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-075b595da8"></a>`module`: `stove0_operator_contracts`
+- <a id="s-d246c344a0"></a>`name`: `AdmissionPolicyCatalogView`
+- <a id="s-46a485b2e3"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-9f593ba909"></a>`kind`: `"class"`
+- <a id="s-d68cb15559"></a>`signature`: `"\"(*, catalog_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], policies: tuple[stove0_operator_contracts.AdmissionPolicyStatus, ...]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-ec615fdcad"></a>
+- <a id="s-dc2d1cc630"></a>`title`: AdmissionPolicyCatalogView
+- <a id="s-bd5dfbbf77"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-80006ec8ce"></a>`catalog_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f1bfd3585b"></a>`policies` | yes | type="array"; items=(#/$defs/AdmissionPolicyStatus) |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-0f4feffb91"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-8675565fed"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-075b595da8"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-d246c344a0"></a>`name` | "AdmissionPolicyCatalogView" |
-| <a id="s-46a485b2e3"></a>`unit` | "export" |
+| <a id="s-13abd4b696"></a>`AdmissionPolicy` | type="object"; fields=`automatic_preview`, `effective_intent`, `format`, `id`, `recipe_id`, `recipe_revision`, `recipe_sha256`, `required_tags`, `revision`; additional keys=`additionalProperties`, `required` |
+| <a id="s-56b276ba28"></a>`AdmissionPolicyStatus` | type="object"; fields=`authorization_view_identity`, `baseline_mode`, `phase`, `policy`, `policy_sha256`, `source_identity`, `through_revision`, `updated_at`; additional keys=`additionalProperties`, `required` |
+| <a id="s-cb5907c3dd"></a>`CollectionTag` | type="string"; minLength=1; maxLength=65536; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
+| <a id="s-b7b9e89314"></a>`JsonValue` | empty object |
 
 ## Governing policies
 
@@ -46,13 +70,201 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a4342d33bc513fbba6cfdf1512053327a768c934a1f6bcea4a9355f50b0242bf -->
+<!-- exact-contract-value: 9a1696aeee277705f1f68bcb72bcbe2ada12ee460e41d06d4497f895b13f60f9 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "ec3d8568a5b10756746eae442f63e658e3f9aff83a690be9759d4d7ef30748d3",
+    "schema": {
+      "$defs": {
+        "AdmissionPolicy": {
+          "additionalProperties": false,
+          "description": "One bounded, exact all-of classification admission rule.",
+          "properties": {
+            "automatic_preview": {
+              "const": "accept-ready",
+              "default": "accept-ready",
+              "title": "Automatic Preview",
+              "type": "string"
+            },
+            "effective_intent": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "title": "Effective Intent",
+              "type": "object"
+            },
+            "format": {
+              "const": "stove0-admission-policy/v1",
+              "default": "stove0-admission-policy/v1",
+              "title": "Format",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "recipe_id": {
+              "maxLength": 160,
+              "minLength": 1,
+              "title": "Recipe Id",
+              "type": "string"
+            },
+            "recipe_revision": {
+              "minimum": 1,
+              "title": "Recipe Revision",
+              "type": "integer"
+            },
+            "recipe_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Recipe Sha256",
+              "type": "string"
+            },
+            "required_tags": {
+              "items": {
+                "$ref": "#/$defs/CollectionTag"
+              },
+              "maxItems": 100,
+              "minItems": 1,
+              "title": "Required Tags",
+              "type": "array",
+              "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-exact-classification-admission-predicate"
+              }
+            },
+            "revision": {
+              "minimum": 1,
+              "title": "Revision",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "id",
+            "revision",
+            "required_tags",
+            "recipe_id",
+            "recipe_revision",
+            "recipe_sha256"
+          ],
+          "title": "AdmissionPolicy",
+          "type": "object"
+        },
+        "AdmissionPolicyStatus": {
+          "additionalProperties": false,
+          "properties": {
+            "authorization_view_identity": {
+              "anyOf": [
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Authorization View Identity"
+            },
+            "baseline_mode": {
+              "enum": [
+                "observe",
+                "backfill"
+              ],
+              "title": "Baseline Mode",
+              "type": "string"
+            },
+            "phase": {
+              "enum": [
+                "new",
+                "baseline",
+                "following",
+                "reset_required"
+              ],
+              "title": "Phase",
+              "type": "string"
+            },
+            "policy": {
+              "$ref": "#/$defs/AdmissionPolicy"
+            },
+            "policy_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Policy Sha256",
+              "type": "string"
+            },
+            "source_identity": {
+              "anyOf": [
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Source Identity"
+            },
+            "through_revision": {
+              "pattern": "^(?:0|[1-9][0-9]*)$",
+              "title": "Through Revision",
+              "type": "string"
+            },
+            "updated_at": {
+              "maxLength": 40,
+              "minLength": 1,
+              "title": "Updated At",
+              "type": "string"
+            }
+          },
+          "required": [
+            "policy",
+            "policy_sha256",
+            "phase",
+            "baseline_mode",
+            "through_revision",
+            "updated_at"
+          ],
+          "title": "AdmissionPolicyStatus",
+          "type": "object"
+        },
+        "CollectionTag": {
+          "maxLength": 65536,
+          "minLength": 1,
+          "type": "string",
+          "x-riverhog-encoded-bytes-max": 65536,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-human-authored-collection-tag"
+          },
+          "x-unicode-normalization": "NFC"
+        },
+        "JsonValue": {}
+      },
+      "additionalProperties": false,
+      "properties": {
+        "catalog_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Catalog Sha256",
+          "type": "string"
+        },
+        "policies": {
+          "items": {
+            "$ref": "#/$defs/AdmissionPolicyStatus"
+          },
+          "title": "Policies",
+          "type": "array"
+        }
+      },
+      "required": [
+        "catalog_sha256",
+        "policies"
+      ],
+      "title": "AdmissionPolicyCatalogView",
+      "type": "object"
+    },
     "signature": "\"(*, catalog_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], policies: tuple[stove0_operator_contracts.AdmissionPolicyStatus, ...]) -> None\""
   },
   "distribution": "stove0-operator-contracts",

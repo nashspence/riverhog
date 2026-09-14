@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-093eacc82d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-29a8185b46"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ff3d420a0e"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-b69b7ec7f9"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-a74dc5e95b"></a>`name` | "read" |
-| <a id="s-1cc70af083"></a>`owner` | "gogurt_listener_runtime.ListenerConfig" |
-| <a id="s-c6caa26d81"></a>`unit` | "member" |
+- <a id="s-ff3d420a0e"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-b69b7ec7f9"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-a74dc5e95b"></a>`name`: `read`
+- <a id="s-1cc70af083"></a>`owner`: `gogurt_listener_runtime.ListenerConfig`
+- <a id="s-c6caa26d81"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-8e7d550f0b"></a>`kind`: `"classmethod"`
+- <a id="s-d263e2cac2"></a>`signature`: `"\"(cls, path: 'Path') -> 'ListenerConfig'\""`
 
 ## Maintained corroboration
 

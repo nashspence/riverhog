@@ -14,13 +14,34 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-eef88604e6"></a>
-| Field | Shape |
+- <a id="s-d83845eb3f"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-7785b73456"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-c7d8f054a9"></a>`name`: `ObjectHeadRequest`
+- <a id="s-399b5cf29e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-fb610e0881"></a>`kind`: `"class"`
+- <a id="s-057720001d"></a>`signature`: `"\"(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, expected_placement: Literal['archive', 'immediate']) -> None\""`
+
+#### Validated model schema
+
+<a id="s-70d5e9eea3"></a>
+- <a id="s-5ac43c1bb0"></a>`title`: ObjectHeadRequest
+- <a id="s-e0ac15e6f5"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-1798c06a34"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
+| <a id="s-01cf494aa8"></a>`object` | yes | #/$defs/ObjectLocator |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-8e639c2c97"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-d83845eb3f"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-7785b73456"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-c7d8f054a9"></a>`name` | "ObjectHeadRequest" |
-| <a id="s-399b5cf29e"></a>`unit` | "export" |
+| <a id="s-6b8a5bc6a1"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
@@ -46,13 +67,66 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2cf194ae933032077ddb3c0a9dd4fd7401d6624eb9c5ce62146e89d7487dde1c -->
+<!-- exact-contract-value: f3fb475d766d79bfc2f5c3bef5563680618f0157fd9a56b2b738e279eecde064 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "1e0283dd234d9ca0e0f4a026cfc1d8102dd40e8a31f86eb9e99e8613976200e5",
+    "schema": {
+      "$defs": {
+        "ObjectLocator": {
+          "additionalProperties": false,
+          "properties": {
+            "object_path": {
+              "maxLength": 4096,
+              "minLength": 1,
+              "title": "Object Path",
+              "type": "string"
+            },
+            "revision": {
+              "anyOf": [
+                {
+                  "maxLength": 2000,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Revision"
+            }
+          },
+          "required": [
+            "object_path"
+          ],
+          "title": "ObjectLocator",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "expected_placement": {
+          "enum": [
+            "archive",
+            "immediate"
+          ],
+          "title": "Expected Placement",
+          "type": "string"
+        },
+        "object": {
+          "$ref": "#/$defs/ObjectLocator"
+        }
+      },
+      "required": [
+        "object",
+        "expected_placement"
+      ],
+      "title": "ObjectHeadRequest",
+      "type": "object"
+    },
     "signature": "\"(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, expected_placement: Literal['archive', 'immediate']) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",

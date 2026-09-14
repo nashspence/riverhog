@@ -14,13 +14,38 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-956255dfcd"></a>
-| Field | Shape |
+- <a id="s-3d98dc5a07"></a>`distribution`: `riverhog-protocol`
+- <a id="s-76bba8821f"></a>`module`: `riverhog_protocol`
+- <a id="s-d8b8ba46c8"></a>`name`: `CollectionArtifactIdentityDocument`
+- <a id="s-7b1aba30ae"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-795f655a4a"></a>`kind`: `"class"`
+- <a id="s-934645b5d4"></a>`signature`: `"\"(*, collection: riverhog_protocol.collection_workflow_transport.CollectionRootIdentityDocument, path: CanonicalRelPath, bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-ab068bfb41"></a>
+- <a id="s-7ee921ba41"></a>`title`: CollectionArtifactIdentityDocument
+- <a id="s-8bc12bb18d"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-57e3627403"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-8bc6c9ef5a"></a>`collection` | yes | #/$defs/CollectionRootIdentityDocument |  |
+| <a id="s-1e37004564"></a>`path` | yes | #/$defs/CanonicalRelPath |  |
+| <a id="s-bba78bc748"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-28cd003c50"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-3d98dc5a07"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-76bba8821f"></a>`module` | "riverhog_protocol" |
-| <a id="s-d8b8ba46c8"></a>`name` | "CollectionArtifactIdentityDocument" |
-| <a id="s-7b1aba30ae"></a>`unit` | "export" |
+| <a id="s-36e7ee4bca"></a>`CanonicalRelPath` | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
+| <a id="s-1dc1d018d5"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-6b0a0a299b"></a>`CollectionRootIdentityDocument` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -52,13 +77,92 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: feb85f57001648f0134e6dbbfa0447a178f13056e76499e4f6921181ffb8f00d -->
+<!-- exact-contract-value: cfc427688a78aa64b64fb3dc2a6f2a8f30ae2f113de81c513c57584f77830d0a -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "149456f1731c2018b68844dd93513f835937fda10ac2bd2fab237237d6f09147",
+    "schema": {
+      "$defs": {
+        "CanonicalRelPath": {
+          "allOf": [
+            {
+              "not": {
+                "pattern": "(?:^|/)\\.{1,2}(?:/|$)"
+              }
+            },
+            {
+              "not": {
+                "pattern": "^\\s|\\s$"
+              }
+            }
+          ],
+          "format": "riverhog-canonical-relpath-v1",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[^/\\\\]+(?:/[^/\\\\]+)*$",
+          "type": "string",
+          "x-unicode-normalization": "NFC"
+        },
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "CollectionRootIdentityDocument": {
+          "additionalProperties": false,
+          "properties": {
+            "archive_root_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Archive Root Sha256",
+              "type": "string"
+            },
+            "collection_id": {
+              "$ref": "#/$defs/CollectionId"
+            },
+            "content_identity": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Content Identity",
+              "type": "string"
+            }
+          },
+          "required": [
+            "collection_id",
+            "archive_root_sha256",
+            "content_identity"
+          ],
+          "title": "CollectionRootIdentityDocument",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 0,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "collection": {
+          "$ref": "#/$defs/CollectionRootIdentityDocument"
+        },
+        "path": {
+          "$ref": "#/$defs/CanonicalRelPath"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "collection",
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "title": "CollectionArtifactIdentityDocument",
+      "type": "object"
+    },
     "signature": "\"(*, collection: riverhog_protocol.collection_workflow_transport.CollectionRootIdentityDocument, path: CanonicalRelPath, bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
   },
   "distribution": "riverhog-protocol",

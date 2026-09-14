@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-338b52e453"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e6f77b5861"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-5e7b91baa4"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-cb3cc79b91"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-c3943558b2"></a>`name` | "validate_small_object_response" |
-| <a id="s-cff223a14c"></a>`unit` | "export" |
+- <a id="s-5e7b91baa4"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-cb3cc79b91"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-c3943558b2"></a>`name`: `validate_small_object_response`
+- <a id="s-cff223a14c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-2283499256"></a>`kind`: `"function"`
+- <a id="s-a75f9404d6"></a>`signature`: `"\"(request: 'SmallObjectWriteRequest', response: 'ImmutableObjectReceipt') -> 'None'\""`
 
 ## Governing policies
 

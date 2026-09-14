@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-702aed12d3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-98f6511b59"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ab14ed20df"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-3ecf27c598"></a>`module` | "riverhog_protocol" |
-| <a id="s-3cddf91fc4"></a>`name` | "from_mapping" |
-| <a id="s-8fb1ba00c4"></a>`owner` | "riverhog_protocol.TransformIntent" |
-| <a id="s-fa840fe22d"></a>`unit` | "member" |
+- <a id="s-ab14ed20df"></a>`distribution`: `riverhog-protocol`
+- <a id="s-3ecf27c598"></a>`module`: `riverhog_protocol`
+- <a id="s-3cddf91fc4"></a>`name`: `from_mapping`
+- <a id="s-8fb1ba00c4"></a>`owner`: `riverhog_protocol.TransformIntent`
+- <a id="s-fa840fe22d"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-7914ec9d47"></a>`kind`: `"classmethod"`
+- <a id="s-411745c3a5"></a>`signature`: `"\"(cls, value: 'Mapping[str, object]') -> 'TransformIntent'\""`
 
 ## Maintained corroboration
 

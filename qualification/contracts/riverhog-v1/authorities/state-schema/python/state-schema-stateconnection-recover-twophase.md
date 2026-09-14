@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2757c4b336"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-467232cbdc"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-22322bc6b5"></a>`distribution` | "state-schema" |
-| <a id="s-099a142de1"></a>`module` | "state_schema" |
-| <a id="s-57d643c7ee"></a>`name` | "recover_twophase" |
-| <a id="s-8a1d80a8ee"></a>`owner` | "state_schema.StateConnection" |
-| <a id="s-4f768f03c4"></a>`unit` | "member" |
+- <a id="s-22322bc6b5"></a>`distribution`: `state-schema`
+- <a id="s-099a142de1"></a>`module`: `state_schema`
+- <a id="s-57d643c7ee"></a>`name`: `recover_twophase`
+- <a id="s-8a1d80a8ee"></a>`owner`: `state_schema.StateConnection`
+- <a id="s-4f768f03c4"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-37fdcdd289"></a>`kind`: `"method"`
+- <a id="s-4e3948e57c"></a>`signature`: `"\"(self) -> 'List[Any]'\""`
 
 ## Maintained corroboration
 

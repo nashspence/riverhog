@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a16fe120fb"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-29caf2e25a"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d5bc704fd8"></a>`distribution` | "stove0-recipe-config" |
-| <a id="s-d21b649915"></a>`module` | "stove0_recipe_config" |
-| <a id="s-9f7728a97b"></a>`name` | "validation_document" |
-| <a id="s-ede7119ce0"></a>`owner` | "stove0_recipe_config.RecipeCatalog" |
-| <a id="s-3f4c0c15f5"></a>`unit` | "member" |
+- <a id="s-d5bc704fd8"></a>`distribution`: `stove0-recipe-config`
+- <a id="s-d21b649915"></a>`module`: `stove0_recipe_config`
+- <a id="s-9f7728a97b"></a>`name`: `validation_document`
+- <a id="s-ede7119ce0"></a>`owner`: `stove0_recipe_config.RecipeCatalog`
+- <a id="s-3f4c0c15f5"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-4f6c73cad0"></a>`kind`: `"method"`
+- <a id="s-30c57f5dbe"></a>`signature`: `"\"(self) -> 'dict[str, JsonValue]'\""`
 
 ## Maintained corroboration
 

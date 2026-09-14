@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-76a121b9ba"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1c07cec3c4"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-2c93b17ba5"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-5dd170f00b"></a>`module` | "riverhog_protocol" |
-| <a id="s-45c2cabfb1"></a>`name` | "OmittedFileProvenanceBinding" |
-| <a id="s-d2a0760302"></a>`unit` | "export" |
+- <a id="s-2c93b17ba5"></a>`distribution`: `riverhog-protocol`
+- <a id="s-5dd170f00b"></a>`module`: `riverhog_protocol`
+- <a id="s-45c2cabfb1"></a>`name`: `OmittedFileProvenanceBinding`
+- <a id="s-d2a0760302"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-d734252520"></a>`kind`: `"class"`
+- <a id="s-a47f922e5a"></a>`signature`: `"\"(*, status: Literal['omitted'], omission_reason: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=None, pattern='^\\\\\\\\S(?:[\\\\\\\\s\\\\\\\\S]*\\\\\\\\S)?$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-16d95d7ac2"></a>
+- <a id="s-6b04c07349"></a>`title`: OmittedFileProvenanceBinding
+- <a id="s-d7df20c576"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-efb6bed35d"></a>`omission_reason` | yes | type="string"; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
+| <a id="s-17183c1914"></a>`status` | yes | type="string"; const="omitted" |  |
 
 ## Governing policies
 
@@ -46,13 +61,34 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5872ce0b930426e8429aefc994e689232b6c913b424ece795f0dac801a083a62 -->
+<!-- exact-contract-value: 450319e61dfb7e3a99fc20400f2694428a92669a1d9179bc86687dfe4bf48415 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "5eba6adbe60f961048cf4ff31b645ca43fb22f9f4ff95b3476666b75a05b8a3c",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "omission_reason": {
+          "minLength": 1,
+          "pattern": "^\\S(?:[\\s\\S]*\\S)?$",
+          "title": "Omission Reason",
+          "type": "string"
+        },
+        "status": {
+          "const": "omitted",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "omission_reason"
+      ],
+      "title": "OmittedFileProvenanceBinding",
+      "type": "object"
+    },
     "signature": "\"(*, status: Literal['omitted'], omission_reason: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=None, pattern='^\\\\\\\\S(?:[\\\\\\\\s\\\\\\\\S]*\\\\\\\\S)?$', ascii_only=None)]) -> None\""
   },
   "distribution": "riverhog-protocol",

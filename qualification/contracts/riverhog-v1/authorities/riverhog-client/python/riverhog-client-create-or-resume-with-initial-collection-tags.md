@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9d74070c33"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-495541c303"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-35c02e4c45"></a>`distribution` | "riverhog-client" |
-| <a id="s-cb4c3d8964"></a>`module` | "riverhog_client" |
-| <a id="s-1d2be32027"></a>`name` | "create_or_resume_with_initial_collection_tags" |
-| <a id="s-47eb2bff32"></a>`unit` | "export" |
+- <a id="s-35c02e4c45"></a>`distribution`: `riverhog-client`
+- <a id="s-cb4c3d8964"></a>`module`: `riverhog_client`
+- <a id="s-1d2be32027"></a>`name`: `create_or_resume_with_initial_collection_tags`
+- <a id="s-47eb2bff32"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-739a0141f9"></a>`kind`: `"function"`
+- <a id="s-dd78e2391c"></a>`signature`: `"\"(tags: 'Iterable[str]', *, create_or_resume: 'Callable[[Sequence[CollectionTag], str], Mapping[str, Any]]', add_tags: 'Callable[[int, Sequence[CollectionTag]], object]') -> 'dict[str, Any]'\""`
 
 ## Governing policies
 

@@ -14,13 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9f2fb7c810"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-29bd42c814"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-aabab06ccd"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-e3c4489a05"></a>`module` | "riverhog_protocol" |
-| <a id="s-a9c84ef31c"></a>`name` | "CollectionTagSetRoot" |
-| <a id="s-22a4aca000"></a>`unit` | "export" |
+- <a id="s-aabab06ccd"></a>`distribution`: `riverhog-protocol`
+- <a id="s-e3c4489a05"></a>`module`: `riverhog_protocol`
+- <a id="s-a9c84ef31c"></a>`name`: `CollectionTagSetRoot`
+- <a id="s-22a4aca000"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-a586df5285"></a>`kind`: `"class"`
+- <a id="s-7d5bc1ef66"></a>`signature`: `"\"(root_sha256: 'str \| None', tag_set_identity: 'str') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-37b821af97"></a>`root_sha256` | `'str \| None'` | `required` |
+| <a id="s-3d4fe40340"></a>`tag_set_identity` | `'str'` | `required` |
 
 ## Maintained corroboration
 

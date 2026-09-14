@@ -14,13 +14,26 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-90c034311c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-381d8996d0"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-f1d84cf39f"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-1754ba3e32"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-f11d8380b0"></a>`name` | "Stove0EventData" |
-| <a id="s-e7650946bc"></a>`unit` | "export" |
+- <a id="s-f1d84cf39f"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-1754ba3e32"></a>`module`: `stove0_operator_contracts`
+- <a id="s-f11d8380b0"></a>`name`: `Stove0EventData`
+- <a id="s-e7650946bc"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-87392325ed"></a>`kind`: `"class"`
+- <a id="s-9ad3b16028"></a>`signature`: `"'() -> None'"`
+
+#### Validated model schema
+
+<a id="s-ec14158fcc"></a>
+- <a id="s-b931e61d4d"></a>`title`: Stove0EventData
+- <a id="s-f13c4e108a"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
 
 ## Maintained corroboration
 
@@ -53,13 +66,18 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4709830cc9256221c16bfcd93a69112e519994b6e974d289c6ba1957cafd2f95 -->
+<!-- exact-contract-value: 3be614c2ebedf625631bfa1451f92e1352386a0bd23353b252b900cd9454e478 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "158157692a2d44d063a5dc475153416e4e4b4ab76f497b963fb959bdf83e9d03",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {},
+      "title": "Stove0EventData",
+      "type": "object"
+    },
     "signature": "'() -> None'"
   },
   "distribution": "stove0-operator-contracts",

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b41db5c664"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f021ee0b22"></a>`contract` | type="types.UnionType"; additional keys=`kind` |
-| <a id="s-2bfa99c48a"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-500af61d7a"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-1a587c779c"></a>`name` | "ArchiveVolume" |
-| <a id="s-b62471df83"></a>`unit` | "export" |
+- <a id="s-2bfa99c48a"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-500af61d7a"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-1a587c779c"></a>`name`: `ArchiveVolume`
+- <a id="s-b62471df83"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-487c4547e3"></a>`kind`: `"object"`
+- <a id="s-5d57f94d9d"></a>`type`: `"types.UnionType"`
 
 ## Governing policies
 

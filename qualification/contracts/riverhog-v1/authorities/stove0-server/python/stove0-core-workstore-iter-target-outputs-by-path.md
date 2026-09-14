@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f5fc54eca1"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-08db23dde3"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-79d498fc56"></a>`distribution` | "stove0-server" |
-| <a id="s-deef6f34c9"></a>`module` | "stove0_core" |
-| <a id="s-fbd928e77b"></a>`name` | "iter_target_outputs_by_path" |
-| <a id="s-e735cb436f"></a>`owner` | "stove0_core.WorkStore" |
-| <a id="s-60a632c242"></a>`unit` | "member" |
+- <a id="s-79d498fc56"></a>`distribution`: `stove0-server`
+- <a id="s-deef6f34c9"></a>`module`: `stove0_core`
+- <a id="s-fbd928e77b"></a>`name`: `iter_target_outputs_by_path`
+- <a id="s-e735cb436f"></a>`owner`: `stove0_core.WorkStore`
+- <a id="s-60a632c242"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-716678db97"></a>`kind`: `"method"`
+- <a id="s-96b5ee6440"></a>`signature`: `"\"(self, work_id: 'str', job_id: 'str') -> 'Iterator[OutputArtifact]'\""`
 
 ## Maintained corroboration
 

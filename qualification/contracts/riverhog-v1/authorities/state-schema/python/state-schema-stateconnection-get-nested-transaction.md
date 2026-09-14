@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7d43aa3561"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f809e52bc6"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e3b485fbe7"></a>`distribution` | "state-schema" |
-| <a id="s-5b000db0f4"></a>`module` | "state_schema" |
-| <a id="s-90e8733678"></a>`name` | "get_nested_transaction" |
-| <a id="s-9dd5c7872a"></a>`owner` | "state_schema.StateConnection" |
-| <a id="s-a26f936940"></a>`unit` | "member" |
+- <a id="s-e3b485fbe7"></a>`distribution`: `state-schema`
+- <a id="s-5b000db0f4"></a>`module`: `state_schema`
+- <a id="s-90e8733678"></a>`name`: `get_nested_transaction`
+- <a id="s-9dd5c7872a"></a>`owner`: `state_schema.StateConnection`
+- <a id="s-a26f936940"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-12bc7180c1"></a>`kind`: `"method"`
+- <a id="s-f4c72f7af6"></a>`signature`: `"\"(self) -> 'Optional[NestedTransaction]'\""`
 
 ## Maintained corroboration
 

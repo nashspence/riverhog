@@ -14,13 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-92d09ac817"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6817ca728b"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-b60e48b367"></a>`distribution` | "stove0-target-support" |
-| <a id="s-baf7bd6879"></a>`module` | "stove0_target_support" |
-| <a id="s-b2a9c3e737"></a>`name` | "TargetConformanceCase" |
-| <a id="s-932c31826e"></a>`unit` | "export" |
+- <a id="s-b60e48b367"></a>`distribution`: `stove0-target-support`
+- <a id="s-baf7bd6879"></a>`module`: `stove0_target_support`
+- <a id="s-b2a9c3e737"></a>`name`: `TargetConformanceCase`
+- <a id="s-932c31826e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-a1382e9f6b"></a>`kind`: `"class"`
+- <a id="s-13795ea3e8"></a>`signature`: `"\"(operation: 'OperationContract', job_request: 'TargetJobRequest', semantic_vectors: 'SemanticIntentConformanceVectors \| None' = None) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-a7dd544fb6"></a>`operation` | `'OperationContract'` | `required` |
+| <a id="s-1c95ce4eed"></a>`job_request` | `'TargetJobRequest'` | `required` |
+| <a id="s-d24f19a5fe"></a>`semantic_vectors` | `'SemanticIntentConformanceVectors \| None'` | `None` |
 
 ## Governing policies
 

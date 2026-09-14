@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5d7c150f5b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-51abc1b662"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-81f67d4ff5"></a>`distribution` | "gogurt-core" |
-| <a id="s-b9df29100f"></a>`module` | "gogurt_core" |
-| <a id="s-c732b4836d"></a>`name` | "execute_gogurt_action" |
-| <a id="s-a26bd4c886"></a>`unit` | "export" |
+- <a id="s-81f67d4ff5"></a>`distribution`: `gogurt-core`
+- <a id="s-b9df29100f"></a>`module`: `gogurt_core`
+- <a id="s-c732b4836d"></a>`name`: `execute_gogurt_action`
+- <a id="s-a26bd4c886"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-b6f982aa66"></a>`kind`: `"function"`
+- <a id="s-229a8d2688"></a>`signature`: `"\"(plan: 'Mapping[str, object]', *, provider: 'MountedVolumeProvider', capture_output: 'bool' = False) -> 'subprocess.CompletedProcess[str]'\""`
 
 ## Governing policies
 

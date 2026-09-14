@@ -8,22 +8,22 @@ Stove0 is a maintainer-selected, nonnormative Riverhog reference application. It
 
 | Semantic area | Exact authorities | Contract elements |
 |---|---:|---:|
-| Application | 7 | 885 |
+| Application | 7 | 907 |
 | Observers | 7 | 189 |
-| Targets | 8 | 383 |
+| Targets | 8 | 385 |
 | Review | 10 | 164 |
 | Recipes | 1 | 29 |
 
 ## Application
 
-Authorities: **7** · Contract elements: **885**
+Authorities: **7** · Contract elements: **907**
 
 | Exact authority | Contract elements | Interfaces | Maintained purpose |
 |---|---:|---|---|
 | [stove0](../authorities/stove0/index.md) | 170 | HTTP Operations, HTTP Schemas, HTTP Service Declaration | Optional nonnormative content-opaque transformation reference application for Riverhog. |
 | [stove0-api-client](../authorities/stove0-api-client/index.md) | 39 | Configuration Environment, Python | Official Python client for the stove0 v1 workflow API. |
 | [stove0-client](../authorities/stove0-client/index.md) | 37 | CLI | Optional nonnormative command-line client for the Stove0 reference application. |
-| [stove0-control](../authorities/stove0-control/index.md) | 1 | Durable State | Optional nonnormative content-opaque transformation reference application for Riverhog. |
+| [stove0-control](../authorities/stove0-control/index.md) | 23 | Durable State | Optional nonnormative content-opaque transformation reference application for Riverhog. |
 | [stove0-operator-contracts](../authorities/stove0-operator-contracts/index.md) | 99 | Configuration Documents, Python | Canonical public state contracts for the Stove0 v1 operator surface. |
 | [stove0-protocol](../authorities/stove0-protocol/index.md) | 190 | Python | Canonical content-opaque collection orchestration contracts for stove0. |
 | [stove0-server](../authorities/stove0-server/index.md) | 349 | Configuration Environment, Python | Optional nonnormative content-opaque transformation reference application for Riverhog. |
@@ -44,7 +44,7 @@ Authorities: **7** · Contract elements: **189**
 
 ## Targets
 
-Authorities: **8** · Contract elements: **383**
+Authorities: **8** · Contract elements: **385**
 
 | Exact authority | Contract elements | Interfaces | Maintained purpose |
 |---|---:|---|---|
@@ -53,7 +53,7 @@ Authorities: **8** · Contract elements: **383**
 | [stove0-nvenc-av1-opus-target](../authorities/stove0-nvenc-av1-opus-target/index.md) | 12 | Configuration Environment, Python | Optional nonnormative NVENC AV1 and Opus target reference for Stove0. |
 | [stove0-opus-target](../authorities/stove0-opus-target/index.md) | 11 | Configuration Environment, Python | Optional nonnormative Opus target reference for Stove0. |
 | [stove0-target-client](../authorities/stove0-target-client/index.md) | 15 | Python | Narrow HTTP client for Stove0 transform targets. |
-| [stove0-target-jobs](../authorities/stove0-target-jobs/index.md) | 1 | Durable State | Hardware-neutral target protocol, runtime, and conformance support for stove0. |
+| [stove0-target-jobs](../authorities/stove0-target-jobs/index.md) | 3 | Durable State | Dependency-light public contracts for external stove0 targets. |
 | [stove0-target-protocol](../authorities/stove0-target-protocol/index.md) | 129 | Python | Dependency-light public contracts for external stove0 targets. |
 | [stove0-target-support](../authorities/stove0-target-support/index.md) | 162 | Process Protocol, Process Protocol Operations, Process Protocol Schemas, CLI, Configuration Environment, Python | Hardware-neutral target protocol, runtime, and conformance support for stove0. |
 

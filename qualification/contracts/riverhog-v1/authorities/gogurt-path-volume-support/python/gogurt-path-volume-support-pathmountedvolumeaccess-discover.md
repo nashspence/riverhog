@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5d1c961ccf"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-fab550c782"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f3d136cf63"></a>`distribution` | "gogurt-path-volume-support" |
-| <a id="s-0eea4d274e"></a>`module` | "gogurt_path_volume_support" |
-| <a id="s-5c62e19d75"></a>`name` | "discover" |
-| <a id="s-cb6c562817"></a>`owner` | "gogurt_path_volume_support.PathMountedVolumeAccess" |
-| <a id="s-e2a0932a11"></a>`unit` | "member" |
+- <a id="s-f3d136cf63"></a>`distribution`: `gogurt-path-volume-support`
+- <a id="s-0eea4d274e"></a>`module`: `gogurt_path_volume_support`
+- <a id="s-5c62e19d75"></a>`name`: `discover`
+- <a id="s-cb6c562817"></a>`owner`: `gogurt_path_volume_support.PathMountedVolumeAccess`
+- <a id="s-e2a0932a11"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-af2378f26d"></a>`kind`: `"method"`
+- <a id="s-e19d14c28b"></a>`signature`: `"\"(self) -> 'Sequence[Path]'\""`
 
 ## Maintained corroboration
 

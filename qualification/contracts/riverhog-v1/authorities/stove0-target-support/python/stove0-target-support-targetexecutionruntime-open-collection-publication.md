@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5f6f85a41a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6951df1fc6"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7e5efc1b86"></a>`distribution` | "stove0-target-support" |
-| <a id="s-bd4f12b129"></a>`module` | "stove0_target_support" |
-| <a id="s-1f029ca8bc"></a>`name` | "open_collection_publication" |
-| <a id="s-7424e83e05"></a>`owner` | "stove0_target_support.TargetExecutionRuntime" |
-| <a id="s-564253ba6a"></a>`unit` | "member" |
+- <a id="s-7e5efc1b86"></a>`distribution`: `stove0-target-support`
+- <a id="s-bd4f12b129"></a>`module`: `stove0_target_support`
+- <a id="s-1f029ca8bc"></a>`name`: `open_collection_publication`
+- <a id="s-7424e83e05"></a>`owner`: `stove0_target_support.TargetExecutionRuntime`
+- <a id="s-564253ba6a"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-fa0878f402"></a>`kind`: `"method"`
+- <a id="s-32b766ceba"></a>`signature`: `"\"(self, *, source_context: 'Mapping[str, object] \| None' = None) -> 'TargetCollectionPublication'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-cccefe0555"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-55f18209ec"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e6a997f533"></a>`distribution` | "riverhog-age" |
-| <a id="s-13a3e3e439"></a>`module` | "riverhog_age" |
-| <a id="s-86ee678178"></a>`name` | "decrypt_age_scrypt" |
-| <a id="s-5fdd3347b4"></a>`unit` | "export" |
+- <a id="s-e6a997f533"></a>`distribution`: `riverhog-age`
+- <a id="s-13a3e3e439"></a>`module`: `riverhog_age`
+- <a id="s-86ee678178"></a>`name`: `decrypt_age_scrypt`
+- <a id="s-5fdd3347b4"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ee167c7dfd"></a>`kind`: `"function"`
+- <a id="s-2a93d48c7f"></a>`signature`: `"\"(age_file: 'bytes', passphrase: 'str \| bytes', *, scrypt_maxmem: 'int \| None' = None) -> 'bytes'\""`
 
 ## Governing policies
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ef5adc4e2c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ead81a05bf"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-4de7e85510"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-652cb3bd67"></a>`module` | "riverhog_protocol" |
-| <a id="s-e24267f133"></a>`name` | "from_mapping" |
-| <a id="s-eefd925b74"></a>`owner` | "riverhog_protocol.OperationIdentity" |
-| <a id="s-cccbcb188f"></a>`unit` | "member" |
+- <a id="s-4de7e85510"></a>`distribution`: `riverhog-protocol`
+- <a id="s-652cb3bd67"></a>`module`: `riverhog_protocol`
+- <a id="s-e24267f133"></a>`name`: `from_mapping`
+- <a id="s-eefd925b74"></a>`owner`: `riverhog_protocol.OperationIdentity`
+- <a id="s-cccbcb188f"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e7c8425688"></a>`kind`: `"classmethod"`
+- <a id="s-ef6a8c7598"></a>`signature`: `"\"(cls, value: 'Mapping[str, object]') -> 'OperationIdentity'\""`
 
 ## Maintained corroboration
 

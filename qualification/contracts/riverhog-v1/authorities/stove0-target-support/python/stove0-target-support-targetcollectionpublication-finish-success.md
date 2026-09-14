@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-22b5e5b3fe"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5b9164bfc1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-840dc8210a"></a>`distribution` | "stove0-target-support" |
-| <a id="s-bcdb581dc5"></a>`module` | "stove0_target_support" |
-| <a id="s-b62c9e7925"></a>`name` | "finish_success" |
-| <a id="s-2a03f6c38f"></a>`owner` | "stove0_target_support.TargetCollectionPublication" |
-| <a id="s-1c8a8035db"></a>`unit` | "member" |
+- <a id="s-840dc8210a"></a>`distribution`: `stove0-target-support`
+- <a id="s-bcdb581dc5"></a>`module`: `stove0_target_support`
+- <a id="s-b62c9e7925"></a>`name`: `finish_success`
+- <a id="s-2a03f6c38f"></a>`owner`: `stove0_target_support.TargetCollectionPublication`
+- <a id="s-1c8a8035db"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-88e9c64fc1"></a>`kind`: `"method"`
+- <a id="s-2d85c5cb06"></a>`signature`: `"\"(self, *, operation: 'OperationContract', execution_sha256: 'str', attempt: 'int' = 1, runtime_evidence: 'Mapping[str, object] \| None' = None, **kwargs: 'Any') -> 'TargetJobStatus'\""`
 
 ## Maintained corroboration
 

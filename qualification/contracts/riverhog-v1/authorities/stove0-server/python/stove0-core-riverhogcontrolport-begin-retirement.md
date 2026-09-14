@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-110561f9c2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-06ed4835de"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-afbccb1017"></a>`distribution` | "stove0-server" |
-| <a id="s-b28f508e52"></a>`module` | "stove0_core" |
-| <a id="s-4ffb4439d8"></a>`name` | "begin_retirement" |
-| <a id="s-72d0705e81"></a>`owner` | "stove0_core.RiverhogControlPort" |
-| <a id="s-4112e6acd5"></a>`unit` | "member" |
+- <a id="s-afbccb1017"></a>`distribution`: `stove0-server`
+- <a id="s-b28f508e52"></a>`module`: `stove0_core`
+- <a id="s-4ffb4439d8"></a>`name`: `begin_retirement`
+- <a id="s-72d0705e81"></a>`owner`: `stove0_core.RiverhogControlPort`
+- <a id="s-4112e6acd5"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-daaf494b9b"></a>`kind`: `"method"`
+- <a id="s-59f5936725"></a>`signature`: `"\"(self, record: 'WorkRecord') -> 'bool'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7c95aaede0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ede5fdc684"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-cd7d0c8c1a"></a>`distribution` | "riverhog-client" |
-| <a id="s-53bf2e46f3"></a>`module` | "riverhog_client" |
-| <a id="s-ce7f01bfb6"></a>`name` | "page" |
-| <a id="s-ffbba68c9e"></a>`owner` | "riverhog_client.CatalogReplica" |
-| <a id="s-81fa750fea"></a>`unit` | "member" |
+- <a id="s-cd7d0c8c1a"></a>`distribution`: `riverhog-client`
+- <a id="s-53bf2e46f3"></a>`module`: `riverhog_client`
+- <a id="s-ce7f01bfb6"></a>`name`: `page`
+- <a id="s-ffbba68c9e"></a>`owner`: `riverhog_client.CatalogReplica`
+- <a id="s-81fa750fea"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-fcddf1b4f0"></a>`kind`: `"method"`
+- <a id="s-9387a7c592"></a>`signature`: `"\"(self, *, after: 'int' = 0, limit: 'int' = 100, tags: 'Sequence[str]' = ()) -> 'list[CatalogSyncDescriptor]'\""`
 
 ## Maintained corroboration
 

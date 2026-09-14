@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b786082bb0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-63fbb43d82"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-15bc279384"></a>`distribution` | "stove0-server" |
-| <a id="s-320b987da5"></a>`module` | "stove0_core" |
-| <a id="s-8de52df5ee"></a>`name` | "project_target_source_edges" |
-| <a id="s-3e9cbb1e7d"></a>`owner` | "stove0_core.Stove0RiverhogClient" |
-| <a id="s-3c238d41c2"></a>`unit` | "member" |
+- <a id="s-15bc279384"></a>`distribution`: `stove0-server`
+- <a id="s-320b987da5"></a>`module`: `stove0_core`
+- <a id="s-8de52df5ee"></a>`name`: `project_target_source_edges`
+- <a id="s-3e9cbb1e7d"></a>`owner`: `stove0_core.Stove0RiverhogClient`
+- <a id="s-3c238d41c2"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ebfb08552f"></a>`kind`: `"method"`
+- <a id="s-06fb1796da"></a>`signature`: `"\"(self, record: 'WorkRecord', edges: 'Sequence[ArtifactDispositionOutput]') -> 'None'\""`
 
 ## Maintained corroboration
 

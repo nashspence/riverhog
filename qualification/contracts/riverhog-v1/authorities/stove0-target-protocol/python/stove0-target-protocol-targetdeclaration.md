@@ -14,13 +14,40 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b7498f526c"></a>
-| Field | Shape |
+- <a id="s-2b2ba036d5"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-ecc21766d5"></a>`module`: `stove0_target_protocol`
+- <a id="s-7fb2d4675d"></a>`name`: `TargetDeclaration`
+- <a id="s-d03c570747"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-b367b04639"></a>`kind`: `"class"`
+- <a id="s-5741c28e26"></a>`signature`: `"\"(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = <factory>) -> None\""`
+
+#### Validated model schema
+
+<a id="s-37219e2d2e"></a>
+- <a id="s-e80189d421"></a>`title`: TargetDeclaration
+- <a id="s-22fe6cb854"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a287e0badd"></a>`inputs` | yes | #/$defs/TargetInputAuthority |  |
+| <a id="s-9cbcf14317"></a>`intent` | yes | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-74f40fc5cc"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-dd270463c2"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-d58529fd80"></a>`target_options` | no | type="object"; additional keys=`additionalProperties` |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-67c81dd8b6"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-2b2ba036d5"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-ecc21766d5"></a>`module` | "stove0_target_protocol" |
-| <a id="s-7fb2d4675d"></a>`name` | "TargetDeclaration" |
-| <a id="s-d03c570747"></a>`unit` | "export" |
+| <a id="s-84dc83c9f1"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
+| <a id="s-b02bf50d68"></a>`JsonValue` | empty object |
+| <a id="s-894c0460ed"></a>`TargetInputAuthority` | type="object"; fields=`roles`, `selection`; additional keys=`additionalProperties`, `required` |
+| <a id="s-7b067f8b3b"></a>`TargetInputRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
@@ -46,13 +73,127 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d27f0356a42091a6b86f7aa5defeee4f9adf25f5594a251508bcc5158d6b6e08 -->
+<!-- exact-contract-value: a71a4c656edcb04811d332df9afde40f81c5a79bc719c29851cfb4726a52311e -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "2799fc17c1e3def4ba574b3d4ac58984d664b817f1a646a63e4f35c7343b6997",
+    "schema": {
+      "$defs": {
+        "ArtifactSelectionRef": {
+          "additionalProperties": false,
+          "description": "Closed reference to a separately retained selection document.",
+          "properties": {
+            "artifact_count": {
+              "minimum": 1,
+              "title": "Artifact Count",
+              "type": "integer"
+            },
+            "selection_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Selection Sha256",
+              "type": "string"
+            },
+            "total_bytes": {
+              "minimum": 0,
+              "title": "Total Bytes",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "selection_sha256",
+            "artifact_count",
+            "total_bytes"
+          ],
+          "title": "ArtifactSelectionRef",
+          "type": "object"
+        },
+        "JsonValue": {},
+        "TargetInputAuthority": {
+          "additionalProperties": false,
+          "description": "Small exact input authority retained by Stove0 and traversed in bounded pages.",
+          "properties": {
+            "roles": {
+              "items": {
+                "$ref": "#/$defs/TargetInputRoleCount"
+              },
+              "minItems": 1,
+              "title": "Roles",
+              "type": "array"
+            },
+            "selection": {
+              "$ref": "#/$defs/ArtifactSelectionRef"
+            }
+          },
+          "required": [
+            "selection",
+            "roles"
+          ],
+          "title": "TargetInputAuthority",
+          "type": "object"
+        },
+        "TargetInputRoleCount": {
+          "additionalProperties": false,
+          "properties": {
+            "count": {
+              "minimum": 1,
+              "title": "Count",
+              "type": "integer"
+            },
+            "role": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Role",
+              "type": "string"
+            }
+          },
+          "required": [
+            "role",
+            "count"
+          ],
+          "title": "TargetInputRoleCount",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "inputs": {
+          "$ref": "#/$defs/TargetInputAuthority"
+        },
+        "intent": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Intent",
+          "type": "object"
+        },
+        "operation_contract_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Operation Contract Sha256",
+          "type": "string"
+        },
+        "operation_id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "target_options": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Target Options",
+          "type": "object"
+        }
+      },
+      "required": [
+        "operation_id",
+        "operation_contract_sha256",
+        "inputs",
+        "intent"
+      ],
+      "title": "TargetDeclaration",
+      "type": "object"
+    },
     "signature": "\"(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = <factory>) -> None\""
   },
   "distribution": "stove0-target-protocol",

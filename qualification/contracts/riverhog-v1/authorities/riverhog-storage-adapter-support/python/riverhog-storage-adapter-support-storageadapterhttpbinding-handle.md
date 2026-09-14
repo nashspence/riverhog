@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f4c0c87b4e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-210d7a3c3f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7dfa30e4cd"></a>`distribution` | "riverhog-storage-adapter-support" |
-| <a id="s-8f610fb747"></a>`module` | "riverhog_storage_adapter_support" |
-| <a id="s-8dca27a125"></a>`name` | "handle" |
-| <a id="s-ddfd66f499"></a>`owner` | "riverhog_storage_adapter_support.StorageAdapterHttpBinding" |
-| <a id="s-7d1f1cda1b"></a>`unit` | "member" |
+- <a id="s-7dfa30e4cd"></a>`distribution`: `riverhog-storage-adapter-support`
+- <a id="s-8f610fb747"></a>`module`: `riverhog_storage_adapter_support`
+- <a id="s-8dca27a125"></a>`name`: `handle`
+- <a id="s-ddfd66f499"></a>`owner`: `riverhog_storage_adapter_support.StorageAdapterHttpBinding`
+- <a id="s-7d1f1cda1b"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3b71a00084"></a>`kind`: `"method"`
+- <a id="s-ed45cc9fc2"></a>`signature`: `"\"(self, method: 'str', path: 'str', body: 'bytes' = b'') -> 'StorageAdapterHttpResponse'\""`
 
 ## Maintained corroboration
 

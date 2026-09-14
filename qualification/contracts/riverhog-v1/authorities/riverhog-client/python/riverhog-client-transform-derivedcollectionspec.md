@@ -14,13 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-15ad17dac7"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5cd3029bec"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-fbb3947996"></a>`distribution` | "riverhog-client" |
-| <a id="s-a6bf6e02e9"></a>`module` | "riverhog_client.transform" |
-| <a id="s-464388594e"></a>`name` | "DerivedCollectionSpec" |
-| <a id="s-ab395beda6"></a>`unit` | "export" |
+- <a id="s-fbb3947996"></a>`distribution`: `riverhog-client`
+- <a id="s-a6bf6e02e9"></a>`module`: `riverhog_client.transform`
+- <a id="s-464388594e"></a>`name`: `DerivedCollectionSpec`
+- <a id="s-ab395beda6"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f56c62a7f2"></a>`kind`: `"class"`
+- <a id="s-34f4cc0430"></a>`signature`: `"\"(inputs: 'tuple[CollectionRootIdentity, ...]', recipe: 'RecipeIdentity', operation: 'OperationIdentity') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-38e75438d0"></a>`inputs` | `'tuple[CollectionRootIdentity, ...]'` | `required` |
+| <a id="s-3f8357fe15"></a>`recipe` | `'RecipeIdentity'` | `required` |
+| <a id="s-80f8c9d2ee"></a>`operation` | `'OperationIdentity'` | `required` |
 
 ## Governing policies
 

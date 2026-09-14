@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a165d454ee"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e49f80e872"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-bdbe448537"></a>`distribution` | "lifecycle-events" |
-| <a id="s-76a2a71df9"></a>`module` | "lifecycle_events" |
-| <a id="s-6f805cd25f"></a>`name` | "normalize_event_context" |
-| <a id="s-3c2b8b0712"></a>`unit` | "export" |
+- <a id="s-bdbe448537"></a>`distribution`: `lifecycle-events`
+- <a id="s-76a2a71df9"></a>`module`: `lifecycle_events`
+- <a id="s-6f805cd25f"></a>`name`: `normalize_event_context`
+- <a id="s-3c2b8b0712"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-1a2bc09fc9"></a>`kind`: `"function"`
+- <a id="s-cabb55cf8b"></a>`signature`: `"\"(value: 'Mapping[str, Any] \| None', *, max_bytes: 'int' = 4096) -> 'dict[str, Any] \| None'\""`
 
 ## Governing policies
 

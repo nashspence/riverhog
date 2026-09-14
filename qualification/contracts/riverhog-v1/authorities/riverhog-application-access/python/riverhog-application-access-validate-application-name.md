@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7a7b8d7fc8"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4c739cf9b9"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-be7747f293"></a>`distribution` | "riverhog-application-access" |
-| <a id="s-bfc4f49333"></a>`module` | "riverhog_application_access" |
-| <a id="s-32e04f49b9"></a>`name` | "validate_application_name" |
-| <a id="s-6565348ea6"></a>`unit` | "export" |
+- <a id="s-be7747f293"></a>`distribution`: `riverhog-application-access`
+- <a id="s-bfc4f49333"></a>`module`: `riverhog_application_access`
+- <a id="s-32e04f49b9"></a>`name`: `validate_application_name`
+- <a id="s-6565348ea6"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-1200acd6aa"></a>`kind`: `"function"`
+- <a id="s-74f9621f3c"></a>`signature`: `"\"(value: 'str') -> 'str'\""`
 
 ## Governing policies
 

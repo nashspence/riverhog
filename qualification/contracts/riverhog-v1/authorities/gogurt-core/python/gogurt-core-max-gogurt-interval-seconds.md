@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d4e9d80f7b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2c6f92c2a6"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-62a52d5ceb"></a>`distribution` | "gogurt-core" |
-| <a id="s-d830a581d0"></a>`module` | "gogurt_core" |
-| <a id="s-98e1255885"></a>`name` | "MAX_GOGURT_INTERVAL_SECONDS" |
-| <a id="s-08244c28b6"></a>`unit` | "export" |
+- <a id="s-62a52d5ceb"></a>`distribution`: `gogurt-core`
+- <a id="s-d830a581d0"></a>`module`: `gogurt_core`
+- <a id="s-98e1255885"></a>`name`: `MAX_GOGURT_INTERVAL_SECONDS`
+- <a id="s-08244c28b6"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-360321f4b3"></a>`kind`: `"constant"`
+- <a id="s-20652394b3"></a>`value`: `3600`
 
 ## Governing policies
 

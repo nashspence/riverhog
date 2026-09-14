@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f5d7fcb8a9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-075c7ced08"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-8aa7d071c6"></a>`distribution` | "riverhog-client" |
-| <a id="s-5529751b12"></a>`module` | "riverhog_client" |
-| <a id="s-08dacf261a"></a>`name` | "plan_retrieval" |
-| <a id="s-adde2277f2"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-49e91d9393"></a>`unit` | "member" |
+- <a id="s-8aa7d071c6"></a>`distribution`: `riverhog-client`
+- <a id="s-5529751b12"></a>`module`: `riverhog_client`
+- <a id="s-08dacf261a"></a>`name`: `plan_retrieval`
+- <a id="s-adde2277f2"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-49e91d9393"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-d6185bee3e"></a>`kind`: `"method"`
+- <a id="s-093f8a8483"></a>`signature`: `"\"(self, files: 'Sequence[tuple[int, str]]', *, idempotency_key: 'RetrievalPlanIdempotencyKey \| None' = None, lease_seconds: 'int \| None' = None, restore_policy: 'RestorePolicy' = 'allow') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

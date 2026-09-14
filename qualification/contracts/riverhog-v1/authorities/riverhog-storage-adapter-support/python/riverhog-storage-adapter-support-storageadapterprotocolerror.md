@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b4b6a808f9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5b84945caa"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-49c8ad0674"></a>`distribution` | "riverhog-storage-adapter-support" |
-| <a id="s-e4d7cf433f"></a>`module` | "riverhog_storage_adapter_support" |
-| <a id="s-0b148db92a"></a>`name` | "StorageAdapterProtocolError" |
-| <a id="s-431339566b"></a>`unit` | "export" |
+- <a id="s-49c8ad0674"></a>`distribution`: `riverhog-storage-adapter-support`
+- <a id="s-e4d7cf433f"></a>`module`: `riverhog_storage_adapter_support`
+- <a id="s-0b148db92a"></a>`name`: `StorageAdapterProtocolError`
+- <a id="s-431339566b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-285653ef93"></a>`kind`: `"class"`
+- <a id="s-950842adb0"></a>`signature`: `"\"(message: 'str', *, status_code: 'int \| None' = None, code: 'StorageAdapterErrorCode' = 'internal_failure') -> 'None'\""`
 
 ## Governing policies
 

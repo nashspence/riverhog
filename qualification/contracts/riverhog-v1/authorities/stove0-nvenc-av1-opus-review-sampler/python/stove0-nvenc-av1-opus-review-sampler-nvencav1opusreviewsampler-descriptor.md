@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a4f3ac3486"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a9264d9b02"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d533161805"></a>`distribution` | "stove0-nvenc-av1-opus-review-sampler" |
-| <a id="s-67fdb82d4d"></a>`module` | "stove0_nvenc_av1_opus_review_sampler" |
-| <a id="s-12219f7a93"></a>`name` | "descriptor" |
-| <a id="s-44e5046432"></a>`owner` | "stove0_nvenc_av1_opus_review_sampler.NvencAv1OpusReviewSampler" |
-| <a id="s-a15b5c0f3f"></a>`unit` | "member" |
+- <a id="s-d533161805"></a>`distribution`: `stove0-nvenc-av1-opus-review-sampler`
+- <a id="s-67fdb82d4d"></a>`module`: `stove0_nvenc_av1_opus_review_sampler`
+- <a id="s-12219f7a93"></a>`name`: `descriptor`
+- <a id="s-44e5046432"></a>`owner`: `stove0_nvenc_av1_opus_review_sampler.NvencAv1OpusReviewSampler`
+- <a id="s-a15b5c0f3f"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-7531145dbf"></a>`kind`: `"method"`
+- <a id="s-8bc7d4ade7"></a>`signature`: `"\"(self) -> 'SamplerDescriptor'\""`
 
 ## Maintained corroboration
 

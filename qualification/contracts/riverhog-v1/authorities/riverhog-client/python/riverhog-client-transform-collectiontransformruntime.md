@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-250deae17a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ec348a11a6"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b07ef9b0ff"></a>`distribution` | "riverhog-client" |
-| <a id="s-e2e7071e79"></a>`module` | "riverhog_client.transform" |
-| <a id="s-b6288359a2"></a>`name` | "CollectionTransformRuntime" |
-| <a id="s-c4b5b70f21"></a>`unit` | "export" |
+- <a id="s-b07ef9b0ff"></a>`distribution`: `riverhog-client`
+- <a id="s-e2e7071e79"></a>`module`: `riverhog_client.transform`
+- <a id="s-b6288359a2"></a>`name`: `CollectionTransformRuntime`
+- <a id="s-c4b5b70f21"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e0cf59816e"></a>`kind`: `"class"`
+- <a id="s-351d481a33"></a>`signature`: `"'(api: \\'Any\\', *, spec: \\'DerivedCollectionSpec\\', claim_id: \\'str\\', fence: \\'int\\', work_id: \\'str\\', execution_id: \\'str\\', controller_evidence: \\'Mapping[str, object]\\', producer_app: \\'str\\', producer_version: \\'str\\' = \\'development\\', cancellation_check: \\'CancellationCheck \| None\\' = None, input_retrieval_policy: \"Literal[\\'available-only\\', \\'allow\\']\" = \\'available-only\\', owned_api: \\'bool\\' = False) -> \\'None\\''"`
 
 ## Maintained corroboration
 

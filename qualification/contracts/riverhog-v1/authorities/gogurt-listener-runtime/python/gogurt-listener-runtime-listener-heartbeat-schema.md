@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5b35d953ce"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-03a1ce9325"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-ec295d4fbb"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-8958bb9a99"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-088109d6ac"></a>`name` | "LISTENER_HEARTBEAT_SCHEMA" |
-| <a id="s-b0077053db"></a>`unit` | "export" |
+- <a id="s-ec295d4fbb"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-8958bb9a99"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-088109d6ac"></a>`name`: `LISTENER_HEARTBEAT_SCHEMA`
+- <a id="s-b0077053db"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-afacb83057"></a>`kind`: `"constant"`
+- <a id="s-4f9c1dc6d2"></a>`value`: `"gogurt-listener-heartbeat/v1"`
 
 ## Governing policies
 

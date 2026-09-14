@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9f21cb4015"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e68d5a54e3"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-563cfd9cfb"></a>`distribution` | "riverhog-client" |
-| <a id="s-72a135d718"></a>`module` | "riverhog_client.transform" |
-| <a id="s-ff2ad39d8b"></a>`name` | "renew_retrieval_job" |
-| <a id="s-8ec02c2a3a"></a>`owner` | "riverhog_client.transform.ClaimedCollectionApi" |
-| <a id="s-db9f5cde7d"></a>`unit` | "member" |
+- <a id="s-563cfd9cfb"></a>`distribution`: `riverhog-client`
+- <a id="s-72a135d718"></a>`module`: `riverhog_client.transform`
+- <a id="s-ff2ad39d8b"></a>`name`: `renew_retrieval_job`
+- <a id="s-8ec02c2a3a"></a>`owner`: `riverhog_client.transform.ClaimedCollectionApi`
+- <a id="s-db9f5cde7d"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-09fa99df2d"></a>`kind`: `"method"`
+- <a id="s-5225940bbc"></a>`signature`: `"\"(self, job_id: 'str', *, lease_seconds: 'int') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

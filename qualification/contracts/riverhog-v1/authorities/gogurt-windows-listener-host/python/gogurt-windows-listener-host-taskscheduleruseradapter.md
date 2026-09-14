@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7d98801104"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4446055959"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-472557ee5d"></a>`distribution` | "gogurt-windows-listener-host" |
-| <a id="s-52a2b1d632"></a>`module` | "gogurt_windows_listener_host" |
-| <a id="s-5eb62d79c7"></a>`name` | "TaskSchedulerUserAdapter" |
-| <a id="s-25c9444cea"></a>`unit` | "export" |
+- <a id="s-472557ee5d"></a>`distribution`: `gogurt-windows-listener-host`
+- <a id="s-52a2b1d632"></a>`module`: `gogurt_windows_listener_host`
+- <a id="s-5eb62d79c7"></a>`name`: `TaskSchedulerUserAdapter`
+- <a id="s-25c9444cea"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-82ffd4f479"></a>`kind`: `"class"`
+- <a id="s-d9009422ff"></a>`signature`: `"'()'"`
 
 ## Maintained corroboration
 

@@ -14,13 +14,37 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b854206772"></a>
-| Field | Shape |
+- <a id="s-0691d60f59"></a>`distribution`: `stove0-protocol`
+- <a id="s-a59507a0fd"></a>`module`: `stove0_protocol`
+- <a id="s-df624b9773"></a>`name`: `JoinWorkBinding`
+- <a id="s-38db47d563"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0cf17f2755"></a>`kind`: `"class"`
+- <a id="s-ca846eea75"></a>`signature`: `"\"(*, kind: Literal['join'] = 'join', parent_work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], branch_set_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], members: Annotated[tuple[stove0_protocol.models.JoinWorkMemberBinding, ...], MinLen(min_length=2)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-3564faa66a"></a>
+- <a id="s-8868a02bb9"></a>`title`: JoinWorkBinding
+- <a id="s-bf94557811"></a>`description`: Stable branch-set lineage for one ordinary join work identity.
+- <a id="s-b758093e43"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e4301a2336"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-84d3afc9f6"></a>`kind` | no | type="string"; const="join" |  |
+| <a id="s-00c0487b12"></a>`members` | yes | type="array"; minItems=2; items=(#/$defs/JoinWorkMemberBinding) |  |
+| <a id="s-7d970213a6"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-07ece426bd"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-0691d60f59"></a>`distribution` | "stove0-protocol" |
-| <a id="s-a59507a0fd"></a>`module` | "stove0_protocol" |
-| <a id="s-df624b9773"></a>`name` | "JoinWorkBinding" |
-| <a id="s-38db47d563"></a>`unit` | "export" |
+| <a id="s-480f0cfabe"></a>`JoinWorkMemberBinding` | type="object"; fields=`artifact_selection_sha256`, `branch_id`, `producer_settlement_sha256`, `settlement_sha256`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -52,13 +76,92 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b156c4c853657e03ec965f6dce35ea7e05c2cd7c6150637a2da46237d33773bc -->
+<!-- exact-contract-value: cfa1618e5bc257003884c91b08f8a7a2f6482727277b1a90c079c5a83fc79549 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "9466a9060b07855b7c74730ec2a1866e96a403f35ff43ce1352e6a4eb80eeafd",
+    "schema": {
+      "$defs": {
+        "JoinWorkMemberBinding": {
+          "additionalProperties": false,
+          "description": "Exact successful branch result used to derive one join work identity.",
+          "properties": {
+            "artifact_selection_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Artifact Selection Sha256",
+              "type": "string"
+            },
+            "branch_id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Branch Id",
+              "type": "string"
+            },
+            "producer_settlement_sha256": {
+              "anyOf": [
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Producer Settlement Sha256"
+            },
+            "settlement_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Settlement Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "branch_id",
+            "settlement_sha256",
+            "artifact_selection_sha256"
+          ],
+          "title": "JoinWorkMemberBinding",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Stable branch-set lineage for one ordinary join work identity.",
+      "properties": {
+        "branch_set_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Branch Set Sha256",
+          "type": "string"
+        },
+        "kind": {
+          "const": "join",
+          "default": "join",
+          "title": "Kind",
+          "type": "string"
+        },
+        "members": {
+          "items": {
+            "$ref": "#/$defs/JoinWorkMemberBinding"
+          },
+          "minItems": 2,
+          "title": "Members",
+          "type": "array"
+        },
+        "parent_work_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Parent Work Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "parent_work_id",
+        "branch_set_sha256",
+        "members"
+      ],
+      "title": "JoinWorkBinding",
+      "type": "object"
+    },
     "signature": "\"(*, kind: Literal['join'] = 'join', parent_work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], branch_set_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], members: Annotated[tuple[stove0_protocol.models.JoinWorkMemberBinding, ...], MinLen(min_length=2)]) -> None\""
   },
   "distribution": "stove0-protocol",

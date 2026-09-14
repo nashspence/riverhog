@@ -14,13 +14,29 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8e272d11c5"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-69a3f11491"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-548d08bb07"></a>`distribution` | "stove0-review-target-contracts" |
-| <a id="s-9c4ed66da6"></a>`module` | "stove0_review_target_contracts" |
-| <a id="s-2b8c2e73b3"></a>`name` | "ReviewSampleWindow" |
-| <a id="s-b117aff8b3"></a>`unit` | "export" |
+- <a id="s-548d08bb07"></a>`distribution`: `stove0-review-target-contracts`
+- <a id="s-9c4ed66da6"></a>`module`: `stove0_review_target_contracts`
+- <a id="s-2b8c2e73b3"></a>`name`: `ReviewSampleWindow`
+- <a id="s-b117aff8b3"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-2365526c11"></a>`kind`: `"class"`
+- <a id="s-364b64b8a9"></a>`signature`: `"'(*, artifact_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], start_ms: Annotated[int, Ge(ge=0)], duration_ms: Annotated[int, Ge(ge=1)]) -> None'"`
+
+#### Validated model schema
+
+<a id="s-0aad1ea5a6"></a>
+- <a id="s-cc98c238d4"></a>`title`: ReviewSampleWindow
+- <a id="s-6fcab1fdf3"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-35c8ae862c"></a>`artifact_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-d724965218"></a>`duration_ms` | yes | type="integer"; minimum=1 |  |
+| <a id="s-489c1bc11e"></a>`start_ms` | yes | type="integer"; minimum=0 |  |
 
 ## Governing policies
 
@@ -46,13 +62,40 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a2f3becabf99d28927fa705c4d7d64cda7a6b3bd20bc86edda5c9bb8150924db -->
+<!-- exact-contract-value: d88136eb684025e685770f08285b79eb9ff80015ab21806c30ea30758b1df343 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "fce3a584b3ca9e6a8ba5fe4f91d261c9c18a807411dc26d26f74d144cdfe18d1",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "duration_ms": {
+          "minimum": 1,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "start_ms": {
+          "minimum": 0,
+          "title": "Start Ms",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "start_ms",
+        "duration_ms"
+      ],
+      "title": "ReviewSampleWindow",
+      "type": "object"
+    },
     "signature": "'(*, artifact_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], start_ms: Annotated[int, Ge(ge=0)], duration_ms: Annotated[int, Ge(ge=1)]) -> None'"
   },
   "distribution": "stove0-review-target-contracts",

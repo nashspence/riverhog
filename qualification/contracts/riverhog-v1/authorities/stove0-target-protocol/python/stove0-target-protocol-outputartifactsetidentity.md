@@ -14,13 +14,37 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2abc66a0f6"></a>
-| Field | Shape |
+- <a id="s-8c70c70601"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-c2b2a0df19"></a>`module`: `stove0_target_protocol`
+- <a id="s-095e1a5956"></a>`name`: `OutputArtifactSetIdentity`
+- <a id="s-d0a43c4ac2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-abac619cb1"></a>`kind`: `"class"`
+- <a id="s-62cac3dd8e"></a>`signature`: `"\"(*, artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[int, Ge(ge=0)], roles: Annotated[tuple[stove0_target_protocol.protocol.OutputArtifactRoleCount, ...], MinLen(min_length=1)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-c8e742d9c0"></a>
+- <a id="s-3fff309abc"></a>`title`: OutputArtifactSetIdentity
+- <a id="s-752d5f4a1d"></a>`description`: Small identity for target outputs already registered with Riverhog.
+- <a id="s-96f0d14a68"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7e7b5a02d8"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-a7e23628d4"></a>`roles` | yes | type="array"; minItems=1; items=(#/$defs/OutputArtifactRoleCount) |  |
+| <a id="s-bc1d77585e"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a0c27ad3b5"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-6630dac3da"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-8c70c70601"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-c2b2a0df19"></a>`module` | "stove0_target_protocol" |
-| <a id="s-095e1a5956"></a>`name` | "OutputArtifactSetIdentity" |
-| <a id="s-d0a43c4ac2"></a>`unit` | "export" |
+| <a id="s-96c477b04f"></a>`OutputArtifactRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -54,13 +78,72 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0b488c6f10315425b0426ff3dcb55bba9d85f900f423b02f4814f053641ef30d -->
+<!-- exact-contract-value: 9b810b5053558016e3f21ba9d162e19849de169dd3c2ed89da2e32ea3d74612a -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "75c833d938ce913e50ba083b5326c6ddf408d2de5335bbb1872610b2c298dcbe",
+    "schema": {
+      "$defs": {
+        "OutputArtifactRoleCount": {
+          "additionalProperties": false,
+          "properties": {
+            "count": {
+              "minimum": 1,
+              "title": "Count",
+              "type": "integer"
+            },
+            "role": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Role",
+              "type": "string"
+            }
+          },
+          "required": [
+            "role",
+            "count"
+          ],
+          "title": "OutputArtifactRoleCount",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Small identity for target outputs already registered with Riverhog.",
+      "properties": {
+        "artifact_count": {
+          "minimum": 1,
+          "title": "Artifact Count",
+          "type": "integer"
+        },
+        "roles": {
+          "items": {
+            "$ref": "#/$defs/OutputArtifactRoleCount"
+          },
+          "minItems": 1,
+          "title": "Roles",
+          "type": "array"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "total_bytes": {
+          "minimum": 0,
+          "title": "Total Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "artifact_count",
+        "total_bytes",
+        "roles",
+        "sha256"
+      ],
+      "title": "OutputArtifactSetIdentity",
+      "type": "object"
+    },
     "signature": "\"(*, artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[int, Ge(ge=0)], roles: Annotated[tuple[stove0_target_protocol.protocol.OutputArtifactRoleCount, ...], MinLen(min_length=1)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-target-protocol",

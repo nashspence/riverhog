@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b349b8e722"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e83c136501"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-a48ff96315"></a>`distribution` | "stove0-target-support" |
-| <a id="s-cfcef4a43f"></a>`module` | "stove0_target_support" |
-| <a id="s-b0efcdb890"></a>`name` | "conformance_report" |
-| <a id="s-8443e83a48"></a>`unit` | "export" |
+- <a id="s-a48ff96315"></a>`distribution`: `stove0-target-support`
+- <a id="s-cfcef4a43f"></a>`module`: `stove0_target_support`
+- <a id="s-b0efcdb890"></a>`name`: `conformance_report`
+- <a id="s-8443e83a48"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-4f35a7d814"></a>`kind`: `"function"`
+- <a id="s-9c1352ea20"></a>`signature`: `"\"(client: 'TargetClient', *, cases: 'Sequence[TargetConformanceCase]' = ()) -> 'TargetConformanceResult'\""`
 
 ## Governing policies
 

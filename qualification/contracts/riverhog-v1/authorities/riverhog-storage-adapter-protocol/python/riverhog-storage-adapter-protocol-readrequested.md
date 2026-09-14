@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9a7acfd5f1"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-177517ec91"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-76a87a25ec"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-25cda13643"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-94065ea87d"></a>`name` | "ReadRequested" |
-| <a id="s-97decf1a13"></a>`unit` | "export" |
+- <a id="s-76a87a25ec"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-25cda13643"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-94065ea87d"></a>`name`: `ReadRequested`
+- <a id="s-97decf1a13"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-a8427453a0"></a>`kind`: `"class"`
+- <a id="s-66ccaec0a7"></a>`signature`: `"\"(*, state: Literal['requested'] = 'requested', estimated_ready_at: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=100)] = None) -> None\""`
+
+#### Validated model schema
+
+<a id="s-5e92215fe7"></a>
+- <a id="s-9412086252"></a>`title`: ReadRequested
+- <a id="s-2974f2d622"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c2df294917"></a>`estimated_ready_at` | no | anyOf=type="string"; minLength=1; maxLength=100 \| type="null" |  |
+| <a id="s-f0a46163f4"></a>`state` | no | type="string"; const="requested" |  |
 
 ## Maintained corroboration
 
@@ -52,13 +67,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4c52dec520e3e8d3e1fe9f3ea1f6a4204be35f52e5af497560a22317321c2036 -->
+<!-- exact-contract-value: a9cde6473fa04ad3677f5c005fc0cd5a3a21fddcb9ddb77fcdcfdb01173a993e -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "d31c1bb220eaafa6bbc0ed7ed7faaba5eaa8d145766373dbbc76f7f5f377c2e7",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "estimated_ready_at": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Estimated Ready At"
+        },
+        "state": {
+          "const": "requested",
+          "default": "requested",
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "title": "ReadRequested",
+      "type": "object"
+    },
     "signature": "\"(*, state: Literal['requested'] = 'requested', estimated_ready_at: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=100)] = None) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",

@@ -14,13 +14,40 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a9e93a2755"></a>
-| Field | Shape |
+- <a id="s-8212001da0"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-6ce32f60bb"></a>`module`: `stove0_operator_contracts`
+- <a id="s-a72cde56eb"></a>`name`: `EvaluationCreatedEvent`
+- <a id="s-6311f4ff52"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f3bb6464e6"></a>`kind`: `"class"`
+- <a id="s-136e1859ad"></a>`signature`: `"\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.evaluation.created'], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.EvaluationCreatedEventData) -> None\""`
+
+#### Validated model schema
+
+<a id="s-23ad66d4b5"></a>
+- <a id="s-f711ef6166"></a>`title`: EvaluationCreatedEvent
+- <a id="s-e3cc3f3417"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-add4371446"></a>`data` | yes | #/$defs/EvaluationCreatedEventData |  |
+| <a id="s-feabbe1e8e"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-4ac098cf9a"></a>`id` | yes | type="string"; minLength=1 |  |
+| <a id="s-8f5573b03c"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
+| <a id="s-04a29a1dbe"></a>`specversion` | no | type="string"; const="1.0" |  |
+| <a id="s-4b10b4cd7d"></a>`subject` | yes | type="string"; minLength=1 |  |
+| <a id="s-92854b5e7f"></a>`time` | yes | type="string" |  |
+| <a id="s-e30bee9869"></a>`type` | yes | type="string"; const="io.riverhog.stove0.evaluation.created" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-d7168f1304"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-8212001da0"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-6ce32f60bb"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-a72cde56eb"></a>`name` | "EvaluationCreatedEvent" |
-| <a id="s-6311f4ff52"></a>`unit` | "export" |
+| <a id="s-dbda641bbc"></a>`EvaluationCreatedEventData` | type="object"; fields=`evaluation_id`, `phase`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
@@ -46,13 +73,96 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7ae31d0aa3c32199e7490f84f428627d3136be7de27cbf202261b0d2356ed720 -->
+<!-- exact-contract-value: 9184c491c948eb90841258334d3670d29b034227c7b5b166c6ed6f13f68152ef -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "52570919e6a0bf09290e62d59812406cfb485c0add7710a05ffac8be63119baa",
+    "schema": {
+      "$defs": {
+        "EvaluationCreatedEventData": {
+          "additionalProperties": false,
+          "properties": {
+            "evaluation_id": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Evaluation Id",
+              "type": "string"
+            },
+            "phase": {
+              "enum": [
+                "planning",
+                "running",
+                "partially_complete",
+                "complete",
+                "failed",
+                "canceled"
+              ],
+              "title": "Phase",
+              "type": "string"
+            }
+          },
+          "required": [
+            "evaluation_id",
+            "phase"
+          ],
+          "title": "EvaluationCreatedEventData",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "$ref": "#/$defs/EvaluationCreatedEventData"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "title": "Datacontenttype",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "const": "urn:riverhog:stove0",
+          "title": "Source",
+          "type": "string"
+        },
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Specversion",
+          "type": "string"
+        },
+        "subject": {
+          "minLength": 1,
+          "title": "Subject",
+          "type": "string"
+        },
+        "time": {
+          "title": "Time",
+          "type": "string"
+        },
+        "type": {
+          "const": "io.riverhog.stove0.evaluation.created",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "type",
+        "subject",
+        "time",
+        "data"
+      ],
+      "title": "EvaluationCreatedEvent",
+      "type": "object"
+    },
     "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.evaluation.created'], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.EvaluationCreatedEventData) -> None\""
   },
   "distribution": "stove0-operator-contracts",

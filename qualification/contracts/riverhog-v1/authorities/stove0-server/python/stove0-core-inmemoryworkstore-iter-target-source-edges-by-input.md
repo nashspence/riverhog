@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-baa2b34c98"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6421405c76"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c5a1fdc106"></a>`distribution` | "stove0-server" |
-| <a id="s-a62c0c0b8a"></a>`module` | "stove0_core" |
-| <a id="s-67c10421bb"></a>`name` | "iter_target_source_edges_by_input" |
-| <a id="s-72cee09bc7"></a>`owner` | "stove0_core.InMemoryWorkStore" |
-| <a id="s-e77e362351"></a>`unit` | "member" |
+- <a id="s-c5a1fdc106"></a>`distribution`: `stove0-server`
+- <a id="s-a62c0c0b8a"></a>`module`: `stove0_core`
+- <a id="s-67c10421bb"></a>`name`: `iter_target_source_edges_by_input`
+- <a id="s-72cee09bc7"></a>`owner`: `stove0_core.InMemoryWorkStore`
+- <a id="s-e77e362351"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-731fe19109"></a>`kind`: `"method"`
+- <a id="s-47aba3d951"></a>`signature`: `"\"(self, work_id: 'str', job_id: 'str') -> 'Iterator[OutputSourceEdge]'\""`
 
 ## Maintained corroboration
 

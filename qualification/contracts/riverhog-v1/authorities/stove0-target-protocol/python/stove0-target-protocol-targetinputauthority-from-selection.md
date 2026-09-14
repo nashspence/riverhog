@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-103dcafaa2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a6d02134cd"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-35570ecc46"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-21ac78fac0"></a>`module` | "stove0_target_protocol" |
-| <a id="s-d87debf1c3"></a>`name` | "from_selection" |
-| <a id="s-f26a4b3443"></a>`owner` | "stove0_target_protocol.TargetInputAuthority" |
-| <a id="s-5be79ce6a8"></a>`unit` | "member" |
+- <a id="s-35570ecc46"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-21ac78fac0"></a>`module`: `stove0_target_protocol`
+- <a id="s-d87debf1c3"></a>`name`: `from_selection`
+- <a id="s-f26a4b3443"></a>`owner`: `stove0_target_protocol.TargetInputAuthority`
+- <a id="s-5be79ce6a8"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-f6dd436d29"></a>`kind`: `"classmethod"`
+- <a id="s-497a441cf4"></a>`signature`: `"\"(cls, selection: 'ArtifactSelection') -> 'TargetInputAuthority'\""`
 
 ## Maintained corroboration
 

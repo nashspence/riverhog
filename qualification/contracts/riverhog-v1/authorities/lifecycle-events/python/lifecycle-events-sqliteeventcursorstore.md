@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b23620ae06"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-07831dd1e2"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-0b83dcc641"></a>`distribution` | "lifecycle-events" |
-| <a id="s-ef4666d1fd"></a>`module` | "lifecycle_events" |
-| <a id="s-46db195a11"></a>`name` | "SQLiteEventCursorStore" |
-| <a id="s-22497db3e2"></a>`unit` | "export" |
+- <a id="s-0b83dcc641"></a>`distribution`: `lifecycle-events`
+- <a id="s-ef4666d1fd"></a>`module`: `lifecycle_events`
+- <a id="s-46db195a11"></a>`name`: `SQLiteEventCursorStore`
+- <a id="s-22497db3e2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-c2d713c086"></a>`kind`: `"class"`
+- <a id="s-30c26ac4c1"></a>`signature`: `"\"(connect: 'Callable[[], sqlite3.Connection]') -> 'None'\""`
 
 ## Maintained corroboration
 

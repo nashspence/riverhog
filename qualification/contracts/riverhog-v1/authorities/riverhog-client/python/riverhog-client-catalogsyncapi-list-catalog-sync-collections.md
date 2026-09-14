@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2e0a07fb4a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f2b9c9bac5"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b2f0892bb9"></a>`distribution` | "riverhog-client" |
-| <a id="s-797781321b"></a>`module` | "riverhog_client" |
-| <a id="s-c27a60e84d"></a>`name` | "list_catalog_sync_collections" |
-| <a id="s-ec985390e4"></a>`owner` | "riverhog_client.CatalogSyncApi" |
-| <a id="s-b74542acb8"></a>`unit` | "member" |
+- <a id="s-b2f0892bb9"></a>`distribution`: `riverhog-client`
+- <a id="s-797781321b"></a>`module`: `riverhog_client`
+- <a id="s-c27a60e84d"></a>`name`: `list_catalog_sync_collections`
+- <a id="s-ec985390e4"></a>`owner`: `riverhog_client.CatalogSyncApi`
+- <a id="s-b74542acb8"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-bbbed5969f"></a>`kind`: `"method"`
+- <a id="s-5c708f12e8"></a>`signature`: `"\"(self, cursor: 'str', *, limit: 'int' = 100) -> 'CatalogSyncCollectionPage'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5f14a5f313"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-920d6c4770"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b3e42ff843"></a>`distribution` | "stove0-protocol" |
-| <a id="s-bee774afa5"></a>`module` | "stove0_protocol" |
-| <a id="s-e8b05b1484"></a>`name` | "validate_branch_set_plan" |
-| <a id="s-65f4917843"></a>`unit` | "export" |
+- <a id="s-b3e42ff843"></a>`distribution`: `stove0-protocol`
+- <a id="s-bee774afa5"></a>`module`: `stove0_protocol`
+- <a id="s-e8b05b1484"></a>`name`: `validate_branch_set_plan`
+- <a id="s-65f4917843"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-48de5f9de8"></a>`kind`: `"function"`
+- <a id="s-1eb9ec92e6"></a>`signature`: `"\"(plan: 'BranchSetPlan', selections: 'SelectionDocuments', branch_sets: 'Mapping[str, BranchSetPlan] \| None' = None) -> 'None'\""`
 
 ## Governing policies
 

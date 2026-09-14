@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-32f28c588b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5081affa29"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-090cb8f6f4"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-abb792a744"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-95fff9a354"></a>`name` | "__getitem__" |
-| <a id="s-c980b1c1b1"></a>`owner` | "stove0_operator_contracts.Stove0EventData" |
-| <a id="s-aef469b37c"></a>`unit` | "member" |
+- <a id="s-090cb8f6f4"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-abb792a744"></a>`module`: `stove0_operator_contracts`
+- <a id="s-95fff9a354"></a>`name`: `__getitem__`
+- <a id="s-c980b1c1b1"></a>`owner`: `stove0_operator_contracts.Stove0EventData`
+- <a id="s-aef469b37c"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-12d1e81b6f"></a>`kind`: `"method"`
+- <a id="s-abd5a2fde5"></a>`signature`: `"\"(self, key: 'str') -> 'Any'\""`
 
 ## Maintained corroboration
 

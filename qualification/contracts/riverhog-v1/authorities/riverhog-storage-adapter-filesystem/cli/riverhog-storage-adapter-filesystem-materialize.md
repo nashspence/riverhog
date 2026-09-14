@@ -44,14 +44,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-87aa6be67d"></a>`completed` | <a id="s-5214dd4180"></a>`{"kind":"materialization-completed"}` | <a id="s-f75383c0b8"></a>`0` | <a id="s-cf82974b80"></a>`human: noncontractual-presentation-of-command-result; json: riverhog-filesystem-materialization-summary/v1` | <a id="s-be54da33ab"></a>`all: empty` |
+| <a id="s-87aa6be67d"></a>`completed` | <a id="s-5214dd4180"></a>`{"kind":"materialization-completed"}` | <a id="s-f75383c0b8"></a>`0` | <a id="s-cf82974b80"></a>`human: noncontractual-presentation-of-command-result; json: riverhog-filesystem-materialization-result/v1` | <a id="s-be54da33ab"></a>`all: empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-ecfc6df42a"></a>`usage` | <a id="s-67b1b1f3d7"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-4317a5c11c"></a>`2` | <a id="s-86297cde3e"></a>`all: empty` | <a id="s-22fb428ae1"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-4ccc914638"></a>`materialization` | <a id="s-5dbfe7b0f2"></a>`{"kind":"materialization-error"}` | <a id="s-87a8cd7159"></a>`1` | <a id="s-382bb6f12c"></a>`all: empty` | <a id="s-57d17310a9"></a>`all: riverhog-filesystem-materialization-diagnostic/v1` |
+| <a id="s-4ccc914638"></a>`materialization` | <a id="s-5dbfe7b0f2"></a>`{"kind":"materialization-error"}` | <a id="s-87a8cd7159"></a>`1` | <a id="s-382bb6f12c"></a>`all: empty` | <a id="s-57d17310a9"></a>`all: noncontractual-diagnostic` |
 
 ### Progression, limits, and lifecycle
 
@@ -167,7 +167,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/result_contract`
 
-<!-- exact-contract-value: e36b053ebd70219e22ca05bea24ca0297abf71c8e6bcfe90277a2c5d4ed4cee5 -->
+<!-- exact-contract-value: 4dfb6fa663f7868f3986bd2d44a7e19013a52d070cc1c9f3ace663273761ddf7 -->
 
 ```json
 {
@@ -192,7 +192,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "kind": "materialization-error"
       },
       "stderr": {
-        "all": "riverhog-filesystem-materialization-diagnostic/v1"
+        "all": "noncontractual-diagnostic"
       },
       "stdout": {
         "all": "empty"
@@ -216,8 +216,64 @@ The following JSON is the complete value owned at each machine-authority pointer
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
         "json": {
-          "identity": "riverhog-filesystem-materialization-summary/v1",
-          "kind": "semantic-format"
+          "identity": "riverhog-filesystem-materialization-result/v1",
+          "kind": "cli-local-json-schema",
+          "schema": {
+            "additionalProperties": false,
+            "properties": {
+              "copied_bytes": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "copied_objects": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "destination": {
+                "type": "string"
+              },
+              "destination_verified_bytes": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "destination_verified_objects": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "format": {
+                "const": "riverhog-filesystem-materialization-result/v1"
+              },
+              "selected_bytes": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "selected_objects": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "source_metadata_bytes": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "staging_verified_bytes": {
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "format",
+              "destination",
+              "selected_objects",
+              "selected_bytes",
+              "source_metadata_bytes",
+              "destination_verified_objects",
+              "destination_verified_bytes",
+              "staging_verified_bytes",
+              "copied_objects",
+              "copied_bytes"
+            ],
+            "type": "object"
+          }
         }
       }
     }

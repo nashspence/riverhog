@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-74446e0757"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-37ebe301bb"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-c36fa275bc"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-749f4a0346"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-0ad5cf17eb"></a>`name` | "SchedulerRunIn" |
-| <a id="s-c9dbda8eb7"></a>`unit` | "export" |
+- <a id="s-c36fa275bc"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-749f4a0346"></a>`module`: `stove0_operator_contracts`
+- <a id="s-0ad5cf17eb"></a>`name`: `SchedulerRunIn`
+- <a id="s-c9dbda8eb7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ea48552522"></a>`kind`: `"class"`
+- <a id="s-f32885fcc4"></a>`signature`: `"\"(*, role: Literal['controller', 'worker', 'combined'] = 'combined', work_limit: Annotated[int, Ge(ge=1), Le(le=100)] = 25) -> None\""`
+
+#### Validated model schema
+
+<a id="s-650df8a463"></a>
+- <a id="s-b7a0b3d779"></a>`title`: SchedulerRunIn
+- <a id="s-29eab23810"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2bbbfb2c7f"></a>`role` | no | type="string"; enum=["controller","worker","combined"] |  |
+| <a id="s-361bcb3516"></a>`work_limit` | no | type="integer"; minimum=1; maximum=100 |  |
 
 ## Governing policies
 
@@ -46,13 +61,36 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 06d8d8c011cdcd6df071686d017c3d1a1980bbbb94093b639990a6d17ad61902 -->
+<!-- exact-contract-value: 673b7f010eb6c00232c5429dfb26f3351656dee5268915bb29d08c4cb06e9812 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "bb6999171d296c228fdb5ff3ba85eb17a54fcbccdc9cfd7f0af37f0db3209dd5",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "default": "combined",
+          "enum": [
+            "controller",
+            "worker",
+            "combined"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "work_limit": {
+          "default": 25,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Work Limit",
+          "type": "integer"
+        }
+      },
+      "title": "SchedulerRunIn",
+      "type": "object"
+    },
     "signature": "\"(*, role: Literal['controller', 'worker', 'combined'] = 'combined', work_limit: Annotated[int, Ge(ge=1), Le(le=100)] = 25) -> None\""
   },
   "distribution": "stove0-operator-contracts",

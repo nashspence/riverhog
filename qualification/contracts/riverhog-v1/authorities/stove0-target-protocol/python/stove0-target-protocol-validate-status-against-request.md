@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9b91816e16"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-37c972a675"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c404cb69e8"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-ca0562b22a"></a>`module` | "stove0_target_protocol" |
-| <a id="s-0177889178"></a>`name` | "validate_status_against_request" |
-| <a id="s-1f2fe1a3d2"></a>`unit` | "export" |
+- <a id="s-c404cb69e8"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-ca0562b22a"></a>`module`: `stove0_target_protocol`
+- <a id="s-0177889178"></a>`name`: `validate_status_against_request`
+- <a id="s-1f2fe1a3d2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-61a07927eb"></a>`kind`: `"function"`
+- <a id="s-4b7accd488"></a>`signature`: `"\"(status: 'TargetJobStatus', request: 'TargetJobRequest \| AcceptedTargetJob', operation: 'OperationContract') -> 'None'\""`
 
 ## Governing policies
 

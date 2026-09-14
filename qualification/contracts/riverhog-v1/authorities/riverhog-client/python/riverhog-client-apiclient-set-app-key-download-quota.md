@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-491a1046f9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-54523b9e7f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-818d943d1e"></a>`distribution` | "riverhog-client" |
-| <a id="s-3b891d582d"></a>`module` | "riverhog_client" |
-| <a id="s-4a40b17724"></a>`name` | "set_app_key_download_quota" |
-| <a id="s-9c5a658696"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-c834b1c486"></a>`unit` | "member" |
+- <a id="s-818d943d1e"></a>`distribution`: `riverhog-client`
+- <a id="s-3b891d582d"></a>`module`: `riverhog_client`
+- <a id="s-4a40b17724"></a>`name`: `set_app_key_download_quota`
+- <a id="s-9c5a658696"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-c834b1c486"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1561bbdeb7"></a>`kind`: `"method"`
+- <a id="s-7c55857d6d"></a>`signature`: `"\"(self, app: 'ApplicationName', key_id: 'ApplicationKeyId', *, monthly_bytes: 'MonthlyDownloadQuotaBytes \| None') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

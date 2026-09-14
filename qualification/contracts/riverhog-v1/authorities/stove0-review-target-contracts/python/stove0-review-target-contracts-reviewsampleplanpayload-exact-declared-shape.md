@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b30d8be635"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-817ca7bfc5"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-02ea150ec9"></a>`distribution` | "stove0-review-target-contracts" |
-| <a id="s-1b479aaceb"></a>`module` | "stove0_review_target_contracts" |
-| <a id="s-83f19fb5c9"></a>`name` | "exact_declared_shape" |
-| <a id="s-09ffcfa9df"></a>`owner` | "stove0_review_target_contracts.ReviewSamplePlanPayload" |
-| <a id="s-ef88d00deb"></a>`unit` | "member" |
+- <a id="s-02ea150ec9"></a>`distribution`: `stove0-review-target-contracts`
+- <a id="s-1b479aaceb"></a>`module`: `stove0_review_target_contracts`
+- <a id="s-83f19fb5c9"></a>`name`: `exact_declared_shape`
+- <a id="s-09ffcfa9df"></a>`owner`: `stove0_review_target_contracts.ReviewSamplePlanPayload`
+- <a id="s-ef88d00deb"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-b1c9a67656"></a>`kind`: `"method"`
+- <a id="s-07eb3edcba"></a>`signature`: `"\"(self) -> 'Self'\""`
 
 ## Maintained corroboration
 

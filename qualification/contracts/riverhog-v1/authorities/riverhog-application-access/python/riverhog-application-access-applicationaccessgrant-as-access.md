@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ad9f2e55de"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c6638134d1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-0367037543"></a>`distribution` | "riverhog-application-access" |
-| <a id="s-4c41186cb3"></a>`module` | "riverhog_application_access" |
-| <a id="s-fcc7fb575c"></a>`name` | "as_access" |
-| <a id="s-6a6804902e"></a>`owner` | "riverhog_application_access.ApplicationAccessGrant" |
-| <a id="s-ab2b3a35ca"></a>`unit` | "member" |
+- <a id="s-0367037543"></a>`distribution`: `riverhog-application-access`
+- <a id="s-4c41186cb3"></a>`module`: `riverhog_application_access`
+- <a id="s-fcc7fb575c"></a>`name`: `as_access`
+- <a id="s-6a6804902e"></a>`owner`: `riverhog_application_access.ApplicationAccessGrant`
+- <a id="s-ab2b3a35ca"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e7e1df78bf"></a>`kind`: `"method"`
+- <a id="s-d633a09d32"></a>`signature`: `"\"(self) -> 'ApplicationAccess'\""`
 
 ## Maintained corroboration
 

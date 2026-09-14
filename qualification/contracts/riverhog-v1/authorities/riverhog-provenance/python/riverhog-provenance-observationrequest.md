@@ -14,13 +14,34 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9b87a0d621"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-645108068d"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-50e8adf922"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-0149f17c28"></a>`module` | "riverhog_provenance" |
-| <a id="s-6581557e3a"></a>`name` | "ObservationRequest" |
-| <a id="s-a017cd6e75"></a>`unit` | "export" |
+- <a id="s-50e8adf922"></a>`distribution`: `riverhog-provenance`
+- <a id="s-0149f17c28"></a>`module`: `riverhog_provenance`
+- <a id="s-6581557e3a"></a>`name`: `ObservationRequest`
+- <a id="s-a017cd6e75"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-bac5aedba0"></a>`kind`: `"class"`
+- <a id="s-5dd12d198a"></a>`signature`: `"\"(path: 'PathInput', lineage_id: 'str', host_id: 'str', host_entity_id: 'str \| None' = None, observer_agent_id: 'str \| None' = None, state_id: 'str \| None' = None, capture_id: 'str \| None' = None, environment_id: 'str \| None' = None, binding_id: 'str \| None' = None, payload_binding: 'PayloadBindingRequest \| None' = None, policy: 'ObservationPolicy' = <factory>, additional_agents: 'tuple[Mapping[str, Any], ...]' = (), additional_associations: 'tuple[Mapping[str, Any], ...]' = (), notes: 'tuple[str, ...]' = ()) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-12aa94106c"></a>`path` | `'PathInput'` | `required` |
+| <a id="s-e7749b6e45"></a>`lineage_id` | `'str'` | `required` |
+| <a id="s-4cff844118"></a>`host_id` | `'str'` | `required` |
+| <a id="s-20d77f421e"></a>`host_entity_id` | `'str \| None'` | `None` |
+| <a id="s-51b9439345"></a>`observer_agent_id` | `'str \| None'` | `None` |
+| <a id="s-99ebddef59"></a>`state_id` | `'str \| None'` | `None` |
+| <a id="s-9d5d40e88f"></a>`capture_id` | `'str \| None'` | `None` |
+| <a id="s-9d90afad39"></a>`environment_id` | `'str \| None'` | `None` |
+| <a id="s-ad1ae50628"></a>`binding_id` | `'str \| None'` | `None` |
+| <a id="s-6b69a407ca"></a>`payload_binding` | `'PayloadBindingRequest \| None'` | `None` |
+| <a id="s-9af8101fb0"></a>`policy` | `'ObservationPolicy'` | `factory` |
+| <a id="s-39d1722d45"></a>`additional_agents` | `'tuple[Mapping[str, Any], ...]'` | `()` |
+| <a id="s-3cf091a32a"></a>`additional_associations` | `'tuple[Mapping[str, Any], ...]'` | `()` |
+| <a id="s-a0a718cf51"></a>`notes` | `'tuple[str, ...]'` | `()` |
 
 ## Governing policies
 

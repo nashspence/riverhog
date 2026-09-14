@@ -14,13 +14,43 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1b4ba953c4"></a>
-| Field | Shape |
+- <a id="s-def1a1128f"></a>`distribution`: `stove0-protocol`
+- <a id="s-61a837bb45"></a>`module`: `stove0_protocol`
+- <a id="s-91afe9b9c8"></a>`name`: `JoinDeclaration`
+- <a id="s-296c5c4a48"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-37b2fa2d28"></a>`kind`: `"class"`
+- <a id="s-9ceaefdc39"></a>`signature`: `"\"(*, format: Literal['stove0-join-declaration/v1'] = 'stove0-join-declaration/v1', members: Annotated[tuple[stove0_protocol.fork_join.JoinMemberDeclaration, ...], MinLen(min_length=2)], recipe: stove0_protocol.models.RecipeRef, effective_intent: dict[str, JsonValue] = <factory>, workflow_intent: stove0_protocol.models.WorkflowPlanIntent, join_declaration_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-5fb9c36efa"></a>
+- <a id="s-8c8072430d"></a>`title`: JoinDeclaration
+- <a id="s-36f8c0a5e4"></a>`description`: One optional exact named-subset join declaration.
+- <a id="s-97c387fe33"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-58eb35b67f"></a>`effective_intent` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-2e664fb177"></a>`format` | no | type="string"; const="stove0-join-declaration/v1" |  |
+| <a id="s-efd68c962f"></a>`join_declaration_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ae30d7711c"></a>`members` | yes | type="array"; minItems=2; items=(#/$defs/JoinMemberDeclaration) |  |
+| <a id="s-904fa8d437"></a>`recipe` | yes | #/$defs/RecipeRef |  |
+| <a id="s-5850f02fef"></a>`workflow_intent` | yes | #/$defs/WorkflowPlanIntent |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-62a2dd238d"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-def1a1128f"></a>`distribution` | "stove0-protocol" |
-| <a id="s-61a837bb45"></a>`module` | "stove0_protocol" |
-| <a id="s-91afe9b9c8"></a>`name` | "JoinDeclaration" |
-| <a id="s-296c5c4a48"></a>`unit` | "export" |
+| <a id="s-5300c97a15"></a>`JoinMemberDeclaration` | type="object"; fields=`branch_id`, `output_roles`; additional keys=`additionalProperties`, `required` |
+| <a id="s-3c52221150"></a>`JsonValue` | empty object |
+| <a id="s-75a94902c0"></a>`OperationRef` | type="object"; fields=`id`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-659c9b0200"></a>`RecipeRef` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-8705882e44"></a>`WorkflowPlanIntent` | type="object"; fields=`input_retrieval_policy`, `operation`, `output_policy`, `requested_target_options`, `result_kind`, `retirement_grace_seconds`, `retirement_policy`, `target_contract_sha256`, `target_registration_id`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -54,13 +84,208 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 470a279561a13e7785cf7953b00976de1443f8f006b562b46d0715674273374c -->
+<!-- exact-contract-value: 35be2fccb2145f98ead5e3f4ff33798254065241c819b71ce4ab8c6099a7294e -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "59b7a82cb0367a896054d30d8696a7585892d491b7e53c80ef5205434d902f06",
+    "schema": {
+      "$defs": {
+        "JoinMemberDeclaration": {
+          "additionalProperties": false,
+          "description": "Exact named branch and opaque output roles required by the join.",
+          "properties": {
+            "branch_id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Branch Id",
+              "type": "string"
+            },
+            "output_roles": {
+              "items": {
+                "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+                "type": "string"
+              },
+              "minItems": 1,
+              "title": "Output Roles",
+              "type": "array"
+            }
+          },
+          "required": [
+            "branch_id",
+            "output_roles"
+          ],
+          "title": "JoinMemberDeclaration",
+          "type": "object"
+        },
+        "JsonValue": {},
+        "OperationRef": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sha256"
+          ],
+          "title": "OperationRef",
+          "type": "object"
+        },
+        "RecipeRef": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "revision": {
+              "minimum": 1,
+              "title": "Revision",
+              "type": "integer"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "revision",
+            "sha256"
+          ],
+          "title": "RecipeRef",
+          "type": "object"
+        },
+        "WorkflowPlanIntent": {
+          "additionalProperties": false,
+          "description": "Work-independent fields that deterministically materialize a workflow plan.",
+          "properties": {
+            "input_retrieval_policy": {
+              "default": "available-only",
+              "enum": [
+                "available-only",
+                "allow"
+              ],
+              "title": "Input Retrieval Policy",
+              "type": "string"
+            },
+            "operation": {
+              "$ref": "#/$defs/OperationRef"
+            },
+            "output_policy": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "title": "Output Policy",
+              "type": "object"
+            },
+            "requested_target_options": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "title": "Requested Target Options",
+              "type": "object"
+            },
+            "result_kind": {
+              "default": "collection",
+              "enum": [
+                "collection",
+                "external-effect"
+              ],
+              "title": "Result Kind",
+              "type": "string"
+            },
+            "retirement_grace_seconds": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Retirement Grace Seconds",
+              "type": "integer"
+            },
+            "retirement_policy": {
+              "default": "retain",
+              "enum": [
+                "retain",
+                "retire-after-verified-output"
+              ],
+              "title": "Retirement Policy",
+              "type": "string"
+            },
+            "target_contract_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Target Contract Sha256",
+              "type": "string"
+            },
+            "target_registration_id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$",
+              "title": "Target Registration Id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "operation",
+            "target_registration_id",
+            "target_contract_sha256"
+          ],
+          "title": "WorkflowPlanIntent",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "One optional exact named-subset join declaration.",
+      "properties": {
+        "effective_intent": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Effective Intent",
+          "type": "object"
+        },
+        "format": {
+          "const": "stove0-join-declaration/v1",
+          "default": "stove0-join-declaration/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "join_declaration_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Join Declaration Sha256",
+          "type": "string"
+        },
+        "members": {
+          "items": {
+            "$ref": "#/$defs/JoinMemberDeclaration"
+          },
+          "minItems": 2,
+          "title": "Members",
+          "type": "array"
+        },
+        "recipe": {
+          "$ref": "#/$defs/RecipeRef"
+        },
+        "workflow_intent": {
+          "$ref": "#/$defs/WorkflowPlanIntent"
+        }
+      },
+      "required": [
+        "members",
+        "recipe",
+        "workflow_intent",
+        "join_declaration_sha256"
+      ],
+      "title": "JoinDeclaration",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['stove0-join-declaration/v1'] = 'stove0-join-declaration/v1', members: Annotated[tuple[stove0_protocol.fork_join.JoinMemberDeclaration, ...], MinLen(min_length=2)], recipe: stove0_protocol.models.RecipeRef, effective_intent: dict[str, JsonValue] = <factory>, workflow_intent: stove0_protocol.models.WorkflowPlanIntent, join_declaration_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-protocol",

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9f54e035ce"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-948c62d5ee"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-bd8661b7e4"></a>`distribution` | "riverhog-storage-adapter-support" |
-| <a id="s-862cbcbcc7"></a>`module` | "riverhog_storage_adapter_support" |
-| <a id="s-f256fdcc14"></a>`name` | "StorageAdapterClient" |
-| <a id="s-1fde2f7ee9"></a>`unit` | "export" |
+- <a id="s-bd8661b7e4"></a>`distribution`: `riverhog-storage-adapter-support`
+- <a id="s-862cbcbcc7"></a>`module`: `riverhog_storage_adapter_support`
+- <a id="s-f256fdcc14"></a>`name`: `StorageAdapterClient`
+- <a id="s-1fde2f7ee9"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-70b52cff7f"></a>`kind`: `"class"`
+- <a id="s-2d25332ed2"></a>`signature`: `"\"(base_url: 'str', *, token: 'str', allow_insecure_http: 'bool' = False, timeout: 'float \| httpx.Timeout \| None' = 300.0, maximum_connections: 'int' = 32, client: 'httpx.Client \| None' = None) -> 'None'\""`
 
 ## Maintained corroboration
 

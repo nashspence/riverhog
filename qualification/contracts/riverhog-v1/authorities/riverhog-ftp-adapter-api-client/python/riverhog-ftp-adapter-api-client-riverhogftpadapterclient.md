@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d4ce809cd2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-73f8e4b711"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-cc63ea3472"></a>`distribution` | "riverhog-ftp-adapter-api-client" |
-| <a id="s-492b9b5e8a"></a>`module` | "riverhog_ftp_adapter_api_client" |
-| <a id="s-6f4c016411"></a>`name` | "RiverhogFtpAdapterClient" |
-| <a id="s-36b7d07849"></a>`unit` | "export" |
+- <a id="s-cc63ea3472"></a>`distribution`: `riverhog-ftp-adapter-api-client`
+- <a id="s-492b9b5e8a"></a>`module`: `riverhog_ftp_adapter_api_client`
+- <a id="s-6f4c016411"></a>`name`: `RiverhogFtpAdapterClient`
+- <a id="s-36b7d07849"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-14c83cd90a"></a>`kind`: `"class"`
+- <a id="s-5ad2fd00d6"></a>`signature`: `"\"(base_url: 'str \| None' = None, token: 'str \| None' = None, *, allow_insecure_http: 'bool \| None' = None, timeout_seconds: 'float \| None' = None, http2: 'bool \| None' = None, transport: 'httpx.BaseTransport \| None' = None) -> 'None'\""`
 
 ## Maintained corroboration
 

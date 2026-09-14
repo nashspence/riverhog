@@ -14,13 +14,41 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b033958ec2"></a>
-| Field | Shape |
+- <a id="s-693f47030c"></a>`distribution`: `stove0-media-archive-target-support`
+- <a id="s-150d06f3f1"></a>`module`: `stove0_media_archive_target_support`
+- <a id="s-d7e02a93cd"></a>`name`: `MediaProjectionItem`
+- <a id="s-62122ca441"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-227449cb3b"></a>`kind`: `"class"`
+- <a id="s-b2818943a4"></a>`signature`: `"'(*, input_artifact_id: str, associated_sidecar_artifact_ids: tuple[str, ...] = (), archive_path: str, xmp_path: str, assertions: tuple[stove0_media_metadata_observer_contracts.contracts.MediaMetadataFact, ...] = (), selected: tuple[stove0_media_archive_target_support.projection.MediaProjectedValue, ...] = ()) -> None'"`
+
+#### Validated model schema
+
+<a id="s-06ef93095f"></a>
+- <a id="s-4d7e6082f8"></a>`title`: MediaProjectionItem
+- <a id="s-7197e20472"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-313a118932"></a>`archive_path` | yes | type="string" |  |
+| <a id="s-40432666e3"></a>`assertions` | no | type="array"; items=(#/$defs/MediaMetadataFact) |  |
+| <a id="s-2c7c592359"></a>`associated_sidecar_artifact_ids` | no | type="array"; items=(type="string") |  |
+| <a id="s-790b4a5584"></a>`input_artifact_id` | yes | type="string" |  |
+| <a id="s-3ac59195a2"></a>`selected` | no | type="array"; items=(#/$defs/MediaProjectedValue) |  |
+| <a id="s-3730378d5c"></a>`xmp_path` | yes | type="string" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-09e51b35b7"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-693f47030c"></a>`distribution` | "stove0-media-archive-target-support" |
-| <a id="s-150d06f3f1"></a>`module` | "stove0_media_archive_target_support" |
-| <a id="s-d7e02a93cd"></a>`name` | "MediaProjectionItem" |
-| <a id="s-62122ca441"></a>`unit` | "export" |
+| <a id="s-08ff9de5de"></a>`JsonValue` | empty object |
+| <a id="s-3786098b71"></a>`MediaFactEvidence` | type="object"; fields=`artifact_id`, `field`; additional keys=`additionalProperties`, `required` |
+| <a id="s-e33b4f41af"></a>`MediaMetadataFact` | type="object"; fields=`evidence`, `name`, `value`; additional keys=`additionalProperties`, `required` |
+| <a id="s-5797d39559"></a>`MediaProjectedValue` | type="object"; fields=`evidence`, `name`, `source`, `value`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -55,13 +83,161 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 27e748c6aa1c8efdadcb9299f3c9ae69cfbc2aa4455a99414678d464e5427a2d -->
+<!-- exact-contract-value: 11fd77cefb9100ae71fd23d35b7d8359ceee819d14d525eb7cacee1e3b7cfc7d -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "66e94ffdb8669f096b49716657bc94b8f025e37ebf2e15ac8fe28451448ede3c",
+    "schema": {
+      "$defs": {
+        "JsonValue": {},
+        "MediaFactEvidence": {
+          "additionalProperties": false,
+          "description": "Exact artifact and ExifTool field from which one value was read.",
+          "properties": {
+            "artifact_id": {
+              "maxLength": 160,
+              "minLength": 1,
+              "title": "Artifact Id",
+              "type": "string"
+            },
+            "field": {
+              "maxLength": 240,
+              "minLength": 1,
+              "title": "Field",
+              "type": "string"
+            }
+          },
+          "required": [
+            "artifact_id",
+            "field"
+          ],
+          "title": "MediaFactEvidence",
+          "type": "object"
+        },
+        "MediaMetadataFact": {
+          "additionalProperties": false,
+          "properties": {
+            "evidence": {
+              "$ref": "#/$defs/MediaFactEvidence"
+            },
+            "name": {
+              "enum": [
+                "capture-time",
+                "container-format",
+                "creator",
+                "device-make",
+                "device-model",
+                "gps-latitude",
+                "gps-longitude"
+              ],
+              "title": "Name",
+              "type": "string"
+            },
+            "value": {
+              "$ref": "#/$defs/JsonValue"
+            }
+          },
+          "required": [
+            "name",
+            "value",
+            "evidence"
+          ],
+          "title": "MediaMetadataFact",
+          "type": "object"
+        },
+        "MediaProjectedValue": {
+          "additionalProperties": false,
+          "properties": {
+            "evidence": {
+              "default": [],
+              "items": {
+                "$ref": "#/$defs/MediaFactEvidence"
+              },
+              "title": "Evidence",
+              "type": "array"
+            },
+            "name": {
+              "enum": [
+                "capture-time",
+                "creator",
+                "device-make",
+                "device-model",
+                "gps-latitude",
+                "gps-longitude"
+              ],
+              "title": "Name",
+              "type": "string"
+            },
+            "source": {
+              "enum": [
+                "observation",
+                "recipe"
+              ],
+              "title": "Source",
+              "type": "string"
+            },
+            "value": {
+              "$ref": "#/$defs/JsonValue"
+            }
+          },
+          "required": [
+            "name",
+            "value",
+            "source"
+          ],
+          "title": "MediaProjectedValue",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "archive_path": {
+          "title": "Archive Path",
+          "type": "string"
+        },
+        "assertions": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/MediaMetadataFact"
+          },
+          "title": "Assertions",
+          "type": "array"
+        },
+        "associated_sidecar_artifact_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Associated Sidecar Artifact Ids",
+          "type": "array"
+        },
+        "input_artifact_id": {
+          "title": "Input Artifact Id",
+          "type": "string"
+        },
+        "selected": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/MediaProjectedValue"
+          },
+          "title": "Selected",
+          "type": "array"
+        },
+        "xmp_path": {
+          "title": "Xmp Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "input_artifact_id",
+        "archive_path",
+        "xmp_path"
+      ],
+      "title": "MediaProjectionItem",
+      "type": "object"
+    },
     "signature": "'(*, input_artifact_id: str, associated_sidecar_artifact_ids: tuple[str, ...] = (), archive_path: str, xmp_path: str, assertions: tuple[stove0_media_metadata_observer_contracts.contracts.MediaMetadataFact, ...] = (), selected: tuple[stove0_media_archive_target_support.projection.MediaProjectedValue, ...] = ()) -> None'"
   },
   "distribution": "stove0-media-archive-target-support",

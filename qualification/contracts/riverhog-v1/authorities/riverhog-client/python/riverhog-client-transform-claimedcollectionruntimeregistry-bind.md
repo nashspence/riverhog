@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7b95fac5b8"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4d2b74a309"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-90cd4eb58f"></a>`distribution` | "riverhog-client" |
-| <a id="s-e618e09c8e"></a>`module` | "riverhog_client.transform" |
-| <a id="s-aa5d9d2124"></a>`name` | "bind" |
-| <a id="s-38ee6215ad"></a>`owner` | "riverhog_client.transform.ClaimedCollectionRuntimeRegistry" |
-| <a id="s-04f7f5367f"></a>`unit` | "member" |
+- <a id="s-90cd4eb58f"></a>`distribution`: `riverhog-client`
+- <a id="s-e618e09c8e"></a>`module`: `riverhog_client.transform`
+- <a id="s-aa5d9d2124"></a>`name`: `bind`
+- <a id="s-38ee6215ad"></a>`owner`: `riverhog_client.transform.ClaimedCollectionRuntimeRegistry`
+- <a id="s-04f7f5367f"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-abb478a31f"></a>`kind`: `"method"`
+- <a id="s-6c89178655"></a>`signature`: `"\"(self, job_id: 'str', runtime: 'RefreshableClaimedCollectionRuntime') -> 'Iterator[RefreshableClaimedCollectionRuntime]'\""`
 
 ## Maintained corroboration
 

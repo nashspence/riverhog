@@ -10,7 +10,7 @@ Riverhog owns the public archive service and the reusable contracts that define 
 |---|---:|---:|
 | Riverhog service | 1 | 364 |
 | Riverhog-owned contracts and libraries | 13 | 1115 |
-| Implementation and build | 3 | 111 |
+| Implementation and build | 3 | 201 |
 
 ## Riverhog service
 
@@ -42,10 +42,10 @@ Authorities: **13** · Contract elements: **1115**
 
 ## Implementation and build
 
-Authorities: **3** · Contract elements: **111**
+Authorities: **3** · Contract elements: **201**
 
 | Exact authority | Contract elements | Interfaces | Maintained purpose |
 |---|---:|---|---|
-| [riverhog-catalog](../authorities/riverhog-catalog/index.md) | 1 | Durable State | Encrypted archive management, catalog, and retrieval. |
+| [riverhog-catalog](../authorities/riverhog-catalog/index.md) | 91 | Durable State | Encrypted archive management, catalog, and retrieval. |
 | [riverhog-server](../authorities/riverhog-server/index.md) | 52 | Configuration Environment | Encrypted archive management, catalog, and retrieval. |
 | [state-schema](../authorities/state-schema/index.md) | 58 | Python | Forward-only relational state schema and migration contracts. |

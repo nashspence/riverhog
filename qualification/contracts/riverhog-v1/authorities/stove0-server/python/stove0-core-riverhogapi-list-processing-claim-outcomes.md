@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b9ed50ba38"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-976f645fc9"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e94f7d6941"></a>`distribution` | "stove0-server" |
-| <a id="s-f0b0ff279a"></a>`module` | "stove0_core" |
-| <a id="s-c22421a3e4"></a>`name` | "list_processing_claim_outcomes" |
-| <a id="s-9c2b229f95"></a>`owner` | "stove0_core.RiverhogApi" |
-| <a id="s-0ce628392a"></a>`unit` | "member" |
+- <a id="s-e94f7d6941"></a>`distribution`: `stove0-server`
+- <a id="s-f0b0ff279a"></a>`module`: `stove0_core`
+- <a id="s-c22421a3e4"></a>`name`: `list_processing_claim_outcomes`
+- <a id="s-9c2b229f95"></a>`owner`: `stove0_core.RiverhogApi`
+- <a id="s-0ce628392a"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-56bb48c64d"></a>`kind`: `"method"`
+- <a id="s-0de0e8343e"></a>`signature`: `"\"(self, claim_id: 'str', *, authority_sha256: 'str', start_ordinal: 'int' = 0) -> 'ProcessingOutcomePageDocument'\""`
 
 ## Maintained corroboration
 

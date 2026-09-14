@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9e2853c5ac"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8ba218dbd9"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b97387d2d2"></a>`distribution` | "stove0-server" |
-| <a id="s-933842738e"></a>`module` | "stove0_api" |
-| <a id="s-7e326e0257"></a>`name` | "build" |
-| <a id="s-2492fbc31e"></a>`owner` | "stove0_api.Stove0Composition" |
-| <a id="s-479fd5d756"></a>`unit` | "member" |
+- <a id="s-b97387d2d2"></a>`distribution`: `stove0-server`
+- <a id="s-933842738e"></a>`module`: `stove0_api`
+- <a id="s-7e326e0257"></a>`name`: `build`
+- <a id="s-2492fbc31e"></a>`owner`: `stove0_api.Stove0Composition`
+- <a id="s-479fd5d756"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-afaa762809"></a>`kind`: `"classmethod"`
+- <a id="s-460c36d0ee"></a>`signature`: `"\"(cls, config: 'Stove0RuntimeConfig') -> 'Stove0Composition'\""`
 
 ## Maintained corroboration
 

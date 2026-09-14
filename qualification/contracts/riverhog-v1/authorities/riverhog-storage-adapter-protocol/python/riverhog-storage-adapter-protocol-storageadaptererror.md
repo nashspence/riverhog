@@ -14,13 +14,33 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-339d4e2876"></a>
-| Field | Shape |
+- <a id="s-1df02dc29f"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-b959e15e1d"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-2fd6a49f10"></a>`name`: `StorageAdapterError`
+- <a id="s-69541978c7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-8b53d2c079"></a>`kind`: `"class"`
+- <a id="s-c6baa213d9"></a>`signature`: `"'(*, error: riverhog_storage_adapter_protocol.protocol.StorageAdapterErrorBody) -> None'"`
+
+#### Validated model schema
+
+<a id="s-8273a3b582"></a>
+- <a id="s-0995432c5d"></a>`title`: StorageAdapterError
+- <a id="s-60f4870d95"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3f94044d27"></a>`error` | yes | #/$defs/StorageAdapterErrorBody |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-cd5662d56f"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-1df02dc29f"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-b959e15e1d"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-2fd6a49f10"></a>`name` | "StorageAdapterError" |
-| <a id="s-69541978c7"></a>`unit` | "export" |
+| <a id="s-1ac506b6c2"></a>`StorageAdapterErrorBody` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
@@ -46,13 +66,66 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0d93567819aa9a0fda3f3dcae41c79d59c30ed2f4b0cf6f616ba91343e4cee8b -->
+<!-- exact-contract-value: 5f8401df24b68a7b7eb412fa030ee60ce425eb6fc8bf0a4aedb132be4508b262 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "19b906afcdf8d94d77f5aef65b4facf0cb084d382ef94d440ae8a5cd58e7aa7f",
+    "schema": {
+      "$defs": {
+        "StorageAdapterErrorBody": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "enum": [
+                "unauthorized",
+                "invalid_request",
+                "not_found",
+                "method_not_allowed",
+                "length_required",
+                "request_too_large",
+                "insufficient_storage",
+                "identity_conflict",
+                "traversal_invalidated",
+                "invalid_path",
+                "invalid_range",
+                "read_not_ready",
+                "read_expired",
+                "integrity_failure",
+                "provider_unavailable",
+                "internal_failure"
+              ],
+              "title": "Code",
+              "type": "string"
+            },
+            "message": {
+              "maxLength": 2000,
+              "minLength": 1,
+              "title": "Message",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code",
+            "message"
+          ],
+          "title": "StorageAdapterErrorBody",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/StorageAdapterErrorBody"
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "title": "StorageAdapterError",
+      "type": "object"
+    },
     "signature": "'(*, error: riverhog_storage_adapter_protocol.protocol.StorageAdapterErrorBody) -> None'"
   },
   "distribution": "riverhog-storage-adapter-protocol",

@@ -14,11 +14,12 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4250c856b8"></a>
+
 - <a id="s-0ce078a71d"></a>`format`: riverhog-provenance-installation-id/v1
 
 ## Governing policies
 
-- <a id="pa-ddde16f1af"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-7845ed3800"></a>[compatibility/durable-state/v1](../../../policies/index.md#p-214a49c2de)
 
 ## Evidence
 
@@ -30,7 +31,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [state:riverhog-provenance-installation](../../../evidence/sources.md#src-080b970190) — `state:riverhog-provenance-installation`
+- [state:riverhog-provenance-installation](../../../evidence/sources.md#src-080b970190) — `packages/riverhog-provenance/src/riverhog_provenance/identity.py`
 
 ### Machine authority
 
@@ -40,16 +41,24 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3412629259ba1bf4fe27cb2a3ad8f05a05a153f52a8bd38ea9d52df974b50f32 -->
+<!-- exact-contract-value: a75d387c9cce36fc0bc7c58180b70e129a2e5987ba72214ed4b9de20110148c1 -->
 
 ```json
 {
   "distribution": "riverhog-provenance",
-  "fixture_sha256s": [
-    "fae5bd819bced353febb34ae9ad32e167f2522cebae4572e007f1747bc92277a"
-  ],
   "format": "riverhog-provenance-installation-id/v1",
   "head": "v1",
-  "id": "riverhog-provenance-installation"
+  "id": "riverhog-provenance-installation",
+  "structure": {
+    "encoding": "ascii",
+    "kind": "text-document",
+    "line_count": 1,
+    "terminator": "LF",
+    "value": {
+      "kind": "canonical-uuid-urn",
+      "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    }
+  },
+  "transition": "immutable-identity"
 }
 ```

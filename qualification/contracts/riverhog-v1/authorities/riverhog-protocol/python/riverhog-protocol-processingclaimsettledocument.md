@@ -14,13 +14,42 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-730bdee45f"></a>
-| Field | Shape |
+- <a id="s-983c6203e0"></a>`distribution`: `riverhog-protocol`
+- <a id="s-620de56e1d"></a>`module`: `riverhog_protocol`
+- <a id="s-5c92771092"></a>`name`: `ProcessingClaimSettleDocument`
+- <a id="s-bc6159f138"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-8a2f15880b"></a>`kind`: `"class"`
+- <a id="s-15b08e67cd"></a>`signature`: `"'(*, fence: Annotated[int, Ge(ge=1)], output_collection_id: CollectionId, derivation: riverhog_protocol.collection_workflow_transport.CollectionDerivationDocument, outcome: riverhog_protocol.collection_workflow_transport.ProcessingOutcomeBindingDocument \| None = None) -> None'"`
+
+#### Validated model schema
+
+<a id="s-3b78000f99"></a>
+- <a id="s-45d3dafa24"></a>`title`: ProcessingClaimSettleDocument
+- <a id="s-01be60b278"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-dd4b96785f"></a>`derivation` | yes | #/$defs/CollectionDerivationDocument |  |
+| <a id="s-011a82f456"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-84a0f0c6d4"></a>`outcome` | no | anyOf=#/$defs/ProcessingOutcomeBindingDocument \| type="null" |  |
+| <a id="s-67ff0b4dc2"></a>`output_collection_id` | yes | #/$defs/CollectionId |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-2b6a341d87"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-983c6203e0"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-620de56e1d"></a>`module` | "riverhog_protocol" |
-| <a id="s-5c92771092"></a>`name` | "ProcessingClaimSettleDocument" |
-| <a id="s-bc6159f138"></a>`unit` | "export" |
+| <a id="s-bcbe294d68"></a>`ArtifactDispositionSetIdentityDocument` | type="object"; fields=`disposition_count`, `output_artifact_count`, `output_edge_count`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-adf64e03c7"></a>`ClaimFenceDocument` | type="object"; fields=`fence`, `id`; additional keys=`additionalProperties`, `required` |
+| <a id="s-2bd8d62893"></a>`CollectionDerivationDocument` | type="object"; fields=`artifact_set_sha256`, `claim`, `controller_evidence`, `controller_evidence_sha256`, `disposition_set`, `execution_envelope_sha256`, `execution_id`, `execution_sha256`, `format`, `input_set_sha256`, `operation`, `recipe`; additional keys=`additionalProperties`, `required` |
+| <a id="s-e37ce6215f"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-769008a64e"></a>`OperationIdentityDocument` | type="object"; fields=`id`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-c7e96fccf8"></a>`ProcessingOutcomeBindingDocument` | type="object"; fields=`claim_id`, `fence`, `outcome_id`; additional keys=`additionalProperties`, `required` |
+| <a id="s-7b57800bfc"></a>`RecipeIdentityDocument` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
@@ -46,13 +75,259 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 94d2ef90fc735c3be037fefb016f1e86a03eceb71d1dac39e2c27e59fc7a4e35 -->
+<!-- exact-contract-value: 3274447093e5664c8d6ea7a48dfeb8818ef5a50b7db9fb951de7deb8bc588186 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "682a1ec87a74c11eae2be43f2f99840117d339d2c518bfa188b2e15fc1513100",
+    "schema": {
+      "$defs": {
+        "ArtifactDispositionSetIdentityDocument": {
+          "additionalProperties": false,
+          "properties": {
+            "disposition_count": {
+              "minimum": 1,
+              "title": "Disposition Count",
+              "type": "integer"
+            },
+            "output_artifact_count": {
+              "minimum": 1,
+              "title": "Output Artifact Count",
+              "type": "integer"
+            },
+            "output_edge_count": {
+              "minimum": 1,
+              "title": "Output Edge Count",
+              "type": "integer"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "disposition_count",
+            "output_edge_count",
+            "output_artifact_count",
+            "sha256"
+          ],
+          "title": "ArtifactDispositionSetIdentityDocument",
+          "type": "object"
+        },
+        "ClaimFenceDocument": {
+          "additionalProperties": false,
+          "properties": {
+            "fence": {
+              "minimum": 1,
+              "title": "Fence",
+              "type": "integer"
+            },
+            "id": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "fence"
+          ],
+          "title": "ClaimFenceDocument",
+          "type": "object"
+        },
+        "CollectionDerivationDocument": {
+          "additionalProperties": false,
+          "properties": {
+            "artifact_set_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Artifact Set Sha256",
+              "type": "string"
+            },
+            "claim": {
+              "$ref": "#/$defs/ClaimFenceDocument"
+            },
+            "controller_evidence": {
+              "additionalProperties": true,
+              "title": "Controller Evidence",
+              "type": "object",
+              "x-riverhog-encoded-bytes-max": 16777216,
+              "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-controller-evidence-envelope"
+              }
+            },
+            "controller_evidence_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Controller Evidence Sha256",
+              "type": "string"
+            },
+            "disposition_set": {
+              "$ref": "#/$defs/ArtifactDispositionSetIdentityDocument"
+            },
+            "execution_envelope_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Execution Envelope Sha256",
+              "type": "string"
+            },
+            "execution_id": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Execution Id",
+              "type": "string"
+            },
+            "execution_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Execution Sha256",
+              "type": "string"
+            },
+            "format": {
+              "const": "riverhog-collection-derivation/v1",
+              "title": "Format",
+              "type": "string"
+            },
+            "input_set_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Input Set Sha256",
+              "type": "string"
+            },
+            "operation": {
+              "$ref": "#/$defs/OperationIdentityDocument"
+            },
+            "recipe": {
+              "$ref": "#/$defs/RecipeIdentityDocument"
+            }
+          },
+          "required": [
+            "format",
+            "execution_id",
+            "claim",
+            "recipe",
+            "operation",
+            "input_set_sha256",
+            "artifact_set_sha256",
+            "execution_envelope_sha256",
+            "execution_sha256",
+            "controller_evidence",
+            "controller_evidence_sha256",
+            "disposition_set"
+          ],
+          "title": "CollectionDerivationDocument",
+          "type": "object"
+        },
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "OperationIdentityDocument": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sha256"
+          ],
+          "title": "OperationIdentityDocument",
+          "type": "object"
+        },
+        "ProcessingOutcomeBindingDocument": {
+          "additionalProperties": false,
+          "properties": {
+            "claim_id": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Claim Id",
+              "type": "string"
+            },
+            "fence": {
+              "minimum": 1,
+              "title": "Fence",
+              "type": "integer"
+            },
+            "outcome_id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Outcome Id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "claim_id",
+            "fence",
+            "outcome_id"
+          ],
+          "title": "ProcessingOutcomeBindingDocument",
+          "type": "object"
+        },
+        "RecipeIdentityDocument": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "revision": {
+              "minimum": 1,
+              "title": "Revision",
+              "type": "integer"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "revision",
+            "sha256"
+          ],
+          "title": "RecipeIdentityDocument",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "derivation": {
+          "$ref": "#/$defs/CollectionDerivationDocument"
+        },
+        "fence": {
+          "minimum": 1,
+          "title": "Fence",
+          "type": "integer"
+        },
+        "outcome": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProcessingOutcomeBindingDocument"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "output_collection_id": {
+          "$ref": "#/$defs/CollectionId"
+        }
+      },
+      "required": [
+        "fence",
+        "output_collection_id",
+        "derivation"
+      ],
+      "title": "ProcessingClaimSettleDocument",
+      "type": "object"
+    },
     "signature": "'(*, fence: Annotated[int, Ge(ge=1)], output_collection_id: CollectionId, derivation: riverhog_protocol.collection_workflow_transport.CollectionDerivationDocument, outcome: riverhog_protocol.collection_workflow_transport.ProcessingOutcomeBindingDocument | None = None) -> None'"
   },
   "distribution": "riverhog-protocol",

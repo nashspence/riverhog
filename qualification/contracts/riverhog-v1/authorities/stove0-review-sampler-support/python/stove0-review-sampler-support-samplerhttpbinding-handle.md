@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1ad5438dfa"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7237f94570"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d43f5e2130"></a>`distribution` | "stove0-review-sampler-support" |
-| <a id="s-c89694c76b"></a>`module` | "stove0_review_sampler_support" |
-| <a id="s-ba7dd3ef70"></a>`name` | "handle" |
-| <a id="s-f6a43d13db"></a>`owner` | "stove0_review_sampler_support.SamplerHttpBinding" |
-| <a id="s-4e7617c03e"></a>`unit` | "member" |
+- <a id="s-d43f5e2130"></a>`distribution`: `stove0-review-sampler-support`
+- <a id="s-c89694c76b"></a>`module`: `stove0_review_sampler_support`
+- <a id="s-ba7dd3ef70"></a>`name`: `handle`
+- <a id="s-f6a43d13db"></a>`owner`: `stove0_review_sampler_support.SamplerHttpBinding`
+- <a id="s-4e7617c03e"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-7a14fd0517"></a>`kind`: `"method"`
+- <a id="s-3577eb4175"></a>`signature`: `"\"(self, method: 'str', path: 'str', body: 'bytes' = b'') -> 'SamplerHttpResponse'\""`
 
 ## Maintained corroboration
 

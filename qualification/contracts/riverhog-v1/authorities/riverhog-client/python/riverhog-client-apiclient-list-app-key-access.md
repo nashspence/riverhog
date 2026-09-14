@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-71553a4d06"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-58ea462da8"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f75faac3a0"></a>`distribution` | "riverhog-client" |
-| <a id="s-2746365972"></a>`module` | "riverhog_client" |
-| <a id="s-43dbef4642"></a>`name` | "list_app_key_access" |
-| <a id="s-9de3cb1fc1"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-fafb5e66e2"></a>`unit` | "member" |
+- <a id="s-f75faac3a0"></a>`distribution`: `riverhog-client`
+- <a id="s-2746365972"></a>`module`: `riverhog_client`
+- <a id="s-43dbef4642"></a>`name`: `list_app_key_access`
+- <a id="s-9de3cb1fc1"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-fafb5e66e2"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-00c5138d80"></a>`kind`: `"method"`
+- <a id="s-f3359efb48"></a>`signature`: `"\"(self, *, page_size: 'int' = 25, page_token: 'str \| None' = None, q: 'str \| None' = None, sort: 'ApplicationAccessSort' = 'permission', order: 'SortOrder' = 'asc', app: 'ApplicationName \| None' = None, key_id: 'ApplicationKeyId \| None' = None, permission: 'ApplicationPermission \| None' = None, resource: 'ApplicationResource \| None' = None, active: 'bool \| None' = None) -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

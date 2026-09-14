@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-688ee47ec6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-582f2e8bf7"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-61c8df3269"></a>`distribution` | "stove0-target-client" |
-| <a id="s-2856e5e4e6"></a>`module` | "stove0_target_client" |
-| <a id="s-7dbad280d2"></a>`name` | "declare_target_execution_disposition" |
-| <a id="s-0671ba294d"></a>`owner` | "stove0_target_client.TargetCallbackClient" |
-| <a id="s-9f4ad12086"></a>`unit` | "member" |
+- <a id="s-61c8df3269"></a>`distribution`: `stove0-target-client`
+- <a id="s-2856e5e4e6"></a>`module`: `stove0_target_client`
+- <a id="s-7dbad280d2"></a>`name`: `declare_target_execution_disposition`
+- <a id="s-0671ba294d"></a>`owner`: `stove0_target_client.TargetCallbackClient`
+- <a id="s-9f4ad12086"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1a48164053"></a>`kind`: `"method"`
+- <a id="s-bee220991e"></a>`signature`: `"\"(self, job_id: 'str', disposition: 'InputDispositionDeclaration') -> 'TargetCallbackAcknowledgement'\""`
 
 ## Maintained corroboration
 

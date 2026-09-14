@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-77ec797383"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1e34ec14c8"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-85994d2b69"></a>`distribution` | "stove0-api-client" |
-| <a id="s-f691b51ca6"></a>`module` | "stove0_api_client" |
-| <a id="s-6f42d21ca1"></a>`name` | "review_evaluation_variant" |
-| <a id="s-db64196f7e"></a>`owner` | "stove0_api_client.Stove0ApiClient" |
-| <a id="s-0969fd5502"></a>`unit` | "member" |
+- <a id="s-85994d2b69"></a>`distribution`: `stove0-api-client`
+- <a id="s-f691b51ca6"></a>`module`: `stove0_api_client`
+- <a id="s-6f42d21ca1"></a>`name`: `review_evaluation_variant`
+- <a id="s-db64196f7e"></a>`owner`: `stove0_api_client.Stove0ApiClient`
+- <a id="s-0969fd5502"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-b8acb6277f"></a>`kind`: `"method"`
+- <a id="s-cd857cf65b"></a>`signature`: `"\"(self, evaluation_id: 'str', variant_id: 'str', *, rating: 'int \| None' = None, note: 'str \| None' = None) -> 'EvaluationView'\""`
 
 ## Maintained corroboration
 

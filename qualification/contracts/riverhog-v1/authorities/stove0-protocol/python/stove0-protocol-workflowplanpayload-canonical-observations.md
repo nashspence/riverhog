@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0ef94ad020"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-78863be6bf"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-dcdc45f286"></a>`distribution` | "stove0-protocol" |
-| <a id="s-ab8136ace5"></a>`module` | "stove0_protocol" |
-| <a id="s-353518fc09"></a>`name` | "canonical_observations" |
-| <a id="s-488ff7a5ce"></a>`owner` | "stove0_protocol.WorkflowPlanPayload" |
-| <a id="s-fe11ca2a90"></a>`unit` | "member" |
+- <a id="s-dcdc45f286"></a>`distribution`: `stove0-protocol`
+- <a id="s-ab8136ace5"></a>`module`: `stove0_protocol`
+- <a id="s-353518fc09"></a>`name`: `canonical_observations`
+- <a id="s-488ff7a5ce"></a>`owner`: `stove0_protocol.WorkflowPlanPayload`
+- <a id="s-fe11ca2a90"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-a10d8ea94b"></a>`kind`: `"classmethod"`
+- <a id="s-c167292e89"></a>`signature`: `"\"(cls, value: 'tuple[ObservationEvidence, ...]') -> 'tuple[ObservationEvidence, ...]'\""`
 
 ## Maintained corroboration
 

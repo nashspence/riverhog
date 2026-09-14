@@ -14,13 +14,31 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3fea62c41e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8d09b2cabd"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-6f70aba77d"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-0c742cd251"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-55d8088e95"></a>`name` | "WorkCreatedEventData" |
-| <a id="s-40e0be8acf"></a>`unit` | "export" |
+- <a id="s-6f70aba77d"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-0c742cd251"></a>`module`: `stove0_operator_contracts`
+- <a id="s-55d8088e95"></a>`name`: `WorkCreatedEventData`
+- <a id="s-40e0be8acf"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-84929f32c9"></a>`kind`: `"class"`
+- <a id="s-479636ccfe"></a>`signature`: `"\"(*, work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], phase: Literal['eligible', 'claimed', 'observing', 'planning', 'target_preflight', 'queued', 'executing', 'output_finalizing', 'verifying', 'settled', 'retirement_pending', 'coordinating', 'abandon_pending', 'complete', 'inapplicable', 'failed', 'canceled'], parent_work_id: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, branch_set_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, join_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None) -> None\""`
+
+#### Validated model schema
+
+<a id="s-7e184c36b0"></a>
+- <a id="s-70274cd651"></a>`title`: WorkCreatedEventData
+- <a id="s-baa9edac26"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-447ccfc4ba"></a>`branch_set_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-215d36605a"></a>`join_plan_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-7d361ca119"></a>`parent_work_id` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-9d4dd347d6"></a>`phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] |  |
+| <a id="s-35f210dbd8"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -52,13 +70,90 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: cec44afcc45b4588baca952d14a9b512b76024e4f8a64a2b1115f28a9f9fd137 -->
+<!-- exact-contract-value: 5d25b365f3dc66a544d157a852c7849d4713bd269f6178376f650181bb657d15 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "e1e48763e34ffc2258b2a0ef13e61106e72258ba277b09a9263caad67af1c640",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "branch_set_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Branch Set Sha256"
+        },
+        "join_plan_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Join Plan Sha256"
+        },
+        "parent_work_id": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Work Id"
+        },
+        "phase": {
+          "enum": [
+            "eligible",
+            "claimed",
+            "observing",
+            "planning",
+            "target_preflight",
+            "queued",
+            "executing",
+            "output_finalizing",
+            "verifying",
+            "settled",
+            "retirement_pending",
+            "coordinating",
+            "abandon_pending",
+            "complete",
+            "inapplicable",
+            "failed",
+            "canceled"
+          ],
+          "title": "Phase",
+          "type": "string"
+        },
+        "work_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Work Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "work_id",
+        "phase"
+      ],
+      "title": "WorkCreatedEventData",
+      "type": "object"
+    },
     "signature": "\"(*, work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], phase: Literal['eligible', 'claimed', 'observing', 'planning', 'target_preflight', 'queued', 'executing', 'output_finalizing', 'verifying', 'settled', 'retirement_pending', 'coordinating', 'abandon_pending', 'complete', 'inapplicable', 'failed', 'canceled'], parent_work_id: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, branch_set_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, join_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None) -> None\""
   },
   "distribution": "stove0-operator-contracts",

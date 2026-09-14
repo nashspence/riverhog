@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7fd0f5942e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8c757f6668"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-68ba9c12db"></a>`distribution` | "stove0-server" |
-| <a id="s-104c0bfbd2"></a>`module` | "stove0_core" |
-| <a id="s-bf135d6731"></a>`name` | "iter_target_dispositions" |
-| <a id="s-0df563097b"></a>`owner` | "stove0_core.WorkStore" |
-| <a id="s-47919b0323"></a>`unit` | "member" |
+- <a id="s-68ba9c12db"></a>`distribution`: `stove0-server`
+- <a id="s-104c0bfbd2"></a>`module`: `stove0_core`
+- <a id="s-bf135d6731"></a>`name`: `iter_target_dispositions`
+- <a id="s-0df563097b"></a>`owner`: `stove0_core.WorkStore`
+- <a id="s-47919b0323"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-433256307d"></a>`kind`: `"method"`
+- <a id="s-4108cda3b1"></a>`signature`: `"\"(self, work_id: 'str', job_id: 'str') -> 'Iterator[InputDispositionDeclaration]'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,26 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c609296245"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-380c5f7684"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-2923974e6c"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-bf3b93adaa"></a>`module` | "stove0_target_protocol" |
-| <a id="s-0d704363d3"></a>`name` | "TargetProtocolModel" |
-| <a id="s-ac4b934a57"></a>`unit` | "export" |
+- <a id="s-2923974e6c"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-bf3b93adaa"></a>`module`: `stove0_target_protocol`
+- <a id="s-0d704363d3"></a>`name`: `TargetProtocolModel`
+- <a id="s-ac4b934a57"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-aab5424c2c"></a>`kind`: `"class"`
+- <a id="s-e686acb949"></a>`signature`: `"'() -> None'"`
+
+#### Validated model schema
+
+<a id="s-17ef776d55"></a>
+- <a id="s-028dfff3be"></a>`title`: TargetProtocolModel
+- <a id="s-fd946aa206"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
 
 ## Governing policies
 
@@ -46,13 +59,18 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8cf1d9f0e8199a035a3f88bfa475c3c124a50a777574cf6a99c23e97af432207 -->
+<!-- exact-contract-value: 7b28e8377e155bdd5af7bbd3b9af35e9e98bb2471382966f4b44be2ff3be0c33 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "c93552e6289487dd5fa8baeb3416b24ed8657c354167fb0ed7a8de1e1a8ccb90",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {},
+      "title": "TargetProtocolModel",
+      "type": "object"
+    },
     "signature": "'() -> None'"
   },
   "distribution": "stove0-target-protocol",

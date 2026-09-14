@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fa713674bc"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-92eb3ef2dd"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-9c2cb1798e"></a>`distribution` | "stove0-review-sampler-support" |
-| <a id="s-44ea749f32"></a>`module` | "stove0_review_sampler_support" |
-| <a id="s-4a14361e31"></a>`name` | "conformance_report" |
-| <a id="s-2e53f69268"></a>`unit` | "export" |
+- <a id="s-9c2cb1798e"></a>`distribution`: `stove0-review-sampler-support`
+- <a id="s-44ea749f32"></a>`module`: `stove0_review_sampler_support`
+- <a id="s-4a14361e31"></a>`name`: `conformance_report`
+- <a id="s-2e53f69268"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-931135eb46"></a>`kind`: `"function"`
+- <a id="s-8a2a7ad3a8"></a>`signature`: `"\"(client: 'SamplerClient', *, request: 'SamplerRequest \| None' = None) -> 'SamplerConformanceResult'\""`
 
 ## Governing policies
 

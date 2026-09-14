@@ -14,13 +14,29 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2ff4deeda4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-08fd32b897"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-bd0e79df53"></a>`distribution` | "stove0-protocol" |
-| <a id="s-54e93e7d58"></a>`module` | "stove0_protocol" |
-| <a id="s-ef4b90cf8d"></a>`name` | "JoinMemberDeclaration" |
-| <a id="s-80443e9007"></a>`unit` | "export" |
+- <a id="s-bd0e79df53"></a>`distribution`: `stove0-protocol`
+- <a id="s-54e93e7d58"></a>`module`: `stove0_protocol`
+- <a id="s-ef4b90cf8d"></a>`name`: `JoinMemberDeclaration`
+- <a id="s-80443e9007"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0a8e07fdab"></a>`kind`: `"class"`
+- <a id="s-d762a38b71"></a>`signature`: `"\"(*, branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], output_roles: Annotated[tuple[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...], MinLen(min_length=1)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-4557e503c3"></a>
+- <a id="s-aa9b43fca9"></a>`title`: JoinMemberDeclaration
+- <a id="s-536e8ce651"></a>`description`: Exact named branch and opaque output roles required by the join.
+- <a id="s-d1058aa570"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-86a3a42529"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-86d7ae3c64"></a>`output_roles` | yes | type="array"; minItems=1; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
 
 ## Maintained corroboration
 
@@ -52,13 +68,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 97f4739c4077a05ba465d066f3956cb109ec2b38005d55a855435bf0103a16c0 -->
+<!-- exact-contract-value: 5622eea53c6abd6726aa377664d9493db9b30be923746ce896ea9130fd83796f -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "f1b1441297c6334a7eeb79e0a05030fe3b536cc2d6ee09a2aa316a623e74c389",
+    "schema": {
+      "additionalProperties": false,
+      "description": "Exact named branch and opaque output roles required by the join.",
+      "properties": {
+        "branch_id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Branch Id",
+          "type": "string"
+        },
+        "output_roles": {
+          "items": {
+            "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Output Roles",
+          "type": "array"
+        }
+      },
+      "required": [
+        "branch_id",
+        "output_roles"
+      ],
+      "title": "JoinMemberDeclaration",
+      "type": "object"
+    },
     "signature": "\"(*, branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], output_roles: Annotated[tuple[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...], MinLen(min_length=1)]) -> None\""
   },
   "distribution": "stove0-protocol",

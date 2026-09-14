@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2aed75a18d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-08446b7bc7"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-38faf15651"></a>`distribution` | "riverhog-client" |
-| <a id="s-18e90e9edd"></a>`module` | "riverhog_client" |
-| <a id="s-bf42cf0921"></a>`name` | "publish_inputs" |
-| <a id="s-9961bd4532"></a>`owner` | "riverhog_client.CollectionProducer" |
-| <a id="s-b38db32a44"></a>`unit` | "member" |
+- <a id="s-38faf15651"></a>`distribution`: `riverhog-client`
+- <a id="s-18e90e9edd"></a>`module`: `riverhog_client`
+- <a id="s-bf42cf0921"></a>`name`: `publish_inputs`
+- <a id="s-9961bd4532"></a>`owner`: `riverhog_client.CollectionProducer`
+- <a id="s-b38db32a44"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-8092b12930"></a>`kind`: `"method"`
+- <a id="s-81cd03b551"></a>`signature`: `"\"(self, files: 'Iterable[ProducerInput]', *, source_event_id: 'str', source_context: 'Mapping[str, object] \| None' = None, provenance_journals: 'Iterable[tuple[str, bytes]] \| None' = None, idempotency_key: 'str \| None' = None, event_context: 'Mapping[str, object] \| None' = None, poll_seconds: 'float' = 2.0, timeout_seconds: 'float' = 86400, progress: 'ReadProgress \| None' = None) -> 'ProducedCollection'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d9036768b6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f9a553dbc8"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-ac638445bb"></a>`distribution` | "lifecycle-events" |
-| <a id="s-fd4e77a02a"></a>`module` | "lifecycle_events" |
-| <a id="s-174ae88ec4"></a>`name` | "MAX_EVENT_CONTEXT_BYTES" |
-| <a id="s-86d9eb46ce"></a>`unit` | "export" |
+- <a id="s-ac638445bb"></a>`distribution`: `lifecycle-events`
+- <a id="s-fd4e77a02a"></a>`module`: `lifecycle_events`
+- <a id="s-174ae88ec4"></a>`name`: `MAX_EVENT_CONTEXT_BYTES`
+- <a id="s-86d9eb46ce"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-242d732991"></a>`kind`: `"constant"`
+- <a id="s-cf3918786d"></a>`value`: `4096`
 
 ## Governing policies
 

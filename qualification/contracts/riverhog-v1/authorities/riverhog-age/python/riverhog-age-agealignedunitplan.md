@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8ea299d5e8"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-146367435f"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-038046d8ba"></a>`distribution` | "riverhog-age" |
-| <a id="s-736aeeeb6e"></a>`module` | "riverhog_age" |
-| <a id="s-3085907738"></a>`name` | "AgeAlignedUnitPlan" |
-| <a id="s-74294cdbac"></a>`unit` | "export" |
+- <a id="s-038046d8ba"></a>`distribution`: `riverhog-age`
+- <a id="s-736aeeeb6e"></a>`module`: `riverhog_age`
+- <a id="s-3085907738"></a>`name`: `AgeAlignedUnitPlan`
+- <a id="s-74294cdbac"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-a6924ec6a5"></a>`kind`: `"class"`
+- <a id="s-98e4c44948"></a>`signature`: `"\"(unit_number: 'int', first_chunk: 'int', chunk_count: 'int', includes_age_prefix: 'bool', plaintext_start: 'int', plaintext_end: 'int', ciphertext_start: 'int', ciphertext_end: 'int') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-1029dc0b45"></a>`unit_number` | `'int'` | `required` |
+| <a id="s-d2425e5be6"></a>`first_chunk` | `'int'` | `required` |
+| <a id="s-74cfff65f5"></a>`chunk_count` | `'int'` | `required` |
+| <a id="s-8190206e18"></a>`includes_age_prefix` | `'bool'` | `required` |
+| <a id="s-764a60a05c"></a>`plaintext_start` | `'int'` | `required` |
+| <a id="s-09c7351d0b"></a>`plaintext_end` | `'int'` | `required` |
+| <a id="s-d98e0a3de4"></a>`ciphertext_start` | `'int'` | `required` |
+| <a id="s-f1080fd1b3"></a>`ciphertext_end` | `'int'` | `required` |
 
 ## Maintained corroboration
 

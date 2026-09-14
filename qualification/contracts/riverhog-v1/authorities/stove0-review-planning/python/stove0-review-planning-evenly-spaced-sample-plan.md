@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-315740d1d6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ffd7243544"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-eeef7fa97c"></a>`distribution` | "stove0-review-planning" |
-| <a id="s-2c75331680"></a>`module` | "stove0_review_planning" |
-| <a id="s-313432920c"></a>`name` | "evenly_spaced_sample_plan" |
-| <a id="s-91cf72b4eb"></a>`unit` | "export" |
+- <a id="s-eeef7fa97c"></a>`distribution`: `stove0-review-planning`
+- <a id="s-2c75331680"></a>`module`: `stove0_review_planning`
+- <a id="s-313432920c"></a>`name`: `evenly_spaced_sample_plan`
+- <a id="s-91cf72b4eb"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-56443cf034"></a>`kind`: `"function"`
+- <a id="s-7f089b0ea2"></a>`signature`: `"\"(facts: 'MediaSamplingFacts', *, samples_per_artifact: 'int', window_duration_ms: 'int') -> 'ReviewSamplePlan'\""`
 
 ## Governing policies
 

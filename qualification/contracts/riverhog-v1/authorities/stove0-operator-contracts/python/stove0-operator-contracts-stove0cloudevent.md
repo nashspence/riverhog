@@ -14,13 +14,34 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-efd4c54b15"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-723b24641f"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-7648196d49"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-118e11fbe2"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-5fdf247562"></a>`name` | "Stove0CloudEvent" |
-| <a id="s-51a090cd7d"></a>`unit` | "export" |
+- <a id="s-7648196d49"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-118e11fbe2"></a>`module`: `stove0_operator_contracts`
+- <a id="s-5fdf247562"></a>`name`: `Stove0CloudEvent`
+- <a id="s-51a090cd7d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-2d9ef24fc3"></a>`kind`: `"class"`
+- <a id="s-489444ae84"></a>`signature`: `"\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Annotated[str, MinLen(min_length=1)], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: Any) -> None\""`
+
+#### Validated model schema
+
+<a id="s-58dccf3714"></a>
+- <a id="s-83ad51b9c9"></a>`title`: Stove0CloudEvent
+- <a id="s-7bfc9452ca"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b3ad5c015c"></a>`data` | yes | empty object |  |
+| <a id="s-12e327774b"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-7909202afe"></a>`id` | yes | type="string"; minLength=1 |  |
+| <a id="s-503011d03a"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
+| <a id="s-11497c7367"></a>`specversion` | no | type="string"; const="1.0" |  |
+| <a id="s-20c1c814af"></a>`subject` | yes | type="string"; minLength=1 |  |
+| <a id="s-cca47fbd88"></a>`time` | yes | type="string" |  |
+| <a id="s-7b8dd11a65"></a>`type` | yes | type="string"; minLength=1 |  |
 
 ## Maintained corroboration
 
@@ -52,13 +73,66 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f3a1a907fdf1ff99dcb66a9980d68051199504c3c1e7feed7b61c4dd7cbd7c97 -->
+<!-- exact-contract-value: f06b51e0549956ab9dcd3149fe5d14e75b951c880ee6b8163a2696125a95428a -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "0a714ffc7a24bde3a4c45a3624ec4bec304011f02c9cb8d6b0ec2cbeeb945700",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "title": "Data"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "title": "Datacontenttype",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "const": "urn:riverhog:stove0",
+          "title": "Source",
+          "type": "string"
+        },
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Specversion",
+          "type": "string"
+        },
+        "subject": {
+          "minLength": 1,
+          "title": "Subject",
+          "type": "string"
+        },
+        "time": {
+          "title": "Time",
+          "type": "string"
+        },
+        "type": {
+          "minLength": 1,
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "type",
+        "subject",
+        "time",
+        "data"
+      ],
+      "title": "Stove0CloudEvent",
+      "type": "object"
+    },
     "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Annotated[str, MinLen(min_length=1)], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: Any) -> None\""
   },
   "distribution": "stove0-operator-contracts",

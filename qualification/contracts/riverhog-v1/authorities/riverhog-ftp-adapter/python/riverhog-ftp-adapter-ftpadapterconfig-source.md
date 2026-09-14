@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-63c31123bc"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6058461e9f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-abbe5689f3"></a>`distribution` | "riverhog-ftp-adapter" |
-| <a id="s-637d99f2e4"></a>`module` | "riverhog_ftp_adapter" |
-| <a id="s-713666d891"></a>`name` | "source" |
-| <a id="s-00d77f27f7"></a>`owner` | "riverhog_ftp_adapter.FtpAdapterConfig" |
-| <a id="s-a829cffd02"></a>`unit` | "member" |
+- <a id="s-abbe5689f3"></a>`distribution`: `riverhog-ftp-adapter`
+- <a id="s-637d99f2e4"></a>`module`: `riverhog_ftp_adapter`
+- <a id="s-713666d891"></a>`name`: `source`
+- <a id="s-00d77f27f7"></a>`owner`: `riverhog_ftp_adapter.FtpAdapterConfig`
+- <a id="s-a829cffd02"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-01b11aa7d3"></a>`kind`: `"method"`
+- <a id="s-98cb7b721f"></a>`signature`: `"\"(self, source_id: 'str') -> 'SourceConfig'\""`
 
 ## Maintained corroboration
 

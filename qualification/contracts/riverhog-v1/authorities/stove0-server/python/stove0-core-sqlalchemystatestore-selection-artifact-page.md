@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-41b8cd2a8b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6802ce04cb"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-fa60f17b37"></a>`distribution` | "stove0-server" |
-| <a id="s-ea5c65a788"></a>`module` | "stove0_core" |
-| <a id="s-16127557ba"></a>`name` | "selection_artifact_page" |
-| <a id="s-8bf8565224"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-b0a3a9a497"></a>`unit` | "member" |
+- <a id="s-fa60f17b37"></a>`distribution`: `stove0-server`
+- <a id="s-ea5c65a788"></a>`module`: `stove0_core`
+- <a id="s-16127557ba"></a>`name`: `selection_artifact_page`
+- <a id="s-8bf8565224"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-b0a3a9a497"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-240c9fdc5f"></a>`kind`: `"method"`
+- <a id="s-e0b21ef147"></a>`signature`: `"\"(self, selection_sha256: 'str', *, continuation: 'str \| None', limit: 'int') -> 'tuple[tuple[ArtifactSubject, ...], str \| None, bool]'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6bba327398"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0fb27e6fbb"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-26162a82a0"></a>`distribution` | "stove0-server" |
-| <a id="s-b2920acddf"></a>`module` | "stove0_core" |
-| <a id="s-6a9ca6c357"></a>`name` | "load_target_output" |
-| <a id="s-91229ee443"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-6f250f4969"></a>`unit` | "member" |
+- <a id="s-26162a82a0"></a>`distribution`: `stove0-server`
+- <a id="s-b2920acddf"></a>`module`: `stove0_core`
+- <a id="s-6a9ca6c357"></a>`name`: `load_target_output`
+- <a id="s-91229ee443"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-6f250f4969"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-2987e0f061"></a>`kind`: `"method"`
+- <a id="s-944bbcea00"></a>`signature`: `"\"(self, work_id: 'str', job_id: 'str', output_id: 'str') -> 'OutputArtifact \| None'\""`
 
 ## Maintained corroboration
 

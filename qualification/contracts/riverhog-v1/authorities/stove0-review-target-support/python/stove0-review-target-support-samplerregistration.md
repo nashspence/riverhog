@@ -14,13 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bd66b0be49"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8ecf4ab48b"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-de11072a42"></a>`distribution` | "stove0-review-target-support" |
-| <a id="s-9e97ab2f84"></a>`module` | "stove0_review_target_support" |
-| <a id="s-ec8654615e"></a>`name` | "SamplerRegistration" |
-| <a id="s-517500f8be"></a>`unit` | "export" |
+- <a id="s-de11072a42"></a>`distribution`: `stove0-review-target-support`
+- <a id="s-9e97ab2f84"></a>`module`: `stove0_review_target_support`
+- <a id="s-ec8654615e"></a>`name`: `SamplerRegistration`
+- <a id="s-517500f8be"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e7509d7e60"></a>`kind`: `"class"`
+- <a id="s-332a1c38fb"></a>`signature`: `"\"(id: 'str', client: 'ReviewSamplerClient', descriptor_sha256: 'str', image_digest: 'str') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-c6fe35252b"></a>`id` | `'str'` | `required` |
+| <a id="s-b3547b4c35"></a>`client` | `'ReviewSamplerClient'` | `required` |
+| <a id="s-d5b8dc9d13"></a>`descriptor_sha256` | `'str'` | `required` |
+| <a id="s-05160ecc62"></a>`image_digest` | `'str'` | `required` |
 
 ## Maintained corroboration
 

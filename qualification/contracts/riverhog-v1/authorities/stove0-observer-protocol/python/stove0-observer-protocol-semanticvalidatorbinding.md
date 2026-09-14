@@ -14,13 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9ba83a64c2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6ca4980438"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-5f1c9879b4"></a>`distribution` | "stove0-observer-protocol" |
-| <a id="s-e1b56624a2"></a>`module` | "stove0_observer_protocol" |
-| <a id="s-e42cbd33e1"></a>`name` | "SemanticValidatorBinding" |
-| <a id="s-3bb49562ef"></a>`unit` | "export" |
+- <a id="s-5f1c9879b4"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-e1b56624a2"></a>`module`: `stove0_observer_protocol`
+- <a id="s-e42cbd33e1"></a>`name`: `SemanticValidatorBinding`
+- <a id="s-3bb49562ef"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e8c8010fba"></a>`kind`: `"class"`
+- <a id="s-0c0128cbb0"></a>`signature`: `"\"(profile_id: 'str', profile_sha256: 'str', validator: 'FactsSemanticValidator') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-444a988734"></a>`profile_id` | `'str'` | `required` |
+| <a id="s-d3f9b32adf"></a>`profile_sha256` | `'str'` | `required` |
+| <a id="s-d47d813089"></a>`validator` | `'FactsSemanticValidator'` | `required` |
 
 ## Maintained corroboration
 

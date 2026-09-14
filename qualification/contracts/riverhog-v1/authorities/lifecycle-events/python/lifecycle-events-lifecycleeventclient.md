@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9058ce1c58"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-be6e9020ca"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-73767b7ecd"></a>`distribution` | "lifecycle-events" |
-| <a id="s-e4edb60763"></a>`module` | "lifecycle_events" |
-| <a id="s-e4f350ca64"></a>`name` | "LifecycleEventClient" |
-| <a id="s-be68f9ea04"></a>`unit` | "export" |
+- <a id="s-73767b7ecd"></a>`distribution`: `lifecycle-events`
+- <a id="s-e4edb60763"></a>`module`: `lifecycle_events`
+- <a id="s-e4f350ca64"></a>`name`: `LifecycleEventClient`
+- <a id="s-be68f9ea04"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-4cd5048133"></a>`kind`: `"class"`
+- <a id="s-b45d770d6a"></a>`signature`: `"\"(events_url: 'str', *, token: 'str', timeout: 'float' = 10.0, client: 'httpx.Client \| None' = None) -> 'None'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-197088c886"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-fef97c219b"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-3cd8409b89"></a>`distribution` | "stove0-protocol" |
-| <a id="s-7aa9c37253"></a>`module` | "stove0_protocol" |
-| <a id="s-b69f3d14f5"></a>`name` | "require_plan_document" |
-| <a id="s-218525f112"></a>`owner` | "stove0_protocol.TargetPlanBinding" |
-| <a id="s-bad0daf397"></a>`unit` | "member" |
+- <a id="s-3cd8409b89"></a>`distribution`: `stove0-protocol`
+- <a id="s-7aa9c37253"></a>`module`: `stove0_protocol`
+- <a id="s-b69f3d14f5"></a>`name`: `require_plan_document`
+- <a id="s-218525f112"></a>`owner`: `stove0_protocol.TargetPlanBinding`
+- <a id="s-bad0daf397"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-7314157658"></a>`kind`: `"classmethod"`
+- <a id="s-70db3dc417"></a>`signature`: `"\"(cls, value: 'dict[str, JsonValue]') -> 'dict[str, JsonValue]'\""`
 
 ## Maintained corroboration
 

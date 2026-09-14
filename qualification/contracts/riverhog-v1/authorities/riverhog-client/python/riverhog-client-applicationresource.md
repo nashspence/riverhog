@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e82152dea7"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e7bd15ef2d"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-e8b9618125"></a>`distribution` | "riverhog-client" |
-| <a id="s-6d7fb7843a"></a>`module` | "riverhog_client" |
-| <a id="s-e239e7c8bc"></a>`name` | "ApplicationResource" |
-| <a id="s-1f2eb4ce60"></a>`unit` | "export" |
+- <a id="s-e8b9618125"></a>`distribution`: `riverhog-client`
+- <a id="s-6d7fb7843a"></a>`module`: `riverhog_client`
+- <a id="s-e239e7c8bc"></a>`name`: `ApplicationResource`
+- <a id="s-1f2eb4ce60"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-d2be9a949b"></a>`kind`: `"type-alias"`
+- <a id="s-ad92e15093"></a>`value`: `"typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^(?:\\\\*\|tag:.+\|collection:[1-9][0-9]*)$', ascii_only=None), AfterValidator(func=<function validate_application_resource>)]"`
 
 ## Governing policies
 

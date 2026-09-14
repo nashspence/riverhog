@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-da69f01859"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-cf873834d5"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ca7232990a"></a>`distribution` | "riverhog-client" |
-| <a id="s-6d57fc3c61"></a>`module` | "riverhog_client" |
-| <a id="s-cff4b1744d"></a>`name` | "add_collection_tag" |
-| <a id="s-3299e9bdba"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-f6b2042650"></a>`unit` | "member" |
+- <a id="s-ca7232990a"></a>`distribution`: `riverhog-client`
+- <a id="s-6d57fc3c61"></a>`module`: `riverhog_client`
+- <a id="s-cff4b1744d"></a>`name`: `add_collection_tag`
+- <a id="s-3299e9bdba"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-f6b2042650"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ee0ff1d8b4"></a>`kind`: `"method"`
+- <a id="s-4eb2a32e13"></a>`signature`: `"\"(self, collection_id: 'CollectionId', *, tag: 'CollectionTag', operation_id: 'str', expected_revision: 'int', expected_tag_set_identity: 'str') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-55ded5c62c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0be2d89cad"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-96854716bb"></a>`distribution` | "stove0-media-archive-target-support" |
-| <a id="s-ba3c1bbf1c"></a>`module` | "stove0_media_archive_target_support" |
-| <a id="s-d123796c5c"></a>`name` | "canonical_evidence" |
-| <a id="s-efe1cfd679"></a>`owner` | "stove0_media_archive_target_support.MediaProjectedValue" |
-| <a id="s-8340b32e3d"></a>`unit` | "member" |
+- <a id="s-96854716bb"></a>`distribution`: `stove0-media-archive-target-support`
+- <a id="s-ba3c1bbf1c"></a>`module`: `stove0_media_archive_target_support`
+- <a id="s-d123796c5c"></a>`name`: `canonical_evidence`
+- <a id="s-efe1cfd679"></a>`owner`: `stove0_media_archive_target_support.MediaProjectedValue`
+- <a id="s-8340b32e3d"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-8d1e8bfc87"></a>`kind`: `"classmethod"`
+- <a id="s-7153dd9ff3"></a>`signature`: `"\"(cls, value: 'tuple[MediaFactEvidence, ...]') -> 'tuple[MediaFactEvidence, ...]'\""`
 
 ## Maintained corroboration
 

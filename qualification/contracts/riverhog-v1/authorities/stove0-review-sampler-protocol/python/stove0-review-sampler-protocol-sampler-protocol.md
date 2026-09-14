@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-875f747684"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-44f7fdddeb"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-45a061be81"></a>`distribution` | "stove0-review-sampler-protocol" |
-| <a id="s-1c6b3fb8a7"></a>`module` | "stove0_review_sampler_protocol" |
-| <a id="s-5cfa28fcf5"></a>`name` | "SAMPLER_PROTOCOL" |
-| <a id="s-c9be0558cf"></a>`unit` | "export" |
+- <a id="s-45a061be81"></a>`distribution`: `stove0-review-sampler-protocol`
+- <a id="s-1c6b3fb8a7"></a>`module`: `stove0_review_sampler_protocol`
+- <a id="s-5cfa28fcf5"></a>`name`: `SAMPLER_PROTOCOL`
+- <a id="s-c9be0558cf"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-728a2c11da"></a>`kind`: `"constant"`
+- <a id="s-417c98332f"></a>`value`: `"stove0-review-sampler/v1"`
 
 ## Governing policies
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1f6af6a011"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d1e6c82285"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-23990c0b6e"></a>`distribution` | "stove0-target-support" |
-| <a id="s-e65090a730"></a>`module` | "stove0_target_support" |
-| <a id="s-851917c047"></a>`name` | "append" |
-| <a id="s-a715078922"></a>`owner` | "stove0_target_support.TargetCollectionPublication" |
-| <a id="s-2798291a46"></a>`unit` | "member" |
+- <a id="s-23990c0b6e"></a>`distribution`: `stove0-target-support`
+- <a id="s-e65090a730"></a>`module`: `stove0_target_support`
+- <a id="s-851917c047"></a>`name`: `append`
+- <a id="s-a715078922"></a>`owner`: `stove0_target_support.TargetCollectionPublication`
+- <a id="s-2798291a46"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-f7707995ba"></a>`kind`: `"method"`
+- <a id="s-17014e829a"></a>`signature`: `"\"(self, source: 'ProducerInput', artifact: 'OutputArtifact', *, derived_from: 'Iterable[str]') -> 'tuple[ProducerArtifactCustody, ...]'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-911b1a4764"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5062437b9f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-418daf9a6a"></a>`distribution` | "riverhog-client" |
-| <a id="s-ad96eed345"></a>`module` | "riverhog_client.transform" |
-| <a id="s-f3e2995879"></a>`name` | "prepare_inputs" |
-| <a id="s-b415b4681b"></a>`owner` | "riverhog_client.transform.ClaimedCollectionRuntime" |
-| <a id="s-950d11c1ca"></a>`unit` | "member" |
+- <a id="s-418daf9a6a"></a>`distribution`: `riverhog-client`
+- <a id="s-ad96eed345"></a>`module`: `riverhog_client.transform`
+- <a id="s-f3e2995879"></a>`name`: `prepare_inputs`
+- <a id="s-b415b4681b"></a>`owner`: `riverhog_client.transform.ClaimedCollectionRuntime`
+- <a id="s-950d11c1ca"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-0ad15eb8bf"></a>`kind`: `"method"`
+- <a id="s-b1e078570b"></a>`signature`: `"\"(self, artifacts: 'Sequence[ClaimedArtifact] \| None' = None, **kwargs: 'Any') -> 'ClaimedRetrieval'\""`
 
 ## Maintained corroboration
 

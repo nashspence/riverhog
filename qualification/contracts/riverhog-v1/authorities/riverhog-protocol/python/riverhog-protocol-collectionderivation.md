@@ -14,13 +14,32 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-74084c15fc"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c2545a6799"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-91e082f62c"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-3f057600fc"></a>`module` | "riverhog_protocol" |
-| <a id="s-1482c7c276"></a>`name` | "CollectionDerivation" |
-| <a id="s-3a0bdc594e"></a>`unit` | "export" |
+- <a id="s-91e082f62c"></a>`distribution`: `riverhog-protocol`
+- <a id="s-3f057600fc"></a>`module`: `riverhog_protocol`
+- <a id="s-1482c7c276"></a>`name`: `CollectionDerivation`
+- <a id="s-3a0bdc594e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-35676c3330"></a>`kind`: `"class"`
+- <a id="s-12a20a779f"></a>`signature`: `"\"(execution_id: 'str', claim_id: 'str', fence: 'int', recipe: 'RecipeIdentity', operation: 'OperationIdentity', input_set_sha256: 'str', artifact_set_sha256: 'str', execution_envelope_sha256: 'str', execution_sha256: 'str', controller_evidence: 'dict[str, JsonValue]', controller_evidence_sha256: 'str', disposition_set: 'ArtifactDispositionSetIdentity') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-fbd2390934"></a>`execution_id` | `'str'` | `required` |
+| <a id="s-3552b61dfb"></a>`claim_id` | `'str'` | `required` |
+| <a id="s-115b62ddc9"></a>`fence` | `'int'` | `required` |
+| <a id="s-29c777ceb5"></a>`recipe` | `'RecipeIdentity'` | `required` |
+| <a id="s-a21ff9b214"></a>`operation` | `'OperationIdentity'` | `required` |
+| <a id="s-9099668a9b"></a>`input_set_sha256` | `'str'` | `required` |
+| <a id="s-aba3cd483f"></a>`artifact_set_sha256` | `'str'` | `required` |
+| <a id="s-6e47fd8cc6"></a>`execution_envelope_sha256` | `'str'` | `required` |
+| <a id="s-eab4a06aaf"></a>`execution_sha256` | `'str'` | `required` |
+| <a id="s-41e746aa89"></a>`controller_evidence` | `'dict[str, JsonValue]'` | `required` |
+| <a id="s-daa16638b6"></a>`controller_evidence_sha256` | `'str'` | `required` |
+| <a id="s-d0eb9ef5b8"></a>`disposition_set` | `'ArtifactDispositionSetIdentity'` | `required` |
 
 ## Maintained corroboration
 

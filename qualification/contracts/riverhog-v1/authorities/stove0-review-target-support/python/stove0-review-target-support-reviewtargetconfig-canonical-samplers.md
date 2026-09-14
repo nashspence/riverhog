@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2c808bf02f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-12f72c3921"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-8918c52bba"></a>`distribution` | "stove0-review-target-support" |
-| <a id="s-accf4ec019"></a>`module` | "stove0_review_target_support" |
-| <a id="s-88d4dbb43c"></a>`name` | "canonical_samplers" |
-| <a id="s-38369c8395"></a>`owner` | "stove0_review_target_support.ReviewTargetConfig" |
-| <a id="s-4c0029f239"></a>`unit` | "member" |
+- <a id="s-8918c52bba"></a>`distribution`: `stove0-review-target-support`
+- <a id="s-accf4ec019"></a>`module`: `stove0_review_target_support`
+- <a id="s-88d4dbb43c"></a>`name`: `canonical_samplers`
+- <a id="s-38369c8395"></a>`owner`: `stove0_review_target_support.ReviewTargetConfig`
+- <a id="s-4c0029f239"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1e5911d66c"></a>`kind`: `"classmethod"`
+- <a id="s-bb92776c19"></a>`signature`: `"\"(cls, value: 'tuple[SamplerConfig, ...]') -> 'tuple[SamplerConfig, ...]'\""`
 
 ## Maintained corroboration
 

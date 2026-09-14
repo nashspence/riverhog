@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bb1e6f7139"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ea4816828f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6aaef7ff03"></a>`distribution` | "riverhog-client" |
-| <a id="s-3807ebb6f5"></a>`module` | "riverhog_client" |
-| <a id="s-4c356f861a"></a>`name` | "list_retrieval_plan_files" |
-| <a id="s-3802fd2f87"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-9bd626ac4a"></a>`unit` | "member" |
+- <a id="s-6aaef7ff03"></a>`distribution`: `riverhog-client`
+- <a id="s-3807ebb6f5"></a>`module`: `riverhog_client`
+- <a id="s-4c356f861a"></a>`name`: `list_retrieval_plan_files`
+- <a id="s-3802fd2f87"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-9bd626ac4a"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1414f44742"></a>`kind`: `"method"`
+- <a id="s-c10f296959"></a>`signature`: `"\"(self, plan_id: 'str', *, plan_etag: 'str', start_ordinal: 'int' = 0, page_size: 'int' = 100) -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

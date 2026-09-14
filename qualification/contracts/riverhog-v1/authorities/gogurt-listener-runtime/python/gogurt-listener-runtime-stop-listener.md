@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-502327069f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b5f6ba8609"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-216d41bca0"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-0276061110"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-af814a91f5"></a>`name` | "stop_listener" |
-| <a id="s-3ae77434c7"></a>`unit` | "export" |
+- <a id="s-216d41bca0"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-0276061110"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-af814a91f5"></a>`name`: `stop_listener`
+- <a id="s-3ae77434c7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-864727c0c6"></a>`kind`: `"function"`
+- <a id="s-b235e8f0e0"></a>`signature`: `"\"(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str') -> 'dict[str, object]'\""`
 
 ## Governing policies
 

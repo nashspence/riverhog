@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ed7980f110"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-756ecd9376"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c67bfd741b"></a>`distribution` | "riverhog-storage-adapter-support" |
-| <a id="s-25bffa9e81"></a>`module` | "riverhog_storage_adapter_support" |
-| <a id="s-0c98c4f4ff"></a>`name` | "delete_prefix" |
-| <a id="s-28692e0147"></a>`owner` | "riverhog_storage_adapter_support.StorageAdapterClient" |
-| <a id="s-29044b6ca7"></a>`unit` | "member" |
+- <a id="s-c67bfd741b"></a>`distribution`: `riverhog-storage-adapter-support`
+- <a id="s-25bffa9e81"></a>`module`: `riverhog_storage_adapter_support`
+- <a id="s-0c98c4f4ff"></a>`name`: `delete_prefix`
+- <a id="s-28692e0147"></a>`owner`: `riverhog_storage_adapter_support.StorageAdapterClient`
+- <a id="s-29044b6ca7"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-6be4f921bb"></a>`kind`: `"method"`
+- <a id="s-cda99da488"></a>`signature`: `"\"(self, request: 'DeletePrefixRequest') -> 'int'\""`
 
 ## Maintained corroboration
 

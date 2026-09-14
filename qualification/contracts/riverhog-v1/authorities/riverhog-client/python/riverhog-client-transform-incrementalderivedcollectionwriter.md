@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7db501b083"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d1a4aeea24"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-2c83e2732d"></a>`distribution` | "riverhog-client" |
-| <a id="s-44f3b551de"></a>`module` | "riverhog_client.transform" |
-| <a id="s-eb508ef3b1"></a>`name` | "IncrementalDerivedCollectionWriter" |
-| <a id="s-597d69f6bd"></a>`unit` | "export" |
+- <a id="s-2c83e2732d"></a>`distribution`: `riverhog-client`
+- <a id="s-44f3b551de"></a>`module`: `riverhog_client.transform`
+- <a id="s-eb508ef3b1"></a>`name`: `IncrementalDerivedCollectionWriter`
+- <a id="s-597d69f6bd"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-45293ac433"></a>`kind`: `"class"`
+- <a id="s-9dccde211e"></a>`signature`: `"\"(api: 'Any', *, spec: 'DerivedCollectionSpec', claim_id: 'str', fence: 'int', work_id: 'str', execution_id: 'str', controller_evidence: 'Mapping[str, object]', producer_app: 'str', producer_version: 'str', execution_envelope_sha256: 'str', source_context: 'Mapping[str, object] \| None' = None) -> 'None'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,31 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b3c9dba8f8"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ebce65f4ed"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-dab55dfc97"></a>`distribution` | "stove0-protocol" |
-| <a id="s-da35b8f414"></a>`module` | "stove0_protocol" |
-| <a id="s-2392f4a239"></a>`name` | "JoinWorkMemberBinding" |
-| <a id="s-1884ee9af7"></a>`unit` | "export" |
+- <a id="s-dab55dfc97"></a>`distribution`: `stove0-protocol`
+- <a id="s-da35b8f414"></a>`module`: `stove0_protocol`
+- <a id="s-2392f4a239"></a>`name`: `JoinWorkMemberBinding`
+- <a id="s-1884ee9af7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-35c931e3a9"></a>`kind`: `"class"`
+- <a id="s-a31d624dc0"></a>`signature`: `"\"(*, branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], producer_settlement_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, artifact_selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-67495a11aa"></a>
+- <a id="s-6da8243c52"></a>`title`: JoinWorkMemberBinding
+- <a id="s-5bef6373eb"></a>`description`: Exact successful branch result used to derive one join work identity.
+- <a id="s-e860510ec8"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cad6409d2f"></a>`artifact_selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-78f0cfdd96"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-b1a1d64d3b"></a>`producer_settlement_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-2aca03ce44"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Governing policies
 
@@ -46,13 +64,53 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d31a6e7eeb4de7dd6cdc05bc3dcb44d0f1772546fb9a8b34f3cf8adf70840ce6 -->
+<!-- exact-contract-value: b1cc326cb78b739916b8e397e61565c53578fc24a0f6efc3e6ae94eff432688f -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "e690f8cf01c0d8d6a830f122677b627aae3106fead58d4c6f8829b28574369e3",
+    "schema": {
+      "additionalProperties": false,
+      "description": "Exact successful branch result used to derive one join work identity.",
+      "properties": {
+        "artifact_selection_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Selection Sha256",
+          "type": "string"
+        },
+        "branch_id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Branch Id",
+          "type": "string"
+        },
+        "producer_settlement_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Producer Settlement Sha256"
+        },
+        "settlement_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Settlement Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "branch_id",
+        "settlement_sha256",
+        "artifact_selection_sha256"
+      ],
+      "title": "JoinWorkMemberBinding",
+      "type": "object"
+    },
     "signature": "\"(*, branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], producer_settlement_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, artifact_selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-protocol",

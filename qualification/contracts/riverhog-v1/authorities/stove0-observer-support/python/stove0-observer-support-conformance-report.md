@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-aa3b9c912c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2c8a2a6a35"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-5d8948f7f8"></a>`distribution` | "stove0-observer-support" |
-| <a id="s-c08a4062ac"></a>`module` | "stove0_observer_support" |
-| <a id="s-8e6081b310"></a>`name` | "conformance_report" |
-| <a id="s-081e2e52f1"></a>`unit` | "export" |
+- <a id="s-5d8948f7f8"></a>`distribution`: `stove0-observer-support`
+- <a id="s-c08a4062ac"></a>`module`: `stove0_observer_support`
+- <a id="s-8e6081b310"></a>`name`: `conformance_report`
+- <a id="s-081e2e52f1"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-8786d06a41"></a>`kind`: `"function"`
+- <a id="s-d6bdcedf22"></a>`signature`: `"\"(client: 'ObserverClient', *, invocations: 'Sequence[ObservationInvocation]' = (), semantic_vectors: 'Sequence[SemanticFactsConformanceVectors]' = (), semantic_validators: 'SemanticValidatorProvider \| None' = None) -> 'ObserverConformanceResult'\""`
 
 ## Governing policies
 

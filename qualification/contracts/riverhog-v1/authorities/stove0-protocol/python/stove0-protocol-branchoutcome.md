@@ -14,13 +14,33 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ed0e6bd90e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6aaa423564"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-fd41d0605d"></a>`distribution` | "stove0-protocol" |
-| <a id="s-83d48ae6c4"></a>`module` | "stove0_protocol" |
-| <a id="s-ec5a5e650d"></a>`name` | "BranchOutcome" |
-| <a id="s-5ad96785e6"></a>`unit` | "export" |
+- <a id="s-fd41d0605d"></a>`distribution`: `stove0-protocol`
+- <a id="s-83d48ae6c4"></a>`module`: `stove0_protocol`
+- <a id="s-ec5a5e650d"></a>`name`: `BranchOutcome`
+- <a id="s-5ad96785e6"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0b58debbf5"></a>`kind`: `"class"`
+- <a id="s-5ff05f457f"></a>`signature`: `"\"(*, format: Literal['stove0-branch-outcome/v1'] = 'stove0-branch-outcome/v1', branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], workflow_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, branch_set_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, state: Literal['failed', 'inapplicable', 'interrupted', 'canceled']) -> None\""`
+
+#### Validated model schema
+
+<a id="s-a247abab03"></a>
+- <a id="s-da8db0a73a"></a>`title`: BranchOutcome
+- <a id="s-71fa819601"></a>`description`: Current non-success projection for a leaf or coordination branch.
+- <a id="s-53c1393412"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-01bd34421c"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-98f8aff547"></a>`branch_set_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-5b4f066dc6"></a>`format` | no | type="string"; const="stove0-branch-outcome/v1" |  |
+| <a id="s-9d9231ca67"></a>`state` | yes | type="string"; enum=["failed","inapplicable","interrupted","canceled"] |  |
+| <a id="s-f27ad0208a"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-cb21b5c0fb"></a>`workflow_plan_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
 
 ## Maintained corroboration
 
@@ -52,13 +72,77 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 271a434ff1ed4e31288f0ef8063a34f452a47033ec2de0463002680c5f206a32 -->
+<!-- exact-contract-value: 29a7d4ad8de2fb7a47add75c241f9ae2ebda361db9cc8c5fb67dbe227b71e343 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "994be4a7a6a634822af2aeca476070657d99b942dad13078f6d8aa70d683ad3e",
+    "schema": {
+      "additionalProperties": false,
+      "description": "Current non-success projection for a leaf or coordination branch.",
+      "properties": {
+        "branch_id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Branch Id",
+          "type": "string"
+        },
+        "branch_set_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Branch Set Sha256"
+        },
+        "format": {
+          "const": "stove0-branch-outcome/v1",
+          "default": "stove0-branch-outcome/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "failed",
+            "inapplicable",
+            "interrupted",
+            "canceled"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "work_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Work Id",
+          "type": "string"
+        },
+        "workflow_plan_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Workflow Plan Sha256"
+        }
+      },
+      "required": [
+        "branch_id",
+        "work_id",
+        "state"
+      ],
+      "title": "BranchOutcome",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['stove0-branch-outcome/v1'] = 'stove0-branch-outcome/v1', branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], workflow_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, branch_set_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, state: Literal['failed', 'inapplicable', 'interrupted', 'canceled']) -> None\""
   },
   "distribution": "stove0-protocol",

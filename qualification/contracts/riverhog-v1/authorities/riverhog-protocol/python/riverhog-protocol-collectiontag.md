@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2999906b32"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-60b46f5347"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-bb438404c3"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-1e57f8dada"></a>`module` | "riverhog_protocol" |
-| <a id="s-4379ae9505"></a>`name` | "CollectionTag" |
-| <a id="s-3bc26797b2"></a>`unit` | "export" |
+- <a id="s-bb438404c3"></a>`distribution`: `riverhog-protocol`
+- <a id="s-1e57f8dada"></a>`module`: `riverhog_protocol`
+- <a id="s-4379ae9505"></a>`name`: `CollectionTag`
+- <a id="s-3bc26797b2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-625f002ee8"></a>`kind`: `"type-alias"`
+- <a id="s-aa8ebd7f2d"></a>`value`: `"typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=True, min_length=1, max_length=65536, pattern=None, ascii_only=None), AfterValidator(func=<function validate_collection_tag>), FieldInfo(annotation=NoneType, required=True, json_schema_extra={'x-riverhog-encoded-bytes-max': 65536, 'x-riverhog-extent': {'policy': 'contract_max', 'reason': 'bounded-human-authored-collection-tag'}, 'x-unicode-normalization': 'NFC'})]"`
 
 ## Governing policies
 

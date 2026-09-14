@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-513c00f014"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-50f4037eb6"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e6f00d3ebf"></a>`distribution` | "stove0-server" |
-| <a id="s-6392ff6f48"></a>`module` | "stove0_core" |
-| <a id="s-c0489e9d11"></a>`name` | "compare_and_swap_cursor" |
-| <a id="s-9c9d042c1d"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-b2cf569788"></a>`unit` | "member" |
+- <a id="s-e6f00d3ebf"></a>`distribution`: `stove0-server`
+- <a id="s-6392ff6f48"></a>`module`: `stove0_core`
+- <a id="s-c0489e9d11"></a>`name`: `compare_and_swap_cursor`
+- <a id="s-9c9d042c1d"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-b2cf569788"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-9e31347029"></a>`kind`: `"method"`
+- <a id="s-4e0a4c003a"></a>`signature`: `"\"(self, stream: 'str', *, expected_revision: 'int \| None', cursor: 'str') -> 'tuple[str, int]'\""`
 
 ## Maintained corroboration
 

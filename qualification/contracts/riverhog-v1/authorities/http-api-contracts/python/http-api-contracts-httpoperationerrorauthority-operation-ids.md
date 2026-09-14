@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b8de2dc5ab"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-92a0f2ffe0"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-95631cc5bd"></a>`distribution` | "http-api-contracts" |
-| <a id="s-bd8b4fcc7e"></a>`module` | "http_api_contracts" |
-| <a id="s-4d52adea4f"></a>`name` | "operation_ids" |
-| <a id="s-0ffaea30a8"></a>`owner` | "http_api_contracts.HttpOperationErrorAuthority" |
-| <a id="s-266de9137f"></a>`unit` | "member" |
+- <a id="s-95631cc5bd"></a>`distribution`: `http-api-contracts`
+- <a id="s-bd8b4fcc7e"></a>`module`: `http_api_contracts`
+- <a id="s-4d52adea4f"></a>`name`: `operation_ids`
+- <a id="s-0ffaea30a8"></a>`owner`: `http_api_contracts.HttpOperationErrorAuthority`
+- <a id="s-266de9137f"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3b98b78fd8"></a>`kind`: `"property"`
+- <a id="s-940f83b69c"></a>`signature`: `"\"(self) -> 'frozenset[str]'\""`
 
 ## Maintained corroboration
 

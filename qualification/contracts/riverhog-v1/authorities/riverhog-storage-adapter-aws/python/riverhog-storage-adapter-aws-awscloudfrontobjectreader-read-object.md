@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-00bc1c85ad"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4034a366ba"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c91137f24f"></a>`distribution` | "riverhog-storage-adapter-aws" |
-| <a id="s-7535d54b02"></a>`module` | "riverhog_storage_adapter_aws" |
-| <a id="s-8b8c04612d"></a>`name` | "read_object" |
-| <a id="s-2aa8407d1c"></a>`owner` | "riverhog_storage_adapter_aws.AwsCloudFrontObjectReader" |
-| <a id="s-52479ceebb"></a>`unit` | "member" |
+- <a id="s-c91137f24f"></a>`distribution`: `riverhog-storage-adapter-aws`
+- <a id="s-7535d54b02"></a>`module`: `riverhog_storage_adapter_aws`
+- <a id="s-8b8c04612d"></a>`name`: `read_object`
+- <a id="s-2aa8407d1c"></a>`owner`: `riverhog_storage_adapter_aws.AwsCloudFrontObjectReader`
+- <a id="s-52479ceebb"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-21be59ad23"></a>`kind`: `"method"`
+- <a id="s-6cdebfe842"></a>`signature`: `"\"(self, *, client: 'Any', bucket: 'str', key: 'str', object_path: 'str', revision: 'str \| None', offset: 'int \| None', size: 'int \| None', expected_bytes: 'int', chunk_bytes: 'int') -> 'ObjectReadStream'\""`
 
 ## Maintained corroboration
 

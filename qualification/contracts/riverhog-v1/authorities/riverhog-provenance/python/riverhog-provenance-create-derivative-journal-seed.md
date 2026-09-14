@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f30d44cdd4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8296856f0d"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-3976f0ac85"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-df5952d1e4"></a>`module` | "riverhog_provenance" |
-| <a id="s-e4ccb4be83"></a>`name` | "create_derivative_journal_seed" |
-| <a id="s-0ae6ba6488"></a>`unit` | "export" |
+- <a id="s-3976f0ac85"></a>`distribution`: `riverhog-provenance`
+- <a id="s-df5952d1e4"></a>`module`: `riverhog_provenance`
+- <a id="s-e4ccb4be83"></a>`name`: `create_derivative_journal_seed`
+- <a id="s-0ae6ba6488"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-20e083a402"></a>`kind`: `"function"`
+- <a id="s-eac649c907"></a>`signature`: `"\"(*, relative_path: 'str', byte_count: 'int', sha256: 'str', agent_name: 'str', agent_version: 'str', event_label: 'str', started_at: 'str', ended_at: 'str', journal_id: 'str') -> 'tuple[bytes, DerivativeJournalSeed]'\""`
 
 ## Governing policies
 

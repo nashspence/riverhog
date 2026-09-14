@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-035089216d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-36b59e7322"></a>`contract` | type="typing._LiteralGenericAlias"; additional keys=`kind` |
-| <a id="s-cd8061d468"></a>`distribution` | "stove0-target-support" |
-| <a id="s-c62fd172b4"></a>`module` | "stove0_target_support" |
-| <a id="s-a919fbd232"></a>`name` | "TargetResultKind" |
-| <a id="s-933be4afd9"></a>`unit` | "export" |
+- <a id="s-cd8061d468"></a>`distribution`: `stove0-target-support`
+- <a id="s-c62fd172b4"></a>`module`: `stove0_target_support`
+- <a id="s-a919fbd232"></a>`name`: `TargetResultKind`
+- <a id="s-933be4afd9"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e4c7f09f8f"></a>`kind`: `"object"`
+- <a id="s-9af86d80bf"></a>`type`: `"typing._LiteralGenericAlias"`
 
 ## Governing policies
 

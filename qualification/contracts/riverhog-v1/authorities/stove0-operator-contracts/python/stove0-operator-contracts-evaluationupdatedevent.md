@@ -14,13 +14,40 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-062f7eb7ef"></a>
-| Field | Shape |
+- <a id="s-5ccc6043b3"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-19ba929f51"></a>`module`: `stove0_operator_contracts`
+- <a id="s-fd39019df9"></a>`name`: `EvaluationUpdatedEvent`
+- <a id="s-d58988d1b3"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ef44a085a3"></a>`kind`: `"class"`
+- <a id="s-5b6d3438ad"></a>`signature`: `"\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.evaluation.updated'], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.EvaluationUpdatedEventData) -> None\""`
+
+#### Validated model schema
+
+<a id="s-2b454f576a"></a>
+- <a id="s-74b958ae29"></a>`title`: EvaluationUpdatedEvent
+- <a id="s-3ba4ded61b"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a6a8e49a71"></a>`data` | yes | #/$defs/EvaluationUpdatedEventData |  |
+| <a id="s-dbcd58ed46"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-34a9bd9582"></a>`id` | yes | type="string"; minLength=1 |  |
+| <a id="s-def10d38ca"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
+| <a id="s-6a3681d5ee"></a>`specversion` | no | type="string"; const="1.0" |  |
+| <a id="s-06a722e14d"></a>`subject` | yes | type="string"; minLength=1 |  |
+| <a id="s-27203fd068"></a>`time` | yes | type="string" |  |
+| <a id="s-f4794df724"></a>`type` | yes | type="string"; const="io.riverhog.stove0.evaluation.updated" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-c0a5b8de01"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-5ccc6043b3"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-19ba929f51"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-fd39019df9"></a>`name` | "EvaluationUpdatedEvent" |
-| <a id="s-d58988d1b3"></a>`unit` | "export" |
+| <a id="s-267e631fd0"></a>`EvaluationUpdatedEventData` | type="object"; fields=`evaluation_id`, `phase`, `revision`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
@@ -46,13 +73,102 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 01fe2cbce1e64705267e483a83fe5348667b690f4772bfdb91b030f75dc18aff -->
+<!-- exact-contract-value: ab05b2d01348e139500340bd573d8d8e9875a31a35406e3cc29b7cf506ad4092 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "b4bc91ca87029c356c47ff9a7274db3f8f871bfa655b6696c04562571522aabc",
+    "schema": {
+      "$defs": {
+        "EvaluationUpdatedEventData": {
+          "additionalProperties": false,
+          "properties": {
+            "evaluation_id": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Evaluation Id",
+              "type": "string"
+            },
+            "phase": {
+              "enum": [
+                "planning",
+                "running",
+                "partially_complete",
+                "complete",
+                "failed",
+                "canceled"
+              ],
+              "title": "Phase",
+              "type": "string"
+            },
+            "revision": {
+              "minimum": 2,
+              "title": "Revision",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "evaluation_id",
+            "phase",
+            "revision"
+          ],
+          "title": "EvaluationUpdatedEventData",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "$ref": "#/$defs/EvaluationUpdatedEventData"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "title": "Datacontenttype",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "const": "urn:riverhog:stove0",
+          "title": "Source",
+          "type": "string"
+        },
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Specversion",
+          "type": "string"
+        },
+        "subject": {
+          "minLength": 1,
+          "title": "Subject",
+          "type": "string"
+        },
+        "time": {
+          "title": "Time",
+          "type": "string"
+        },
+        "type": {
+          "const": "io.riverhog.stove0.evaluation.updated",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "type",
+        "subject",
+        "time",
+        "data"
+      ],
+      "title": "EvaluationUpdatedEvent",
+      "type": "object"
+    },
     "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.evaluation.updated'], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.EvaluationUpdatedEventData) -> None\""
   },
   "distribution": "stove0-operator-contracts",

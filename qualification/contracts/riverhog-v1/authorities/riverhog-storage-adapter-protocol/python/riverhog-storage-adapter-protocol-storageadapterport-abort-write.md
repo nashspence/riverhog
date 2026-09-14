@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-01fefbdb27"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-bc04e46fd9"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b722845896"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-510715ebd5"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-2edd441bb7"></a>`name` | "abort_write" |
-| <a id="s-74d854eaf3"></a>`owner` | "riverhog_storage_adapter_protocol.StorageAdapterPort" |
-| <a id="s-ab87626c83"></a>`unit` | "member" |
+- <a id="s-b722845896"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-510715ebd5"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-2edd441bb7"></a>`name`: `abort_write`
+- <a id="s-74d854eaf3"></a>`owner`: `riverhog_storage_adapter_protocol.StorageAdapterPort`
+- <a id="s-ab87626c83"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c272888a6f"></a>`kind`: `"method"`
+- <a id="s-c0ba3e26c0"></a>`signature`: `"\"(self, session: 'WriteSession') -> 'None'\""`
 
 ## Maintained corroboration
 

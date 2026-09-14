@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-96f58e8f2c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b8b85b3de0"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ba0b2e7d32"></a>`distribution` | "stove0-review-target-contracts" |
-| <a id="s-d85d7fd817"></a>`module` | "stove0_review_target_contracts" |
-| <a id="s-3e3c9ee667"></a>`name` | "canonical_windows" |
-| <a id="s-74cbbaafc1"></a>`owner` | "stove0_review_target_contracts.ReviewSamplePlanPayload" |
-| <a id="s-d96af09f0d"></a>`unit` | "member" |
+- <a id="s-ba0b2e7d32"></a>`distribution`: `stove0-review-target-contracts`
+- <a id="s-d85d7fd817"></a>`module`: `stove0_review_target_contracts`
+- <a id="s-3e3c9ee667"></a>`name`: `canonical_windows`
+- <a id="s-74cbbaafc1"></a>`owner`: `stove0_review_target_contracts.ReviewSamplePlanPayload`
+- <a id="s-d96af09f0d"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-dd454f9050"></a>`kind`: `"classmethod"`
+- <a id="s-35e1c71160"></a>`signature`: `"\"(cls, value: 'tuple[ReviewSampleWindow, ...]') -> 'tuple[ReviewSampleWindow, ...]'\""`
 
 ## Maintained corroboration
 

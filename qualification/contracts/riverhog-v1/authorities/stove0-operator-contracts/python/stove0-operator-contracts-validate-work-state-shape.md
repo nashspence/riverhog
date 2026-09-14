@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-12abe81c0c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2a0f38b7d3"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-8a7babf842"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-a80be1d20f"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-35d03d716e"></a>`name` | "validate_work_state_shape" |
-| <a id="s-bfb85d2ada"></a>`unit` | "export" |
+- <a id="s-8a7babf842"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-a80be1d20f"></a>`module`: `stove0_operator_contracts`
+- <a id="s-35d03d716e"></a>`name`: `validate_work_state_shape`
+- <a id="s-bfb85d2ada"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-89029571f7"></a>`kind`: `"function"`
+- <a id="s-014acc5ea3"></a>`signature`: `"'(*, work: \\'WorkIdentity\\', phase: \\'WorkPhase\\', claim: \\'object \| None\\', preview_acceptance: \\'object \| None\\', expected_target_plan_sha256: \\'str \| None\\', branch_set_plan: \\'BranchSetPlan \| None\\', coordination_settlement: \\'CoordinationSettlement \| None\\', join_plan: \\'JoinPlan \| None\\', coordination_cancel_requested: \\'bool\\', workflow_plan: \\'WorkflowPlan \| None\\', output: \\'OutputCollectionRef \| None\\', retirement_remaining: \\'Sequence[int]\\', failure: \\'object \| None\\', inapplicable: \\'object \| None\\', abandon_outcome: \"Literal[\\'inapplicable\\', \\'failed\\', \\'canceled\\'] \| None\") -> \\'None\\''"`
 
 ## Governing policies
 

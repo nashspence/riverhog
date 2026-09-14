@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0c53023383"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3411fa2ed9"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-4a829630de"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-adf2d807b1"></a>`module` | "riverhog_protocol" |
-| <a id="s-964b099f3d"></a>`name` | "seal" |
-| <a id="s-5a3713e66a"></a>`owner` | "riverhog_protocol.CollectionTagHeadDocument" |
-| <a id="s-b6791bb3a5"></a>`unit` | "member" |
+- <a id="s-4a829630de"></a>`distribution`: `riverhog-protocol`
+- <a id="s-adf2d807b1"></a>`module`: `riverhog_protocol`
+- <a id="s-964b099f3d"></a>`name`: `seal`
+- <a id="s-5a3713e66a"></a>`owner`: `riverhog_protocol.CollectionTagHeadDocument`
+- <a id="s-b6791bb3a5"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-a30af4e594"></a>`kind`: `"classmethod"`
+- <a id="s-c29d578710"></a>`signature`: `"\"(cls, *, archive_root_sha256: 'str', revision: 'int', root_sha256: 'str \| None') -> 'CollectionTagHeadDocument'\""`
 
 ## Maintained corroboration
 

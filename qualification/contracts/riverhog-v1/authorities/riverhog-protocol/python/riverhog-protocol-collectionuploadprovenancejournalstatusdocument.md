@@ -14,13 +14,43 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-cc38a2e4c5"></a>
-| Field | Shape |
+- <a id="s-d195a089ff"></a>`distribution`: `riverhog-protocol`
+- <a id="s-ad8af71d6b"></a>`module`: `riverhog_protocol`
+- <a id="s-94fa29b8f6"></a>`name`: `CollectionUploadProvenanceJournalStatusDocument`
+- <a id="s-04174ca703"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-6242748ea8"></a>`kind`: `"class"`
+- <a id="s-0e976206ae"></a>`signature`: `"\"(*, journal_id: ProvenanceJournalId, state: Literal['accepting', 'validating', 'sealed', 'failed'], bytes: Annotated[int, Strict(strict=True), Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], accepted_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], failure: str \| None = None, current_state_id: ProvenanceStateId \| None = None, current_path: str \| None = None, current_bytes: Annotated[int \| None, Strict(strict=True), Ge(ge=0)] = None, current_sha256: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')])]] = None) -> None\""`
+
+#### Validated model schema
+
+<a id="s-48d89948a0"></a>
+- <a id="s-d740926987"></a>`title`: CollectionUploadProvenanceJournalStatusDocument
+- <a id="s-e104228c65"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c05f142da4"></a>`accepted_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-e0c87204a2"></a>`bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-ddef0dd98c"></a>`current_bytes` | no | anyOf=type="integer"; minimum=0 \| type="null" |  |
+| <a id="s-c34cd2178b"></a>`current_path` | no | anyOf=type="string" \| type="null" |  |
+| <a id="s-7f2707a86d"></a>`current_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-232feea01f"></a>`current_state_id` | no | anyOf=#/$defs/ProvenanceStateId \| type="null" |  |
+| <a id="s-7e7ede4480"></a>`failure` | no | anyOf=type="string" \| type="null" |  |
+| <a id="s-f7ea842030"></a>`journal_id` | yes | #/$defs/ProvenanceJournalId |  |
+| <a id="s-8e2556666a"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-5b08c1e75b"></a>`state` | yes | type="string"; enum=["accepting","validating","sealed","failed"] |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-5ec37b7f6d"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-d195a089ff"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-ad8af71d6b"></a>`module` | "riverhog_protocol" |
-| <a id="s-94fa29b8f6"></a>`name` | "CollectionUploadProvenanceJournalStatusDocument" |
-| <a id="s-04174ca703"></a>`unit` | "export" |
+| <a id="s-941b870066"></a>`ProvenanceJournalId` | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
+| <a id="s-0e1edefe0b"></a>`ProvenanceStateId` | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
 
 ## Maintained corroboration
 
@@ -52,13 +82,125 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d29687a2a080a8f288bc5be5b3a36bceadefbce274d52ee34be6cdad72d1b5fa -->
+<!-- exact-contract-value: 3101722f1678caf712dfaa6d13f429328cb1b5f186b21564e62bfc03614cb683 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "58d9abee3be096444e28e38c250957e0808e2af0dbe6cac127f0955006c44831",
+    "schema": {
+      "$defs": {
+        "ProvenanceJournalId": {
+          "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "type": "string"
+        },
+        "ProvenanceStateId": {
+          "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "accepted_bytes": {
+          "minimum": 0,
+          "title": "Accepted Bytes",
+          "type": "integer"
+        },
+        "bytes": {
+          "minimum": 1,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "current_bytes": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Current Bytes"
+        },
+        "current_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Current Path"
+        },
+        "current_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Current Sha256"
+        },
+        "current_state_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProvenanceStateId"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "failure": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure"
+        },
+        "journal_id": {
+          "$ref": "#/$defs/ProvenanceJournalId"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "accepting",
+            "validating",
+            "sealed",
+            "failed"
+          ],
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "journal_id",
+        "state",
+        "bytes",
+        "sha256",
+        "accepted_bytes"
+      ],
+      "title": "CollectionUploadProvenanceJournalStatusDocument",
+      "type": "object"
+    },
     "signature": "\"(*, journal_id: ProvenanceJournalId, state: Literal['accepting', 'validating', 'sealed', 'failed'], bytes: Annotated[int, Strict(strict=True), Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], accepted_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], failure: str | None = None, current_state_id: ProvenanceStateId | None = None, current_path: str | None = None, current_bytes: Annotated[int | None, Strict(strict=True), Ge(ge=0)] = None, current_sha256: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')])]] = None) -> None\""
   },
   "distribution": "riverhog-protocol",

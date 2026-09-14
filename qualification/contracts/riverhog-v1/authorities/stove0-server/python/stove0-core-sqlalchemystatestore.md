@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3880bd2f03"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-39b4b80be6"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-07fffd3ea4"></a>`distribution` | "stove0-server" |
-| <a id="s-3f154d00f4"></a>`module` | "stove0_core" |
-| <a id="s-7877d5e40c"></a>`name` | "SqlAlchemyStateStore" |
-| <a id="s-59671e259e"></a>`unit` | "export" |
+- <a id="s-07fffd3ea4"></a>`distribution`: `stove0-server`
+- <a id="s-3f154d00f4"></a>`module`: `stove0_core`
+- <a id="s-7877d5e40c"></a>`name`: `SqlAlchemyStateStore`
+- <a id="s-59671e259e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-719ccd2292"></a>`kind`: `"class"`
+- <a id="s-b9aad5d17c"></a>`signature`: `"\"(database_url: 'str', *, engine: 'Engine \| None' = None, initialize: 'bool' = True) -> 'None'\""`
 
 ## Maintained corroboration
 

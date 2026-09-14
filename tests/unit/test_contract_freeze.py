@@ -4,10 +4,14 @@ import importlib.util
 import json
 import sys
 import tomllib
+from dataclasses import dataclass
+from enum import StrEnum
 from pathlib import Path
 from types import ModuleType
+from typing import Any
 
 import pytest
+from pydantic import BaseModel, Field
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts/contract_freeze.py"
@@ -25,10 +29,12 @@ def load_script() -> ModuleType:
     return module
 
 
-def test_checked_contract_freeze_matches_every_executable_authority() -> None:
+def test_checked_contract_freeze_matches_every_executable_authority(
+    checked_contract_closure: dict[str, Any],
+) -> None:
     module = load_script()
     projection, trace, generated = module._generated_atlas()
-    checked = module.load_atlas(ARTIFACT)
+    checked = checked_contract_closure["atlas"]
 
     assert ARTIFACT.read_bytes() == module.canonical_bytes(generated.root)
     assert checked.root == generated.root
@@ -120,6 +126,10 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
     assert len(external["python"]) == trace["python_registry"]["coverage"]["protected"]
     assert len(external["python"]) > len(trace["python_registry"]["detections"])
     assert len(external["durable_state"]["owners"]) == 8
+    assert all(
+        "structure" in owner and "fixture_sha256s" not in owner
+        for owner in external["durable_state"]["owners"]
+    )
     release = external["release"]
     assert set(release) == {"compatibility", "publication"}
     publication = release["publication"]
@@ -188,6 +198,11 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
         "release-publication-envelope",
     }
     sources = {item["id"]: item for item in trace["sources"]}
+    assert all(
+        sources[f"state:{owner['id']}"]["declarations"]
+        and sources[f"state:{owner['id']}"]["fixtures"]
+        for owner in external["durable_state"]["owners"]
+    )
     assert sources["cli:stove0"]["owner"] == "stove0-client"
     assert (
         sources["cli:riverhog-storage-adapter-conformance"]["owner"]
@@ -384,6 +399,30 @@ def test_python_class_members_assign_structure_to_the_smallest_public_unit() -> 
     }
 
 
+def test_python_class_surface_preserves_selected_enum_model_and_dataclass_structure() -> None:
+    module = load_script()
+
+    class Mode(StrEnum):
+        READY = "ready"
+
+    class Payload(BaseModel):
+        name: str = Field(min_length=1)
+
+    @dataclass(frozen=True)
+    class Record:
+        name: str
+        count: int = 1
+
+    assert module._class_surface(Mode)["enum_values"] == {"READY": "ready"}
+    payload = module._class_surface(Payload)
+    assert "schema_sha256" not in payload
+    assert payload["schema"]["properties"]["name"]["minLength"] == 1
+    assert module._class_surface(Record)["fields"] == [
+        {"name": "name", "type": "'str'", "default": "required"},
+        {"name": "count", "type": "'int'", "default": "1"},
+    ]
+
+
 def test_python_public_import_paths_and_special_methods_are_exact_units() -> None:
     module = load_script()
     projects = module.release_contract.validate_release_contract(REPO_ROOT)
@@ -544,8 +583,11 @@ def test_extent_semantic_diff_is_grouped_by_owning_boundary() -> None:
 
 def test_audit_commands_route_by_authority_interface_and_dossier(
     capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+    checked_contract_closure: dict[str, Any],
 ) -> None:
     module = load_script()
+    monkeypatch.setattr(module, "load_atlas", lambda _path: checked_contract_closure["atlas"])
 
     assert module.main(["summary"]) == 0
     summary = json.loads(capsys.readouterr().out)

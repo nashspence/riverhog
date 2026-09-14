@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ee838942bc"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6d23edfa30"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b6eabe1ff9"></a>`distribution` | "riverhog-client" |
-| <a id="s-47b6d77383"></a>`module` | "riverhog_client.transform" |
-| <a id="s-b45a9a23ec"></a>`name` | "open_incremental_publication" |
-| <a id="s-34bb6dc573"></a>`owner` | "riverhog_client.transform.CollectionTransformRuntime" |
-| <a id="s-c3a7f45cdc"></a>`unit` | "member" |
+- <a id="s-b6eabe1ff9"></a>`distribution`: `riverhog-client`
+- <a id="s-47b6d77383"></a>`module`: `riverhog_client.transform`
+- <a id="s-b45a9a23ec"></a>`name`: `open_incremental_publication`
+- <a id="s-34bb6dc573"></a>`owner`: `riverhog_client.transform.CollectionTransformRuntime`
+- <a id="s-c3a7f45cdc"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-6e907ef88a"></a>`kind`: `"method"`
+- <a id="s-3226dce18c"></a>`signature`: `"\"(self, *, execution_envelope_sha256: 'str', source_context: 'Mapping[str, object] \| None' = None) -> 'IncrementalDerivedCollectionWriter'\""`
 
 ## Maintained corroboration
 

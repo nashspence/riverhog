@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-24e9421ae7"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-dd97179b44"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e3339b742d"></a>`distribution` | "stove0-protocol" |
-| <a id="s-36753b7263"></a>`module` | "stove0_protocol" |
-| <a id="s-a0418b88b9"></a>`name` | "seal" |
-| <a id="s-a9d38a6a17"></a>`owner` | "stove0_protocol.JoinDeclaration" |
-| <a id="s-0f6d0e09f0"></a>`unit` | "member" |
+- <a id="s-e3339b742d"></a>`distribution`: `stove0-protocol`
+- <a id="s-36753b7263"></a>`module`: `stove0_protocol`
+- <a id="s-a0418b88b9"></a>`name`: `seal`
+- <a id="s-a9d38a6a17"></a>`owner`: `stove0_protocol.JoinDeclaration`
+- <a id="s-0f6d0e09f0"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-d21b17df63"></a>`kind`: `"classmethod"`
+- <a id="s-781c0afd9e"></a>`signature`: `"\"(cls, *, members: 'Sequence[JoinMemberDeclaration]', recipe: 'RecipeRef', effective_intent: 'Mapping[str, JsonValue]', workflow_intent: 'WorkflowPlanIntent') -> 'JoinDeclaration'\""`
 
 ## Maintained corroboration
 

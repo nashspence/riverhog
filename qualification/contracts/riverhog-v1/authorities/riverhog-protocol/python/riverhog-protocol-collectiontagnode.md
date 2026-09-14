@@ -14,13 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-828ade08b3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5d94f2d02f"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-b66beb27fc"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-73ccb36f87"></a>`module` | "riverhog_protocol" |
-| <a id="s-b757839c0d"></a>`name` | "CollectionTagNode" |
-| <a id="s-d61d7621cf"></a>`unit` | "export" |
+- <a id="s-b66beb27fc"></a>`distribution`: `riverhog-protocol`
+- <a id="s-73ccb36f87"></a>`module`: `riverhog_protocol`
+- <a id="s-b757839c0d"></a>`name`: `CollectionTagNode`
+- <a id="s-d61d7621cf"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-cdc13116be"></a>`kind`: `"class"`
+- <a id="s-d3b8dda32f"></a>`signature`: `"\"(prefix: 'bytes', tag: 'bytes \| None' = None, children: 'tuple[CollectionTagChild, ...]' = ()) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-08dd399313"></a>`prefix` | `'bytes'` | `required` |
+| <a id="s-12e03f182d"></a>`tag` | `'bytes \| None'` | `None` |
+| <a id="s-7851943cef"></a>`children` | `'tuple[CollectionTagChild, ...]'` | `()` |
 
 ## Governing policies
 

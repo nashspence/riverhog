@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-46770a3595"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9c73be3d1e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-4470336d03"></a>`distribution` | "stove0-server" |
-| <a id="s-8ce92152f1"></a>`module` | "stove0_core" |
-| <a id="s-9db9127e4f"></a>`name` | "settle_processing_claim_outcomes" |
-| <a id="s-168ea27291"></a>`owner` | "stove0_core.RiverhogApi" |
-| <a id="s-f856dddf4f"></a>`unit` | "member" |
+- <a id="s-4470336d03"></a>`distribution`: `stove0-server`
+- <a id="s-8ce92152f1"></a>`module`: `stove0_core`
+- <a id="s-9db9127e4f"></a>`name`: `settle_processing_claim_outcomes`
+- <a id="s-168ea27291"></a>`owner`: `stove0_core.RiverhogApi`
+- <a id="s-f856dddf4f"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-9934f47acd"></a>`kind`: `"method"`
+- <a id="s-b8b81de746"></a>`signature`: `"\"(self, claim_id: 'str', *, fence: 'int', retirement_policy: 'RetirementPolicy' = 'retain', retirement_grace_seconds: 'int' = 0) -> 'ProcessingClaimDocument'\""`
 
 ## Maintained corroboration
 

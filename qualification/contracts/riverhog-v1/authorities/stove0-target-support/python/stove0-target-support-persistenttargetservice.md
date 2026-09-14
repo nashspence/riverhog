@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8007380dc4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-67cd8c9cad"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d2e8ccca29"></a>`distribution` | "stove0-target-support" |
-| <a id="s-7a529f7792"></a>`module` | "stove0_target_support" |
-| <a id="s-771af501e4"></a>`name` | "PersistentTargetService" |
-| <a id="s-bb57f1976b"></a>`unit` | "export" |
+- <a id="s-d2e8ccca29"></a>`distribution`: `stove0-target-support`
+- <a id="s-7a529f7792"></a>`module`: `stove0_target_support`
+- <a id="s-771af501e4"></a>`name`: `PersistentTargetService`
+- <a id="s-bb57f1976b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0ad1181311"></a>`kind`: `"class"`
+- <a id="s-1040ca7098"></a>`signature`: `"\"(*, contract: 'TargetContract', operations: 'Mapping[str, OperationContract]', state_root: 'Path', execute: 'JobExecutor', intent_semantic_validators: 'Mapping[str, IntentSemanticValidator] \| None' = None, maximum_workers: 'int' = 1, terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""`
 
 ## Maintained corroboration
 

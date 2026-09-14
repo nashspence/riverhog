@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-18e1483356"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8231bac0a1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d26dd2f029"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-f60cef52a4"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-2c9a3180d8"></a>`name` | "validate_object_metadata_response" |
-| <a id="s-98159bdbdc"></a>`unit` | "export" |
+- <a id="s-d26dd2f029"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-f60cef52a4"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-2c9a3180d8"></a>`name`: `validate_object_metadata_response`
+- <a id="s-98159bdbdc"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-32c3f1ddb7"></a>`kind`: `"function"`
+- <a id="s-1d78d5a499"></a>`signature`: `"\"(request: 'ObjectHeadRequest', response: 'ObjectMetadataReceipt') -> 'None'\""`
 
 ## Governing policies
 

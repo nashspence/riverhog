@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-92a7010e2a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8f1b9483d1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c92359449c"></a>`distribution` | "stove0-protocol" |
-| <a id="s-3694538348"></a>`module` | "stove0_protocol" |
-| <a id="s-5059fa3590"></a>`name` | "resolve_join_plan" |
-| <a id="s-175f51655b"></a>`unit` | "export" |
+- <a id="s-c92359449c"></a>`distribution`: `stove0-protocol`
+- <a id="s-3694538348"></a>`module`: `stove0_protocol`
+- <a id="s-5059fa3590"></a>`name`: `resolve_join_plan`
+- <a id="s-175f51655b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-da4c8c8de9"></a>`kind`: `"function"`
+- <a id="s-0aa9d8bc7d"></a>`signature`: `"\"(plan: 'BranchSetPlan', selections: 'SelectionDocuments', settlements: 'Sequence[BranchSettlement]', effect_settlements: 'Sequence[BranchEffectSettlement]' = (), coordination_settlements: 'Sequence[CoordinationSettlement]' = (), branch_sets: 'Mapping[str, BranchSetPlan] \| None' = None) -> 'tuple[JoinPlan, tuple[ArtifactSelection, ...]] \| None'\""`
 
 ## Governing policies
 

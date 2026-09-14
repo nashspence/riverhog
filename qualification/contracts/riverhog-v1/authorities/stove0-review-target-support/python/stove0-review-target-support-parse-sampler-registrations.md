@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bb7b01c888"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0a97d9183a"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-74d580e1c5"></a>`distribution` | "stove0-review-target-support" |
-| <a id="s-8bb7b5ab09"></a>`module` | "stove0_review_target_support" |
-| <a id="s-eab6d79abb"></a>`name` | "parse_sampler_registrations" |
-| <a id="s-743d4e8abc"></a>`unit` | "export" |
+- <a id="s-74d580e1c5"></a>`distribution`: `stove0-review-target-support`
+- <a id="s-8bb7b5ab09"></a>`module`: `stove0_review_target_support`
+- <a id="s-eab6d79abb"></a>`name`: `parse_sampler_registrations`
+- <a id="s-743d4e8abc"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-fa51007872"></a>`kind`: `"function"`
+- <a id="s-420ffe4913"></a>`signature`: `"\"(document: 'str') -> 'tuple[SamplerRegistration, ...]'\""`
 
 ## Governing policies
 

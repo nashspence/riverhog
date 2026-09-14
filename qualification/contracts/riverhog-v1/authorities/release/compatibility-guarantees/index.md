@@ -12,6 +12,7 @@ Coordinated v1 compatibility promises.
 | [Compatibility: cli](compatibility-cli.md) | — |
 | [Compatibility: components](compatibility-components.md) | — |
 | [Compatibility: configuration](compatibility-configuration.md) | — |
+| [Compatibility: durable state](compatibility-durable-state.md) | — |
 | [Compatibility: http api](compatibility-http-api.md) | — |
 | [Compatibility: python api](compatibility-python-api.md) | — |
 | [Compatibility: recovery](compatibility-recovery.md) | — |

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9713aaaeab"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-33b16c5b45"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-cb2ae78f44"></a>`distribution` | "stove0-protocol" |
-| <a id="s-93705b9ee8"></a>`module` | "stove0_protocol" |
-| <a id="s-69621c8509"></a>`name` | "JSON_SCHEMA_PROFILE_FORMAT" |
-| <a id="s-7b2be2ed1b"></a>`unit` | "export" |
+- <a id="s-cb2ae78f44"></a>`distribution`: `stove0-protocol`
+- <a id="s-93705b9ee8"></a>`module`: `stove0_protocol`
+- <a id="s-69621c8509"></a>`name`: `JSON_SCHEMA_PROFILE_FORMAT`
+- <a id="s-7b2be2ed1b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-6cf34fe0a2"></a>`kind`: `"constant"`
+- <a id="s-543376daac"></a>`value`: `"stove0-json-schema-profile/v1"`
 
 ## Governing policies
 

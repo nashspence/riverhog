@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-198993ef10"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-76ef8ab382"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f4c8f053c9"></a>`distribution` | "stove0-review-sampler-protocol" |
-| <a id="s-c9482083c0"></a>`module` | "stove0_review_sampler_protocol" |
-| <a id="s-4c30a46d2b"></a>`name` | "seal" |
-| <a id="s-efec6a9bc3"></a>`owner` | "stove0_review_sampler_protocol.SamplerRequest" |
-| <a id="s-8f648c6cfb"></a>`unit` | "member" |
+- <a id="s-f4c8f053c9"></a>`distribution`: `stove0-review-sampler-protocol`
+- <a id="s-c9482083c0"></a>`module`: `stove0_review_sampler_protocol`
+- <a id="s-4c30a46d2b"></a>`name`: `seal`
+- <a id="s-efec6a9bc3"></a>`owner`: `stove0_review_sampler_protocol.SamplerRequest`
+- <a id="s-8f648c6cfb"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-829ca19aa9"></a>`kind`: `"classmethod"`
+- <a id="s-3498926c41"></a>`signature`: `"\"(cls, payload: 'SamplerRequestPayload') -> 'SamplerRequest'\""`
 
 ## Maintained corroboration
 

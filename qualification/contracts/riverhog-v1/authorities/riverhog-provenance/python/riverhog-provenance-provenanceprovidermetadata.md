@@ -14,13 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5db6f18e79"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9bdba0ec54"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-da9919583a"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-35341a4a10"></a>`module` | "riverhog_provenance" |
-| <a id="s-358e376a9f"></a>`name` | "ProvenanceProviderMetadata" |
-| <a id="s-4c5c6e0b2f"></a>`unit` | "export" |
+- <a id="s-da9919583a"></a>`distribution`: `riverhog-provenance`
+- <a id="s-35341a4a10"></a>`module`: `riverhog_provenance`
+- <a id="s-358e376a9f"></a>`name`: `ProvenanceProviderMetadata`
+- <a id="s-4c5c6e0b2f"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0cf5d7c081"></a>`kind`: `"class"`
+- <a id="s-ef227ab955"></a>`signature`: `"\"(name: 'str', value: 'str', distribution: 'str \| None', version: 'str \| None') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-7ec5cadf44"></a>`name` | `'str'` | `required` |
+| <a id="s-c090ac3feb"></a>`value` | `'str'` | `required` |
+| <a id="s-c1dc616d05"></a>`distribution` | `'str \| None'` | `required` |
+| <a id="s-680ec8680a"></a>`version` | `'str \| None'` | `required` |
 
 ## Maintained corroboration
 

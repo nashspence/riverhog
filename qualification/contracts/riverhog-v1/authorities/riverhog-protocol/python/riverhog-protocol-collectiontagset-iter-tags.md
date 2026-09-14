@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2c37e25144"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ff8c571012"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-89c10b1a47"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-205db9d6e9"></a>`module` | "riverhog_protocol" |
-| <a id="s-38bdc011ef"></a>`name` | "iter_tags" |
-| <a id="s-823896bd9c"></a>`owner` | "riverhog_protocol.CollectionTagSet" |
-| <a id="s-ad5a3dc6d9"></a>`unit` | "member" |
+- <a id="s-89c10b1a47"></a>`distribution`: `riverhog-protocol`
+- <a id="s-205db9d6e9"></a>`module`: `riverhog_protocol`
+- <a id="s-38bdc011ef"></a>`name`: `iter_tags`
+- <a id="s-823896bd9c"></a>`owner`: `riverhog_protocol.CollectionTagSet`
+- <a id="s-ad5a3dc6d9"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-a379134816"></a>`kind`: `"method"`
+- <a id="s-ceb6596e62"></a>`signature`: `"\"(self, *, start_after_sha256: 'str \| None' = None) -> 'Iterator[str]'\""`
 
 ## Maintained corroboration
 

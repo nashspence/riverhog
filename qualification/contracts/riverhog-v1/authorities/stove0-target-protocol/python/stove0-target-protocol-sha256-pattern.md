@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-176db117a0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c0ad4c10f8"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-f994426962"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-d888a44862"></a>`module` | "stove0_target_protocol" |
-| <a id="s-a9dfbe7bf5"></a>`name` | "SHA256_PATTERN" |
-| <a id="s-7f66c4d41d"></a>`unit` | "export" |
+- <a id="s-f994426962"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-d888a44862"></a>`module`: `stove0_target_protocol`
+- <a id="s-a9dfbe7bf5"></a>`name`: `SHA256_PATTERN`
+- <a id="s-7f66c4d41d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-a1b265f33e"></a>`kind`: `"constant"`
+- <a id="s-2c9d1be26b"></a>`value`: `"^[0-9a-f]{64}$"`
 
 ## Governing policies
 

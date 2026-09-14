@@ -14,13 +14,38 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9052785ed5"></a>
-| Field | Shape |
+- <a id="s-e6d0614c12"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-3af0525ee1"></a>`module`: `stove0_operator_contracts`
+- <a id="s-a21009d9bc"></a>`name`: `SchedulerRun`
+- <a id="s-7d4de8abc1"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-707b5c1086"></a>`kind`: `"class"`
+- <a id="s-ac3c4af9b1"></a>`signature`: `"'(*, pruning: stove0_operator_contracts.SchedulerPruning \| None, admission: stove0_operator_contracts.AdmissionRun \| None = None, work: stove0_operator_contracts.SchedulerWorkBatch) -> None'"`
+
+#### Validated model schema
+
+<a id="s-bea95f16ce"></a>
+- <a id="s-47790f2c8c"></a>`title`: SchedulerRun
+- <a id="s-c7db1dc77d"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4529d53325"></a>`admission` | no | anyOf=#/$defs/AdmissionRun \| type="null" |  |
+| <a id="s-d0ff3529cf"></a>`pruning` | yes | anyOf=#/$defs/SchedulerPruning \| type="null" |  |
+| <a id="s-557354c3af"></a>`work` | yes | #/$defs/SchedulerWorkBatch |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-5e19a19241"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-e6d0614c12"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-3af0525ee1"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-a21009d9bc"></a>`name` | "SchedulerRun" |
-| <a id="s-7d4de8abc1"></a>`unit` | "export" |
+| <a id="s-bba32c184c"></a>`AdmissionRun` | type="object"; fields=`failures`, `progressed`; additional keys=`additionalProperties`, `required` |
+| <a id="s-f931be92db"></a>`SchedulerFailure` | type="object"; fields=`error`, `event_id`, `work_id`; additional keys=`additionalProperties`, `required` |
+| <a id="s-bc7006be46"></a>`SchedulerPruning` | type="object"; fields=`evaluation_bytes`, `evaluations`, `event_bytes`, `events`, `selection_bytes`, `selections`, `work`, `work_bytes`; additional keys=`additionalProperties`, `required` |
+| <a id="s-85f50ba4ce"></a>`SchedulerWorkBatch` | type="object"; fields=`cursor`, `failures`, `next_cursor`, `progressed`, `role`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
@@ -46,13 +71,218 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: dd91224d04b2cb958ccc56c01573930072a5e8e6096bd6a4062a649cf5e5f702 -->
+<!-- exact-contract-value: 7fcd8daa28494be595dd7fe039a603601804413de3aebe4974bbafd7130aaac3 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "fee1ffcab5fa9cfca8ccd9dbcdb1291b4545b6a161c886b5f6b8402be1501bb2",
+    "schema": {
+      "$defs": {
+        "AdmissionRun": {
+          "additionalProperties": false,
+          "properties": {
+            "failures": {
+              "default": [],
+              "items": {
+                "$ref": "#/$defs/SchedulerFailure"
+              },
+              "title": "Failures",
+              "type": "array"
+            },
+            "progressed": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Progressed",
+              "type": "array"
+            }
+          },
+          "required": [
+            "progressed"
+          ],
+          "title": "AdmissionRun",
+          "type": "object"
+        },
+        "SchedulerFailure": {
+          "additionalProperties": false,
+          "properties": {
+            "error": {
+              "maxLength": 1000,
+              "minLength": 1,
+              "title": "Error",
+              "type": "string"
+            },
+            "event_id": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Event Id"
+            },
+            "work_id": {
+              "anyOf": [
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Work Id"
+            }
+          },
+          "required": [
+            "error"
+          ],
+          "title": "SchedulerFailure",
+          "type": "object"
+        },
+        "SchedulerPruning": {
+          "additionalProperties": false,
+          "properties": {
+            "evaluation_bytes": {
+              "minimum": 0,
+              "title": "Evaluation Bytes",
+              "type": "integer"
+            },
+            "evaluations": {
+              "minimum": 0,
+              "title": "Evaluations",
+              "type": "integer"
+            },
+            "event_bytes": {
+              "minimum": 0,
+              "title": "Event Bytes",
+              "type": "integer"
+            },
+            "events": {
+              "minimum": 0,
+              "title": "Events",
+              "type": "integer"
+            },
+            "selection_bytes": {
+              "minimum": 0,
+              "title": "Selection Bytes",
+              "type": "integer"
+            },
+            "selections": {
+              "minimum": 0,
+              "title": "Selections",
+              "type": "integer"
+            },
+            "work": {
+              "minimum": 0,
+              "title": "Work",
+              "type": "integer"
+            },
+            "work_bytes": {
+              "minimum": 0,
+              "title": "Work Bytes",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "work",
+            "work_bytes",
+            "evaluations",
+            "evaluation_bytes",
+            "selections",
+            "selection_bytes",
+            "events",
+            "event_bytes"
+          ],
+          "title": "SchedulerPruning",
+          "type": "object"
+        },
+        "SchedulerWorkBatch": {
+          "additionalProperties": false,
+          "properties": {
+            "cursor": {
+              "title": "Cursor",
+              "type": "string"
+            },
+            "failures": {
+              "items": {
+                "$ref": "#/$defs/SchedulerFailure"
+              },
+              "title": "Failures",
+              "type": "array"
+            },
+            "next_cursor": {
+              "title": "Next Cursor",
+              "type": "string"
+            },
+            "progressed": {
+              "items": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "title": "Progressed",
+              "type": "array"
+            },
+            "role": {
+              "enum": [
+                "controller",
+                "worker",
+                "combined"
+              ],
+              "title": "Role",
+              "type": "string"
+            }
+          },
+          "required": [
+            "role",
+            "cursor",
+            "next_cursor",
+            "progressed",
+            "failures"
+          ],
+          "title": "SchedulerWorkBatch",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "admission": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AdmissionRun"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "pruning": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SchedulerPruning"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "work": {
+          "$ref": "#/$defs/SchedulerWorkBatch"
+        }
+      },
+      "required": [
+        "pruning",
+        "work"
+      ],
+      "title": "SchedulerRun",
+      "type": "object"
+    },
     "signature": "'(*, pruning: stove0_operator_contracts.SchedulerPruning | None, admission: stove0_operator_contracts.AdmissionRun | None = None, work: stove0_operator_contracts.SchedulerWorkBatch) -> None'"
   },
   "distribution": "stove0-operator-contracts",

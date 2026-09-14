@@ -14,13 +14,37 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-716c48f27f"></a>
-| Field | Shape |
+- <a id="s-34a91cb1db"></a>`distribution`: `riverhog-protocol`
+- <a id="s-bbe94b5bbe"></a>`module`: `riverhog_protocol`
+- <a id="s-4f92d564d3"></a>`name`: `ProcessingOutcomeIdentityDocument`
+- <a id="s-141ffa151f"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-7ed6cc02e9"></a>`kind`: `"class"`
+- <a id="s-ff8b884dc9"></a>`signature`: `"\"(*, outcome_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$')], source_claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], output_collection: riverhog_protocol.collection_workflow_transport.CollectionRootIdentityDocument, derivation_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-0f42bb2ef8"></a>
+- <a id="s-bc8522451b"></a>`title`: ProcessingOutcomeIdentityDocument
+- <a id="s-7f84618032"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7888da1110"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-11ae19fbde"></a>`outcome_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-a92119db8c"></a>`output_collection` | yes | #/$defs/CollectionRootIdentityDocument |  |
+| <a id="s-680392bdca"></a>`source_claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-3f68b0efd9"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-34a91cb1db"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-bbe94b5bbe"></a>`module` | "riverhog_protocol" |
-| <a id="s-4f92d564d3"></a>`name` | "ProcessingOutcomeIdentityDocument" |
-| <a id="s-141ffa151f"></a>`unit` | "export" |
+| <a id="s-3475778270"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-7aa06b3d4f"></a>`CollectionRootIdentityDocument` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -52,13 +76,74 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0af52942172d487a50401982b6ee1753e390e84852204182b90f1fc081963a2b -->
+<!-- exact-contract-value: e254d00ce00237ee90f6c7100bd7fabb5722e13fb3459ad40a3a064c81bbbf89 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "8dc6d3031e0dc17cc17e6e2c78c2f72b79a129fcc79822a1b2dd39c77972651f",
+    "schema": {
+      "$defs": {
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "CollectionRootIdentityDocument": {
+          "additionalProperties": false,
+          "properties": {
+            "archive_root_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Archive Root Sha256",
+              "type": "string"
+            },
+            "collection_id": {
+              "$ref": "#/$defs/CollectionId"
+            },
+            "content_identity": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Content Identity",
+              "type": "string"
+            }
+          },
+          "required": [
+            "collection_id",
+            "archive_root_sha256",
+            "content_identity"
+          ],
+          "title": "CollectionRootIdentityDocument",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "derivation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Derivation Sha256",
+          "type": "string"
+        },
+        "outcome_id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Outcome Id",
+          "type": "string"
+        },
+        "output_collection": {
+          "$ref": "#/$defs/CollectionRootIdentityDocument"
+        },
+        "source_claim_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Claim Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "outcome_id",
+        "source_claim_id",
+        "output_collection",
+        "derivation_sha256"
+      ],
+      "title": "ProcessingOutcomeIdentityDocument",
+      "type": "object"
+    },
     "signature": "\"(*, outcome_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$')], source_claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], output_collection: riverhog_protocol.collection_workflow_transport.CollectionRootIdentityDocument, derivation_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
   },
   "distribution": "riverhog-protocol",

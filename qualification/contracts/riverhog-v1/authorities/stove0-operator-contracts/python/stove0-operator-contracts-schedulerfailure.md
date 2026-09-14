@@ -14,13 +14,29 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f1e38100b6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-250bee2c0f"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-c97abb90e8"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-e121b2f226"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-54c7b5cb13"></a>`name` | "SchedulerFailure" |
-| <a id="s-7f90a112c2"></a>`unit` | "export" |
+- <a id="s-c97abb90e8"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-e121b2f226"></a>`module`: `stove0_operator_contracts`
+- <a id="s-54c7b5cb13"></a>`name`: `SchedulerFailure`
+- <a id="s-7f90a112c2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-bab74aa569"></a>`kind`: `"class"`
+- <a id="s-e083307c55"></a>`signature`: `"\"(*, event_id: str \| None = None, work_id: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, error: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-287de05b75"></a>
+- <a id="s-89ce26f526"></a>`title`: SchedulerFailure
+- <a id="s-90de1d8807"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-1f6c06e3b0"></a>`error` | yes | type="string"; minLength=1; maxLength=1000 |  |
+| <a id="s-c69f5696f6"></a>`event_id` | no | anyOf=type="string" \| type="null" |  |
+| <a id="s-fbe7f96916"></a>`work_id` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
 
 ## Maintained corroboration
 
@@ -52,13 +68,53 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2be0086918921366999cb8b4878f0a49f7b852e0794126e0ca21b1baf54acd6f -->
+<!-- exact-contract-value: 0dc252d94120b278e0d190635196470515354015714dcf79cdc9ac0117350efb -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "a833286ffda928b36d0a305881d883157303922614a8c4e55d7c3ff0134b32e2",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "error": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Error",
+          "type": "string"
+        },
+        "event_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Event Id"
+        },
+        "work_id": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Work Id"
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "title": "SchedulerFailure",
+      "type": "object"
+    },
     "signature": "\"(*, event_id: str | None = None, work_id: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, error: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None\""
   },
   "distribution": "stove0-operator-contracts",

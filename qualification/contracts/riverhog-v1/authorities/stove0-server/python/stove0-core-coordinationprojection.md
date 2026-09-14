@@ -14,13 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-959e678a6d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b191818dcb"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-9357d4b066"></a>`distribution` | "stove0-server" |
-| <a id="s-d631cf993d"></a>`module` | "stove0_core" |
-| <a id="s-554088950f"></a>`name` | "CoordinationProjection" |
-| <a id="s-e3270c1173"></a>`unit` | "export" |
+- <a id="s-9357d4b066"></a>`distribution`: `stove0-server`
+- <a id="s-d631cf993d"></a>`module`: `stove0_core`
+- <a id="s-554088950f"></a>`name`: `CoordinationProjection`
+- <a id="s-e3270c1173"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-99b4336ad2"></a>`kind`: `"class"`
+- <a id="s-8674c23b32"></a>`signature`: `"\"(evaluation: 'BranchSetEvaluation', selection_documents: 'dict[str, ArtifactSelection]', pending_join: 'JoinPlan \| None' = None, pending_join_selections: 'tuple[ArtifactSelection, ...]' = ()) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-dd5fe55969"></a>`evaluation` | `'BranchSetEvaluation'` | `required` |
+| <a id="s-e6f7a3bae5"></a>`selection_documents` | `'dict[str, ArtifactSelection]'` | `required` |
+| <a id="s-864264fa87"></a>`pending_join` | `'JoinPlan \| None'` | `None` |
+| <a id="s-431426261c"></a>`pending_join_selections` | `'tuple[ArtifactSelection, ...]'` | `()` |
 
 ## Governing policies
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5f87741bf4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b94b156bd0"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-0bcc5510ab"></a>`distribution` | "riverhog-provenance-windows-contracts" |
-| <a id="s-cab10690d5"></a>`module` | "riverhog_provenance_windows_contracts" |
-| <a id="s-bb179fabc2"></a>`name` | "PLATFORM_FAMILY" |
-| <a id="s-bb07ce0046"></a>`unit` | "export" |
+- <a id="s-0bcc5510ab"></a>`distribution`: `riverhog-provenance-windows-contracts`
+- <a id="s-cab10690d5"></a>`module`: `riverhog_provenance_windows_contracts`
+- <a id="s-bb179fabc2"></a>`name`: `PLATFORM_FAMILY`
+- <a id="s-bb07ce0046"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f5a5c4c793"></a>`kind`: `"constant"`
+- <a id="s-bece528387"></a>`value`: `"windows"`
 
 ## Governing policies
 

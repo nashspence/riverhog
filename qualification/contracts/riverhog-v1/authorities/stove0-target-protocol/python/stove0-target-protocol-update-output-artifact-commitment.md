@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e1d556b352"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6074a71201"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-32b8b48d24"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-73107d5a67"></a>`module` | "stove0_target_protocol" |
-| <a id="s-f3dd701acb"></a>`name` | "update_output_artifact_commitment" |
-| <a id="s-7b13adc417"></a>`unit` | "export" |
+- <a id="s-32b8b48d24"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-73107d5a67"></a>`module`: `stove0_target_protocol`
+- <a id="s-f3dd701acb"></a>`name`: `update_output_artifact_commitment`
+- <a id="s-7b13adc417"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-3a1dea9b18"></a>`kind`: `"function"`
+- <a id="s-902006cba1"></a>`signature`: `"\"(digest: 'Any', *, ordinal: 'int', artifact: 'OutputArtifact') -> 'None'\""`
 
 ## Governing policies
 

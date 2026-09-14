@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-168507c8e9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b79100f2c5"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c4a3890349"></a>`distribution` | "stove0-server" |
-| <a id="s-b1d0bc9096"></a>`module` | "stove0_core" |
-| <a id="s-e56e5a42b7"></a>`name` | "issue_access" |
-| <a id="s-0dc11d206d"></a>`owner` | "stove0_core.TargetCallbackAuthority" |
-| <a id="s-242d57040c"></a>`unit` | "member" |
+- <a id="s-c4a3890349"></a>`distribution`: `stove0-server`
+- <a id="s-b1d0bc9096"></a>`module`: `stove0_core`
+- <a id="s-e56e5a42b7"></a>`name`: `issue_access`
+- <a id="s-0dc11d206d"></a>`owner`: `stove0_core.TargetCallbackAuthority`
+- <a id="s-242d57040c"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-5a7100f687"></a>`kind`: `"method"`
+- <a id="s-93fb0fdb91"></a>`signature`: `"\"(self, record: 'WorkRecord', target_registration_id: 'str') -> 'TargetCallbackAccess'\""`
 
 ## Maintained corroboration
 

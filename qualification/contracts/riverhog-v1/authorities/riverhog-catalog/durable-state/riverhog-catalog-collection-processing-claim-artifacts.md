@@ -1,0 +1,173 @@
+# riverhog-catalog: collection_processing_claim_artifacts
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-processing-cl-b761c1c7be:4426253d75 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-catalog](../index.md) |
+| Interface | [Durable State](index.md) |
+
+## External contract
+
+<a id="s-841b96ee19"></a>
+- Table: `collection_processing_claim_artifacts`
+
+### Columns
+
+| Column | Type | Nullable | Default | Other constraints |
+|---|---|---:|---|---|
+| <a id="s-20abc2cef1"></a>`claim_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-5297f0c8b1"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-0628c3d37c"></a>`path` | `VARCHAR` | no | `—` | — |
+| <a id="s-0bf019998a"></a>`artifact_order` | `BIGINT` | no | `—` | — |
+| <a id="s-37e23b17c5"></a>`bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-3ffac4b9c2"></a>`sha256` | `VARCHAR(64)` | no | `—` | — |
+
+### Table constraints
+
+| Kind | Name | Exact definition |
+|---|---|---|
+| <a id="s-0ef405d0d8"></a>`primary-key` | `—` | `PRIMARY KEY (claim_id, collection_id, path)` |
+| <a id="s-76bb1574ec"></a>`foreign-key` | `—` | `FOREIGN KEY(claim_id, collection_id) REFERENCES collection_processing_claim_inputs (claim_id, collection_id) ON DELETE CASCADE` |
+| <a id="s-f3944a6def"></a>`check` | `ck_processing_claim_artifacts_bytes` | `CONSTRAINT ck_processing_claim_artifacts_bytes CHECK (bytes >= 0)` |
+| <a id="s-e6bfdc2d01"></a>`check` | `ck_processing_claim_artifacts_order` | `CONSTRAINT ck_processing_claim_artifacts_order CHECK (artifact_order >= 0)` |
+| <a id="s-18d99c735a"></a>`check` | `ck_processing_claim_artifacts_sha256` | `CONSTRAINT ck_processing_claim_artifacts_sha256 CHECK (length(sha256) = 64)` |
+| <a id="s-5fe26466b6"></a>`check` | `ck_collection_processing_claim_artifacts_claim_id_hex` | `CONSTRAINT ck_collection_processing_claim_artifacts_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-2000575e14"></a>`check` | `ck_collection_processing_claim_artifacts_sha256_hex` | `CONSTRAINT ck_collection_processing_claim_artifacts_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog-catalog durable-state identity](riverhog-catalog-durable-state-identity.md)
+
+## Governing policies
+
+- <a id="pa-010e4505a1"></a>[compatibility/durable-state/v1](../../../policies/index.md#p-214a49c2de)
+
+## Evidence
+
+### Qualification
+
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make database-qualification](../../../evidence/sources.md#q-27f281b51e)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [state:riverhog-catalog](../../../evidence/sources.md#src-d8b4a14670) — `riverhog/src/riverhog_core/state_migrations/v1_ddl.py`
+
+### Machine authority
+
+- `/external_contract/durable_state/owners/0/structure/tables/70`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b88a3491d3c70c883331f54d30fa2f7b4433942942f3ae435b9e787b89c528ce -->
+
+```json
+{
+  "columns": [
+    {
+      "definition": "claim_id VARCHAR(64) NOT NULL",
+      "name": "claim_id",
+      "nullable": false,
+      "type": "VARCHAR(64)"
+    },
+    {
+      "definition": "collection_id BIGINT NOT NULL",
+      "name": "collection_id",
+      "nullable": false,
+      "type": "BIGINT"
+    },
+    {
+      "definition": "path VARCHAR NOT NULL",
+      "name": "path",
+      "nullable": false,
+      "type": "VARCHAR"
+    },
+    {
+      "definition": "artifact_order BIGINT NOT NULL",
+      "name": "artifact_order",
+      "nullable": false,
+      "type": "BIGINT"
+    },
+    {
+      "definition": "bytes BIGINT NOT NULL",
+      "name": "bytes",
+      "nullable": false,
+      "type": "BIGINT"
+    },
+    {
+      "definition": "sha256 VARCHAR(64) NOT NULL",
+      "name": "sha256",
+      "nullable": false,
+      "type": "VARCHAR(64)"
+    }
+  ],
+  "constraints": [
+    {
+      "columns": [
+        "claim_id",
+        "collection_id",
+        "path"
+      ],
+      "definition": "PRIMARY KEY (claim_id, collection_id, path)",
+      "kind": "primary-key"
+    },
+    {
+      "columns": [
+        "claim_id",
+        "collection_id"
+      ],
+      "definition": "FOREIGN KEY(claim_id, collection_id) REFERENCES collection_processing_claim_inputs (claim_id, collection_id) ON DELETE CASCADE",
+      "kind": "foreign-key",
+      "references": {
+        "actions": "ON DELETE CASCADE",
+        "columns": [
+          "claim_id",
+          "collection_id"
+        ],
+        "table": "collection_processing_claim_inputs"
+      }
+    },
+    {
+      "definition": "CONSTRAINT ck_processing_claim_artifacts_bytes CHECK (bytes >= 0)",
+      "expression": "(bytes >= 0)",
+      "kind": "check",
+      "name": "ck_processing_claim_artifacts_bytes"
+    },
+    {
+      "definition": "CONSTRAINT ck_processing_claim_artifacts_order CHECK (artifact_order >= 0)",
+      "expression": "(artifact_order >= 0)",
+      "kind": "check",
+      "name": "ck_processing_claim_artifacts_order"
+    },
+    {
+      "definition": "CONSTRAINT ck_processing_claim_artifacts_sha256 CHECK (length(sha256) = 64)",
+      "expression": "(length(sha256) = 64)",
+      "kind": "check",
+      "name": "ck_processing_claim_artifacts_sha256"
+    },
+    {
+      "definition": "CONSTRAINT ck_collection_processing_claim_artifacts_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')",
+      "expression": "(length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')",
+      "kind": "check",
+      "name": "ck_collection_processing_claim_artifacts_claim_id_hex"
+    },
+    {
+      "definition": "CONSTRAINT ck_collection_processing_claim_artifacts_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')",
+      "expression": "(length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')",
+      "kind": "check",
+      "name": "ck_collection_processing_claim_artifacts_sha256_hex"
+    }
+  ],
+  "name": "collection_processing_claim_artifacts"
+}
+```

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ba794c0229"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c8fa5fc06e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c813d9e7aa"></a>`distribution` | "state-schema" |
-| <a id="s-b55335f8ab"></a>`module` | "state_schema" |
-| <a id="s-8b52125a03"></a>`name` | "require_postgresql_extension" |
-| <a id="s-6c269ed802"></a>`unit` | "export" |
+- <a id="s-c813d9e7aa"></a>`distribution`: `state-schema`
+- <a id="s-b55335f8ab"></a>`module`: `state_schema`
+- <a id="s-8b52125a03"></a>`name`: `require_postgresql_extension`
+- <a id="s-6c269ed802"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-fbf580bc84"></a>`kind`: `"function"`
+- <a id="s-0af86d9d8b"></a>`signature`: `"\"(connection: 'Connection', *, name: 'str', schema: 'str', accepted_versions: 'tuple[str, ...]' = (), operator_classes: 'tuple[str, ...]' = ()) -> 'None'\""`
 
 ## Governing policies
 

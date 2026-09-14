@@ -14,13 +14,25 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ce5bdbb8fe"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-41bfc8cbc4"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-d42a1099e9"></a>`distribution` | "riverhog-client" |
-| <a id="s-416ea2e995"></a>`module` | "riverhog_client" |
-| <a id="s-61130c16a2"></a>`name` | "ProducerStream" |
-| <a id="s-7cc20ce22c"></a>`unit` | "export" |
+- <a id="s-d42a1099e9"></a>`distribution`: `riverhog-client`
+- <a id="s-416ea2e995"></a>`module`: `riverhog_client`
+- <a id="s-61130c16a2"></a>`name`: `ProducerStream`
+- <a id="s-7cc20ce22c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-73c5cd69c2"></a>`kind`: `"class"`
+- <a id="s-558926d1c9"></a>`signature`: `"\"(path: 'str', bytes: 'int', sha256: 'str', read_range: 'RangeReader', provenance: 'Mapping[str, object] \| None' = None) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-b300225bde"></a>`path` | `'str'` | `required` |
+| <a id="s-ab612a4a85"></a>`bytes` | `'int'` | `required` |
+| <a id="s-b178f100b1"></a>`sha256` | `'str'` | `required` |
+| <a id="s-c9d1a9c9ee"></a>`read_range` | `'RangeReader'` | `required` |
+| <a id="s-fb6869170f"></a>`provenance` | `'Mapping[str, object] \| None'` | `None` |
 
 ## Governing policies
 

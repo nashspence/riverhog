@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8510c090fc"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0bbbc67b88"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7f1a443356"></a>`distribution` | "stove0-protocol" |
-| <a id="s-7292a08ea3"></a>`module` | "stove0_protocol" |
-| <a id="s-c9b6238ccc"></a>`name` | "canonical_target_plans" |
-| <a id="s-a8252df979"></a>`owner` | "stove0_protocol.WorkflowPreviewPayload" |
-| <a id="s-5b22a9a868"></a>`unit` | "member" |
+- <a id="s-7f1a443356"></a>`distribution`: `stove0-protocol`
+- <a id="s-7292a08ea3"></a>`module`: `stove0_protocol`
+- <a id="s-c9b6238ccc"></a>`name`: `canonical_target_plans`
+- <a id="s-a8252df979"></a>`owner`: `stove0_protocol.WorkflowPreviewPayload`
+- <a id="s-5b22a9a868"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-8b6f73c8f6"></a>`kind`: `"classmethod"`
+- <a id="s-db9ffa37ab"></a>`signature`: `"\"(cls, value: 'tuple[BranchTargetPreview, ...]') -> 'tuple[BranchTargetPreview, ...]'\""`
 
 ## Maintained corroboration
 

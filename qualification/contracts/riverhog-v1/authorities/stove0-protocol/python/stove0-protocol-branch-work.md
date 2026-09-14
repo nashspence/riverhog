@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6c7fa9e19d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a28405f146"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-5cdc2d52b2"></a>`distribution` | "stove0-protocol" |
-| <a id="s-9c373984d4"></a>`module` | "stove0_protocol" |
-| <a id="s-0a1effb31a"></a>`name` | "branch_work" |
-| <a id="s-4c31c593a2"></a>`unit` | "export" |
+- <a id="s-5cdc2d52b2"></a>`distribution`: `stove0-protocol`
+- <a id="s-9c373984d4"></a>`module`: `stove0_protocol`
+- <a id="s-0a1effb31a"></a>`name`: `branch_work`
+- <a id="s-4c31c593a2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-972ee09964"></a>`kind`: `"function"`
+- <a id="s-888aef6cd5"></a>`signature`: `"\"(branch: 'BranchDeclaration') -> 'WorkIdentity'\""`
 
 ## Governing policies
 

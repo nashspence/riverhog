@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-29032fe1c7"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-31f5183429"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-fa8f030327"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-4f2d699a60"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-c0f9f0ef0f"></a>`name` | "canonical_path" |
-| <a id="s-cf8cb1e854"></a>`owner` | "riverhog_storage_adapter_protocol.CompletedWriteLookupRequest" |
-| <a id="s-943250eca3"></a>`unit` | "member" |
+- <a id="s-fa8f030327"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-4f2d699a60"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-c0f9f0ef0f"></a>`name`: `canonical_path`
+- <a id="s-cf8cb1e854"></a>`owner`: `riverhog_storage_adapter_protocol.CompletedWriteLookupRequest`
+- <a id="s-943250eca3"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-6dfc448571"></a>`kind`: `"classmethod"`
+- <a id="s-25bab5b71f"></a>`signature`: `"\"(cls, value: 'str') -> 'str'\""`
 
 ## Maintained corroboration
 

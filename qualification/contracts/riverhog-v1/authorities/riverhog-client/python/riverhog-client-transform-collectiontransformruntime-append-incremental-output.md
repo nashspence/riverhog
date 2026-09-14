@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-383669e80a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4503c40592"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ed01fe2caa"></a>`distribution` | "riverhog-client" |
-| <a id="s-519ab48971"></a>`module` | "riverhog_client.transform" |
-| <a id="s-7d4aee37e3"></a>`name` | "append_incremental_output" |
-| <a id="s-02f1dd3bd4"></a>`owner` | "riverhog_client.transform.CollectionTransformRuntime" |
-| <a id="s-afd10aca45"></a>`unit` | "member" |
+- <a id="s-ed01fe2caa"></a>`distribution`: `riverhog-client`
+- <a id="s-519ab48971"></a>`module`: `riverhog_client.transform`
+- <a id="s-7d4aee37e3"></a>`name`: `append_incremental_output`
+- <a id="s-02f1dd3bd4"></a>`owner`: `riverhog_client.transform.CollectionTransformRuntime`
+- <a id="s-afd10aca45"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-5b011f982c"></a>`kind`: `"method"`
+- <a id="s-8ffec55fc0"></a>`signature`: `"\"(self, writer: 'IncrementalDerivedCollectionWriter', source: 'ProducerInput', *, identity: 'ProducerArtifactIdentity') -> 'tuple[ProducerArtifactCustody, ...]'\""`
 
 ## Maintained corroboration
 

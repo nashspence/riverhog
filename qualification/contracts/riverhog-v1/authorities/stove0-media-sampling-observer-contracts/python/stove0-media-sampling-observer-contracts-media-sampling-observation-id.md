@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-29feac5b7b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-093274352b"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-b0aa0b8929"></a>`distribution` | "stove0-media-sampling-observer-contracts" |
-| <a id="s-c41eb910f4"></a>`module` | "stove0_media_sampling_observer_contracts" |
-| <a id="s-b8f8fec8b9"></a>`name` | "MEDIA_SAMPLING_OBSERVATION_ID" |
-| <a id="s-a4f6df0aed"></a>`unit` | "export" |
+- <a id="s-b0aa0b8929"></a>`distribution`: `stove0-media-sampling-observer-contracts`
+- <a id="s-c41eb910f4"></a>`module`: `stove0_media_sampling_observer_contracts`
+- <a id="s-b8f8fec8b9"></a>`name`: `MEDIA_SAMPLING_OBSERVATION_ID`
+- <a id="s-a4f6df0aed"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f8c74dea11"></a>`kind`: `"constant"`
+- <a id="s-8155cd0969"></a>`value`: `"stove0.review.media-sampling/v1"`
 
 ## Governing policies
 

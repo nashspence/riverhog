@@ -14,13 +14,30 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b897c77a22"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-508733814e"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-5a6f81591e"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-e38dfd13d2"></a>`module` | "riverhog_protocol" |
-| <a id="s-f303c7898e"></a>`name` | "CatalogSyncCheckpoint" |
-| <a id="s-e958f819f3"></a>`unit` | "export" |
+- <a id="s-5a6f81591e"></a>`distribution`: `riverhog-protocol`
+- <a id="s-e38dfd13d2"></a>`module`: `riverhog_protocol`
+- <a id="s-f303c7898e"></a>`name`: `CatalogSyncCheckpoint`
+- <a id="s-e958f819f3"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-d6b8c82e54"></a>`kind`: `"class"`
+- <a id="s-9dada88db2"></a>`signature`: `"\"(*, format: Literal['riverhog-catalog-sync/v1'] = 'riverhog-catalog-sync/v1', source_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], authorization_view_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], catalog_cursor: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=4096, pattern=None, ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-013e1b52c8"></a>
+- <a id="s-513db9ab80"></a>`title`: CatalogSyncCheckpoint
+- <a id="s-64033b90ee"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cdc54045ed"></a>`authorization_view_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c6ec2def91"></a>`catalog_cursor` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-619001cf1f"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1" |  |
+| <a id="s-5a3c7515cb"></a>`source_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
 
 ## Governing policies
 
@@ -46,13 +63,50 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 848ee4660dc11d5f2567059d9ec3b7e3495c0933ffc6df512b5d4b2da0eae7ec -->
+<!-- exact-contract-value: 3702119200b432cb2ed133439a4a3b8cecc346d57b541d01c2d7595953a9ec47 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "23f1a9cd803ee925c19334eab9c8b6024bbbee97eb6be8c601b45924f2bf8d9e",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "authorization_view_identity": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Authorization View Identity",
+          "type": "string"
+        },
+        "catalog_cursor": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Catalog Cursor",
+          "type": "string"
+        },
+        "format": {
+          "const": "riverhog-catalog-sync/v1",
+          "default": "riverhog-catalog-sync/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "source_identity": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Identity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_identity",
+        "authorization_view_identity",
+        "catalog_cursor"
+      ],
+      "title": "CatalogSyncCheckpoint",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['riverhog-catalog-sync/v1'] = 'riverhog-catalog-sync/v1', source_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], authorization_view_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], catalog_cursor: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=4096, pattern=None, ascii_only=None)]) -> None\""
   },
   "distribution": "riverhog-protocol",

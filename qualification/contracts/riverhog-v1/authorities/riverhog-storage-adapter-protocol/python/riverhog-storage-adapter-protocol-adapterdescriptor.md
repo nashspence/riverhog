@@ -14,13 +14,33 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-65e1a436bb"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6e65e45851"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-b5b2c11f15"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-728a5464c2"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-ee265a69aa"></a>`name` | "AdapterDescriptor" |
-| <a id="s-9419e0d1de"></a>`unit` | "export" |
+- <a id="s-b5b2c11f15"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-728a5464c2"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-ee265a69aa"></a>`name`: `AdapterDescriptor`
+- <a id="s-9419e0d1de"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ea83e34bf9"></a>`kind`: `"class"`
+- <a id="s-5503e8069a"></a>`signature`: `"\"(*, protocol: Literal['riverhog-storage-adapter/v1'] = 'riverhog-storage-adapter/v1', implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], read_mode: Literal['immediate', 'restore_required'], minimum_nonfinal_segment_bytes: Annotated[int, Ge(ge=1)], maximum_segment_bytes: Annotated[int \| None, Ge(ge=1)] = None, maximum_segment_count: Annotated[int \| None, Ge(ge=1)] = None) -> None\""`
+
+#### Validated model schema
+
+<a id="s-8b430ee967"></a>
+- <a id="s-58b4601db4"></a>`title`: AdapterDescriptor
+- <a id="s-b14721e05d"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7d113a0a6f"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-0816c01412"></a>`implementation_version` | yes | type="string"; minLength=1; maxLength=120 |  |
+| <a id="s-2bf6e29577"></a>`maximum_segment_bytes` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| <a id="s-4de2d33675"></a>`maximum_segment_count` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| <a id="s-5b5c395f56"></a>`minimum_nonfinal_segment_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-c01ebffa91"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1" |  |
+| <a id="s-f27205a52f"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"] |  |
 
 ## Maintained corroboration
 
@@ -52,13 +72,81 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6ffc3a22c99a28aa31298739fc121b5c3b7534c306c68081d707ff7364ad2f58 -->
+<!-- exact-contract-value: 4a4e070d516182d2a736450ab1375729f4d71c6ce06df4311ea0d3a4072ab60b -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "9cee17550dd897297e60b7829813a6b432932a360b38b800c81292b1cbdda754",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "implementation_id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Implementation Id",
+          "type": "string"
+        },
+        "implementation_version": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Implementation Version",
+          "type": "string"
+        },
+        "maximum_segment_bytes": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maximum Segment Bytes"
+        },
+        "maximum_segment_count": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maximum Segment Count"
+        },
+        "minimum_nonfinal_segment_bytes": {
+          "minimum": 1,
+          "title": "Minimum Nonfinal Segment Bytes",
+          "type": "integer"
+        },
+        "protocol": {
+          "const": "riverhog-storage-adapter/v1",
+          "default": "riverhog-storage-adapter/v1",
+          "title": "Protocol",
+          "type": "string"
+        },
+        "read_mode": {
+          "enum": [
+            "immediate",
+            "restore_required"
+          ],
+          "title": "Read Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "implementation_id",
+        "implementation_version",
+        "read_mode",
+        "minimum_nonfinal_segment_bytes"
+      ],
+      "title": "AdapterDescriptor",
+      "type": "object"
+    },
     "signature": "\"(*, protocol: Literal['riverhog-storage-adapter/v1'] = 'riverhog-storage-adapter/v1', implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], read_mode: Literal['immediate', 'restore_required'], minimum_nonfinal_segment_bytes: Annotated[int, Ge(ge=1)], maximum_segment_bytes: Annotated[int | None, Ge(ge=1)] = None, maximum_segment_count: Annotated[int | None, Ge(ge=1)] = None) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",

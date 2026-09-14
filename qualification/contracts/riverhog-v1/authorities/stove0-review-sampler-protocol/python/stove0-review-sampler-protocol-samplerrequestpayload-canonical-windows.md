@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4bd1eb8252"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7b688ef084"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-593a3a7d31"></a>`distribution` | "stove0-review-sampler-protocol" |
-| <a id="s-5710779271"></a>`module` | "stove0_review_sampler_protocol" |
-| <a id="s-b94881234e"></a>`name` | "canonical_windows" |
-| <a id="s-83c908e812"></a>`owner` | "stove0_review_sampler_protocol.SamplerRequestPayload" |
-| <a id="s-3c781563f2"></a>`unit` | "member" |
+- <a id="s-593a3a7d31"></a>`distribution`: `stove0-review-sampler-protocol`
+- <a id="s-5710779271"></a>`module`: `stove0_review_sampler_protocol`
+- <a id="s-b94881234e"></a>`name`: `canonical_windows`
+- <a id="s-83c908e812"></a>`owner`: `stove0_review_sampler_protocol.SamplerRequestPayload`
+- <a id="s-3c781563f2"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3038eda3b2"></a>`kind`: `"classmethod"`
+- <a id="s-071f915c56"></a>`signature`: `"\"(cls, value: 'tuple[SamplerWindow, ...]') -> 'tuple[SamplerWindow, ...]'\""`
 
 ## Maintained corroboration
 

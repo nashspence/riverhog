@@ -14,13 +14,26 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5b5296e905"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b7f74145b4"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-d29ae1837d"></a>`distribution` | "riverhog-storage-adapter-s3-support" |
-| <a id="s-b229d8b182"></a>`module` | "riverhog_storage_adapter_s3_support" |
-| <a id="s-b18467816b"></a>`name` | "S3ClientConfig" |
-| <a id="s-5efaffd67c"></a>`unit` | "export" |
+- <a id="s-d29ae1837d"></a>`distribution`: `riverhog-storage-adapter-s3-support`
+- <a id="s-b229d8b182"></a>`module`: `riverhog_storage_adapter_s3_support`
+- <a id="s-b18467816b"></a>`name`: `S3ClientConfig`
+- <a id="s-5efaffd67c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-dc661352ae"></a>`kind`: `"class"`
+- <a id="s-59e13eff8d"></a>`signature`: `"\"(endpoint_url: 'str \| None', region: 'str', access_key_id: 'str', secret_access_key: 'str', session_token: 'str \| None' = None, force_path_style: 'bool' = False) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-f8397eb7df"></a>`endpoint_url` | `'str \| None'` | `required` |
+| <a id="s-bb74e60579"></a>`region` | `'str'` | `required` |
+| <a id="s-ff24381cee"></a>`access_key_id` | `'str'` | `required` |
+| <a id="s-a8fe1a1b59"></a>`secret_access_key` | `'str'` | `required` |
+| <a id="s-e554487609"></a>`session_token` | `'str \| None'` | `None` |
+| <a id="s-c8267c6281"></a>`force_path_style` | `'bool'` | `False` |
 
 ## Governing policies
 

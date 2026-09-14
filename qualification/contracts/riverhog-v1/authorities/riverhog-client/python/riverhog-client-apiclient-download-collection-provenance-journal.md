@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8b388893cb"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-45fe88032d"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c7fb125c36"></a>`distribution` | "riverhog-client" |
-| <a id="s-c553abb203"></a>`module` | "riverhog_client" |
-| <a id="s-24dba0e749"></a>`name` | "download_collection_provenance_journal" |
-| <a id="s-defdaa85c0"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-3d9ee906dd"></a>`unit` | "member" |
+- <a id="s-c7fb125c36"></a>`distribution`: `riverhog-client`
+- <a id="s-c553abb203"></a>`module`: `riverhog_client`
+- <a id="s-24dba0e749"></a>`name`: `download_collection_provenance_journal`
+- <a id="s-defdaa85c0"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-3d9ee906dd"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-0eb0e84911"></a>`kind`: `"method"`
+- <a id="s-928c7743a3"></a>`signature`: `"\"(self, collection_id: 'CollectionId', journal_id: 'ProvenanceJournalId', *, output: 'Path') -> 'tuple[int, str]'\""`
 
 ## Maintained corroboration
 

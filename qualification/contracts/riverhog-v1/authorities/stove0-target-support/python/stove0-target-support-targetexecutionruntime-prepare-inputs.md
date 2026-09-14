@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e0bbe0d3f0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-63707e7209"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-1a252bd00d"></a>`distribution` | "stove0-target-support" |
-| <a id="s-e65963782b"></a>`module` | "stove0_target_support" |
-| <a id="s-b8471c746d"></a>`name` | "prepare_inputs" |
-| <a id="s-6ac0dc1a1f"></a>`owner` | "stove0_target_support.TargetExecutionRuntime" |
-| <a id="s-7db56b5fa9"></a>`unit` | "member" |
+- <a id="s-1a252bd00d"></a>`distribution`: `stove0-target-support`
+- <a id="s-e65963782b"></a>`module`: `stove0_target_support`
+- <a id="s-b8471c746d"></a>`name`: `prepare_inputs`
+- <a id="s-6ac0dc1a1f"></a>`owner`: `stove0_target_support.TargetExecutionRuntime`
+- <a id="s-7db56b5fa9"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-d4d9d8f7f1"></a>`kind`: `"method"`
+- <a id="s-197d82578b"></a>`signature`: `"\"(self, inputs: 'Sequence[InputArtifact] \| None' = None, **kwargs: 'Any') -> 'ClaimedRetrieval'\""`
 
 ## Maintained corroboration
 

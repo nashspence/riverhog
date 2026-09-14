@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0d9e1e074e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5bd87004f7"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-55f4718e18"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-e1d2f36033"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-3af489c62a"></a>`name` | "from_page" |
-| <a id="s-a64b16f680"></a>`owner` | "stove0_operator_contracts.WorkPage" |
-| <a id="s-f145d725c0"></a>`unit` | "member" |
+- <a id="s-55f4718e18"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-e1d2f36033"></a>`module`: `stove0_operator_contracts`
+- <a id="s-3af489c62a"></a>`name`: `from_page`
+- <a id="s-a64b16f680"></a>`owner`: `stove0_operator_contracts.WorkPage`
+- <a id="s-f145d725c0"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-81b6767adf"></a>`kind`: `"classmethod"`
+- <a id="s-a9eaa64e61"></a>`signature`: `"\"(cls, page: 'Mapping[str, Any]') -> 'WorkPage'\""`
 
 ## Maintained corroboration
 

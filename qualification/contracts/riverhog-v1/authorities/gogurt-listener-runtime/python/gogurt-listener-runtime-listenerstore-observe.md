@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bd5a7ef2b5"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3e4db51404"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e6ce9a7a9a"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-121c9ca41b"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-1b6a19b935"></a>`name` | "observe" |
-| <a id="s-fb6eeeac92"></a>`owner` | "gogurt_listener_runtime.ListenerStore" |
-| <a id="s-801a673624"></a>`unit` | "member" |
+- <a id="s-e6ce9a7a9a"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-121c9ca41b"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-1b6a19b935"></a>`name`: `observe`
+- <a id="s-fb6eeeac92"></a>`owner`: `gogurt_listener_runtime.ListenerStore`
+- <a id="s-801a673624"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-41018ec30e"></a>`kind`: `"method"`
+- <a id="s-e9e72eaf61"></a>`signature`: `"\"(self, mount_points: 'Sequence[Path]', planner: 'Callable[[Path], Mapping[str, object]]', *, now: 'float') -> 'list[str]'\""`
 
 ## Maintained corroboration
 

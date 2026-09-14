@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-39a4abaefa"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3cce4ce708"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7f5b04b724"></a>`distribution` | "stove0-server" |
-| <a id="s-b298736144"></a>`module` | "stove0_core" |
-| <a id="s-35af8977b3"></a>`name` | "iter_evaluations" |
-| <a id="s-cadcfcd758"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-e5a6e7ab8b"></a>`unit` | "member" |
+- <a id="s-7f5b04b724"></a>`distribution`: `stove0-server`
+- <a id="s-b298736144"></a>`module`: `stove0_core`
+- <a id="s-35af8977b3"></a>`name`: `iter_evaluations`
+- <a id="s-cadcfcd758"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-e5a6e7ab8b"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-2b8ee51fa8"></a>`kind`: `"method"`
+- <a id="s-93266257dc"></a>`signature`: `"\"(self, *, phase: 'str \| None' = None, query: 'str \| None' = None, sort: 'EvaluationSort' = 'updated_at', order: 'SortOrder' = 'desc') -> 'Iterator[EvaluationRecord]'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-228339cb3b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-af46df79d7"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d109ccb240"></a>`distribution` | "riverhog-ftp-adapter" |
-| <a id="s-3aa50f4f1a"></a>`module` | "riverhog_ftp_adapter" |
-| <a id="s-4817b38c7b"></a>`name` | "complete_policy" |
-| <a id="s-4ddc73dbba"></a>`owner` | "riverhog_ftp_adapter.SourceConfig" |
-| <a id="s-ac8119d86d"></a>`unit` | "member" |
+- <a id="s-d109ccb240"></a>`distribution`: `riverhog-ftp-adapter`
+- <a id="s-3aa50f4f1a"></a>`module`: `riverhog_ftp_adapter`
+- <a id="s-4817b38c7b"></a>`name`: `complete_policy`
+- <a id="s-4ddc73dbba"></a>`owner`: `riverhog_ftp_adapter.SourceConfig`
+- <a id="s-ac8119d86d"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-caa027f442"></a>`kind`: `"method"`
+- <a id="s-3a7d5332c3"></a>`signature`: `"\"(self) -> 'Self'\""`
 
 ## Maintained corroboration
 

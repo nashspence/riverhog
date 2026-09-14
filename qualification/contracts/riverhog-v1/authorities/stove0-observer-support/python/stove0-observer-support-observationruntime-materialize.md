@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d0ecc7cec8"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-96487ea341"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ae8d3a10af"></a>`distribution` | "stove0-observer-support" |
-| <a id="s-e5a0ddb891"></a>`module` | "stove0_observer_support" |
-| <a id="s-d96892cc08"></a>`name` | "materialize" |
-| <a id="s-dc918c9ff1"></a>`owner` | "stove0_observer_support.ObservationRuntime" |
-| <a id="s-f6c1469258"></a>`unit` | "member" |
+- <a id="s-ae8d3a10af"></a>`distribution`: `stove0-observer-support`
+- <a id="s-e5a0ddb891"></a>`module`: `stove0_observer_support`
+- <a id="s-d96892cc08"></a>`name`: `materialize`
+- <a id="s-dc918c9ff1"></a>`owner`: `stove0_observer_support.ObservationRuntime`
+- <a id="s-f6c1469258"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-32a12cd6fc"></a>`kind`: `"method"`
+- <a id="s-c24f1ead84"></a>`signature`: `"\"(self, subject: 'ArtifactSubject', *, workspace: 'TransformWorkspace', relative_path: 'str \| None' = None, **prepare_kwargs: 'Any') -> 'Path'\""`
 
 ## Maintained corroboration
 

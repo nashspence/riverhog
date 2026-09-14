@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b5ac9e8f90"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d657acbbe5"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-2ff826d7d2"></a>`distribution` | "riverhog-client" |
-| <a id="s-0a9af9b426"></a>`module` | "riverhog_client" |
-| <a id="s-9dd6e6eac1"></a>`name` | "stage_provenance_journals" |
-| <a id="s-f1e1c92662"></a>`owner` | "riverhog_client.IncrementalCollectionProducer" |
-| <a id="s-89f1f2b21e"></a>`unit` | "member" |
+- <a id="s-2ff826d7d2"></a>`distribution`: `riverhog-client`
+- <a id="s-0a9af9b426"></a>`module`: `riverhog_client`
+- <a id="s-9dd6e6eac1"></a>`name`: `stage_provenance_journals`
+- <a id="s-f1e1c92662"></a>`owner`: `riverhog_client.IncrementalCollectionProducer`
+- <a id="s-89f1f2b21e"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-486e6be0d7"></a>`kind`: `"method"`
+- <a id="s-749989b1d6"></a>`signature`: `"\"(self, journals: 'Iterable[tuple[str, bytes]]') -> 'None'\""`
 
 ## Maintained corroboration
 

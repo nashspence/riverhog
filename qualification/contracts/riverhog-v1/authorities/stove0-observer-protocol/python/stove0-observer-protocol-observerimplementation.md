@@ -14,13 +14,31 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0ffe2132b9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e988bee1e1"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-a96b49937e"></a>`distribution` | "stove0-observer-protocol" |
-| <a id="s-bd8cd92316"></a>`module` | "stove0_observer_protocol" |
-| <a id="s-1cca12b586"></a>`name` | "ObserverImplementation" |
-| <a id="s-05b7fff3b6"></a>`unit` | "export" |
+- <a id="s-a96b49937e"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-bd8cd92316"></a>`module`: `stove0_observer_protocol`
+- <a id="s-1cca12b586"></a>`name`: `ObserverImplementation`
+- <a id="s-05b7fff3b6"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-4607e58c1a"></a>`kind`: `"class"`
+- <a id="s-0c124e3822"></a>`signature`: `"\"(*, protocol: Literal['stove0-content-observer/v1'] = 'stove0-content-observer/v1', id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], source_revision: Annotated[str, MinLen(min_length=1), MaxLen(max_length=200)], descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-907553dbff"></a>
+- <a id="s-258d63d0b7"></a>`title`: ObserverImplementation
+- <a id="s-d1aad8e833"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-fd5ab589e1"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ca1eb8a66d"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-90297de3f0"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1" |  |
+| <a id="s-099d750c4b"></a>`source_revision` | yes | type="string"; minLength=1; maxLength=200 |  |
+| <a id="s-d172b29d75"></a>`version` | yes | type="string"; minLength=1; maxLength=120 |  |
 
 ## Governing policies
 
@@ -46,13 +64,53 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 034e2f62cf562d3ff47895c21fead8cb13a8f61576542b9dde11a511b56c29e3 -->
+<!-- exact-contract-value: c78181a2bb66caacf6065cf711cb0350dd9bf56bce5d933d7b3b21ca31141473 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "6ffdaa644c4d7b3d7f3e17d66ebec04a5997be6e6e59c8839ae0685b1250ba75",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "descriptor_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Descriptor Sha256",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "protocol": {
+          "const": "stove0-content-observer/v1",
+          "default": "stove0-content-observer/v1",
+          "title": "Protocol",
+          "type": "string"
+        },
+        "source_revision": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Source Revision",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "source_revision",
+        "descriptor_sha256"
+      ],
+      "title": "ObserverImplementation",
+      "type": "object"
+    },
     "signature": "\"(*, protocol: Literal['stove0-content-observer/v1'] = 'stove0-content-observer/v1', id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], source_revision: Annotated[str, MinLen(min_length=1), MaxLen(max_length=200)], descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-observer-protocol",

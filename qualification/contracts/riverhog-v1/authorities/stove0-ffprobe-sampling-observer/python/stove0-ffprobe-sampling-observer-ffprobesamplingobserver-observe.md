@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6e2581f441"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7bb03a9b3f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7fd330480c"></a>`distribution` | "stove0-ffprobe-sampling-observer" |
-| <a id="s-4a959affe9"></a>`module` | "stove0_ffprobe_sampling_observer" |
-| <a id="s-9df625ec46"></a>`name` | "observe" |
-| <a id="s-7ca6d250d8"></a>`owner` | "stove0_ffprobe_sampling_observer.FfprobeSamplingObserver" |
-| <a id="s-cdcc1ff240"></a>`unit` | "member" |
+- <a id="s-7fd330480c"></a>`distribution`: `stove0-ffprobe-sampling-observer`
+- <a id="s-4a959affe9"></a>`module`: `stove0_ffprobe_sampling_observer`
+- <a id="s-9df625ec46"></a>`name`: `observe`
+- <a id="s-7ca6d250d8"></a>`owner`: `stove0_ffprobe_sampling_observer.FfprobeSamplingObserver`
+- <a id="s-cdcc1ff240"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ce7cc26ee1"></a>`kind`: `"method"`
+- <a id="s-454dfb6c37"></a>`signature`: `"\"(self, request: 'ObservationRequest', runtime: 'ObservationRuntime') -> 'ObservationResult'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-062f7ad259"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-41a1e5b31a"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-6c14fd0f43"></a>`distribution` | "gogurt-core" |
-| <a id="s-5b1d17b159"></a>`module` | "gogurt_core" |
-| <a id="s-3b24993859"></a>`name` | "GogurtRouteMarker" |
-| <a id="s-f33be52755"></a>`unit` | "export" |
+- <a id="s-6c14fd0f43"></a>`distribution`: `gogurt-core`
+- <a id="s-5b1d17b159"></a>`module`: `gogurt_core`
+- <a id="s-3b24993859"></a>`name`: `GogurtRouteMarker`
+- <a id="s-f33be52755"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-23d55dcc30"></a>`kind`: `"class"`
+- <a id="s-96d5cfded3"></a>`signature`: `"\"(route: 'str', format: 'str' = 'gogurt-route-marker/v1') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-e599b40571"></a>`route` | `'str'` | `required` |
+| <a id="s-d5d44ff7fd"></a>`format` | `'str'` | `'gogurt-route-marker/v1'` |
 
 ## Maintained corroboration
 

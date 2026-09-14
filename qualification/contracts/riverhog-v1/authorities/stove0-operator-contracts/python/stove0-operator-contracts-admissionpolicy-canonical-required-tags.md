@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0adce5b997"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d9e02d5507"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-07e6895ea1"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-71d05c80ca"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-02c4f1fef3"></a>`name` | "canonical_required_tags" |
-| <a id="s-9e87e17573"></a>`owner` | "stove0_operator_contracts.AdmissionPolicy" |
-| <a id="s-f7704b576d"></a>`unit` | "member" |
+- <a id="s-07e6895ea1"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-71d05c80ca"></a>`module`: `stove0_operator_contracts`
+- <a id="s-02c4f1fef3"></a>`name`: `canonical_required_tags`
+- <a id="s-9e87e17573"></a>`owner`: `stove0_operator_contracts.AdmissionPolicy`
+- <a id="s-f7704b576d"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-8002c43775"></a>`kind`: `"classmethod"`
+- <a id="s-9031f18e7f"></a>`signature`: `"\"(cls, value: 'tuple[CollectionTag, ...]') -> 'tuple[CollectionTag, ...]'\""`
 
 ## Maintained corroboration
 

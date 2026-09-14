@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1c40639669"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f7cd6b1b41"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-231dae19bf"></a>`distribution` | "riverhog-storage-adapter-support" |
-| <a id="s-588f37371b"></a>`module` | "riverhog_storage_adapter_support" |
-| <a id="s-d89648ce7f"></a>`name` | "handle_framed" |
-| <a id="s-4a6e2331c3"></a>`owner` | "riverhog_storage_adapter_support.StorageAdapterHttpBinding" |
-| <a id="s-226359bd05"></a>`unit` | "member" |
+- <a id="s-231dae19bf"></a>`distribution`: `riverhog-storage-adapter-support`
+- <a id="s-588f37371b"></a>`module`: `riverhog_storage_adapter_support`
+- <a id="s-d89648ce7f"></a>`name`: `handle_framed`
+- <a id="s-4a6e2331c3"></a>`owner`: `riverhog_storage_adapter_support.StorageAdapterHttpBinding`
+- <a id="s-226359bd05"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-eb1763545a"></a>`kind`: `"method"`
+- <a id="s-5dfde32872"></a>`signature`: `"\"(self, method: 'str', path: 'str', chunks: 'Iterable[bytes]', *, content_length: 'int \| None') -> 'StorageAdapterHttpResponse'\""`
 
 ## Maintained corroboration
 

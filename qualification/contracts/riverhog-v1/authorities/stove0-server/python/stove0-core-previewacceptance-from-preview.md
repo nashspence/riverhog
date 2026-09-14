@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9af73c2e93"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9ad2a8e677"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-437f3595ef"></a>`distribution` | "stove0-server" |
-| <a id="s-055f2423a7"></a>`module` | "stove0_core" |
-| <a id="s-9e29d4492f"></a>`name` | "from_preview" |
-| <a id="s-50c4b708e2"></a>`owner` | "stove0_core.PreviewAcceptance" |
-| <a id="s-e44490b2c9"></a>`unit` | "member" |
+- <a id="s-437f3595ef"></a>`distribution`: `stove0-server`
+- <a id="s-055f2423a7"></a>`module`: `stove0_core`
+- <a id="s-9e29d4492f"></a>`name`: `from_preview`
+- <a id="s-50c4b708e2"></a>`owner`: `stove0_core.PreviewAcceptance`
+- <a id="s-e44490b2c9"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-db0334709d"></a>`kind`: `"classmethod"`
+- <a id="s-7eb10460db"></a>`signature`: `"\"(cls, preview: 'WorkflowPreview') -> 'PreviewAcceptance'\""`
 
 ## Maintained corroboration
 

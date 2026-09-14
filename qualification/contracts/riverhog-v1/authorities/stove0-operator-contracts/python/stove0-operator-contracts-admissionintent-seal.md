@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-48086caac5"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-55c5f8ce59"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-72d5ead971"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-00ea73714e"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-f4a53bc88f"></a>`name` | "seal" |
-| <a id="s-803678106a"></a>`owner` | "stove0_operator_contracts.AdmissionIntent" |
-| <a id="s-00042b6eeb"></a>`unit` | "member" |
+- <a id="s-72d5ead971"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-00ea73714e"></a>`module`: `stove0_operator_contracts`
+- <a id="s-f4a53bc88f"></a>`name`: `seal`
+- <a id="s-803678106a"></a>`owner`: `stove0_operator_contracts.AdmissionIntent`
+- <a id="s-00042b6eeb"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-edb2ede046"></a>`kind`: `"classmethod"`
+- <a id="s-089656d4a3"></a>`signature`: `"\"(cls, *, policy: 'AdmissionPolicy', collection: 'CatalogSyncDescriptor') -> 'AdmissionIntent'\""`
 
 ## Maintained corroboration
 

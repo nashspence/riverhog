@@ -14,13 +14,30 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4e6310bc6a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b819a9b925"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-6206c2ac9e"></a>`distribution` | "stove0-recipe-config" |
-| <a id="s-894408085a"></a>`module` | "stove0_recipe_config" |
-| <a id="s-710a1efd07"></a>`name` | "ArtifactAssociation" |
-| <a id="s-9e54fc0abb"></a>`unit` | "export" |
+- <a id="s-6206c2ac9e"></a>`distribution`: `stove0-recipe-config`
+- <a id="s-894408085a"></a>`module`: `stove0_recipe_config`
+- <a id="s-710a1efd07"></a>`name`: `ArtifactAssociation`
+- <a id="s-9e54fc0abb"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-a4bb638f41"></a>`kind`: `"class"`
+- <a id="s-6ee96b4c1b"></a>`signature`: `"\"(*, primary_role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], associated_roles: Annotated[tuple[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...], MinLen(min_length=1)], path_identity: Literal['same-parent-stem'] = 'same-parent-stem') -> None\""`
+
+#### Validated model schema
+
+<a id="s-2230a51faf"></a>
+- <a id="s-3917449ac4"></a>`title`: ArtifactAssociation
+- <a id="s-4083268266"></a>`description`: Associate classified artifacts without assigning device meaning to Stove0.
+- <a id="s-aabc0229d5"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c6bb642d0c"></a>`associated_roles` | yes | type="array"; minItems=1; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| <a id="s-b60af1bdda"></a>`path_identity` | no | type="string"; const="same-parent-stem" |  |
+| <a id="s-d1e139800a"></a>`primary_role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ## Maintained corroboration
 
@@ -52,13 +69,44 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 354f73d431424cdd31f99f67404350b02540158718ea5acf9146d5aba8800644 -->
+<!-- exact-contract-value: 1fa8d033ba591515d56d43ec17ca939f48a036bca683aa00028024a548d3fb4b -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "00a5b3ff7e9d421eedaa499625122b72ab475c426ae33f3193ca4bb26500ed7d",
+    "schema": {
+      "additionalProperties": false,
+      "description": "Associate classified artifacts without assigning device meaning to Stove0.",
+      "properties": {
+        "associated_roles": {
+          "items": {
+            "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Associated Roles",
+          "type": "array"
+        },
+        "path_identity": {
+          "const": "same-parent-stem",
+          "default": "same-parent-stem",
+          "title": "Path Identity",
+          "type": "string"
+        },
+        "primary_role": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Primary Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "primary_role",
+        "associated_roles"
+      ],
+      "title": "ArtifactAssociation",
+      "type": "object"
+    },
     "signature": "\"(*, primary_role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], associated_roles: Annotated[tuple[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...], MinLen(min_length=1)], path_identity: Literal['same-parent-stem'] = 'same-parent-stem') -> None\""
   },
   "distribution": "stove0-recipe-config",

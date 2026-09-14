@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c6590801c0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b434a1e0dc"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6e0a208722"></a>`distribution` | "stove0-server" |
-| <a id="s-0cadc1b5e2"></a>`module` | "stove0_core" |
-| <a id="s-40993a0b40"></a>`name` | "preflight" |
-| <a id="s-abfc44053a"></a>`owner` | "stove0_core.TargetPort" |
-| <a id="s-ce627aa294"></a>`unit` | "member" |
+- <a id="s-6e0a208722"></a>`distribution`: `stove0-server`
+- <a id="s-0cadc1b5e2"></a>`module`: `stove0_core`
+- <a id="s-40993a0b40"></a>`name`: `preflight`
+- <a id="s-abfc44053a"></a>`owner`: `stove0_core.TargetPort`
+- <a id="s-ce627aa294"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3888ec30ee"></a>`kind`: `"method"`
+- <a id="s-fe68db9651"></a>`signature`: `"\"(self, registration_id: 'str', request: 'TargetPreflightRequest') -> 'TargetPreflightResponse'\""`
 
 ## Maintained corroboration
 

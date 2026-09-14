@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-67d8290270"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-83488c7314"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-409aa45f28"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-ae7fd162ea"></a>`module` | "riverhog_protocol" |
-| <a id="s-a6c8ba6b13"></a>`name` | "ProcessingClaimRenewDocument" |
-| <a id="s-e58af8205b"></a>`unit` | "export" |
+- <a id="s-409aa45f28"></a>`distribution`: `riverhog-protocol`
+- <a id="s-ae7fd162ea"></a>`module`: `riverhog_protocol`
+- <a id="s-a6c8ba6b13"></a>`name`: `ProcessingClaimRenewDocument`
+- <a id="s-e58af8205b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-8620053107"></a>`kind`: `"class"`
+- <a id="s-c69303d0ee"></a>`signature`: `"'(*, fence: Annotated[int, Ge(ge=1)], lease_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 1800) -> None'"`
+
+#### Validated model schema
+
+<a id="s-0e65013f90"></a>
+- <a id="s-0e82ed8776"></a>`title`: ProcessingClaimRenewDocument
+- <a id="s-0095a52f9f"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c6ad8973f0"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-c75d18c697"></a>`lease_seconds` | no | type="integer"; minimum=30; maximum=86400 |  |
 
 ## Governing policies
 
@@ -46,13 +61,34 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f299dd634036fe627de756321c8a45f6f6c26c09ca4c6f7e085c9f251a65ecd5 -->
+<!-- exact-contract-value: 177bc1190f39d0af46ba59e71e8bee6b2706bd9b6a863b893b2ebf0a899c9f33 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "653180bef69a08ae3179fd94db145a2e362fe71ddfe0e1bbfd4e65e8ced1f146",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "fence": {
+          "minimum": 1,
+          "title": "Fence",
+          "type": "integer"
+        },
+        "lease_seconds": {
+          "default": 1800,
+          "maximum": 86400,
+          "minimum": 30,
+          "title": "Lease Seconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "fence"
+      ],
+      "title": "ProcessingClaimRenewDocument",
+      "type": "object"
+    },
     "signature": "'(*, fence: Annotated[int, Ge(ge=1)], lease_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 1800) -> None'"
   },
   "distribution": "riverhog-protocol",

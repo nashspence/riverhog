@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-159448df0c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4e2cf3d6ea"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-76bffcb772"></a>`distribution` | "stove0-server" |
-| <a id="s-affdfd0d22"></a>`module` | "stove0_api" |
-| <a id="s-6b8bb645b7"></a>`name` | "create_app" |
-| <a id="s-4b7a072e69"></a>`unit` | "export" |
+- <a id="s-76bffcb772"></a>`distribution`: `stove0-server`
+- <a id="s-affdfd0d22"></a>`module`: `stove0_api`
+- <a id="s-6b8bb645b7"></a>`name`: `create_app`
+- <a id="s-4b7a072e69"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-2c06a26736"></a>`kind`: `"function"`
+- <a id="s-47716a775d"></a>`signature`: `"\"(composition: 'Stove0Composition') -> 'FastAPI'\""`
 
 ## Governing policies
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5d0b69e53a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1327a5c873"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-52f0440920"></a>`distribution` | "state-schema" |
-| <a id="s-0c276e3b52"></a>`module` | "state_schema" |
-| <a id="s-84a9ffed59"></a>`name` | "begin_twophase" |
-| <a id="s-c5efb5f8db"></a>`owner` | "state_schema.StateConnection" |
-| <a id="s-1fc1babd57"></a>`unit` | "member" |
+- <a id="s-52f0440920"></a>`distribution`: `state-schema`
+- <a id="s-0c276e3b52"></a>`module`: `state_schema`
+- <a id="s-84a9ffed59"></a>`name`: `begin_twophase`
+- <a id="s-c5efb5f8db"></a>`owner`: `state_schema.StateConnection`
+- <a id="s-1fc1babd57"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-b4812c22c8"></a>`kind`: `"method"`
+- <a id="s-aa07e2eb47"></a>`signature`: `"\"(self, xid: 'Optional[Any]' = None) -> 'TwoPhaseTransaction'\""`
 
 ## Maintained corroboration
 

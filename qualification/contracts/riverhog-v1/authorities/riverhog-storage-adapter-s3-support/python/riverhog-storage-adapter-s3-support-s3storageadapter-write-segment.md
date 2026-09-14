@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e00c6f1ad8"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c755e9ac0c"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-875efe0bbf"></a>`distribution` | "riverhog-storage-adapter-s3-support" |
-| <a id="s-dbaeca94b8"></a>`module` | "riverhog_storage_adapter_s3_support" |
-| <a id="s-57479e67f0"></a>`name` | "write_segment" |
-| <a id="s-d889c00d8b"></a>`owner` | "riverhog_storage_adapter_s3_support.S3StorageAdapter" |
-| <a id="s-bbdff3acb2"></a>`unit` | "member" |
+- <a id="s-875efe0bbf"></a>`distribution`: `riverhog-storage-adapter-s3-support`
+- <a id="s-dbaeca94b8"></a>`module`: `riverhog_storage_adapter_s3_support`
+- <a id="s-57479e67f0"></a>`name`: `write_segment`
+- <a id="s-d889c00d8b"></a>`owner`: `riverhog_storage_adapter_s3_support.S3StorageAdapter`
+- <a id="s-bbdff3acb2"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-0c50d5a49a"></a>`kind`: `"method"`
+- <a id="s-d3b8aa89c0"></a>`signature`: `"\"(self, *, session: 'WriteSession', number: 'int', stored_bytes: 'int', content: 'BinaryContent') -> 'WriteSegmentReceipt'\""`
 
 ## Maintained corroboration
 

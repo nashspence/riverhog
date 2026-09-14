@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9510402234"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7cd0ec0dec"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-0b95810d8e"></a>`distribution` | "stove0-server" |
-| <a id="s-ebf26afdd5"></a>`module` | "stove0_core" |
-| <a id="s-9bc343a850"></a>`name` | "prune_operational_state" |
-| <a id="s-201abc3c28"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-166967cacf"></a>`unit` | "member" |
+- <a id="s-0b95810d8e"></a>`distribution`: `stove0-server`
+- <a id="s-ebf26afdd5"></a>`module`: `stove0_core`
+- <a id="s-9bc343a850"></a>`name`: `prune_operational_state`
+- <a id="s-201abc3c28"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-166967cacf"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-59e51d40b6"></a>`kind`: `"method"`
+- <a id="s-b7ff1806b5"></a>`signature`: `"\"(self, *, cutoff: 'str') -> 'dict[str, int]'\""`
 
 ## Maintained corroboration
 

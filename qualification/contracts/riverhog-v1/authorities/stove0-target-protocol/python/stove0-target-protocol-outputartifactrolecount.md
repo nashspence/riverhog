@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-015e7541dc"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4785cc3ae2"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-6e962bab8e"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-bde57fdf15"></a>`module` | "stove0_target_protocol" |
-| <a id="s-fbb8f47fe2"></a>`name` | "OutputArtifactRoleCount" |
-| <a id="s-faf0b1c5a4"></a>`unit` | "export" |
+- <a id="s-6e962bab8e"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-bde57fdf15"></a>`module`: `stove0_target_protocol`
+- <a id="s-fbb8f47fe2"></a>`name`: `OutputArtifactRoleCount`
+- <a id="s-faf0b1c5a4"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-37e0e22e28"></a>`kind`: `"class"`
+- <a id="s-7679a6149f"></a>`signature`: `"\"(*, role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], count: Annotated[int, Ge(ge=1)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-482bab16bd"></a>
+- <a id="s-829df4a9f8"></a>`title`: OutputArtifactRoleCount
+- <a id="s-d616c9f1ff"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-31de334ea0"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-31b510ca97"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ## Governing policies
 
@@ -46,13 +61,33 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f299956d0ae1707933fd33d087687baec74cc539ac9423358354f49b645c36c3 -->
+<!-- exact-contract-value: fc3114f136a06fbc649ee9e7a68cc53557e5351bcf6db312f91cc3f1dc2317fe -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "932e988623cd6631a9f8d0b64a0098cab1ac4a1f70d8609fa8b89676f3c82caf",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "minimum": 1,
+          "title": "Count",
+          "type": "integer"
+        },
+        "role": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "count"
+      ],
+      "title": "OutputArtifactRoleCount",
+      "type": "object"
+    },
     "signature": "\"(*, role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], count: Annotated[int, Ge(ge=1)]) -> None\""
   },
   "distribution": "stove0-target-protocol",

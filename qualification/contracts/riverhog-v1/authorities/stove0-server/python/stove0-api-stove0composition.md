@@ -14,13 +14,32 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9b7594b8bd"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-773fc5618d"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-92764ff489"></a>`distribution` | "stove0-server" |
-| <a id="s-fb4a15cf55"></a>`module` | "stove0_api" |
-| <a id="s-3658a19a5b"></a>`name` | "Stove0Composition" |
-| <a id="s-3a6c049120"></a>`unit` | "export" |
+- <a id="s-92764ff489"></a>`distribution`: `stove0-server`
+- <a id="s-fb4a15cf55"></a>`module`: `stove0_api`
+- <a id="s-3658a19a5b"></a>`name`: `Stove0Composition`
+- <a id="s-3a6c049120"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e430c631dd"></a>`kind`: `"class"`
+- <a id="s-a8044467c2"></a>`signature`: `"\"(config: 'Stove0RuntimeConfig', riverhog_api: 'ApiClient', state: 'SqlAlchemyStateStore', recipes: 'RecipeCatalog', work: 'Stove0WorkService', coordinator: 'Stove0Coordinator', preview: 'WorkflowPreviewService', evaluations: 'EvaluationService', scheduler: 'Stove0Scheduler', admission: 'ClassificationAdmissionService \| None' = None, target_callbacks: 'TargetCallbackAuthority \| None' = None, browse_tokens: 'BrowseTokenCodec \| None' = None) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-30c47f8646"></a>`config` | `'Stove0RuntimeConfig'` | `required` |
+| <a id="s-8cdbab91cd"></a>`riverhog_api` | `'ApiClient'` | `required` |
+| <a id="s-e5d05d951f"></a>`state` | `'SqlAlchemyStateStore'` | `required` |
+| <a id="s-d10cc843e4"></a>`recipes` | `'RecipeCatalog'` | `required` |
+| <a id="s-f0e25e86c7"></a>`work` | `'Stove0WorkService'` | `required` |
+| <a id="s-6ffe7dd62d"></a>`coordinator` | `'Stove0Coordinator'` | `required` |
+| <a id="s-de3388a695"></a>`preview` | `'WorkflowPreviewService'` | `required` |
+| <a id="s-a127b2bfba"></a>`evaluations` | `'EvaluationService'` | `required` |
+| <a id="s-5ff05a3caf"></a>`scheduler` | `'Stove0Scheduler'` | `required` |
+| <a id="s-0848a3118c"></a>`admission` | `'ClassificationAdmissionService \| None'` | `None` |
+| <a id="s-293cc42d59"></a>`target_callbacks` | `'TargetCallbackAuthority \| None'` | `None` |
+| <a id="s-dfc6b6734b"></a>`browse_tokens` | `'BrowseTokenCodec \| None'` | `None` |
 
 ## Maintained corroboration
 

@@ -14,13 +14,35 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-10a2a32df8"></a>
-| Field | Shape |
+- <a id="s-0246f8a2d7"></a>`distribution`: `stove0-protocol`
+- <a id="s-9da9fbb81a"></a>`module`: `stove0_protocol`
+- <a id="s-a7ea5e1aa7"></a>`name`: `CollectionRootRef`
+- <a id="s-ca40bdeee3"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-cffc0acbf1"></a>`kind`: `"class"`
+- <a id="s-524d43c3bc"></a>`signature`: `"\"(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], content_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-9e39aea4c3"></a>
+- <a id="s-c325881515"></a>`title`: CollectionRootRef
+- <a id="s-6a9c1d36d4"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-092c9b7dae"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-5044a4d3bc"></a>`collection_id` | yes | #/$defs/CollectionId |  |
+| <a id="s-bb3ed71587"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-599445df4e"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-0246f8a2d7"></a>`distribution` | "stove0-protocol" |
-| <a id="s-9da9fbb81a"></a>`module` | "stove0_protocol" |
-| <a id="s-a7ea5e1aa7"></a>`name` | "CollectionRootRef" |
-| <a id="s-ca40bdeee3"></a>`unit` | "export" |
+| <a id="s-a0dd024c6d"></a>`CollectionId` | type="integer"; minimum=1 |
 
 ## Maintained corroboration
 
@@ -53,13 +75,43 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 54e825fbe0ff992b26584609dfd4c33631ff7430a68cf993d5eb1293608647e8 -->
+<!-- exact-contract-value: 85dbf3e0443132db66e2a0ea4bbbdee3d7c83b1c958437fdbee79e6094578a9b -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "0129b21c7d9e83eb25d287865778230c2388dd72c6a5fa8243a72b6c74a72649",
+    "schema": {
+      "$defs": {
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "archive_root_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Archive Root Sha256",
+          "type": "string"
+        },
+        "collection_id": {
+          "$ref": "#/$defs/CollectionId"
+        },
+        "content_identity": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Identity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "collection_id",
+        "archive_root_sha256",
+        "content_identity"
+      ],
+      "title": "CollectionRootRef",
+      "type": "object"
+    },
     "signature": "\"(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], content_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-protocol",

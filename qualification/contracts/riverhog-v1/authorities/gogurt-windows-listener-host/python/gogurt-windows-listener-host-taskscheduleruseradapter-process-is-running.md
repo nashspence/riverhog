@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2f889de298"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-122b14ea35"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ab60efc531"></a>`distribution` | "gogurt-windows-listener-host" |
-| <a id="s-ca599f7c7b"></a>`module` | "gogurt_windows_listener_host" |
-| <a id="s-1f1706b3a8"></a>`name` | "process_is_running" |
-| <a id="s-b00ef5d50f"></a>`owner` | "gogurt_windows_listener_host.TaskSchedulerUserAdapter" |
-| <a id="s-ca86c64210"></a>`unit` | "member" |
+- <a id="s-ab60efc531"></a>`distribution`: `gogurt-windows-listener-host`
+- <a id="s-ca599f7c7b"></a>`module`: `gogurt_windows_listener_host`
+- <a id="s-1f1706b3a8"></a>`name`: `process_is_running`
+- <a id="s-b00ef5d50f"></a>`owner`: `gogurt_windows_listener_host.TaskSchedulerUserAdapter`
+- <a id="s-ca86c64210"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-d05879453d"></a>`kind`: `"staticmethod"`
+- <a id="s-e9f8e9158e"></a>`signature`: `"\"(pid: 'int') -> 'bool'\""`
 
 ## Maintained corroboration
 

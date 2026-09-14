@@ -8,13 +8,13 @@ This page is proof routing, not contract navigation. Every dossier names its loc
 
 | Qualification route | Count |
 |---|---:|
-| <a id="q-d1121e35fa"></a>`make build` | 2859 |
+| <a id="q-d1121e35fa"></a>`make build` | 2860 |
 | <a id="q-413b0b241b"></a>`make compose-smoke` | 805 |
 | <a id="q-8c74349e71"></a>`make contract-freeze` | 12 |
-| <a id="q-27f281b51e"></a>`make database-qualification` | 8 |
-| <a id="q-0ba2578a3e"></a>`make dist-smoke` | 3026 |
+| <a id="q-27f281b51e"></a>`make database-qualification` | 137 |
+| <a id="q-0ba2578a3e"></a>`make dist-smoke` | 3027 |
 | <a id="q-dd95e4459f"></a>`make operation-qualification` | 725 |
-| <a id="q-8d8d22d6a6"></a>`make release-check` | 125 |
+| <a id="q-8d8d22d6a6"></a>`make release-check` | 255 |
 | <a id="q-ce47068f50"></a>`make unit` | 259 |
 
 ## Source authorities
@@ -300,7 +300,7 @@ Source authorities: **484**
 | <a id="src-28686050a7"></a>`configuration:stove0-recipe-config:configuration:recipe-catalog` | 1 | `reference/stove0/packages/recipe-config/src/stove0_recipe_config/models.py::RecipeCatalog` |
 | <a id="src-cca9387ce6"></a>`configuration:stove0-review-target-support:configuration:review-target-config` | 1 | `reference/stove0/targets/review/support/src/stove0_review_target_support/app.py::ReviewTargetConfig` |
 | <a id="src-5ac94d0a12"></a>`extent:extent-contract` | 12 | `scripts/extent_contract.py::extent_projection` |
-| <a id="src-47381a6c4f"></a>`generator:contract-projection` | 3851 | `scripts/contract_freeze.py::contract_projection` |
+| <a id="src-47381a6c4f"></a>`generator:contract-projection` | 3981 | `scripts/contract_freeze.py::contract_projection` |
 | <a id="src-c42f268fc9"></a>`openapi:riverhog` | 364 | `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI` |
 | <a id="src-c3a51ac29a"></a>`openapi:riverhog-ftp-adapter` | 12 | `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI` |
 | <a id="src-52e6e32124"></a>`openapi:stove0` | 170 | `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI` |
@@ -498,12 +498,31 @@ Source authorities: **484**
 | <a id="src-8d3f4df21c"></a>`release-images:docker-bake` | 13 | `docker-bake.hcl` |
 | <a id="src-d1a927fc4b"></a>`release-installation:planner` | 4 | `scripts/release_installation.py::INSTALLATION_POLICY` |
 | <a id="src-03a2f48338"></a>`release-publication:planner` | 110 | `scripts/release.py::publication_contract` |
-| <a id="src-c5380dbe5f"></a>`release:release.toml` | 130 | `release.toml` |
-| <a id="src-6b3ecfced3"></a>`state:gogurt-listener` | 1 | `state:gogurt-listener` |
-| <a id="src-b1cc215b8d"></a>`state:mango-fish-cursor` | 1 | `state:mango-fish-cursor` |
-| <a id="src-f6a1289f67"></a>`state:piggity-local` | 1 | `state:piggity-local` |
-| <a id="src-d8b4a14670"></a>`state:riverhog-catalog` | 1 | `state:riverhog-catalog` |
-| <a id="src-54f88a3a47"></a>`state:riverhog-ftp-custody` | 1 | `state:riverhog-ftp-custody` |
-| <a id="src-080b970190"></a>`state:riverhog-provenance-installation` | 1 | `state:riverhog-provenance-installation` |
-| <a id="src-45e44b17fd"></a>`state:stove0-control` | 1 | `state:stove0-control` |
-| <a id="src-7b4138829a"></a>`state:stove0-target-jobs` | 1 | `state:stove0-target-jobs` |
+| <a id="src-c5380dbe5f"></a>`release:release.toml` | 131 | `release.toml` |
+| <a id="src-6b3ecfced3"></a>`state:gogurt-listener` | 4 | `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/listener.py` |
+| <a id="src-b1cc215b8d"></a>`state:mango-fish-cursor` | 2 | `reference/riverhog/applications/mango-fish/src/mango_fish/state_migrations/v1_ddl.py` |
+| <a id="src-f6a1289f67"></a>`state:piggity-local` | 7 | `reference/riverhog/applications/piggity/src/piggity/state_migrations/v1_ddl.py` |
+| <a id="src-d8b4a14670"></a>`state:riverhog-catalog` | 91 | `riverhog/src/riverhog_core/state_migrations/v1_ddl.py` |
+| <a id="src-54f88a3a47"></a>`state:riverhog-ftp-custody` | 6 | `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/state_contract.py` |
+| <a id="src-080b970190"></a>`state:riverhog-provenance-installation` | 1 | `packages/riverhog-provenance/src/riverhog_provenance/identity.py` |
+| <a id="src-45e44b17fd"></a>`state:stove0-control` | 23 | `reference/stove0/application/server/src/stove0_core/state_migrations/v1_ddl.py` |
+| <a id="src-7b4138829a"></a>`state:stove0-target-jobs` | 3 | `reference/stove0/packages/target-protocol/src/stove0_target_protocol/protocol.py` |
+
+## Durable-state fixture evidence
+
+Fixtures prove restart and introspection behavior; component declarations above remain the semantic structure authorities.
+
+| State authority | Fixture | SHA-256 |
+|---|---|---|
+| `state:gogurt-listener` | `tests/fixtures/state/v1_0001/gogurt-listener.sqlite.sql` | `278ff26b6357b89c6af934f31b31917557cd3c377ecdddf8308eb3d9962cd15a` |
+| `state:mango-fish-cursor` | `tests/fixtures/state/v1_0001/mango-fish.sqlite.sql` | `f1baf4752b190b555de143a53a7b68eb41785895fa1d353c86e90b111fa6bf96` |
+| `state:piggity-local` | `tests/fixtures/state/v1_0001/piggity.sqlite.sql` | `f848ff7767d1fe3c70b8194c7b9334aaccf2f3c3ae26e3af99b48c86faf87a7f` |
+| `state:riverhog-catalog` | `tests/fixtures/state/v1_0001/riverhog.postgresql.sql` | `8b337f69f6bdc2665afd1b24a645301878925997d1a4416b607c82204d68bc96` |
+| `state:riverhog-ftp-custody` | `tests/fixtures/state/v1_0001/riverhog-ftp-adapter/claim.json` | `4ade71a24a784d4893d8f447fedecbab4cdde5257d21e174b2ccd654027be95f` |
+| `state:riverhog-ftp-custody` | `tests/fixtures/state/v1_0001/riverhog-ftp-adapter/payload.bin` | `565b24bc77ebeee74f70f6c608e099956666c3589ed85146fcea7e77d9f25356` |
+| `state:riverhog-provenance-installation` | `tests/fixtures/state/v1_0001/provenance-installation-id` | `fae5bd819bced353febb34ae9ad32e167f2522cebae4572e007f1747bc92277a` |
+| `state:stove0-control` | `tests/fixtures/state/v1_0001/stove0.postgresql.sql` | `6fec3eecfca50325cdc0823fd9d2b301fbbbd3cf272abd5fe58ac3fb8dca7a29` |
+| `state:stove0-target-jobs` | `tests/fixtures/state/v1_0001/stove0-target/transform.accepted.json` | `a7a558f503adc7905717e7a99404bc42132f55e639bcb56cf0d194c4058dd4fc` |
+| `state:stove0-target-jobs` | `tests/fixtures/state/v1_0001/stove0-target/transform.status.json` | `29254d1dc7d6429b8368f311c1d25fee6bf059f55d5f1b9e309e507659920cf7` |
+| `state:stove0-target-jobs` | `tests/fixtures/state/v1_0001/stove0-target/effect.accepted.json` | `dbb18aa80a2e9e15f6dacf3194928b42411aea66004bb20663ab90749ad8e33b` |
+| `state:stove0-target-jobs` | `tests/fixtures/state/v1_0001/stove0-target/effect.status.json` | `626cdf4d36eedf18fcd596fb81a6c49ea1fea98845f773ec33f8dd0b00887071` |

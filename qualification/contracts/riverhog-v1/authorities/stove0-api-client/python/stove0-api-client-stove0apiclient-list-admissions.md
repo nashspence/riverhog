@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b966fd28ea"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c81d940525"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-5bbb49e44d"></a>`distribution` | "stove0-api-client" |
-| <a id="s-65c159115b"></a>`module` | "stove0_api_client" |
-| <a id="s-c092deac78"></a>`name` | "list_admissions" |
-| <a id="s-164bf5f9da"></a>`owner` | "stove0_api_client.Stove0ApiClient" |
-| <a id="s-8eb2ce2088"></a>`unit` | "member" |
+- <a id="s-5bbb49e44d"></a>`distribution`: `stove0-api-client`
+- <a id="s-65c159115b"></a>`module`: `stove0_api_client`
+- <a id="s-c092deac78"></a>`name`: `list_admissions`
+- <a id="s-164bf5f9da"></a>`owner`: `stove0_api_client.Stove0ApiClient`
+- <a id="s-8eb2ce2088"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-aae8156ef9"></a>`kind`: `"method"`
+- <a id="s-f11f7b1177"></a>`signature`: `"\"(self, *, page_size: 'int' = 25, page_token: 'str \| None' = None, policy_id: 'str \| None' = None, state: 'AdmissionState \| None' = None, query: 'str \| None' = None, sort: 'AdmissionSort' = 'created_at', order: 'SortOrder' = 'desc') -> 'AdmissionPage'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ec490ca30f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f79371ca51"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-6cf1ad5bc3"></a>`distribution` | "stove0-protocol" |
-| <a id="s-ccac456152"></a>`module` | "stove0_protocol" |
-| <a id="s-84c874cd67"></a>`name` | "WORKFLOW_PLAN_FORMAT" |
-| <a id="s-c572ae805f"></a>`unit` | "export" |
+- <a id="s-6cf1ad5bc3"></a>`distribution`: `stove0-protocol`
+- <a id="s-ccac456152"></a>`module`: `stove0_protocol`
+- <a id="s-84c874cd67"></a>`name`: `WORKFLOW_PLAN_FORMAT`
+- <a id="s-c572ae805f"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-250dab3778"></a>`kind`: `"constant"`
+- <a id="s-856205f99b"></a>`value`: `"stove0-workflow-plan/v1"`
 
 ## Governing policies
 

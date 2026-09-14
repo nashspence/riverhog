@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-26e8908858"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d0a7a37b11"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-e0f674201d"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-7a170751af"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-f9af881038"></a>`name` | "Stove0LifecycleEvent" |
-| <a id="s-ffb3f70a0f"></a>`unit` | "export" |
+- <a id="s-e0f674201d"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-7a170751af"></a>`module`: `stove0_operator_contracts`
+- <a id="s-f9af881038"></a>`name`: `Stove0LifecycleEvent`
+- <a id="s-ffb3f70a0f"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-b6a95ee230"></a>`kind`: `"type-alias"`
+- <a id="s-b507a5cf05"></a>`value`: `"typing.Annotated[stove0_operator_contracts.WorkCreatedEvent \| stove0_operator_contracts.WorkUpdatedEvent \| stove0_operator_contracts.BranchSetAdmittedEvent \| stove0_operator_contracts.JoinAdmittedEvent \| stove0_operator_contracts.EvaluationCreatedEvent \| stove0_operator_contracts.EvaluationUpdatedEvent, FieldInfo(annotation=NoneType, required=True, discriminator='type')]"`
 
 ## Governing policies
 

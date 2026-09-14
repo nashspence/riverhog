@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e7c3cf9838"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ecb91d023a"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-fc36704604"></a>`distribution` | "riverhog-client" |
-| <a id="s-535b34135b"></a>`module` | "riverhog_client" |
-| <a id="s-d8531b79fc"></a>`name` | "list_collection_tags" |
-| <a id="s-16bd13fa51"></a>`owner` | "riverhog_client.CatalogSyncApi" |
-| <a id="s-ada093eb6a"></a>`unit` | "member" |
+- <a id="s-fc36704604"></a>`distribution`: `riverhog-client`
+- <a id="s-535b34135b"></a>`module`: `riverhog_client`
+- <a id="s-d8531b79fc"></a>`name`: `list_collection_tags`
+- <a id="s-16bd13fa51"></a>`owner`: `riverhog_client.CatalogSyncApi`
+- <a id="s-ada093eb6a"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-6a0fc88d73"></a>`kind`: `"method"`
+- <a id="s-f9b63859d0"></a>`signature`: `"\"(self, collection_id: 'int', *, revision: 'int', tag_set_identity: 'str', page_size: 'int' = 25, page_token: 'str \| None' = None) -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

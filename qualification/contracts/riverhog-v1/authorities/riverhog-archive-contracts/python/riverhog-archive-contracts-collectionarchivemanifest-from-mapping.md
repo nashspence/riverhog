@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-65030c6f79"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9bddb7af89"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-345e849532"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-e1a4ca49bc"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-f91ddbf4ab"></a>`name` | "from_mapping" |
-| <a id="s-f459b3a140"></a>`owner` | "riverhog_archive_contracts.CollectionArchiveManifest" |
-| <a id="s-18a65b200e"></a>`unit` | "member" |
+- <a id="s-345e849532"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-e1a4ca49bc"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-f91ddbf4ab"></a>`name`: `from_mapping`
+- <a id="s-f459b3a140"></a>`owner`: `riverhog_archive_contracts.CollectionArchiveManifest`
+- <a id="s-18a65b200e"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1964f6cb81"></a>`kind`: `"classmethod"`
+- <a id="s-d6e33a740d"></a>`signature`: `"\"(cls, value: 'object') -> 'CollectionArchiveManifest'\""`
 
 ## Maintained corroboration
 

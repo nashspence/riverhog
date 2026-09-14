@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c10b605328"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3faef08bb1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-88f6147166"></a>`distribution` | "stove0-server" |
-| <a id="s-885f39d5df"></a>`module` | "stove0_core" |
-| <a id="s-8dfa108bb2"></a>`name` | "run_once" |
-| <a id="s-4c456b990c"></a>`owner` | "stove0_core.Stove0Scheduler" |
-| <a id="s-8f488ba3fa"></a>`unit` | "member" |
+- <a id="s-88f6147166"></a>`distribution`: `stove0-server`
+- <a id="s-885f39d5df"></a>`module`: `stove0_core`
+- <a id="s-8dfa108bb2"></a>`name`: `run_once`
+- <a id="s-4c456b990c"></a>`owner`: `stove0_core.Stove0Scheduler`
+- <a id="s-8f488ba3fa"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-8ae46594be"></a>`kind`: `"method"`
+- <a id="s-966696a2e3"></a>`signature`: `"\"(self, *, role: 'SchedulerRole' = 'combined', work_limit: 'int' = 25) -> 'dict[str, object]'\""`
 
 ## Maintained corroboration
 

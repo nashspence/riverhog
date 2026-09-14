@@ -14,13 +14,31 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f0d20e20a8"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6bed19425f"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-e21618d727"></a>`distribution` | "stove0-review-sampler-protocol" |
-| <a id="s-effc939627"></a>`module` | "stove0_review_sampler_protocol" |
-| <a id="s-e476694ee5"></a>`name` | "SamplerWindow" |
-| <a id="s-933428f98e"></a>`unit` | "export" |
+- <a id="s-e21618d727"></a>`distribution`: `stove0-review-sampler-protocol`
+- <a id="s-effc939627"></a>`module`: `stove0_review_sampler_protocol`
+- <a id="s-e476694ee5"></a>`name`: `SamplerWindow`
+- <a id="s-933428f98e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-c8ca04aae2"></a>`kind`: `"class"`
+- <a id="s-d18e471956"></a>`signature`: `"\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], input_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], start_ms: Annotated[int, Ge(ge=0)], duration_ms: Annotated[int, Ge(ge=1)], output_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-f3de5ccbcb"></a>
+- <a id="s-26cdb234cb"></a>`title`: SamplerWindow
+- <a id="s-2c05f7dc67"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0690e04aad"></a>`duration_ms` | yes | type="integer"; minimum=1 |  |
+| <a id="s-57e429dc7b"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-16acf6a5d0"></a>`input_id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-99677eca01"></a>`output_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-99eed2264c"></a>`start_ms` | yes | type="integer"; minimum=0 |  |
 
 ## Maintained corroboration
 
@@ -52,13 +70,52 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e2d7504608f5eb48855be0eb450ad869b19779136e2df5902d5b7a4bd65e11cf -->
+<!-- exact-contract-value: 1190ad46919343be467db3b44a6bb2602d9a99d738c280e130fb7c1d9a2f4ace -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "70e05026e2bb99cdfa6d74df5cc6bde72c26a3df7e62152f80345fed5a8d4420",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "duration_ms": {
+          "minimum": 1,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "input_id": {
+          "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
+          "title": "Input Id",
+          "type": "string"
+        },
+        "output_path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Output Path",
+          "type": "string"
+        },
+        "start_ms": {
+          "minimum": 0,
+          "title": "Start Ms",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "input_id",
+        "start_ms",
+        "duration_ms",
+        "output_path"
+      ],
+      "title": "SamplerWindow",
+      "type": "object"
+    },
     "signature": "\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], input_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], start_ms: Annotated[int, Ge(ge=0)], duration_ms: Annotated[int, Ge(ge=1)], output_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)]) -> None\""
   },
   "distribution": "stove0-review-sampler-protocol",

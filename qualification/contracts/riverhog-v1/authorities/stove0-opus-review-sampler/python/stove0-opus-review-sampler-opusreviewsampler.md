@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-de7aeac5f2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3d6bdf3580"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-619b7a6add"></a>`distribution` | "stove0-opus-review-sampler" |
-| <a id="s-f3297768c8"></a>`module` | "stove0_opus_review_sampler" |
-| <a id="s-5c1390c1f8"></a>`name` | "OpusReviewSampler" |
-| <a id="s-ee1fa1459a"></a>`unit` | "export" |
+- <a id="s-619b7a6add"></a>`distribution`: `stove0-opus-review-sampler`
+- <a id="s-f3297768c8"></a>`module`: `stove0_opus_review_sampler`
+- <a id="s-5c1390c1f8"></a>`name`: `OpusReviewSampler`
+- <a id="s-ee1fa1459a"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e588fd03a2"></a>`kind`: `"class"`
+- <a id="s-9e3ad9c568"></a>`signature`: `"\"(*, workspace_root: 'Path', ffmpeg: 'str' = 'ffmpeg', source_revision: 'str' = 'unknown', image_digest: 'str') -> 'None'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ac76af497d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0ed54af079"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-31923cc8a4"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-0017528ac7"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-dde4b58abe"></a>`name` | "ObjectLocator" |
-| <a id="s-9fdc9f1df3"></a>`unit` | "export" |
+- <a id="s-31923cc8a4"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-0017528ac7"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-dde4b58abe"></a>`name`: `ObjectLocator`
+- <a id="s-9fdc9f1df3"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-309dd7fce3"></a>`kind`: `"class"`
+- <a id="s-42065b5716"></a>`signature`: `"'(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=2000)] = None) -> None'"`
+
+#### Validated model schema
+
+<a id="s-d5b5deaef9"></a>
+- <a id="s-b10586a4cf"></a>`title`: ObjectLocator
+- <a id="s-7c1e8986f2"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4623f87320"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-7ef7be1c5b"></a>`revision` | no | anyOf=type="string"; minLength=1; maxLength=2000 \| type="null" |  |
 
 ## Maintained corroboration
 
@@ -52,13 +67,42 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e06fa7eab3c3957b0c6dd2c3288dc47eadf6071ce81866dc668e8ae720c99dc9 -->
+<!-- exact-contract-value: 7c8bbff5706bc3880c2a6d8877f75b9616ca8e68aa146614f3067b9f7af92136 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "5728d2076704f8b4113eabaab445c0f91b667082021eab79d06d5f97438ce1cb",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "object_path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Object Path",
+          "type": "string"
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Revision"
+        }
+      },
+      "required": [
+        "object_path"
+      ],
+      "title": "ObjectLocator",
+      "type": "object"
+    },
     "signature": "'(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=2000)] = None) -> None'"
   },
   "distribution": "riverhog-storage-adapter-protocol",

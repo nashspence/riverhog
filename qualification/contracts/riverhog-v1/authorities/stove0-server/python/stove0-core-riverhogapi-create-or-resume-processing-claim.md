@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-729d896749"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-74d3142099"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-366a863f7b"></a>`distribution` | "stove0-server" |
-| <a id="s-2a631a0638"></a>`module` | "stove0_core" |
-| <a id="s-7f6e1d743b"></a>`name` | "create_or_resume_processing_claim" |
-| <a id="s-5ab34603c3"></a>`owner` | "stove0_core.RiverhogApi" |
-| <a id="s-55bb62d9c0"></a>`unit` | "member" |
+- <a id="s-366a863f7b"></a>`distribution`: `stove0-server`
+- <a id="s-2a631a0638"></a>`module`: `stove0_core`
+- <a id="s-7f6e1d743b"></a>`name`: `create_or_resume_processing_claim`
+- <a id="s-5ab34603c3"></a>`owner`: `stove0_core.RiverhogApi`
+- <a id="s-55bb62d9c0"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3c5fea89ea"></a>`kind`: `"method"`
+- <a id="s-e41cd0cc1d"></a>`signature`: `"\"(self, *, work_id: 'str', work_document: 'Mapping[str, Any]', work_document_sha256: 'str', inputs: 'Iterable[Mapping[str, Any]]', lease_seconds: 'int' = 1800, purpose: 'str' = 'collection-work/v1') -> 'ProcessingClaimDocument'\""`
 
 ## Maintained corroboration
 

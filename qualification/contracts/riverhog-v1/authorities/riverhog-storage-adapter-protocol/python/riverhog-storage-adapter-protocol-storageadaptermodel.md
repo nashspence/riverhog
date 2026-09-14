@@ -14,13 +14,26 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4559792237"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-aec2f88ae4"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-d83c972172"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-193c3b570c"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-e0f3e7613d"></a>`name` | "StorageAdapterModel" |
-| <a id="s-020963594c"></a>`unit` | "export" |
+- <a id="s-d83c972172"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-193c3b570c"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-e0f3e7613d"></a>`name`: `StorageAdapterModel`
+- <a id="s-020963594c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-76019e5238"></a>`kind`: `"class"`
+- <a id="s-36f58fa3b5"></a>`signature`: `"'() -> None'"`
+
+#### Validated model schema
+
+<a id="s-3f891dda28"></a>
+- <a id="s-b14fc11247"></a>`title`: StorageAdapterModel
+- <a id="s-d1f89cdd95"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
 
 ## Governing policies
 
@@ -46,13 +59,18 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fcc4b84fc3335dc02485709514a1d7320630b77cd63702a43ee5818728d4e5c5 -->
+<!-- exact-contract-value: 95dcabf55e17ee11084e9ee43d9de30f3b993f54e8b81ea99d7e6ebf6baca510 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "571e8620bee52a4520a602c0fda40f9631fb2fa449d9b858070ec0a5491c8add",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {},
+      "title": "StorageAdapterModel",
+      "type": "object"
+    },
     "signature": "'() -> None'"
   },
   "distribution": "riverhog-storage-adapter-protocol",

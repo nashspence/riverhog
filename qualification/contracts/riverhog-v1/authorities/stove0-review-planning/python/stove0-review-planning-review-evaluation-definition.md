@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d9ed5ffaf3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8c16c0740f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f4605ba624"></a>`distribution` | "stove0-review-planning" |
-| <a id="s-8d1b9d95d5"></a>`module` | "stove0_review_planning" |
-| <a id="s-9a5ab8fc81"></a>`name` | "review_evaluation_definition" |
-| <a id="s-c0d6d6657e"></a>`unit` | "export" |
+- <a id="s-f4605ba624"></a>`distribution`: `stove0-review-planning`
+- <a id="s-8d1b9d95d5"></a>`module`: `stove0_review_planning`
+- <a id="s-9a5ab8fc81"></a>`name`: `review_evaluation_definition`
+- <a id="s-c0d6d6657e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-41812a7627"></a>`kind`: `"function"`
+- <a id="s-092ac17e88"></a>`signature`: `"'(*, recipe: \\'RecipeRef\\', inputs: \\'tuple[CollectionRootRef, ...]\\', sample_plan: \\'ReviewSamplePlan\\', variants: \\'tuple[ReviewVariant, ...]\\', purpose: \"Literal[\\'trial\\', \\'evaluation\\']\" = \\'evaluation\\', common_intent: \\'dict[str, JsonValue] \| None\\' = None) -> \\'EvaluationDefinition\\''"`
 
 ## Governing policies
 

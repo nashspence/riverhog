@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-73a14f24a0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3c08a738da"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-2e15f160da"></a>`distribution` | "stove0-server" |
-| <a id="s-ce58934280"></a>`module` | "stove0_core" |
-| <a id="s-d7b6aa40b3"></a>`name` | "abandon_processing_claim" |
-| <a id="s-461a3a3ad9"></a>`owner` | "stove0_core.RiverhogApi" |
-| <a id="s-e1228e929a"></a>`unit` | "member" |
+- <a id="s-2e15f160da"></a>`distribution`: `stove0-server`
+- <a id="s-ce58934280"></a>`module`: `stove0_core`
+- <a id="s-d7b6aa40b3"></a>`name`: `abandon_processing_claim`
+- <a id="s-461a3a3ad9"></a>`owner`: `stove0_core.RiverhogApi`
+- <a id="s-e1228e929a"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-39c4fa82f5"></a>`kind`: `"method"`
+- <a id="s-7fde3eb1d7"></a>`signature`: `"\"(self, claim_id: 'str', *, fence: 'int', reason: 'str') -> 'ProcessingClaimDocument'\""`
 
 ## Maintained corroboration
 

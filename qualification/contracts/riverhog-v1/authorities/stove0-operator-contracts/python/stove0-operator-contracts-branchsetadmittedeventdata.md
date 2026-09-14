@@ -14,13 +14,32 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-811f53197c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f74929d33b"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-88d0a14002"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-f3cac77eb9"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-7a4dad50a7"></a>`name` | "BranchSetAdmittedEventData" |
-| <a id="s-7066bfad7e"></a>`unit` | "export" |
+- <a id="s-88d0a14002"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-f3cac77eb9"></a>`module`: `stove0_operator_contracts`
+- <a id="s-7a4dad50a7"></a>`name`: `BranchSetAdmittedEventData`
+- <a id="s-7066bfad7e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-da783cc266"></a>`kind`: `"class"`
+- <a id="s-3fcff0afc3"></a>`signature`: `"\"(*, work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], phase: Literal['coordinating'], revision: Annotated[int, Ge(ge=2)], branch_set_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], branch_count: Annotated[int, Ge(ge=1)], admitted_work_count: Annotated[int, Ge(ge=1)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-3bcc965813"></a>
+- <a id="s-44a2012d62"></a>`title`: BranchSetAdmittedEventData
+- <a id="s-24e69f7113"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0dbe2713d3"></a>`admitted_work_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-4b59d72431"></a>`branch_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-23adcd7fe9"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2453f4e1e9"></a>`phase` | yes | type="string"; const="coordinating" |  |
+| <a id="s-40244e82a2"></a>`revision` | yes | type="integer"; minimum=2 |  |
+| <a id="s-75357cccc4"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Governing policies
 
@@ -46,13 +65,57 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1c59dfb2d1a5cf8d315165e18fa0e084d03ee85eb7eddde00b2043f66085b777 -->
+<!-- exact-contract-value: ba331e74e30f75b5b856e474263053f4b44cad8a7bdbe71bfe5b66b67ed46891 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "8915aca1dade95650ccfb03c5ac47cf18fb3cd693a2c2becad387ba7624688f6",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "admitted_work_count": {
+          "minimum": 1,
+          "title": "Admitted Work Count",
+          "type": "integer"
+        },
+        "branch_count": {
+          "minimum": 1,
+          "title": "Branch Count",
+          "type": "integer"
+        },
+        "branch_set_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Branch Set Sha256",
+          "type": "string"
+        },
+        "phase": {
+          "const": "coordinating",
+          "title": "Phase",
+          "type": "string"
+        },
+        "revision": {
+          "minimum": 2,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "work_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Work Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "work_id",
+        "phase",
+        "revision",
+        "branch_set_sha256",
+        "branch_count",
+        "admitted_work_count"
+      ],
+      "title": "BranchSetAdmittedEventData",
+      "type": "object"
+    },
     "signature": "\"(*, work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], phase: Literal['coordinating'], revision: Annotated[int, Ge(ge=2)], branch_set_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], branch_count: Annotated[int, Ge(ge=1)], admitted_work_count: Annotated[int, Ge(ge=1)]) -> None\""
   },
   "distribution": "stove0-operator-contracts",

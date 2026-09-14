@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-39698bf164"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4927725104"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-8f3305c178"></a>`distribution` | "stove0-protocol" |
-| <a id="s-85476edda4"></a>`module` | "stove0_protocol" |
-| <a id="s-6672ed6e2f"></a>`name` | "canonical_selections" |
-| <a id="s-8f5fc2e654"></a>`owner` | "stove0_protocol.WorkflowPreviewPayload" |
-| <a id="s-cb501f5c04"></a>`unit` | "member" |
+- <a id="s-8f3305c178"></a>`distribution`: `stove0-protocol`
+- <a id="s-85476edda4"></a>`module`: `stove0_protocol`
+- <a id="s-6672ed6e2f"></a>`name`: `canonical_selections`
+- <a id="s-8f5fc2e654"></a>`owner`: `stove0_protocol.WorkflowPreviewPayload`
+- <a id="s-cb501f5c04"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c456ea9b93"></a>`kind`: `"classmethod"`
+- <a id="s-a952b26541"></a>`signature`: `"\"(cls, value: 'tuple[ArtifactSelection, ...]') -> 'tuple[ArtifactSelection, ...]'\""`
 
 ## Maintained corroboration
 

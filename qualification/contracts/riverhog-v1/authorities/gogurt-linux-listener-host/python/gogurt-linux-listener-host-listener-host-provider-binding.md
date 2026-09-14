@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-be12f965dd"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4b7d58f993"></a>`contract` | type="gogurt_listener_runtime.platform.ListenerHostProviderBinding"; additional keys=`kind` |
-| <a id="s-8cd158e70e"></a>`distribution` | "gogurt-linux-listener-host" |
-| <a id="s-02fffada7e"></a>`module` | "gogurt_linux_listener_host" |
-| <a id="s-4fb1302c61"></a>`name` | "LISTENER_HOST_PROVIDER_BINDING" |
-| <a id="s-abd700e6dd"></a>`unit` | "export" |
+- <a id="s-8cd158e70e"></a>`distribution`: `gogurt-linux-listener-host`
+- <a id="s-02fffada7e"></a>`module`: `gogurt_linux_listener_host`
+- <a id="s-4fb1302c61"></a>`name`: `LISTENER_HOST_PROVIDER_BINDING`
+- <a id="s-abd700e6dd"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ee1111bba0"></a>`kind`: `"object"`
+- <a id="s-9ae99620b1"></a>`type`: `"gogurt_listener_runtime.platform.ListenerHostProviderBinding"`
 
 ## Governing policies
 

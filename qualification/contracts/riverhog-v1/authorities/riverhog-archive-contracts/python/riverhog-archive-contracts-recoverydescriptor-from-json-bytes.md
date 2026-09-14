@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4a04f8c323"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6ae605dba6"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d053cafcd7"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-cbacdf3937"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-d7379f3f24"></a>`name` | "from_json_bytes" |
-| <a id="s-f1dd3f7107"></a>`owner` | "riverhog_archive_contracts.RecoveryDescriptor" |
-| <a id="s-fcade61773"></a>`unit` | "member" |
+- <a id="s-d053cafcd7"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-cbacdf3937"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-d7379f3f24"></a>`name`: `from_json_bytes`
+- <a id="s-f1dd3f7107"></a>`owner`: `riverhog_archive_contracts.RecoveryDescriptor`
+- <a id="s-fcade61773"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-b75afa825f"></a>`kind`: `"classmethod"`
+- <a id="s-dff4d28bc0"></a>`signature`: `"\"(cls, content: 'bytes \| str') -> 'RecoveryDescriptor'\""`
 
 ## Maintained corroboration
 

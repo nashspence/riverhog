@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3da9a10448"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c69cbdfbb9"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-eead5c0eaf"></a>`distribution` | "stove0-server" |
-| <a id="s-cc461f6af6"></a>`module` | "stove0_core" |
-| <a id="s-4ffc3ac05d"></a>`name` | "target_output_page" |
-| <a id="s-1cbb405091"></a>`owner` | "stove0_core.WorkStore" |
-| <a id="s-145040a5a9"></a>`unit` | "member" |
+- <a id="s-eead5c0eaf"></a>`distribution`: `stove0-server`
+- <a id="s-cc461f6af6"></a>`module`: `stove0_core`
+- <a id="s-4ffc3ac05d"></a>`name`: `target_output_page`
+- <a id="s-1cbb405091"></a>`owner`: `stove0_core.WorkStore`
+- <a id="s-145040a5a9"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-4d76e7d1a4"></a>`kind`: `"method"`
+- <a id="s-9a754b8aed"></a>`signature`: `"\"(self, work_id: 'str', job_id: 'str', *, after_id: 'str \| None', limit: 'int') -> 'tuple[OutputArtifact, ...]'\""`
 
 ## Maintained corroboration
 

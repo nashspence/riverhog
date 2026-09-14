@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-93cca69db4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5ec1b3b23a"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-52b61fc5f9"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-6552e7e25c"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-96fa32a7f6"></a>`name` | "validate_bytes" |
-| <a id="s-f34ba856a2"></a>`owner` | "riverhog_storage_adapter_protocol.WriteCompleteRequest" |
-| <a id="s-1471111c04"></a>`unit` | "member" |
+- <a id="s-52b61fc5f9"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-6552e7e25c"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-96fa32a7f6"></a>`name`: `validate_bytes`
+- <a id="s-f34ba856a2"></a>`owner`: `riverhog_storage_adapter_protocol.WriteCompleteRequest`
+- <a id="s-1471111c04"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-8f114fd3c2"></a>`kind`: `"method"`
+- <a id="s-8158244fb3"></a>`signature`: `"\"(self) -> 'Self'\""`
 
 ## Maintained corroboration
 

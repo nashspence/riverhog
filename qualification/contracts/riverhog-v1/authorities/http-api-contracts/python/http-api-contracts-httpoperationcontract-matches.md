@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-eb542d1314"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-44d9d34082"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f89d045dfc"></a>`distribution` | "http-api-contracts" |
-| <a id="s-9834eff961"></a>`module` | "http_api_contracts" |
-| <a id="s-72f1146f7a"></a>`name` | "matches" |
-| <a id="s-95896c4fa1"></a>`owner` | "http_api_contracts.HttpOperationContract" |
-| <a id="s-b6fadc28e3"></a>`unit` | "member" |
+- <a id="s-f89d045dfc"></a>`distribution`: `http-api-contracts`
+- <a id="s-9834eff961"></a>`module`: `http_api_contracts`
+- <a id="s-72f1146f7a"></a>`name`: `matches`
+- <a id="s-95896c4fa1"></a>`owner`: `http_api_contracts.HttpOperationContract`
+- <a id="s-b6fadc28e3"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-54daa08f90"></a>`kind`: `"method"`
+- <a id="s-a4f827e3e5"></a>`signature`: `"\"(self, method: 'str', path: 'str') -> 'bool'\""`
 
 ## Maintained corroboration
 

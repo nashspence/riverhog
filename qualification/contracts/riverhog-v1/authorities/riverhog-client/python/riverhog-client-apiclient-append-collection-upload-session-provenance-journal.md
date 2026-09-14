@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-38c078fe60"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-903b56bb39"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-9c6033fbba"></a>`distribution` | "riverhog-client" |
-| <a id="s-ea4acccf2b"></a>`module` | "riverhog_client" |
-| <a id="s-1d431059f4"></a>`name` | "append_collection_upload_session_provenance_journal" |
-| <a id="s-400bea03c4"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-3ac3d42ce5"></a>`unit` | "member" |
+- <a id="s-9c6033fbba"></a>`distribution`: `riverhog-client`
+- <a id="s-ea4acccf2b"></a>`module`: `riverhog_client`
+- <a id="s-1d431059f4"></a>`name`: `append_collection_upload_session_provenance_journal`
+- <a id="s-400bea03c4"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-3ac3d42ce5"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-bd939bded3"></a>`kind`: `"method"`
+- <a id="s-05dced62cc"></a>`signature`: `"\"(self, collection_id: 'CollectionId', journal_id: 'ProvenanceJournalId', *, offset: 'int', content: 'bytes') -> 'CollectionUploadProvenanceJournalStatusDocument'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-32758165dd"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-dac6e3c96e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-91f12d39c0"></a>`distribution` | "stove0-api-client" |
-| <a id="s-6ec970c302"></a>`module` | "stove0_api_client" |
-| <a id="s-9578467e34"></a>`name` | "Stove0ApiError" |
-| <a id="s-1cfc8e7dab"></a>`unit` | "export" |
+- <a id="s-91f12d39c0"></a>`distribution`: `stove0-api-client`
+- <a id="s-6ec970c302"></a>`module`: `stove0_api_client`
+- <a id="s-9578467e34"></a>`name`: `Stove0ApiError`
+- <a id="s-1cfc8e7dab"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-b6e990aade"></a>`kind`: `"class"`
+- <a id="s-0423fa905b"></a>`signature`: `"\"(message: 'str', *, code: 'str' = 'stove0_client_error', observed_status: 'int \| None' = None, details: 'Mapping[str, Any] \| None' = None) -> 'None'\""`
 
 ## Governing policies
 

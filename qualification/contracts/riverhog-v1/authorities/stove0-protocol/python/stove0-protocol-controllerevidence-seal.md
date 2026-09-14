@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-319e15f5a6"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c6d6017d1d"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-5c62f0f9f4"></a>`distribution` | "stove0-protocol" |
-| <a id="s-62e753962e"></a>`module` | "stove0_protocol" |
-| <a id="s-9c20edfcb2"></a>`name` | "seal" |
-| <a id="s-c691bca7f0"></a>`owner` | "stove0_protocol.ControllerEvidence" |
-| <a id="s-5a902004ed"></a>`unit` | "member" |
+- <a id="s-5c62f0f9f4"></a>`distribution`: `stove0-protocol`
+- <a id="s-62e753962e"></a>`module`: `stove0_protocol`
+- <a id="s-9c20edfcb2"></a>`name`: `seal`
+- <a id="s-c691bca7f0"></a>`owner`: `stove0_protocol.ControllerEvidence`
+- <a id="s-5a902004ed"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-14320ee81c"></a>`kind`: `"classmethod"`
+- <a id="s-7df5e6651e"></a>`signature`: `"\"(cls, payload: 'ControllerEvidencePayload') -> 'ControllerEvidence'\""`
 
 ## Maintained corroboration
 

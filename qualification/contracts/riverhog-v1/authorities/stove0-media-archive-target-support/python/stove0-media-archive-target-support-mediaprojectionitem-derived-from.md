@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e3d1e841b1"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d78ab190ff"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-aee6dd0932"></a>`distribution` | "stove0-media-archive-target-support" |
-| <a id="s-fa35fa4d0a"></a>`module` | "stove0_media_archive_target_support" |
-| <a id="s-e7b5cb9560"></a>`name` | "derived_from" |
-| <a id="s-8417a729e7"></a>`owner` | "stove0_media_archive_target_support.MediaProjectionItem" |
-| <a id="s-1263ce2fc8"></a>`unit` | "member" |
+- <a id="s-aee6dd0932"></a>`distribution`: `stove0-media-archive-target-support`
+- <a id="s-fa35fa4d0a"></a>`module`: `stove0_media_archive_target_support`
+- <a id="s-e7b5cb9560"></a>`name`: `derived_from`
+- <a id="s-8417a729e7"></a>`owner`: `stove0_media_archive_target_support.MediaProjectionItem`
+- <a id="s-1263ce2fc8"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-0f5117fa03"></a>`kind`: `"property"`
+- <a id="s-75efec5ae6"></a>`signature`: `"\"(self) -> 'tuple[str, ...]'\""`
 
 ## Maintained corroboration
 

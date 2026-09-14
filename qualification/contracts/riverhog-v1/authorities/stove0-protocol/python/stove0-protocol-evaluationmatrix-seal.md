@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f7d1beb0b2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f44401f8d3"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-801525b73b"></a>`distribution` | "stove0-protocol" |
-| <a id="s-b91bab7a6c"></a>`module` | "stove0_protocol" |
-| <a id="s-6fd870ddd7"></a>`name` | "seal" |
-| <a id="s-c578660a66"></a>`owner` | "stove0_protocol.EvaluationMatrix" |
-| <a id="s-3c8afd9fc5"></a>`unit` | "member" |
+- <a id="s-801525b73b"></a>`distribution`: `stove0-protocol`
+- <a id="s-b91bab7a6c"></a>`module`: `stove0_protocol`
+- <a id="s-6fd870ddd7"></a>`name`: `seal`
+- <a id="s-c578660a66"></a>`owner`: `stove0_protocol.EvaluationMatrix`
+- <a id="s-3c8afd9fc5"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-9e053b1bc6"></a>`kind`: `"classmethod"`
+- <a id="s-c47b03dc1b"></a>`signature`: `"\"(cls, payload: 'EvaluationMatrixPayload') -> 'EvaluationMatrix'\""`
 
 ## Maintained corroboration
 

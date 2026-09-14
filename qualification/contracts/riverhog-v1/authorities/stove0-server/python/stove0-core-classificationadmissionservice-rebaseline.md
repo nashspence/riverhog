@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6cf4ea1451"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-1070ce9826"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ea67479dc7"></a>`distribution` | "stove0-server" |
-| <a id="s-e2f698244e"></a>`module` | "stove0_core" |
-| <a id="s-85662dd33d"></a>`name` | "rebaseline" |
-| <a id="s-871614e04e"></a>`owner` | "stove0_core.ClassificationAdmissionService" |
-| <a id="s-f57563e823"></a>`unit` | "member" |
+- <a id="s-ea67479dc7"></a>`distribution`: `stove0-server`
+- <a id="s-e2f698244e"></a>`module`: `stove0_core`
+- <a id="s-85662dd33d"></a>`name`: `rebaseline`
+- <a id="s-871614e04e"></a>`owner`: `stove0_core.ClassificationAdmissionService`
+- <a id="s-f57563e823"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c795b09e66"></a>`kind`: `"method"`
+- <a id="s-cc6e060e33"></a>`signature`: `"'(self, policy_id: \\'str\\', *, mode: \"Literal[\\'observe\\', \\'backfill\\']\" = \\'observe\\') -> \\'AdmissionPolicyStatus\\''"`
 
 ## Maintained corroboration
 

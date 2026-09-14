@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-760480cf63"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-667582c3e1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-5387e922a9"></a>`distribution` | "stove0-observer-protocol" |
-| <a id="s-4061dc3b45"></a>`module` | "stove0_observer_protocol" |
-| <a id="s-f36d781bb4"></a>`name` | "require_semantic_validators" |
-| <a id="s-d95d0e82b2"></a>`unit` | "export" |
+- <a id="s-5387e922a9"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-4061dc3b45"></a>`module`: `stove0_observer_protocol`
+- <a id="s-f36d781bb4"></a>`name`: `require_semantic_validators`
+- <a id="s-d95d0e82b2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-09aa97af47"></a>`kind`: `"function"`
+- <a id="s-d6bad46eff"></a>`signature`: `"\"(provider: 'SemanticValidatorProvider \| None', descriptor: 'ObserverDescriptor') -> 'None'\""`
 
 ## Governing policies
 

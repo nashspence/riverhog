@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5188cf02de"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a4c52334f4"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d3f95439f2"></a>`distribution` | "stove0-media-archive-target-contracts" |
-| <a id="s-6851d351c6"></a>`module` | "stove0_media_archive_target_contracts" |
-| <a id="s-80051231cc"></a>`name` | "validate_audio_archive_intent" |
-| <a id="s-5c99ea25a4"></a>`unit` | "export" |
+- <a id="s-d3f95439f2"></a>`distribution`: `stove0-media-archive-target-contracts`
+- <a id="s-6851d351c6"></a>`module`: `stove0_media_archive_target_contracts`
+- <a id="s-80051231cc"></a>`name`: `validate_audio_archive_intent`
+- <a id="s-5c99ea25a4"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-3ae063026a"></a>`kind`: `"function"`
+- <a id="s-0c559dcee3"></a>`signature`: `"\"(intent: 'Mapping[str, object]') -> 'None'\""`
 
 ## Governing policies
 

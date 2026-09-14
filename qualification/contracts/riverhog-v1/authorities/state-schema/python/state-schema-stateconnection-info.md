@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-94e7e2e503"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5a234f7981"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-39266c5091"></a>`distribution` | "state-schema" |
-| <a id="s-468898a647"></a>`module` | "state_schema" |
-| <a id="s-9fb7d017ca"></a>`name` | "info" |
-| <a id="s-e4de20a948"></a>`owner` | "state_schema.StateConnection" |
-| <a id="s-3ba45ab52e"></a>`unit` | "member" |
+- <a id="s-39266c5091"></a>`distribution`: `state-schema`
+- <a id="s-468898a647"></a>`module`: `state_schema`
+- <a id="s-9fb7d017ca"></a>`name`: `info`
+- <a id="s-e4de20a948"></a>`owner`: `state_schema.StateConnection`
+- <a id="s-3ba45ab52e"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1e732e99f0"></a>`kind`: `"property"`
+- <a id="s-074d576ab9"></a>`signature`: `"\"(self) -> '_InfoType'\""`
 
 ## Maintained corroboration
 

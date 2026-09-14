@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fb64a5680d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3ce14a23e4"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-1ca4347e94"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-6506ae0575"></a>`module` | "stove0_target_protocol" |
-| <a id="s-458321a52f"></a>`name` | "seal" |
-| <a id="s-58c7fcf419"></a>`owner` | "stove0_target_protocol.TargetSettlementAuthority" |
-| <a id="s-dbd54c8cd4"></a>`unit` | "member" |
+- <a id="s-1ca4347e94"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-6506ae0575"></a>`module`: `stove0_target_protocol`
+- <a id="s-458321a52f"></a>`name`: `seal`
+- <a id="s-58c7fcf419"></a>`owner`: `stove0_target_protocol.TargetSettlementAuthority`
+- <a id="s-dbd54c8cd4"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-768ed35d32"></a>`kind`: `"classmethod"`
+- <a id="s-c8defd7e9f"></a>`signature`: `"\"(cls, payload: 'TargetSettlementAuthorityPayload') -> 'TargetSettlementAuthority'\""`
 
 ## Maintained corroboration
 

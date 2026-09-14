@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-025a3dbec1"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-726eda49ac"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-2f32d47794"></a>`distribution` | "stove0-server" |
-| <a id="s-4020f899be"></a>`module` | "stove0_core" |
-| <a id="s-20bf3faeee"></a>`name` | "iter_selection_artifacts" |
-| <a id="s-667aab917f"></a>`owner` | "stove0_core.InMemoryWorkStore" |
-| <a id="s-2e7d4e7b51"></a>`unit` | "member" |
+- <a id="s-2f32d47794"></a>`distribution`: `stove0-server`
+- <a id="s-4020f899be"></a>`module`: `stove0_core`
+- <a id="s-20bf3faeee"></a>`name`: `iter_selection_artifacts`
+- <a id="s-667aab917f"></a>`owner`: `stove0_core.InMemoryWorkStore`
+- <a id="s-2e7d4e7b51"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ff74cff0a7"></a>`kind`: `"method"`
+- <a id="s-caff2a57eb"></a>`signature`: `"\"(self, selection_sha256: 'str') -> 'Iterator[ArtifactSubject]'\""`
 
 ## Maintained corroboration
 

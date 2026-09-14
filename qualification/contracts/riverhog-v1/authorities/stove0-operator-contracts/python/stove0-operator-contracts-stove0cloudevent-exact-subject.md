@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ce0c75ee47"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3ace9f1b17"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d143d1a4cc"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-b6d3885a0a"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-be9bf44af5"></a>`name` | "exact_subject" |
-| <a id="s-aec81f37e4"></a>`owner` | "stove0_operator_contracts.Stove0CloudEvent" |
-| <a id="s-06af88666b"></a>`unit` | "member" |
+- <a id="s-d143d1a4cc"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-b6d3885a0a"></a>`module`: `stove0_operator_contracts`
+- <a id="s-be9bf44af5"></a>`name`: `exact_subject`
+- <a id="s-aec81f37e4"></a>`owner`: `stove0_operator_contracts.Stove0CloudEvent`
+- <a id="s-06af88666b"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3e8700e357"></a>`kind`: `"method"`
+- <a id="s-b03d42be95"></a>`signature`: `"\"(self) -> 'Self'\""`
 
 ## Maintained corroboration
 

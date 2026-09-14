@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-61453d75dd"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8f8ebe8b6b"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d1fe00ccfb"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-9904f5b78e"></a>`module` | "riverhog_storage_adapter_protocol" |
-| <a id="s-45ebc30570"></a>`name` | "canonical_objects" |
-| <a id="s-8280fa8bde"></a>`owner` | "riverhog_storage_adapter_protocol.ReadPreparationRequest" |
-| <a id="s-401922735c"></a>`unit` | "member" |
+- <a id="s-d1fe00ccfb"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-9904f5b78e"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-45ebc30570"></a>`name`: `canonical_objects`
+- <a id="s-8280fa8bde"></a>`owner`: `riverhog_storage_adapter_protocol.ReadPreparationRequest`
+- <a id="s-401922735c"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-2a34de35f0"></a>`kind`: `"classmethod"`
+- <a id="s-d671b2528b"></a>`signature`: `"\"(cls, value: 'tuple[ObjectLocator, ...]') -> 'tuple[ObjectLocator, ...]'\""`
 
 ## Maintained corroboration
 

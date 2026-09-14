@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f3f4992e68"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-dd0da3ae45"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-152ec01be8"></a>`distribution` | "riverhog-client" |
-| <a id="s-4b0448b60b"></a>`module` | "riverhog_client.transform" |
-| <a id="s-ad44ec3a59"></a>`name` | "open_workspace" |
-| <a id="s-f3f2f66239"></a>`owner` | "riverhog_client.transform.CollectionTransformRuntime" |
-| <a id="s-d2dcb4a1f9"></a>`unit` | "member" |
+- <a id="s-152ec01be8"></a>`distribution`: `riverhog-client`
+- <a id="s-4b0448b60b"></a>`module`: `riverhog_client.transform`
+- <a id="s-ad44ec3a59"></a>`name`: `open_workspace`
+- <a id="s-f3f2f66239"></a>`owner`: `riverhog_client.transform.CollectionTransformRuntime`
+- <a id="s-d2dcb4a1f9"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-41beee1ad7"></a>`kind`: `"method"`
+- <a id="s-77f654d393"></a>`signature`: `"\"(self, root: 'Path', *, assurance: 'WorkspaceAssurance') -> 'TransformWorkspace'\""`
 
 ## Maintained corroboration
 

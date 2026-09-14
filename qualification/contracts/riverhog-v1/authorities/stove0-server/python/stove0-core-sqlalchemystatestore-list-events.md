@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ba9937df60"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d3b87d1d35"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-4fa296f3d0"></a>`distribution` | "stove0-server" |
-| <a id="s-e8dbdffdcc"></a>`module` | "stove0_core" |
-| <a id="s-b6d16d432b"></a>`name` | "list_events" |
-| <a id="s-1995b26ace"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-d38d09bd46"></a>`unit` | "member" |
+- <a id="s-4fa296f3d0"></a>`distribution`: `stove0-server`
+- <a id="s-e8dbdffdcc"></a>`module`: `stove0_core`
+- <a id="s-b6d16d432b"></a>`name`: `list_events`
+- <a id="s-1995b26ace"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-d38d09bd46"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-7d93355a5e"></a>`kind`: `"method"`
+- <a id="s-bd6225a82b"></a>`signature`: `"\"(self, *, after: 'str \| None' = None, limit: 'int' = 100) -> 'Stove0EventPage'\""`
 
 ## Maintained corroboration
 

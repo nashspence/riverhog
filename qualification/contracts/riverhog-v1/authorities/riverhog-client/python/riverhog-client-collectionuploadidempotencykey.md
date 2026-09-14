@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9b46bb64f4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-651e47256f"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-de32b47334"></a>`distribution` | "riverhog-client" |
-| <a id="s-1b7b5b51ba"></a>`module` | "riverhog_client" |
-| <a id="s-fe482ad98f"></a>`name` | "CollectionUploadIdempotencyKey" |
-| <a id="s-05523e3403"></a>`unit` | "export" |
+- <a id="s-de32b47334"></a>`distribution`: `riverhog-client`
+- <a id="s-1b7b5b51ba"></a>`module`: `riverhog_client`
+- <a id="s-fe482ad98f"></a>`name`: `CollectionUploadIdempotencyKey`
+- <a id="s-05523e3403"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-03169e5ccf"></a>`kind`: `"type-alias"`
+- <a id="s-9dbbba6096"></a>`value`: `"typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=None, pattern='^\\\\S(?:[\\\\s\\\\S]*\\\\S)?$', ascii_only=None), FieldInfo(annotation=NoneType, required=True, metadata=[MaxLen(max_length=200)])]"`
 
 ## Governing policies
 

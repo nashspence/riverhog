@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a9d427fb29"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5989ad9c95"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6eb849aefd"></a>`distribution` | "riverhog-age" |
-| <a id="s-29d22027ed"></a>`module` | "riverhog_age" |
-| <a id="s-ee30511862"></a>`name` | "AgeDecryptError" |
-| <a id="s-2dc032c761"></a>`unit` | "export" |
+- <a id="s-6eb849aefd"></a>`distribution`: `riverhog-age`
+- <a id="s-29d22027ed"></a>`module`: `riverhog_age`
+- <a id="s-ee30511862"></a>`name`: `AgeDecryptError`
+- <a id="s-2dc032c761"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-5310211e42"></a>`kind`: `"class"`
+- <a id="s-7711b9574d"></a>`signature`: `"unavailable"`
 
 ## Governing policies
 

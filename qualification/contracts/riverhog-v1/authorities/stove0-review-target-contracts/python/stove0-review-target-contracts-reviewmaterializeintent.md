@@ -14,13 +14,37 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9727e13bbf"></a>
-| Field | Shape |
+- <a id="s-2859aeda44"></a>`distribution`: `stove0-review-target-contracts`
+- <a id="s-7959551eb4"></a>`module`: `stove0_review_target_contracts`
+- <a id="s-f460554b56"></a>`name`: `ReviewMaterializeIntent`
+- <a id="s-b17b1a1f04"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-7e8760c54f"></a>`kind`: `"class"`
+- <a id="s-821bfdeeb7"></a>`signature`: `"'(*, sample_plan: stove0_review_target_contracts.models.ReviewSamplePlan, variant: stove0_review_target_contracts.models.ReviewVariantIntent) -> None'"`
+
+#### Validated model schema
+
+<a id="s-772b957e5e"></a>
+- <a id="s-59ca22420d"></a>`title`: ReviewMaterializeIntent
+- <a id="s-fa9a048ade"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f792084b8d"></a>`sample_plan` | yes | #/$defs/ReviewSamplePlan |  |
+| <a id="s-c1f5b36439"></a>`variant` | yes | #/$defs/ReviewVariantIntent |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-bfabbfbab1"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-2859aeda44"></a>`distribution` | "stove0-review-target-contracts" |
-| <a id="s-7959551eb4"></a>`module` | "stove0_review_target_contracts" |
-| <a id="s-f460554b56"></a>`name` | "ReviewMaterializeIntent" |
-| <a id="s-b17b1a1f04"></a>`unit` | "export" |
+| <a id="s-3508712c62"></a>`JsonValue` | empty object |
+| <a id="s-1e4346490e"></a>`ReviewSamplePlan` | type="object"; fields=`format`, `sample_plan_sha256`, `samples_per_artifact`, `selection_method`, `window_duration_ms`, `windows`; additional keys=`additionalProperties`, `required` |
+| <a id="s-f8858821b9"></a>`ReviewSampleWindow` | type="object"; fields=`artifact_id`, `duration_ms`, `start_ms`; additional keys=`additionalProperties`, `required` |
+| <a id="s-248948c57f"></a>`ReviewVariantIntent` | type="object"; fields=`id`, `portable_intent`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
@@ -46,13 +70,131 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 89dcebf2b76452e9fcbf60032956dbaa5705a6add84acbf52bfc2ec0002badf3 -->
+<!-- exact-contract-value: 4db5b43b71d6a0ca99f1ab9e18481375b53617f69dba1b3a3c85c58b7bf9dbbe -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "4f40aec33b76e3333c7c3860975aebee92e0f66bf1eb7310b9f734a9b497b706",
+    "schema": {
+      "$defs": {
+        "JsonValue": {},
+        "ReviewSamplePlan": {
+          "additionalProperties": false,
+          "properties": {
+            "format": {
+              "const": "stove0-review-sample-plan/v1",
+              "default": "stove0-review-sample-plan/v1",
+              "title": "Format",
+              "type": "string"
+            },
+            "sample_plan_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sample Plan Sha256",
+              "type": "string"
+            },
+            "samples_per_artifact": {
+              "minimum": 1,
+              "title": "Samples Per Artifact",
+              "type": "integer"
+            },
+            "selection_method": {
+              "const": "evenly-spaced/v1",
+              "default": "evenly-spaced/v1",
+              "title": "Selection Method",
+              "type": "string"
+            },
+            "window_duration_ms": {
+              "minimum": 1,
+              "title": "Window Duration Ms",
+              "type": "integer"
+            },
+            "windows": {
+              "items": {
+                "$ref": "#/$defs/ReviewSampleWindow"
+              },
+              "minItems": 1,
+              "title": "Windows",
+              "type": "array"
+            }
+          },
+          "required": [
+            "samples_per_artifact",
+            "window_duration_ms",
+            "windows",
+            "sample_plan_sha256"
+          ],
+          "title": "ReviewSamplePlan",
+          "type": "object"
+        },
+        "ReviewSampleWindow": {
+          "additionalProperties": false,
+          "properties": {
+            "artifact_id": {
+              "maxLength": 160,
+              "minLength": 1,
+              "title": "Artifact Id",
+              "type": "string"
+            },
+            "duration_ms": {
+              "minimum": 1,
+              "title": "Duration Ms",
+              "type": "integer"
+            },
+            "start_ms": {
+              "minimum": 0,
+              "title": "Start Ms",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "artifact_id",
+            "start_ms",
+            "duration_ms"
+          ],
+          "title": "ReviewSampleWindow",
+          "type": "object"
+        },
+        "ReviewVariantIntent": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "portable_intent": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "title": "Portable Intent",
+              "type": "object"
+            }
+          },
+          "required": [
+            "id",
+            "portable_intent"
+          ],
+          "title": "ReviewVariantIntent",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "sample_plan": {
+          "$ref": "#/$defs/ReviewSamplePlan"
+        },
+        "variant": {
+          "$ref": "#/$defs/ReviewVariantIntent"
+        }
+      },
+      "required": [
+        "sample_plan",
+        "variant"
+      ],
+      "title": "ReviewMaterializeIntent",
+      "type": "object"
+    },
     "signature": "'(*, sample_plan: stove0_review_target_contracts.models.ReviewSamplePlan, variant: stove0_review_target_contracts.models.ReviewVariantIntent) -> None'"
   },
   "distribution": "stove0-review-target-contracts",

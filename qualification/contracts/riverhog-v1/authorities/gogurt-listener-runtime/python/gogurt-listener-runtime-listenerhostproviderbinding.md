@@ -14,13 +14,25 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2ddd4bda91"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-617c249133"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-ab2faf60bd"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-c419ecb23c"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-6d7b11d05b"></a>`name` | "ListenerHostProviderBinding" |
-| <a id="s-391d2842ea"></a>`unit` | "export" |
+- <a id="s-ab2faf60bd"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-c419ecb23c"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-6d7b11d05b"></a>`name`: `ListenerHostProviderBinding`
+- <a id="s-391d2842ea"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-309d7ad08c"></a>`kind`: `"class"`
+- <a id="s-4530f228ec"></a>`signature`: `"\"(provider_id: 'str', paths: 'Callable[[], ListenerRuntimePaths]', adapter: 'Callable[[], ListenerAdapter]', executable: 'Callable[[str \| None], Path]', format: 'str' = 'gogurt-listener-host-provider-binding/v1') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-ba394e496c"></a>`provider_id` | `'str'` | `required` |
+| <a id="s-0eed4dba04"></a>`paths` | `'Callable[[], ListenerRuntimePaths]'` | `required` |
+| <a id="s-8804dc955a"></a>`adapter` | `'Callable[[], ListenerAdapter]'` | `required` |
+| <a id="s-2871a9eea8"></a>`executable` | `'Callable[[str \| None], Path]'` | `required` |
+| <a id="s-96b692e585"></a>`format` | `'str'` | `'gogurt-listener-host-provider-binding/v1'` |
 
 ## Governing policies
 

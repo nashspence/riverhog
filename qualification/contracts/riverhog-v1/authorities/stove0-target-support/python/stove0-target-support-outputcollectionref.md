@@ -14,13 +14,36 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2ab99788b2"></a>
-| Field | Shape |
+- <a id="s-676fa2817a"></a>`distribution`: `stove0-target-support`
+- <a id="s-bfe0b492c0"></a>`module`: `stove0_target_support`
+- <a id="s-6e28c055ac"></a>`name`: `OutputCollectionRef`
+- <a id="s-f9218583ad"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0caffbe2a5"></a>`kind`: `"class"`
+- <a id="s-3aa8cee7fc"></a>`signature`: `"\"(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], content_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], derivation_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-42e4d3717e"></a>
+- <a id="s-18d912ccda"></a>`title`: OutputCollectionRef
+- <a id="s-c2f9425249"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-9dc179149e"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-9c84697634"></a>`collection_id` | yes | #/$defs/CollectionId |  |
+| <a id="s-c7a7a3330a"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-43d8102252"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-06ecb63616"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-676fa2817a"></a>`distribution` | "stove0-target-support" |
-| <a id="s-bfe0b492c0"></a>`module` | "stove0_target_support" |
-| <a id="s-6e28c055ac"></a>`name` | "OutputCollectionRef" |
-| <a id="s-f9218583ad"></a>`unit` | "export" |
+| <a id="s-ffd073defa"></a>`CollectionId` | type="integer"; minimum=1 |
 
 ## Governing policies
 
@@ -46,13 +69,49 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7dd8c86e19e30d7e3d7397107f2e6e7a94d5e9873930e81d429dc9976563b744 -->
+<!-- exact-contract-value: 7ed6aa01a326743bf1dc9de91f6203b43da71d9763519432e312228240f703f5 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "5e114f49bd35594b81763b7a7bd469021694265597f256e3648d44f6284201e1",
+    "schema": {
+      "$defs": {
+        "CollectionId": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "archive_root_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Archive Root Sha256",
+          "type": "string"
+        },
+        "collection_id": {
+          "$ref": "#/$defs/CollectionId"
+        },
+        "content_identity": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Identity",
+          "type": "string"
+        },
+        "derivation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Derivation Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "collection_id",
+        "archive_root_sha256",
+        "content_identity",
+        "derivation_sha256"
+      ],
+      "title": "OutputCollectionRef",
+      "type": "object"
+    },
     "signature": "\"(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], content_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], derivation_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-target-support",

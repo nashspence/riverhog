@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d9f3061d16"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5d553d1c59"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-19999ec268"></a>`distribution` | "stove0-observer-protocol" |
-| <a id="s-be49d2d021"></a>`module` | "stove0_observer_protocol" |
-| <a id="s-5e4b9ce465"></a>`name` | "seal" |
-| <a id="s-b42d46cddd"></a>`owner` | "stove0_observer_protocol.ObserverDescriptor" |
-| <a id="s-0fed2b6266"></a>`unit` | "member" |
+- <a id="s-19999ec268"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-be49d2d021"></a>`module`: `stove0_observer_protocol`
+- <a id="s-5e4b9ce465"></a>`name`: `seal`
+- <a id="s-b42d46cddd"></a>`owner`: `stove0_observer_protocol.ObserverDescriptor`
+- <a id="s-0fed2b6266"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-0e6f8d9e66"></a>`kind`: `"classmethod"`
+- <a id="s-9eb21ce762"></a>`signature`: `"\"(cls, payload: 'ObserverDescriptorPayload') -> 'ObserverDescriptor'\""`
 
 ## Maintained corroboration
 

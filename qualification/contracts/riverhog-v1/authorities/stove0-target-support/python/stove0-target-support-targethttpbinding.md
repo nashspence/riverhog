@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-54295f660d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9eec3bb9e1"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6d35e5cb9f"></a>`distribution` | "stove0-target-support" |
-| <a id="s-6b2fce611d"></a>`module` | "stove0_target_support" |
-| <a id="s-8a365315b6"></a>`name` | "TargetHttpBinding" |
-| <a id="s-f36170af40"></a>`unit` | "export" |
+- <a id="s-6d35e5cb9f"></a>`distribution`: `stove0-target-support`
+- <a id="s-6b2fce611d"></a>`module`: `stove0_target_support`
+- <a id="s-8a365315b6"></a>`name`: `TargetHttpBinding`
+- <a id="s-f36170af40"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-d9efb10017"></a>`kind`: `"class"`
+- <a id="s-04d227ee09"></a>`signature`: `"\"(target: 'TargetService', *, maximum_request_bytes: 'int' = 16777216) -> 'None'\""`
 
 ## Maintained corroboration
 

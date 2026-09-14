@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-eb5a8b6f70"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3377ec8d48"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-3aaf55d1a4"></a>`distribution` | "stove0-target-support" |
-| <a id="s-36e665e0e5"></a>`module` | "stove0_target_support" |
-| <a id="s-0b723f0463"></a>`name` | "seal" |
-| <a id="s-f29600ddf3"></a>`owner` | "stove0_target_support.EffectPlan" |
-| <a id="s-3f5430b180"></a>`unit` | "member" |
+- <a id="s-3aaf55d1a4"></a>`distribution`: `stove0-target-support`
+- <a id="s-36e665e0e5"></a>`module`: `stove0_target_support`
+- <a id="s-0b723f0463"></a>`name`: `seal`
+- <a id="s-f29600ddf3"></a>`owner`: `stove0_target_support.EffectPlan`
+- <a id="s-3f5430b180"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-cf0a31f2f3"></a>`kind`: `"classmethod"`
+- <a id="s-fe79a06dea"></a>`signature`: `"\"(cls, payload: 'EffectPlanPayload') -> 'EffectPlan'\""`
 
 ## Maintained corroboration
 

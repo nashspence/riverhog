@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6433d7050d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e12e03c7ce"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f04f0e59b8"></a>`distribution` | "stove0-server" |
-| <a id="s-dd974f9133"></a>`module` | "stove0_core" |
-| <a id="s-8133e949f2"></a>`name` | "target_output_path_page" |
-| <a id="s-ba2edd222f"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-d56901f5e3"></a>`unit` | "member" |
+- <a id="s-f04f0e59b8"></a>`distribution`: `stove0-server`
+- <a id="s-dd974f9133"></a>`module`: `stove0_core`
+- <a id="s-8133e949f2"></a>`name`: `target_output_path_page`
+- <a id="s-ba2edd222f"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-d56901f5e3"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-98fcc1ce5f"></a>`kind`: `"method"`
+- <a id="s-524ecf183a"></a>`signature`: `"\"(self, work_id: 'str', job_id: 'str', *, after_path: 'str \| None', limit: 'int') -> 'tuple[OutputArtifact, ...]'\""`
 
 ## Maintained corroboration
 

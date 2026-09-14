@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6c5e5b102e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-79a40d072a"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-72a251ed51"></a>`distribution` | "riverhog-client" |
-| <a id="s-b6969d8b54"></a>`module` | "riverhog_client" |
-| <a id="s-057bc2138c"></a>`name` | "tag_page" |
-| <a id="s-39a94f79fc"></a>`owner` | "riverhog_client.CatalogReplica" |
-| <a id="s-f7733e1689"></a>`unit` | "member" |
+- <a id="s-72a251ed51"></a>`distribution`: `riverhog-client`
+- <a id="s-b6969d8b54"></a>`module`: `riverhog_client`
+- <a id="s-057bc2138c"></a>`name`: `tag_page`
+- <a id="s-39a94f79fc"></a>`owner`: `riverhog_client.CatalogReplica`
+- <a id="s-f7733e1689"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-0a4816629f"></a>`kind`: `"method"`
+- <a id="s-84bb9bcb05"></a>`signature`: `"\"(self, collection_id: 'int', *, after: 'str \| None' = None, limit: 'int' = 100) -> 'list[str]'\""`
 
 ## Maintained corroboration
 

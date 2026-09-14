@@ -14,13 +14,31 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8ed9f2d910"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-caddeb7e32"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-fa0def82e6"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-f221669769"></a>`module` | "riverhog_provenance" |
-| <a id="s-414054d5bf"></a>`name` | "ProvenanceVolumeDocument" |
-| <a id="s-e164d75201"></a>`unit` | "export" |
+- <a id="s-fa0def82e6"></a>`distribution`: `riverhog-provenance`
+- <a id="s-f221669769"></a>`module`: `riverhog_provenance`
+- <a id="s-414054d5bf"></a>`name`: `ProvenanceVolumeDocument`
+- <a id="s-e164d75201"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-882817c891"></a>`kind`: `"class"`
+- <a id="s-c17ff2b5ca"></a>`signature`: `"\"(archive_generation: 'str', archive_tree_sha256: 'str', sequence: 'int', payload: 'ProvenancePayloadIdentity', first_file_order: 'int \| None' = None, file_count: 'int \| None' = None, journal_id: 'str \| None' = None, journal_offset: 'int \| None' = None, journal_bytes: 'int \| None' = None, journal_sha256: 'str \| None' = None, schema: 'str' = 'riverhog-provenance-volume/v1') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-d07f219bbb"></a>`archive_generation` | `'str'` | `required` |
+| <a id="s-afd6e11bae"></a>`archive_tree_sha256` | `'str'` | `required` |
+| <a id="s-950e10147b"></a>`sequence` | `'int'` | `required` |
+| <a id="s-6f57292056"></a>`payload` | `'ProvenancePayloadIdentity'` | `required` |
+| <a id="s-663a2c7ccd"></a>`first_file_order` | `'int \| None'` | `None` |
+| <a id="s-7ec6bf0516"></a>`file_count` | `'int \| None'` | `None` |
+| <a id="s-33d08fac2c"></a>`journal_id` | `'str \| None'` | `None` |
+| <a id="s-ed57ad7096"></a>`journal_offset` | `'int \| None'` | `None` |
+| <a id="s-1eae6d8438"></a>`journal_bytes` | `'int \| None'` | `None` |
+| <a id="s-2ca4805c9a"></a>`journal_sha256` | `'str \| None'` | `None` |
+| <a id="s-2c2e0878b1"></a>`schema` | `'str'` | `'riverhog-provenance-volume/v1'` |
 
 ## Maintained corroboration
 

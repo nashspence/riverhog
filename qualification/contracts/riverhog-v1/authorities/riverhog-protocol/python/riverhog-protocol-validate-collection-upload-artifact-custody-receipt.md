@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c2acb1b217"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-036173aad3"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e9661832f3"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-9ed593e0a9"></a>`module` | "riverhog_protocol" |
-| <a id="s-019111d634"></a>`name` | "validate_collection_upload_artifact_custody_receipt" |
-| <a id="s-94914d6718"></a>`unit` | "export" |
+- <a id="s-e9661832f3"></a>`distribution`: `riverhog-protocol`
+- <a id="s-9ed593e0a9"></a>`module`: `riverhog_protocol`
+- <a id="s-019111d634"></a>`name`: `validate_collection_upload_artifact_custody_receipt`
+- <a id="s-94914d6718"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-217ed536fe"></a>`kind`: `"function"`
+- <a id="s-202c7086bb"></a>`signature`: `"\"(collection_id: 'int', artifact: 'ImmutableFileIdentityDocument', receipt: 'CollectionUploadArtifactCustodyReceiptDocument') -> 'CollectionUploadArtifactCustodyReceiptDocument'\""`
 
 ## Governing policies
 

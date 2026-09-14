@@ -14,13 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c0d6abd237"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-13676433aa"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-e89ac4a521"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-9d747aab51"></a>`module` | "riverhog_protocol" |
-| <a id="s-3749518bb8"></a>`name` | "RecipeIdentity" |
-| <a id="s-c31517471a"></a>`unit` | "export" |
+- <a id="s-e89ac4a521"></a>`distribution`: `riverhog-protocol`
+- <a id="s-9d747aab51"></a>`module`: `riverhog_protocol`
+- <a id="s-3749518bb8"></a>`name`: `RecipeIdentity`
+- <a id="s-c31517471a"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ebb796681b"></a>`kind`: `"class"`
+- <a id="s-81ba5c61ea"></a>`signature`: `"\"(id: 'str', revision: 'int', sha256: 'str') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-8f34cd2b16"></a>`id` | `'str'` | `required` |
+| <a id="s-75b8abd798"></a>`revision` | `'int'` | `required` |
+| <a id="s-35285abe0a"></a>`sha256` | `'str'` | `required` |
 
 ## Maintained corroboration
 

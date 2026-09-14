@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
-Python contract owned by gogurt-path-volume-support.
+Declared public imports and their selected exact structural contracts.
 
 ## Semantic dossiers
 

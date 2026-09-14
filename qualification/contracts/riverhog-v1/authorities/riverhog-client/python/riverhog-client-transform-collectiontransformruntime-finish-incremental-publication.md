@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-847d4e3070"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a939691c0f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ccbcc4b76b"></a>`distribution` | "riverhog-client" |
-| <a id="s-6c79049d20"></a>`module` | "riverhog_client.transform" |
-| <a id="s-e1d3848635"></a>`name` | "finish_incremental_publication" |
-| <a id="s-2233b65bb5"></a>`owner` | "riverhog_client.transform.CollectionTransformRuntime" |
-| <a id="s-df09733876"></a>`unit` | "member" |
+- <a id="s-ccbcc4b76b"></a>`distribution`: `riverhog-client`
+- <a id="s-6c79049d20"></a>`module`: `riverhog_client.transform`
+- <a id="s-e1d3848635"></a>`name`: `finish_incremental_publication`
+- <a id="s-2233b65bb5"></a>`owner`: `riverhog_client.transform.CollectionTransformRuntime`
+- <a id="s-df09733876"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-05c1d29dd3"></a>`kind`: `"method"`
+- <a id="s-48936bf277"></a>`signature`: `"\"(self, writer: 'IncrementalDerivedCollectionWriter', *, execution_sha256: 'str', disposition_set: 'ArtifactDispositionSetIdentity', **kwargs: 'Any') -> 'DerivedCollectionReceipt'\""`
 
 ## Maintained corroboration
 

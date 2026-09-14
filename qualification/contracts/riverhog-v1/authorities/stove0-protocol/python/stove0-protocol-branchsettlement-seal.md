@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6ab17c4b36"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-cd712f3992"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-41dc9dd002"></a>`distribution` | "stove0-protocol" |
-| <a id="s-4fcbffa40d"></a>`module` | "stove0_protocol" |
-| <a id="s-2343f003e0"></a>`name` | "seal" |
-| <a id="s-4a7de9cb31"></a>`owner` | "stove0_protocol.BranchSettlement" |
-| <a id="s-21e1fcdec5"></a>`unit` | "member" |
+- <a id="s-41dc9dd002"></a>`distribution`: `stove0-protocol`
+- <a id="s-4fcbffa40d"></a>`module`: `stove0_protocol`
+- <a id="s-2343f003e0"></a>`name`: `seal`
+- <a id="s-4a7de9cb31"></a>`owner`: `stove0_protocol.BranchSettlement`
+- <a id="s-21e1fcdec5"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-5ff621a107"></a>`kind`: `"classmethod"`
+- <a id="s-551672cbf8"></a>`signature`: `"\"(cls, *, branch: 'BranchPlan', derivation_sha256: 'str', producer_settlement_sha256: 'str', output_collection: 'CollectionRootRef', output_selection: 'ArtifactSelection') -> 'BranchSettlement'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4d3eaf9bfc"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d51f140f1f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-209747f784"></a>`distribution` | "stove0-api-client" |
-| <a id="s-fd3d5251b5"></a>`module` | "stove0_api_client" |
-| <a id="s-228e7c16a1"></a>`name` | "health_ready" |
-| <a id="s-02cefcf76a"></a>`owner` | "stove0_api_client.Stove0ApiClient" |
-| <a id="s-5538048941"></a>`unit` | "member" |
+- <a id="s-209747f784"></a>`distribution`: `stove0-api-client`
+- <a id="s-fd3d5251b5"></a>`module`: `stove0_api_client`
+- <a id="s-228e7c16a1"></a>`name`: `health_ready`
+- <a id="s-02cefcf76a"></a>`owner`: `stove0_api_client.Stove0ApiClient`
+- <a id="s-5538048941"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ec1f592ee7"></a>`kind`: `"method"`
+- <a id="s-754fccf94e"></a>`signature`: `"\"(self) -> 'HealthResponse'\""`
 
 ## Maintained corroboration
 

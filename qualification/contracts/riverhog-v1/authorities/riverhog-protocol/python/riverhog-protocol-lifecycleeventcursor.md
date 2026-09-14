@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a8af915545"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-26ef520c74"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-ef4362c490"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-3bf565a69f"></a>`module` | "riverhog_protocol" |
-| <a id="s-61be6a7e47"></a>`name` | "LifecycleEventCursor" |
-| <a id="s-f2a762009b"></a>`unit` | "export" |
+- <a id="s-ef4362c490"></a>`distribution`: `riverhog-protocol`
+- <a id="s-3bf565a69f"></a>`module`: `riverhog_protocol`
+- <a id="s-61be6a7e47"></a>`name`: `LifecycleEventCursor`
+- <a id="s-f2a762009b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-fc50378035"></a>`kind`: `"type-alias"`
+- <a id="s-8c97a084c2"></a>`value`: `"typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern='^(?:0\|[1-9][0-9]*)$', ascii_only=None), AfterValidator(func=<function validate_lifecycle_event_cursor>)]"`
 
 ## Governing policies
 

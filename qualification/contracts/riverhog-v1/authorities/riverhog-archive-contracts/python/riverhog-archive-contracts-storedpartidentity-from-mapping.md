@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-dd0ecadd0c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e65232e995"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7ed9b99f3b"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-df731783f2"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-bb290b8487"></a>`name` | "from_mapping" |
-| <a id="s-e4ef36c725"></a>`owner` | "riverhog_archive_contracts.StoredPartIdentity" |
-| <a id="s-ddd5407a91"></a>`unit` | "member" |
+- <a id="s-7ed9b99f3b"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-df731783f2"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-bb290b8487"></a>`name`: `from_mapping`
+- <a id="s-e4ef36c725"></a>`owner`: `riverhog_archive_contracts.StoredPartIdentity`
+- <a id="s-ddd5407a91"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1c8830e216"></a>`kind`: `"classmethod"`
+- <a id="s-9f983272da"></a>`signature`: `"\"(cls, value: 'object', *, expected_number: 'int', expected_start: 'int') -> 'StoredPartIdentity'\""`
 
 ## Maintained corroboration
 

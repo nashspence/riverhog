@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ef08386f9d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-10ce8eed78"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-251c3274ea"></a>`distribution` | "riverhog-client" |
-| <a id="s-a162b7b9a7"></a>`module` | "riverhog_client" |
-| <a id="s-45e88dfd2f"></a>`name` | "stream_collection_provenance_journal" |
-| <a id="s-56a4b56712"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-43ebfce0f0"></a>`unit` | "member" |
+- <a id="s-251c3274ea"></a>`distribution`: `riverhog-client`
+- <a id="s-a162b7b9a7"></a>`module`: `riverhog_client`
+- <a id="s-45e88dfd2f"></a>`name`: `stream_collection_provenance_journal`
+- <a id="s-56a4b56712"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-43ebfce0f0"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-4b13f660d0"></a>`kind`: `"method"`
+- <a id="s-7f6001adfd"></a>`signature`: `"\"(self, collection_id: 'CollectionId', journal_id: 'ProvenanceJournalId', *, start: 'int' = 0, end: 'int \| None' = None, expected_bytes: 'int \| None' = None, expected_sha256: 'str \| None' = None, chunk_size: 'int' = 8388608) -> 'Iterator[Iterator[bytes]]'\""`
 
 ## Maintained corroboration
 

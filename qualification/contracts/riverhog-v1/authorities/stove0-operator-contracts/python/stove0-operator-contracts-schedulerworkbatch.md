@@ -14,13 +14,37 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d876608274"></a>
-| Field | Shape |
+- <a id="s-9870bed9cd"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-9628750893"></a>`module`: `stove0_operator_contracts`
+- <a id="s-f7c8a8072b"></a>`name`: `SchedulerWorkBatch`
+- <a id="s-3b3255e2fc"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-893b3b8741"></a>`kind`: `"class"`
+- <a id="s-fda32eeaa9"></a>`signature`: `"\"(*, role: Literal['controller', 'worker', 'combined'], cursor: str, next_cursor: str, progressed: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], ...], failures: tuple[stove0_operator_contracts.SchedulerFailure, ...]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-32572a0437"></a>
+- <a id="s-41eeab2448"></a>`title`: SchedulerWorkBatch
+- <a id="s-4bc9da636a"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a1f4c295e8"></a>`cursor` | yes | type="string" |  |
+| <a id="s-355109a36f"></a>`failures` | yes | type="array"; items=(#/$defs/SchedulerFailure) |  |
+| <a id="s-b0d7b8b4a6"></a>`next_cursor` | yes | type="string" |  |
+| <a id="s-ef32b8f15b"></a>`progressed` | yes | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
+| <a id="s-95adbfea4b"></a>`role` | yes | type="string"; enum=["controller","worker","combined"] |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-92d7873cc7"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-9870bed9cd"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-9628750893"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-f7c8a8072b"></a>`name` | "SchedulerWorkBatch" |
-| <a id="s-3b3255e2fc"></a>`unit` | "export" |
+| <a id="s-2747364e28"></a>`SchedulerFailure` | type="object"; fields=`error`, `event_id`, `work_id`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
@@ -46,13 +70,101 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: be51770b8585c1e34f68457dde2ed9a32100000e94480de5fd9f4be975459db4 -->
+<!-- exact-contract-value: ea474537a3c065a082b54dfe38a87217abb0cdd73e04a5c168fc79b1816ff911 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "84e8e1e2198f4b04c8d33af067097705e328f79c575320420d0034fca2160a60",
+    "schema": {
+      "$defs": {
+        "SchedulerFailure": {
+          "additionalProperties": false,
+          "properties": {
+            "error": {
+              "maxLength": 1000,
+              "minLength": 1,
+              "title": "Error",
+              "type": "string"
+            },
+            "event_id": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Event Id"
+            },
+            "work_id": {
+              "anyOf": [
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Work Id"
+            }
+          },
+          "required": [
+            "error"
+          ],
+          "title": "SchedulerFailure",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "cursor": {
+          "title": "Cursor",
+          "type": "string"
+        },
+        "failures": {
+          "items": {
+            "$ref": "#/$defs/SchedulerFailure"
+          },
+          "title": "Failures",
+          "type": "array"
+        },
+        "next_cursor": {
+          "title": "Next Cursor",
+          "type": "string"
+        },
+        "progressed": {
+          "items": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "title": "Progressed",
+          "type": "array"
+        },
+        "role": {
+          "enum": [
+            "controller",
+            "worker",
+            "combined"
+          ],
+          "title": "Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "cursor",
+        "next_cursor",
+        "progressed",
+        "failures"
+      ],
+      "title": "SchedulerWorkBatch",
+      "type": "object"
+    },
     "signature": "\"(*, role: Literal['controller', 'worker', 'combined'], cursor: str, next_cursor: str, progressed: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], ...], failures: tuple[stove0_operator_contracts.SchedulerFailure, ...]) -> None\""
   },
   "distribution": "stove0-operator-contracts",

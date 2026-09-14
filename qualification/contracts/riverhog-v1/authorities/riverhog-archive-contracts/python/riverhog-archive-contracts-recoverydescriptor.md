@@ -14,13 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d67095667b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-abec65b109"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-e0278487f3"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-7c9daf6e77"></a>`module` | "riverhog_archive_contracts" |
-| <a id="s-b52f9fda9f"></a>`name` | "RecoveryDescriptor" |
-| <a id="s-a8c51a83ec"></a>`unit` | "export" |
+- <a id="s-e0278487f3"></a>`distribution`: `riverhog-archive-contracts`
+- <a id="s-7c9daf6e77"></a>`module`: `riverhog_archive_contracts`
+- <a id="s-b52f9fda9f"></a>`name`: `RecoveryDescriptor`
+- <a id="s-a8c51a83ec"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-68eb69d9af"></a>`kind`: `"class"`
+- <a id="s-8e67e400cc"></a>`signature`: `"\"(encryption: 'CollectionEncryptionBinding', root: 'ArchiveRootCiphertextIdentity', schema: 'str' = 'riverhog-recovery-descriptor/v1') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-0613215bfc"></a>`encryption` | `'CollectionEncryptionBinding'` | `required` |
+| <a id="s-8f752a2801"></a>`root` | `'ArchiveRootCiphertextIdentity'` | `required` |
+| <a id="s-2e44a13a84"></a>`schema` | `'str'` | `'riverhog-recovery-descriptor/v1'` |
 
 ## Maintained corroboration
 

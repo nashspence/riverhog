@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e546e745a0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-422da12982"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-78b135405d"></a>`distribution` | "stove0-target-support" |
-| <a id="s-04c4c5ed1a"></a>`module` | "stove0_target_support" |
-| <a id="s-7ce3f5caeb"></a>`name` | "TargetService" |
-| <a id="s-568c885e8b"></a>`unit` | "export" |
+- <a id="s-78b135405d"></a>`distribution`: `stove0-target-support`
+- <a id="s-04c4c5ed1a"></a>`module`: `stove0_target_support`
+- <a id="s-7ce3f5caeb"></a>`name`: `TargetService`
+- <a id="s-568c885e8b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-acb989a208"></a>`kind`: `"class"`
+- <a id="s-3140262d88"></a>`signature`: `"'(*args, **kwargs)'"`
 
 ## Maintained corroboration
 

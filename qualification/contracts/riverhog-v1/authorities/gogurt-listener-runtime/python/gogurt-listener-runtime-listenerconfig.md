@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-070199c165"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c0d6cc211c"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-10d2b301bf"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-85a9f64738"></a>`module` | "gogurt_listener_runtime" |
-| <a id="s-0ecbbe7fe0"></a>`name` | "ListenerConfig" |
-| <a id="s-a6329e81f8"></a>`unit` | "export" |
+- <a id="s-10d2b301bf"></a>`distribution`: `gogurt-listener-runtime`
+- <a id="s-85a9f64738"></a>`module`: `gogurt_listener_runtime`
+- <a id="s-0ecbbe7fe0"></a>`name`: `ListenerConfig`
+- <a id="s-a6329e81f8"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-574cbf7166"></a>`kind`: `"class"`
+- <a id="s-4e065b5a9e"></a>`signature`: `"\"(executable: 'Path', routes_file: 'Path', actions_dir: 'Path \| None', interval_seconds: 'float', state_dir: 'Path', mounted_volume_provider: 'GogurtProviderReference', listener_host_provider: 'GogurtProviderReference', autorun: 'bool' = True) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-36da8e85a8"></a>`executable` | `'Path'` | `required` |
+| <a id="s-d97b186294"></a>`routes_file` | `'Path'` | `required` |
+| <a id="s-fb4f89c7c2"></a>`actions_dir` | `'Path \| None'` | `required` |
+| <a id="s-f1201f84b8"></a>`interval_seconds` | `'float'` | `required` |
+| <a id="s-0adb7c9f3b"></a>`state_dir` | `'Path'` | `required` |
+| <a id="s-e9623d2e7d"></a>`mounted_volume_provider` | `'GogurtProviderReference'` | `required` |
+| <a id="s-2068fcc7b3"></a>`listener_host_provider` | `'GogurtProviderReference'` | `required` |
+| <a id="s-ac3dc937a6"></a>`autorun` | `'bool'` | `True` |
 
 ## Maintained corroboration
 

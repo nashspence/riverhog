@@ -14,13 +14,37 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-21fca26a4b"></a>
-| Field | Shape |
+- <a id="s-1c307a5c8f"></a>`distribution`: `stove0-media-metadata-observer-contracts`
+- <a id="s-e3746e4d8f"></a>`module`: `stove0_media_metadata_observer_contracts`
+- <a id="s-34bc7b1003"></a>`name`: `MediaArtifactFacts`
+- <a id="s-d6100014d2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-a329ca9abd"></a>`kind`: `"class"`
+- <a id="s-2b23ccdc62"></a>`signature`: `"\"(*, artifact_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], state: Literal['observed', 'unsupported'], facts: tuple[stove0_media_metadata_observer_contracts.contracts.MediaMetadataFact, ...] = ()) -> None\""`
+
+#### Validated model schema
+
+<a id="s-bfe04bf52f"></a>
+- <a id="s-0dc8c85ce3"></a>`title`: MediaArtifactFacts
+- <a id="s-69659dd347"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3c6dd9b0ec"></a>`artifact_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-5d0e028eda"></a>`facts` | no | type="array"; items=(#/$defs/MediaMetadataFact) |  |
+| <a id="s-64fd95ee2e"></a>`state` | yes | type="string"; enum=["observed","unsupported"] |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-2a1c616c74"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-1c307a5c8f"></a>`distribution` | "stove0-media-metadata-observer-contracts" |
-| <a id="s-e3746e4d8f"></a>`module` | "stove0_media_metadata_observer_contracts" |
-| <a id="s-34bc7b1003"></a>`name` | "MediaArtifactFacts" |
-| <a id="s-d6100014d2"></a>`unit` | "export" |
+| <a id="s-128351c62f"></a>`JsonValue` | empty object |
+| <a id="s-957f003757"></a>`MediaFactEvidence` | type="object"; fields=`artifact_id`, `field`; additional keys=`additionalProperties`, `required` |
+| <a id="s-9288049ca6"></a>`MediaMetadataFact` | type="object"; fields=`evidence`, `name`, `value`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -52,13 +76,124 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5648d7905fcc8516c1eae18069b31caddab51f8342530510a44051e622150157 -->
+<!-- exact-contract-value: 48b2357443bd75ebd5176a5a00dea746285d5dd320eb82c3f38489aaeb21b85f -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "64a2c3c20961d6282bdf02f4727399391df9329ca3212b0457d35d6f5dd60ce2",
+    "schema": {
+      "$defs": {
+        "JsonValue": {},
+        "MediaFactEvidence": {
+          "additionalProperties": false,
+          "description": "Exact artifact and ExifTool field from which one value was read.",
+          "properties": {
+            "artifact_id": {
+              "maxLength": 160,
+              "minLength": 1,
+              "title": "Artifact Id",
+              "type": "string"
+            },
+            "field": {
+              "maxLength": 240,
+              "minLength": 1,
+              "title": "Field",
+              "type": "string"
+            }
+          },
+          "required": [
+            "artifact_id",
+            "field"
+          ],
+          "title": "MediaFactEvidence",
+          "type": "object"
+        },
+        "MediaMetadataFact": {
+          "additionalProperties": false,
+          "properties": {
+            "evidence": {
+              "$ref": "#/$defs/MediaFactEvidence"
+            },
+            "name": {
+              "enum": [
+                "capture-time",
+                "container-format",
+                "creator",
+                "device-make",
+                "device-model",
+                "gps-latitude",
+                "gps-longitude"
+              ],
+              "title": "Name",
+              "type": "string"
+            },
+            "value": {
+              "$ref": "#/$defs/JsonValue"
+            }
+          },
+          "required": [
+            "name",
+            "value",
+            "evidence"
+          ],
+          "title": "MediaMetadataFact",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "unsupported"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "facts": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "artifact_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "facts": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/MediaMetadataFact"
+          },
+          "title": "Facts",
+          "type": "array"
+        },
+        "state": {
+          "enum": [
+            "observed",
+            "unsupported"
+          ],
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "state"
+      ],
+      "title": "MediaArtifactFacts",
+      "type": "object"
+    },
     "signature": "\"(*, artifact_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], state: Literal['observed', 'unsupported'], facts: tuple[stove0_media_metadata_observer_contracts.contracts.MediaMetadataFact, ...] = ()) -> None\""
   },
   "distribution": "stove0-media-metadata-observer-contracts",

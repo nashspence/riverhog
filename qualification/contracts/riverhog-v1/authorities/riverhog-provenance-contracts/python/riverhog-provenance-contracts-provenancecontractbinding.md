@@ -14,13 +14,26 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-eec57be6e3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-f71f5eb0a4"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-7a662c14a0"></a>`distribution` | "riverhog-provenance-contracts" |
-| <a id="s-061aa03156"></a>`module` | "riverhog_provenance_contracts" |
-| <a id="s-029457a1af"></a>`name` | "ProvenanceContractBinding" |
-| <a id="s-b393fc0f69"></a>`unit` | "export" |
+- <a id="s-7a662c14a0"></a>`distribution`: `riverhog-provenance-contracts`
+- <a id="s-061aa03156"></a>`module`: `riverhog_provenance_contracts`
+- <a id="s-029457a1af"></a>`name`: `ProvenanceContractBinding`
+- <a id="s-b393fc0f69"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-dc89cc68e2"></a>`kind`: `"class"`
+- <a id="s-d8cc76985e"></a>`signature`: `"\"(*, contract_id: 'str', schemas: 'Iterable[Mapping[str, Any]]') -> 'None'\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-fbd405824c"></a>`format` | `'str'` | `required` |
+| <a id="s-dc876e5b6d"></a>`contract_id` | `'str'` | `required` |
+| <a id="s-0852df3c78"></a>`contract_sha256` | `'str'` | `required` |
+| <a id="s-f935ed9fcd"></a>`schema_dialect` | `'str'` | `required` |
+| <a id="s-56245cc4ca"></a>`format_policy` | `'str'` | `required` |
+| <a id="s-3bd1e79564"></a>`_schemas_json` | `'bytes'` | `required` |
 
 ## Maintained corroboration
 

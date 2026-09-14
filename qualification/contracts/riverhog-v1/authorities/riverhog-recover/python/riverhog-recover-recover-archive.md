@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-46d6d88e34"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-efb4078d44"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6892e61931"></a>`distribution` | "riverhog-recover" |
-| <a id="s-d6cd35f849"></a>`module` | "riverhog_recover" |
-| <a id="s-b170351150"></a>`name` | "recover_archive" |
-| <a id="s-7101dec922"></a>`unit` | "export" |
+- <a id="s-6892e61931"></a>`distribution`: `riverhog-recover`
+- <a id="s-d6cd35f849"></a>`module`: `riverhog_recover`
+- <a id="s-b170351150"></a>`name`: `recover_archive`
+- <a id="s-7101dec922"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-35e0e533af"></a>`kind`: `"function"`
+- <a id="s-ea2029d95e"></a>`signature`: `"\"(archive_dir: 'Path', output_dir: 'Path', *, passphrases: 'Mapping[str, str]', age_command: 'str' = 'age') -> 'RecoverySummary'\""`
 
 ## Governing policies
 

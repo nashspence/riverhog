@@ -14,13 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a2e1505ad2"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-88aad8151c"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-e6fee813dc"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-b88ae841f9"></a>`module` | "riverhog_provenance" |
-| <a id="s-63454acb2e"></a>`name` | "ProvenancePayloadIdentity" |
-| <a id="s-bc2d19cc91"></a>`unit` | "export" |
+- <a id="s-e6fee813dc"></a>`distribution`: `riverhog-provenance`
+- <a id="s-b88ae841f9"></a>`module`: `riverhog_provenance`
+- <a id="s-63454acb2e"></a>`name`: `ProvenancePayloadIdentity`
+- <a id="s-bc2d19cc91"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-74d760ca2c"></a>`kind`: `"class"`
+- <a id="s-82bdec24a3"></a>`signature`: `"'(kind: \"Literal[\\'bindings\\', \\'journal\\']\", path: \\'str\\', bytes: \\'int\\', sha256: \\'str\\') -> None'"`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-4c40c1650e"></a>`kind` | `"Literal['bindings', 'journal']"` | `required` |
+| <a id="s-1efe372afe"></a>`path` | `'str'` | `required` |
+| <a id="s-5f7c8ae54e"></a>`bytes` | `'int'` | `required` |
+| <a id="s-b3a4095d28"></a>`sha256` | `'str'` | `required` |
 
 ## Maintained corroboration
 

@@ -14,13 +14,26 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-acfba6eabb"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-41ad8cd43c"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-df04607a71"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-115e4f9b88"></a>`module` | "riverhog_protocol" |
-| <a id="s-feae23b7a4"></a>`name` | "ProducerEvidence" |
-| <a id="s-d9b7d7007f"></a>`unit` | "export" |
+- <a id="s-df04607a71"></a>`distribution`: `riverhog-protocol`
+- <a id="s-115e4f9b88"></a>`module`: `riverhog_protocol`
+- <a id="s-feae23b7a4"></a>`name`: `ProducerEvidence`
+- <a id="s-d9b7d7007f"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ec720104c5"></a>`kind`: `"class"`
+- <a id="s-c1bc081d15"></a>`signature`: `"\"(producer_app: 'str', adapter_id: 'str', adapter_version: 'str', source_event_id: 'str', ingest_source: 'str', source_context: 'dict[str, JsonValue]') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-4c20e3f8dc"></a>`producer_app` | `'str'` | `required` |
+| <a id="s-93505b23e3"></a>`adapter_id` | `'str'` | `required` |
+| <a id="s-b6d10e7603"></a>`adapter_version` | `'str'` | `required` |
+| <a id="s-b45a3e22c4"></a>`source_event_id` | `'str'` | `required` |
+| <a id="s-a7bf2a5d68"></a>`ingest_source` | `'str'` | `required` |
+| <a id="s-4f1aadff02"></a>`source_context` | `'dict[str, JsonValue]'` | `required` |
 
 ## Maintained corroboration
 

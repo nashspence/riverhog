@@ -14,13 +14,29 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-66f5e845ea"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ddb2f2b858"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-a02aeebd1a"></a>`distribution` | "http-api-contracts" |
-| <a id="s-7bd38abf12"></a>`module` | "http_api_contracts" |
-| <a id="s-6b37ed451d"></a>`name` | "ErrorBody" |
-| <a id="s-1660f7149b"></a>`unit` | "export" |
+- <a id="s-a02aeebd1a"></a>`distribution`: `http-api-contracts`
+- <a id="s-7bd38abf12"></a>`module`: `http_api_contracts`
+- <a id="s-6b37ed451d"></a>`name`: `ErrorBody`
+- <a id="s-1660f7149b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e81d9ad753"></a>`kind`: `"class"`
+- <a id="s-8d39e038d5"></a>`signature`: `"'(*, code: Annotated[str, MinLen(min_length=1)], message: Annotated[str, MinLen(min_length=1)], details: dict[str, typing.Any] \| None = None) -> None'"`
+
+#### Validated model schema
+
+<a id="s-5887f8d888"></a>
+- <a id="s-dfb5755b79"></a>`title`: ErrorBody
+- <a id="s-a088576b95"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-53d24d4f9b"></a>`code` | yes | type="string"; minLength=1 |  |
+| <a id="s-e465fc5cf6"></a>`details` | no | anyOf=type="object"; additional keys=`additionalProperties` \| type="null" |  |
+| <a id="s-4da8dc85c7"></a>`message` | yes | type="string"; minLength=1 |  |
 
 ## Governing policies
 
@@ -46,13 +62,46 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 84da6f5626b193476a70086361d40f28ab8acdbd423c4ff6b5fecb5b7bc0d623 -->
+<!-- exact-contract-value: 1ab2f605ea4e543d54568d9b3aba4f5c7a0b60139b8119b380c30d79e917a215 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "6760c34bd592b6639dc349282b6e02f6cebfa1985aa1a5b2c1943c0faa367741",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Details"
+        },
+        "message": {
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "ErrorBody",
+      "type": "object"
+    },
     "signature": "'(*, code: Annotated[str, MinLen(min_length=1)], message: Annotated[str, MinLen(min_length=1)], details: dict[str, typing.Any] | None = None) -> None'"
   },
   "distribution": "http-api-contracts",

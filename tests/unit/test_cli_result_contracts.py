@@ -239,11 +239,14 @@ def test_every_json_result_resolves_to_an_exact_authority_and_selector(
     cli_surfaces: Mapping[str, Mapping[str, object]],
 ) -> None:
     allowed = {
+        "cli-local-exact-json",
         "cli-local-json-schema",
+        "cli-local-json-sequence",
+        "document-authority",
         "http-operation-response",
         "openapi-schema",
         "python-model",
-        "semantic-format",
+        "schema-authority",
     }
     resolved = 0
     for authority, root in cli_surfaces.items():
@@ -276,6 +279,36 @@ def test_every_json_result_resolves_to_an_exact_authority_and_selector(
                             Draft202012Validator.check_schema(json_authority["schema"])
                         resolved += 1
     assert resolved > 100
+
+
+def test_unresolved_json_format_and_unknown_runtime_selector_fail_closed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    contract = _contract_module()
+    planning = importlib.import_module("stove0_review_planning.conformance")
+    original = planning._CLI_RESULT_CONTRACT
+
+    unresolved = json.loads(json.dumps(original))
+    unresolved["profiles"]["machine-report"]["success"][0]["stdout"]["json"] = "unowned-format/v1"
+    monkeypatch.setattr(planning, "_CLI_RESULT_CONTRACT", unresolved)
+    with pytest.raises(contract.ContractFreezeError, match="does not resolve"):
+        contract._apply_cli_result_contract(
+            "stove0-review-planning",
+            contract._argparse_command(planning._parser()),
+            operations=contract.operation_qualification.operation_matrix(),
+            openapi=contract._openapi_surfaces(),
+        )
+
+    unknown_selector = json.loads(json.dumps(original))
+    unknown_selector["outcome_selectors"]["reported"] = {"kind": "misspelled-completion"}
+    monkeypatch.setattr(planning, "_CLI_RESULT_CONTRACT", unknown_selector)
+    with pytest.raises(contract.ContractFreezeError, match="selector kind is unknown"):
+        contract._apply_cli_result_contract(
+            "stove0-review-planning",
+            contract._argparse_command(planning._parser()),
+            operations=contract.operation_qualification.operation_matrix(),
+            openapi=contract._openapi_surfaces(),
+        )
 
 
 def test_framework_terminating_controls_are_discovered_without_completion_side_effects(

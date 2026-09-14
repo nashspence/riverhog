@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0c91a344e9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c29eeda73e"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-a84751643f"></a>`distribution` | "http-api-contracts" |
-| <a id="s-a08c308ad4"></a>`module` | "http_api_contracts" |
-| <a id="s-08473c4e0a"></a>`name` | "BrowsePageToken" |
-| <a id="s-7a60c15e8d"></a>`unit` | "export" |
+- <a id="s-a84751643f"></a>`distribution`: `http-api-contracts`
+- <a id="s-a08c308ad4"></a>`module`: `http_api_contracts`
+- <a id="s-08473c4e0a"></a>`name`: `BrowsePageToken`
+- <a id="s-7a60c15e8d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-c862393969"></a>`kind`: `"type-alias"`
+- <a id="s-42b6794184"></a>`value`: `"typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=8192, pattern=None, ascii_only=None)]"`
 
 ## Governing policies
 

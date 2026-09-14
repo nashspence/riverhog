@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e29a11199e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-eff63e1b46"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c5f2272f2b"></a>`distribution` | "stove0-server" |
-| <a id="s-9014414f37"></a>`module` | "stove0_core" |
-| <a id="s-8ddd509c29"></a>`name` | "record_target_status" |
-| <a id="s-fac7afe155"></a>`owner` | "stove0_core.Stove0WorkService" |
-| <a id="s-53e9cd4f44"></a>`unit` | "member" |
+- <a id="s-c5f2272f2b"></a>`distribution`: `stove0-server`
+- <a id="s-9014414f37"></a>`module`: `stove0_core`
+- <a id="s-8ddd509c29"></a>`name`: `record_target_status`
+- <a id="s-fac7afe155"></a>`owner`: `stove0_core.Stove0WorkService`
+- <a id="s-53e9cd4f44"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-9ee3321603"></a>`kind`: `"method"`
+- <a id="s-ac35fc0c53"></a>`signature`: `"\"(self, work_id: 'str', status: 'TargetJobStatus', *, operation: 'OperationContract', expected_revision: 'int') -> 'WorkRecord'\""`
 
 ## Maintained corroboration
 

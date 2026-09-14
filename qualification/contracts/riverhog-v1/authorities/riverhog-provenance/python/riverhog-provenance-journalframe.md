@@ -14,13 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1a903e0b15"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3ea849be4f"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-a945304194"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-b5303fa8fe"></a>`module` | "riverhog_provenance" |
-| <a id="s-1c30d16ead"></a>`name` | "JournalFrame" |
-| <a id="s-1ea76144a7"></a>`unit` | "export" |
+- <a id="s-a945304194"></a>`distribution`: `riverhog-provenance`
+- <a id="s-b5303fa8fe"></a>`module`: `riverhog_provenance`
+- <a id="s-1c30d16ead"></a>`name`: `JournalFrame`
+- <a id="s-1ea76144a7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-d11ee0b57e"></a>`kind`: `"class"`
+- <a id="s-8220a3dae6"></a>`signature`: `"\"(sequence: 'int', json_bytes: 'bytes', document: 'JsonObject', sha256: 'str') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-39afed9053"></a>`sequence` | `'int'` | `required` |
+| <a id="s-7456cdb4b0"></a>`json_bytes` | `'bytes'` | `required` |
+| <a id="s-b58a147990"></a>`document` | `'JsonObject'` | `required` |
+| <a id="s-3c30b54b19"></a>`sha256` | `'str'` | `required` |
 
 ## Governing policies
 

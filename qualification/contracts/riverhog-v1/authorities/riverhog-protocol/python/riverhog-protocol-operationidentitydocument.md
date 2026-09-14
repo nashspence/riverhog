@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fcbbbc44c7"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-05d8aa21b4"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-f31de61ef2"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-47669e91dd"></a>`module` | "riverhog_protocol" |
-| <a id="s-6f99ad08f3"></a>`name` | "OperationIdentityDocument" |
-| <a id="s-e2bfaac9d0"></a>`unit` | "export" |
+- <a id="s-f31de61ef2"></a>`distribution`: `riverhog-protocol`
+- <a id="s-47669e91dd"></a>`module`: `riverhog_protocol`
+- <a id="s-6f99ad08f3"></a>`name`: `OperationIdentityDocument`
+- <a id="s-e2bfaac9d0"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-74ec797e5f"></a>`kind`: `"class"`
+- <a id="s-5796af01dd"></a>`signature`: `"\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$')], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-403822726a"></a>
+- <a id="s-f0e7c23ae3"></a>`title`: OperationIdentityDocument
+- <a id="s-c2aa956a4b"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-455cddd580"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-14a663d1f4"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -52,13 +67,33 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c962b9676818a1ab254fff7a98cf0e4d4d19faca4358f432d690580fa85bb764 -->
+<!-- exact-contract-value: 70098bdf7e8856aae9852d4c1a1f0068b054902aa82620058995982921b385de -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "8edceb5ac10853866a052a46257f6386a34c5bd639e7416a8eabfdb516ec77a0",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "sha256"
+      ],
+      "title": "OperationIdentityDocument",
+      "type": "object"
+    },
     "signature": "\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$')], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
   },
   "distribution": "riverhog-protocol",

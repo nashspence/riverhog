@@ -14,13 +14,36 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-99aa99dbbe"></a>
-| Field | Shape |
+- <a id="s-9c778d8d73"></a>`distribution`: `stove0-media-metadata-observer-contracts`
+- <a id="s-4ac12ed9fa"></a>`module`: `stove0_media_metadata_observer_contracts`
+- <a id="s-e5a61a906d"></a>`name`: `MediaMetadataFact`
+- <a id="s-bdecce9aa4"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-f93b9429ae"></a>`kind`: `"class"`
+- <a id="s-7d6ac34844"></a>`signature`: `"\"(*, name: Literal['capture-time', 'container-format', 'creator', 'device-make', 'device-model', 'gps-latitude', 'gps-longitude'], value: JsonValue, evidence: stove0_media_metadata_observer_contracts.contracts.MediaFactEvidence) -> None\""`
+
+#### Validated model schema
+
+<a id="s-1ea8c031f9"></a>
+- <a id="s-2948062346"></a>`title`: MediaMetadataFact
+- <a id="s-c50044e3ec"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-85da213ab6"></a>`evidence` | yes | #/$defs/MediaFactEvidence |  |
+| <a id="s-aff70022ce"></a>`name` | yes | type="string"; enum=["capture-time","container-format","creator","device-make","device-model","gps-latitude","gps-longitude"] |  |
+| <a id="s-a6a962ed5c"></a>`value` | yes | #/$defs/JsonValue |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-47d392e90d"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-9c778d8d73"></a>`distribution` | "stove0-media-metadata-observer-contracts" |
-| <a id="s-4ac12ed9fa"></a>`module` | "stove0_media_metadata_observer_contracts" |
-| <a id="s-e5a61a906d"></a>`name` | "MediaMetadataFact" |
-| <a id="s-bdecce9aa4"></a>`unit` | "export" |
+| <a id="s-62e920a617"></a>`JsonValue` | empty object |
+| <a id="s-c2f402a43a"></a>`MediaFactEvidence` | type="object"; fields=`artifact_id`, `field`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
@@ -46,13 +69,70 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 310d5bf5d6c63faba7aaad2bba87a255b95cf03bbd0b9275f239fcdc64486b70 -->
+<!-- exact-contract-value: 645b51cd0393ba7d404be5a816c94a3653211e7393b39211f479ea3e5d5638cd -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "6bf6c513c1eaffa8790cfceb1ed51efcb1005ba23283931318c474e2d251aca0",
+    "schema": {
+      "$defs": {
+        "JsonValue": {},
+        "MediaFactEvidence": {
+          "additionalProperties": false,
+          "description": "Exact artifact and ExifTool field from which one value was read.",
+          "properties": {
+            "artifact_id": {
+              "maxLength": 160,
+              "minLength": 1,
+              "title": "Artifact Id",
+              "type": "string"
+            },
+            "field": {
+              "maxLength": 240,
+              "minLength": 1,
+              "title": "Field",
+              "type": "string"
+            }
+          },
+          "required": [
+            "artifact_id",
+            "field"
+          ],
+          "title": "MediaFactEvidence",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "$ref": "#/$defs/MediaFactEvidence"
+        },
+        "name": {
+          "enum": [
+            "capture-time",
+            "container-format",
+            "creator",
+            "device-make",
+            "device-model",
+            "gps-latitude",
+            "gps-longitude"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/JsonValue"
+        }
+      },
+      "required": [
+        "name",
+        "value",
+        "evidence"
+      ],
+      "title": "MediaMetadataFact",
+      "type": "object"
+    },
     "signature": "\"(*, name: Literal['capture-time', 'container-format', 'creator', 'device-make', 'device-model', 'gps-latitude', 'gps-longitude'], value: JsonValue, evidence: stove0_media_metadata_observer_contracts.contracts.MediaFactEvidence) -> None\""
   },
   "distribution": "stove0-media-metadata-observer-contracts",

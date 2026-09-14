@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b5e2f12571"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-5e58b9056d"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-68320fcb39"></a>`distribution` | "stove0-target-support" |
-| <a id="s-0fc8b7836f"></a>`module` | "stove0_target_support" |
-| <a id="s-12b0859d42"></a>`name` | "handle" |
-| <a id="s-56de72cf95"></a>`owner` | "stove0_target_support.TargetHttpBinding" |
-| <a id="s-ad31ae3d48"></a>`unit` | "member" |
+- <a id="s-68320fcb39"></a>`distribution`: `stove0-target-support`
+- <a id="s-0fc8b7836f"></a>`module`: `stove0_target_support`
+- <a id="s-12b0859d42"></a>`name`: `handle`
+- <a id="s-56de72cf95"></a>`owner`: `stove0_target_support.TargetHttpBinding`
+- <a id="s-ad31ae3d48"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ef27126583"></a>`kind`: `"method"`
+- <a id="s-f458841ad1"></a>`signature`: `"\"(self, method: 'str', path: 'str', body: 'bytes' = b'') -> 'TargetHttpResponse'\""`
 
 ## Maintained corroboration
 

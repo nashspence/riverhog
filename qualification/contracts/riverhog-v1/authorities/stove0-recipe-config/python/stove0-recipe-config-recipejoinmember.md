@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-cf9be6eb91"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-676a986a86"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-04369fd660"></a>`distribution` | "stove0-recipe-config" |
-| <a id="s-cb5b8af0b6"></a>`module` | "stove0_recipe_config" |
-| <a id="s-b43aa245d4"></a>`name` | "RecipeJoinMember" |
-| <a id="s-d2ffdc69e6"></a>`unit` | "export" |
+- <a id="s-04369fd660"></a>`distribution`: `stove0-recipe-config`
+- <a id="s-cb5b8af0b6"></a>`module`: `stove0_recipe_config`
+- <a id="s-b43aa245d4"></a>`name`: `RecipeJoinMember`
+- <a id="s-d2ffdc69e6"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-b9c9359951"></a>`kind`: `"class"`
+- <a id="s-3fc46aaeb3"></a>`signature`: `"\"(*, branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], output_roles: Annotated[tuple[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...], MinLen(min_length=1)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-b3976bdc31"></a>
+- <a id="s-a353b7b8df"></a>`title`: RecipeJoinMember
+- <a id="s-74dbfb34bf"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e882923afd"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-a081eaf028"></a>`output_roles` | yes | type="array"; minItems=1; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
 
 ## Maintained corroboration
 
@@ -52,13 +67,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b3c9ac5263de0255d5fe8f9923acca755a0ab1572d798584149d2f2d69fe8db7 -->
+<!-- exact-contract-value: 5c23b0d3f89c1f60e7b5e0e47b96c4167e36a0abaebb28b9494c56610b382ed0 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "f96f0cc79aff67369a99fa4bb8d4b8f29e89bdd258e990af58d3e937574ad43f",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "branch_id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Branch Id",
+          "type": "string"
+        },
+        "output_roles": {
+          "items": {
+            "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Output Roles",
+          "type": "array"
+        }
+      },
+      "required": [
+        "branch_id",
+        "output_roles"
+      ],
+      "title": "RecipeJoinMember",
+      "type": "object"
+    },
     "signature": "\"(*, branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], output_roles: Annotated[tuple[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...], MinLen(min_length=1)]) -> None\""
   },
   "distribution": "stove0-recipe-config",

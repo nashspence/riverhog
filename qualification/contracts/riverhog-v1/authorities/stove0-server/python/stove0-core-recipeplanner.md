@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-85e2915dba"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7c2e268d4f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-01cfbe7387"></a>`distribution` | "stove0-server" |
-| <a id="s-8ed2a24a98"></a>`module` | "stove0_core" |
-| <a id="s-3cf98f175b"></a>`name` | "RecipePlanner" |
-| <a id="s-430af5a5c7"></a>`unit` | "export" |
+- <a id="s-01cfbe7387"></a>`distribution`: `stove0-server`
+- <a id="s-8ed2a24a98"></a>`module`: `stove0_core`
+- <a id="s-3cf98f175b"></a>`name`: `RecipePlanner`
+- <a id="s-430af5a5c7"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-9546d3f424"></a>`kind`: `"class"`
+- <a id="s-eeee34cd55"></a>`signature`: `"\"(*, catalog: 'RecipeCatalog', riverhog: 'ApiClient', observers: 'ObserverPort', targets: 'TargetPort') -> 'None'\""`
 
 ## Maintained corroboration
 

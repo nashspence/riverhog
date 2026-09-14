@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-af0da57744"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-13f73ff1db"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-557b6c51b5"></a>`distribution` | "riverhog-provenance-contracts" |
-| <a id="s-470f52ec52"></a>`module` | "riverhog_provenance_contracts" |
-| <a id="s-c693f7e153"></a>`name` | "ProvenanceStateId" |
-| <a id="s-902c17074f"></a>`unit` | "export" |
+- <a id="s-557b6c51b5"></a>`distribution`: `riverhog-provenance-contracts`
+- <a id="s-470f52ec52"></a>`module`: `riverhog_provenance_contracts`
+- <a id="s-c693f7e153"></a>`name`: `ProvenanceStateId`
+- <a id="s-902c17074f"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-85ad7fee6d"></a>`kind`: `"type-alias"`
+- <a id="s-86d15913ea"></a>`value`: `"typing.Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$')]), AfterValidator(func=<function _state_id>)]"`
 
 ## Governing policies
 

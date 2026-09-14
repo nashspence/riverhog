@@ -14,13 +14,26 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c32b4a25dd"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-49e70ac729"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-ffb56a6616"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-c3267644b8"></a>`module` | "riverhog_provenance" |
-| <a id="s-dd7c5440cf"></a>`name` | "ProvenanceObserverBinding" |
-| <a id="s-3b95ebc712"></a>`unit` | "export" |
+- <a id="s-ffb56a6616"></a>`distribution`: `riverhog-provenance`
+- <a id="s-c3267644b8"></a>`module`: `riverhog_provenance`
+- <a id="s-dd7c5440cf"></a>`name`: `ProvenanceObserverBinding`
+- <a id="s-3b95ebc712"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-9d5b6fdfa2"></a>`kind`: `"class"`
+- <a id="s-fdd8ab1793"></a>`signature`: `"\"(observer_id: 'str', contract_provider: 'str', contract_id: 'str', contract_sha256: 'str', factory: 'FileStateObserverFactory', format: 'str' = 'riverhog-provenance-observer-binding/v1') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-14310170b8"></a>`observer_id` | `'str'` | `required` |
+| <a id="s-4fc283e217"></a>`contract_provider` | `'str'` | `required` |
+| <a id="s-ccbc87d875"></a>`contract_id` | `'str'` | `required` |
+| <a id="s-81dff460ba"></a>`contract_sha256` | `'str'` | `required` |
+| <a id="s-31f69e0e7f"></a>`factory` | `'FileStateObserverFactory'` | `required` |
+| <a id="s-b7450d4abe"></a>`format` | `'str'` | `'riverhog-provenance-observer-binding/v1'` |
 
 ## Governing policies
 

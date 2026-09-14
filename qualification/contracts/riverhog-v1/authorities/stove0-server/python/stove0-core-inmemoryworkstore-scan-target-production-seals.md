@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e5eb2ae55d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a4de9af476"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7971359cf7"></a>`distribution` | "stove0-server" |
-| <a id="s-4fe24d3e03"></a>`module` | "stove0_core" |
-| <a id="s-8fc646e2dd"></a>`name` | "scan_target_production_seals" |
-| <a id="s-c3a00de9e3"></a>`owner` | "stove0_core.InMemoryWorkStore" |
-| <a id="s-f923ed949f"></a>`unit` | "member" |
+- <a id="s-7971359cf7"></a>`distribution`: `stove0-server`
+- <a id="s-4fe24d3e03"></a>`module`: `stove0_core`
+- <a id="s-8fc646e2dd"></a>`name`: `scan_target_production_seals`
+- <a id="s-c3a00de9e3"></a>`owner`: `stove0_core.InMemoryWorkStore`
+- <a id="s-f923ed949f"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-bf78840f8c"></a>`kind`: `"method"`
+- <a id="s-32fc35078d"></a>`signature`: `"\"(self, *, state: 'TargetProductionSealState', limit: 'int') -> 'tuple[TargetProductionSealRecord, ...]'\""`
 
 ## Maintained corroboration
 

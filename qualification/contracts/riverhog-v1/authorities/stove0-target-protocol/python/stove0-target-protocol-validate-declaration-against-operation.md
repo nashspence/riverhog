@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-000946ca49"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-782d4c6d31"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-9f3fdf555f"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-35b1ffb756"></a>`module` | "stove0_target_protocol" |
-| <a id="s-0154eb91ea"></a>`name` | "validate_declaration_against_operation" |
-| <a id="s-281a96e339"></a>`unit` | "export" |
+- <a id="s-9f3fdf555f"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-35b1ffb756"></a>`module`: `stove0_target_protocol`
+- <a id="s-0154eb91ea"></a>`name`: `validate_declaration_against_operation`
+- <a id="s-281a96e339"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-ed5a9f2562"></a>`kind`: `"function"`
+- <a id="s-340f128908"></a>`signature`: `"\"(declaration: 'TargetDeclaration', operation: 'OperationContract') -> 'None'\""`
 
 ## Governing policies
 

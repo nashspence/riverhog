@@ -14,13 +14,42 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a53f1e89da"></a>
-| Field | Shape |
+- <a id="s-18e3233808"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-9e6f450fff"></a>`module`: `stove0_operator_contracts`
+- <a id="s-6608828010"></a>`name`: `AdmissionPolicyStatus`
+- <a id="s-b35967e0e6"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-bedb584586"></a>`kind`: `"class"`
+- <a id="s-83f2c0efa8"></a>`signature`: `"\"(*, policy: stove0_operator_contracts.AdmissionPolicy, policy_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], phase: Literal['new', 'baseline', 'following', 'reset_required'], source_identity: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, authorization_view_identity: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, baseline_mode: Literal['observe', 'backfill'], through_revision: Annotated[str, _PydanticGeneralMetadata(pattern='^(?:0\|[1-9][0-9]*)$')], updated_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=40)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-3203bf160f"></a>
+- <a id="s-ba3bd9a772"></a>`title`: AdmissionPolicyStatus
+- <a id="s-7c331f0fe3"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-61e92577bf"></a>`authorization_view_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-14107432f2"></a>`baseline_mode` | yes | type="string"; enum=["observe","backfill"] |  |
+| <a id="s-b089560ded"></a>`phase` | yes | type="string"; enum=["new","baseline","following","reset_required"] |  |
+| <a id="s-2df79306d7"></a>`policy` | yes | #/$defs/AdmissionPolicy |  |
+| <a id="s-aee0f3b523"></a>`policy_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-579dc64d48"></a>`source_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-600e42a725"></a>`through_revision` | yes | type="string"; pattern="^(?:0\|[1-9][0-9]*)$" |  |
+| <a id="s-3c47e8b3e9"></a>`updated_at` | yes | type="string"; minLength=1; maxLength=40 |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-afc793dbff"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-18e3233808"></a>`distribution` | "stove0-operator-contracts" |
-| <a id="s-9e6f450fff"></a>`module` | "stove0_operator_contracts" |
-| <a id="s-6608828010"></a>`name` | "AdmissionPolicyStatus" |
-| <a id="s-b35967e0e6"></a>`unit` | "export" |
+| <a id="s-e72ad30da5"></a>`AdmissionPolicy` | type="object"; fields=`automatic_preview`, `effective_intent`, `format`, `id`, `recipe_id`, `recipe_revision`, `recipe_sha256`, `required_tags`, `revision`; additional keys=`additionalProperties`, `required` |
+| <a id="s-0c9cd7d2a9"></a>`CollectionTag` | type="string"; minLength=1; maxLength=65536; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
+| <a id="s-9f78c43b46"></a>`JsonValue` | empty object |
 
 ## Maintained corroboration
 
@@ -52,13 +81,178 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ebec4902282499c842c0fb9cf2d52070a77470526bbff9762addc70b563392a8 -->
+<!-- exact-contract-value: 80e84112a284eba2985a88c3dc95efcfe2362373ff96797a19b4ca6bb5b2dba5 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "5f0c6158276ff3ee0f2695bf26ec3c7aa12e1b9341146ab950503d5efdf49ada",
+    "schema": {
+      "$defs": {
+        "AdmissionPolicy": {
+          "additionalProperties": false,
+          "description": "One bounded, exact all-of classification admission rule.",
+          "properties": {
+            "automatic_preview": {
+              "const": "accept-ready",
+              "default": "accept-ready",
+              "title": "Automatic Preview",
+              "type": "string"
+            },
+            "effective_intent": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "title": "Effective Intent",
+              "type": "object"
+            },
+            "format": {
+              "const": "stove0-admission-policy/v1",
+              "default": "stove0-admission-policy/v1",
+              "title": "Format",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "recipe_id": {
+              "maxLength": 160,
+              "minLength": 1,
+              "title": "Recipe Id",
+              "type": "string"
+            },
+            "recipe_revision": {
+              "minimum": 1,
+              "title": "Recipe Revision",
+              "type": "integer"
+            },
+            "recipe_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Recipe Sha256",
+              "type": "string"
+            },
+            "required_tags": {
+              "items": {
+                "$ref": "#/$defs/CollectionTag"
+              },
+              "maxItems": 100,
+              "minItems": 1,
+              "title": "Required Tags",
+              "type": "array",
+              "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-exact-classification-admission-predicate"
+              }
+            },
+            "revision": {
+              "minimum": 1,
+              "title": "Revision",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "id",
+            "revision",
+            "required_tags",
+            "recipe_id",
+            "recipe_revision",
+            "recipe_sha256"
+          ],
+          "title": "AdmissionPolicy",
+          "type": "object"
+        },
+        "CollectionTag": {
+          "maxLength": 65536,
+          "minLength": 1,
+          "type": "string",
+          "x-riverhog-encoded-bytes-max": 65536,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-human-authored-collection-tag"
+          },
+          "x-unicode-normalization": "NFC"
+        },
+        "JsonValue": {}
+      },
+      "additionalProperties": false,
+      "properties": {
+        "authorization_view_identity": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Authorization View Identity"
+        },
+        "baseline_mode": {
+          "enum": [
+            "observe",
+            "backfill"
+          ],
+          "title": "Baseline Mode",
+          "type": "string"
+        },
+        "phase": {
+          "enum": [
+            "new",
+            "baseline",
+            "following",
+            "reset_required"
+          ],
+          "title": "Phase",
+          "type": "string"
+        },
+        "policy": {
+          "$ref": "#/$defs/AdmissionPolicy"
+        },
+        "policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Policy Sha256",
+          "type": "string"
+        },
+        "source_identity": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Identity"
+        },
+        "through_revision": {
+          "pattern": "^(?:0|[1-9][0-9]*)$",
+          "title": "Through Revision",
+          "type": "string"
+        },
+        "updated_at": {
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Updated At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "policy",
+        "policy_sha256",
+        "phase",
+        "baseline_mode",
+        "through_revision",
+        "updated_at"
+      ],
+      "title": "AdmissionPolicyStatus",
+      "type": "object"
+    },
     "signature": "\"(*, policy: stove0_operator_contracts.AdmissionPolicy, policy_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], phase: Literal['new', 'baseline', 'following', 'reset_required'], source_identity: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, authorization_view_identity: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, baseline_mode: Literal['observe', 'backfill'], through_revision: Annotated[str, _PydanticGeneralMetadata(pattern='^(?:0|[1-9][0-9]*)$')], updated_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=40)]) -> None\""
   },
   "distribution": "stove0-operator-contracts",

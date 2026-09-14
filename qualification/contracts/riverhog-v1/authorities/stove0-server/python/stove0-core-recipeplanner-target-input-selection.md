@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e4325ab3d7"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a296a1199b"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-c59a94fcee"></a>`distribution` | "stove0-server" |
-| <a id="s-aebf211dae"></a>`module` | "stove0_core" |
-| <a id="s-31d9ccd04b"></a>`name` | "target_input_selection" |
-| <a id="s-ff2768f17c"></a>`owner` | "stove0_core.RecipePlanner" |
-| <a id="s-be470a2b53"></a>`unit` | "member" |
+- <a id="s-c59a94fcee"></a>`distribution`: `stove0-server`
+- <a id="s-aebf211dae"></a>`module`: `stove0_core`
+- <a id="s-31d9ccd04b"></a>`name`: `target_input_selection`
+- <a id="s-ff2768f17c"></a>`owner`: `stove0_core.RecipePlanner`
+- <a id="s-be470a2b53"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-d786b59ca7"></a>`kind`: `"method"`
+- <a id="s-e92603d9b1"></a>`signature`: `"\"(self, plan: 'WorkflowPlan', selections: 'Mapping[str, ArtifactSelection]') -> 'ArtifactSelection'\""`
 
 ## Maintained corroboration
 

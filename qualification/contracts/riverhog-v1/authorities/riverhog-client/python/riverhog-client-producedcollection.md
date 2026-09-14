@@ -14,13 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-02a57ac2ae"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c585df47b4"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-9c8ae74029"></a>`distribution` | "riverhog-client" |
-| <a id="s-d873aed8ea"></a>`module` | "riverhog_client" |
-| <a id="s-923485e9e5"></a>`name` | "ProducedCollection" |
-| <a id="s-3a1d362daa"></a>`unit` | "export" |
+- <a id="s-9c8ae74029"></a>`distribution`: `riverhog-client`
+- <a id="s-d873aed8ea"></a>`module`: `riverhog_client`
+- <a id="s-923485e9e5"></a>`name`: `ProducedCollection`
+- <a id="s-3a1d362daa"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-bae50fad2d"></a>`kind`: `"class"`
+- <a id="s-b33322b666"></a>`signature`: `"\"(collection_id: 'CollectionId', archive_root_sha256: 'str', content_identity: 'str', receipt: 'dict[str, Any]') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-281850063c"></a>`collection_id` | `'CollectionId'` | `required` |
+| <a id="s-643cc3655a"></a>`archive_root_sha256` | `'str'` | `required` |
+| <a id="s-f35429893d"></a>`content_identity` | `'str'` | `required` |
+| <a id="s-aa9d38b2ce"></a>`receipt` | `'dict[str, Any]'` | `required` |
 
 ## Governing policies
 

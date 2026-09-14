@@ -14,13 +14,33 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e55fe2bc05"></a>
-| Field | Shape |
+- <a id="s-e72f049f29"></a>`distribution`: `stove0-review-target-support`
+- <a id="s-b74952cfa1"></a>`module`: `stove0_review_target_support`
+- <a id="s-6b0b03ea44"></a>`name`: `ReviewTargetConfig`
+- <a id="s-38ac975c44"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-d5db7b461b"></a>`kind`: `"class"`
+- <a id="s-60b99e18f4"></a>`signature`: `"'(*, samplers: Annotated[tuple[stove0_review_target_support.app.SamplerConfig, ...], MinLen(min_length=1)]) -> None'"`
+
+#### Validated model schema
+
+<a id="s-243034401d"></a>
+- <a id="s-851f772f9b"></a>`title`: ReviewTargetConfig
+- <a id="s-261a0d1b65"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-849c1b0a82"></a>`samplers` | yes | type="array"; minItems=1; items=(#/$defs/SamplerConfig) |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-492eb21fa4"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-e72f049f29"></a>`distribution` | "stove0-review-target-support" |
-| <a id="s-b74952cfa1"></a>`module` | "stove0_review_target_support" |
-| <a id="s-6b0b03ea44"></a>`name` | "ReviewTargetConfig" |
-| <a id="s-38ac975c44"></a>`unit` | "export" |
+| <a id="s-50d7f1f942"></a>`SamplerConfig` | type="object"; fields=`allow_insecure_http`, `base_url`, `descriptor_sha256`, `id`, `image_digest`, `token_file`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -52,13 +72,77 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1ef2f392a9829e8b414d990221b24731ead8e1d8ce15ccf15bcec23a0e93eb4a -->
+<!-- exact-contract-value: 87d893a0228a99a18f4ff87b408428c6d2489f21ed5b34710bbb21790b892796 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "465ba4684267b5a403b655bcbaaa58dbe51e259b14ffa6dc2fbd902af816ff0c",
+    "schema": {
+      "$defs": {
+        "SamplerConfig": {
+          "additionalProperties": false,
+          "properties": {
+            "allow_insecure_http": {
+              "default": false,
+              "title": "Allow Insecure Http",
+              "type": "boolean"
+            },
+            "base_url": {
+              "maxLength": 2048,
+              "minLength": 1,
+              "title": "Base Url",
+              "type": "string"
+            },
+            "descriptor_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Descriptor Sha256",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,118}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "image_digest": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Image Digest",
+              "type": "string"
+            },
+            "token_file": {
+              "format": "path",
+              "title": "Token File",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "base_url",
+            "token_file",
+            "descriptor_sha256",
+            "image_digest"
+          ],
+          "title": "SamplerConfig",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "samplers": {
+          "items": {
+            "$ref": "#/$defs/SamplerConfig"
+          },
+          "minItems": 1,
+          "title": "Samplers",
+          "type": "array"
+        }
+      },
+      "required": [
+        "samplers"
+      ],
+      "title": "ReviewTargetConfig",
+      "type": "object"
+    },
     "signature": "'(*, samplers: Annotated[tuple[stove0_review_target_support.app.SamplerConfig, ...], MinLen(min_length=1)]) -> None'"
   },
   "distribution": "stove0-review-target-support",

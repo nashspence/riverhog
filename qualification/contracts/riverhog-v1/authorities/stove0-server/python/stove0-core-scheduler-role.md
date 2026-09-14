@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2f944398b3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-bddc7114c7"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b025422a6f"></a>`distribution` | "stove0-server" |
-| <a id="s-57f0c1f417"></a>`module` | "stove0_core" |
-| <a id="s-a200110cc3"></a>`name` | "scheduler_role" |
-| <a id="s-a1578e57f8"></a>`unit` | "export" |
+- <a id="s-b025422a6f"></a>`distribution`: `stove0-server`
+- <a id="s-57f0c1f417"></a>`module`: `stove0_core`
+- <a id="s-a200110cc3"></a>`name`: `scheduler_role`
+- <a id="s-a1578e57f8"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-bba5159c35"></a>`kind`: `"function"`
+- <a id="s-7185c3119f"></a>`signature`: `"\"(value: 'str') -> 'SchedulerRole'\""`
 
 ## Governing policies
 

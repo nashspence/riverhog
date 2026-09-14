@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1430137ed4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9268dead1f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-a6e0647e80"></a>`distribution` | "stove0-server" |
-| <a id="s-3bac176451"></a>`module` | "stove0_core" |
-| <a id="s-c437567062"></a>`name` | "Stove0Coordinator" |
-| <a id="s-979f7880cf"></a>`unit` | "export" |
+- <a id="s-a6e0647e80"></a>`distribution`: `stove0-server`
+- <a id="s-3bac176451"></a>`module`: `stove0_core`
+- <a id="s-c437567062"></a>`name`: `Stove0Coordinator`
+- <a id="s-979f7880cf"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-e944aa968f"></a>`kind`: `"class"`
+- <a id="s-4407ce5137"></a>`signature`: `"\"(work: 'Stove0WorkService', *, riverhog: 'RiverhogControlPort', planning: 'PlanningPort', observers: 'ObserverPort', targets: 'TargetPort', target_callbacks: 'TargetCallbackPort') -> 'None'\""`
 
 ## Maintained corroboration
 

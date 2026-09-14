@@ -11,6 +11,24 @@ from .errors import ProvenanceObserverError
 INSTALLATION_ID_FILENAME = "provenance-installation-id"
 
 
+def _installation_id_state_contract() -> dict[str, object]:
+    """Return the exact persisted installation-identity structure."""
+
+    return {
+        "kind": "text-document",
+        "encoding": "ascii",
+        "line_count": 1,
+        "value": {
+            "kind": "canonical-uuid-urn",
+            "pattern": (
+                r"^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-"
+                r"[0-9a-f]{4}-[0-9a-f]{12}$"
+            ),
+        },
+        "terminator": "LF",
+    }
+
+
 def user_installation_id(application: str) -> str:
     """Return an opaque identity persisted in the application's user state."""
 

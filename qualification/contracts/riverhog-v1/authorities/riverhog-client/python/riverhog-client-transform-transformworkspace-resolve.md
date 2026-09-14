@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1e5936f70d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d27d335a61"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-7922793027"></a>`distribution` | "riverhog-client" |
-| <a id="s-1a3e51061b"></a>`module` | "riverhog_client.transform" |
-| <a id="s-c0fdbb6c13"></a>`name` | "resolve" |
-| <a id="s-a048e0ec98"></a>`owner` | "riverhog_client.transform.TransformWorkspace" |
-| <a id="s-ab18583afd"></a>`unit` | "member" |
+- <a id="s-7922793027"></a>`distribution`: `riverhog-client`
+- <a id="s-1a3e51061b"></a>`module`: `riverhog_client.transform`
+- <a id="s-c0fdbb6c13"></a>`name`: `resolve`
+- <a id="s-a048e0ec98"></a>`owner`: `riverhog_client.transform.TransformWorkspace`
+- <a id="s-ab18583afd"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-242ac5d3cb"></a>`kind`: `"method"`
+- <a id="s-986c387e14"></a>`signature`: `"\"(self, relative_path: 'str') -> 'Path'\""`
 
 ## Maintained corroboration
 

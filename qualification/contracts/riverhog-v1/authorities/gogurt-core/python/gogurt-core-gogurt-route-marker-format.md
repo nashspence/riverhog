@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a47df50168"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-cd676d4cf6"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-62ea6d7189"></a>`distribution` | "gogurt-core" |
-| <a id="s-9179cf024e"></a>`module` | "gogurt_core" |
-| <a id="s-3730404dfb"></a>`name` | "GOGURT_ROUTE_MARKER_FORMAT" |
-| <a id="s-b046b54f92"></a>`unit` | "export" |
+- <a id="s-62ea6d7189"></a>`distribution`: `gogurt-core`
+- <a id="s-9179cf024e"></a>`module`: `gogurt_core`
+- <a id="s-3730404dfb"></a>`name`: `GOGURT_ROUTE_MARKER_FORMAT`
+- <a id="s-b046b54f92"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-d670711d7d"></a>`kind`: `"constant"`
+- <a id="s-df36a4bae7"></a>`value`: `"gogurt-route-marker/v1"`
 
 ## Governing policies
 

@@ -14,13 +14,30 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-49de63b382"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-75236df783"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-253aae5a09"></a>`distribution` | "stove0-protocol" |
-| <a id="s-62f6917187"></a>`module` | "stove0_protocol" |
-| <a id="s-e22a721a43"></a>`name` | "ArtifactSelectionRef" |
-| <a id="s-b8d88cd133"></a>`unit` | "export" |
+- <a id="s-253aae5a09"></a>`distribution`: `stove0-protocol`
+- <a id="s-62f6917187"></a>`module`: `stove0_protocol`
+- <a id="s-e22a721a43"></a>`name`: `ArtifactSelectionRef`
+- <a id="s-b8d88cd133"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-c64b79336f"></a>`kind`: `"class"`
+- <a id="s-44d973b82a"></a>`signature`: `"\"(*, selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[int, Ge(ge=0)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-b010b6408b"></a>
+- <a id="s-7e9f4d8e66"></a>`title`: ArtifactSelectionRef
+- <a id="s-e0ea483e48"></a>`description`: Closed reference to a separately retained selection document.
+- <a id="s-bfa6214ab2"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-20a6419614"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-4521979d85"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-05cba6e4d0"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
 
 ## Maintained corroboration
 
@@ -52,13 +69,40 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c7358ba78bfbd1d4c30184ca8845e18c11863babde79c35af7cac8085ab320b4 -->
+<!-- exact-contract-value: c5b1dbb798889d147d61975c6a792b123257a78749fec7a69d42ec6ca873247a -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "e8cd0eea202ee0c8f3d19552216aa1b0d50521d431df3a185e911bfe1c3aa4c7",
+    "schema": {
+      "additionalProperties": false,
+      "description": "Closed reference to a separately retained selection document.",
+      "properties": {
+        "artifact_count": {
+          "minimum": 1,
+          "title": "Artifact Count",
+          "type": "integer"
+        },
+        "selection_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Selection Sha256",
+          "type": "string"
+        },
+        "total_bytes": {
+          "minimum": 0,
+          "title": "Total Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "selection_sha256",
+        "artifact_count",
+        "total_bytes"
+      ],
+      "title": "ArtifactSelectionRef",
+      "type": "object"
+    },
     "signature": "\"(*, selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[int, Ge(ge=0)]) -> None\""
   },
   "distribution": "stove0-protocol",

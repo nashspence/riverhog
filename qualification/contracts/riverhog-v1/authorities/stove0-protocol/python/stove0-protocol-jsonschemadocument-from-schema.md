@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-605c5e07ab"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6def9e2d34"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e06c19156e"></a>`distribution` | "stove0-protocol" |
-| <a id="s-bb678b1639"></a>`module` | "stove0_protocol" |
-| <a id="s-681e286ad1"></a>`name` | "from_schema" |
-| <a id="s-a9d635f432"></a>`owner` | "stove0_protocol.JsonSchemaDocument" |
-| <a id="s-1e9dc50efe"></a>`unit` | "member" |
+- <a id="s-e06c19156e"></a>`distribution`: `stove0-protocol`
+- <a id="s-bb678b1639"></a>`module`: `stove0_protocol`
+- <a id="s-681e286ad1"></a>`name`: `from_schema`
+- <a id="s-a9d635f432"></a>`owner`: `stove0_protocol.JsonSchemaDocument`
+- <a id="s-1e9dc50efe"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e28ff24cfd"></a>`kind`: `"classmethod"`
+- <a id="s-5a11a1a247"></a>`signature`: `"\"(cls, schema_id: 'str', schema: 'dict[str, JsonValue]') -> 'JsonSchemaDocument'\""`
 
 ## Maintained corroboration
 

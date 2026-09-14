@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
-Durable State contract owned by riverhog-provenance-installation.
+Persisted structures, schema heads, and v1 transition obligations.
 
 ## Semantic dossiers
 

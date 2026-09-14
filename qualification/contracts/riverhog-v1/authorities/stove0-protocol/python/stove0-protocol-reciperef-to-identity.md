@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b7787332bb"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ccde91db4a"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-d77d473d1c"></a>`distribution` | "stove0-protocol" |
-| <a id="s-943f1011ad"></a>`module` | "stove0_protocol" |
-| <a id="s-9e0ecc3d2a"></a>`name` | "to_identity" |
-| <a id="s-d7a8037dd0"></a>`owner` | "stove0_protocol.RecipeRef" |
-| <a id="s-87b5603ca5"></a>`unit` | "member" |
+- <a id="s-d77d473d1c"></a>`distribution`: `stove0-protocol`
+- <a id="s-943f1011ad"></a>`module`: `stove0_protocol`
+- <a id="s-9e0ecc3d2a"></a>`name`: `to_identity`
+- <a id="s-d7a8037dd0"></a>`owner`: `stove0_protocol.RecipeRef`
+- <a id="s-87b5603ca5"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-0fa5d864ad"></a>`kind`: `"method"`
+- <a id="s-302b94a1f6"></a>`signature`: `"\"(self) -> 'RecipeIdentity'\""`
 
 ## Maintained corroboration
 

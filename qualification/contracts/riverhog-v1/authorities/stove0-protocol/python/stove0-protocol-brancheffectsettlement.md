@@ -14,13 +14,33 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7bd6083665"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3cc50df764"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-4a686b1851"></a>`distribution` | "stove0-protocol" |
-| <a id="s-7db621204d"></a>`module` | "stove0_protocol" |
-| <a id="s-e0bd5621f6"></a>`name` | "BranchEffectSettlement" |
-| <a id="s-66e22b302a"></a>`unit` | "export" |
+- <a id="s-4a686b1851"></a>`distribution`: `stove0-protocol`
+- <a id="s-7db621204d"></a>`module`: `stove0_protocol`
+- <a id="s-e0bd5621f6"></a>`name`: `BranchEffectSettlement`
+- <a id="s-66e22b302a"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-a06512b8a3"></a>`kind`: `"class"`
+- <a id="s-b3e7998028"></a>`signature`: `"\"(*, format: Literal['stove0-branch-effect-settlement/v1'] = 'stove0-branch-effect-settlement/v1', branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], workflow_plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], effect_receipt_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-9fb71ba400"></a>
+- <a id="s-aa7643379f"></a>`title`: BranchEffectSettlement
+- <a id="s-915a62d91e"></a>`description`: Success-only receipt identity for one required external-effect branch.
+- <a id="s-ecb292acb2"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2b40572333"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-e048dc94a3"></a>`effect_receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f408df7e04"></a>`format` | no | type="string"; const="stove0-branch-effect-settlement/v1" |  |
+| <a id="s-476e450987"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b7677d118d"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-74ffdfff9b"></a>`workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -53,13 +73,58 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 17b4262852524102f2108210f7b00af5717169136a96e651afd34d2d60da66f4 -->
+<!-- exact-contract-value: d7df64fbf8bdbba172f6fc78cbc78ba0f77fc072a0fa0d7f6c063e60496af075 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "8d079076de524eab27cd12f57634171620d2cd76204c4d4349a9231ece5830d8",
+    "schema": {
+      "additionalProperties": false,
+      "description": "Success-only receipt identity for one required external-effect branch.",
+      "properties": {
+        "branch_id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Branch Id",
+          "type": "string"
+        },
+        "effect_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Effect Receipt Sha256",
+          "type": "string"
+        },
+        "format": {
+          "const": "stove0-branch-effect-settlement/v1",
+          "default": "stove0-branch-effect-settlement/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "settlement_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Settlement Sha256",
+          "type": "string"
+        },
+        "work_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Work Id",
+          "type": "string"
+        },
+        "workflow_plan_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Workflow Plan Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "branch_id",
+        "work_id",
+        "workflow_plan_sha256",
+        "effect_receipt_sha256",
+        "settlement_sha256"
+      ],
+      "title": "BranchEffectSettlement",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['stove0-branch-effect-settlement/v1'] = 'stove0-branch-effect-settlement/v1', branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], workflow_plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], effect_receipt_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-protocol",

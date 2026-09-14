@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6efd4a17a9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-51846c5493"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-a3719a08d3"></a>`distribution` | "riverhog-ftp-adapter" |
-| <a id="s-736989e7c9"></a>`module` | "riverhog_ftp_adapter" |
-| <a id="s-163892fbf1"></a>`name` | "absolute_root" |
-| <a id="s-ef26842c8c"></a>`owner` | "riverhog_ftp_adapter.SourceConfig" |
-| <a id="s-8c0930dd8d"></a>`unit` | "member" |
+- <a id="s-a3719a08d3"></a>`distribution`: `riverhog-ftp-adapter`
+- <a id="s-736989e7c9"></a>`module`: `riverhog_ftp_adapter`
+- <a id="s-163892fbf1"></a>`name`: `absolute_root`
+- <a id="s-ef26842c8c"></a>`owner`: `riverhog_ftp_adapter.SourceConfig`
+- <a id="s-8c0930dd8d"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-49355e4b0b"></a>`kind`: `"classmethod"`
+- <a id="s-11b3376b7a"></a>`signature`: `"\"(cls, value: 'Path') -> 'Path'\""`
 
 ## Maintained corroboration
 

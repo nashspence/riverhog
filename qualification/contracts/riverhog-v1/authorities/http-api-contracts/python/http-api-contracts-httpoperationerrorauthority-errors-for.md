@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-55da008d7a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-7a2557f154"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ce1506a96e"></a>`distribution` | "http-api-contracts" |
-| <a id="s-0f8a54bd90"></a>`module` | "http_api_contracts" |
-| <a id="s-eb76eeee14"></a>`name` | "errors_for" |
-| <a id="s-6540193dca"></a>`owner` | "http_api_contracts.HttpOperationErrorAuthority" |
-| <a id="s-6780f79584"></a>`unit` | "member" |
+- <a id="s-ce1506a96e"></a>`distribution`: `http-api-contracts`
+- <a id="s-0f8a54bd90"></a>`module`: `http_api_contracts`
+- <a id="s-eb76eeee14"></a>`name`: `errors_for`
+- <a id="s-6540193dca"></a>`owner`: `http_api_contracts.HttpOperationErrorAuthority`
+- <a id="s-6780f79584"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-fb514ab8a3"></a>`kind`: `"method"`
+- <a id="s-e3a3fcbf69"></a>`signature`: `"\"(self, operation_id: 'str') -> 'tuple[HttpErrorContract, ...]'\""`
 
 ## Maintained corroboration
 

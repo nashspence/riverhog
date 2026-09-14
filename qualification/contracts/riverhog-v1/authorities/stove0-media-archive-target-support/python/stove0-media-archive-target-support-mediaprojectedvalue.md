@@ -14,13 +14,37 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-dd46f38ca4"></a>
-| Field | Shape |
+- <a id="s-32bfb70aa4"></a>`distribution`: `stove0-media-archive-target-support`
+- <a id="s-d5690a54a4"></a>`module`: `stove0_media_archive_target_support`
+- <a id="s-d475a78205"></a>`name`: `MediaProjectedValue`
+- <a id="s-e27301f78e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-07f0cff672"></a>`kind`: `"class"`
+- <a id="s-6dbaf0f576"></a>`signature`: `"\"(*, name: Literal['capture-time', 'creator', 'device-make', 'device-model', 'gps-latitude', 'gps-longitude'], value: JsonValue, source: Literal['observation', 'recipe'], evidence: tuple[stove0_media_metadata_observer_contracts.contracts.MediaFactEvidence, ...] = ()) -> None\""`
+
+#### Validated model schema
+
+<a id="s-a6afa45f9c"></a>
+- <a id="s-8d37fe39be"></a>`title`: MediaProjectedValue
+- <a id="s-dcd28f60ec"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-1e1aadd981"></a>`evidence` | no | type="array"; items=(#/$defs/MediaFactEvidence) |  |
+| <a id="s-07dc9075c1"></a>`name` | yes | type="string"; enum=["capture-time","creator","device-make","device-model","gps-latitude","gps-longitude"] |  |
+| <a id="s-aebfdb916c"></a>`source` | yes | type="string"; enum=["observation","recipe"] |  |
+| <a id="s-0202da227e"></a>`value` | yes | #/$defs/JsonValue |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-9a6530e2ed"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-32bfb70aa4"></a>`distribution` | "stove0-media-archive-target-support" |
-| <a id="s-d5690a54a4"></a>`module` | "stove0_media_archive_target_support" |
-| <a id="s-d475a78205"></a>`name` | "MediaProjectedValue" |
-| <a id="s-e27301f78e"></a>`unit` | "export" |
+| <a id="s-cd70d44f81"></a>`JsonValue` | empty object |
+| <a id="s-d89aacd611"></a>`MediaFactEvidence` | type="object"; fields=`artifact_id`, `field`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -53,13 +77,82 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 74c9865e9036492a0caaac82ffc566227113bf37341214a4efa9b55f01bb8144 -->
+<!-- exact-contract-value: 50990d0449e0c744428c7e1724b2255687f2f322c0f11089aa923502890a2fea -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "cb40d7111242d2d59c8a440788114e49f192faf2baa7e1fdeca5876548348f44",
+    "schema": {
+      "$defs": {
+        "JsonValue": {},
+        "MediaFactEvidence": {
+          "additionalProperties": false,
+          "description": "Exact artifact and ExifTool field from which one value was read.",
+          "properties": {
+            "artifact_id": {
+              "maxLength": 160,
+              "minLength": 1,
+              "title": "Artifact Id",
+              "type": "string"
+            },
+            "field": {
+              "maxLength": 240,
+              "minLength": 1,
+              "title": "Field",
+              "type": "string"
+            }
+          },
+          "required": [
+            "artifact_id",
+            "field"
+          ],
+          "title": "MediaFactEvidence",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/MediaFactEvidence"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "name": {
+          "enum": [
+            "capture-time",
+            "creator",
+            "device-make",
+            "device-model",
+            "gps-latitude",
+            "gps-longitude"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "observation",
+            "recipe"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/JsonValue"
+        }
+      },
+      "required": [
+        "name",
+        "value",
+        "source"
+      ],
+      "title": "MediaProjectedValue",
+      "type": "object"
+    },
     "signature": "\"(*, name: Literal['capture-time', 'creator', 'device-make', 'device-model', 'gps-latitude', 'gps-longitude'], value: JsonValue, source: Literal['observation', 'recipe'], evidence: tuple[stove0_media_metadata_observer_contracts.contracts.MediaFactEvidence, ...] = ()) -> None\""
   },
   "distribution": "stove0-media-archive-target-support",

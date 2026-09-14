@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ac266755fb"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-43ba54446a"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-0626e4a792"></a>`distribution` | "stove0-server" |
-| <a id="s-5635f6a853"></a>`module` | "stove0_core" |
-| <a id="s-f773adf499"></a>`name` | "renew_claim" |
-| <a id="s-3abc498bee"></a>`owner` | "stove0_core.RiverhogControlPort" |
-| <a id="s-2bcea6c4b5"></a>`unit` | "member" |
+- <a id="s-0626e4a792"></a>`distribution`: `stove0-server`
+- <a id="s-5635f6a853"></a>`module`: `stove0_core`
+- <a id="s-f773adf499"></a>`name`: `renew_claim`
+- <a id="s-3abc498bee"></a>`owner`: `stove0_core.RiverhogControlPort`
+- <a id="s-2bcea6c4b5"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-fbc6e3a435"></a>`kind`: `"method"`
+- <a id="s-87f6373bf5"></a>`signature`: `"\"(self, work: 'WorkIdentity', claim: 'ClaimBinding') -> 'ClaimBinding'\""`
 
 ## Maintained corroboration
 

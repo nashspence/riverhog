@@ -16,7 +16,7 @@
   - [Publication Locations](authorities/release/publication-locations/index.md) (2)
   - [Artifact Verification](authorities/release/artifact-verification/index.md) (3)
   - [Versioning and Tags](authorities/release/versioning-tags/index.md) (5)
-  - [Compatibility Guarantees](authorities/release/compatibility-guarantees/index.md) (7)
+  - [Compatibility Guarantees](authorities/release/compatibility-guarantees/index.md) (8)
 
 ### Riverhog product
 
@@ -64,7 +64,7 @@
     - [Python](authorities/riverhog-storage-adapter-support/python/index.md) (45)
 - [Implementation and build](surfaces/riverhog.md#implementation-and-build)
   - [riverhog-catalog](authorities/riverhog-catalog/index.md) — Encrypted archive management, catalog, and retrieval.
-    - [Durable State](authorities/riverhog-catalog/durable-state/index.md) (1)
+    - [Durable State](authorities/riverhog-catalog/durable-state/index.md) (91)
   - [riverhog-server](authorities/riverhog-server/index.md) — Encrypted archive management, catalog, and retrieval.
     - [Configuration Environment](authorities/riverhog-server/configuration-environment/index.md) (52)
   - [state-schema](authorities/state-schema/index.md) — Forward-only relational state schema and migration contracts.
@@ -86,7 +86,7 @@
     - [Configuration Environment](authorities/riverhog-ftp-adapter-api-client/configuration-environment/index.md) (5)
     - [Python](authorities/riverhog-ftp-adapter-api-client/python/index.md) (11)
   - [riverhog-ftp-custody](authorities/riverhog-ftp-custody/index.md) — Optional nonnormative FTP ingress reference for Riverhog.
-    - [Durable State](authorities/riverhog-ftp-custody/durable-state/index.md) (1)
+    - [Durable State](authorities/riverhog-ftp-custody/durable-state/index.md) (6)
   - [riverhog-provenance-linux-contracts](authorities/riverhog-provenance-linux-contracts/index.md) — Optional nonnormative Linux observation-contract reference for Riverhog provenance. Provider for extension: [riverhog.provenance-contracts](extensions/extension-point-riverhog-provenance-contracts.md).
     - [Schemas](authorities/riverhog-provenance-linux-contracts/schema/index.md) (5)
     - [Python](authorities/riverhog-provenance-linux-contracts/python/index.md) (4)
@@ -122,7 +122,7 @@
   - [gogurt-linux-mounted-volume](authorities/gogurt-linux-mounted-volume/index.md) — Optional nonnormative Linux mounted-volume reference for Gogurt. Provider for extension: [gogurt.mounted-volume-providers](extensions/extension-point-gogurt-mounted-volume-providers.md).
     - [Python](authorities/gogurt-linux-mounted-volume/python/index.md) (3)
   - [gogurt-listener](authorities/gogurt-listener/index.md) — Portable durable listener runtime and native-platform port for Gogurt.
-    - [Durable State](authorities/gogurt-listener/durable-state/index.md) (1)
+    - [Durable State](authorities/gogurt-listener/durable-state/index.md) (4)
   - [gogurt-listener-runtime](authorities/gogurt-listener-runtime/index.md) — Portable durable listener runtime and native-platform port for Gogurt.
     - [Python](authorities/gogurt-listener-runtime/python/index.md) (53) — Defines extension: [gogurt.listener-host-providers](extensions/extension-point-gogurt-listener-host-providers.md).
   - [gogurt-macos-listener-host](authorities/gogurt-macos-listener-host/index.md) — Optional nonnormative macOS launchd listener-host reference for Gogurt. Provider for extension: [gogurt.listener-host-providers](extensions/extension-point-gogurt-listener-host-providers.md).
@@ -141,13 +141,13 @@
     - [CLI](authorities/mango-fish/cli/index.md) (5)
     - [Configuration Documents](authorities/mango-fish/configuration/index.md) (1)
   - [mango-fish-cursor](authorities/mango-fish-cursor/index.md) — Optional nonnormative CloudEvents reference application for Riverhog.
-    - [Durable State](authorities/mango-fish-cursor/durable-state/index.md) (1)
+    - [Durable State](authorities/mango-fish-cursor/durable-state/index.md) (2)
 - [Piggity](surfaces/references.md#piggity)
   - [piggity](authorities/piggity/index.md) — Optional nonnormative Piggity reference client for Riverhog.
     - [CLI](authorities/piggity/cli/index.md) (86)
     - [Configuration Environment](authorities/piggity/configuration-environment/index.md) (7)
   - [piggity-local](authorities/piggity-local/index.md) — Optional nonnormative Piggity reference client for Riverhog.
-    - [Durable State](authorities/piggity-local/durable-state/index.md) (1)
+    - [Durable State](authorities/piggity-local/durable-state/index.md) (7)
 - [Stove0](surfaces/stove0.md)
   - [Application](surfaces/stove0.md#application)
     - [stove0](authorities/stove0/index.md) — The Stove0 reference application API and its maintained cross-interface operation parity.
@@ -160,7 +160,7 @@
     - [stove0-client](authorities/stove0-client/index.md) — Optional nonnormative command-line client for the Stove0 reference application.
       - [CLI](authorities/stove0-client/cli/index.md) (37)
     - [stove0-control](authorities/stove0-control/index.md) — Optional nonnormative content-opaque transformation reference application for Riverhog.
-      - [Durable State](authorities/stove0-control/durable-state/index.md) (1)
+      - [Durable State](authorities/stove0-control/durable-state/index.md) (23)
     - [stove0-operator-contracts](authorities/stove0-operator-contracts/index.md) — Canonical public state contracts for the Stove0 v1 operator surface.
       - [Configuration Documents](authorities/stove0-operator-contracts/configuration/index.md) (1)
       - [Python](authorities/stove0-operator-contracts/python/index.md) (98)
@@ -203,8 +203,8 @@
       - [Python](authorities/stove0-opus-target/python/index.md) (2)
     - [stove0-target-client](authorities/stove0-target-client/index.md) — Narrow HTTP client for Stove0 transform targets.
       - [Python](authorities/stove0-target-client/python/index.md) (15)
-    - [stove0-target-jobs](authorities/stove0-target-jobs/index.md) — Hardware-neutral target protocol, runtime, and conformance support for stove0.
-      - [Durable State](authorities/stove0-target-jobs/durable-state/index.md) (1)
+    - [stove0-target-jobs](authorities/stove0-target-jobs/index.md) — Dependency-light public contracts for external stove0 targets.
+      - [Durable State](authorities/stove0-target-jobs/durable-state/index.md) (3)
     - [stove0-target-protocol](authorities/stove0-target-protocol/index.md) — Dependency-light public contracts for external stove0 targets.
       - [Python](authorities/stove0-target-protocol/python/index.md) (129) — Defines protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
     - [stove0-target-support](authorities/stove0-target-support/index.md) — Hardware-neutral target protocol, runtime, and conformance support for stove0.

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ddd6168db0"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-00dc1d4ac8"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-35f2a45e8b"></a>`distribution` | "riverhog-client" |
-| <a id="s-8459cb5154"></a>`module` | "riverhog_client" |
-| <a id="s-10e5b035b4"></a>`name` | "list_collection_provenance_journal_agents" |
-| <a id="s-f83db5b423"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-39b341a898"></a>`unit` | "member" |
+- <a id="s-35f2a45e8b"></a>`distribution`: `riverhog-client`
+- <a id="s-8459cb5154"></a>`module`: `riverhog_client`
+- <a id="s-10e5b035b4"></a>`name`: `list_collection_provenance_journal_agents`
+- <a id="s-f83db5b423"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-39b341a898"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-a7b708e030"></a>`kind`: `"method"`
+- <a id="s-8cc9f0213d"></a>`signature`: `"\"(self, collection_id: 'CollectionId', journal_id: 'ProvenanceJournalId', *, page_size: 'int' = 25, page_token: 'str \| None' = None) -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

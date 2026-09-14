@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2a73ff8de5"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2050bd4665"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-ef71bec6c3"></a>`distribution` | "riverhog-age" |
-| <a id="s-eae170f6e3"></a>`module` | "riverhog_age" |
-| <a id="s-7ef14d5915"></a>`name` | "to_json_bytes" |
-| <a id="s-adfeab19f7"></a>`owner` | "riverhog_age.UploadState" |
-| <a id="s-3d42360aa3"></a>`unit` | "member" |
+- <a id="s-ef71bec6c3"></a>`distribution`: `riverhog-age`
+- <a id="s-eae170f6e3"></a>`module`: `riverhog_age`
+- <a id="s-7ef14d5915"></a>`name`: `to_json_bytes`
+- <a id="s-adfeab19f7"></a>`owner`: `riverhog_age.UploadState`
+- <a id="s-3d42360aa3"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-b8b852c98e"></a>`kind`: `"method"`
+- <a id="s-72b053f461"></a>`signature`: `"\"(self) -> 'bytes'\""`
 
 ## Maintained corroboration
 

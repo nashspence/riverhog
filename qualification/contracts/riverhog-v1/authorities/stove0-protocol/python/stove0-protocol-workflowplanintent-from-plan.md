@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a7cb28e0fc"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8bd559e6b7"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-aec98793e8"></a>`distribution` | "stove0-protocol" |
-| <a id="s-e8a9ad7ead"></a>`module` | "stove0_protocol" |
-| <a id="s-71684bfc13"></a>`name` | "from_plan" |
-| <a id="s-d8b1833a73"></a>`owner` | "stove0_protocol.WorkflowPlanIntent" |
-| <a id="s-030c333831"></a>`unit` | "member" |
+- <a id="s-aec98793e8"></a>`distribution`: `stove0-protocol`
+- <a id="s-e8a9ad7ead"></a>`module`: `stove0_protocol`
+- <a id="s-71684bfc13"></a>`name`: `from_plan`
+- <a id="s-d8b1833a73"></a>`owner`: `stove0_protocol.WorkflowPlanIntent`
+- <a id="s-030c333831"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-950f15f856"></a>`kind`: `"classmethod"`
+- <a id="s-279ce2593f"></a>`signature`: `"\"(cls, plan: 'WorkflowPlan') -> 'WorkflowPlanIntent'\""`
 
 ## Maintained corroboration
 

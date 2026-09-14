@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2f3ff640d4"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d7e0295159"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-70e7babae2"></a>`distribution` | "riverhog-client" |
-| <a id="s-e362183cb8"></a>`module` | "riverhog_client" |
-| <a id="s-102ccb811e"></a>`name` | "finish" |
-| <a id="s-a541e5a376"></a>`owner` | "riverhog_client.IncrementalCollectionProducer" |
-| <a id="s-595eed6805"></a>`unit` | "member" |
+- <a id="s-70e7babae2"></a>`distribution`: `riverhog-client`
+- <a id="s-e362183cb8"></a>`module`: `riverhog_client`
+- <a id="s-102ccb811e"></a>`name`: `finish`
+- <a id="s-a541e5a376"></a>`owner`: `riverhog_client.IncrementalCollectionProducer`
+- <a id="s-595eed6805"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-5522c405de"></a>`kind`: `"method"`
+- <a id="s-4a8ba75e69"></a>`signature`: `"\"(self, *, terminal_evidence: 'Mapping[str, bytes]', provenance_journals: 'Mapping[str, bytes] \| None' = None, poll_seconds: 'float' = 2.0, timeout_seconds: 'float' = 86400) -> 'ProducedCollection'\""`
 
 ## Maintained corroboration
 

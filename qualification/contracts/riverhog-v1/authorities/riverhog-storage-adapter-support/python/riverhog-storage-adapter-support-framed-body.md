@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-645156724a"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d1e4f277e2"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-1f94186257"></a>`distribution` | "riverhog-storage-adapter-support" |
-| <a id="s-788099a89b"></a>`module` | "riverhog_storage_adapter_support" |
-| <a id="s-f081bf8c43"></a>`name` | "framed_body" |
-| <a id="s-a4681d14f9"></a>`unit` | "export" |
+- <a id="s-1f94186257"></a>`distribution`: `riverhog-storage-adapter-support`
+- <a id="s-788099a89b"></a>`module`: `riverhog_storage_adapter_support`
+- <a id="s-f081bf8c43"></a>`name`: `framed_body`
+- <a id="s-a4681d14f9"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-92fb8ff48d"></a>`kind`: `"function"`
+- <a id="s-a7b3bf37f3"></a>`signature`: `"\"(model: 'BaseModel', content: 'BinaryContent') -> 'Iterator[bytes]'\""`
 
 ## Governing policies
 

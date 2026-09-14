@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4b16e8bf3d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8e73a7cb04"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-2c68d45a54"></a>`distribution` | "riverhog-client" |
-| <a id="s-8dde36a327"></a>`module` | "riverhog_client.transform" |
-| <a id="s-f054703da9"></a>`name` | "plan_retrieval" |
-| <a id="s-1c2e96e4b7"></a>`owner` | "riverhog_client.transform.ClaimedCollectionApi" |
-| <a id="s-248bd1c1fc"></a>`unit` | "member" |
+- <a id="s-2c68d45a54"></a>`distribution`: `riverhog-client`
+- <a id="s-8dde36a327"></a>`module`: `riverhog_client.transform`
+- <a id="s-f054703da9"></a>`name`: `plan_retrieval`
+- <a id="s-1c2e96e4b7"></a>`owner`: `riverhog_client.transform.ClaimedCollectionApi`
+- <a id="s-248bd1c1fc"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-bfa4d98ef3"></a>`kind`: `"method"`
+- <a id="s-52a4b559e4"></a>`signature`: `"\"(self, files: 'Sequence[tuple[CollectionId, str]]', *, lease_seconds: 'int \| None' = None, restore_policy: 'RiverhogRestorePolicy' = 'never') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

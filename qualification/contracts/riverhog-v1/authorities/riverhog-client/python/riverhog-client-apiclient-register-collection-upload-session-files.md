@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0de7b8093b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d6887eee97"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6b68f7491f"></a>`distribution` | "riverhog-client" |
-| <a id="s-5da7530d7a"></a>`module` | "riverhog_client" |
-| <a id="s-eca759b822"></a>`name` | "register_collection_upload_session_files" |
-| <a id="s-a56b487db9"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-86096fcba2"></a>`unit` | "member" |
+- <a id="s-6b68f7491f"></a>`distribution`: `riverhog-client`
+- <a id="s-5da7530d7a"></a>`module`: `riverhog_client`
+- <a id="s-eca759b822"></a>`name`: `register_collection_upload_session_files`
+- <a id="s-a56b487db9"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-86096fcba2"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-19daacba5b"></a>`kind`: `"method"`
+- <a id="s-31b0c3d2da"></a>`signature`: `"\"(self, collection_id: 'CollectionId', files: 'Sequence[CollectionUploadFileIn \| Mapping[str, Any]]', *, registration_constraints: 'CollectionUploadRegistrationConstraintsDocument \| Mapping[str, Any]') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

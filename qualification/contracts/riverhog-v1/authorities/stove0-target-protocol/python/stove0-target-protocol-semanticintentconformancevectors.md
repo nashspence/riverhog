@@ -14,13 +14,36 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-76799b2f82"></a>
-| Field | Shape |
+- <a id="s-48b84baae6"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-ea0336bb8f"></a>`module`: `stove0_target_protocol`
+- <a id="s-502a05ea08"></a>`name`: `SemanticIntentConformanceVectors`
+- <a id="s-b42046ea6b"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-da88ec4433"></a>`kind`: `"class"`
+- <a id="s-f683c35320"></a>`signature`: `"\"(*, format: Literal['stove0-semantic-intent-conformance/v1'] = 'stove0-semantic-intent-conformance/v1', profile_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], vectors: Annotated[tuple[stove0_target_protocol.conformance.SemanticIntentConformanceVector, ...], MinLen(min_length=2)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-4d6e331430"></a>
+- <a id="s-70a4caa90c"></a>`title`: SemanticIntentConformanceVectors
+- <a id="s-58735656dd"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-19302fb3e3"></a>`format` | no | type="string"; const="stove0-semantic-intent-conformance/v1" |  |
+| <a id="s-942f665176"></a>`profile_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-acab2eba81"></a>`vectors` | yes | type="array"; minItems=2; items=(#/$defs/SemanticIntentConformanceVector) |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-32a5659de7"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-48b84baae6"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-ea0336bb8f"></a>`module` | "stove0_target_protocol" |
-| <a id="s-502a05ea08"></a>`name` | "SemanticIntentConformanceVectors" |
-| <a id="s-b42046ea6b"></a>`unit` | "export" |
+| <a id="s-f6959d296b"></a>`JsonValue` | empty object |
+| <a id="s-32cf7b6f36"></a>`SemanticIntentConformanceVector` | type="object"; fields=`accepted`, `id`, `intent`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -54,13 +77,73 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 34027056a49bdf143700eb797f046779874cbe3d644e12d49c72244166aa6590 -->
+<!-- exact-contract-value: afebd0c4e5388f6da915e19e0da0a8239eef81125b366e5113a18c4eea927371 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "97bacfee1ce36f2e715ebe95a8f92c7553faaeda88e9080ae8b07a33a04165b0",
+    "schema": {
+      "$defs": {
+        "JsonValue": {},
+        "SemanticIntentConformanceVector": {
+          "additionalProperties": false,
+          "properties": {
+            "accepted": {
+              "title": "Accepted",
+              "type": "boolean"
+            },
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "intent": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "title": "Intent",
+              "type": "object"
+            }
+          },
+          "required": [
+            "id",
+            "accepted",
+            "intent"
+          ],
+          "title": "SemanticIntentConformanceVector",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "const": "stove0-semantic-intent-conformance/v1",
+          "default": "stove0-semantic-intent-conformance/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "profile_id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Profile Id",
+          "type": "string"
+        },
+        "vectors": {
+          "items": {
+            "$ref": "#/$defs/SemanticIntentConformanceVector"
+          },
+          "minItems": 2,
+          "title": "Vectors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "profile_id",
+        "vectors"
+      ],
+      "title": "SemanticIntentConformanceVectors",
+      "type": "object"
+    },
     "signature": "\"(*, format: Literal['stove0-semantic-intent-conformance/v1'] = 'stove0-semantic-intent-conformance/v1', profile_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], vectors: Annotated[tuple[stove0_target_protocol.conformance.SemanticIntentConformanceVector, ...], MinLen(min_length=2)]) -> None\""
   },
   "distribution": "stove0-target-protocol",

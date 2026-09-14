@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e462b31615"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-e176261c30"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-f1e6d94f94"></a>`distribution` | "stove0-target-support" |
-| <a id="s-afaa700ebd"></a>`module` | "stove0_target_support" |
-| <a id="s-3359ad4488"></a>`name` | "resolve_input_ids" |
-| <a id="s-49652583c4"></a>`owner` | "stove0_target_support.TargetExecutionRuntime" |
-| <a id="s-04d7cc9732"></a>`unit` | "member" |
+- <a id="s-f1e6d94f94"></a>`distribution`: `stove0-target-support`
+- <a id="s-afaa700ebd"></a>`module`: `stove0_target_support`
+- <a id="s-3359ad4488"></a>`name`: `resolve_input_ids`
+- <a id="s-49652583c4"></a>`owner`: `stove0_target_support.TargetExecutionRuntime`
+- <a id="s-04d7cc9732"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-3ad2f929c9"></a>`kind`: `"method"`
+- <a id="s-7106ab15dc"></a>`signature`: `"\"(self, input_ids: 'Sequence[str]') -> 'tuple[ClaimedArtifact, ...]'\""`
 
 ## Maintained corroboration
 

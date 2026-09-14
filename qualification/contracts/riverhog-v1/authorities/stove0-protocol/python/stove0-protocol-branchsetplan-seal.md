@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-91002ad5f8"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3d75812e20"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-a74b24aa53"></a>`distribution` | "stove0-protocol" |
-| <a id="s-e518ca49fc"></a>`module` | "stove0_protocol" |
-| <a id="s-c6d933d048"></a>`name` | "seal" |
-| <a id="s-46949f3681"></a>`owner` | "stove0_protocol.BranchSetPlan" |
-| <a id="s-a4474bb1dc"></a>`unit` | "member" |
+- <a id="s-a74b24aa53"></a>`distribution`: `stove0-protocol`
+- <a id="s-e518ca49fc"></a>`module`: `stove0_protocol`
+- <a id="s-c6d933d048"></a>`name`: `seal`
+- <a id="s-46949f3681"></a>`owner`: `stove0_protocol.BranchSetPlan`
+- <a id="s-a4474bb1dc"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-2f44ec25dd"></a>`kind`: `"classmethod"`
+- <a id="s-79bc20af80"></a>`signature`: `"\"(cls, *, parent_work: 'WorkIdentity', decision_sha256: 'str', evidence_sha256s: 'Sequence[str]' = (), branches: 'Sequence[BranchDeclaration]', join: 'JoinDeclaration \| None' = None, retirement_policy: 'RetirementPolicy' = 'retain', retirement_grace_seconds: 'int' = 0, selections: 'SelectionDocuments', branch_sets: 'Mapping[str, BranchSetPlan] \| None' = None) -> 'BranchSetPlan'\""`
 
 ## Maintained corroboration
 

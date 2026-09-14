@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c6ff22a04b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-04b1123666"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-8968d2420a"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-7ded0481ae"></a>`module` | "stove0_target_protocol" |
-| <a id="s-26a8d239b1"></a>`name` | "validate_cardinality" |
-| <a id="s-2fff049931"></a>`owner` | "stove0_target_protocol.OutputArtifactContract" |
-| <a id="s-c6c272135c"></a>`unit` | "member" |
+- <a id="s-8968d2420a"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-7ded0481ae"></a>`module`: `stove0_target_protocol`
+- <a id="s-26a8d239b1"></a>`name`: `validate_cardinality`
+- <a id="s-2fff049931"></a>`owner`: `stove0_target_protocol.OutputArtifactContract`
+- <a id="s-c6c272135c"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-56d611430d"></a>`kind`: `"method"`
+- <a id="s-6be2384392"></a>`signature`: `"\"(self) -> 'Self'\""`
 
 ## Maintained corroboration
 

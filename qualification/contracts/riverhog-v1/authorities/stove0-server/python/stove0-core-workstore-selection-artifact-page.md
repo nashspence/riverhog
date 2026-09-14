@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e159083615"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b96d87273e"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-07cffb5ae2"></a>`distribution` | "stove0-server" |
-| <a id="s-3966309693"></a>`module` | "stove0_core" |
-| <a id="s-043c3a3be1"></a>`name` | "selection_artifact_page" |
-| <a id="s-be750672e2"></a>`owner` | "stove0_core.WorkStore" |
-| <a id="s-c0eb1876e8"></a>`unit` | "member" |
+- <a id="s-07cffb5ae2"></a>`distribution`: `stove0-server`
+- <a id="s-3966309693"></a>`module`: `stove0_core`
+- <a id="s-043c3a3be1"></a>`name`: `selection_artifact_page`
+- <a id="s-be750672e2"></a>`owner`: `stove0_core.WorkStore`
+- <a id="s-c0eb1876e8"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-8b3636dd69"></a>`kind`: `"method"`
+- <a id="s-1242369a9b"></a>`signature`: `"\"(self, selection_sha256: 'str', *, continuation: 'str \| None', limit: 'int') -> 'tuple[tuple[ArtifactSubject, ...], str \| None, bool]'\""`
 
 ## Maintained corroboration
 

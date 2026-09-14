@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5ab767ae8b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-20f76b2af4"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-b3d62e31b2"></a>`distribution` | "stove0-observer-support" |
-| <a id="s-3dd2402d92"></a>`module` | "stove0_observer_support" |
-| <a id="s-ae5562d40e"></a>`name` | "from_invocation" |
-| <a id="s-3eca18de95"></a>`owner` | "stove0_observer_support.ObservationRuntime" |
-| <a id="s-56e4435d93"></a>`unit` | "member" |
+- <a id="s-b3d62e31b2"></a>`distribution`: `stove0-observer-support`
+- <a id="s-3dd2402d92"></a>`module`: `stove0_observer_support`
+- <a id="s-ae5562d40e"></a>`name`: `from_invocation`
+- <a id="s-3eca18de95"></a>`owner`: `stove0_observer_support.ObservationRuntime`
+- <a id="s-56e4435d93"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-c9b320649b"></a>`kind`: `"classmethod"`
+- <a id="s-9e3aef9127"></a>`signature`: `"\"(cls, invocation: 'ObservationInvocation', *, cancellation_check: 'CancellationCheck \| None' = None, heartbeat: 'Heartbeat \| None' = None) -> 'ObservationRuntime'\""`
 
 ## Maintained corroboration
 

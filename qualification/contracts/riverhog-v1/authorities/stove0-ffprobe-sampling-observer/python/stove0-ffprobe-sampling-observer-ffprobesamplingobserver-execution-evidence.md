@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4da5a6fce8"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-fc7a1f1c21"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-be55685aa4"></a>`distribution` | "stove0-ffprobe-sampling-observer" |
-| <a id="s-c6cc35d16b"></a>`module` | "stove0_ffprobe_sampling_observer" |
-| <a id="s-9eea8ffdf9"></a>`name` | "execution_evidence" |
-| <a id="s-3d7d60c5ff"></a>`owner` | "stove0_ffprobe_sampling_observer.FfprobeSamplingObserver" |
-| <a id="s-e71433da5f"></a>`unit` | "member" |
+- <a id="s-be55685aa4"></a>`distribution`: `stove0-ffprobe-sampling-observer`
+- <a id="s-c6cc35d16b"></a>`module`: `stove0_ffprobe_sampling_observer`
+- <a id="s-9eea8ffdf9"></a>`name`: `execution_evidence`
+- <a id="s-3d7d60c5ff"></a>`owner`: `stove0_ffprobe_sampling_observer.FfprobeSamplingObserver`
+- <a id="s-e71433da5f"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-bff8b6459f"></a>`kind`: `"method"`
+- <a id="s-8c5122137c"></a>`signature`: `"\"(self) -> 'dict[str, str]'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8f620769d5"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-86d8c65836"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-e6ec0189b3"></a>`distribution` | "http-api-contracts" |
-| <a id="s-f16772f287"></a>`module` | "http_api_contracts" |
-| <a id="s-9aca6d0207"></a>`name` | "HttpErrorContract" |
-| <a id="s-a7684f9b74"></a>`unit` | "export" |
+- <a id="s-e6ec0189b3"></a>`distribution`: `http-api-contracts`
+- <a id="s-f16772f287"></a>`module`: `http_api_contracts`
+- <a id="s-9aca6d0207"></a>`name`: `HttpErrorContract`
+- <a id="s-a7684f9b74"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-b83d2050d4"></a>`kind`: `"class"`
+- <a id="s-f8321326f9"></a>`signature`: `"\"(code: 'str', status: 'int') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-4aa8d99d6c"></a>`code` | `'str'` | `required` |
+| <a id="s-574f983553"></a>`status` | `'int'` | `required` |
 
 ## Governing policies
 

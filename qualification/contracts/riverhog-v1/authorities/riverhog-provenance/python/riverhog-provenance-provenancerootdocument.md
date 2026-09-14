@@ -14,13 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-55795d3dbe"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b3c1643571"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-19190167d4"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-dae7a72ff5"></a>`module` | "riverhog_provenance" |
-| <a id="s-51dfd3886b"></a>`name` | "ProvenanceRootDocument" |
-| <a id="s-1f05b97362"></a>`unit` | "export" |
+- <a id="s-19190167d4"></a>`distribution`: `riverhog-provenance`
+- <a id="s-dae7a72ff5"></a>`module`: `riverhog_provenance`
+- <a id="s-51dfd3886b"></a>`name`: `ProvenanceRootDocument`
+- <a id="s-1f05b97362"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-8131f3cdb1"></a>`kind`: `"class"`
+- <a id="s-30e23f79e5"></a>`signature`: `"\"(archive_generation: 'str', archive_tree_sha256: 'str', ordered_volume_sha256: 'str', schema: 'str' = 'riverhog-provenance-root/v1') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-a50dad90b9"></a>`archive_generation` | `'str'` | `required` |
+| <a id="s-bfb9ed07c2"></a>`archive_tree_sha256` | `'str'` | `required` |
+| <a id="s-a9aaca8d7f"></a>`ordered_volume_sha256` | `'str'` | `required` |
+| <a id="s-03b66ef0bf"></a>`schema` | `'str'` | `'riverhog-provenance-root/v1'` |
 
 ## Maintained corroboration
 

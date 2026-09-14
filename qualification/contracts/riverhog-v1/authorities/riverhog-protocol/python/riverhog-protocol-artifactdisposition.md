@@ -14,13 +14,26 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7dcc2fcc48"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4e1c850a92"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-b24e9e81de"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-d1317e8c96"></a>`module` | "riverhog_protocol" |
-| <a id="s-8e0fe797f5"></a>`name` | "ArtifactDisposition" |
-| <a id="s-4ee33ed4fd"></a>`unit` | "export" |
+- <a id="s-b24e9e81de"></a>`distribution`: `riverhog-protocol`
+- <a id="s-d1317e8c96"></a>`module`: `riverhog_protocol`
+- <a id="s-8e0fe797f5"></a>`name`: `ArtifactDisposition`
+- <a id="s-4ee33ed4fd"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-391a96bad8"></a>`kind`: `"class"`
+- <a id="s-cb47d3bccc"></a>`signature`: `"\"(input_collection_id: 'CollectionId', input_archive_root_sha256: 'str', input_path: 'str', status: 'DispositionState', code: 'str \| None' = None, message: 'str \| None' = None) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-62e8ae5b27"></a>`input_collection_id` | `'CollectionId'` | `required` |
+| <a id="s-c40425c181"></a>`input_archive_root_sha256` | `'str'` | `required` |
+| <a id="s-8ba53b1087"></a>`input_path` | `'str'` | `required` |
+| <a id="s-15ee184e1b"></a>`status` | `'DispositionState'` | `required` |
+| <a id="s-c50fcab5ca"></a>`code` | `'str \| None'` | `None` |
+| <a id="s-907fdc661c"></a>`message` | `'str \| None'` | `None` |
 
 ## Maintained corroboration
 

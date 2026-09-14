@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2783287f06"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2b5a6cb9ac"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-4f9a991362"></a>`distribution` | "riverhog-application-access" |
-| <a id="s-5a0c73e726"></a>`module` | "riverhog_application_access" |
-| <a id="s-211a002942"></a>`name` | "APPLICATION_PERMISSIONS" |
-| <a id="s-2a07b36096"></a>`unit` | "export" |
+- <a id="s-4f9a991362"></a>`distribution`: `riverhog-application-access`
+- <a id="s-5a0c73e726"></a>`module`: `riverhog_application_access`
+- <a id="s-211a002942"></a>`name`: `APPLICATION_PERMISSIONS`
+- <a id="s-2a07b36096"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0206a147c3"></a>`kind`: `"constant"`
+- <a id="s-d40c2a6c34"></a>`value`: `["archives:manage","archives:read","catalog:read","collection-descriptions:manage","collection-tags:manage","collection-transforms:control","collection-transforms:execute","collections:create","collections:delete","events:read","events:read_all","keys:manage","provenance:export","provenance:read","quotas:manage","retrieval:manage"]`
 
 ## Governing policies
 

@@ -14,13 +14,28 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-513c81b23d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-88e4054d80"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-f48abc51d8"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-7a030f78e6"></a>`module` | "riverhog_protocol" |
-| <a id="s-c50bf567cc"></a>`name` | "CollectionUploadCustodyObjectDocument" |
-| <a id="s-45b93e6f41"></a>`unit` | "export" |
+- <a id="s-f48abc51d8"></a>`distribution`: `riverhog-protocol`
+- <a id="s-7a030f78e6"></a>`module`: `riverhog_protocol`
+- <a id="s-c50bf567cc"></a>`name`: `CollectionUploadCustodyObjectDocument`
+- <a id="s-45b93e6f41"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-06ea8874f0"></a>`kind`: `"class"`
+- <a id="s-6da940d917"></a>`signature`: `"\"(*, volume_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^(?:pack\|segment)-[0-9a-f]{64}$', ascii_only=None)], sealed_receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-dc86bf46a1"></a>
+- <a id="s-5ce7ee6e4a"></a>`title`: CollectionUploadCustodyObjectDocument
+- <a id="s-a190c457bb"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cea73fb356"></a>`sealed_receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f6371e9790"></a>`volume_id` | yes | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$" |  |
 
 ## Governing policies
 
@@ -46,13 +61,33 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9ba59fa1c9a331a3e83d7ec8a8217a7d39248c2e9972df20ccba068b54975eae -->
+<!-- exact-contract-value: c17e3c5cede438a8330c84545889a4a07c4eeff29c01d912cae5ec023ee309d0 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "ab739b34e762d74a982f0188a94fe8c54345a38aee2272388a4382dd8deebd29",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "sealed_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sealed Receipt Sha256",
+          "type": "string"
+        },
+        "volume_id": {
+          "pattern": "^(?:pack|segment)-[0-9a-f]{64}$",
+          "title": "Volume Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "volume_id",
+        "sealed_receipt_sha256"
+      ],
+      "title": "CollectionUploadCustodyObjectDocument",
+      "type": "object"
+    },
     "signature": "\"(*, volume_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^(?:pack|segment)-[0-9a-f]{64}$', ascii_only=None)], sealed_receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
   },
   "distribution": "riverhog-protocol",

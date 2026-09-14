@@ -14,13 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1bca796d3f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-b1b24ed0fc"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-9707187dda"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-58c7caa074"></a>`module` | "riverhog_provenance" |
-| <a id="s-aadbcf941b"></a>`name` | "PreparedFileProvenance" |
-| <a id="s-f696784aa6"></a>`unit` | "export" |
+- <a id="s-9707187dda"></a>`distribution`: `riverhog-provenance`
+- <a id="s-58c7caa074"></a>`module`: `riverhog_provenance`
+- <a id="s-aadbcf941b"></a>`name`: `PreparedFileProvenance`
+- <a id="s-f696784aa6"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-b110613148"></a>`kind`: `"class"`
+- <a id="s-a60a22b7e1"></a>`signature`: `"\"(binding: 'FileProvenanceBinding', journals: 'dict[str, bytes]', source: 'str') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-90ecba1a23"></a>`binding` | `'FileProvenanceBinding'` | `required` |
+| <a id="s-609a727567"></a>`journals` | `'dict[str, bytes]'` | `required` |
+| <a id="s-9548e30929"></a>`source` | `'str'` | `required` |
 
 ## Governing policies
 

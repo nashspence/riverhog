@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d7ff7245e9"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-989636d188"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6ec1b6103a"></a>`distribution` | "state-schema" |
-| <a id="s-41a17785e4"></a>`module` | "state_schema" |
-| <a id="s-61eade7cec"></a>`name` | "execution_options" |
-| <a id="s-f3120e6e25"></a>`owner` | "state_schema.StateEngine" |
-| <a id="s-5da14a2683"></a>`unit` | "member" |
+- <a id="s-6ec1b6103a"></a>`distribution`: `state-schema`
+- <a id="s-41a17785e4"></a>`module`: `state_schema`
+- <a id="s-61eade7cec"></a>`name`: `execution_options`
+- <a id="s-f3120e6e25"></a>`owner`: `state_schema.StateEngine`
+- <a id="s-5da14a2683"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1e2359bad5"></a>`kind`: `"method"`
+- <a id="s-c38dec8115"></a>`signature`: `"\"(self, **opt: 'Any') -> 'OptionEngine'\""`
 
 ## Maintained corroboration
 

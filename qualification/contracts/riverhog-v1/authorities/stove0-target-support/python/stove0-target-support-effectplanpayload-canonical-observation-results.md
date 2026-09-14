@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2f474b47e5"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-69e7e56021"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-af452ca06a"></a>`distribution` | "stove0-target-support" |
-| <a id="s-5e5b11a332"></a>`module` | "stove0_target_support" |
-| <a id="s-ecf2402764"></a>`name` | "canonical_observation_results" |
-| <a id="s-ae927f1ffe"></a>`owner` | "stove0_target_support.EffectPlanPayload" |
-| <a id="s-4c21c257db"></a>`unit` | "member" |
+- <a id="s-af452ca06a"></a>`distribution`: `stove0-target-support`
+- <a id="s-5e5b11a332"></a>`module`: `stove0_target_support`
+- <a id="s-ecf2402764"></a>`name`: `canonical_observation_results`
+- <a id="s-ae927f1ffe"></a>`owner`: `stove0_target_support.EffectPlanPayload`
+- <a id="s-4c21c257db"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-11ec692052"></a>`kind`: `"classmethod"`
+- <a id="s-c677a9256f"></a>`signature`: `"\"(cls, value: 'tuple[str, ...]') -> 'tuple[str, ...]'\""`
 
 ## Maintained corroboration
 

@@ -14,13 +14,32 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-68bc0bed73"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-af9cedbee1"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-2539bfcd6a"></a>`distribution` | "stove0-review-sampler-protocol" |
-| <a id="s-814ef07be9"></a>`module` | "stove0_review_sampler_protocol" |
-| <a id="s-23416d7d34"></a>`name` | "SamplerOutput" |
-| <a id="s-cbc124711e"></a>`unit` | "export" |
+- <a id="s-2539bfcd6a"></a>`distribution`: `stove0-review-sampler-protocol`
+- <a id="s-814ef07be9"></a>`module`: `stove0_review_sampler_protocol`
+- <a id="s-23416d7d34"></a>`name`: `SamplerOutput`
+- <a id="s-cbc124711e"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-c7a45ce33c"></a>`kind`: `"class"`
+- <a id="s-d423acb22b"></a>`signature`: `"\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], media_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], derived_from: Annotated[tuple[str, ...], MinLen(min_length=1)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-d01a821efc"></a>
+- <a id="s-3a9ea0ac9f"></a>`title`: SamplerOutput
+- <a id="s-ff5d956d3d"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-241ceaa52d"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-ff7d077529"></a>`derived_from` | yes | type="array"; minItems=1; items=(type="string") |  |
+| <a id="s-35b95467de"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-57436e5d43"></a>`media_type` | yes | type="string"; minLength=1; maxLength=255 |  |
+| <a id="s-d3292fc5f1"></a>`path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-ba93cf995a"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -53,13 +72,62 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 02cd0958de0209b4278a2670d917166a495b0c341096920346f6fea4088da370 -->
+<!-- exact-contract-value: c01c8a6883c645ae163ae66fbc9cbbc533d99685b1a40bab012fc05cee779d85 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "6e4a50dfd5fcaa493a6baa6f34436ab5b4bc32ab808f0f2c7d6f99fda3befdac",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 0,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "derived_from": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Derived From",
+          "type": "array"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "media_type": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Media Type",
+          "type": "string"
+        },
+        "path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "path",
+        "bytes",
+        "sha256",
+        "media_type",
+        "derived_from"
+      ],
+      "title": "SamplerOutput",
+      "type": "object"
+    },
     "signature": "\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], media_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], derived_from: Annotated[tuple[str, ...], MinLen(min_length=1)]) -> None\""
   },
   "distribution": "stove0-review-sampler-protocol",

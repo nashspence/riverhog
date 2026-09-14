@@ -14,13 +14,21 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8d9f14a03b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2a50288b95"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-c289068450"></a>`distribution` | "gogurt-path-volume-support" |
-| <a id="s-22e56d4f40"></a>`module` | "gogurt_path_volume_support" |
-| <a id="s-0e478b45cf"></a>`name` | "PathMountedVolumeAccess" |
-| <a id="s-6e5c658a6c"></a>`unit` | "export" |
+- <a id="s-c289068450"></a>`distribution`: `gogurt-path-volume-support`
+- <a id="s-22e56d4f40"></a>`module`: `gogurt_path_volume_support`
+- <a id="s-0e478b45cf"></a>`name`: `PathMountedVolumeAccess`
+- <a id="s-6e5c658a6c"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-b0537f3240"></a>`kind`: `"class"`
+- <a id="s-a900fa1b7b"></a>`signature`: `"\"(discover_mounts: 'Callable[[], Sequence[Path]]') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-972ed64c78"></a>`discover_mounts` | `'Callable[[], Sequence[Path]]'` | `required` |
 
 ## Maintained corroboration
 

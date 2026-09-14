@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4b59ece2a7"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-11999f4f9f"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-e2a5e3b054"></a>`distribution` | "lifecycle-events" |
-| <a id="s-f86953edf2"></a>`module` | "lifecycle_events" |
-| <a id="s-af2d2ae192"></a>`name` | "__enter__" |
-| <a id="s-6bb64f50bc"></a>`owner` | "lifecycle_events.LifecycleEventClient" |
-| <a id="s-eae6b11783"></a>`unit` | "member" |
+- <a id="s-e2a5e3b054"></a>`distribution`: `lifecycle-events`
+- <a id="s-f86953edf2"></a>`module`: `lifecycle_events`
+- <a id="s-af2d2ae192"></a>`name`: `__enter__`
+- <a id="s-6bb64f50bc"></a>`owner`: `lifecycle_events.LifecycleEventClient`
+- <a id="s-eae6b11783"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-2049cba14e"></a>`kind`: `"method"`
+- <a id="s-9fb3b47b54"></a>`signature`: `"\"(self) -> 'LifecycleEventClient'\""`
 
 ## Maintained corroboration
 

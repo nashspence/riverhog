@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-db3527de49"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-a2a7c35c23"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-6f1c934427"></a>`distribution` | "stove0-nvenc-av1-opus-target" |
-| <a id="s-bd2994f8f4"></a>`module` | "stove0_nvenc_av1_opus_target" |
-| <a id="s-9b17a96ff5"></a>`name` | "NvencAv1OpusTargetService" |
-| <a id="s-a9643afbc1"></a>`unit` | "export" |
+- <a id="s-6f1c934427"></a>`distribution`: `stove0-nvenc-av1-opus-target`
+- <a id="s-bd2994f8f4"></a>`module`: `stove0_nvenc_av1_opus_target`
+- <a id="s-9b17a96ff5"></a>`name`: `NvencAv1OpusTargetService`
+- <a id="s-a9643afbc1"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-085a454ca4"></a>`kind`: `"class"`
+- <a id="s-3bf4ce0c8c"></a>`signature`: `"\"(*, state_root: 'Path', workspace_root: 'Path', ffmpeg: 'str' = 'ffmpeg', source_revision: 'str' = 'unknown', image_digest: 'str', terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""`
 
 ## Maintained corroboration
 

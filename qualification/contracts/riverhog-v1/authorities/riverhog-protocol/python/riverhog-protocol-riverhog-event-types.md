@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-92f5c1d452"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-81ca6f01bb"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-ad731c37a8"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-8763c4f348"></a>`module` | "riverhog_protocol" |
-| <a id="s-5efa389865"></a>`name` | "RIVERHOG_EVENT_TYPES" |
-| <a id="s-8da2196cba"></a>`unit` | "export" |
+- <a id="s-ad731c37a8"></a>`distribution`: `riverhog-protocol`
+- <a id="s-8763c4f348"></a>`module`: `riverhog_protocol`
+- <a id="s-5efa389865"></a>`name`: `RIVERHOG_EVENT_TYPES`
+- <a id="s-8da2196cba"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-72dd4ffd30"></a>`kind`: `"constant"`
+- <a id="s-ab76d180e4"></a>`value`: `["io.riverhog.riverhog.archive_copy.canceled","io.riverhog.riverhog.archive_copy.completed","io.riverhog.riverhog.archive_copy.issue","io.riverhog.riverhog.archive_copy.requested","io.riverhog.riverhog.collection.deleted","io.riverhog.riverhog.collection.finalized","io.riverhog.riverhog.retrieval.canceled","io.riverhog.riverhog.retrieval.completed","io.riverhog.riverhog.retrieval.expired","io.riverhog.riverhog.retrieval.failed","io.riverhog.riverhog.retrieval.issue","io.riverhog.riverhog.retrieval.ready","io.riverhog.riverhog.retrieval.renewed","io.riverhog.riverhog.retrieval.requested"]`
 
 ## Governing policies
 

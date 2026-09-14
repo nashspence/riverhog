@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9c8182135e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-ba32816877"></a>`contract` | additional keys=`kind`, `value` |
-| <a id="s-239d3a652d"></a>`distribution` | "riverhog-provenance-macos-contracts" |
-| <a id="s-fbc4de8f2f"></a>`module` | "riverhog_provenance_macos_contracts" |
-| <a id="s-1cb7b4ec75"></a>`name` | "PLATFORM_FAMILY" |
-| <a id="s-2c2c402de8"></a>`unit` | "export" |
+- <a id="s-239d3a652d"></a>`distribution`: `riverhog-provenance-macos-contracts`
+- <a id="s-fbc4de8f2f"></a>`module`: `riverhog_provenance_macos_contracts`
+- <a id="s-1cb7b4ec75"></a>`name`: `PLATFORM_FAMILY`
+- <a id="s-2c2c402de8"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-414b697a55"></a>`kind`: `"constant"`
+- <a id="s-0afa4db4fa"></a>`value`: `"macos"`
 
 ## Governing policies
 

@@ -1,0 +1,112 @@
+# stove0-control: stove0_event_cursors
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-event-cursors:a1de6ed85e -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-control](../index.md) |
+| Interface | [Durable State](index.md) |
+
+## External contract
+
+<a id="s-ee83fb8e33"></a>
+- Table: `stove0_event_cursors`
+
+### Columns
+
+| Column | Type | Nullable | Default | Other constraints |
+|---|---|---:|---|---|
+| <a id="s-4a3475cb4c"></a>`stream` | `VARCHAR(160)` | no | `—` | — |
+| <a id="s-d0e6f96460"></a>`cursor` | `VARCHAR(500)` | no | `—` | — |
+| <a id="s-e8d072e3dc"></a>`revision` | `INTEGER` | no | `—` | — |
+| <a id="s-31e9bd711c"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
+
+### Table constraints
+
+| Kind | Name | Exact definition |
+|---|---|---|
+| <a id="s-ce44365cef"></a>`primary-key` | `—` | `PRIMARY KEY (stream)` |
+| <a id="s-d2b8bad4e2"></a>`check` | `ck_stove0_event_cursors_revision` | `CONSTRAINT ck_stove0_event_cursors_revision CHECK (revision >= 1)` |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0-control durable-state identity](stove0-control-durable-state-identity.md)
+
+## Governing policies
+
+- <a id="pa-fc53f8a29d"></a>[compatibility/durable-state/v1](../../../policies/index.md#p-214a49c2de)
+
+## Evidence
+
+### Qualification
+
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make database-qualification](../../../evidence/sources.md#q-27f281b51e)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [state:stove0-control](../../../evidence/sources.md#src-45e44b17fd) — `reference/stove0/application/server/src/stove0_core/state_migrations/v1_ddl.py`
+
+### Machine authority
+
+- `/external_contract/durable_state/owners/3/structure/tables/6`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 3620e611a37c74f2a12118ec0764392c3eb08d300e5043c3cd65d9552a8a005c -->
+
+```json
+{
+  "columns": [
+    {
+      "definition": "stream VARCHAR(160) NOT NULL",
+      "name": "stream",
+      "nullable": false,
+      "type": "VARCHAR(160)"
+    },
+    {
+      "definition": "cursor VARCHAR(500) NOT NULL",
+      "name": "cursor",
+      "nullable": false,
+      "type": "VARCHAR(500)"
+    },
+    {
+      "definition": "revision INTEGER NOT NULL",
+      "name": "revision",
+      "nullable": false,
+      "type": "INTEGER"
+    },
+    {
+      "definition": "updated_at VARCHAR(40) NOT NULL",
+      "name": "updated_at",
+      "nullable": false,
+      "type": "VARCHAR(40)"
+    }
+  ],
+  "constraints": [
+    {
+      "columns": [
+        "stream"
+      ],
+      "definition": "PRIMARY KEY (stream)",
+      "kind": "primary-key"
+    },
+    {
+      "definition": "CONSTRAINT ck_stove0_event_cursors_revision CHECK (revision >= 1)",
+      "expression": "(revision >= 1)",
+      "kind": "check",
+      "name": "ck_stove0_event_cursors_revision"
+    }
+  ],
+  "name": "stove0_event_cursors"
+}
+```

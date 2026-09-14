@@ -14,13 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5d12552e0d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-c776ef9e84"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-4fc4f751e6"></a>`distribution` | "http-api-contracts" |
-| <a id="s-3a9963b5d0"></a>`module` | "http_api_contracts" |
-| <a id="s-45e48ba31c"></a>`name` | "HttpResponseHeaderContract" |
-| <a id="s-3fc13150f2"></a>`unit` | "export" |
+- <a id="s-4fc4f751e6"></a>`distribution`: `http-api-contracts`
+- <a id="s-3a9963b5d0"></a>`module`: `http_api_contracts`
+- <a id="s-45e48ba31c"></a>`name`: `HttpResponseHeaderContract`
+- <a id="s-3fc13150f2"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-61d83be94c"></a>`kind`: `"class"`
+- <a id="s-d56244036b"></a>`signature`: `"\"(name: 'str', value_type: 'object' = <class 'str'>, description: 'str \| None' = None) -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-e7b1478118"></a>`name` | `'str'` | `required` |
+| <a id="s-60d207ce13"></a>`value_type` | `'object'` | `<class 'str'>` |
+| <a id="s-dadc8af163"></a>`description` | `'str \| None'` | `None` |
 
 ## Governing policies
 

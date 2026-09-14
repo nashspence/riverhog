@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2ba50ff0ba"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-2a77c79ea5"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-629f7bd5c5"></a>`distribution` | "riverhog-client" |
-| <a id="s-e372050583"></a>`module` | "riverhog_client.transform" |
-| <a id="s-d617fa70a8"></a>`name` | "from_capability" |
-| <a id="s-c2f6553901"></a>`owner` | "riverhog_client.transform.CollectionTransformRuntime" |
-| <a id="s-22ce9ef691"></a>`unit` | "member" |
+- <a id="s-629f7bd5c5"></a>`distribution`: `riverhog-client`
+- <a id="s-e372050583"></a>`module`: `riverhog_client.transform`
+- <a id="s-d617fa70a8"></a>`name`: `from_capability`
+- <a id="s-c2f6553901"></a>`owner`: `riverhog_client.transform.CollectionTransformRuntime`
+- <a id="s-22ce9ef691"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-db02ac4b27"></a>`kind`: `"classmethod"`
+- <a id="s-d15b92c6d6"></a>`signature`: `"\"(cls, *, base_url: 'str', capability_token: 'str', spec: 'DerivedCollectionSpec', claim_id: 'str', fence: 'int', work_id: 'str', execution_id: 'str', controller_evidence: 'Mapping[str, object]', allow_insecure_http: 'bool' = False, **kwargs: 'Any') -> 'CollectionTransformRuntime'\""`
 
 ## Maintained corroboration
 

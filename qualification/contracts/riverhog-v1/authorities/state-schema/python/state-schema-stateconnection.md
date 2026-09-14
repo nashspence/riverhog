@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-194353803b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-6fce4ce2fc"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-283d73246f"></a>`distribution` | "state-schema" |
-| <a id="s-1c1cec9c34"></a>`module` | "state_schema" |
-| <a id="s-272f666ff8"></a>`name` | "StateConnection" |
-| <a id="s-02be498d6d"></a>`unit` | "export" |
+- <a id="s-283d73246f"></a>`distribution`: `state-schema`
+- <a id="s-1c1cec9c34"></a>`module`: `state_schema`
+- <a id="s-272f666ff8"></a>`name`: `StateConnection`
+- <a id="s-02be498d6d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-eba6e561b3"></a>`kind`: `"class"`
+- <a id="s-feeac4c569"></a>`signature`: `"\"(engine: 'Engine', connection: 'Optional[PoolProxiedConnection]' = None, _has_events: 'Optional[bool]' = None, _allow_revalidate: 'bool' = True, _allow_autobegin: 'bool' = True)\""`
 
 ## Maintained corroboration
 

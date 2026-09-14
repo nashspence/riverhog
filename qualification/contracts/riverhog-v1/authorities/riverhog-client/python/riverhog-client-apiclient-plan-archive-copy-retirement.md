@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-eb5098a94b"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-4c7f60ff83"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-a5d5609e5a"></a>`distribution` | "riverhog-client" |
-| <a id="s-a1ce6c590c"></a>`module` | "riverhog_client" |
-| <a id="s-374f7726b9"></a>`name` | "plan_archive_copy_retirement" |
-| <a id="s-f5eeb02596"></a>`owner` | "riverhog_client.ApiClient" |
-| <a id="s-f44f633fcc"></a>`unit` | "member" |
+- <a id="s-a5d5609e5a"></a>`distribution`: `riverhog-client`
+- <a id="s-a1ce6c590c"></a>`module`: `riverhog_client`
+- <a id="s-374f7726b9"></a>`name`: `plan_archive_copy_retirement`
+- <a id="s-f5eeb02596"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-f44f633fcc"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-acfb55ce9e"></a>`kind`: `"method"`
+- <a id="s-05514e7a70"></a>`signature`: `"\"(self, collection_id: 'CollectionId', *, store: 'ArchiveStoreName') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 

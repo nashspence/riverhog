@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4133c8667f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-47545d8dfe"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-a416aa0dae"></a>`distribution` | "riverhog-storage-adapter-filesystem" |
-| <a id="s-56aacd7eeb"></a>`module` | "riverhog_storage_adapter_filesystem" |
-| <a id="s-494f41611b"></a>`name` | "descriptor" |
-| <a id="s-d38a80ccf6"></a>`owner` | "riverhog_storage_adapter_filesystem.FilesystemStorageAdapter" |
-| <a id="s-fd1aca1b0c"></a>`unit` | "member" |
+- <a id="s-a416aa0dae"></a>`distribution`: `riverhog-storage-adapter-filesystem`
+- <a id="s-56aacd7eeb"></a>`module`: `riverhog_storage_adapter_filesystem`
+- <a id="s-494f41611b"></a>`name`: `descriptor`
+- <a id="s-d38a80ccf6"></a>`owner`: `riverhog_storage_adapter_filesystem.FilesystemStorageAdapter`
+- <a id="s-fd1aca1b0c"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-bb9597e063"></a>`kind`: `"method"`
+- <a id="s-612000e60f"></a>`signature`: `"\"(self) -> 'AdapterDescriptor'\""`
 
 ## Maintained corroboration
 

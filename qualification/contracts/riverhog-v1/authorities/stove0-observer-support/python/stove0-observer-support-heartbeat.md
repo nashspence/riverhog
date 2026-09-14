@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-10870be18e"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-3abdfd3434"></a>`contract` | type="collections.abc._CallableGenericAlias"; additional keys=`kind` |
-| <a id="s-31058fd115"></a>`distribution` | "stove0-observer-support" |
-| <a id="s-0bb002e848"></a>`module` | "stove0_observer_support" |
-| <a id="s-5f1c252fc1"></a>`name` | "Heartbeat" |
-| <a id="s-55076a94cd"></a>`unit` | "export" |
+- <a id="s-31058fd115"></a>`distribution`: `stove0-observer-support`
+- <a id="s-0bb002e848"></a>`module`: `stove0_observer_support`
+- <a id="s-5f1c252fc1"></a>`name`: `Heartbeat`
+- <a id="s-55076a94cd"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-4a3e8c5993"></a>`kind`: `"object"`
+- <a id="s-24f8e5d1fa"></a>`type`: `"collections.abc._CallableGenericAlias"`
 
 ## Governing policies
 

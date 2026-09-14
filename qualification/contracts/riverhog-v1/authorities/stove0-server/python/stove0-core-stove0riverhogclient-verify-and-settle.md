@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-da926cc496"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-96cadeb58b"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-067fad56ef"></a>`distribution` | "stove0-server" |
-| <a id="s-0e44ad5334"></a>`module` | "stove0_core" |
-| <a id="s-9c82aa6ae0"></a>`name` | "verify_and_settle" |
-| <a id="s-b715e10f28"></a>`owner` | "stove0_core.Stove0RiverhogClient" |
-| <a id="s-21219d1892"></a>`unit` | "member" |
+- <a id="s-067fad56ef"></a>`distribution`: `stove0-server`
+- <a id="s-0e44ad5334"></a>`module`: `stove0_core`
+- <a id="s-9c82aa6ae0"></a>`name`: `verify_and_settle`
+- <a id="s-b715e10f28"></a>`owner`: `stove0_core.Stove0RiverhogClient`
+- <a id="s-21219d1892"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-8147c0bd26"></a>`kind`: `"method"`
+- <a id="s-fcbd204074"></a>`signature`: `"\"(self, record: 'WorkRecord', parent_outcome: 'ParentOutcomeBinding \| None' = None) -> 'tuple[OutputCollectionRef, TargetSettlementAuthority \| None]'\""`
 
 ## Maintained corroboration
 

@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7dc792a3e3"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-89349a1841"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-9c8b4f7da6"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-e6b318aa1d"></a>`module` | "riverhog_provenance" |
-| <a id="s-9b81b8ba95"></a>`name` | "assertion_body" |
-| <a id="s-b5ec0302ed"></a>`owner` | "riverhog_provenance.ObservationResult" |
-| <a id="s-4441af1383"></a>`unit` | "member" |
+- <a id="s-9c8b4f7da6"></a>`distribution`: `riverhog-provenance`
+- <a id="s-e6b318aa1d"></a>`module`: `riverhog_provenance`
+- <a id="s-9b81b8ba95"></a>`name`: `assertion_body`
+- <a id="s-b5ec0302ed"></a>`owner`: `riverhog_provenance.ObservationResult`
+- <a id="s-4441af1383"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-ab6765baf1"></a>`kind`: `"method"`
+- <a id="s-64f6547d69"></a>`signature`: `"\"(self, *, omit_object_ids: 'Sequence[str]' = ()) -> 'JsonObject'\""`
 
 ## Maintained corroboration
 

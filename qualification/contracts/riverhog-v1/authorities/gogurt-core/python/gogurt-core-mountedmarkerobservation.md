@@ -14,13 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-001f059d6c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-252faab8c2"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-5b9f2b57e3"></a>`distribution` | "gogurt-core" |
-| <a id="s-123c5f0288"></a>`module` | "gogurt_core" |
-| <a id="s-c173a77694"></a>`name` | "MountedMarkerObservation" |
-| <a id="s-c074d35bfd"></a>`unit` | "export" |
+- <a id="s-5b9f2b57e3"></a>`distribution`: `gogurt-core`
+- <a id="s-123c5f0288"></a>`module`: `gogurt_core`
+- <a id="s-c173a77694"></a>`name`: `MountedMarkerObservation`
+- <a id="s-c074d35bfd"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-6e6cb9d4e8"></a>`kind`: `"class"`
+- <a id="s-35a30b6d46"></a>`signature`: `"\"(marker: 'GogurtRouteMarker', identity: 'str') -> None\""`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-c6036c7275"></a>`marker` | `'GogurtRouteMarker'` | `required` |
+| <a id="s-050b3f7397"></a>`identity` | `'str'` | `required` |
 
 ## Governing policies
 

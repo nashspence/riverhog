@@ -14,13 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0e731a658f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-9e533a27e6"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-70fc7887c6"></a>`distribution` | "riverhog-protocol" |
-| <a id="s-feeb52bb10"></a>`module` | "riverhog_protocol" |
-| <a id="s-ad33b74a42"></a>`name` | "encode_collection_tag_node" |
-| <a id="s-31cfbf55b0"></a>`unit` | "export" |
+- <a id="s-70fc7887c6"></a>`distribution`: `riverhog-protocol`
+- <a id="s-feeb52bb10"></a>`module`: `riverhog_protocol`
+- <a id="s-ad33b74a42"></a>`name`: `encode_collection_tag_node`
+- <a id="s-31cfbf55b0"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-421c6b90f5"></a>`kind`: `"function"`
+- <a id="s-945c968806"></a>`signature`: `"\"(node: 'CollectionTagNode') -> 'bytes'\""`
 
 ## Governing policies
 

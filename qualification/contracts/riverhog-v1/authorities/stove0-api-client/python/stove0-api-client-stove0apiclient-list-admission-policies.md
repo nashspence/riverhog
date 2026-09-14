@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ef977a783f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-491c294437"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-26367120a8"></a>`distribution` | "stove0-api-client" |
-| <a id="s-25ae68f686"></a>`module` | "stove0_api_client" |
-| <a id="s-099a922060"></a>`name` | "list_admission_policies" |
-| <a id="s-4023b786e8"></a>`owner` | "stove0_api_client.Stove0ApiClient" |
-| <a id="s-2daa3404d8"></a>`unit` | "member" |
+- <a id="s-26367120a8"></a>`distribution`: `stove0-api-client`
+- <a id="s-25ae68f686"></a>`module`: `stove0_api_client`
+- <a id="s-099a922060"></a>`name`: `list_admission_policies`
+- <a id="s-4023b786e8"></a>`owner`: `stove0_api_client.Stove0ApiClient`
+- <a id="s-2daa3404d8"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-1ca2d1f25b"></a>`kind`: `"method"`
+- <a id="s-c6b37a4430"></a>`signature`: `"\"(self) -> 'AdmissionPolicyCatalogView'\""`
 
 ## Maintained corroboration
 

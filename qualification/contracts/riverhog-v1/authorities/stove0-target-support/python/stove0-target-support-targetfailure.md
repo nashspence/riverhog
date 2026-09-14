@@ -14,13 +14,29 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-dce584700f"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-cb48ca51e4"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-f66d8a8288"></a>`distribution` | "stove0-target-support" |
-| <a id="s-7184615570"></a>`module` | "stove0_target_support" |
-| <a id="s-ded8318de1"></a>`name` | "TargetFailure" |
-| <a id="s-c5ab76ee59"></a>`unit` | "export" |
+- <a id="s-f66d8a8288"></a>`distribution`: `stove0-target-support`
+- <a id="s-7184615570"></a>`module`: `stove0_target_support`
+- <a id="s-ded8318de1"></a>`name`: `TargetFailure`
+- <a id="s-c5ab76ee59"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-6c64612257"></a>`kind`: `"class"`
+- <a id="s-39c0cc7fa8"></a>`signature`: `"\"(*, code: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)], retryable: bool) -> None\""`
+
+#### Validated model schema
+
+<a id="s-dffb976f63"></a>
+- <a id="s-83270f0b47"></a>`title`: TargetFailure
+- <a id="s-25c95c2144"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7b9580a80a"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-938353d745"></a>`message` | yes | type="string"; minLength=1; maxLength=1000 |  |
+| <a id="s-24486c1a4a"></a>`retryable` | yes | type="boolean" |  |
 
 ## Governing policies
 
@@ -46,13 +62,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 845b2cc11290f5639995a3076dd376c060d177f797c48eedd4249a0e5ea817da -->
+<!-- exact-contract-value: dd5aa500143d861bbd03568ac85bcfcb4c3377c5c137e01b11bef3f67d99b748 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "1f3471f4274fa0dc57b46bac02964b1e6b6f07bbd8a9a19f618b2031ccb0c065",
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "retryable": {
+          "title": "Retryable",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "retryable"
+      ],
+      "title": "TargetFailure",
+      "type": "object"
+    },
     "signature": "\"(*, code: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)], retryable: bool) -> None\""
   },
   "distribution": "stove0-target-support",

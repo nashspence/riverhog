@@ -14,13 +14,27 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0773d12145"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-8c27a8b990"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
-| <a id="s-26a8126566"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-ae10cd4e03"></a>`module` | "riverhog_provenance" |
-| <a id="s-a4b1168082"></a>`name` | "FileProvenanceBinding" |
-| <a id="s-4577a88bbf"></a>`unit` | "export" |
+- <a id="s-26a8126566"></a>`distribution`: `riverhog-provenance`
+- <a id="s-ae10cd4e03"></a>`module`: `riverhog_provenance`
+- <a id="s-a4b1168082"></a>`name`: `FileProvenanceBinding`
+- <a id="s-4577a88bbf"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-0619bc1f0d"></a>`kind`: `"class"`
+- <a id="s-fd74641d6d"></a>`signature`: `"'(path: \\'str\\', bytes: \\'int\\', sha256: \\'str\\', status: \"Literal[\\'captured\\', \\'omitted\\']\", journal_id: \\'str \| None\\' = None, current_state_id: \\'str \| None\\' = None, omission_reason: \\'str \| None\\' = None) -> None'"`
+
+#### Dataclass fields
+
+| Field | Type | Default |
+|---|---|---|
+| <a id="s-d9ee6148d2"></a>`path` | `'str'` | `required` |
+| <a id="s-d74094fd5f"></a>`bytes` | `'int'` | `required` |
+| <a id="s-c4ce8d3ebb"></a>`sha256` | `'str'` | `required` |
+| <a id="s-8381149583"></a>`status` | `"Literal['captured', 'omitted']"` | `required` |
+| <a id="s-4f63b48705"></a>`journal_id` | `'str \| None'` | `None` |
+| <a id="s-2185563c92"></a>`current_state_id` | `'str \| None'` | `None` |
+| <a id="s-adcaad18df"></a>`omission_reason` | `'str \| None'` | `None` |
 
 ## Governing policies
 

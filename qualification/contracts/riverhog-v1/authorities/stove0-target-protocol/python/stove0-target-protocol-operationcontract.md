@@ -14,13 +14,45 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-05e475df5c"></a>
-| Field | Shape |
+- <a id="s-7acbbf9d43"></a>`distribution`: `stove0-target-protocol`
+- <a id="s-3cda6243e6"></a>`module`: `stove0_target_protocol`
+- <a id="s-f96be9133e"></a>`name`: `OperationContract`
+- <a id="s-379aa4d20d"></a>`unit`: `export`
+
+### Declared structure
+
+- <a id="s-2c137df7ae"></a>`kind`: `"class"`
+- <a id="s-6abcbb0f87"></a>`signature`: `"\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], result_kind: Literal['collection', 'external-effect'] = 'collection', intent_schema: stove0_protocol.models.JsonSchemaDocument, intent_semantics: stove0_protocol.models.SemanticValidationProfile, inputs: Annotated[tuple[stove0_target_protocol.protocol.InputArtifactContract, ...], MinLen(min_length=1)], outputs: tuple[stove0_target_protocol.protocol.OutputArtifactContract, ...] = (), effect_receipt_schema: stove0_protocol.models.JsonSchemaDocument \| None = None, source_retirement_permitted: bool = False, contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+
+#### Validated model schema
+
+<a id="s-c2006a1634"></a>
+- <a id="s-2fd2c9cab3"></a>`title`: OperationContract
+- <a id="s-1b54a2a356"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f6d8680260"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a7dc046b5b"></a>`effect_receipt_schema` | no | anyOf=#/$defs/JsonSchemaDocument \| type="null" |  |
+| <a id="s-3d1390ddcf"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-ed60cb2c72"></a>`inputs` | yes | type="array"; minItems=1; items=(#/$defs/InputArtifactContract) |  |
+| <a id="s-96c8da7257"></a>`intent_schema` | yes | #/$defs/JsonSchemaDocument |  |
+| <a id="s-02ce94975a"></a>`intent_semantics` | yes | #/$defs/SemanticValidationProfile |  |
+| <a id="s-b90338abaf"></a>`outputs` | no | type="array"; items=(#/$defs/OutputArtifactContract) |  |
+| <a id="s-d48b4ba29a"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"] |  |
+| <a id="s-a360528ad7"></a>`source_retirement_permitted` | no | type="boolean" |  |
+
+### Definitions
+
+| Definition | Shape |
 |---|---|
-| <a id="s-f6da62df10"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
-| <a id="s-7acbbf9d43"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-3cda6243e6"></a>`module` | "stove0_target_protocol" |
-| <a id="s-f96be9133e"></a>`name` | "OperationContract" |
-| <a id="s-379aa4d20d"></a>`unit` | "export" |
+| <a id="s-1a2857588b"></a>`InputArtifactContract` | type="object"; fields=`allowed_dispositions`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
+| <a id="s-7a2ac5bc4d"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-b33e771e6c"></a>`JsonValue` | empty object |
+| <a id="s-d6184a61f2"></a>`OutputArtifactContract` | type="object"; fields=`derived_from_roles`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
+| <a id="s-7200aaef6b"></a>`SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
 
 ## Maintained corroboration
 
@@ -53,13 +85,270 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4bb7672e3dbbddc1e7d8185eccb00c135978b95d739d99dce9ce8bfb5feb918a -->
+<!-- exact-contract-value: 22a00d096f7dd5c264a04532536f72a73701d1b4092a13541f0cb33b67b83100 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "schema_sha256": "aa2a5d676e27f1328d9ac0508bb514c28355ff594b7e72c052731d4fbc4edd22",
+    "schema": {
+      "$defs": {
+        "InputArtifactContract": {
+          "additionalProperties": false,
+          "properties": {
+            "allowed_dispositions": {
+              "anyOf": [
+                {
+                  "items": {
+                    "enum": [
+                      "transformed",
+                      "preserved",
+                      "omitted",
+                      "rejected"
+                    ],
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Allowed Dispositions"
+            },
+            "maximum": {
+              "anyOf": [
+                {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Maximum"
+            },
+            "minimum": {
+              "default": 1,
+              "minimum": 0,
+              "title": "Minimum",
+              "type": "integer"
+            },
+            "role": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Role",
+              "type": "string"
+            }
+          },
+          "required": [
+            "role"
+          ],
+          "title": "InputArtifactContract",
+          "type": "object"
+        },
+        "JsonSchemaDocument": {
+          "additionalProperties": false,
+          "properties": {
+            "dialect": {
+              "const": "https://json-schema.org/draft/2020-12/schema",
+              "default": "https://json-schema.org/draft/2020-12/schema",
+              "title": "Dialect",
+              "type": "string"
+            },
+            "format_policy": {
+              "const": "annotation-only",
+              "default": "annotation-only",
+              "title": "Format Policy",
+              "type": "string"
+            },
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "schema": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "title": "Schema",
+              "type": "object"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Sha256",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "sha256",
+            "schema"
+          ],
+          "title": "JsonSchemaDocument",
+          "type": "object"
+        },
+        "JsonValue": {},
+        "OutputArtifactContract": {
+          "additionalProperties": false,
+          "properties": {
+            "derived_from_roles": {
+              "items": {
+                "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+                "type": "string"
+              },
+              "minItems": 1,
+              "title": "Derived From Roles",
+              "type": "array"
+            },
+            "maximum": {
+              "anyOf": [
+                {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Maximum"
+            },
+            "minimum": {
+              "default": 1,
+              "minimum": 0,
+              "title": "Minimum",
+              "type": "integer"
+            },
+            "role": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Role",
+              "type": "string"
+            }
+          },
+          "required": [
+            "role",
+            "derived_from_roles"
+          ],
+          "title": "OutputArtifactContract",
+          "type": "object"
+        },
+        "SemanticValidationProfile": {
+          "additionalProperties": false,
+          "properties": {
+            "conformance_vectors_sha256": {
+              "anyOf": [
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Conformance Vectors Sha256"
+            },
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "title": "Id",
+              "type": "string"
+            },
+            "profile_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Profile Sha256",
+              "type": "string"
+            },
+            "rules": {
+              "items": {
+                "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+                "type": "string"
+              },
+              "minItems": 1,
+              "title": "Rules",
+              "type": "array"
+            }
+          },
+          "required": [
+            "id",
+            "rules",
+            "profile_sha256"
+          ],
+          "title": "SemanticValidationProfile",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "contract_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Contract Sha256",
+          "type": "string"
+        },
+        "effect_receipt_schema": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/JsonSchemaDocument"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "inputs": {
+          "items": {
+            "$ref": "#/$defs/InputArtifactContract"
+          },
+          "minItems": 1,
+          "title": "Inputs",
+          "type": "array"
+        },
+        "intent_schema": {
+          "$ref": "#/$defs/JsonSchemaDocument"
+        },
+        "intent_semantics": {
+          "$ref": "#/$defs/SemanticValidationProfile"
+        },
+        "outputs": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/OutputArtifactContract"
+          },
+          "title": "Outputs",
+          "type": "array"
+        },
+        "result_kind": {
+          "default": "collection",
+          "enum": [
+            "collection",
+            "external-effect"
+          ],
+          "title": "Result Kind",
+          "type": "string"
+        },
+        "source_retirement_permitted": {
+          "default": false,
+          "title": "Source Retirement Permitted",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "intent_schema",
+        "intent_semantics",
+        "inputs",
+        "contract_sha256"
+      ],
+      "title": "OperationContract",
+      "type": "object"
+    },
     "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], result_kind: Literal['collection', 'external-effect'] = 'collection', intent_schema: stove0_protocol.models.JsonSchemaDocument, intent_semantics: stove0_protocol.models.SemanticValidationProfile, inputs: Annotated[tuple[stove0_target_protocol.protocol.InputArtifactContract, ...], MinLen(min_length=1)], outputs: tuple[stove0_target_protocol.protocol.OutputArtifactContract, ...] = (), effect_receipt_schema: stove0_protocol.models.JsonSchemaDocument | None = None, source_retirement_permitted: bool = False, contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-target-protocol",

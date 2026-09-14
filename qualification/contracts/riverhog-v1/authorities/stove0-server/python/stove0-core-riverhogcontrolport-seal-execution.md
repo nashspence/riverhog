@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-71c456b30d"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-0fbe70d8ea"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-24212369c7"></a>`distribution` | "stove0-server" |
-| <a id="s-3c231ca196"></a>`module` | "stove0_core" |
-| <a id="s-fcc3b6b795"></a>`name` | "seal_execution" |
-| <a id="s-73669aafdd"></a>`owner` | "stove0_core.RiverhogControlPort" |
-| <a id="s-4fbc757e5e"></a>`unit` | "member" |
+- <a id="s-24212369c7"></a>`distribution`: `stove0-server`
+- <a id="s-3c231ca196"></a>`module`: `stove0_core`
+- <a id="s-fcc3b6b795"></a>`name`: `seal_execution`
+- <a id="s-73669aafdd"></a>`owner`: `stove0_core.RiverhogControlPort`
+- <a id="s-4fbc757e5e"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-b3de006956"></a>`kind`: `"method"`
+- <a id="s-2bb579d3eb"></a>`signature`: `"\"(self, claim: 'ClaimBinding', evidence: 'ControllerEvidence', plan: 'WorkflowPlan', target_plan: 'TargetPlan', inputs: 'Iterable[ArtifactSubject]') -> 'None'\""`
 
 ## Maintained corroboration
 

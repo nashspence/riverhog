@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b0d1a88ec7"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-bafccaec46"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-748e5720c3"></a>`distribution` | "stove0-server" |
-| <a id="s-7b9ddcc891"></a>`module` | "stove0_core" |
-| <a id="s-9ac8b35f4a"></a>`name` | "scan_target_production_seals" |
-| <a id="s-ca61e09a65"></a>`owner` | "stove0_core.SqlAlchemyStateStore" |
-| <a id="s-7ed31a2d9b"></a>`unit` | "member" |
+- <a id="s-748e5720c3"></a>`distribution`: `stove0-server`
+- <a id="s-7b9ddcc891"></a>`module`: `stove0_core`
+- <a id="s-9ac8b35f4a"></a>`name`: `scan_target_production_seals`
+- <a id="s-ca61e09a65"></a>`owner`: `stove0_core.SqlAlchemyStateStore`
+- <a id="s-7ed31a2d9b"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-a064db44a5"></a>`kind`: `"method"`
+- <a id="s-acc382a361"></a>`signature`: `"\"(self, *, state: 'TargetProductionSealState', limit: 'int') -> 'tuple[TargetProductionSealRecord, ...]'\""`
 
 ## Maintained corroboration
 

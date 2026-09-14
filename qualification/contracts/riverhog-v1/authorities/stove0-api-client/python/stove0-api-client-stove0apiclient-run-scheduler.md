@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b343f2dc8c"></a>
-| Field | Shape |
-|---|---|
-| <a id="s-d42d747e21"></a>`contract` | additional keys=`kind`, `signature` |
-| <a id="s-62b5e8cdc3"></a>`distribution` | "stove0-api-client" |
-| <a id="s-91eeacb38c"></a>`module` | "stove0_api_client" |
-| <a id="s-7cc40a1ea9"></a>`name` | "run_scheduler" |
-| <a id="s-68b2ed32e0"></a>`owner` | "stove0_api_client.Stove0ApiClient" |
-| <a id="s-751580699f"></a>`unit` | "member" |
+- <a id="s-62b5e8cdc3"></a>`distribution`: `stove0-api-client`
+- <a id="s-91eeacb38c"></a>`module`: `stove0_api_client`
+- <a id="s-7cc40a1ea9"></a>`name`: `run_scheduler`
+- <a id="s-68b2ed32e0"></a>`owner`: `stove0_api_client.Stove0ApiClient`
+- <a id="s-751580699f"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-e46a36722c"></a>`kind`: `"method"`
+- <a id="s-b5fec669e8"></a>`signature`: `"\"(self, *, role: 'SchedulerRole' = 'combined', work_limit: 'int' = 25) -> 'SchedulerRun'\""`
 
 ## Maintained corroboration
 
