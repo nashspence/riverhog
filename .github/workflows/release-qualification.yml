@@ -35,6 +35,7 @@ jobs:
       ref: ${{ steps.source.outputs.ref }}
       sha: ${{ steps.source.outputs.sha }}
       version: ${{ steps.source.outputs.version }}
+      mode: ${{ steps.source.outputs.mode }}
     steps:
       - name: Check out workflow authority
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -45,6 +46,7 @@ jobs:
         id: source
         env:
           EVENT_NAME: ${{ github.event_name }}
+          GH_TOKEN: ${{ github.token }}
           REQUESTED_REF: ${{ inputs.ref }}
           REQUESTED_VERSION: ${{ inputs.version }}
           WORKFLOW_REF: ${{ github.ref }}
@@ -58,7 +60,14 @@ jobs:
           if [[ "$EVENT_NAME" == "schedule" ]]; then
             ref=main
             version=1.0.0
-            if git ls-remote --exit-code --heads origin release/v1 >/dev/null; then
+            latest_published_tag="$({
+              gh api --paginate "repos/${{ github.repository }}/releases?per_page=100" \
+                --jq '.[] | select(.draft == false and .prerelease == false and (.tag_name | test("^v1\\.[0-9]+\\.[0-9]+$"))) | .tag_name'
+            } | sort -V | tail -n 1)"
+            if [[ -n "$latest_published_tag" ]]; then
+              ref="$latest_published_tag"
+              version="${latest_published_tag#v}"
+            elif git ls-remote --exit-code --heads origin release/v1 >/dev/null; then
               ref=release/v1
             fi
           fi
@@ -70,9 +79,23 @@ jobs:
             printf 'Unsupported qualification version: %s\n' "$version" >&2
             exit 2
           fi
+          mode=prospective
+          if [[ "$ref" =~ ^v1\.[0-9]+\.[0-9]+$ ]]; then
+            mode=historical
+            if [[ "$ref" != "v$version" ]]; then
+              printf 'Historical qualification ref and version differ: %s %s\n' \
+                "$ref" "$version" >&2
+              exit 2
+            fi
+            release="$(gh api "repos/${{ github.repository }}/releases/tags/$ref")"
+            jq --exit-status --arg tag "$ref" \
+              '.draft == false and .prerelease == false and .tag_name == $tag' \
+              <<< "$release" >/dev/null
+          fi
           git fetch --force --no-tags origin "$ref"
           sha="$(git rev-parse --verify 'FETCH_HEAD^{commit}')"
-          printf 'ref=%s\nsha=%s\nversion=%s\n' "$ref" "$sha" "$version" >> "$GITHUB_OUTPUT"
+          printf 'ref=%s\nsha=%s\nversion=%s\nmode=%s\n' \
+            "$ref" "$sha" "$version" "$mode" >> "$GITHUB_OUTPUT"
       - name: Verify exact-source CodeQL checks
         env:
           GH_TOKEN: ${{ github.token }}
@@ -106,6 +129,7 @@ jobs:
       SOURCE_SHA: ${{ needs.resolve.outputs.sha }}
       SOURCE_REF: ${{ needs.resolve.outputs.ref }}
       RELEASE_VERSION: ${{ needs.resolve.outputs.version }}
+      QUALIFICATION_MODE: ${{ needs.resolve.outputs.mode }}
       RIVERHOG_RELEASE_GHA_CACHE: "true"
     steps:
       - name: Check out workflow authority
@@ -152,12 +176,34 @@ jobs:
           previous_tag=
           mapfile -t published_tags < <(
             gh api --paginate "repos/${{ github.repository }}/releases?per_page=100" \
-              --jq '.[] | select(.draft == false and (.tag_name | test("^v1\\.[0-9]+\\.[0-9]+$"))) | .tag_name' \
+              --jq '.[] | select(.draft == false and .prerelease == false and (.tag_name | test("^v1\\.[0-9]+\\.[0-9]+$"))) | .tag_name' \
               | sort -V
           )
+          if [[ "$QUALIFICATION_MODE" == "prospective" ]]; then
+            if [[ "${#published_tags[@]}" -eq 0 ]]; then
+              if [[ "$RELEASE_VERSION" != "1.0.0" ]]; then
+                printf 'No immutable predecessor exists for %s.\n' "$candidate_tag" >&2
+                exit 2
+              fi
+            else
+              head_index=$((${#published_tags[@]} - 1))
+              current_head="${published_tags[$head_index]}"
+              greatest="$(printf '%s\n%s\n' "$current_head" "$candidate_tag" | sort -V | tail -n 1)"
+              if [[ "$candidate_tag" == "$current_head" || "$greatest" != "$candidate_tag" ]]; then
+                printf 'Prospective candidate %s does not follow current v1 head %s.\n' \
+                  "$candidate_tag" "$current_head" >&2
+                exit 2
+              fi
+            fi
+          elif [[ "$QUALIFICATION_MODE" != "historical" ]]; then
+            printf 'Unknown release qualification mode: %s\n' "$QUALIFICATION_MODE" >&2
+            exit 2
+          fi
+
+          historical_candidate=
           for tag in "${published_tags[@]}"; do
-            first="$(printf '%s\n%s\n' "$tag" "$candidate_tag" | sort -V | sed -n '1p')"
-            if [[ "$tag" == "$candidate_tag" || "$first" != "$tag" ]]; then
+            first="$(printf '%s\n%s\n' "$tag" "$candidate_tag" | sort -V | head -n 1)"
+            if [[ "$QUALIFICATION_MODE" == "historical" && "$first" != "$tag" ]]; then
               continue
             fi
             release="$(gh api "repos/${{ github.repository }}/releases/tags/$tag")"
@@ -168,24 +214,68 @@ jobs:
               printf 'Release %s lacks one immutable release-manifest.json asset.\n' "$tag" >&2
               exit 2
             fi
-            manifest="$RELEASE_HISTORY_DIR/$tag.json"
+            if [[ "$tag" == "$candidate_tag" ]]; then
+              manifest="$RELEASE_HISTORY_DIR/published-candidate.json"
+              historical_candidate="$manifest"
+            else
+              manifest="$RELEASE_HISTORY_DIR/$tag.json"
+            fi
             gh api \
               -H 'Accept: application/octet-stream' \
               "repos/${{ github.repository }}/releases/assets/${asset_ids[0]}" > "$manifest"
             jq --exit-status --arg tag "$tag" \
               '.schema == "riverhog-release/v1" and .tag == $tag' "$manifest" >/dev/null
-            previous_tag="$tag"
+            canonical="$manifest.canonical"
+            mise x -- python -m json.tool --sort-keys --indent 2 "$manifest" "$canonical"
+            cmp --silent "$manifest" "$canonical"
+            rm "$canonical"
+            if [[ "$tag" != "$candidate_tag" ]]; then
+              previous_tag="$tag"
+            fi
           done
-          if [[ "$RELEASE_VERSION" == "1.0.0" ]]; then
-            test -z "$previous_tag"
-          elif [[ -z "$previous_tag" ]]; then
-            printf 'No immutable predecessor exists for %s.\n' "$candidate_tag" >&2
-            exit 2
-          else
+
+          if [[ "$QUALIFICATION_MODE" == "historical" ]]; then
+            if [[ -z "$historical_candidate" ]]; then
+              printf 'Historical release is not published: %s.\n' "$candidate_tag" >&2
+              exit 2
+            fi
+            jq --exit-status --arg tag "$candidate_tag" --arg version "$RELEASE_VERSION" \
+              --arg sha "$SOURCE_SHA" \
+              '.tag == $tag and .version == $version and .source_sha == $sha' \
+              "$historical_candidate" >/dev/null
+            history_kind="$(jq -r '.v1_history.kind' "$historical_candidate")"
+            if [[ "$history_kind" == "genesis" ]]; then
+              if [[ "$RELEASE_VERSION" != "1.0.0" || -n "$previous_tag" ]]; then
+                printf 'Historical genesis is not exact v1.0.0.\n' >&2
+                exit 2
+              fi
+              previous_tag=
+            elif [[ "$history_kind" == "continuation" ]]; then
+              previous_tag="$(jq -r '.v1_history.previous_tag' "$historical_candidate")"
+              RELEASE_PREVIOUS_MANIFEST_SHA256="$(
+                jq -r '.v1_history.previous_manifest_sha256' "$historical_candidate"
+              )"
+            else
+              printf 'Historical release has an invalid v1 history declaration.\n' >&2
+              exit 2
+            fi
+          fi
+
+          if [[ -n "$previous_tag" ]]; then
             previous_manifest="$RELEASE_HISTORY_DIR/$previous_tag.json"
+            if [[ ! -f "$previous_manifest" ]]; then
+              printf 'Immediate predecessor is unavailable: %s.\n' "$previous_tag" >&2
+              exit 2
+            fi
             printf 'RELEASE_PREVIOUS_TAG=%s\n' "$previous_tag" >> "$GITHUB_ENV"
+            observed_previous_sha256="$(sha256sum "$previous_manifest" | cut -d ' ' -f 1)"
+            if [[ "$QUALIFICATION_MODE" == "historical" \
+              && "$RELEASE_PREVIOUS_MANIFEST_SHA256" != "$observed_previous_sha256" ]]; then
+              printf 'Historical predecessor digest differs at %s.\n' "$previous_tag" >&2
+              exit 2
+            fi
             printf 'RELEASE_PREVIOUS_MANIFEST_SHA256=%s\n' \
-              "$(sha256sum "$previous_manifest" | cut -d ' ' -f 1)" >> "$GITHUB_ENV"
+              "$observed_previous_sha256" >> "$GITHUB_ENV"
           fi
       - name: Exercise disposable operation lifecycles and record timings
         env:
@@ -340,6 +430,7 @@ jobs:
           CONTRACT_SUMMARY="$(mise x -- uv run --locked --all-packages --group dev python scripts/contract_freeze.py summary)"
           jq --null-input \
             --arg ref "$SOURCE_REF" \
+            --arg qualification_mode "$QUALIFICATION_MODE" \
             --arg sha "$SOURCE_SHA" \
             --arg version "$RELEASE_VERSION" \
             --arg contract_projection_sha256 "$(sha256sum qualification/contracts/riverhog-v1.json | cut -d ' ' -f 1)" \
@@ -351,6 +442,7 @@ jobs:
             '{
               schema: "riverhog-release-qualification/v1",
               ref: $ref,
+              qualification_mode: $qualification_mode,
               source_sha: $sha,
               version: $version,
               contract_projection_sha256: $contract_projection_sha256,

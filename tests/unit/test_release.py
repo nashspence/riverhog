@@ -190,6 +190,66 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
     assert qualification["storage_reference"] == module.STORAGE_REFERENCE_QUALIFICATION
 
 
+def test_python_distribution_identities_use_pep_503_canonical_names(
+    tmp_path: Path,
+) -> None:
+    module = load_script()
+
+    assert module._canonical_distribution_name("Riverhog.Client") == "riverhog-client"
+    assert module._canonical_distribution_name("riverhog_client") == "riverhog-client"
+    assert module._canonical_distribution_name("riverhog--client") == "riverhog-client"
+    with pytest.raises(module.ReleaseError, match="built evidence repeats a canonical"):
+        module._canonical_distribution_versions(
+            [("foo.bar", "1.0.0"), ("foo_bar", "1.0.0")],
+            source="built evidence",
+        )
+
+    _copy_release_contract(module, tmp_path)
+    pyproject = tmp_path / "reference/gogurt/packages/listener-runtime/pyproject.toml"
+    pyproject.write_text(
+        pyproject.read_text(encoding="utf-8").replace(
+            'name = "gogurt-listener-runtime"',
+            'name = "riverhog_client"',
+            1,
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(module.ReleaseError, match="repeats distribution name: riverhog-client"):
+        module.validate_release_contract(tmp_path)
+
+
+def test_publication_license_inventory_requires_canonical_distribution_coordinates() -> None:
+    module = load_script()
+    publication = {
+        "distributions": {
+            "riverhog-client": {
+                "publication_identity": {
+                    "kind": "python-distribution",
+                    "coordinate": "riverhog_client",
+                },
+                "license_expression": "Apache-2.0",
+            }
+        },
+        "runtime_images": {},
+    }
+
+    with pytest.raises(module.ReleaseError, match="noncanonical Python distribution"):
+        module._publication_license_inventory(publication)
+
+    publication["distributions"]["second-coordinate"] = {
+        "publication_identity": {
+            "kind": "python-distribution",
+            "coordinate": "riverhog-client",
+        },
+        "license_expression": "Apache-2.0",
+    }
+    publication["distributions"]["riverhog-client"]["publication_identity"]["coordinate"] = (
+        "riverhog-client"
+    )
+    with pytest.raises(module.ReleaseError, match="repeats a license coordinate"):
+        module._publication_license_inventory(publication)
+
+
 def test_reusable_library_requires_explicit_exports_for_every_public_module(
     tmp_path: Path,
 ) -> None:
@@ -723,11 +783,44 @@ def test_v1_release_manifest_history_rejects_wrong_heads_duplicates_and_cycles(
     cyclic_path = tmp_path / "cycle.json"
     cyclic_digest = _write_history_manifest(module, cyclic_path, cyclic)
     cycle_candidate = _history_manifest(module, "1.1.0", coordinate, ("v1.0.1", cyclic_digest))
-    with pytest.raises(module.ReleaseError, match="cycle"):
+    with pytest.raises(module.ReleaseError, match="does not increase"):
         module._verify_v1_manifest_history(
             cycle_candidate,
             expected_previous={"tag": "v1.0.1", "manifest_sha256": cyclic_digest},
             historical_manifest_paths=[cyclic_path],
+        )
+
+
+def test_v1_release_manifest_history_requires_strictly_increasing_versions(
+    tmp_path: Path,
+) -> None:
+    module = load_script()
+    coordinate = {("python-distribution", "riverhog-client"): "Apache-2.0"}
+    future = _history_manifest(
+        module,
+        "1.2.0",
+        coordinate,
+        ("v1.3.0", "0" * 64),
+    )
+    future_path = tmp_path / "v1.2.0.json"
+    future_digest = _write_history_manifest(module, future_path, future)
+    candidate = _history_manifest(
+        module,
+        "1.3.0",
+        coordinate,
+        ("v1.2.0", future_digest),
+    )
+
+    with pytest.raises(module.ReleaseError, match="must increase its predecessor"):
+        module._release_history_declaration(
+            "1.1.0",
+            {"tag": "v1.2.0", "manifest_sha256": future_digest},
+        )
+    with pytest.raises(module.ReleaseError, match="continuation does not increase"):
+        module._verify_v1_manifest_history(
+            candidate,
+            expected_previous={"tag": "v1.2.0", "manifest_sha256": future_digest},
+            historical_manifest_paths=[future_path],
         )
 
 

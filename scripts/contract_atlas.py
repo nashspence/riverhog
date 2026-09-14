@@ -121,16 +121,6 @@ RELEASE_INTERFACES = (
     "versioning-tags",
     "compatibility-guarantees",
 )
-RELEASE_INTERFACE_PREFIXES = {
-    "artifact-verification": "Trust: ",
-    "compatibility-guarantees": "Compatibility: ",
-    "installation-roots": "Installation root: ",
-    "publication-locations": "Coordinates: ",
-    "python-distributions": "Python distribution: ",
-    "release-artifacts": "Release artifact: ",
-    "runtime-images": "Runtime image: ",
-    "versioning-tags": "Versioning: ",
-}
 INTERFACE_ORDER = {
     interface: index
     for index, interface in enumerate(
@@ -2113,6 +2103,278 @@ def _contextual_labels(
             raise ContractAtlasError("contextual inventory labels remain ambiguous")
 
 
+@dataclass(frozen=True)
+class NavigationIdentity:
+    """Representation-only structural identity for one navigation link."""
+
+    components: tuple[str, ...]
+    context: tuple[str, ...] = ()
+    separator: str = ": "
+    kind: str | None = None
+
+
+def _pointer_leaf(item: Mapping[str, object]) -> str:
+    pointers = cast(Sequence[str], item["pointers"])
+    if not pointers:
+        raise ContractAtlasError(f"navigation identity has no structural pointer: {item['id']}")
+    parts = _pointer_parts(pointers[0])
+    if not parts:
+        raise ContractAtlasError(f"navigation identity points at the projection root: {item['id']}")
+    return parts[-1]
+
+
+def _atomic_navigation(item: Mapping[str, object]) -> NavigationIdentity:
+    return NavigationIdentity((str(item["title"]),))
+
+
+def _release_navigation(item: Mapping[str, object]) -> NavigationIdentity:
+    prefixes = {
+        "artifact-verification": "Trust: ",
+        "compatibility-guarantees": "Compatibility: ",
+        "installation-roots": "Installation root: ",
+        "publication-locations": "Coordinates: ",
+        "python-distributions": "Python distribution: ",
+        "release-artifacts": "Release artifact: ",
+        "runtime-images": "Runtime image: ",
+        "versioning-tags": "Versioning: ",
+    }
+    interface = str(item["interface"])
+    leaf = _pointer_leaf(item)
+    display = (
+        leaf.replace("_", " ")
+        if interface in {"compatibility-guarantees", "versioning-tags"}
+        else leaf
+    )
+    expected = f"{prefixes[interface]}{display}"
+    if str(item["title"]) != expected:
+        raise ContractAtlasError(f"release navigation is not structurally exact: {item['id']}")
+    return NavigationIdentity((display,))
+
+
+def _cli_navigation(item: Mapping[str, object]) -> NavigationIdentity:
+    details = cast(Mapping[str, object], item.get("details", {}))
+    command_path = tuple(str(value) for value in cast(Sequence[object], details["command_path"]))
+    if not command_path or str(item["title"]) != " ".join(command_path):
+        raise ContractAtlasError(f"CLI navigation is not structurally exact: {item['id']}")
+    context = command_path[:1] if len(command_path) > 1 else ()
+    return NavigationIdentity(command_path, context=context, separator=" ")
+
+
+def _configuration_navigation(item: Mapping[str, object]) -> NavigationIdentity:
+    leaf = _pointer_leaf(item)
+    if str(item["title"]) != f"{leaf} configuration":
+        raise ContractAtlasError(
+            f"configuration navigation is not structurally exact: {item['id']}"
+        )
+    authority = str(item["authority"])
+    prefix = f"{authority}:configuration:"
+    if not leaf.startswith(prefix) or not leaf.removeprefix(prefix):
+        raise ContractAtlasError(f"configuration identity has no owned local unit: {item['id']}")
+    return NavigationIdentity(
+        (authority, "configuration", leaf.removeprefix(prefix)),
+        context=(authority, "configuration"),
+    )
+
+
+def _durable_state_navigation(item: Mapping[str, object]) -> NavigationIdentity:
+    details = cast(Mapping[str, object], item.get("details", {}))
+    owner = str(details["state_owner"])
+    unit = str(details["state_unit"])
+    kind_labels = {
+        "append-only-json-sequence": "Append-only JSON sequence",
+        "identity": "Schema identity",
+        "json-document": "JSON document",
+        "opaque-bytes": "Opaque bytes",
+        "relational-schema": "Relational schema",
+        "relational-table": "Relational table",
+        "text-document": "Text document",
+        "unique-index": "Unique index",
+    }
+    try:
+        kind = kind_labels[unit]
+    except KeyError as exc:
+        raise ContractAtlasError(f"unknown durable-state unit kind: {unit}") from exc
+    title = str(item["title"])
+    if unit == "identity":
+        if title != f"{owner} durable-state identity":
+            raise ContractAtlasError(f"durable-state identity is not exact: {item['id']}")
+        return NavigationIdentity(("Schema identity",), kind=kind)
+    if title == f"{owner} durable state":
+        return NavigationIdentity(tuple(unit.split("-")), separator=" ", kind=kind)
+    prefix = f"{owner}: "
+    if not title.startswith(prefix):
+        raise ContractAtlasError(f"durable-state unit is not exact: {item['id']}")
+    return NavigationIdentity((owner, title[len(prefix) :]), context=(owner,), kind=kind)
+
+
+def _extent_navigation(item: Mapping[str, object]) -> NavigationIdentity:
+    title = str(item["title"])
+    if ": " not in title:
+        raise ContractAtlasError(f"extent navigation is not structurally exact: {item['id']}")
+    kind, leaf = title.split(": ", 1)
+    return NavigationIdentity((kind, leaf))
+
+
+def _http_schema_navigation(item: Mapping[str, object]) -> NavigationIdentity:
+    leaf = _pointer_leaf(item)
+    if str(item["title"]) != f"schemas: {leaf}":
+        raise ContractAtlasError(f"HTTP schema navigation is not structurally exact: {item['id']}")
+    return NavigationIdentity((leaf,))
+
+
+def _http_security_navigation(item: Mapping[str, object]) -> NavigationIdentity:
+    leaf = _pointer_leaf(item)
+    if str(item["title"]) != f"securitySchemes: {leaf}":
+        raise ContractAtlasError(
+            f"HTTP security-scheme navigation is not structurally exact: {item['id']}"
+        )
+    return NavigationIdentity((leaf,))
+
+
+def _http_service_navigation(item: Mapping[str, object]) -> NavigationIdentity:
+    authority = str(item["authority"])
+    if str(item["title"]) != f"{authority} HTTP service":
+        raise ContractAtlasError(f"HTTP service navigation is not structurally exact: {item['id']}")
+    return NavigationIdentity(("Service declaration",))
+
+
+def _protocol_name(item: Mapping[str, object]) -> str:
+    parts = _pointer_parts(cast(Sequence[str], item["pointers"])[0])
+    try:
+        index = parts.index("protocol_schemas")
+        return parts[index + 1]
+    except (ValueError, IndexError) as exc:
+        raise ContractAtlasError(f"process protocol pointer is not exact: {item['id']}") from exc
+
+
+def _process_protocol_navigation(item: Mapping[str, object]) -> NavigationIdentity:
+    protocol = _protocol_name(item)
+    if str(item["title"]) != f"{protocol} protocol":
+        raise ContractAtlasError(f"process protocol navigation is not exact: {item['id']}")
+    return NavigationIdentity((protocol,))
+
+
+def _process_schema_navigation(item: Mapping[str, object]) -> NavigationIdentity:
+    protocol = _protocol_name(item)
+    leaf = _pointer_leaf(item)
+    if str(item["title"]) != f"{protocol}: {leaf}":
+        raise ContractAtlasError(f"process schema navigation is not exact: {item['id']}")
+    return NavigationIdentity((protocol, leaf), context=(protocol,))
+
+
+def _python_navigation(item: Mapping[str, object]) -> NavigationIdentity:
+    details = cast(Mapping[str, object], item.get("details", {}))
+    public_identity = str(details["public_identity"])
+    components = tuple(public_identity.split("."))
+    unit = str(details["unit"])
+    if unit == "export":
+        context = tuple(str(details["module"]).split("."))
+    elif unit == "member":
+        context = tuple(str(details["owner"]).split("."))
+    else:
+        raise ContractAtlasError(f"unknown Python navigation unit: {unit}")
+    if components[: len(context)] != context or str(item["title"]) != public_identity:
+        raise ContractAtlasError(f"Python navigation is not structurally exact: {item['id']}")
+    return NavigationIdentity(components, context=context, separator=".")
+
+
+NavigationProvider = Callable[[Mapping[str, object]], NavigationIdentity]
+NAVIGATION_PROVIDERS: dict[str, NavigationProvider] = {
+    "artifact-verification": _release_navigation,
+    "cli": _cli_navigation,
+    "compatibility-guarantees": _release_navigation,
+    "configuration": _configuration_navigation,
+    "configuration-environment": _atomic_navigation,
+    "durable-state": _durable_state_navigation,
+    "extent": _extent_navigation,
+    "http-operations": _atomic_navigation,
+    "http-schemas": _http_schema_navigation,
+    "http-service-declaration": _http_service_navigation,
+    "http-security-schemes": _http_security_navigation,
+    "installation-roots": _release_navigation,
+    "process-protocol": _process_protocol_navigation,
+    "process-protocol-operations": _atomic_navigation,
+    "process-protocol-schemas": _process_schema_navigation,
+    "publication-locations": _release_navigation,
+    "python": _python_navigation,
+    "python-distributions": _release_navigation,
+    "release-artifacts": _release_navigation,
+    "runtime-images": _release_navigation,
+    "schema": _atomic_navigation,
+    "versioning-tags": _release_navigation,
+}
+
+
+def _navigation_identity(item: Mapping[str, object]) -> NavigationIdentity:
+    if set(NAVIGATION_PROVIDERS) != set(INTERFACE_LABELS):
+        missing = sorted(set(INTERFACE_LABELS) - set(NAVIGATION_PROVIDERS))
+        stale = sorted(set(NAVIGATION_PROVIDERS) - set(INTERFACE_LABELS))
+        raise ContractAtlasError(
+            f"navigation-provider registry is not exact: missing={missing}, stale={stale}"
+        )
+    return NAVIGATION_PROVIDERS[str(item["interface"])](item)
+
+
+def _navigation_candidates(item: Mapping[str, object]) -> list[str]:
+    navigation = _navigation_identity(item)
+    if (
+        not navigation.components
+        or any(not value for value in navigation.components)
+        or navigation.components[: len(navigation.context)] != navigation.context
+    ):
+        raise ContractAtlasError(
+            f"navigation identity has invalid structural context: {item['id']}"
+        )
+    visible = navigation.components[len(navigation.context) :]
+    if not visible:
+        visible = navigation.components[-1:]
+    candidates = [
+        navigation.separator.join(visible[-width:]) for width in range(1, len(visible) + 1)
+    ]
+    candidates.extend(
+        navigation.separator.join(navigation.components[-width:])
+        for width in range(len(visible) + 1, len(navigation.components) + 1)
+    )
+    return [*dict.fromkeys([*candidates, str(item["title"])])]
+
+
+def _navigation_labels(items: Sequence[Mapping[str, object]]) -> dict[str, str]:
+    return _contextual_labels(items, _navigation_candidates)
+
+
+def _interface_navigation_contexts(
+    interface: str,
+    values: Sequence[Mapping[str, object]],
+) -> list[list[Mapping[str, object]]]:
+    if interface != "python":
+        return [list(values)]
+    contexts: list[list[Mapping[str, object]]] = []
+    by_context: dict[tuple[str, str], list[Mapping[str, object]]] = defaultdict(list)
+    for item in values:
+        details = cast(Mapping[str, object], item["details"])
+        unit = str(details["unit"])
+        owner = str(details["module"] if unit == "export" else details["owner"])
+        by_context[(unit, owner)].append(item)
+    for key in sorted(by_context):
+        contexts.append(by_context[key])
+    return contexts
+
+
+def _interface_navigation_labels(
+    interface: str,
+    values: Sequence[Mapping[str, object]],
+) -> dict[str, str]:
+    labels: dict[str, str] = {}
+    for context in _interface_navigation_contexts(interface, values):
+        for identity, label in _navigation_labels(context).items():
+            if identity in labels:
+                raise ContractAtlasError(f"navigation identity appears in two contexts: {identity}")
+            labels[identity] = label
+    if set(labels) != {str(item["id"]) for item in values}:
+        raise ContractAtlasError(f"interface navigation does not cover every {interface} item")
+    return labels
+
+
 def _relationship_node_anchor(node_id: str) -> str:
     return _anchor_id("relationship-node", node_id)
 
@@ -3075,6 +3337,23 @@ def _extension_context_path(extension: Mapping[str, object]) -> str:
     return f"{ATLAS_DIRECTORY}/extensions/{_slug(str(extension['id']), limit=96)}.md"
 
 
+def _dossier_navigation_labels(
+    element: Mapping[str, object],
+    targets: Sequence[Mapping[str, object]],
+) -> dict[str, str]:
+    local = [
+        target
+        for target in targets
+        if target["authority"] == element["authority"]
+        and target["interface"] == element["interface"]
+    ]
+    labels = _navigation_labels(local) if local else {}
+    labels.update(
+        {str(target["id"]): str(target["title"]) for target in targets if target not in local}
+    )
+    return labels
+
+
 def _render_dossier(
     element: Mapping[str, object],
     projection: Mapping[str, object],
@@ -3269,14 +3548,23 @@ def _render_dossier(
         lines.extend(["## Maintained corroboration", ""])
     if related_ids:
         lines.extend(["### Related interface records", ""])
+        related_elements = [elements_by_id[identity] for identity in related_ids]
+        related_labels = _dossier_navigation_labels(element, related_elements)
         for related_id in related_ids:
             related = elements_by_id[related_id]
-            lines.append(f"- [{related['title']}]({_relative_link(path, str(related['dossier']))})")
+            lines.append(
+                f"- [{_md(related_labels[related_id])}]"
+                f"({_relative_link(path, str(related['dossier']))})"
+            )
         lines.append("")
     if referenced:
         lines.extend(["### Referenced contract dossiers", ""])
+        referenced_labels = _dossier_navigation_labels(element, referenced)
         for owner in referenced:
-            lines.append(f"- [{owner['title']}]({_relative_link(path, str(owner['dossier']))})")
+            lines.append(
+                f"- [{_md(referenced_labels[str(owner['id'])])}]"
+                f"({_relative_link(path, str(owner['dossier']))})"
+            )
         lines.append("")
 
     lines.extend(
@@ -4456,19 +4744,26 @@ def _render_atlas(
                 "## Semantic dossiers",
                 "",
             ]
-            if interface in RELEASE_INTERFACES:
-                prefix = RELEASE_INTERFACE_PREFIXES[interface]
-
-                def release_label_candidates(
-                    item: Mapping[str, object], prefix: str = prefix
-                ) -> list[str]:
-                    title = str(item["title"])
-                    return [title[len(prefix) :] if title.startswith(prefix) else title, title]
-
-                labels = _contextual_labels(
-                    values,
-                    release_label_candidates,
+            labels = _interface_navigation_labels(interface, values)
+            if interface == "durable-state":
+                lines.extend(
+                    [
+                        "| Exact unit | Kind |",
+                        "|---|---|",
+                    ]
                 )
+                for state_item in sorted(values, key=lambda value: str(value["title"])):
+                    kind = _navigation_identity(state_item).kind
+                    if kind is None:
+                        raise ContractAtlasError(
+                            f"durable-state navigation lacks a kind: {state_item['id']}"
+                        )
+                    lines.append(
+                        f"| [{_md(labels[str(state_item['id'])])}]"
+                        f"({_relative_link(interface_path, str(state_item['dossier']))}) | "
+                        f"{_md(kind)} |"
+                    )
+            elif interface in RELEASE_INTERFACES:
                 lines.extend(
                     [
                         "| Exact unit | Classification |",
@@ -4487,30 +4782,6 @@ def _render_atlas(
                         f"{rendered_classification} |"
                     )
             elif interface == "cli":
-                labels = _contextual_labels(
-                    values,
-                    lambda item: [
-                        " ".join(
-                            cast(
-                                Sequence[str],
-                                cast(Mapping[str, object], item.get("details", {})).get(
-                                    "command_path", ()
-                                ),
-                            )[1:]
-                        )
-                        if len(
-                            cast(
-                                Sequence[str],
-                                cast(Mapping[str, object], item.get("details", {})).get(
-                                    "command_path", ()
-                                ),
-                            )
-                        )
-                        > 1
-                        else str(item["title"]),
-                        str(item["title"]),
-                    ],
-                )
                 executable = sorted(
                     (
                         item
@@ -4564,47 +4835,19 @@ def _render_atlas(
                         raise ContractAtlasError(
                             f"Python interface index has members without exports: {module}"
                         )
-                    export_values = [exports[identity] for identity in sorted(exports)]
-
-                    def export_label_candidates(
-                        item: Mapping[str, object], module_name: str = module
-                    ) -> list[str]:
-                        public = str(cast(Mapping[str, object], item["details"])["public_identity"])
-                        return [public.removeprefix(f"{module_name}."), public]
-
-                    export_labels = _contextual_labels(
-                        export_values,
-                        export_label_candidates,
-                    )
                     lines.extend([f"### `{_md(module)}`", ""])
                     for public_identity, item in sorted(exports.items()):
                         lines.append(
-                            f"- [{_md(export_labels[str(item['id'])])}]"
+                            f"- [{_md(labels[str(item['id'])])}]"
                             f"({_relative_link(interface_path, str(item['dossier']))})"
                         )
                         owner_members = sorted(
                             members.get(public_identity, ()), key=lambda value: str(value["title"])
                         )
 
-                        def member_label_candidates(
-                            member: Mapping[str, object],
-                            owner_identity: str = public_identity,
-                            module_name: str = module,
-                        ) -> list[str]:
-                            title = str(member["title"])
-                            return [
-                                title.removeprefix(f"{owner_identity}."),
-                                title.removeprefix(f"{module_name}."),
-                                title,
-                            ]
-
-                        member_labels = _contextual_labels(
-                            owner_members,
-                            member_label_candidates,
-                        )
                         for member in owner_members:
                             lines.append(
-                                f"  - [{_md(member_labels[str(member['id'])])}]"
+                                f"  - [{_md(labels[str(member['id'])])}]"
                                 f"({_relative_link(interface_path, str(member['dossier']))})"
                             )
                     lines.append("")
@@ -4625,17 +4868,6 @@ def _render_atlas(
                         if interface in {"http-operations", "process-protocol-operations"}
                         else (str(item["title"]),)
                     )
-                )
-                labels = (
-                    _contextual_labels(
-                        values,
-                        lambda item: [
-                            str(item["title"]).removeprefix("schemas: "),
-                            str(item["title"]),
-                        ],
-                    )
-                    if interface == "http-schemas"
-                    else {str(item["id"]): str(item["title"]) for item in values}
                 )
                 for item in values:
                     lines.append(
@@ -5649,6 +5881,27 @@ def validate_atlas(
             )
         if "| Contract elements |" in dossier_text or "| Extent decisions |" in dossier_text:
             raise ContractAtlasError(f"atlas dossier repeats aggregate accounting: {item['id']}")
+        related_elements = [
+            elements_by_id[identity]
+            for identity in cast(Sequence[str], item["related_element_ids"])
+        ]
+        referenced_elements = _local_contract_references(
+            str(item["authority"]),
+            [
+                pointer_value(projection_value, pointer)
+                for pointer in cast(Sequence[str], item["pointers"])
+            ],
+            elements_by_id,
+        )
+        for targets in (related_elements, referenced_elements):
+            labels = _dossier_navigation_labels(item, targets)
+            for target in targets:
+                link = _relative_link(str(item["dossier"]), str(target["dossier"]))
+                rendered = f"[{_md(labels[str(target['id'])])}]({link})"
+                if dossier_text.count(rendered) != 1:
+                    raise ContractAtlasError(
+                        f"dossier navigation is not exact: {item['id']} -> {target['id']}"
+                    )
         if any(
             policy.encode() not in dossier for policy in cast(Sequence[str], item["policy_ids"])
         ):
@@ -5718,23 +5971,6 @@ def validate_atlas(
                 raise ContractAtlasError(
                     f"atlas dossier does not render its complete contract value: {item['id']}"
                 )
-        for referenced in _local_contract_references(
-            str(item["authority"]),
-            [
-                pointer_value(root["projection"], pointer)
-                for pointer in cast(Sequence[str], item["pointers"])
-            ],
-            elements_by_id,
-        ):
-            reference_link = (
-                f"[{referenced['title']}]"
-                f"({_relative_link(str(item['dossier']), str(referenced['dossier']))})"
-            ).encode()
-            if reference_link not in dossier:
-                raise ContractAtlasError(
-                    f"atlas dossier does not route its referenced contract: {item['id']}"
-                )
-
     operation_qualification = cast(Mapping[str, object], trace_value["operation_qualification"])
     if operation_qualification.get("schema") != "riverhog-operation-qualification/v1":
         raise ContractAtlasError("operation qualification evidence has another schema")
@@ -6178,11 +6414,13 @@ def validate_atlas(
                 for item in elements
                 if item["authority"] == authority and item["interface"] == interface
             ]
+            interface_labels = _interface_navigation_labels(interface, interface_elements)
             for item in interface_elements:
                 dossier_link = _relative_link(interface_path, str(item["dossier"]))
-                if interface_page.count(f"]({dossier_link})") != 1:
+                rendered = f"[{_md(interface_labels[str(item['id'])])}]({dossier_link})"
+                if interface_page.count(rendered) != 1:
                     raise ContractAtlasError(
-                        f"human interface omits semantic dossier: {item['id']}"
+                        f"human interface navigation is not exact: {item['id']}"
                     )
     authority_registry = cast(Mapping[str, object], trace_value["authority_registry"])
     for item in cast(Sequence[Mapping[str, object]], authority_registry["declared_authorities"]):

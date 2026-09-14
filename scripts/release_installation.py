@@ -27,7 +27,7 @@ from gogurt_listener_runtime.listener import (
 from packaging.markers import Marker, default_environment
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.tags import Tag, compatible_tags, cpython_tags, mac_platforms
-from packaging.utils import InvalidWheelFilename, parse_wheel_filename
+from packaging.utils import InvalidWheelFilename, canonicalize_name, parse_wheel_filename
 
 INSTALLATION_SCHEMA = "riverhog-installation/v1"
 INSTALLATION_ROOTS = (
@@ -124,8 +124,10 @@ class ProjectLike(Protocol):
     def version(self) -> str: ...
 
 
-def normalize_name(value: str) -> str:
-    return re.sub(r"[-_.]+", "-", value).lower()
+def canonical_distribution_name(value: str) -> str:
+    """Return the canonical Python distribution identity defined by packaging."""
+
+    return str(canonicalize_name(value))
 
 
 def sha256_file(path: Path) -> str:
@@ -192,11 +194,15 @@ def project_dependency_graph(
                 requirement = Requirement(str(value))
             except InvalidRequirement as exc:
                 raise InstallationError(f"{project.name} has an invalid dependency") from exc
-            if normalize_name(requirement.name) in names:
+            if canonical_distribution_name(requirement.name) in names:
                 dependencies.append(requirement)
         graph[project.name] = tuple(
             sorted(
-                dependencies, key=lambda item: (normalize_name(item.name), str(item.marker or ""))
+                dependencies,
+                key=lambda item: (
+                    canonical_distribution_name(item.name),
+                    str(item.marker or ""),
+                ),
             )
         )
     return graph
@@ -216,7 +222,7 @@ def dependency_closure(
             continue
         result.add(name)
         pending.extend(
-            normalize_name(requirement.name)
+            canonical_distribution_name(requirement.name)
             for requirement in graph[name]
             if requirement.marker is None or requirement.marker.evaluate(environment=environment)
         )
@@ -343,7 +349,7 @@ def _split_lock(text: str) -> tuple[str, dict[str, str]]:
         match = re.search(r'(?m)^name = "([^"]+)"$', block)
         if match is None:
             raise InstallationError("uv emitted a PEP 751 package without a name")
-        name = normalize_name(match.group(1))
+        name = canonical_distribution_name(match.group(1))
         if name in blocks:
             raise InstallationError(f"uv emitted a repeated PEP 751 package: {name}")
         blocks[name] = block.strip() + "\n"
@@ -571,11 +577,13 @@ def _platform_requirements(
         url = str(wheel["url"])
         requirements.append(
             {
-                "name": normalize_name(str(package["name"])),
+                "name": canonical_distribution_name(str(package["name"])),
                 "version": str(package["version"]),
                 "url": url,
                 "sha256": digest,
-                "requirement": (f"{normalize_name(str(package['name']))} @ {url}#sha256={digest}"),
+                "requirement": (
+                    f"{canonical_distribution_name(str(package['name']))} @ {url}#sha256={digest}"
+                ),
             }
         )
     return sorted(requirements, key=lambda item: item["name"])
@@ -597,7 +605,7 @@ def _simple_project_page(name: str, wheel: dict[str, Any], asset_base_url: str) 
 
 def _simple_root_page(names: set[str]) -> bytes:
     links = "".join(
-        f'<a href="{html.escape(normalize_name(name))}/">{html.escape(name)}</a>\n'
+        f'<a href="{html.escape(canonical_distribution_name(name))}/">{html.escape(name)}</a>\n'
         for name in sorted(names)
     )
     return (
@@ -631,8 +639,8 @@ def write_index_snapshot(
     prefix = PurePosixPath(simple_index_path)
     files = {str(prefix / "index.html"): _simple_root_page(names)}
     for name in sorted(names):
-        files[str(prefix / normalize_name(name) / "index.html")] = _simple_project_page(
-            name, wheels[name], asset_base_url
+        files[str(prefix / canonical_distribution_name(name) / "index.html")] = (
+            _simple_project_page(name, wheels[name], asset_base_url)
         )
     directories = {str(PurePosixPath(path).parent) for path in files}
     directories |= {
@@ -1196,8 +1204,13 @@ def verify_installation_artifacts(output: Path, manifest: dict[str, Any]) -> Non
             raise InstallationError(f"component lock does not verify: {component['root']}")
         parsed = tomllib.loads(path.read_text(encoding="utf-8"))
         locked = {
-            normalize_name(str(item["name"])): str(item["version"]) for item in parsed["packages"]
+            canonical_distribution_name(str(item["name"])): str(item["version"])
+            for item in parsed["packages"]
         }
+        if len(locked) != len(parsed["packages"]):
+            raise InstallationError(
+                f"component lock repeats a canonical distribution: {component['root']}"
+            )
         expected = {
             str(item["name"]): str(item["version"]) for item in component["resolved_packages"]
         }
@@ -1227,7 +1240,11 @@ def verify_installation_artifacts(output: Path, manifest: dict[str, Any]) -> Non
         files = {member.name for member in archive.getmembers() if member.isfile()}
     expected_files = {str(PurePosixPath(manifest["index"]["path"]) / "index.html")}
     expected_files |= {
-        str(PurePosixPath(manifest["index"]["path"]) / normalize_name(name) / "index.html")
+        str(
+            PurePosixPath(manifest["index"]["path"])
+            / canonical_distribution_name(name)
+            / "index.html"
+        )
         for name in wheel_names
     }
     if files != expected_files:
