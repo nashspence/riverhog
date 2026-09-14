@@ -9,7 +9,7 @@ Coordinated version and immutable-tag semantics.
 | Exact unit | Classification |
 |---|---|
 | [distribution version](versioning-distribution-version.md) | — |
-| [policy](versioning-policy.md) | — |
-| [series](versioning-series.md) | — |
+| [versioning policy](versioning-policy.md) | — |
+| [versioning series](versioning-series.md) | — |
 | [tag immutability](versioning-tag-immutability.md) | — |
 | [tag template](versioning-tag-template.md) | — |

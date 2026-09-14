@@ -8,7 +8,7 @@ CLI contract owned by stove0-review-sampler-support.
 
 Executable commands: **2** · Command groups: **0**
 
-### Executable commands
+### Command tree
 
 - [stove0-review-sampler-conformance](stove0-review-sampler-conformance.md)
 - [stove0-review-sampler-schemas](stove0-review-sampler-schemas.md)

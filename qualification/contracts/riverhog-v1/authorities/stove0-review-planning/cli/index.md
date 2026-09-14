@@ -8,6 +8,6 @@ CLI contract owned by stove0-review-planning.
 
 Executable commands: **1** · Command groups: **0**
 
-### Executable commands
+### Command tree
 
 - [stove0-review-planning](stove0-review-planning.md)

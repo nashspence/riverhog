@@ -8,6 +8,6 @@ CLI contract owned by riverhog-recover.
 
 Executable commands: **1** · Command groups: **0**
 
-### Executable commands
+### Command tree
 
 - [riverhog-recover](riverhog-recover.md)

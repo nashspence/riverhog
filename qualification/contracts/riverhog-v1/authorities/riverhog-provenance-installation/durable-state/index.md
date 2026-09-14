@@ -8,4 +8,4 @@ Persisted structures, schema heads, and v1 transition obligations.
 
 | Exact unit | Kind |
 |---|---|
-| [document](riverhog-provenance-installation-durable-state.md) | Text document |
+| [text document](riverhog-provenance-installation-durable-state.md) | Text document |

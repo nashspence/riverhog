@@ -8,13 +8,10 @@ CLI contract owned by mango-fish.
 
 Executable commands: **4** · Command groups: **1**
 
-### Executable commands
+### Command tree
 
 - [mango-fish](mango-fish.md)
-- [status](mango-fish-state-status.md)
-- [upgrade](mango-fish-state-upgrade.md)
-- [verify](mango-fish-state-verify.md)
-
-### Command groups
-
-- [state](mango-fish-state.md)
+  - [state](mango-fish-state.md)
+    - [status](mango-fish-state-status.md)
+    - [upgrade](mango-fish-state-upgrade.md)
+    - [verify](mango-fish-state-verify.md)

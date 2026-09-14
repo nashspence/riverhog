@@ -8,7 +8,7 @@ CLI contract owned by stove0-target-support.
 
 Executable commands: **2** · Command groups: **0**
 
-### Executable commands
+### Command tree
 
 - [stove0-target-conformance](stove0-target-conformance.md)
 - [stove0-target-schemas](stove0-target-schemas.md)

@@ -8,6 +8,6 @@ CLI contract owned by riverhog-storage-adapter-filesystem.
 
 Executable commands: **1** · Command groups: **0**
 
-### Executable commands
+### Command tree
 
 - [riverhog-storage-adapter-filesystem-materialize](riverhog-storage-adapter-filesystem-materialize.md)

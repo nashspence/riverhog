@@ -8,7 +8,7 @@ CLI contract owned by stove0-observer-support.
 
 Executable commands: **2** · Command groups: **0**
 
-### Executable commands
+### Command tree
 
 - [stove0-observer-conformance](stove0-observer-conformance.md)
 - [stove0-observer-schemas](stove0-observer-schemas.md)

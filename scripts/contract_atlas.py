@@ -2148,6 +2148,11 @@ def _release_navigation(item: Mapping[str, object]) -> NavigationIdentity:
     expected = f"{prefixes[interface]}{display}"
     if str(item["title"]) != expected:
         raise ContractAtlasError(f"release navigation is not structurally exact: {item['id']}")
+    if interface == "versioning-tags":
+        components = tuple(leaf.split("_"))
+        if len(components) == 1:
+            components = ("versioning", *components)
+        return NavigationIdentity(components, separator=" ")
     return NavigationIdentity((display,))
 
 
@@ -2328,13 +2333,9 @@ def _navigation_candidates(item: Mapping[str, object]) -> list[str]:
     visible = navigation.components[len(navigation.context) :]
     if not visible:
         visible = navigation.components[-1:]
-    candidates = [
-        navigation.separator.join(visible[-width:]) for width in range(1, len(visible) + 1)
-    ]
-    candidates.extend(
-        navigation.separator.join(navigation.components[-width:])
-        for width in range(len(visible) + 1, len(navigation.components) + 1)
-    )
+    candidates = [navigation.separator.join(visible)]
+    if visible != navigation.components:
+        candidates.append(navigation.separator.join(navigation.components))
     return [*dict.fromkeys([*candidates, str(item["title"])])]
 
 
@@ -2364,6 +2365,8 @@ def _interface_navigation_labels(
     interface: str,
     values: Sequence[Mapping[str, object]],
 ) -> dict[str, str]:
+    if interface == "cli":
+        return {str(item["id"]): _navigation_identity(item).components[-1] for item in values}
     labels: dict[str, str] = {}
     for context in _interface_navigation_contexts(interface, values):
         for identity, label in _navigation_labels(context).items():
@@ -2373,6 +2376,47 @@ def _interface_navigation_labels(
     if set(labels) != {str(item["id"]) for item in values}:
         raise ContractAtlasError(f"interface navigation does not cover every {interface} item")
     return labels
+
+
+def _render_cli_navigation_tree(
+    values: Sequence[Mapping[str, object]], *, interface_path: str
+) -> list[str]:
+    by_path: dict[tuple[str, ...], Mapping[str, object]] = {}
+    for item in values:
+        path = _navigation_identity(item).components
+        if path in by_path:
+            raise ContractAtlasError(f"duplicate CLI command path: {' '.join(path)}")
+        by_path[path] = item
+    for path in by_path:
+        if len(path) > 1 and path[:-1] not in by_path:
+            raise ContractAtlasError(
+                f"CLI command path lacks its structural parent: {' '.join(path)}"
+            )
+
+    lines: list[str] = []
+
+    def append_path(path: tuple[str, ...], depth: int) -> None:
+        item = by_path[path]
+        lines.append(
+            f"{'  ' * depth}- [{_md(path[-1])}]"
+            f"({_relative_link(interface_path, str(item['dossier']))})"
+        )
+        children = sorted(
+            candidate
+            for candidate in by_path
+            if len(candidate) == len(path) + 1 and candidate[:-1] == path
+        )
+        for child in children:
+            append_path(child, depth + 1)
+
+    roots = sorted(path for path in by_path if len(path) == 1)
+    if not roots:
+        raise ContractAtlasError("CLI interface has no root command")
+    for root in roots:
+        append_path(root, 0)
+    if len(lines) != len(values):
+        raise ContractAtlasError("CLI command tree does not cover every command")
+    return lines
 
 
 def _relationship_node_anchor(node_id: str) -> str:
@@ -4782,39 +4826,21 @@ def _render_atlas(
                         f"{rendered_classification} |"
                     )
             elif interface == "cli":
-                executable = sorted(
-                    (
-                        item
-                        for item in values
-                        if cast(Mapping[str, object], item.get("details", {})).get("executable")
-                    ),
-                    key=lambda item: str(item["title"]),
+                executable_count = sum(
+                    bool(cast(Mapping[str, object], item.get("details", {})).get("executable"))
+                    for item in values
                 )
-                groups = sorted(
-                    (item for item in values if item not in executable),
-                    key=lambda item: str(item["title"]),
-                )
+                group_count = len(values) - executable_count
                 lines.extend(
                     [
-                        f"Executable commands: **{len(executable)}** · "
-                        f"Command groups: **{len(groups)}**",
+                        f"Executable commands: **{executable_count}** · "
+                        f"Command groups: **{group_count}**",
                         "",
-                        "### Executable commands",
+                        "### Command tree",
                         "",
+                        *_render_cli_navigation_tree(values, interface_path=interface_path),
                     ]
                 )
-                for item in executable:
-                    lines.append(
-                        f"- [{_md(labels[str(item['id'])])}]"
-                        f"({_relative_link(interface_path, str(item['dossier']))})"
-                    )
-                if groups:
-                    lines.extend(["", "### Command groups", ""])
-                    for item in groups:
-                        lines.append(
-                            f"- [{_md(labels[str(item['id'])])}]"
-                            f"({_relative_link(interface_path, str(item['dossier']))})"
-                        )
             elif interface == "python":
                 by_module: dict[str, list[dict[str, object]]] = defaultdict(list)
                 for item in values:
