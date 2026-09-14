@@ -53,7 +53,7 @@ _CLI_RESULT_CONTRACT = {
                     "id": "operational",
                     "exit_status": 1,
                     "stdout": {"all": "empty"},
-                    "stderr": {"all": "stove0-cli-diagnostic/v1"},
+                    "stderr": {"all": "noncontractual-diagnostic"},
                 },
             ],
         }

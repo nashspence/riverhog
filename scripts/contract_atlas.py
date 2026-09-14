@@ -81,6 +81,7 @@ INTERFACE_ORDER = {
 INTERFACE_PURPOSES: dict[str, str] = {
     "artifact-verification": "External verification mechanisms for published artifacts.",
     "compatibility-guarantees": "Coordinated v1 compatibility promises.",
+    "durable-state": "Persisted structures, schema heads, and v1 transition obligations.",
     "http-operations": "Callable HTTP operations.",
     "http-schemas": "Supporting HTTP data definitions; these are not callable operations.",
     "http-service-declaration": (
@@ -100,6 +101,7 @@ INTERFACE_PURPOSES: dict[str, str] = {
     ),
     "process-protocol-schemas": "Structured values exchanged by a process protocol.",
     "publication-locations": "Stable externally used publication locations.",
+    "python": "Declared public imports and their selected exact structural contracts.",
     "python-distributions": "Published Python distribution identities and artifact forms.",
     "release-artifacts": "Discrete files published with a coordinated release.",
     "runtime-images": "Published OCI runtime-image identities.",
@@ -414,7 +416,7 @@ def _compatibility_policies(interface: str) -> list[str]:
         "cli": "compatibility/cli/v1",
         "configuration": "compatibility/configuration/v1",
         "configuration-environment": "compatibility/configuration/v1",
-        "durable-state": "compatibility/components/v1",
+        "durable-state": "compatibility/durable-state/v1",
         "extent": "extent-principle/logical-totals/v1",
         "http-operations": "compatibility/http-api/v1",
         "http-schemas": "compatibility/http-api/v1",
@@ -1000,15 +1002,91 @@ def _external_elements(
     state = cast(Mapping[str, object], external["durable_state"])
     for index, state_owner in enumerate(cast(Sequence[Mapping[str, object]], state["owners"])):
         authority = str(state_owner["id"])
-        _add_element(
+        base = f"/external_contract/durable_state/owners/{index}"
+        structure = cast(Mapping[str, object], state_owner["structure"])
+        structure_kind = str(structure.get("kind", ""))
+        split_keys = {
+            "relational-schema": {"tables", "unique_indexes"},
+            "json-documents": {"documents"},
+            "composite": {"units"},
+        }.get(structure_kind)
+        if split_keys is None:
+            _add_element(
+                elements,
+                authority=authority,
+                interface="durable-state",
+                title=f"{authority} durable state",
+                pointers=[base],
+                detector="durable-state",
+                source_ids=[f"state:{authority}"],
+                details={"state_owner": authority, "state_unit": structure_kind},
+            )
+            continue
+        collection_keys = {key for key, value in structure.items() if isinstance(value, list)}
+        if collection_keys != split_keys:
+            raise ContractAtlasError(
+                f"durable-state structure has unknown collection fields: "
+                f"{authority}: {sorted(collection_keys)}"
+            )
+        parent = _add_element(
             elements,
             authority=authority,
             interface="durable-state",
-            title=f"{authority} durable state",
-            pointers=[f"/external_contract/durable_state/owners/{index}"],
+            title=f"{authority} durable-state identity",
+            pointers=[
+                *(
+                    f"{base}/{_escape_pointer(str(key))}"
+                    for key in state_owner
+                    if key != "structure"
+                ),
+                *(
+                    f"{base}/structure/{_escape_pointer(str(key))}"
+                    for key in structure
+                    if key not in split_keys
+                ),
+                *(
+                    f"{base}/structure/{_escape_pointer(key)}"
+                    for key in sorted(split_keys)
+                    if not cast(Sequence[object], structure[key])
+                ),
+            ],
             detector="durable-state",
             source_ids=[f"state:{authority}"],
+            details={"state_owner": authority, "state_unit": "identity"},
         )
+        children: list[dict[str, object]] = []
+        for collection_key in sorted(split_keys):
+            items = cast(Sequence[Mapping[str, object]], structure[collection_key])
+            for item_index, item in enumerate(items):
+                unit_name = str(item.get("name", item.get("id", item_index)))
+                unit_kind = (
+                    "relational-table"
+                    if collection_key == "tables"
+                    else "unique-index"
+                    if collection_key == "unique_indexes"
+                    else "json-document"
+                    if collection_key == "documents"
+                    else str(item.get("kind", "durable-unit"))
+                )
+                child = _add_element(
+                    elements,
+                    authority=authority,
+                    interface="durable-state",
+                    title=f"{authority}: {unit_name}",
+                    pointers=[f"{base}/structure/{collection_key}/{item_index}"],
+                    detector="durable-state",
+                    source_ids=[f"state:{authority}"],
+                    details={
+                        "state_owner": authority,
+                        "state_unit": unit_kind,
+                    },
+                )
+                children.append(child)
+        cast(list[str], parent["related_element_ids"]).extend(
+            str(child["id"]) for child in children
+        )
+        for child in children:
+            cast(list[str], child["related_element_ids"]).append(str(parent["id"]))
 
     extents = cast(Mapping[str, object], external["extents"])
     for key in sorted(cast(Mapping[str, object], extents["principles"])):
@@ -2109,6 +2187,149 @@ def _render_schema(
     return lines
 
 
+def _render_python(
+    value: Mapping[str, object], base_pointer: str, placed_subjects: set[str]
+) -> list[str]:
+    """Render one exact declared Python unit without hiding structural promises."""
+
+    lines = [_subject_marker(base_pointer, placed_subjects)]
+    for key in ("distribution", "module", "name", "owner", "unit"):
+        if key in value:
+            pointer = f"{base_pointer}/{_escape_pointer(key)}"
+            lines.append(
+                f"- {_subject_marker(pointer, placed_subjects)}`{key}`: `{_md(value[key])}`"
+            )
+    contract = cast(Mapping[str, object], value["contract"])
+    contract_pointer = f"{base_pointer}/contract"
+    lines.extend(["", "### Declared structure", ""])
+    for key in ("kind", "signature", "type", "value"):
+        if key in contract:
+            pointer = f"{contract_pointer}/{_escape_pointer(key)}"
+            rendered = _compact_json(contract[key])
+            lines.append(f"- {_subject_marker(pointer, placed_subjects)}`{key}`: `{_md(rendered)}`")
+    enum_values = contract.get("enum_values")
+    if isinstance(enum_values, Mapping):
+        lines.extend(["", "#### Enum members", "", "| Member | Value |", "|---|---|"])
+        for name, item in enum_values.items():
+            pointer = f"{contract_pointer}/enum_values/{_escape_pointer(str(name))}"
+            lines.append(
+                f"| {_subject_marker(pointer, placed_subjects)}`{_md(name)}` | "
+                f"`{_md(_compact_json(item))}` |"
+            )
+    fields = contract.get("fields")
+    if isinstance(fields, list):
+        lines.extend(
+            ["", "#### Dataclass fields", "", "| Field | Type | Default |", "|---|---|---|"]
+        )
+        for index, item in enumerate(cast(Sequence[Mapping[str, object]], fields)):
+            pointer = f"{contract_pointer}/fields/{index}"
+            lines.append(
+                f"| {_subject_marker(pointer, placed_subjects)}`{_md(item['name'])}` | "
+                f"`{_md(item['type'])}` | `{_md(item['default'])}` |"
+            )
+    schema = contract.get("schema")
+    if isinstance(schema, Mapping):
+        lines.extend(["", "#### Validated model schema", ""])
+        lines.extend(
+            _render_schema(
+                cast(Mapping[str, object], schema),
+                f"{contract_pointer}/schema",
+                placed_subjects,
+            )
+        )
+    return lines
+
+
+def _render_durable_state(
+    pointers: Sequence[str],
+    values: Sequence[object],
+    details: Mapping[str, object],
+    placed_subjects: set[str],
+) -> list[str]:
+    """Render one bounded, owner-projected durable-state audit unit."""
+
+    unit = str(details["state_unit"])
+    if unit == "identity":
+        return [
+            "| Authority fact | Value |",
+            "|---|---|",
+            *(
+                f"| {_subject_marker(pointer, placed_subjects)}"
+                f"`{_md(_pointer_parts(pointer)[-1])}` "
+                f"| `{_md(_compact_json(value))}` |"
+                for pointer, value in zip(pointers, values, strict=True)
+            ),
+        ]
+    if len(pointers) != 1 or len(values) != 1 or not isinstance(values[0], Mapping):
+        raise ContractAtlasError(f"durable-state unit is not exact: {details['state_owner']}")
+    pointer = pointers[0]
+    value = cast(Mapping[str, object], values[0])
+    lines = [_subject_marker(pointer, placed_subjects)]
+    if unit == "relational-table":
+        lines.extend(
+            [
+                f"- Table: `{_md(value['name'])}`",
+                "",
+                "### Columns",
+                "",
+                "| Column | Type | Nullable | Default | Other constraints |",
+                "|---|---|---:|---|---|",
+            ]
+        )
+        for index, column in enumerate(cast(Sequence[Mapping[str, object]], value["columns"])):
+            column_pointer = f"{pointer}/columns/{index}"
+            other = {
+                key: item
+                for key, item in column.items()
+                if key not in {"name", "type", "nullable", "default", "definition"}
+            }
+            lines.append(
+                f"| {_subject_marker(column_pointer, placed_subjects)}`{_md(column['name'])}` | "
+                f"`{_md(column['type'])}` | {'yes' if column['nullable'] else 'no'} | "
+                f"`{_md(column.get('default', '—'))}` | "
+                f"{_md(_compact_json(other)) if other else '—'} |"
+            )
+        constraints = cast(Sequence[Mapping[str, object]], value.get("constraints", ()))
+        if constraints:
+            lines.extend(
+                [
+                    "",
+                    "### Table constraints",
+                    "",
+                    "| Kind | Name | Exact definition |",
+                    "|---|---|---|",
+                ]
+            )
+            for index, constraint in enumerate(constraints):
+                constraint_pointer = f"{pointer}/constraints/{index}"
+                lines.append(
+                    f"| {_subject_marker(constraint_pointer, placed_subjects)}"
+                    f"`{_md(constraint['kind'])}` | "
+                    f"`{_md(constraint.get('name', '—'))}` | `{_md(constraint['definition'])}` |"
+                )
+        return lines
+    if unit == "unique-index":
+        return [
+            *lines,
+            "| Index fact | Value |",
+            "|---|---|",
+            *(f"| `{_md(key)}` | `{_md(_compact_json(item))}` |" for key, item in value.items()),
+        ]
+    if unit == "json-document":
+        lines.extend([f"- Document: `{_md(value['id'])}`", "", "### Document schema", ""])
+        schema = value.get("schema")
+        if not isinstance(schema, Mapping):
+            raise ContractAtlasError("durable JSON document has no exact schema")
+        lines.extend(
+            _render_schema(cast(Mapping[str, object], schema), f"{pointer}/schema", placed_subjects)
+        )
+        return lines
+    # Composite units and deliberately simple component-owned structures are
+    # still rendered losslessly below and retain their bounded unit dossier.
+    lines.extend(_render_generic([pointer], [value], placed_subjects))
+    return lines
+
+
 def _render_http(
     value: Mapping[str, object],
     details: Mapping[str, object],
@@ -2605,6 +2826,12 @@ def _render_dossier(
         )
     elif interface == "cli":
         lines.extend(_render_cli(pointers, values, placed_subjects))
+    elif interface == "python" and len(values) == 1 and isinstance(values[0], Mapping):
+        lines.extend(
+            _render_python(cast(Mapping[str, object], values[0]), pointers[0], placed_subjects)
+        )
+    elif interface == "durable-state":
+        lines.extend(_render_durable_state(pointers, values, details, placed_subjects))
     elif (
         interface in {"http-operations", "process-protocol-operations"}
         and len(values) == 1
@@ -4160,6 +4387,30 @@ def _render_atlas(
             f"| {_html_anchor(_source_anchor(source_id))}`{_md(source_id)}` | {count} | "
             f"`{_md(rendered + symbol)}` |"
         )
+    state_sources = [
+        source
+        for source in source_index.values()
+        if str(source["id"]).startswith("state:") and source.get("fixtures")
+    ]
+    if state_sources:
+        source_lines.extend(
+            [
+                "",
+                "## Durable-state fixture evidence",
+                "",
+                "Fixtures prove restart and introspection behavior; component declarations "
+                "above remain the semantic structure authorities.",
+                "",
+                "| State authority | Fixture | SHA-256 |",
+                "|---|---|---|",
+            ]
+        )
+        for state_source in state_sources:
+            for fixture in cast(Sequence[Mapping[str, object]], state_source["fixtures"]):
+                source_lines.append(
+                    f"| `{_md(state_source['id'])}` | `{_md(fixture['path'])}` | "
+                    f"`{_md(fixture['sha256'])}` |"
+                )
     files[source_evidence_path] = ("\n".join(source_lines).rstrip() + "\n").encode()
 
     authority_registry = cast(Mapping[str, object], trace["authority_registry"])

@@ -16,6 +16,38 @@ from riverhog_storage_adapter_filesystem.materialize import (
 )
 
 COMMAND = "riverhog-storage-adapter-filesystem-materialize"
+_MATERIALIZATION_OUTPUT = {
+    "kind": "cli-local-json-schema",
+    "identity": "riverhog-filesystem-materialization-result/v1",
+    "schema": {
+        "type": "object",
+        "additionalProperties": False,
+        "required": [
+            "format",
+            "destination",
+            "selected_objects",
+            "selected_bytes",
+            "source_metadata_bytes",
+            "destination_verified_objects",
+            "destination_verified_bytes",
+            "staging_verified_bytes",
+            "copied_objects",
+            "copied_bytes",
+        ],
+        "properties": {
+            "format": {"const": "riverhog-filesystem-materialization-result/v1"},
+            "destination": {"type": "string"},
+            "selected_objects": {"type": "integer", "minimum": 0},
+            "selected_bytes": {"type": "integer", "minimum": 0},
+            "source_metadata_bytes": {"type": "integer", "minimum": 0},
+            "destination_verified_objects": {"type": "integer", "minimum": 0},
+            "destination_verified_bytes": {"type": "integer", "minimum": 0},
+            "staging_verified_bytes": {"type": "integer", "minimum": 0},
+            "copied_objects": {"type": "integer", "minimum": 0},
+            "copied_bytes": {"type": "integer", "minimum": 0},
+        },
+    },
+}
 
 _CLI_RESULT_CONTRACT = {
     "schema": "riverhog-cli-result-contract/v1",
@@ -32,7 +64,7 @@ _CLI_RESULT_CONTRACT = {
                     "exit_status": 0,
                     "stdout": {
                         "human": "noncontractual-presentation-of-command-result",
-                        "json": "riverhog-filesystem-materialization-summary/v1",
+                        "json": _MATERIALIZATION_OUTPUT,
                     },
                     "stderr": {"all": "empty"},
                 }
@@ -48,7 +80,7 @@ _CLI_RESULT_CONTRACT = {
                     "id": "materialization",
                     "exit_status": 1,
                     "stdout": {"all": "empty"},
-                    "stderr": {"all": "riverhog-filesystem-materialization-diagnostic/v1"},
+                    "stderr": {"all": "noncontractual-diagnostic"},
                 },
             ],
         }

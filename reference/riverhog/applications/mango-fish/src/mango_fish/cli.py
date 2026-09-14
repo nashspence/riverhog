@@ -61,7 +61,7 @@ _CLI_RESULT_CONTRACT = {
                     "id": "state-schema",
                     "exit_status": 1,
                     "stdout": {"all": "empty"},
-                    "stderr": {"all": "mango-fish-state-schema-diagnostic/v1"},
+                    "stderr": {"all": "noncontractual-diagnostic"},
                 },
             ],
         },

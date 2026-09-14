@@ -39,6 +39,11 @@ from riverhog_ftp_adapter.completion import (
     read_completion_header,
 )
 from riverhog_ftp_adapter.config import FtpAdapterConfig, SourceConfig
+from riverhog_ftp_adapter.state_contract import (
+    FTP_OPERATIONAL_STATE_DDL,
+    FtpClaimState,
+    FtpReceiptState,
+)
 
 _CONTROL_DIR = CONTROL_DIR
 _FLUSH_MARKER = ".riverhog-ftp-flush"
@@ -136,35 +141,7 @@ class FtpAdapter:
             version = int(connection.execute("PRAGMA user_version").fetchone()[0])
             if version not in {0, 2}:
                 raise FtpAdapterError("unsupported FTP adapter operational-state revision")
-            connection.executescript(
-                """
-                CREATE TABLE IF NOT EXISTS claims (
-                    ordinal INTEGER PRIMARY KEY,
-                    claim_id TEXT NOT NULL UNIQUE,
-                    manifest_json TEXT NOT NULL,
-                    claim_bytes INTEGER NOT NULL CHECK (claim_bytes >= 0)
-                );
-                CREATE TABLE IF NOT EXISTS adapter_state (
-                    key TEXT PRIMARY KEY,
-                    value TEXT NOT NULL
-                );
-                CREATE TABLE IF NOT EXISTS completion_events (
-                    event_id TEXT PRIMARY KEY,
-                    claim_id TEXT NOT NULL
-                );
-                CREATE TABLE IF NOT EXISTS completion_failures (
-                    ordinal INTEGER PRIMARY KEY,
-                    failure_id TEXT NOT NULL UNIQUE,
-                    generation TEXT NOT NULL,
-                    record_offset INTEGER NOT NULL CHECK (record_offset >= 0),
-                    raw BLOB NOT NULL,
-                    reason TEXT NOT NULL,
-                    retryable INTEGER NOT NULL CHECK (retryable IN (0, 1)),
-                    attempts INTEGER NOT NULL DEFAULT 0 CHECK (attempts >= 0)
-                );
-                PRAGMA user_version = 2;
-                """
-            )
+            connection.executescript(FTP_OPERATIONAL_STATE_DDL)
             claim_count = _state_value(connection, "claim_count")
             claim_bytes = _state_value(connection, "claim_bytes")
             if claim_count is None or claim_bytes is None:
@@ -863,12 +840,13 @@ class FtpAdapter:
         if record is None:
             raise FtpAdapterError(f"FTP claim is not registered: {claim_id}")
         _ordinal, encoded = record
-        payload = json.loads(encoded)
-        if (
-            not isinstance(payload, dict)
-            or payload.get("claim_id") != claim_id
-            or payload.get("source") != source.id
-        ):
+        try:
+            payload = FtpClaimState.model_validate_json(encoded).model_dump(
+                mode="json", exclude_none=True
+            )
+        except ValueError as exc:
+            raise FtpAdapterError("registered FTP claim manifest is invalid") from exc
+        if payload["claim_id"] != claim_id or payload["source"] != source.id:
             raise FtpAdapterError("registered FTP claim manifest is invalid")
         return payload
 
@@ -1290,21 +1268,17 @@ class FtpAdapter:
         path = self._receipt_path(source, claim_id)
         if not path.is_file():
             return None
-        payload = json.loads(path.read_text(encoding="utf-8"))
-        if (
-            not isinstance(payload, dict)
-            or payload.get("format") != "riverhog-ftp-adapter-receipt/v1"
-            or payload.get("claim_id") != claim_id
-        ):
+        try:
+            payload = FtpReceiptState.model_validate_json(path.read_text(encoding="utf-8"))
+        except ValueError as exc:
+            raise FtpAdapterError("invalid durable FTP adapter receipt") from exc
+        if payload.claim_id != claim_id:
             raise FtpAdapterError("invalid durable FTP adapter receipt")
-        raw_receipt = payload.get("riverhog_receipt")
-        if not isinstance(raw_receipt, dict):
-            raise FtpAdapterError("durable FTP adapter receipt has no Riverhog receipt")
         return ProducedCollection(
-            collection_id=int(payload["collection_id"]),
-            archive_root_sha256=str(payload["archive_root_sha256"]),
-            content_identity=str(payload["content_identity"]),
-            receipt=raw_receipt,
+            collection_id=payload.collection_id,
+            archive_root_sha256=payload.archive_root_sha256,
+            content_identity=payload.content_identity,
+            receipt=payload.riverhog_receipt,
         )
 
 
@@ -1386,10 +1360,12 @@ def _require_completion_identity(
 
 
 def _read_manifest(claim_root: Path) -> dict[str, object]:
-    payload = json.loads((claim_root / _MANIFEST).read_text(encoding="utf-8"))
-    if not isinstance(payload, dict) or payload.get("format") != "riverhog-ftp-adapter-claim/v1":
-        raise FtpAdapterError(f"invalid FTP adapter claim: {claim_root}")
-    return payload
+    try:
+        return FtpClaimState.model_validate_json(
+            (claim_root / _MANIFEST).read_text(encoding="utf-8")
+        ).model_dump(mode="json", exclude_none=True)
+    except ValueError as exc:
+        raise FtpAdapterError(f"invalid FTP adapter claim: {claim_root}") from exc
 
 
 def _claim_completion_record(

@@ -3,11 +3,25 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 from collections.abc import Sequence
 
 from stove0_media_sampling_observer_contracts import MEDIA_SAMPLING_OBSERVER_CONTRACT
 from stove0_review_target_contracts import REVIEW_MATERIALIZE_OPERATION
+
+_REVIEW_CONTRACT_REPORT = {
+    "format": "stove0-review-contract-report/v1",
+    "observer_contract": MEDIA_SAMPLING_OBSERVER_CONTRACT.model_dump(mode="json"),
+    "operation_contract": REVIEW_MATERIALIZE_OPERATION.model_dump(mode="json"),
+    "source_retirement_permitted": False,
+    "status": "conformant",
+}
+_REVIEW_CONTRACT_REPORT_OUTPUT = {
+    "kind": "cli-local-exact-json",
+    "identity": "stove0-review-contract-report/v1",
+    "document": _REVIEW_CONTRACT_REPORT,
+}
 
 _CLI_RESULT_CONTRACT: dict[str, object] = {
     "schema": "riverhog-cli-result-contract/v1",
@@ -22,7 +36,7 @@ _CLI_RESULT_CONTRACT: dict[str, object] = {
                 {
                     "id": "reported",
                     "exit_status": 0,
-                    "stdout": {"json": "stove0-review-contract-report/v1"},
+                    "stdout": {"json": _REVIEW_CONTRACT_REPORT_OUTPUT},
                     "stderr": {"all": "empty"},
                 }
             ],
@@ -49,13 +63,7 @@ _CLI_RESULT_CONTRACT: dict[str, object] = {
 
 
 def contract_report() -> dict[str, object]:
-    return {
-        "format": "stove0-review-contract-report/v1",
-        "observer_contract": MEDIA_SAMPLING_OBSERVER_CONTRACT.model_dump(mode="json"),
-        "operation_contract": REVIEW_MATERIALIZE_OPERATION.model_dump(mode="json"),
-        "source_retirement_permitted": False,
-        "status": "conformant",
-    }
+    return copy.deepcopy(_REVIEW_CONTRACT_REPORT)
 
 
 def _parser() -> argparse.ArgumentParser:

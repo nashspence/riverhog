@@ -11,6 +11,7 @@ import stat
 import uuid
 from dataclasses import asdict, dataclass
 from pathlib import Path, PurePosixPath
+from typing import Final, Literal
 
 from riverhog_provenance import SIDECAR_SUFFIX, canonical_sidecar_path
 
@@ -23,7 +24,8 @@ _INTENTS_DIR = "handoff-intents"
 _PENDING_SIDECARS_DIR = "pending-sidecars"
 _INTENT_FORMAT = "riverhog-ftp-completion-intent/v1"
 _PENDING_SIDECAR_FORMAT = "riverhog-ftp-pending-provenance-sidecar/v1"
-_RECORD_FORMAT = "riverhog-ftp-completion-record/v1"
+CompletionRecordFormat = Literal["riverhog-ftp-completion-record/v1"]
+COMPLETION_RECORD_FORMAT: Final[CompletionRecordFormat] = "riverhog-ftp-completion-record/v1"
 
 
 class CompletionError(RuntimeError):
@@ -105,7 +107,7 @@ def parse_completion_record(raw: bytes) -> CompletionRecord:
     }:
         raise CompletionError("FTP completion record has unexpected fields")
     record = CompletionRecord(**payload)
-    if record.format != _RECORD_FORMAT:
+    if record.format != COMPLETION_RECORD_FORMAT:
         raise CompletionError("FTP completion record format is invalid")
     try:
         if str(uuid.UUID(record.event_id)) != record.event_id:
@@ -149,7 +151,7 @@ class CompletionHandoff:
         event_id = str(uuid.uuid4())
         custody_relative = f"{CONTROL_DIR}/{_HANDOFFS_DIR}/{event_id}/payload"
         record = CompletionRecord(
-            format=_RECORD_FORMAT,
+            format=COMPLETION_RECORD_FORMAT,
             event_id=event_id,
             source_id=self.source_id,
             path=relative,

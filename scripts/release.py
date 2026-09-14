@@ -848,6 +848,7 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
         "http_api",
         "cli",
         "python_api",
+        "durable_state",
         "archive",
         "recovery",
         "configuration",
@@ -868,6 +869,8 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
             "distribution",
             "format",
             "head",
+            "transition",
+            "structure",
             "fixtures",
         }:
             raise ReleaseError("release.toml durable-state owner is incomplete")
@@ -880,6 +883,13 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
             or distribution not in seen_names
             or not str(owner["format"]).strip()
             or not str(owner["head"]).strip()
+            or owner["transition"]
+            not in {
+                "forward-migration-chain",
+                "backward-readable-documents",
+                "immutable-identity",
+            }
+            or not isinstance(owner["structure"], dict)
             or not isinstance(fixtures, list)
             or not fixtures
         ):

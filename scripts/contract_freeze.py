@@ -24,6 +24,7 @@ import extent_contract
 import extent_witnesses
 import operation_qualification
 import release as release_contract
+import state_contract
 from contract_atlas import (
     ContractAtlas,
     ContractAtlasError,
@@ -226,9 +227,8 @@ def _class_surface(value: type[object]) -> dict[str, object]:
         }
     if issubclass(value, BaseModel):
         schema = value.model_json_schema(mode="validation")
-        surface["schema_sha256"] = hashlib.sha256(
-            json.dumps(schema, separators=(",", ":"), sort_keys=True).encode()
-        ).hexdigest()
+        Draft202012Validator.check_schema(schema)
+        surface["schema"] = schema
     if is_dataclass(value):
         surface["fields"] = [
             {
@@ -721,6 +721,29 @@ CLI_MODULES = {
     "stove0-target-conformance": "stove0_target_support.conformance",
     "stove0-target-schemas": "stove0_target_support.schemas",
 }
+CLI_SIMPLE_OUTCOME_SELECTOR_KINDS = frozenset(
+    {
+        "action-returned-zero",
+        "application-error",
+        "command-completed",
+        "conformance-completed",
+        "contract-report-completed",
+        "delegated-action-returned-nonzero",
+        "interactive-confirmation-mismatch",
+        "listener-runtime-returned",
+        "local-audit-problem-count-positive",
+        "materialization-completed",
+        "materialization-error",
+        "parser-rejected-invocation",
+        "plan-reported-blockers",
+        "recovery-error",
+        "relay-pass-reported-failures",
+        "schema-bundle-emitted",
+        "service-runtime-returned",
+        "state-schema-error",
+        "state-schema-operation-completed",
+    }
+)
 
 
 def _click_terminating_controls(command: Any) -> list[dict[str, object]]:
@@ -952,8 +975,28 @@ def _validate_cli_outcome_selector(
     parameters: Sequence[Mapping[str, object]],
 ) -> None:
     kind = selector.get("kind")
-    if kind not in {"option-equals", "option-present", "option-absent", "options-absent"}:
+    if kind in CLI_SIMPLE_OUTCOME_SELECTOR_KINDS:
+        if set(selector) != {"kind"}:
+            raise ContractFreezeError(
+                f"CLI outcome selector shape is not exact: "
+                f"{authority}: {command}: {outcome_id}: {kind}"
+            )
         return
+    state_predicates = {
+        "archive-copy-state": "failed",
+        "custody-deadline-expired": "not-finalized",
+    }
+    if kind in state_predicates:
+        if set(selector) != {"kind", "state"} or selector.get("state") != state_predicates[kind]:
+            raise ContractFreezeError(
+                f"CLI outcome state predicate is invalid: "
+                f"{authority}: {command}: {outcome_id}: {kind}"
+            )
+        return
+    if kind not in {"option-equals", "option-present", "option-absent", "options-absent"}:
+        raise ContractFreezeError(
+            f"CLI outcome selector kind is unknown: {authority}: {command}: {outcome_id}: {kind}"
+        )
     parameter_names = {
         str(parameter.get("name") or parameter.get("dest"))
         for parameter in parameters
@@ -1017,6 +1060,50 @@ def _operation_success_authority(
     }
 
 
+def _resolved_cli_format_authorities(
+    identity: str, schema_documents: Mapping[str, object]
+) -> list[dict[str, object]]:
+    matches: list[dict[str, object]] = []
+    for schema_authority, document_value in schema_documents.items():
+        if not isinstance(document_value, Mapping):
+            continue
+        document = cast(Mapping[str, object], document_value)
+        if schema_authority == identity:
+            matches.append({"kind": "schema-authority", "authority": schema_authority})
+            continue
+        properties = document.get("properties")
+        format_property = (
+            cast(Mapping[str, object], properties).get("format")
+            if isinstance(properties, Mapping)
+            else None
+        )
+        if isinstance(format_property, Mapping) and format_property.get("const") == identity:
+            matches.append({"kind": "schema-authority", "authority": schema_authority})
+        if document.get("format") == identity:
+            matches.append({"kind": "document-authority", "authority": schema_authority})
+        schemas = document.get("schemas")
+        if not isinstance(schemas, Mapping):
+            continue
+        for schema_name, schema_value in schemas.items():
+            if not isinstance(schema_value, Mapping):
+                continue
+            schema_properties = cast(Mapping[str, object], schema_value).get("properties")
+            schema_format = (
+                cast(Mapping[str, object], schema_properties).get("format")
+                if isinstance(schema_properties, Mapping)
+                else None
+            )
+            if isinstance(schema_format, Mapping) and schema_format.get("const") == identity:
+                matches.append(
+                    {
+                        "kind": "schema-authority",
+                        "authority": schema_authority,
+                        "definition": str(schema_name),
+                    }
+                )
+    return matches
+
+
 def _resolve_cli_output_authority(
     *,
     authority: str,
@@ -1027,6 +1114,7 @@ def _resolve_cli_output_authority(
     operations_by_command: Mapping[tuple[str, str], Sequence[operation_qualification.Operation]],
     operations_by_id: Mapping[tuple[str, str], operation_qualification.Operation],
     openapi: Mapping[str, object],
+    schema_documents: Mapping[str, object],
 ) -> object:
     if declared != CLI_COMMAND_JSON_OUTPUT:
         if isinstance(declared, str):
@@ -1036,7 +1124,13 @@ def _resolve_cli_output_authority(
                 raise ContractFreezeError(
                     f"CLI JSON format identity is empty: {authority}: {command}: {outcome_id}"
                 )
-            return {"kind": "semantic-format", "identity": declared}
+            matches = _resolved_cli_format_authorities(declared, schema_documents)
+            if len(matches) != 1:
+                raise ContractFreezeError(
+                    f"CLI JSON format identity does not resolve to one schema authority: "
+                    f"{authority}: {command}: {outcome_id}: {declared}: {len(matches)}"
+                )
+            return matches[0]
         if not isinstance(declared, Mapping):
             raise ContractFreezeError(
                 f"CLI JSON output authority is invalid: {authority}: {command}: {outcome_id}"
@@ -1044,6 +1138,59 @@ def _resolve_cli_output_authority(
         kind = declared.get("kind")
         identity = declared.get("identity")
         schema = declared.get("schema")
+        if kind == "cli-local-exact-json":
+            document = declared.get("document")
+            if (
+                set(declared) != {"kind", "identity", "document"}
+                or not isinstance(identity, str)
+                or not identity
+                or not isinstance(document, Mapping)
+                or document.get("format") != identity
+            ):
+                raise ContractFreezeError(
+                    f"CLI exact JSON authority is invalid: {authority}: {command}: {outcome_id}"
+                )
+            return copy.deepcopy(declared)
+        if kind == "schema-format-or-null":
+            if set(declared) != {"kind", "identity"} or not isinstance(identity, str):
+                raise ContractFreezeError(
+                    f"CLI nullable JSON format authority is invalid: "
+                    f"{authority}: {command}: {outcome_id}"
+                )
+            matches = _resolved_cli_format_authorities(identity, schema_documents)
+            if len(matches) != 1 or matches[0].get("kind") != "schema-authority":
+                raise ContractFreezeError(
+                    f"CLI nullable JSON format does not resolve to one schema authority: "
+                    f"{authority}: {command}: {outcome_id}: {identity}: {len(matches)}"
+                )
+            return {**matches[0], "nullable": True}
+        if kind == "cli-local-json-sequence":
+            records = declared.get("records")
+            sequence = declared.get("sequence")
+            if (
+                set(declared) != {"kind", "identity", "framing", "records", "sequence"}
+                or not isinstance(identity, str)
+                or not identity
+                or declared.get("framing") != "newline-delimited-json"
+                or not isinstance(records, Mapping)
+                or not records
+                or not isinstance(sequence, Mapping)
+                or set(sequence) != {"start", "repeated", "end"}
+                or not all(isinstance(name, str) and name in records for name in sequence.values())
+                or len(set(sequence.values())) != 3
+                or set(records) != set(sequence.values())
+            ):
+                raise ContractFreezeError(
+                    f"CLI JSON sequence authority is invalid: {authority}: {command}: {outcome_id}"
+                )
+            for record_schema in records.values():
+                if not isinstance(record_schema, Mapping):
+                    raise ContractFreezeError(
+                        f"CLI JSON sequence record schema is invalid: "
+                        f"{authority}: {command}: {outcome_id}"
+                    )
+                Draft202012Validator.check_schema(dict(record_schema))
+            return copy.deepcopy(declared)
         if (
             kind not in {"cli-local-json-schema", "python-model"}
             or not isinstance(identity, str)
@@ -1122,8 +1269,12 @@ def _apply_cli_result_contract(
     *,
     operations: Sequence[operation_qualification.Operation],
     openapi: Mapping[str, object],
+    schema_documents: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
     module = importlib.import_module(CLI_MODULES[authority])
+    resolved_schema_documents = (
+        _schema_documents() if schema_documents is None else schema_documents
+    )
     declaration = getattr(module, "_CLI_RESULT_CONTRACT", None)
     if not isinstance(declaration, Mapping):
         raise ContractFreezeError(f"CLI has no implementation-owned result contract: {authority}")
@@ -1262,6 +1413,7 @@ def _apply_cli_result_contract(
                                 operations_by_command=operations_by_command,
                                 operations_by_id=operations_by_id,
                                 openapi=openapi,
+                                schema_documents=resolved_schema_documents,
                             )
             _validate_cli_result_outcomes(authority, command, "success", result.get("success"))
             _validate_cli_result_outcomes(authority, command, "failure", result.get("failures"))
@@ -1309,11 +1461,13 @@ def _apply_cli_result_contract(
 def _cli_surfaces(
     operations: Sequence[operation_qualification.Operation] | None = None,
     openapi: Mapping[str, object] | None = None,
+    schema_documents: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
     resolved_operations = (
         operation_qualification.operation_matrix() if operations is None else operations
     )
     resolved_openapi = _openapi_surfaces() if openapi is None else openapi
+    resolved_schemas = _schema_documents() if schema_documents is None else schema_documents
     surfaces = {
         "gogurt": _click_command(get_command(gogurt_app), name="gogurt"),
         "mango-fish": _argparse_command(mango_fish_parser()),
@@ -1340,6 +1494,7 @@ def _cli_surfaces(
             surface,
             operations=resolved_operations,
             openapi=resolved_openapi,
+            schema_documents=resolved_schemas,
         )
         for authority, surface in surfaces.items()
     }
@@ -1742,11 +1897,10 @@ def _schema_documents() -> dict[str, object]:
 def _state_contract(config: dict[str, Any]) -> dict[str, object]:
     owners: list[dict[str, object]] = []
     for owner in config["state"]["owners"]:
-        current = dict(owner)
-        current["fixture_sha256s"] = sorted(
-            hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
-            for path in current.pop("fixtures")
-        )
+        try:
+            current = state_contract.project_owner(owner)
+        except state_contract.StateContractError as exc:
+            raise ContractFreezeError(str(exc)) from exc
         owners.append(current)
     return {"schema": config["state"]["schema"], "owners": owners}
 
@@ -1933,19 +2087,30 @@ def _python_trace(registry: Mapping[str, object]) -> list[dict[str, object]]:
 
 def _state_trace() -> list[dict[str, object]]:
     config = _project_config(ROOT / "release.toml")
-    return [
-        {
-            "id": f"state:{owner['id']}",
-            "fixtures": [
-                {
-                    "path": path,
-                    "sha256": hashlib.sha256((ROOT / path).read_bytes()).hexdigest(),
-                }
-                for path in owner["fixtures"]
-            ],
-        }
-        for owner in config["state"]["owners"]
-    ]
+    traced: list[dict[str, object]] = []
+    for owner in config["state"]["owners"]:
+        declarations: list[dict[str, str]] = []
+        for module_name, symbol in state_contract.declaration_symbols(owner):
+            module = importlib.import_module(module_name)
+            source = _source_ref(getattr(module, symbol))
+            if "path" not in source:
+                source = _source_ref(module)
+                source["symbol"] = symbol
+            declarations.append(source)
+        traced.append(
+            {
+                "id": f"state:{owner['id']}",
+                "declarations": declarations,
+                "fixtures": [
+                    {
+                        "path": path,
+                        "sha256": hashlib.sha256((ROOT / path).read_bytes()).hexdigest(),
+                    }
+                    for path in owner["fixtures"]
+                ],
+            }
+        )
+    return traced
 
 
 def _environment_trace() -> list[dict[str, object]]:
@@ -2383,8 +2548,9 @@ def contract_projection() -> dict[str, object]:
     components = _component_boundaries(projects)
     python_surfaces = _python_surfaces(projects)
     http_openapi = _openapi_surfaces()
+    protocol_schemas = _schema_documents()
     operations = operation_qualification.operation_matrix()
-    cli_surfaces = _cli_surfaces(operations, http_openapi)
+    cli_surfaces = _cli_surfaces(operations, http_openapi, protocol_schemas)
     published_distributions = {project.name for project in projects}
     for authority, root in cli_surfaces.items():
         controls = cast(
@@ -2411,7 +2577,7 @@ def contract_projection() -> dict[str, object]:
         "configuration_environment": _environment_names(projects),
         "configuration_environment_patterns": _configuration_environment_patterns(projects),
         "configuration_documents": _configuration_documents(projects),
-        "protocol_schemas": _schema_documents(),
+        "protocol_schemas": protocol_schemas,
         "python": python_surfaces,
         "durable_state": _state_contract(config),
     }

@@ -59,6 +59,7 @@ def test_shared_qualification_support_is_owned_outside_test_modules() -> None:
 def test_every_checked_qualification_input_runs_through_its_real_consumer(
     tmp_path: Path,
     monkeypatch,
+    checked_contract_closure,
 ) -> None:  # type: ignore[no-untyped-def]
     checked_inputs = {
         path
@@ -138,10 +139,9 @@ def test_every_checked_qualification_input_runs_through_its_real_consumer(
     contract_module = importlib.util.module_from_spec(contract_spec)
     sys.modules[contract_spec.name] = contract_module
     contract_spec.loader.exec_module(contract_module)
-    projection, trace, generated = contract_module._generated_atlas()
-    checked = contract_module.load_atlas(CONTRACT_ROOT)
-    assert checked.root == generated.root
-    assert checked.files == generated.files
+    projection = checked_contract_closure["projection"]
+    trace = checked_contract_closure["trace"]
+    checked = checked_contract_closure["atlas"]
     assert contract_module.reassemble_projection(checked) == json.loads(json.dumps(projection))
     assert contract_module.reassemble_trace(checked) == json.loads(json.dumps(trace))
 
