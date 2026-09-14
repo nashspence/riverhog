@@ -39,7 +39,7 @@ Step Work
 
 ### Related interface records
 
-- [stove0-client work step](../../stove0-client/cli/stove0-client-work-step.md)
+- [stove0 work step](../../stove0-client/cli/stove0-work-step.md)
 
 ### Referenced contract dossiers
 

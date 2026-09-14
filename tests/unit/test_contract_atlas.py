@@ -451,6 +451,50 @@ def test_interfaces_are_flat_exact_inventories_with_local_references() -> None:
     )
 
 
+def test_cli_dossiers_expose_exact_result_and_failure_contracts() -> None:
+    checked = checked_atlas()
+    cli_elements = [item for item in checked.root["elements"] if item["interface"] == "cli"]
+    executable = [item for item in cli_elements if item.get("details", {}).get("executable")]
+
+    assert len(executable) == 132
+    assert len({item["details"]["result_identity"] for item in executable}) == 132
+    assert {
+        tuple(item["details"]["command_path"])
+        for item in executable
+        if len(item["details"]["command_path"]) == 1
+    } == {
+        ("mango-fish",),
+        ("riverhog-ftp-adapter",),
+        ("riverhog-recover",),
+        ("riverhog-storage-adapter-conformance",),
+        ("riverhog-storage-adapter-filesystem-materialize",),
+        ("riverhog-storage-adapter-schemas",),
+        ("stove0-observer-conformance",),
+        ("stove0-observer-schemas",),
+        ("stove0-review-planning",),
+        ("stove0-review-sampler-conformance",),
+        ("stove0-review-sampler-schemas",),
+        ("stove0-target-conformance",),
+        ("stove0-target-schemas",),
+    }
+    assert not any("mango-fish mango-fish" in item["title"] for item in cli_elements)
+    assert not any(
+        "riverhog-ftp-adapter riverhog-ftp-adapter" in item["title"] for item in cli_elements
+    )
+
+    upload = next(item for item in executable if item["title"] == "piggity collection upload start")
+    page = checked.files[upload["dossier"]].decode()
+    assert "### Result and failure contract" in page
+    assert "`piggity-cli-result/collection/upload/start/v1`" in page
+    assert "`custody-timeout`" in page
+    assert "`124`" in page
+    piggity_index = checked.files["riverhog-v1/authorities/piggity/cli/index.md"].decode()
+    assert "Executable commands: **66** · Command groups: **20**" in piggity_index
+    assert piggity_index.index("### Executable commands") < piggity_index.index(
+        "### Command groups"
+    )
+
+
 def test_process_protocols_own_exact_metadata_operations_and_schemas() -> None:
     checked = checked_atlas()
     elements = checked.root["elements"]

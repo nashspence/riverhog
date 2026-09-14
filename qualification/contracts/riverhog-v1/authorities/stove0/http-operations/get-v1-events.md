@@ -56,7 +56,7 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ### Related interface records
 
-- [stove0-client event list](../../stove0-client/cli/stove0-client-event-list.md)
+- [stove0 event list](../../stove0-client/cli/stove0-event-list.md)
 
 ### Referenced contract dossiers
 

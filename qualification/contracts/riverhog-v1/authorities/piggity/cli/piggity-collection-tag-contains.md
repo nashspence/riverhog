@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-collection-tag-contains:6ea4522e5e -->
+<!-- contract-element: cli:piggity:piggity-collection-tag-contains:982a1ade05 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -24,6 +24,26 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-4f6f468c54"></a>`revision` | TyperOption | no | {'class': 'typer._click.types.IntRange', 'minimum': 1, 'name': 'integer range'} | --revision |
 | <a id="s-3380feb855"></a>`tag_set_identity` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --tag-set-identity |
 | <a id="s-dbfd84e078"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+
+### Result and failure contract
+
+- <a id="s-c17cb15bda"></a>Result identity: `piggity-cli-result/collection/tag/contains/v1`
+- <a id="s-5d9a251515"></a>Profile: `piggity-cli-human-json/v1`
+- <a id="s-aca710ae8f"></a>Structured output: `optional-json`
+- <a id="s-d68d425b58"></a>Human/JSON relationship: `same-semantic-result`
+
+#### Success outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-cb1e96f23c"></a>`completed` | <a id="s-cce5a8053c"></a>`0` | <a id="s-642d4e9f5f"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-addc816fa3"></a>`{"all":"empty"}` |
+
+#### Failure outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-5ce775ed08"></a>`usage` | <a id="s-8ce329d0b4"></a>`2` | <a id="s-56f2161c4c"></a>`{"all":"empty"}` | <a id="s-eacb26b0b9"></a>`{"all":"noncontractual-usage-diagnostic"}` |
+| <a id="s-af1778233a"></a>`operational` | <a id="s-92a6d9d9e1"></a>`1` | <a id="s-8c0219d819"></a>`{"human":"empty","json":"http-api-contracts.ErrorResponse"}` | <a id="s-17e7c8e235"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
 
 ### Progression, limits, and lifecycle
 
@@ -48,8 +68,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-e446c8be87"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-02f5d08e23"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-5e02b89273"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-0fcae87cee"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -67,6 +87,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - `/external_contract/cli/piggity/commands/collection/commands/tag/commands/contains/name`
 - `/external_contract/cli/piggity/commands/collection/commands/tag/commands/contains/parameters`
+- `/external_contract/cli/piggity/commands/collection/commands/tag/commands/contains/result_contract`
 
 ### Exact owned JSON
 
@@ -175,4 +196,54 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   }
 ]
+```
+
+### `/external_contract/cli/piggity/commands/collection/commands/tag/commands/contains/result_contract`
+
+<!-- exact-contract-value: c968a8ed324bdbc50b941234a97755e515e2d045fc8bed6014fa4baabba986a4 -->
+
+```json
+{
+  "failures": [
+    {
+      "exit_status": 2,
+      "id": "usage",
+      "stderr": {
+        "all": "noncontractual-usage-diagnostic"
+      },
+      "stdout": {
+        "all": "empty"
+      }
+    },
+    {
+      "exit_status": 1,
+      "id": "operational",
+      "stderr": {
+        "human": "noncontractual-diagnostic",
+        "json": "empty"
+      },
+      "stdout": {
+        "human": "empty",
+        "json": "http-api-contracts.ErrorResponse"
+      }
+    }
+  ],
+  "human_json_relationship": "same-semantic-result",
+  "identity": "piggity-cli-result/collection/tag/contains/v1",
+  "profile_id": "piggity-cli-human-json/v1",
+  "structured_output": "optional-json",
+  "success": [
+    {
+      "exit_status": 0,
+      "id": "completed",
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "human": "noncontractual-presentation-of-command-result",
+        "json": "named-command-result"
+      }
+    }
+  ]
+}
 ```

@@ -6,40 +6,47 @@ CLI contract owned by stove0-client.
 
 ## Semantic dossiers
 
-- [stove0-client](stove0-client.md)
-- [stove0-client admission](stove0-client-admission.md)
-- [stove0-client admission list](stove0-client-admission-list.md)
-- [stove0-client admission policy](stove0-client-admission-policy.md)
-- [stove0-client admission policy backfill](stove0-client-admission-policy-backfill.md)
-- [stove0-client admission policy list](stove0-client-admission-policy-list.md)
-- [stove0-client admission policy rebaseline](stove0-client-admission-policy-rebaseline.md)
-- [stove0-client admission show](stove0-client-admission-show.md)
-- [stove0-client evaluation](stove0-client-evaluation.md)
-- [stove0-client evaluation cancel](stove0-client-evaluation-cancel.md)
-- [stove0-client evaluation create](stove0-client-evaluation-create.md)
-- [stove0-client evaluation list](stove0-client-evaluation-list.md)
-- [stove0-client evaluation retry](stove0-client-evaluation-retry.md)
-- [stove0-client evaluation review](stove0-client-evaluation-review.md)
-- [stove0-client evaluation show](stove0-client-evaluation-show.md)
-- [stove0-client evaluation step](stove0-client-evaluation-step.md)
-- [stove0-client event](stove0-client-event.md)
-- [stove0-client event list](stove0-client-event-list.md)
-- [stove0-client health](stove0-client-health.md)
-- [stove0-client preview](stove0-client-preview.md)
-- [stove0-client recipe](stove0-client-recipe.md)
-- [stove0-client recipe list](stove0-client-recipe-list.md)
-- [stove0-client recipe show](stove0-client-recipe-show.md)
-- [stove0-client recipe validate](stove0-client-recipe-validate.md)
-- [stove0-client scheduler](stove0-client-scheduler.md)
-- [stove0-client scheduler run](stove0-client-scheduler-run.md)
-- [stove0-client scheduler status](stove0-client-scheduler-status.md)
-- [stove0-client selection](stove0-client-selection.md)
-- [stove0-client selection show](stove0-client-selection-show.md)
-- [stove0-client work](stove0-client-work.md)
-- [stove0-client work cancel](stove0-client-work-cancel.md)
-- [stove0-client work coordination](stove0-client-work-coordination.md)
-- [stove0-client work create](stove0-client-work-create.md)
-- [stove0-client work list](stove0-client-work-list.md)
-- [stove0-client work retry](stove0-client-work-retry.md)
-- [stove0-client work show](stove0-client-work-show.md)
-- [stove0-client work step](stove0-client-work-step.md)
+Executable commands: **28** · Command groups: **9**
+
+### Executable commands
+
+- [stove0 admission list](stove0-admission-list.md) — `stove0-cli-human-json/v1`
+- [stove0 admission policy backfill](stove0-admission-policy-backfill.md) — `stove0-cli-human-json/v1`
+- [stove0 admission policy list](stove0-admission-policy-list.md) — `stove0-cli-human-json/v1`
+- [stove0 admission policy rebaseline](stove0-admission-policy-rebaseline.md) — `stove0-cli-human-json/v1`
+- [stove0 admission show](stove0-admission-show.md) — `stove0-cli-human-json/v1`
+- [stove0 evaluation cancel](stove0-evaluation-cancel.md) — `stove0-cli-human-json/v1`
+- [stove0 evaluation create](stove0-evaluation-create.md) — `stove0-cli-human-json/v1`
+- [stove0 evaluation list](stove0-evaluation-list.md) — `stove0-cli-human-json/v1`
+- [stove0 evaluation retry](stove0-evaluation-retry.md) — `stove0-cli-human-json/v1`
+- [stove0 evaluation review](stove0-evaluation-review.md) — `stove0-cli-human-json/v1`
+- [stove0 evaluation show](stove0-evaluation-show.md) — `stove0-cli-human-json/v1`
+- [stove0 evaluation step](stove0-evaluation-step.md) — `stove0-cli-human-json/v1`
+- [stove0 event list](stove0-event-list.md) — `stove0-cli-human-json/v1`
+- [stove0 health](stove0-health.md) — `stove0-cli-human-json/v1`
+- [stove0 preview](stove0-preview.md) — `stove0-cli-human-json/v1`
+- [stove0 recipe list](stove0-recipe-list.md) — `stove0-cli-human-json/v1`
+- [stove0 recipe show](stove0-recipe-show.md) — `stove0-cli-human-json/v1`
+- [stove0 recipe validate](stove0-recipe-validate.md) — `stove0-cli-human-json/v1`
+- [stove0 scheduler run](stove0-scheduler-run.md) — `stove0-cli-human-json/v1`
+- [stove0 scheduler status](stove0-scheduler-status.md) — `stove0-cli-human-json/v1`
+- [stove0 selection show](stove0-selection-show.md) — `stove0-cli-human-json/v1`
+- [stove0 work cancel](stove0-work-cancel.md) — `stove0-cli-human-json/v1`
+- [stove0 work coordination](stove0-work-coordination.md) — `stove0-cli-human-json/v1`
+- [stove0 work create](stove0-work-create.md) — `stove0-cli-human-json/v1`
+- [stove0 work list](stove0-work-list.md) — `stove0-cli-human-json/v1`
+- [stove0 work retry](stove0-work-retry.md) — `stove0-cli-human-json/v1`
+- [stove0 work show](stove0-work-show.md) — `stove0-cli-human-json/v1`
+- [stove0 work step](stove0-work-step.md) — `stove0-cli-human-json/v1`
+
+### Command groups
+
+- [stove0](stove0.md)
+- [stove0 admission](stove0-admission.md)
+- [stove0 admission policy](stove0-admission-policy.md)
+- [stove0 evaluation](stove0-evaluation.md)
+- [stove0 event](stove0-event.md)
+- [stove0 recipe](stove0-recipe.md)
+- [stove0 scheduler](stove0-scheduler.md)
+- [stove0 selection](stove0-selection.md)
+- [stove0 work](stove0-work.md)

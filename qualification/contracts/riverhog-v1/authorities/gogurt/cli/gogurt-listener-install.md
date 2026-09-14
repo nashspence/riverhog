@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt-listener-install:153f605e11 -->
+<!-- contract-element: cli:gogurt:gogurt-listener-install:16fdff796c -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -27,6 +27,26 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-0f93a46b54"></a>`listener_host_provider` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --listener-host-provider |
 | <a id="s-e4798ae920"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
+### Result and failure contract
+
+- <a id="s-5dc6f486d4"></a>Result identity: `gogurt-cli-result/listener/install/v1`
+- <a id="s-7b2614c5be"></a>Profile: `gogurt-cli-human-json/v1`
+- <a id="s-e2d4d5e3ba"></a>Structured output: `optional-json`
+- <a id="s-d2f5dcad07"></a>Human/JSON relationship: `same-semantic-result`
+
+#### Success outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-766debc0c6"></a>`completed` | <a id="s-b78a89ef1d"></a>`0` | <a id="s-81469e1a8d"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-38b581ec69"></a>`{"all":"empty"}` |
+
+#### Failure outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-7b2d01af13"></a>`usage` | <a id="s-da5397f723"></a>`2` | <a id="s-bc93e447d5"></a>`{"all":"empty"}` | <a id="s-dcd7042f84"></a>`{"all":"noncontractual-usage-diagnostic"}` |
+| <a id="s-7c484ca96c"></a>`operational` | <a id="s-b32ce984f1"></a>`1` | <a id="s-b355e6ba1c"></a>`{"human":"empty","json":"gogurt-cli-error/v1"}` | <a id="s-cf5f7725af"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
+
 ### Progression, limits, and lifecycle
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
@@ -44,8 +64,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-83b0aad4bb"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-f8814077c2"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-cc838d0f56"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-e360d2e4ee"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -63,6 +83,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - `/external_contract/cli/gogurt/commands/listener/commands/install/name`
 - `/external_contract/cli/gogurt/commands/listener/commands/install/parameters`
+- `/external_contract/cli/gogurt/commands/listener/commands/install/result_contract`
 
 ### Exact owned JSON
 
@@ -214,4 +235,54 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   }
 ]
+```
+
+### `/external_contract/cli/gogurt/commands/listener/commands/install/result_contract`
+
+<!-- exact-contract-value: 0864ddce47bf841117e8563ad82abe186217f44e3921454763d1601ad0543767 -->
+
+```json
+{
+  "failures": [
+    {
+      "exit_status": 2,
+      "id": "usage",
+      "stderr": {
+        "all": "noncontractual-usage-diagnostic"
+      },
+      "stdout": {
+        "all": "empty"
+      }
+    },
+    {
+      "exit_status": 1,
+      "id": "operational",
+      "stderr": {
+        "human": "noncontractual-diagnostic",
+        "json": "empty"
+      },
+      "stdout": {
+        "human": "empty",
+        "json": "gogurt-cli-error/v1"
+      }
+    }
+  ],
+  "human_json_relationship": "same-semantic-result",
+  "identity": "gogurt-cli-result/listener/install/v1",
+  "profile_id": "gogurt-cli-human-json/v1",
+  "structured_output": "optional-json",
+  "success": [
+    {
+      "exit_status": 0,
+      "id": "completed",
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "human": "noncontractual-presentation-of-command-result",
+        "json": "named-command-result"
+      }
+    }
+  ]
+}
 ```

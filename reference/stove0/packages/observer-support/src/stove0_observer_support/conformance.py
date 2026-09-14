@@ -29,6 +29,38 @@ OBSERVER_CONFORMANCE_RESULT: Literal["stove0-observer-conformance-result/v1"] = 
     "stove0-observer-conformance-result/v1"
 )
 
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "stove0-observer-conformance-cli-result",
+    "default_profile": "machine-report",
+    "profiles": {
+        "machine-report": {
+            "id": "stove0-observer-conformance-cli/v1",
+            "structured_output": "always-json",
+            "human_json_relationship": "not-applicable",
+            "success": [
+                {
+                    "id": "conformant",
+                    "exit_status": 0,
+                    "stdout": {"json": OBSERVER_CONFORMANCE_RESULT},
+                    "stderr": {"all": "empty"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                }
+            ],
+        }
+    },
+    "command_profiles": {},
+    "command_overrides": {},
+    "executable_groups": [],
+}
+
 
 class _ObserverConformanceModel(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)

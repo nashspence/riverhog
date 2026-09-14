@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:riverhog-storage-adapter-support:riverhog-storage-adapter-conformance:88169e17b7 -->
+<!-- contract-element: cli:riverhog-storage-adapter-support:riverhog-storage-adapter-conformance:04fadb66ce -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -19,10 +19,29 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| <a id="s-da9cd0d5da"></a>`` | _StoreAction | yes |  | --base-url |
-| <a id="s-4db4323e5a"></a>`` | _StoreAction | yes | Path | --token-file |
-| <a id="s-76ce9fec00"></a>`` | _StoreAction | yes |  | --object-prefix |
-| <a id="s-785a5f2564"></a>`` | _StoreTrueAction | no |  | --allow-insecure-http |
+| <a id="s-da9cd0d5da"></a>`base_url` | _StoreAction | yes |  | --base-url |
+| <a id="s-4db4323e5a"></a>`token_file` | _StoreAction | yes | Path | --token-file |
+| <a id="s-76ce9fec00"></a>`object_prefix` | _StoreAction | yes |  | --object-prefix |
+| <a id="s-785a5f2564"></a>`allow_insecure_http` | _StoreTrueAction | no |  | --allow-insecure-http |
+
+### Result and failure contract
+
+- <a id="s-f9615a8394"></a>Result identity: `riverhog-storage-adapter-conformance-cli-result/root/v1`
+- <a id="s-9b278bfaf6"></a>Profile: `riverhog-storage-adapter-conformance-cli/v1`
+- <a id="s-96e3ff49ca"></a>Structured output: `always-json`
+- <a id="s-f6d1e89bdf"></a>Human/JSON relationship: `not-applicable`
+
+#### Success outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-0779825aae"></a>`conformant` | <a id="s-a511e84d49"></a>`0` | <a id="s-545267f90c"></a>`{"json":"riverhog-storage-adapter-conformance-result/v1"}` | <a id="s-d8d26cc42e"></a>`{"all":"empty"}` |
+
+#### Failure outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-7d57e24d70"></a>`usage` | <a id="s-4a1fdc4dd8"></a>`2` | <a id="s-a81996dea2"></a>`{"all":"empty"}` | <a id="s-c3045d7639"></a>`{"all":"noncontractual-usage-diagnostic"}` |
 
 ### Progression, limits, and lifecycle
 
@@ -36,8 +55,8 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-498b609176"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-ebd776a4c0"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-45b8c014dd"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-63d29d2e7e"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -55,6 +74,7 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 - `/external_contract/cli/riverhog-storage-adapter-conformance/name`
 - `/external_contract/cli/riverhog-storage-adapter-conformance/parameters`
+- `/external_contract/cli/riverhog-storage-adapter-conformance/result_contract`
 
 ### Exact owned JSON
 
@@ -113,4 +133,41 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false
   }
 ]
+```
+
+### `/external_contract/cli/riverhog-storage-adapter-conformance/result_contract`
+
+<!-- exact-contract-value: 46c6d4f0617b200385ecaca5d206def2119bb4c710cecfaed5a54c915d893652 -->
+
+```json
+{
+  "failures": [
+    {
+      "exit_status": 2,
+      "id": "usage",
+      "stderr": {
+        "all": "noncontractual-usage-diagnostic"
+      },
+      "stdout": {
+        "all": "empty"
+      }
+    }
+  ],
+  "human_json_relationship": "not-applicable",
+  "identity": "riverhog-storage-adapter-conformance-cli-result/root/v1",
+  "profile_id": "riverhog-storage-adapter-conformance-cli/v1",
+  "structured_output": "always-json",
+  "success": [
+    {
+      "exit_status": 0,
+      "id": "conformant",
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "json": "riverhog-storage-adapter-conformance-result/v1"
+      }
+    }
+  ]
+}
 ```

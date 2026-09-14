@@ -39,7 +39,7 @@ Get Recipe
 
 ### Related interface records
 
-- [stove0-client recipe show](../../stove0-client/cli/stove0-client-recipe-show.md)
+- [stove0 recipe show](../../stove0-client/cli/stove0-recipe-show.md)
 
 ### Referenced contract dossiers
 

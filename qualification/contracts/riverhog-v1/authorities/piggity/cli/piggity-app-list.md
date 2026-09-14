@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-app-list:59f6a9f502 -->
+<!-- contract-element: cli:piggity:piggity-app-list:d7c32b6609 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -27,6 +27,26 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-25907b1998"></a>`active` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --active |
 | <a id="s-e184294fc7"></a>`ids` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --ids |
 | <a id="s-766e75d897"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+
+### Result and failure contract
+
+- <a id="s-c338ddfa03"></a>Result identity: `piggity-cli-result/app/list/v1`
+- <a id="s-6bf7eecc2e"></a>Profile: `piggity-cli-human-json/v1`
+- <a id="s-8235db30e5"></a>Structured output: `optional-json`
+- <a id="s-bb7bbd6c21"></a>Human/JSON relationship: `same-semantic-result`
+
+#### Success outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-d228d36a26"></a>`completed` | <a id="s-ab8b9023c6"></a>`0` | <a id="s-c8b8421310"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-f07fa438bf"></a>`{"all":"empty"}` |
+
+#### Failure outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-7228995994"></a>`usage` | <a id="s-4e8a16ad52"></a>`2` | <a id="s-4bc7a74e62"></a>`{"all":"empty"}` | <a id="s-91c92d4ba9"></a>`{"all":"noncontractual-usage-diagnostic"}` |
+| <a id="s-47c8f8df7d"></a>`operational` | <a id="s-fa41f6eed9"></a>`1` | <a id="s-28e413d28a"></a>`{"human":"empty","json":"http-api-contracts.ErrorResponse"}` | <a id="s-3bfe4667d7"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
 
 ### Progression, limits, and lifecycle
 
@@ -54,8 +74,8 @@ Shared facts for every subject below: minimum=1
 
 ## Governing policies
 
-- <a id="pa-05c058c28b"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-7f10cf84b6"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-62269d532d"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-cbd0dbc5f4"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -73,6 +93,7 @@ Shared facts for every subject below: minimum=1
 
 - `/external_contract/cli/piggity/commands/app/commands/list/name`
 - `/external_contract/cli/piggity/commands/app/commands/list/parameters`
+- `/external_contract/cli/piggity/commands/app/commands/list/result_contract`
 
 ### Exact owned JSON
 
@@ -247,4 +268,54 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   }
 ]
+```
+
+### `/external_contract/cli/piggity/commands/app/commands/list/result_contract`
+
+<!-- exact-contract-value: 0d9f5fd4f73723916a1f50df042d8197115e96c3e57ec16f48771f5a53ca222f -->
+
+```json
+{
+  "failures": [
+    {
+      "exit_status": 2,
+      "id": "usage",
+      "stderr": {
+        "all": "noncontractual-usage-diagnostic"
+      },
+      "stdout": {
+        "all": "empty"
+      }
+    },
+    {
+      "exit_status": 1,
+      "id": "operational",
+      "stderr": {
+        "human": "noncontractual-diagnostic",
+        "json": "empty"
+      },
+      "stdout": {
+        "human": "empty",
+        "json": "http-api-contracts.ErrorResponse"
+      }
+    }
+  ],
+  "human_json_relationship": "same-semantic-result",
+  "identity": "piggity-cli-result/app/list/v1",
+  "profile_id": "piggity-cli-human-json/v1",
+  "structured_output": "optional-json",
+  "success": [
+    {
+      "exit_status": 0,
+      "id": "completed",
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "human": "noncontractual-presentation-of-command-result",
+        "json": "named-command-result"
+      }
+    }
+  ]
+}
 ```

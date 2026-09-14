@@ -6,4 +6,8 @@ CLI contract owned by riverhog-storage-adapter-filesystem.
 
 ## Semantic dossiers
 
-- [riverhog-storage-adapter-filesystem-materialize](riverhog-storage-adapter-filesystem-materialize.md)
+Executable commands: **1** · Command groups: **0**
+
+### Executable commands
+
+- [riverhog-storage-adapter-filesystem-materialize](riverhog-storage-adapter-filesystem-materialize.md) — `riverhog-storage-adapter-filesystem-materialize-cli/v1`

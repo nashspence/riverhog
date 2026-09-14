@@ -31,7 +31,7 @@ List Admission Policies
 
 ### Related interface records
 
-- [stove0-client admission policy list](../../stove0-client/cli/stove0-client-admission-policy-list.md)
+- [stove0 admission policy list](../../stove0-client/cli/stove0-admission-policy-list.md)
 
 ### Referenced contract dossiers
 

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-local-remove:752218ad98 -->
+<!-- contract-element: cli:piggity:piggity-local-remove:e63ce76cc0 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -21,6 +21,26 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|---:|---|---|
 | <a id="s-0b8d9cb7e8"></a>`collection_id` | TyperArgument | yes | {'class': 'typer._click.types.IntParamType', 'name': 'integer'} | collection_id |
 | <a id="s-64e6ad6b9d"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+
+### Result and failure contract
+
+- <a id="s-ee987dd032"></a>Result identity: `piggity-cli-result/local/remove/v1`
+- <a id="s-edaef51bab"></a>Profile: `piggity-cli-human-json/v1`
+- <a id="s-abc784e04f"></a>Structured output: `optional-json`
+- <a id="s-313608f4bc"></a>Human/JSON relationship: `same-semantic-result`
+
+#### Success outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-d4b6e13a20"></a>`completed` | <a id="s-36c96dfa29"></a>`0` | <a id="s-dcf6b4bf36"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-5c9954c18a"></a>`{"all":"empty"}` |
+
+#### Failure outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-f0f5cd3d2a"></a>`usage` | <a id="s-ea2cc73865"></a>`2` | <a id="s-1fb6f1fee2"></a>`{"all":"empty"}` | <a id="s-1db40d339e"></a>`{"all":"noncontractual-usage-diagnostic"}` |
+| <a id="s-822795332e"></a>`operational` | <a id="s-5b45e87b22"></a>`1` | <a id="s-8236970d8a"></a>`{"human":"empty","json":"http-api-contracts.ErrorResponse"}` | <a id="s-b213eea07f"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
 
 ### Progression, limits, and lifecycle
 
@@ -42,8 +62,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-4cc82e1b83"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-3ddb2a6272"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-4717472bfd"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-61b9bf65fe"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -61,6 +81,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - `/external_contract/cli/piggity/commands/local/commands/remove/name`
 - `/external_contract/cli/piggity/commands/local/commands/remove/parameters`
+- `/external_contract/cli/piggity/commands/local/commands/remove/result_contract`
 
 ### Exact owned JSON
 
@@ -116,4 +137,54 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   }
 ]
+```
+
+### `/external_contract/cli/piggity/commands/local/commands/remove/result_contract`
+
+<!-- exact-contract-value: 620a3618cf9628c13addb9a7fb2c20f547c605a11e2c284349f9258b32d8c795 -->
+
+```json
+{
+  "failures": [
+    {
+      "exit_status": 2,
+      "id": "usage",
+      "stderr": {
+        "all": "noncontractual-usage-diagnostic"
+      },
+      "stdout": {
+        "all": "empty"
+      }
+    },
+    {
+      "exit_status": 1,
+      "id": "operational",
+      "stderr": {
+        "human": "noncontractual-diagnostic",
+        "json": "empty"
+      },
+      "stdout": {
+        "human": "empty",
+        "json": "http-api-contracts.ErrorResponse"
+      }
+    }
+  ],
+  "human_json_relationship": "same-semantic-result",
+  "identity": "piggity-cli-result/local/remove/v1",
+  "profile_id": "piggity-cli-human-json/v1",
+  "structured_output": "optional-json",
+  "success": [
+    {
+      "exit_status": 0,
+      "id": "completed",
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "human": "noncontractual-presentation-of-command-result",
+        "json": "named-command-result"
+      }
+    }
+  ]
+}
 ```

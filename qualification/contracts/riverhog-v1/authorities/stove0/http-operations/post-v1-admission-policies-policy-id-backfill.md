@@ -37,7 +37,7 @@ Backfill Admission Policy
 
 ### Related interface records
 
-- [stove0-client admission policy backfill](../../stove0-client/cli/stove0-client-admission-policy-backfill.md)
+- [stove0 admission policy backfill](../../stove0-client/cli/stove0-admission-policy-backfill.md)
 
 ### Referenced contract dossiers
 

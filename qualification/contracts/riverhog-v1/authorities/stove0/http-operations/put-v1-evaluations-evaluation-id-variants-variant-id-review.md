@@ -44,7 +44,7 @@ Review Evaluation Variant
 
 ### Related interface records
 
-- [stove0-client evaluation review](../../stove0-client/cli/stove0-client-evaluation-review.md)
+- [stove0 evaluation review](../../stove0-client/cli/stove0-evaluation-review.md)
 
 ### Referenced contract dossiers
 

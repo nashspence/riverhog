@@ -36,7 +36,7 @@ Preview Workflow
 
 ### Related interface records
 
-- [stove0-client preview](../../stove0-client/cli/stove0-client-preview.md)
+- [stove0 preview](../../stove0-client/cli/stove0-preview.md)
 
 ### Referenced contract dossiers
 

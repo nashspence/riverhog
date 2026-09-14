@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt-listener-uninstall:7fe678ed62 -->
+<!-- contract-element: cli:gogurt:gogurt-listener-uninstall:8ee46ed425 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -22,6 +22,26 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-9bf6e52d46"></a>`listener_host_provider` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --listener-host-provider |
 | <a id="s-9f84e8d6b1"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
+### Result and failure contract
+
+- <a id="s-7309472bd3"></a>Result identity: `gogurt-cli-result/listener/uninstall/v1`
+- <a id="s-3845455ef3"></a>Profile: `gogurt-cli-human-json/v1`
+- <a id="s-4aad861e0c"></a>Structured output: `optional-json`
+- <a id="s-a1c234178f"></a>Human/JSON relationship: `same-semantic-result`
+
+#### Success outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-3d05495670"></a>`completed` | <a id="s-b5bb63891f"></a>`0` | <a id="s-f498ce6822"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-2752e77382"></a>`{"all":"empty"}` |
+
+#### Failure outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-a145130e57"></a>`usage` | <a id="s-1efb38269b"></a>`2` | <a id="s-c32269de3c"></a>`{"all":"empty"}` | <a id="s-17bfb09a33"></a>`{"all":"noncontractual-usage-diagnostic"}` |
+| <a id="s-af71b8dcf5"></a>`operational` | <a id="s-33bfc36d90"></a>`1` | <a id="s-5f08400698"></a>`{"human":"empty","json":"gogurt-cli-error/v1"}` | <a id="s-2428b3eefe"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
+
 ### Progression, limits, and lifecycle
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
@@ -35,8 +55,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-b7465ba87f"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-3bd1f4fcf3"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-47ebdf327c"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-baedb65e65"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -54,6 +74,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - `/external_contract/cli/gogurt/commands/listener/commands/uninstall/name`
 - `/external_contract/cli/gogurt/commands/listener/commands/uninstall/parameters`
+- `/external_contract/cli/gogurt/commands/listener/commands/uninstall/result_contract`
 
 ### Exact owned JSON
 
@@ -111,4 +132,54 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   }
 ]
+```
+
+### `/external_contract/cli/gogurt/commands/listener/commands/uninstall/result_contract`
+
+<!-- exact-contract-value: 990398fc04b1dbd6e149cdb09313f20ce36abb28fbd0973a00001a39977a4da1 -->
+
+```json
+{
+  "failures": [
+    {
+      "exit_status": 2,
+      "id": "usage",
+      "stderr": {
+        "all": "noncontractual-usage-diagnostic"
+      },
+      "stdout": {
+        "all": "empty"
+      }
+    },
+    {
+      "exit_status": 1,
+      "id": "operational",
+      "stderr": {
+        "human": "noncontractual-diagnostic",
+        "json": "empty"
+      },
+      "stdout": {
+        "human": "empty",
+        "json": "gogurt-cli-error/v1"
+      }
+    }
+  ],
+  "human_json_relationship": "same-semantic-result",
+  "identity": "gogurt-cli-result/listener/uninstall/v1",
+  "profile_id": "gogurt-cli-human-json/v1",
+  "structured_output": "optional-json",
+  "success": [
+    {
+      "exit_status": 0,
+      "id": "completed",
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "human": "noncontractual-presentation-of-command-result",
+        "json": "named-command-result"
+      }
+    }
+  ]
+}
 ```

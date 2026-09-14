@@ -60,7 +60,7 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ### Related interface records
 
-- [stove0-client work list](../../stove0-client/cli/stove0-client-work-list.md)
+- [stove0 work list](../../stove0-client/cli/stove0-work-list.md)
 
 ### Referenced contract dossiers
 

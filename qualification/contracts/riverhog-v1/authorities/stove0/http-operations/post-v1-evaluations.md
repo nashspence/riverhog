@@ -36,7 +36,7 @@ Create Evaluation
 
 ### Related interface records
 
-- [stove0-client evaluation create](../../stove0-client/cli/stove0-client-evaluation-create.md)
+- [stove0 evaluation create](../../stove0-client/cli/stove0-evaluation-create.md)
 
 ### Referenced contract dossiers
 

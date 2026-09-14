@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-local-list:e2109c7e53 -->
+<!-- contract-element: cli:piggity:piggity-local-list:f9b72ab99a -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -27,6 +27,26 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-a030650e72"></a>`ids` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --ids |
 | <a id="s-5c1d09f56e"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
+### Result and failure contract
+
+- <a id="s-ea08a2c5f1"></a>Result identity: `piggity-cli-result/local/list/v1`
+- <a id="s-e107637f6c"></a>Profile: `piggity-cli-human-json/v1`
+- <a id="s-7fdfe9b921"></a>Structured output: `optional-json`
+- <a id="s-424b4be15f"></a>Human/JSON relationship: `same-semantic-result`
+
+#### Success outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-b40ede78f3"></a>`completed` | <a id="s-e624bc94a7"></a>`0` | <a id="s-e8ebb0f401"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-a173379636"></a>`{"all":"empty"}` |
+
+#### Failure outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-53a4388e21"></a>`usage` | <a id="s-00c8e54d75"></a>`2` | <a id="s-be36d857ec"></a>`{"all":"empty"}` | <a id="s-c937018d8c"></a>`{"all":"noncontractual-usage-diagnostic"}` |
+| <a id="s-d3e9f15cc0"></a>`operational` | <a id="s-60cec51350"></a>`1` | <a id="s-8a82f1b3f2"></a>`{"human":"empty","json":"http-api-contracts.ErrorResponse"}` | <a id="s-d1d2a276e7"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
+
 ### Progression, limits, and lifecycle
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
@@ -46,8 +66,8 @@ Shared facts for every subject below: minimum=1
 
 ## Governing policies
 
-- <a id="pa-63d096a1b7"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-6fadfa7cb3"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-6392393fd3"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-aa548b23b6"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -65,6 +85,7 @@ Shared facts for every subject below: minimum=1
 
 - `/external_contract/cli/piggity/commands/local/commands/list/name`
 - `/external_contract/cli/piggity/commands/local/commands/list/parameters`
+- `/external_contract/cli/piggity/commands/local/commands/list/result_contract`
 
 ### Exact owned JSON
 
@@ -219,4 +240,54 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   }
 ]
+```
+
+### `/external_contract/cli/piggity/commands/local/commands/list/result_contract`
+
+<!-- exact-contract-value: 281abb95066bf29f0f0215a3cc7b973625601921f64fa382027647e7e8d4bd9c -->
+
+```json
+{
+  "failures": [
+    {
+      "exit_status": 2,
+      "id": "usage",
+      "stderr": {
+        "all": "noncontractual-usage-diagnostic"
+      },
+      "stdout": {
+        "all": "empty"
+      }
+    },
+    {
+      "exit_status": 1,
+      "id": "operational",
+      "stderr": {
+        "human": "noncontractual-diagnostic",
+        "json": "empty"
+      },
+      "stdout": {
+        "human": "empty",
+        "json": "http-api-contracts.ErrorResponse"
+      }
+    }
+  ],
+  "human_json_relationship": "same-semantic-result",
+  "identity": "piggity-cli-result/local/list/v1",
+  "profile_id": "piggity-cli-human-json/v1",
+  "structured_output": "optional-json",
+  "success": [
+    {
+      "exit_status": 0,
+      "id": "completed",
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "human": "noncontractual-presentation-of-command-result",
+        "json": "named-command-result"
+      }
+    }
+  ]
+}
 ```

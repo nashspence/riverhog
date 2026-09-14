@@ -66,7 +66,7 @@ Shared facts for every subject below: minimum=1; reason="schema-maximum"
 
 ### Related interface records
 
-- [riverhog-ftp-adapter riverhog-ftp-adapter status](../cli/riverhog-ftp-adapter-riverhog-ftp-adapter-status.md)
+- [riverhog-ftp-adapter status](../cli/riverhog-ftp-adapter-status.md)
 
 ### Referenced contract dossiers
 

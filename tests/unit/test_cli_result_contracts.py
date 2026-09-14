@@ -1,0 +1,257 @@
+from __future__ import annotations
+
+import importlib
+import importlib.util
+import json
+import sys
+from collections.abc import Iterator, Mapping, Sequence
+from pathlib import Path
+from types import ModuleType
+from typing import Any
+
+import pytest
+from http_api_contracts import ErrorResponse
+from typer.testing import CliRunner
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+CONTRACT_SCRIPT = REPO_ROOT / "scripts/contract_freeze.py"
+
+
+def _contract_module() -> ModuleType:
+    if str(CONTRACT_SCRIPT.parent) not in sys.path:
+        sys.path.insert(0, str(CONTRACT_SCRIPT.parent))
+    spec = importlib.util.spec_from_file_location("riverhog_cli_result_contracts", CONTRACT_SCRIPT)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.fixture(scope="module")
+def cli_surfaces() -> Mapping[str, Mapping[str, object]]:
+    return _contract_module()._cli_surfaces()
+
+
+def _nodes(
+    node: Mapping[str, object], path: tuple[str, ...] = ()
+) -> Iterator[tuple[tuple[str, ...], Mapping[str, object]]]:
+    yield path, node
+    for name, child in sorted(node.get("commands", {}).items()):
+        assert isinstance(child, Mapping)
+        yield from _nodes(child, (*path, str(name)))
+
+
+def _result(
+    surfaces: Mapping[str, Mapping[str, object]], authority: str, path: Sequence[str]
+) -> Mapping[str, object]:
+    node = surfaces[authority]
+    for name in path:
+        child = node["commands"]
+        assert isinstance(child, Mapping)
+        node = child[name]
+        assert isinstance(node, Mapping)
+    result = node["result_contract"]
+    assert isinstance(result, Mapping)
+    return result
+
+
+def _outcome(contract: Mapping[str, object], kind: str, identity: str) -> Mapping[str, object]:
+    outcomes = contract[kind]
+    assert isinstance(outcomes, list)
+    matches = [item for item in outcomes if isinstance(item, Mapping) and item["id"] == identity]
+    assert len(matches) == 1
+    return matches[0]
+
+
+def test_every_released_cli_leaf_has_one_implementation_owned_result_contract(
+    cli_surfaces: Mapping[str, Mapping[str, object]],
+) -> None:
+    executable: list[Mapping[str, object]] = []
+    groups_with_contracts: set[tuple[str, tuple[str, ...]]] = set()
+    for authority, root in cli_surfaces.items():
+        assert root["name"] == authority
+        for path, node in _nodes(root):
+            children = node.get("commands", {})
+            result = node.get("result_contract")
+            if not children:
+                assert isinstance(result, Mapping), (authority, path)
+            if result is not None:
+                assert isinstance(result, Mapping)
+                executable.append(result)
+                if children:
+                    groups_with_contracts.add((authority, path))
+                success = result["success"]
+                assert isinstance(success, list) and success
+                assert all(
+                    isinstance(outcome, Mapping) and outcome["exit_status"] == 0
+                    for outcome in success
+                )
+                assert _outcome(result, "failures", "usage")["exit_status"] == 2
+                assert result["structured_output"] in {
+                    "always-json",
+                    "mode-specific",
+                    "none",
+                    "optional-json",
+                }
+
+    assert len(executable) == 132
+    assert len({str(item["identity"]) for item in executable}) == len(executable)
+    assert groups_with_contracts == {
+        ("mango-fish", ()),
+        ("riverhog-ftp-adapter", ()),
+    }
+    mango_commands = cli_surfaces["mango-fish"]["commands"]
+    assert isinstance(mango_commands, Mapping)
+    assert set(mango_commands) == {"state"}
+    mango_state = mango_commands["state"]
+    assert isinstance(mango_state, Mapping)
+    assert set(mango_state["commands"]) == {
+        "status",
+        "upgrade",
+        "verify",
+    }
+
+
+def test_cli_result_contracts_preserve_nonzero_terminal_semantics(
+    cli_surfaces: Mapping[str, Mapping[str, object]],
+) -> None:
+    upload = _result(cli_surfaces, "piggity", ("collection", "upload", "start"))
+    assert _outcome(upload, "failures", "custody-timeout")["exit_status"] == 124
+    action = _result(cli_surfaces, "gogurt", ("run",))
+    assert _outcome(action, "failures", "action-exit")["exit_status"] == {
+        "kind": "delegated",
+        "minimum": 1,
+        "maximum": 255,
+    }
+
+
+def test_cli_result_declaration_drift_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+    contract = _contract_module()
+    planning = importlib.import_module("stove0_review_planning.conformance")
+    declaration = dict(planning._CLI_RESULT_CONTRACT)
+    declaration["command_overrides"] = {"missing-command": {}}
+    monkeypatch.setattr(planning, "_CLI_RESULT_CONTRACT", declaration)
+    root = contract._argparse_command(planning._parser())
+
+    with pytest.raises(contract.ContractFreezeError, match="unknown commands"):
+        contract._apply_cli_result_contract("stove0-review-planning", root)
+
+
+def test_machine_report_success_matches_its_discovered_contract(
+    cli_surfaces: Mapping[str, Mapping[str, object]],
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    planning = importlib.import_module("stove0_review_planning.conformance")
+    status = planning.main([])
+    captured = capsys.readouterr()
+    outcome = _outcome(
+        _result(cli_surfaces, "stove0-review-planning", ()),
+        "success",
+        "reported",
+    )
+    assert status == outcome["exit_status"] == 0
+    assert captured.err == ""
+    assert json.loads(captured.out)["format"] == outcome["stdout"]["json"]
+
+
+def test_argparse_usage_failure_matches_its_discovered_contract(
+    cli_surfaces: Mapping[str, Mapping[str, object]],
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    materialize = importlib.import_module("riverhog_storage_adapter_filesystem.materialize_cli")
+    with pytest.raises(SystemExit) as raised:
+        materialize.main([])
+    captured = capsys.readouterr()
+    outcome = _outcome(
+        _result(cli_surfaces, "riverhog-storage-adapter-filesystem-materialize", ()),
+        "failures",
+        "usage",
+    )
+    assert raised.value.code == outcome["exit_status"] == 2
+    assert captured.out == ""
+    assert captured.err
+
+
+def test_piggity_json_failure_matches_its_discovered_contract(
+    cli_surfaces: Mapping[str, Mapping[str, object]],
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    piggity = importlib.import_module("piggity.main")
+
+    def fail() -> None:
+        raise FileNotFoundError("missing fixture")
+
+    monkeypatch.setattr(piggity, "app", fail)
+    monkeypatch.setattr(sys, "argv", ["piggity", "local", "show", "1", "--json"])
+    status = piggity.main()
+    captured = capsys.readouterr()
+    outcome = _outcome(
+        _result(cli_surfaces, "piggity", ("local", "show")),
+        "failures",
+        "operational",
+    )
+    assert status == outcome["exit_status"] == 1
+    assert captured.err == ""
+    assert outcome["stdout"]["json"] == "http-api-contracts.ErrorResponse"
+    assert ErrorResponse.model_validate_json(captured.out).error.code == "error"
+
+
+def test_gogurt_json_failure_matches_its_discovered_contract(
+    cli_surfaces: Mapping[str, Mapping[str, object]],
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    gogurt = importlib.import_module("gogurt.cli")
+
+    def fail() -> None:
+        raise FileNotFoundError("missing fixture")
+
+    monkeypatch.setattr(gogurt, "app", fail)
+    monkeypatch.setattr(sys, "argv", ["gogurt", "list", "--json"])
+    with pytest.raises(SystemExit) as raised:
+        gogurt.main()
+    captured = capsys.readouterr()
+    outcome = _outcome(_result(cli_surfaces, "gogurt", ("list",)), "failures", "operational")
+    assert raised.value.code == outcome["exit_status"] == 1
+    assert captured.err == ""
+    assert outcome["stdout"]["json"] == "gogurt-cli-error/v1"
+    assert json.loads(captured.out) == {
+        "error": {"code": "config_error", "message": "missing fixture"}
+    }
+
+
+def test_stove0_human_and_json_success_and_failure_match_the_profile(
+    cli_surfaces: Mapping[str, Mapping[str, object]],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    stove0 = importlib.import_module("stove0_cli.main")
+
+    class HealthyClient:
+        def __init__(self, *_args: Any, **_kwargs: Any) -> None:
+            pass
+
+        def health_live(self) -> dict[str, str]:
+            return {"service": "stove0", "status": "ok"}
+
+    monkeypatch.setattr(stove0, "Stove0ApiClient", HealthyClient)
+    runner = CliRunner()
+    human = runner.invoke(stove0.app, ["health"])
+    machine = runner.invoke(stove0.app, ["--json", "health"])
+    contract = _result(cli_surfaces, "stove0", ("health",))
+    success = _outcome(contract, "success", "completed")
+    assert human.exit_code == machine.exit_code == success["exit_status"] == 0
+    assert human.stdout.strip()
+    assert json.loads(machine.stdout) == {"service": "stove0", "status": "ok"}
+    assert human.stderr == machine.stderr == ""
+
+    def fail(_state: object, _operation: object, **_kwargs: object) -> None:
+        stove0._fail("service unavailable")
+
+    monkeypatch.setattr(stove0, "_call", fail)
+    failed = runner.invoke(stove0.app, ["--json", "health"])
+    failure = _outcome(contract, "failures", "operational")
+    assert failed.exit_code == failure["exit_status"] == 1
+    assert failed.stdout == ""
+    assert failed.stderr == "service unavailable\n"

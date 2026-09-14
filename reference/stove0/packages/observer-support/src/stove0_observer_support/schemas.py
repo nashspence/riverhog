@@ -25,6 +25,44 @@ from stove0_observer_support.conformance import ObserverConformanceResult
 
 OBSERVER_SCHEMA_BUNDLE_FORMAT = "stove0-observer-schema-bundle/v1"
 
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "stove0-observer-schemas-cli-result",
+    "default_profile": "json-or-file",
+    "profiles": {
+        "json-or-file": {
+            "id": "stove0-observer-schemas-cli/v1",
+            "structured_output": "always-json",
+            "human_json_relationship": "not-applicable",
+            "success": [
+                {
+                    "id": "emitted",
+                    "exit_status": 0,
+                    "stdout": {"json": OBSERVER_SCHEMA_BUNDLE_FORMAT},
+                    "stderr": {"all": "empty"},
+                },
+                {
+                    "id": "written",
+                    "exit_status": 0,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "empty"},
+                },
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                }
+            ],
+        }
+    },
+    "command_profiles": {},
+    "command_overrides": {},
+    "executable_groups": [],
+}
+
 _ADDITIONAL_MODELS = (
     ObserverContract,
     ObserverDescriptor,

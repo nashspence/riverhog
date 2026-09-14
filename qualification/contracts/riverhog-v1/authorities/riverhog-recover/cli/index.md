@@ -6,4 +6,8 @@ CLI contract owned by riverhog-recover.
 
 ## Semantic dossiers
 
-- [riverhog-recover](riverhog-recover.md)
+Executable commands: **1** · Command groups: **0**
+
+### Executable commands
+
+- [riverhog-recover](riverhog-recover.md) — `riverhog-recover-cli/v1`

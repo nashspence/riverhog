@@ -12,6 +12,80 @@ from state_schema import StateSchemaError
 from mango_fish.relay import MangoFish, load_config, summarize_config
 from mango_fish.schema import state_schema
 
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "mango-fish-cli-result",
+    "default_profile": "state-human-json",
+    "profiles": {
+        "state-human-json": {
+            "id": "mango-fish-cli-state-human-json/v1",
+            "structured_output": "optional-json",
+            "human_json_relationship": "same-semantic-result",
+            "success": [
+                {
+                    "id": "completed",
+                    "exit_status": 0,
+                    "stdout": {
+                        "human": "noncontractual-presentation-of-command-result",
+                        "json": "named-command-result",
+                    },
+                    "stderr": {"all": "empty"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                },
+                {
+                    "id": "state-schema",
+                    "exit_status": 1,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "mango-fish-state-schema-diagnostic/v1"},
+                },
+            ],
+        },
+        "relay-runtime": {
+            "id": "mango-fish-cli-relay-runtime/v1",
+            "structured_output": "mode-specific",
+            "human_json_relationship": "mode-specific-results",
+            "success": [
+                {
+                    "id": "configuration-check",
+                    "exit_status": 0,
+                    "stdout": {"all": "mango-fish-configuration-summary/v1"},
+                    "stderr": {"all": "noncontractual-runtime-log-or-empty"},
+                },
+                {
+                    "id": "relay-completed",
+                    "exit_status": 0,
+                    "stdout": {"all": "no-command-result"},
+                    "stderr": {"all": "noncontractual-runtime-log-or-empty"},
+                },
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                },
+                {
+                    "id": "relay-pass-failed",
+                    "exit_status": 1,
+                    "stdout": {"all": "no-command-result"},
+                    "stderr": {"all": "noncontractual-runtime-log"},
+                },
+            ],
+        },
+    },
+    "command_profiles": {"$root": "relay-runtime"},
+    "command_overrides": {},
+    "executable_groups": ["$root"],
+}
+
 
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(

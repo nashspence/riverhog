@@ -13,6 +13,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
+- <a id="s-95ce7f0545"></a>Parser name: `gogurt`
 
 ### Parameters
 
@@ -62,10 +63,10 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/gogurt/name`
 
-<!-- exact-contract-value: 12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126 -->
+<!-- exact-contract-value: d62ab33f625c3607530d1d3341d0733e45a093ae76a2fa164ab43c23774463bb -->
 
 ```json
-""
+"gogurt"
 ```
 
 ### `/external_contract/cli/gogurt/parameters`

@@ -38,7 +38,7 @@ Get Work
 
 ### Related interface records
 
-- [stove0-client work show](../../stove0-client/cli/stove0-client-work-show.md)
+- [stove0 work show](../../stove0-client/cli/stove0-work-show.md)
 
 ### Referenced contract dossiers
 

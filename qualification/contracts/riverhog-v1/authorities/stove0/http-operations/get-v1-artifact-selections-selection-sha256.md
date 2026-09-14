@@ -49,7 +49,7 @@ Shared facts for every subject below: progression={"authority":"artifact-selecti
 
 ### Related interface records
 
-- [stove0-client selection show](../../stove0-client/cli/stove0-client-selection-show.md)
+- [stove0 selection show](../../stove0-client/cli/stove0-selection-show.md)
 
 ### Referenced contract dossiers
 

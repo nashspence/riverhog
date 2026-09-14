@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-local-sync:e57cc3d544 -->
+<!-- contract-element: cli:piggity:piggity-local-sync:cbec289008 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -22,6 +22,26 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-6368e8bf41"></a>`wait` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --wait |
 | <a id="s-78b95fe0d7"></a>`restore_policy` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --restore-policy |
 | <a id="s-b7ec88d2f5"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+
+### Result and failure contract
+
+- <a id="s-166ce3e341"></a>Result identity: `piggity-cli-result/local/sync/v1`
+- <a id="s-b04919f2dd"></a>Profile: `piggity-cli-human-json/v1`
+- <a id="s-15c2511b38"></a>Structured output: `optional-json`
+- <a id="s-dab1add368"></a>Human/JSON relationship: `same-semantic-result`
+
+#### Success outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-a88a58b788"></a>`completed` | <a id="s-ad38c1ecbd"></a>`0` | <a id="s-d1c0d802ff"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-6a0c8e1296"></a>`{"all":"empty"}` |
+
+#### Failure outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-2c68626b32"></a>`usage` | <a id="s-6122ac8b73"></a>`2` | <a id="s-969d817e85"></a>`{"all":"empty"}` | <a id="s-f30185b3b5"></a>`{"all":"noncontractual-usage-diagnostic"}` |
+| <a id="s-306e62a3ab"></a>`operational` | <a id="s-4ef01f8631"></a>`1` | <a id="s-5cdfee6996"></a>`{"human":"empty","json":"http-api-contracts.ErrorResponse"}` | <a id="s-dc0e16944e"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
 
 ### Progression, limits, and lifecycle
 
@@ -53,8 +73,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-d9ec8c06fe"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-d0ac48e20d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-5cc1e46c26"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-2a3f21749a"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -72,6 +92,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - `/external_contract/cli/piggity/commands/local/commands/sync/name`
 - `/external_contract/cli/piggity/commands/local/commands/sync/parameters`
+- `/external_contract/cli/piggity/commands/local/commands/sync/result_contract`
 
 ### Exact owned JSON
 
@@ -151,4 +172,54 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   }
 ]
+```
+
+### `/external_contract/cli/piggity/commands/local/commands/sync/result_contract`
+
+<!-- exact-contract-value: a2b564f87ea38540d491121f334d0040f6cfe6c80c28c422d0925357f90aa5b0 -->
+
+```json
+{
+  "failures": [
+    {
+      "exit_status": 2,
+      "id": "usage",
+      "stderr": {
+        "all": "noncontractual-usage-diagnostic"
+      },
+      "stdout": {
+        "all": "empty"
+      }
+    },
+    {
+      "exit_status": 1,
+      "id": "operational",
+      "stderr": {
+        "human": "noncontractual-diagnostic",
+        "json": "empty"
+      },
+      "stdout": {
+        "human": "empty",
+        "json": "http-api-contracts.ErrorResponse"
+      }
+    }
+  ],
+  "human_json_relationship": "same-semantic-result",
+  "identity": "piggity-cli-result/local/sync/v1",
+  "profile_id": "piggity-cli-human-json/v1",
+  "structured_output": "optional-json",
+  "success": [
+    {
+      "exit_status": 0,
+      "id": "completed",
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "human": "noncontractual-presentation-of-command-result",
+        "json": "named-command-result"
+      }
+    }
+  ]
+}
 ```

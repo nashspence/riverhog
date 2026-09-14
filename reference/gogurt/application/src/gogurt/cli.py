@@ -50,6 +50,121 @@ def _json_text(payload: object) -> str:
 
 
 app = typer.Typer(help="Portable mounted-volume marker actions.")
+
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "gogurt-cli-result",
+    "default_profile": "human-json",
+    "profiles": {
+        "human-json": {
+            "id": "gogurt-cli-human-json/v1",
+            "structured_output": "optional-json",
+            "human_json_relationship": "same-semantic-result",
+            "success": [
+                {
+                    "id": "completed",
+                    "exit_status": 0,
+                    "stdout": {
+                        "human": "noncontractual-presentation-of-command-result",
+                        "json": "named-command-result",
+                    },
+                    "stderr": {"all": "empty"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                },
+                {
+                    "id": "operational",
+                    "exit_status": 1,
+                    "stdout": {
+                        "human": "empty",
+                        "json": "gogurt-cli-error/v1",
+                    },
+                    "stderr": {
+                        "human": "noncontractual-diagnostic",
+                        "json": "empty",
+                    },
+                },
+            ],
+        },
+        "action": {
+            "id": "gogurt-cli-action/v1",
+            "structured_output": "none",
+            "human_json_relationship": "not-applicable",
+            "success": [
+                {
+                    "id": "completed-or-not-run",
+                    "exit_status": 0,
+                    "stdout": {"human": "empty"},
+                    "stderr": {"human": "noncontractual-action-status-or-empty"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"human": "empty"},
+                    "stderr": {"human": "noncontractual-usage-diagnostic"},
+                },
+                {
+                    "id": "operational",
+                    "exit_status": 1,
+                    "stdout": {"human": "empty"},
+                    "stderr": {"human": "noncontractual-diagnostic"},
+                },
+                {
+                    "id": "action-exit",
+                    "exit_status": {
+                        "kind": "delegated",
+                        "minimum": 1,
+                        "maximum": 255,
+                    },
+                    "stdout": {"human": "child-process-owned"},
+                    "stderr": {"human": "child-process-owned-and-action-status"},
+                },
+            ],
+        },
+        "listener-runtime": {
+            "id": "gogurt-cli-listener-runtime/v1",
+            "structured_output": "none",
+            "human_json_relationship": "not-applicable",
+            "success": [
+                {
+                    "id": "stopped",
+                    "exit_status": 0,
+                    "stdout": {"human": "no-command-result"},
+                    "stderr": {"human": "noncontractual-runtime-status"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"human": "empty"},
+                    "stderr": {"human": "noncontractual-usage-diagnostic"},
+                },
+                {
+                    "id": "operational",
+                    "exit_status": 1,
+                    "stdout": {"human": "empty"},
+                    "stderr": {"human": "noncontractual-diagnostic"},
+                },
+            ],
+        },
+    },
+    "command_profiles": {
+        "listener _run": "listener-runtime",
+        "run": "action",
+        "watch": "listener-runtime",
+    },
+    "command_overrides": {},
+    "executable_groups": [],
+}
 listener_app = typer.Typer(help="Install and manage the per-user Gogurt listener.")
 provider_app = typer.Typer(help="Inspect explicitly composable host providers.")
 mounted_volume_provider_app = typer.Typer(help="Inspect mounted-volume providers.")

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-review-sampler-support:stove0-review-sampler-conformance:a395b9e874 -->
+<!-- contract-element: cli:stove0-review-sampler-support:stove0-review-sampler-conformance:13ece4b55a -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -19,11 +19,30 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| <a id="s-c7e1a9bf84"></a>`` | _StoreAction | yes |  |  |
-| <a id="s-01e4236343"></a>`` | _StoreAction | yes | Path | --token-file |
-| <a id="s-503c002d8f"></a>`` | _StoreAction | no | Path | --request |
-| <a id="s-e2cfd0f79c"></a>`` | _StoreTrueAction | no |  | --allow-insecure-http |
-| <a id="s-d47e544d0c"></a>`` | _VersionAction | no |  | --version |
+| <a id="s-c7e1a9bf84"></a>`base_url` | _StoreAction | yes |  |  |
+| <a id="s-01e4236343"></a>`token_file` | _StoreAction | yes | Path | --token-file |
+| <a id="s-503c002d8f"></a>`request` | _StoreAction | no | Path | --request |
+| <a id="s-e2cfd0f79c"></a>`allow_insecure_http` | _StoreTrueAction | no |  | --allow-insecure-http |
+| <a id="s-d47e544d0c"></a>`version` | _VersionAction | no |  | --version |
+
+### Result and failure contract
+
+- <a id="s-4a89cb0fbe"></a>Result identity: `stove0-review-sampler-conformance-cli-result/root/v1`
+- <a id="s-ee014073f8"></a>Profile: `stove0-review-sampler-conformance-cli/v1`
+- <a id="s-1291c932e0"></a>Structured output: `always-json`
+- <a id="s-ec057813d2"></a>Human/JSON relationship: `not-applicable`
+
+#### Success outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-151d33ac93"></a>`conformant` | <a id="s-3193d17a65"></a>`0` | <a id="s-7b6d3f9844"></a>`{"json":"stove0-review-sampler-conformance-result/v1"}` | <a id="s-6d3f8cfee1"></a>`{"all":"empty"}` |
+
+#### Failure outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-c3d5e2d565"></a>`usage` | <a id="s-bd61b61d40"></a>`2` | <a id="s-575d000400"></a>`{"all":"empty"}` | <a id="s-3efe152094"></a>`{"all":"noncontractual-usage-diagnostic"}` |
 
 ### Progression, limits, and lifecycle
 
@@ -38,8 +57,8 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-d611dc9000"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-a798b3a6da"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-8052e808b3"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-c408f6225d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -57,6 +76,7 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 - `/external_contract/cli/stove0-review-sampler-conformance/name`
 - `/external_contract/cli/stove0-review-sampler-conformance/parameters`
+- `/external_contract/cli/stove0-review-sampler-conformance/result_contract`
 
 ### Exact owned JSON
 
@@ -123,4 +143,41 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false
   }
 ]
+```
+
+### `/external_contract/cli/stove0-review-sampler-conformance/result_contract`
+
+<!-- exact-contract-value: 70d408ace59c1796138841e688904da066ca3e801bf10f85d595c0b4a46e5cc4 -->
+
+```json
+{
+  "failures": [
+    {
+      "exit_status": 2,
+      "id": "usage",
+      "stderr": {
+        "all": "noncontractual-usage-diagnostic"
+      },
+      "stdout": {
+        "all": "empty"
+      }
+    }
+  ],
+  "human_json_relationship": "not-applicable",
+  "identity": "stove0-review-sampler-conformance-cli-result/root/v1",
+  "profile_id": "stove0-review-sampler-conformance-cli/v1",
+  "structured_output": "always-json",
+  "success": [
+    {
+      "exit_status": 0,
+      "id": "conformant",
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "json": "stove0-review-sampler-conformance-result/v1"
+      }
+    }
+  ]
+}
 ```

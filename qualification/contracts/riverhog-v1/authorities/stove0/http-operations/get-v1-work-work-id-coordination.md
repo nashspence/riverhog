@@ -38,7 +38,7 @@ Inspect Work Coordination
 
 ### Related interface records
 
-- [stove0-client work coordination](../../stove0-client/cli/stove0-client-work-coordination.md)
+- [stove0 work coordination](../../stove0-client/cli/stove0-work-coordination.md)
 
 ### Referenced contract dossiers
 

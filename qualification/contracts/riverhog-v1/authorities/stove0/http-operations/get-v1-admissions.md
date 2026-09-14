@@ -61,7 +61,7 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ### Related interface records
 
-- [stove0-client admission list](../../stove0-client/cli/stove0-client-admission-list.md)
+- [stove0 admission list](../../stove0-client/cli/stove0-admission-list.md)
 
 ### Referenced contract dossiers
 

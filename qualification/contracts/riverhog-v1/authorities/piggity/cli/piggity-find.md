@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-find:9fc169e4ea -->
+<!-- contract-element: cli:piggity:piggity-find:3d6aa9df59 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -27,6 +27,26 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-5956372d81"></a>`collection` | TyperOption | no | {'class': 'typer._click.types.IntParamType', 'name': 'integer'} | --collection |
 | <a id="s-069125d6c8"></a>`selectors` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --selectors |
 | <a id="s-e47552dc3e"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+
+### Result and failure contract
+
+- <a id="s-e42d1c6e60"></a>Result identity: `piggity-cli-result/find/v1`
+- <a id="s-37b36d95d7"></a>Profile: `piggity-cli-human-json/v1`
+- <a id="s-f17185a092"></a>Structured output: `optional-json`
+- <a id="s-f8d41484d6"></a>Human/JSON relationship: `same-semantic-result`
+
+#### Success outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-d1a5d4a0f7"></a>`completed` | <a id="s-21814263e0"></a>`0` | <a id="s-4197873b59"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-47743f31be"></a>`{"all":"empty"}` |
+
+#### Failure outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-38485143ab"></a>`usage` | <a id="s-2cbf779545"></a>`2` | <a id="s-9df05f2847"></a>`{"all":"empty"}` | <a id="s-5830bc0730"></a>`{"all":"noncontractual-usage-diagnostic"}` |
+| <a id="s-45a520526c"></a>`operational` | <a id="s-44cdaf3dfe"></a>`1` | <a id="s-43ea873930"></a>`{"human":"empty","json":"http-api-contracts.ErrorResponse"}` | <a id="s-cc05b3a358"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
 
 ### Progression, limits, and lifecycle
 
@@ -54,8 +74,8 @@ Shared facts for every subject below: minimum=1
 
 ## Governing policies
 
-- <a id="pa-a1007e7f13"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-9f505d1b95"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-0a0a17259e"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-6de559382a"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -73,6 +93,7 @@ Shared facts for every subject below: minimum=1
 
 - `/external_contract/cli/piggity/commands/find/name`
 - `/external_contract/cli/piggity/commands/find/parameters`
+- `/external_contract/cli/piggity/commands/find/result_contract`
 
 ### Exact owned JSON
 
@@ -245,4 +266,54 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   }
 ]
+```
+
+### `/external_contract/cli/piggity/commands/find/result_contract`
+
+<!-- exact-contract-value: fbca4479d0737282d0dfee33ec5c7f25f77515bd1ec73eee8dfabc463307b0e1 -->
+
+```json
+{
+  "failures": [
+    {
+      "exit_status": 2,
+      "id": "usage",
+      "stderr": {
+        "all": "noncontractual-usage-diagnostic"
+      },
+      "stdout": {
+        "all": "empty"
+      }
+    },
+    {
+      "exit_status": 1,
+      "id": "operational",
+      "stderr": {
+        "human": "noncontractual-diagnostic",
+        "json": "empty"
+      },
+      "stdout": {
+        "human": "empty",
+        "json": "http-api-contracts.ErrorResponse"
+      }
+    }
+  ],
+  "human_json_relationship": "same-semantic-result",
+  "identity": "piggity-cli-result/find/v1",
+  "profile_id": "piggity-cli-human-json/v1",
+  "structured_output": "optional-json",
+  "success": [
+    {
+      "exit_status": 0,
+      "id": "completed",
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "human": "noncontractual-presentation-of-command-result",
+        "json": "named-command-result"
+      }
+    }
+  ]
+}
 ```

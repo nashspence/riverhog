@@ -25,6 +25,38 @@ from stove0_review_sampler_support.conformance import SamplerConformanceResult
 
 SAMPLER_SCHEMA_BUNDLE_FORMAT: Final = "stove0-review-sampler-schema-bundle/v1"
 
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "stove0-review-sampler-schemas-cli-result",
+    "default_profile": "machine-report",
+    "profiles": {
+        "machine-report": {
+            "id": "stove0-review-sampler-schemas-cli/v1",
+            "structured_output": "always-json",
+            "human_json_relationship": "not-applicable",
+            "success": [
+                {
+                    "id": "emitted",
+                    "exit_status": 0,
+                    "stdout": {"json": SAMPLER_SCHEMA_BUNDLE_FORMAT},
+                    "stderr": {"all": "empty"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                }
+            ],
+        }
+    },
+    "command_profiles": {},
+    "command_overrides": {},
+    "executable_groups": [],
+}
+
 
 def sampler_schema_bundle() -> dict[str, Any]:
     payload: dict[str, Any] = {

@@ -39,7 +39,7 @@ Cancel Work
 
 ### Related interface records
 
-- [stove0-client work cancel](../../stove0-client/cli/stove0-client-work-cancel.md)
+- [stove0 work cancel](../../stove0-client/cli/stove0-work-cancel.md)
 
 ### Referenced contract dossiers
 

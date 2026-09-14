@@ -39,7 +39,7 @@ Retry Work
 
 ### Related interface records
 
-- [stove0-client work retry](../../stove0-client/cli/stove0-client-work-retry.md)
+- [stove0 work retry](../../stove0-client/cli/stove0-work-retry.md)
 
 ### Referenced contract dossiers
 

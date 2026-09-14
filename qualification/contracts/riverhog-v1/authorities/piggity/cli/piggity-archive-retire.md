@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-archive-retire:282a6aa991 -->
+<!-- contract-element: cli:piggity:piggity-archive-retire:b6ba8ab347 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -24,6 +24,28 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-6334a27c26"></a>`dry_run` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --dry-run, --plan |
 | <a id="s-bc3027a32b"></a>`confirm` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --confirm |
 | <a id="s-bb4c28ef4b"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+
+### Result and failure contract
+
+- <a id="s-f7b7d91e17"></a>Result identity: `piggity-cli-result/archive/retire/v1`
+- <a id="s-a76ad1c0ea"></a>Profile: `piggity-cli-human-json/v1`
+- <a id="s-f0a299c8ac"></a>Structured output: `optional-json`
+- <a id="s-e6bb996387"></a>Human/JSON relationship: `same-semantic-result`
+
+#### Success outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-99895d5327"></a>`completed` | <a id="s-679543bbd6"></a>`0` | <a id="s-755e242947"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-2f630eeedf"></a>`{"all":"empty"}` |
+
+#### Failure outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-8910a67b1f"></a>`usage` | <a id="s-a159384c27"></a>`2` | <a id="s-71881e206f"></a>`{"all":"empty"}` | <a id="s-e56b218030"></a>`{"all":"noncontractual-usage-diagnostic"}` |
+| <a id="s-8b235c6ce0"></a>`operational` | <a id="s-29c43e7cf1"></a>`1` | <a id="s-95921aba6c"></a>`{"human":"empty","json":"http-api-contracts.ErrorResponse"}` | <a id="s-a89dbe5a9b"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
+| <a id="s-8a42e3889d"></a>`blocked` | <a id="s-c8010cb636"></a>`1` | <a id="s-d0711626b5"></a>`{"human":"noncontractual-presentation-of-command-result"}` | <a id="s-47bee7eb9a"></a>`{"human":"empty"}` |
+| <a id="s-f0b56a096d"></a>`confirmation-declined` | <a id="s-a10a6558d9"></a>`1` | <a id="s-bf862a00be"></a>`{"human":"noncontractual-presentation-of-command-result"}` | <a id="s-df55cf1650"></a>`{"human":"noncontractual-diagnostic"}` |
 
 ### Progression, limits, and lifecycle
 
@@ -48,8 +70,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-3cd8124378"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-3818910dbe"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-2c524e82ec"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-50e6828b95"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -67,6 +89,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - `/external_contract/cli/piggity/commands/archive/commands/retire/name`
 - `/external_contract/cli/piggity/commands/archive/commands/retire/parameters`
+- `/external_contract/cli/piggity/commands/archive/commands/retire/result_contract`
 
 ### Exact owned JSON
 
@@ -178,4 +201,74 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   }
 ]
+```
+
+### `/external_contract/cli/piggity/commands/archive/commands/retire/result_contract`
+
+<!-- exact-contract-value: e99c37e84bcf9fb7967e367c01e9ff5b94eb2dd6e1e88d8e41adbcafbfd52551 -->
+
+```json
+{
+  "failures": [
+    {
+      "exit_status": 2,
+      "id": "usage",
+      "stderr": {
+        "all": "noncontractual-usage-diagnostic"
+      },
+      "stdout": {
+        "all": "empty"
+      }
+    },
+    {
+      "exit_status": 1,
+      "id": "operational",
+      "stderr": {
+        "human": "noncontractual-diagnostic",
+        "json": "empty"
+      },
+      "stdout": {
+        "human": "empty",
+        "json": "http-api-contracts.ErrorResponse"
+      }
+    },
+    {
+      "exit_status": 1,
+      "id": "blocked",
+      "stderr": {
+        "human": "empty"
+      },
+      "stdout": {
+        "human": "noncontractual-presentation-of-command-result"
+      }
+    },
+    {
+      "exit_status": 1,
+      "id": "confirmation-declined",
+      "stderr": {
+        "human": "noncontractual-diagnostic"
+      },
+      "stdout": {
+        "human": "noncontractual-presentation-of-command-result"
+      }
+    }
+  ],
+  "human_json_relationship": "same-semantic-result",
+  "identity": "piggity-cli-result/archive/retire/v1",
+  "profile_id": "piggity-cli-human-json/v1",
+  "structured_output": "optional-json",
+  "success": [
+    {
+      "exit_status": 0,
+      "id": "completed",
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "human": "noncontractual-presentation-of-command-result",
+        "json": "named-command-result"
+      }
+    }
+  ]
+}
 ```

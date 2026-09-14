@@ -37,7 +37,7 @@ Get Admission
 
 ### Related interface records
 
-- [stove0-client admission show](../../stove0-client/cli/stove0-client-admission-show.md)
+- [stove0 admission show](../../stove0-client/cli/stove0-admission-show.md)
 
 ### Referenced contract dossiers
 

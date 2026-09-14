@@ -42,7 +42,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Related interface records
 
-- [riverhog-ftp-adapter riverhog-ftp-adapter run](../cli/riverhog-ftp-adapter-riverhog-ftp-adapter-run.md)
+- [riverhog-ftp-adapter run](../cli/riverhog-ftp-adapter-run.md)
 
 ### Referenced contract dossiers
 

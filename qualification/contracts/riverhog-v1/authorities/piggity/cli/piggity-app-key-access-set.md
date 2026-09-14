@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-app-key-access-set:d51542ee0e -->
+<!-- contract-element: cli:piggity:piggity-app-key-access-set:f355a43afc -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -23,6 +23,26 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-7d243330c3"></a>`key_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | key_id |
 | <a id="s-a9f3d89f96"></a>`allow` | TyperOption | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --allow |
 | <a id="s-cf6989ab1f"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+
+### Result and failure contract
+
+- <a id="s-c6bc19de36"></a>Result identity: `piggity-cli-result/app/key/access/set/v1`
+- <a id="s-51afe454a4"></a>Profile: `piggity-cli-human-json/v1`
+- <a id="s-65cc32c60a"></a>Structured output: `optional-json`
+- <a id="s-0b94070d71"></a>Human/JSON relationship: `same-semantic-result`
+
+#### Success outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-2ad723399d"></a>`completed` | <a id="s-d5eb890608"></a>`0` | <a id="s-41841aa36a"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-482ffc7b8e"></a>`{"all":"empty"}` |
+
+#### Failure outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-16e1633e01"></a>`usage` | <a id="s-4a8346c568"></a>`2` | <a id="s-a1740f4685"></a>`{"all":"empty"}` | <a id="s-3eadabbeec"></a>`{"all":"noncontractual-usage-diagnostic"}` |
+| <a id="s-92f3ce2170"></a>`operational` | <a id="s-78d4d207fb"></a>`1` | <a id="s-abac293d76"></a>`{"human":"empty","json":"http-api-contracts.ErrorResponse"}` | <a id="s-d439e6019a"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
 
 ### Progression, limits, and lifecycle
 
@@ -53,9 +73,9 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-bbe70c4c43"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-de54b5a5dd"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
-- <a id="pa-1d8d342e42"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-7e5f468b6b"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-58320bb882"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-9d05da9b8d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -73,6 +93,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - `/external_contract/cli/piggity/commands/app/commands/key/commands/access/commands/set/name`
 - `/external_contract/cli/piggity/commands/app/commands/key/commands/access/commands/set/parameters`
+- `/external_contract/cli/piggity/commands/app/commands/key/commands/access/commands/set/result_contract`
 
 ### Exact owned JSON
 
@@ -162,4 +183,54 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   }
 ]
+```
+
+### `/external_contract/cli/piggity/commands/app/commands/key/commands/access/commands/set/result_contract`
+
+<!-- exact-contract-value: 656a272a4c099ae67efc746bbce6923ca57c4144717b56a70ac792883aae4240 -->
+
+```json
+{
+  "failures": [
+    {
+      "exit_status": 2,
+      "id": "usage",
+      "stderr": {
+        "all": "noncontractual-usage-diagnostic"
+      },
+      "stdout": {
+        "all": "empty"
+      }
+    },
+    {
+      "exit_status": 1,
+      "id": "operational",
+      "stderr": {
+        "human": "noncontractual-diagnostic",
+        "json": "empty"
+      },
+      "stdout": {
+        "human": "empty",
+        "json": "http-api-contracts.ErrorResponse"
+      }
+    }
+  ],
+  "human_json_relationship": "same-semantic-result",
+  "identity": "piggity-cli-result/app/key/access/set/v1",
+  "profile_id": "piggity-cli-human-json/v1",
+  "structured_output": "optional-json",
+  "success": [
+    {
+      "exit_status": 0,
+      "id": "completed",
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "human": "noncontractual-presentation-of-command-result",
+        "json": "named-command-result"
+      }
+    }
+  ]
+}
 ```

@@ -39,7 +39,7 @@ Get Evaluation
 
 ### Related interface records
 
-- [stove0-client evaluation show](../../stove0-client/cli/stove0-client-evaluation-show.md)
+- [stove0 evaluation show](../../stove0-client/cli/stove0-evaluation-show.md)
 
 ### Referenced contract dossiers
 

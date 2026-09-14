@@ -28,7 +28,7 @@ Health Live
 
 ### Related interface records
 
-- [stove0-client health](../../stove0-client/cli/stove0-client-health.md)
+- [stove0 health](../../stove0-client/cli/stove0-health.md)
 
 ### Referenced contract dossiers
 

@@ -13,6 +13,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
+- <a id="s-14959e77d6"></a>Parser name: `piggity`
 
 ### Parameters
 
@@ -62,10 +63,10 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/name`
 
-<!-- exact-contract-value: 12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126 -->
+<!-- exact-contract-value: e19ec9c376ac7f2b93d8f395c47794186488a3a41ca96da52aa308203f6069f6 -->
 
 ```json
-""
+"piggity"
 ```
 
 ### `/external_contract/cli/piggity/parameters`

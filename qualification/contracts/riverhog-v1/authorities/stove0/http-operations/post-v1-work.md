@@ -37,7 +37,7 @@ Create Work
 
 ### Related interface records
 
-- [stove0-client work create](../../stove0-client/cli/stove0-client-work-create.md)
+- [stove0 work create](../../stove0-client/cli/stove0-work-create.md)
 
 ### Referenced contract dossiers
 

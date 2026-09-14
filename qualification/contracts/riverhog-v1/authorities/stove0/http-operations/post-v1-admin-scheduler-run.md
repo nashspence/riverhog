@@ -36,7 +36,7 @@ Run Scheduler Once
 
 ### Related interface records
 
-- [stove0-client scheduler run](../../stove0-client/cli/stove0-client-scheduler-run.md)
+- [stove0 scheduler run](../../stove0-client/cli/stove0-scheduler-run.md)
 
 ### Referenced contract dossiers
 

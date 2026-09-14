@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-observer-support:stove0-observer-conformance:dc2dbf198e -->
+<!-- contract-element: cli:stove0-observer-support:stove0-observer-conformance:8a7b697a8d -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -19,14 +19,33 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| <a id="s-6504128d72"></a>`` | _StoreAction | yes |  |  |
-| <a id="s-3ce127cbc3"></a>`` | _AppendAction | no | Path | --invocation |
-| <a id="s-38ac0c67ea"></a>`` | _AppendAction | no | Path | --semantic-vectors |
-| <a id="s-c322de089c"></a>`` | _AppendAction | no |  | --semantic-validator-provider |
+| <a id="s-6504128d72"></a>`base_url` | _StoreAction | yes |  |  |
+| <a id="s-3ce127cbc3"></a>`invocation` | _AppendAction | no | Path | --invocation |
+| <a id="s-38ac0c67ea"></a>`semantic_vectors` | _AppendAction | no | Path | --semantic-vectors |
+| <a id="s-c322de089c"></a>`semantic_validator_provider` | _AppendAction | no |  | --semantic-validator-provider |
+
+### Result and failure contract
+
+- <a id="s-2afc9660ff"></a>Result identity: `stove0-observer-conformance-cli-result/root/v1`
+- <a id="s-c25f2c3b51"></a>Profile: `stove0-observer-conformance-cli/v1`
+- <a id="s-e46691ab2c"></a>Structured output: `always-json`
+- <a id="s-0fa93f9723"></a>Human/JSON relationship: `not-applicable`
+
+#### Success outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-1327368945"></a>`conformant` | <a id="s-c66cfdc7f4"></a>`0` | <a id="s-87e367e201"></a>`{"json":"stove0-observer-conformance-result/v1"}` | <a id="s-529648d0d7"></a>`{"all":"empty"}` |
+
+#### Failure outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-b34855a653"></a>`usage` | <a id="s-c5f5947482"></a>`2` | <a id="s-2442499427"></a>`{"all":"empty"}` | <a id="s-95cc494653"></a>`{"all":"noncontractual-usage-diagnostic"}` |
 
 ## Governing policies
 
-- <a id="pa-d0b2333b66"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-4953436fd0"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -44,6 +63,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - `/external_contract/cli/stove0-observer-conformance/name`
 - `/external_contract/cli/stove0-observer-conformance/parameters`
+- `/external_contract/cli/stove0-observer-conformance/result_contract`
 
 ### Exact owned JSON
 
@@ -103,4 +123,41 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false
   }
 ]
+```
+
+### `/external_contract/cli/stove0-observer-conformance/result_contract`
+
+<!-- exact-contract-value: 55117924f5863846a07f09ee0c7b28b5af236a42945f7240122c64c95288bc57 -->
+
+```json
+{
+  "failures": [
+    {
+      "exit_status": 2,
+      "id": "usage",
+      "stderr": {
+        "all": "noncontractual-usage-diagnostic"
+      },
+      "stdout": {
+        "all": "empty"
+      }
+    }
+  ],
+  "human_json_relationship": "not-applicable",
+  "identity": "stove0-observer-conformance-cli-result/root/v1",
+  "profile_id": "stove0-observer-conformance-cli/v1",
+  "structured_output": "always-json",
+  "success": [
+    {
+      "exit_status": 0,
+      "id": "conformant",
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "json": "stove0-observer-conformance-result/v1"
+      }
+    }
+  ]
+}
 ```

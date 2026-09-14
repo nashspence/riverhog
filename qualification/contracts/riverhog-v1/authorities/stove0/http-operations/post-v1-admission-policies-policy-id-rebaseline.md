@@ -37,7 +37,7 @@ Rebaseline Admission Policy
 
 ### Related interface records
 
-- [stove0-client admission policy rebaseline](../../stove0-client/cli/stove0-client-admission-policy-rebaseline.md)
+- [stove0 admission policy rebaseline](../../stove0-client/cli/stove0-admission-policy-rebaseline.md)
 
 ### Referenced contract dossiers
 

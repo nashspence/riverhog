@@ -39,7 +39,7 @@ Step Evaluation
 
 ### Related interface records
 
-- [stove0-client evaluation step](../../stove0-client/cli/stove0-client-evaluation-step.md)
+- [stove0 evaluation step](../../stove0-client/cli/stove0-evaluation-step.md)
 
 ### Referenced contract dossiers
 

@@ -40,7 +40,7 @@ Retry Evaluation Variant
 
 ### Related interface records
 
-- [stove0-client evaluation retry](../../stove0-client/cli/stove0-client-evaluation-retry.md)
+- [stove0 evaluation retry](../../stove0-client/cli/stove0-evaluation-retry.md)
 
 ### Referenced contract dossiers
 

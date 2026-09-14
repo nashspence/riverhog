@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt-write:4e97d46046 -->
+<!-- contract-element: cli:gogurt:gogurt-write:b1741c9d32 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -27,6 +27,26 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-d2fbb045b4"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 | <a id="s-5d3f067691"></a>`mounted_volume_provider` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --mounted-volume-provider |
 
+### Result and failure contract
+
+- <a id="s-e984cc1acf"></a>Result identity: `gogurt-cli-result/write/v1`
+- <a id="s-72e9c65ad0"></a>Profile: `gogurt-cli-human-json/v1`
+- <a id="s-3e72d23db1"></a>Structured output: `optional-json`
+- <a id="s-ea0d4f4135"></a>Human/JSON relationship: `same-semantic-result`
+
+#### Success outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-c5cc1a53c6"></a>`completed` | <a id="s-f85e137cbe"></a>`0` | <a id="s-2a98a7b465"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-d5c25e107a"></a>`{"all":"empty"}` |
+
+#### Failure outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-a116aaabaf"></a>`usage` | <a id="s-eee78944c6"></a>`2` | <a id="s-759246dcbb"></a>`{"all":"empty"}` | <a id="s-1ad8401f8f"></a>`{"all":"noncontractual-usage-diagnostic"}` |
+| <a id="s-d95fc38e29"></a>`operational` | <a id="s-8821274e2c"></a>`1` | <a id="s-d2bc22b47c"></a>`{"human":"empty","json":"gogurt-cli-error/v1"}` | <a id="s-86733215f2"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
+
 ### Progression, limits, and lifecycle
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
@@ -45,8 +65,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-b6ee7f15d7"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-75c18e8e99"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-5e588bb31d"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-2822976a22"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -64,6 +84,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - `/external_contract/cli/gogurt/commands/write/name`
 - `/external_contract/cli/gogurt/commands/write/parameters`
+- `/external_contract/cli/gogurt/commands/write/result_contract`
 
 ### Exact owned JSON
 
@@ -209,4 +230,54 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   }
 ]
+```
+
+### `/external_contract/cli/gogurt/commands/write/result_contract`
+
+<!-- exact-contract-value: 32f0e25609c0d5f50ba2c824c1f72440ac9e22719ed4cab39e2368716cadd043 -->
+
+```json
+{
+  "failures": [
+    {
+      "exit_status": 2,
+      "id": "usage",
+      "stderr": {
+        "all": "noncontractual-usage-diagnostic"
+      },
+      "stdout": {
+        "all": "empty"
+      }
+    },
+    {
+      "exit_status": 1,
+      "id": "operational",
+      "stderr": {
+        "human": "noncontractual-diagnostic",
+        "json": "empty"
+      },
+      "stdout": {
+        "human": "empty",
+        "json": "gogurt-cli-error/v1"
+      }
+    }
+  ],
+  "human_json_relationship": "same-semantic-result",
+  "identity": "gogurt-cli-result/write/v1",
+  "profile_id": "gogurt-cli-human-json/v1",
+  "structured_output": "optional-json",
+  "success": [
+    {
+      "exit_status": 0,
+      "id": "completed",
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "human": "noncontractual-presentation-of-command-result",
+        "json": "named-command-result"
+      }
+    }
+  ]
+}
 ```

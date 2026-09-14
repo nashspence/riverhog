@@ -39,7 +39,7 @@ Cancel Evaluation
 
 ### Related interface records
 
-- [stove0-client evaluation cancel](../../stove0-client/cli/stove0-client-evaluation-cancel.md)
+- [stove0 evaluation cancel](../../stove0-client/cli/stove0-evaluation-cancel.md)
 
 ### Referenced contract dossiers
 

@@ -38,6 +38,38 @@ STORAGE_ADAPTER_CONFORMANCE_RESULT: Literal["riverhog-storage-adapter-conformanc
     "riverhog-storage-adapter-conformance-result/v1"
 )
 
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "riverhog-storage-adapter-conformance-cli-result",
+    "default_profile": "machine-report",
+    "profiles": {
+        "machine-report": {
+            "id": "riverhog-storage-adapter-conformance-cli/v1",
+            "structured_output": "always-json",
+            "human_json_relationship": "not-applicable",
+            "success": [
+                {
+                    "id": "conformant",
+                    "exit_status": 0,
+                    "stdout": {"json": STORAGE_ADAPTER_CONFORMANCE_RESULT},
+                    "stderr": {"all": "empty"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                }
+            ],
+        }
+    },
+    "command_profiles": {},
+    "command_overrides": {},
+    "executable_groups": [],
+}
+
 
 def _expected_checks(descriptor: AdapterDescriptor) -> tuple[str, ...]:
     checks = [

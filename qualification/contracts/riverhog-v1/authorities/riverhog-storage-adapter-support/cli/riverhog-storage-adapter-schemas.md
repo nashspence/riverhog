@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:riverhog-storage-adapter-support:riverhog-storage-adapter-schemas:fbcfbe3901 -->
+<!-- contract-element: cli:riverhog-storage-adapter-support:riverhog-storage-adapter-schemas:a55863592c -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -19,8 +19,28 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| <a id="s-c7cd964cec"></a>`` | _StoreAction | no | Path | --output |
-| <a id="s-38128e6046"></a>`` | _StoreTrueAction | no |  | --compact |
+| <a id="s-c7cd964cec"></a>`output` | _StoreAction | no | Path | --output |
+| <a id="s-38128e6046"></a>`compact` | _StoreTrueAction | no |  | --compact |
+
+### Result and failure contract
+
+- <a id="s-8fd885ec44"></a>Result identity: `riverhog-storage-adapter-schemas-cli-result/root/v1`
+- <a id="s-82824ba7e7"></a>Profile: `riverhog-storage-adapter-schemas-cli/v1`
+- <a id="s-2c6875f114"></a>Structured output: `always-json`
+- <a id="s-c9db2c71bb"></a>Human/JSON relationship: `not-applicable`
+
+#### Success outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-c1a8bb97d5"></a>`emitted` | <a id="s-6198931a89"></a>`0` | <a id="s-4e5ccf02c2"></a>`{"json":"riverhog-storage-adapter-schema-bundle/v1"}` | <a id="s-b3f13bd5e3"></a>`{"all":"empty"}` |
+| <a id="s-3ce2798c93"></a>`written` | <a id="s-3920cf9c82"></a>`0` | <a id="s-3f62ca3ca0"></a>`{"all":"empty"}` | <a id="s-edaca0f659"></a>`{"all":"empty"}` |
+
+#### Failure outcomes
+
+| Identity | Exit status | stdout | stderr |
+|---|---|---|---|
+| <a id="s-f6f6ad03e6"></a>`usage` | <a id="s-90cc83a736"></a>`2` | <a id="s-26a045abe5"></a>`{"all":"empty"}` | <a id="s-c4868a8c48"></a>`{"all":"noncontractual-usage-diagnostic"}` |
 
 ### Progression, limits, and lifecycle
 
@@ -34,8 +54,8 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-d01fe2b079"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-514b9bbb23"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-981f7d44f6"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-73078487eb"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -53,6 +73,7 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 - `/external_contract/cli/riverhog-storage-adapter-schemas/name`
 - `/external_contract/cli/riverhog-storage-adapter-schemas/parameters`
+- `/external_contract/cli/riverhog-storage-adapter-schemas/result_contract`
 
 ### Exact owned JSON
 
@@ -93,4 +114,51 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false
   }
 ]
+```
+
+### `/external_contract/cli/riverhog-storage-adapter-schemas/result_contract`
+
+<!-- exact-contract-value: 7f524661e90bb463707d68ffb697ddbc4f4cafd4aeb017712179c34cb6a706e0 -->
+
+```json
+{
+  "failures": [
+    {
+      "exit_status": 2,
+      "id": "usage",
+      "stderr": {
+        "all": "noncontractual-usage-diagnostic"
+      },
+      "stdout": {
+        "all": "empty"
+      }
+    }
+  ],
+  "human_json_relationship": "not-applicable",
+  "identity": "riverhog-storage-adapter-schemas-cli-result/root/v1",
+  "profile_id": "riverhog-storage-adapter-schemas-cli/v1",
+  "structured_output": "always-json",
+  "success": [
+    {
+      "exit_status": 0,
+      "id": "emitted",
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "json": "riverhog-storage-adapter-schema-bundle/v1"
+      }
+    },
+    {
+      "exit_status": 0,
+      "id": "written",
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "all": "empty"
+      }
+    }
+  ]
+}
 ```

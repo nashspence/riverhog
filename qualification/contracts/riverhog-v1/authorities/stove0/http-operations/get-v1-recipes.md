@@ -31,7 +31,7 @@ List Recipes
 
 ### Related interface records
 
-- [stove0-client recipe list](../../stove0-client/cli/stove0-client-recipe-list.md)
+- [stove0 recipe list](../../stove0-client/cli/stove0-recipe-list.md)
 
 ### Referenced contract dossiers
 

@@ -31,7 +31,7 @@ Scheduler Status
 
 ### Related interface records
 
-- [stove0-client scheduler status](../../stove0-client/cli/stove0-client-scheduler-status.md)
+- [stove0 scheduler status](../../stove0-client/cli/stove0-scheduler-status.md)
 
 ### Referenced contract dossiers
 
