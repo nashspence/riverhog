@@ -553,7 +553,21 @@ while time.monotonic() < deadline:
         data = ftp.transfercmd('STOR ' + first_source.name)
         data.sendall(first_content[:split])
         ftp.close()
-        data.close()
+        partial_deadline = time.monotonic() + 10
+        try:
+            while time.monotonic() < partial_deadline:
+                try:
+                    if first_source.stat().st_size == split:
+                        break
+                except FileNotFoundError:
+                    pass
+                time.sleep(0.1)
+            else:
+                raise AssertionError(
+                    'FTP listener did not retain the exact interrupted prefix'
+                )
+        finally:
+            data.close()
         break
     except all_errors as error:
         last_error = error

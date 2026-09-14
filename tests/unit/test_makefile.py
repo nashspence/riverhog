@@ -776,6 +776,8 @@ def test_compose_smoke_starts_and_cleans_a_fresh_stack(tmp_path: Path) -> None:
     assert "RIVERHOG_SMOKE_ADMISSION_OUTPUT=client" in docker_log
     assert "EXPECTED_WORK_ID=" in docker_log
     assert " down --volumes --remove-orphans" in docker_log
+    smoke = (REPO_ROOT / "scripts" / "test_compose_smoke.sh").read_text(encoding="utf-8")
+    assert "FTP listener did not retain the exact interrupted prefix" in smoke
 
 
 def test_stove0_scale_qualification_reuses_the_final_image_lifecycle(
