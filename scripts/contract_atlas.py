@@ -3,12 +3,13 @@
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import posixpath
 import re
 from collections import Counter, defaultdict
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
@@ -27,6 +28,64 @@ ATLAS_DIRECTORY = "riverhog-v1"
 AUDIT_DOCUMENT_TARGET_BYTES = 128 * 1024
 RELATIONSHIP_SCHEMA = "riverhog-contract-human-relationships/v1"
 CONTRACT_MAP_SCHEMA = "riverhog-contract-human-map/v1"
+
+_SCHEMA_MAPPING_KEYWORDS = frozenset(
+    {"$defs", "definitions", "dependentSchemas", "patternProperties", "properties"}
+)
+_SCHEMA_SEQUENCE_KEYWORDS = frozenset({"allOf", "anyOf", "oneOf", "prefixItems"})
+_SCHEMA_VALUE_KEYWORDS = frozenset(
+    {
+        "additionalItems",
+        "additionalProperties",
+        "contains",
+        "contentSchema",
+        "else",
+        "if",
+        "items",
+        "not",
+        "propertyNames",
+        "then",
+        "unevaluatedItems",
+        "unevaluatedProperties",
+    }
+)
+
+
+def structural_json_schema(schema: object) -> object:
+    """Remove prose annotations only at actual JSON Schema nodes."""
+
+    if isinstance(schema, bool):
+        return schema
+    if not isinstance(schema, Mapping):
+        raise ContractAtlasError("a structural JSON Schema value is not a schema")
+
+    normalized: dict[str, object] = {}
+    for key, value in schema.items():
+        if key in {"title", "description"}:
+            continue
+        if key in _SCHEMA_MAPPING_KEYWORDS and isinstance(value, Mapping):
+            normalized[key] = {
+                str(name): structural_json_schema(child) for name, child in value.items()
+            }
+        elif key in _SCHEMA_SEQUENCE_KEYWORDS and isinstance(value, list):
+            normalized[key] = [structural_json_schema(child) for child in value]
+        elif key == "dependencies" and isinstance(value, Mapping):
+            normalized[key] = {
+                str(name): (
+                    structural_json_schema(child)
+                    if isinstance(child, (bool, Mapping))
+                    else copy.deepcopy(child)
+                )
+                for name, child in value.items()
+            }
+        elif key in _SCHEMA_VALUE_KEYWORDS and isinstance(value, (bool, Mapping)):
+            normalized[key] = structural_json_schema(value)
+        elif key == "items" and isinstance(value, list):
+            normalized[key] = [structural_json_schema(child) for child in value]
+        else:
+            normalized[key] = copy.deepcopy(value)
+    return normalized
+
 
 INTERFACE_LABELS: dict[str, str] = {
     "artifact-verification": "Artifact Verification",
@@ -62,6 +121,16 @@ RELEASE_INTERFACES = (
     "versioning-tags",
     "compatibility-guarantees",
 )
+RELEASE_INTERFACE_PREFIXES = {
+    "artifact-verification": "Trust: ",
+    "compatibility-guarantees": "Compatibility: ",
+    "installation-roots": "Installation root: ",
+    "publication-locations": "Coordinates: ",
+    "python-distributions": "Python distribution: ",
+    "release-artifacts": "Release artifact: ",
+    "runtime-images": "Runtime image: ",
+    "versioning-tags": "Versioning: ",
+}
 INTERFACE_ORDER = {
     interface: index
     for index, interface in enumerate(
@@ -2008,6 +2077,42 @@ def _interface_sort_key(interface: str) -> tuple[int, str]:
     return (INTERFACE_ORDER.get(interface, len(INTERFACE_ORDER)), interface)
 
 
+def _contextual_labels(
+    items: Sequence[Mapping[str, object]],
+    candidates: Callable[[Mapping[str, object]], Sequence[str]],
+) -> dict[str, str]:
+    """Choose the shortest structurally derived label unique among siblings."""
+
+    ordered = sorted(items, key=lambda item: str(item["title"]))
+    options: dict[str, list[str]] = {}
+    positions: dict[str, int] = {}
+    for item in ordered:
+        identity = str(item["id"])
+        available = list(dict.fromkeys(label for label in candidates(item) if label))
+        if not available or available[-1] != str(item["title"]):
+            available.append(str(item["title"]))
+        options[identity] = available
+        positions[identity] = 0
+
+    while True:
+        by_label: dict[str, list[str]] = defaultdict(list)
+        for identity, available in options.items():
+            by_label[available[positions[identity]]].append(identity)
+        collisions = [identities for identities in by_label.values() if len(identities) > 1]
+        if not collisions:
+            return {
+                identity: available[positions[identity]] for identity, available in options.items()
+            }
+        advanced = False
+        for identities in collisions:
+            for identity in identities:
+                if positions[identity] + 1 < len(options[identity]):
+                    positions[identity] += 1
+                    advanced = True
+        if not advanced:
+            raise ContractAtlasError("contextual inventory labels remain ambiguous")
+
+
 def _relationship_node_anchor(node_id: str) -> str:
     return _anchor_id("relationship-node", node_id)
 
@@ -2035,22 +2140,206 @@ def _compact_json(value: object) -> str:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
-def _cli_channel_summary(value: Mapping[str, object]) -> str:
+def _one_cli_authority_element(
+    matches: Iterable[Mapping[str, object]], *, kind: str
+) -> Mapping[str, object]:
+    resolved = list(matches)
+    if len(resolved) != 1:
+        raise ContractAtlasError(f"CLI {kind} authority resolves to {len(resolved)} atlas elements")
+    return resolved[0]
+
+
+def _cli_authority_reference(
+    semantics: Mapping[str, object],
+    *,
+    element: Mapping[str, object],
+    pointer: str,
+    path: str,
+    projection: Mapping[str, object],
+    elements_by_id: Mapping[str, Mapping[str, object]],
+) -> str:
+    kind = str(semantics.get("kind", ""))
+    elements = elements_by_id.values()
+    target: Mapping[str, object]
+    anchor: str | None = None
+
+    if kind == "http-operation-response":
+        required = {"application", "operation_id", "method", "path", "status", "schema"}
+        if not required <= set(semantics):
+            raise ContractAtlasError("CLI HTTP response authority is incomplete")
+        target = _one_cli_authority_element(
+            (
+                item
+                for item in elements
+                if item["authority"] == semantics["application"]
+                and item["interface"] == "http-operations"
+                and cast(Mapping[str, object], item.get("details", {})).get("operation_id")
+                == semantics["operation_id"]
+                and cast(Mapping[str, object], item.get("details", {})).get("method")
+                == semantics["method"]
+                and cast(Mapping[str, object], item.get("details", {})).get("path")
+                == semantics["path"]
+            ),
+            kind=kind,
+        )
+        operation_pointer = cast(Sequence[str], target["pointers"])[0]
+        response_pointer = (
+            f"{operation_pointer}/responses/{_escape_pointer(str(semantics['status']))}"
+        )
+        response = pointer_value(projection, response_pointer)
+        media = (
+            cast(Mapping[str, object], response).get("content", {})
+            if isinstance(response, Mapping)
+            else {}
+        )
+        json_media = (
+            cast(Mapping[str, object], media).get("application/json")
+            if isinstance(media, Mapping)
+            else None
+        )
+        if not isinstance(json_media, Mapping) or json_media.get("schema") != semantics["schema"]:
+            raise ContractAtlasError("CLI HTTP response authority differs from its operation")
+        anchor = _subject_anchor(response_pointer)
+        label = f"HTTP {semantics['operation_id']} response {semantics['status']}"
+    elif kind == "openapi-schema":
+        required = {"application", "schema", "definition"}
+        if not required <= set(semantics):
+            raise ContractAtlasError("CLI OpenAPI schema authority is incomplete")
+        schema_pointer = (
+            f"/external_contract/http_openapi/{_escape_pointer(str(semantics['application']))}/"
+            f"components/schemas/{_escape_pointer(str(semantics['schema']))}"
+        )
+        target = _one_cli_authority_element(
+            (
+                item
+                for item in elements
+                if item["authority"] == semantics["application"]
+                and item["interface"] == "http-schemas"
+                and schema_pointer in cast(Sequence[str], item["pointers"])
+            ),
+            kind=kind,
+        )
+        if pointer_value(projection, schema_pointer) != semantics["definition"]:
+            raise ContractAtlasError("CLI OpenAPI schema authority has a different definition")
+        label = f"OpenAPI {semantics['application']}.{semantics['schema']}"
+    elif kind == "python-model":
+        identity = semantics.get("identity")
+        if not isinstance(identity, str) or not isinstance(semantics.get("schema"), Mapping):
+            raise ContractAtlasError("CLI Python model authority is incomplete")
+        declared_owner, separator, declared_symbol = identity.rpartition(".")
+        target = _one_cli_authority_element(
+            (
+                item
+                for item in elements
+                if item["interface"] == "python"
+                and (
+                    item["title"] == identity
+                    or (
+                        bool(separator)
+                        and item["authority"] == declared_owner
+                        and str(item["title"]).rsplit(".", 1)[-1] == declared_symbol
+                    )
+                )
+            ),
+            kind=kind,
+        )
+        value = pointer_value(projection, cast(Sequence[str], target["pointers"])[0])
+        contract = cast(Mapping[str, object], value).get("contract", {})
+        if not isinstance(contract, Mapping) or contract.get("schema") != structural_json_schema(
+            semantics["schema"]
+        ):
+            raise ContractAtlasError("CLI Python model authority has a different schema")
+        label = identity
+    elif kind == "schema-authority":
+        authority = semantics.get("authority")
+        if not isinstance(authority, str) or not authority:
+            raise ContractAtlasError("CLI schema authority is incomplete")
+        schema_pointer = f"/external_contract/protocol_schemas/{_escape_pointer(authority)}"
+        definition = semantics.get("definition")
+        expected_interface = "schema"
+        if definition is not None:
+            if not isinstance(definition, str) or not definition:
+                raise ContractAtlasError("CLI schema definition authority is invalid")
+            schema_pointer += f"/schemas/{_escape_pointer(definition)}"
+            expected_interface = "process-protocol-schemas"
+        target = _one_cli_authority_element(
+            (
+                item
+                for item in elements
+                if item["interface"] == expected_interface
+                and schema_pointer in cast(Sequence[str], item["pointers"])
+            ),
+            kind=kind,
+        )
+        pointer_value(projection, schema_pointer)
+        label = str(target["title"])
+    elif kind == "document-authority":
+        authority = semantics.get("authority")
+        if not isinstance(authority, str) or not authority:
+            raise ContractAtlasError("CLI document authority is incomplete")
+        base = f"/external_contract/protocol_schemas/{_escape_pointer(authority)}"
+        target = _one_cli_authority_element(
+            (
+                item
+                for item in elements
+                if item["interface"] == "process-protocol"
+                and cast(Sequence[str], item["pointers"])
+                and all(
+                    candidate.startswith(f"{base}/")
+                    for candidate in cast(Sequence[str], item["pointers"])
+                )
+            ),
+            kind=kind,
+        )
+        label = str(target["title"])
+    elif kind in {
+        "cli-local-exact-json",
+        "cli-local-json-schema",
+        "cli-local-json-sequence",
+    }:
+        identity = semantics.get("identity")
+        if not isinstance(identity, str) or not identity:
+            raise ContractAtlasError("CLI-local structured authority has no identity")
+        target = element
+        anchor = _subject_anchor(pointer)
+        label = identity
+    else:
+        raise ContractAtlasError(f"CLI structured output has no atlas resolver: {kind or '<none>'}")
+
+    target_path = str(target["dossier"])
+    href = (
+        _anchor_link(path, target_path, anchor)
+        if anchor is not None
+        else _relative_link(path, target_path)
+    )
+    return f"[{_md(label)}]({href})"
+
+
+def _cli_channel_summary(
+    value: Mapping[str, object],
+    *,
+    element: Mapping[str, object],
+    pointer: str,
+    path: str,
+    projection: Mapping[str, object],
+    elements_by_id: Mapping[str, Mapping[str, object]],
+) -> str:
     parts: list[str] = []
     for mode, semantics in value.items():
         if not isinstance(semantics, Mapping):
-            parts.append(f"{mode}: {semantics}")
+            parts.append(f"{mode}: `{_md(semantics)}`")
             continue
-        kind = str(semantics.get("kind", "authority"))
-        if kind == "http-operation-response":
-            label = (
-                f"HTTP {semantics.get('operation_id')} — {_shape_summary(semantics.get('schema'))}"
+        parts.append(
+            f"{mode}: "
+            + _cli_authority_reference(
+                semantics,
+                element=element,
+                pointer=pointer,
+                path=path,
+                projection=projection,
+                elements_by_id=elements_by_id,
             )
-        elif kind == "openapi-schema":
-            label = f"OpenAPI {semantics.get('application')}.{semantics.get('schema')}"
-        else:
-            label = str(semantics.get("identity", kind))
-        parts.append(f"{mode}: {label}")
+        )
     return "; ".join(parts)
 
 
@@ -2389,7 +2678,14 @@ def _render_http(
 
 
 def _render_cli(
-    pointers: Sequence[str], values: Sequence[object], placed_subjects: set[str]
+    pointers: Sequence[str],
+    values: Sequence[object],
+    placed_subjects: set[str],
+    *,
+    element: Mapping[str, object],
+    path: str,
+    projection: Mapping[str, object],
+    elements_by_id: Mapping[str, Mapping[str, object]],
 ) -> list[str]:
     parameters: Sequence[Mapping[str, object]] = ()
     parameters_pointer = ""
@@ -2496,8 +2792,24 @@ def _render_cli(
                     if isinstance(status, Mapping)
                     else str(status)
                 )
-                stdout = _cli_channel_summary(cast(Mapping[str, object], outcome["stdout"]))
-                stderr = _cli_channel_summary(cast(Mapping[str, object], outcome["stderr"]))
+                stdout_pointer = f"{outcome_pointer}/stdout"
+                stderr_pointer = f"{outcome_pointer}/stderr"
+                stdout = _cli_channel_summary(
+                    cast(Mapping[str, object], outcome["stdout"]),
+                    element=element,
+                    pointer=stdout_pointer,
+                    path=path,
+                    projection=projection,
+                    elements_by_id=elements_by_id,
+                )
+                stderr = _cli_channel_summary(
+                    cast(Mapping[str, object], outcome["stderr"]),
+                    element=element,
+                    pointer=stderr_pointer,
+                    path=path,
+                    projection=projection,
+                    elements_by_id=elements_by_id,
+                )
                 lines.append(
                     f"| {_subject_marker(f'{outcome_pointer}/id', placed_subjects)}"
                     f"`{_md(outcome['id'])}` | "
@@ -2505,10 +2817,8 @@ def _render_cli(
                     f"`{_md(_compact_json(outcome['selected_by']))}` | "
                     f"{_subject_marker(f'{outcome_pointer}/exit_status', placed_subjects)}"
                     f"`{_md(rendered_status)}` | "
-                    f"{_subject_marker(f'{outcome_pointer}/stdout', placed_subjects)}"
-                    f"`{_md(stdout)}` | "
-                    f"{_subject_marker(f'{outcome_pointer}/stderr', placed_subjects)}"
-                    f"`{_md(stderr)}` |"
+                    f"{_subject_marker(stdout_pointer, placed_subjects)}{stdout} | "
+                    f"{_subject_marker(stderr_pointer, placed_subjects)}{stderr} |"
                 )
     return lines
 
@@ -2825,7 +3135,17 @@ def _render_dossier(
             )
         )
     elif interface == "cli":
-        lines.extend(_render_cli(pointers, values, placed_subjects))
+        lines.extend(
+            _render_cli(
+                pointers,
+                values,
+                placed_subjects,
+                element=element,
+                path=path,
+                projection=projection,
+                elements_by_id=elements_by_id,
+            )
+        )
     elif interface == "python" and len(values) == 1 and isinstance(values[0], Mapping):
         lines.extend(
             _render_python(cast(Mapping[str, object], values[0]), pointers[0], placed_subjects)
@@ -4137,6 +4457,18 @@ def _render_atlas(
                 "",
             ]
             if interface in RELEASE_INTERFACES:
+                prefix = RELEASE_INTERFACE_PREFIXES[interface]
+
+                def release_label_candidates(
+                    item: Mapping[str, object], prefix: str = prefix
+                ) -> list[str]:
+                    title = str(item["title"])
+                    return [title[len(prefix) :] if title.startswith(prefix) else title, title]
+
+                labels = _contextual_labels(
+                    values,
+                    release_label_candidates,
+                )
                 lines.extend(
                     [
                         "| Exact unit | Classification |",
@@ -4150,11 +4482,35 @@ def _render_atlas(
                         f"`{_md(classification)}`" if classification != "—" else "—"
                     )
                     lines.append(
-                        f"| [{_md(release_item['title'])}]"
+                        f"| [{_md(labels[str(release_item['id'])])}]"
                         f"({_relative_link(interface_path, str(release_item['dossier']))}) | "
                         f"{rendered_classification} |"
                     )
             elif interface == "cli":
+                labels = _contextual_labels(
+                    values,
+                    lambda item: [
+                        " ".join(
+                            cast(
+                                Sequence[str],
+                                cast(Mapping[str, object], item.get("details", {})).get(
+                                    "command_path", ()
+                                ),
+                            )[1:]
+                        )
+                        if len(
+                            cast(
+                                Sequence[str],
+                                cast(Mapping[str, object], item.get("details", {})).get(
+                                    "command_path", ()
+                                ),
+                            )
+                        )
+                        > 1
+                        else str(item["title"]),
+                        str(item["title"]),
+                    ],
+                )
                 executable = sorted(
                     (
                         item
@@ -4177,17 +4533,15 @@ def _render_atlas(
                     ]
                 )
                 for item in executable:
-                    details = cast(Mapping[str, object], item["details"])
                     lines.append(
-                        f"- [{_md(item['title'])}]"
-                        f"({_relative_link(interface_path, str(item['dossier']))}) — "
-                        f"`{_md(details['result_profile_id'])}`"
+                        f"- [{_md(labels[str(item['id'])])}]"
+                        f"({_relative_link(interface_path, str(item['dossier']))})"
                     )
                 if groups:
                     lines.extend(["", "### Command groups", ""])
                     for item in groups:
                         lines.append(
-                            f"- [{_md(item['title'])}]"
+                            f"- [{_md(labels[str(item['id'])])}]"
                             f"({_relative_link(interface_path, str(item['dossier']))})"
                         )
             elif interface == "python":
@@ -4210,17 +4564,47 @@ def _render_atlas(
                         raise ContractAtlasError(
                             f"Python interface index has members without exports: {module}"
                         )
+                    export_values = [exports[identity] for identity in sorted(exports)]
+
+                    def export_label_candidates(
+                        item: Mapping[str, object], module_name: str = module
+                    ) -> list[str]:
+                        public = str(cast(Mapping[str, object], item["details"])["public_identity"])
+                        return [public.removeprefix(f"{module_name}."), public]
+
+                    export_labels = _contextual_labels(
+                        export_values,
+                        export_label_candidates,
+                    )
                     lines.extend([f"### `{_md(module)}`", ""])
                     for public_identity, item in sorted(exports.items()):
                         lines.append(
-                            f"- [{_md(public_identity)}]"
+                            f"- [{_md(export_labels[str(item['id'])])}]"
                             f"({_relative_link(interface_path, str(item['dossier']))})"
                         )
-                        for member in sorted(
+                        owner_members = sorted(
                             members.get(public_identity, ()), key=lambda value: str(value["title"])
-                        ):
+                        )
+
+                        def member_label_candidates(
+                            member: Mapping[str, object],
+                            owner_identity: str = public_identity,
+                            module_name: str = module,
+                        ) -> list[str]:
+                            title = str(member["title"])
+                            return [
+                                title.removeprefix(f"{owner_identity}."),
+                                title.removeprefix(f"{module_name}."),
+                                title,
+                            ]
+
+                        member_labels = _contextual_labels(
+                            owner_members,
+                            member_label_candidates,
+                        )
+                        for member in owner_members:
                             lines.append(
-                                f"  - [{_md(member['title'])}]"
+                                f"  - [{_md(member_labels[str(member['id'])])}]"
                                 f"({_relative_link(interface_path, str(member['dossier']))})"
                             )
                     lines.append("")
@@ -4242,9 +4626,20 @@ def _render_atlas(
                         else (str(item["title"]),)
                     )
                 )
+                labels = (
+                    _contextual_labels(
+                        values,
+                        lambda item: [
+                            str(item["title"]).removeprefix("schemas: "),
+                            str(item["title"]),
+                        ],
+                    )
+                    if interface == "http-schemas"
+                    else {str(item["id"]): str(item["title"]) for item in values}
+                )
                 for item in values:
                     lines.append(
-                        f"- [{_md(item['title'])}]"
+                        f"- [{_md(labels[str(item['id'])])}]"
                         f"({_relative_link(interface_path, str(item['dossier']))})"
                     )
             files[interface_path] = ("\n".join(lines).rstrip() + "\n").encode()

@@ -34,6 +34,7 @@ from contract_atlas import (
     pointer_value,
     reassemble_projection,
     reassemble_trace,
+    structural_json_schema,
 )
 from contract_discovery import (
     DiscoveryError,
@@ -226,7 +227,10 @@ def _class_surface(value: type[object]) -> dict[str, object]:
             name: _json_value(member.value) for name, member in value.__members__.items()
         }
     if issubclass(value, BaseModel):
-        schema = value.model_json_schema(mode="validation")
+        schema = cast(
+            dict[str, object],
+            structural_json_schema(value.model_json_schema(mode="validation")),
+        )
         Draft202012Validator.check_schema(schema)
         surface["schema"] = schema
     if is_dataclass(value):

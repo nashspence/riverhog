@@ -16,6 +16,8 @@ import tarfile
 import tempfile
 import tomllib
 import zipfile
+from collections import defaultdict
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from email import policy
@@ -24,6 +26,13 @@ from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
 import release_installation as installation
+from license_expression import (  # type: ignore[import-untyped]
+    AND,
+    OR,
+    ExpressionError,
+    ParseError,
+    get_spdx_licensing,
+)
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.specifiers import InvalidSpecifier, SpecifierSet
 from runtime_image_attribution import RuntimeAttributionError, locked_runtime_payloads
@@ -209,10 +218,63 @@ class Project:
     version: str
     description: str
     requires_python: str
+    license_expression: str
 
 
 class ReleaseError(RuntimeError):
     """The release contract is incomplete or inconsistent."""
+
+
+def _canonical_spdx_expression(expression: str) -> tuple[object, ...]:
+    """Return the intentionally narrow structural normalization used for v1 grants."""
+
+    try:
+        parsed = get_spdx_licensing().parse(expression, validate=True)
+    except (ExpressionError, ParseError) as exc:
+        raise ReleaseError(f"invalid SPDX license expression: {expression}") from exc
+    if parsed is None:
+        raise ReleaseError("SPDX license expression is empty")
+
+    def canonical(node: object) -> tuple[object, ...]:
+        if isinstance(node, (AND, OR)):
+            operator = "AND" if isinstance(node, AND) else "OR"
+            operands: list[tuple[object, ...]] = []
+            for child in node.args:
+                normalized = canonical(child)
+                if normalized[0] == operator:
+                    operands.extend(cast(tuple[tuple[object, ...], ...], normalized[1]))
+                else:
+                    operands.append(normalized)
+            return (operator, tuple(sorted(operands, key=repr)))
+        # A license-plus-exception value deliberately remains one atomic operand.
+        return ("ATOM", str(node))
+
+    return canonical(parsed)
+
+
+def _spdx_disjuncts(expression: str) -> frozenset[tuple[object, ...]]:
+    normalized = _canonical_spdx_expression(expression)
+    if normalized[0] == "OR":
+        return frozenset(cast(tuple[tuple[object, ...], ...], normalized[1]))
+    return frozenset({normalized})
+
+
+def _license_grant_preserved(baseline: str, candidate: str) -> bool:
+    """Compare only canonical top-level SPDX OR alternatives by set inclusion."""
+
+    return _spdx_disjuncts(baseline) <= _spdx_disjuncts(candidate)
+
+
+def _dockerfile_license_expression(path: Path) -> str:
+    matches = cast(
+        list[str],
+        re.findall(r'org\.opencontainers\.image\.licenses="([^"]+)"', path.read_text()),
+    )
+    if len(matches) != 1:
+        raise ReleaseError(f"runtime image lacks one OCI license expression: {path}")
+    expression = matches[0]
+    _canonical_spdx_expression(expression)
+    return expression
 
 
 def _run(
@@ -639,6 +701,8 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
             raise ReleaseError(f"{name} does not carry canonical classifiers")
         if metadata.get("urls") != PROJECT_URLS:
             raise ReleaseError(f"{name} does not carry canonical project URLs")
+        license_expression = str(metadata.get("license", "")).strip()
+        _canonical_spdx_expression(license_expression)
         if classified[relative] == "reusable_library":
             _validate_public_python_package(pyproject)
         projects.append(
@@ -649,6 +713,7 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
                 version=version,
                 description=str(metadata["description"]),
                 requires_python=requires_python,
+                license_expression=license_expression,
             )
         )
 
@@ -852,6 +917,7 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
         "archive",
         "recovery",
         "configuration",
+        "licensing",
     }:
         raise ReleaseError("release.toml lacks the complete v1 compatibility policy")
     if any(not str(value).strip() for value in compatibility.values()):
@@ -951,6 +1017,12 @@ def publication_contract(
             "description": project.description,
             "source": f"{project.path}/pyproject.toml",
             "requires_python": project.requires_python,
+            "publication_identity": {
+                "kind": "python-distribution",
+                "coordinate": project.name,
+            },
+            "license_expression": project.license_expression,
+            "license_baseline": "first-v1-publication",
             "channel": config["python_distribution_channel"],
             "artifacts": [
                 {
@@ -967,11 +1039,18 @@ def publication_contract(
     images: dict[str, object] = {}
     for target, value in sorted(runtime_images.items()):
         repository = str(value["repository"])
+        license_expression = _dockerfile_license_expression(_bake_dockerfile(root, target))
         images[target] = {
             "role": value["role"],
             "description": value["description"],
             "format": "oci-image",
             "repository": repository,
+            "publication_identity": {
+                "kind": "oci-repository",
+                "coordinate": repository,
+            },
+            "license_expression": license_expression,
+            "license_baseline": "first-v1-publication",
             "build_target": target,
             "platforms": list(config["images"]["platforms"]),
             "tag_templates": [
@@ -1213,6 +1292,8 @@ def build_release_plan(root: Path, version: str, *, allow_dirty: bool = False) -
                     for item in cast(list[dict[str, object]], published["artifacts"])
                 ],
                 "requires_python": published["requires_python"],
+                "publication_identity": published["publication_identity"],
+                "license_expression": published["license_expression"],
             }
         )
     images = []
@@ -1225,6 +1306,8 @@ def build_release_plan(root: Path, version: str, *, allow_dirty: bool = False) -
                 "description": value["description"],
                 "distributions": value["distribution_roots"],
                 "repository": repository,
+                "publication_identity": value["publication_identity"],
+                "license_expression": value["license_expression"],
                 "platforms": value["platforms"],
                 "tags": [
                     str(template).format(version=version, source_sha=source_sha)
@@ -1284,17 +1367,19 @@ def render_release_markdown(plan: dict[str, Any]) -> str:
         "",
         "## Release units",
         "",
-        "| Distribution | Role | Version |",
-        "| --- | --- | --- |",
+        "| Distribution | Role | Version | License |",
+        "| --- | --- | --- | --- |",
     ]
     lines.extend(
-        f"| `{item['name']}` | `{item['role']}` | `{item['release_version']}` |"
+        f"| `{item['name']}` | `{item['role']}` | `{item['release_version']}` | "
+        f"`{item['license_expression']}` |"
         for item in plan["python"]
     )
     lines.extend(["", "## First-party reference policy", "", plan["reference_policy"]])
     lines.extend(["", "## Runtime images", ""])
     lines.extend(
-        f"- `{item['tags'][0]}` and `{item['tags'][1]}` — {item['role']}: {item['description']}"
+        f"- `{item['tags'][0]}` and `{item['tags'][1]}` — {item['role']}, "
+        f"`{item['license_expression']}`: {item['description']}"
         for item in plan["images"]
     )
     lines.extend(["", "## Changes", ""])
@@ -1327,6 +1412,250 @@ def _sha256_file(path: Path) -> str:
 def _write_json(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _canonical_release_manifest_bytes(value: Mapping[str, object]) -> bytes:
+    return (json.dumps(value, indent=2, sort_keys=True) + "\n").encode()
+
+
+def _publication_license_inventory(
+    publication: Mapping[str, object],
+) -> list[dict[str, object]]:
+    records: list[dict[str, object]] = []
+    for section in ("distributions", "runtime_images"):
+        units = publication.get(section)
+        if not isinstance(units, Mapping):
+            raise ReleaseError(f"release publication lacks {section} licensing")
+        for unit in units.values():
+            if not isinstance(unit, Mapping):
+                raise ReleaseError("release publication unit is invalid")
+            identity = unit.get("publication_identity")
+            expression = unit.get("license_expression")
+            if (
+                not isinstance(identity, Mapping)
+                or set(identity) != {"kind", "coordinate"}
+                or identity.get("kind") not in {"python-distribution", "oci-repository"}
+                or not isinstance(identity.get("coordinate"), str)
+                or not identity["coordinate"]
+                or not isinstance(expression, str)
+            ):
+                raise ReleaseError("release publication license identity is incomplete")
+            _canonical_spdx_expression(expression)
+            records.append(
+                {
+                    "publication_identity": dict(identity),
+                    "license_expression": expression,
+                }
+            )
+    records.sort(
+        key=lambda item: (
+            str(cast(Mapping[str, object], item["publication_identity"])["kind"]),
+            str(cast(Mapping[str, object], item["publication_identity"])["coordinate"]),
+        )
+    )
+    keys = [
+        (
+            str(cast(Mapping[str, object], item["publication_identity"])["kind"]),
+            str(cast(Mapping[str, object], item["publication_identity"])["coordinate"]),
+        )
+        for item in records
+    ]
+    if len(keys) != len(set(keys)):
+        raise ReleaseError("release publication repeats a license coordinate")
+    return records
+
+
+def _verify_built_publication_licenses(
+    subjects: list[dict[str, Any]],
+    inventory: Sequence[Mapping[str, object]],
+) -> None:
+    expected = {
+        (
+            str(cast(Mapping[str, object], item["publication_identity"])["kind"]),
+            str(cast(Mapping[str, object], item["publication_identity"])["coordinate"]),
+        ): str(item["license_expression"])
+        for item in inventory
+    }
+    found: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
+    for subject in subjects:
+        if subject.get("kind") in {"wheel", "sdist"}:
+            key = ("python-distribution", str(subject.get("distribution", "")))
+            found[key].append(subject)
+        elif subject.get("kind") == "image":
+            key = ("oci-repository", str(subject.get("name", "")))
+            found[key].append(subject)
+    if set(found) != set(expected):
+        raise ReleaseError("built first-party publication coordinates differ from the release plan")
+    for key, records in found.items():
+        kinds = {str(item["kind"]) for item in records}
+        required_kinds = {"wheel", "sdist"} if key[0] == "python-distribution" else {"image"}
+        if kinds != required_kinds or len(records) != len(required_kinds):
+            raise ReleaseError(f"built publication evidence is incomplete: {key}")
+        if any(item.get("license") != expected[key] for item in records):
+            raise ReleaseError(f"built publication license differs from its authority: {key}")
+
+
+def _release_history_declaration(
+    version: str, expected_previous: Mapping[str, str] | None
+) -> dict[str, object]:
+    if version == "1.0.0":
+        if expected_previous is not None:
+            raise ReleaseError("v1.0.0 is the release-manifest chain genesis")
+        return {"kind": "genesis"}
+    if (
+        expected_previous is None
+        or set(expected_previous) != {"tag", "manifest_sha256"}
+        or re.fullmatch(r"v1\.[0-9]+\.[0-9]+", expected_previous.get("tag", "")) is None
+        or re.fullmatch(r"[0-9a-f]{64}", expected_previous.get("manifest_sha256", "")) is None
+    ):
+        raise ReleaseError("a post-v1.0 release requires its authenticated predecessor")
+    return {
+        "kind": "continuation",
+        "previous_tag": expected_previous["tag"],
+        "previous_manifest_sha256": expected_previous["manifest_sha256"],
+    }
+
+
+def _manifest_license_map(
+    manifest: Mapping[str, object],
+) -> dict[tuple[str, str], str]:
+    values = manifest.get("publication_licenses")
+    if not isinstance(values, list):
+        raise ReleaseError("release manifest has no publication-license inventory")
+    result: dict[tuple[str, str], str] = {}
+    for item in values:
+        if not isinstance(item, Mapping) or set(item) != {
+            "publication_identity",
+            "license_expression",
+        }:
+            raise ReleaseError("release manifest publication-license entry is invalid")
+        identity = item["publication_identity"]
+        expression = item["license_expression"]
+        if (
+            not isinstance(identity, Mapping)
+            or set(identity) != {"kind", "coordinate"}
+            or identity.get("kind") not in {"python-distribution", "oci-repository"}
+            or not isinstance(identity.get("coordinate"), str)
+            or not identity["coordinate"]
+            or not isinstance(expression, str)
+        ):
+            raise ReleaseError("release manifest publication-license identity is invalid")
+        _canonical_spdx_expression(expression)
+        key = (str(identity["kind"]), str(identity["coordinate"]))
+        if key in result:
+            raise ReleaseError(f"release manifest repeats a publication coordinate: {key}")
+        result[key] = expression
+    return result
+
+
+def _verify_v1_manifest_history(
+    candidate: Mapping[str, object],
+    *,
+    expected_previous: Mapping[str, str] | None,
+    historical_manifest_paths: Sequence[Path],
+) -> dict[str, object]:
+    version = str(candidate.get("version", ""))
+    tag = str(candidate.get("tag", ""))
+    if candidate.get("schema") != RELEASE_SCHEMA or tag != f"v{version}":
+        raise ReleaseError("candidate release manifest identity is invalid")
+    if _version(version)[0] != 1:
+        raise ReleaseError("release manifest history accepts only v1 releases")
+    expected_declaration = _release_history_declaration(version, expected_previous)
+    if candidate.get("v1_history") != expected_declaration:
+        raise ReleaseError("candidate release manifest points to another predecessor")
+
+    historical: list[tuple[dict[str, object], str]] = []
+    tags: set[str] = set()
+    for path in historical_manifest_paths:
+        raw = path.read_bytes()
+        try:
+            manifest = cast(dict[str, object], json.loads(raw))
+        except json.JSONDecodeError as exc:
+            raise ReleaseError(f"historical release manifest is invalid JSON: {path}") from exc
+        if raw != _canonical_release_manifest_bytes(manifest):
+            raise ReleaseError(f"historical release manifest is not canonical: {path}")
+        historical_tag = str(manifest.get("tag", ""))
+        historical_version = str(manifest.get("version", ""))
+        if (
+            manifest.get("schema") != RELEASE_SCHEMA
+            or historical_tag != f"v{historical_version}"
+            or not historical_tag.startswith("v1.")
+        ):
+            raise ReleaseError(f"historical release manifest identity is invalid: {path}")
+        _version(historical_version)
+        if historical_tag in tags:
+            raise ReleaseError(f"historical release manifest tag is duplicated: {historical_tag}")
+        tags.add(historical_tag)
+        historical.append((manifest, hashlib.sha256(raw).hexdigest()))
+
+    if version == "1.0.0":
+        if historical:
+            raise ReleaseError("v1.0.0 release history contains unexpected manifests")
+        manifests = [candidate]
+    else:
+        assert expected_previous is not None
+        current = (expected_previous["tag"], expected_previous["manifest_sha256"])
+        by_tag = {str(item[0]["tag"]): item for item in historical}
+        ordered: list[Mapping[str, object]] = []
+        visited: set[str] = set()
+        while True:
+            current_tag, current_digest = current
+            if current_tag in visited:
+                raise ReleaseError("release manifest history contains a cycle")
+            visited.add(current_tag)
+            resolved = by_tag.get(current_tag)
+            if resolved is None:
+                raise ReleaseError(f"release manifest history is incomplete at {current_tag}")
+            manifest, digest = resolved
+            if digest != current_digest:
+                raise ReleaseError(f"release manifest digest differs at {current_tag}")
+            ordered.append(manifest)
+            declaration = manifest.get("v1_history")
+            if declaration == {"kind": "genesis"}:
+                if manifest.get("version") != "1.0.0":
+                    raise ReleaseError("release manifest history has a non-v1.0 genesis")
+                break
+            if (
+                not isinstance(declaration, Mapping)
+                or set(declaration) != {"kind", "previous_tag", "previous_manifest_sha256"}
+                or declaration.get("kind") != "continuation"
+                or not isinstance(declaration.get("previous_tag"), str)
+                or not isinstance(declaration.get("previous_manifest_sha256"), str)
+            ):
+                raise ReleaseError(f"release manifest predecessor is invalid at {current_tag}")
+            current = (
+                str(declaration["previous_tag"]),
+                str(declaration["previous_manifest_sha256"]),
+            )
+        if [str(item["tag"]) for item, _digest in historical] != [
+            str(item["tag"]) for item in ordered
+        ]:
+            raise ReleaseError("release manifest inputs are reordered, forked, or extraneous")
+        manifests = [*reversed(ordered), candidate]
+
+    baselines: dict[tuple[str, str], tuple[str, str]] = {}
+    for release_manifest in manifests:
+        current_licenses = _manifest_license_map(release_manifest)
+        for coordinate, expression in current_licenses.items():
+            baseline = baselines.get(coordinate)
+            if baseline is None:
+                baselines[coordinate] = (str(release_manifest["tag"]), expression)
+            elif not _license_grant_preserved(baseline[1], expression):
+                raise ReleaseError(
+                    f"v1 license grant was withdrawn for {coordinate}: "
+                    f"{baseline[1]} -> {expression}"
+                )
+    candidate_coordinates = set(_manifest_license_map(candidate))
+    if set(baselines) != candidate_coordinates:
+        raise ReleaseError("candidate release omits a previously published v1 coordinate")
+    return {
+        "manifests": len(manifests),
+        "coordinates": len(candidate_coordinates),
+        "baselines": {
+            f"{kind}:{coordinate}": {"tag": value[0], "license_expression": value[1]}
+            for (kind, coordinate), value in sorted(baselines.items())
+        },
+    }
 
 
 def _wheel_notice_components(
@@ -1531,7 +1860,7 @@ def _write_source_archive(
                         archive.addfile(info)
 
 
-def _distribution_metadata(path: Path) -> tuple[str, str, str, set[str]]:
+def _distribution_metadata(path: Path) -> tuple[str, str, str, str, set[str]]:
     if path.suffix == ".whl":
         with zipfile.ZipFile(path) as archive:
             names = [name for name in archive.namelist() if name.endswith(".dist-info/METADATA")]
@@ -1555,10 +1884,11 @@ def _distribution_metadata(path: Path) -> tuple[str, str, str, set[str]]:
     name = str(metadata.get("Name", ""))
     version = str(metadata.get("Version", ""))
     requires_python = str(metadata.get("Requires-Python", ""))
+    license_expression = str(metadata.get("License-Expression", ""))
     dependencies = {
         _dependency_name(str(value)) for value in (metadata.get_all("Requires-Dist") or [])
     }
-    return _normalize_name(name), version, requires_python, dependencies
+    return _normalize_name(name), version, requires_python, license_expression, dependencies
 
 
 def _project_dependency_graph(
@@ -1637,13 +1967,19 @@ def _validate_distribution_artifacts(
     _internal, direct, _licenses = _project_dependency_graph(root, projects)
     validated: dict[str, tuple[Project, set[str]]] = {}
     for name, project in expected.items():
-        artifact_name, artifact_version, requires_python, dependencies = _distribution_metadata(
-            dist / name
-        )
+        (
+            artifact_name,
+            artifact_version,
+            requires_python,
+            license_expression,
+            dependencies,
+        ) = _distribution_metadata(dist / name)
         if artifact_name != project.name or artifact_version != version:
             raise ReleaseError(f"artifact identity differs from its release unit: {name}")
         if requires_python != project.requires_python:
             raise ReleaseError(f"artifact Requires-Python differs from {project.name}: {name}")
+        if license_expression != project.license_expression:
+            raise ReleaseError(f"artifact License-Expression differs from {project.name}: {name}")
         if dependencies != direct[project.name]:
             raise ReleaseError(f"artifact dependencies differ from {project.name}: {name}")
         validated[name] = project, dependencies
@@ -2100,6 +2436,9 @@ def _build_release_images(
             "org.opencontainers.image.documentation": ("https://nashspence.github.io/riverhog/v1/"),
             "io.github.nashspence.riverhog.release-role": str(image["role"]),
             IMAGE_DISTRIBUTION_ROOTS_LABEL: distribution_roots_label,
+            "org.opencontainers.image.licenses": _dockerfile_license_expression(
+                _bake_dockerfile(root, target)
+            ),
         }
         if any(labels.get(key) != value for key, value in expected_labels.items()):
             raise ReleaseError(f"release image labels differ from the release plan: {target}")
@@ -2204,7 +2543,7 @@ def _build_release_images(
                 "size": int(image_data.get("Size", 0)),
                 "distributions": distributions,
                 "version": version,
-                "license": labels.get("org.opencontainers.image.licenses", "NOASSERTION"),
+                "license": expected_labels["org.opencontainers.image.licenses"],
                 "platforms": list(config["images"]["platforms"]),
                 "tags": [f"{repository}:{version}", f"{repository}:sha-{source_sha}"],
                 "dependencies": [
@@ -2527,6 +2866,9 @@ def verify_release_evidence(
     output: Path,
     *,
     public_key: Path,
+    expected_previous: Mapping[str, str] | None = None,
+    historical_manifest_paths: Sequence[Path] = (),
+    publication: Mapping[str, object] | None = None,
 ) -> dict[str, Any]:
     config = _load_config(root)
     required = set(config["artifacts"]["evidence"])
@@ -2576,6 +2918,16 @@ def verify_release_evidence(
     )
     if manifest.get("schema") != RELEASE_SCHEMA:
         raise ReleaseError("release manifest uses another schema")
+    if publication is None:
+        publication = publication_contract(root)
+    publication_licenses = _publication_license_inventory(publication)
+    if manifest.get("publication_licenses") != publication_licenses:
+        raise ReleaseError("release manifest differs from its publication-license inventory")
+    history = _verify_v1_manifest_history(
+        manifest,
+        expected_previous=expected_previous,
+        historical_manifest_paths=historical_manifest_paths,
+    )
     if manifest.get("notices") != config["artifacts"]["notices"]:
         raise ReleaseError("release manifest differs from the artifact notice policy")
     install_manifest = cast(
@@ -2597,6 +2949,7 @@ def verify_release_evidence(
     subjects = cast(list[dict[str, Any]], manifest.get("subjects"))
     if not subjects:
         raise ReleaseError("release manifest contains no subjects")
+    _verify_built_publication_licenses(subjects, publication_licenses)
     subject_keys = {(str(item["name"]), str(item["sha256"])) for item in subjects}
     if len(subject_keys) != len(subjects):
         raise ReleaseError("release manifest repeats a subject")
@@ -2670,6 +3023,8 @@ def verify_release_evidence(
         "subjects": len(subjects),
         "files": len(entries),
         "notice_components": notice_components,
+        "license_coordinates": len(publication_licenses),
+        "release_history_manifests": history["manifests"],
         "signature_verified": True,
     }
 
@@ -2763,6 +3118,9 @@ def _generate_release_evidence(
     install_manifest: dict[str, Any],
     signing_key: Path,
     public_key: Path,
+    expected_previous: Mapping[str, str] | None = None,
+    historical_manifest_paths: Sequence[Path] = (),
+    publication: Mapping[str, object] | None = None,
 ) -> dict[str, Any]:
     shutil.copy2(root / "THIRD_PARTY_NOTICES.md", output / "THIRD_PARTY_NOTICES.md")
     contract_name = str(_load_config(root)["artifacts"]["contract"])
@@ -2801,6 +3159,10 @@ def _generate_release_evidence(
         created=spdx_created,
     )
     config = _load_config(root)
+    if publication is None:
+        publication = publication_contract(root)
+    publication_licenses = _publication_license_inventory(publication)
+    _verify_built_publication_licenses(records, publication_licenses)
     manifest = {
         "schema": RELEASE_SCHEMA,
         "version": version,
@@ -2810,6 +3172,8 @@ def _generate_release_evidence(
         "platforms": config["images"]["platforms"],
         "notices": config["artifacts"]["notices"],
         "subjects": sorted(records, key=lambda item: (str(item["kind"]), str(item["name"]))),
+        "publication_licenses": publication_licenses,
+        "v1_history": _release_history_declaration(version, expected_previous),
         "installation": {
             "manifest": "install-manifest.json",
             "sha256": _sha256_file(output / "install-manifest.json"),
@@ -2838,7 +3202,14 @@ def _generate_release_evidence(
         version=version,
         source_sha=source_sha,
     )
-    return verify_release_evidence(root, output, public_key=public_key)
+    return verify_release_evidence(
+        root,
+        output,
+        public_key=public_key,
+        expected_previous=expected_previous,
+        historical_manifest_paths=historical_manifest_paths,
+        publication=publication,
+    )
 
 
 def build_release_evidence(
@@ -2848,6 +3219,8 @@ def build_release_evidence(
     *,
     signing_key: Path,
     public_key: Path,
+    expected_previous: Mapping[str, str] | None = None,
+    historical_manifest_paths: Sequence[Path] = (),
 ) -> dict[str, Any]:
     _ensure_clean(root)
     source_sha = _source_sha(root)
@@ -2934,6 +3307,9 @@ def build_release_evidence(
                 install_manifest=install_manifest,
                 signing_key=signing_key,
                 public_key=public_key,
+                expected_previous=expected_previous,
+                historical_manifest_paths=historical_manifest_paths,
+                publication=publication_contract(checkout, projects),
             )
     finally:
         _remove_release_image_tags(cleanup_tags, cwd=root)
@@ -2948,6 +3324,8 @@ def build_release_evidence(
         "evidence_subjects": verification["subjects"],
         "evidence_files": verification["files"],
         "notice_components": verification["notice_components"],
+        "license_coordinates": verification["license_coordinates"],
+        "release_history_manifests": verification["release_history_manifests"],
         "signature_verified": verification["signature_verified"],
         "published": False,
         "validation": [
@@ -2965,7 +3343,13 @@ def build_release_evidence(
     }
 
 
-def dry_run(root: Path, version: str) -> dict[str, Any]:
+def dry_run(
+    root: Path,
+    version: str,
+    *,
+    expected_previous: Mapping[str, str] | None = None,
+    historical_manifest_paths: Sequence[Path] = (),
+) -> dict[str, Any]:
     with tempfile.TemporaryDirectory(prefix="riverhog-release-dry-run.") as temporary:
         scratch = Path(temporary)
         keys = scratch / "keys"
@@ -2990,7 +3374,35 @@ def dry_run(root: Path, version: str) -> dict[str, Any]:
             scratch / "evidence",
             signing_key=signing_key,
             public_key=public_key,
+            expected_previous=expected_previous,
+            historical_manifest_paths=historical_manifest_paths,
         )
+
+
+def _add_history_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--previous-tag")
+    parser.add_argument("--previous-manifest-sha256")
+    parser.add_argument(
+        "--history-manifest",
+        action="append",
+        type=Path,
+        default=[],
+        help="Predecessor manifests in newest-to-oldest order.",
+    )
+
+
+def _history_arguments(args: argparse.Namespace) -> tuple[dict[str, str] | None, list[Path]]:
+    if bool(args.previous_tag) != bool(args.previous_manifest_sha256):
+        raise ReleaseError("previous release tag and manifest SHA-256 must be supplied together")
+    expected = (
+        {
+            "tag": str(args.previous_tag),
+            "manifest_sha256": str(args.previous_manifest_sha256),
+        }
+        if args.previous_tag
+        else None
+    )
+    return expected, [path.resolve() for path in cast(list[Path], args.history_manifest)]
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -3019,6 +3431,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     dry.add_argument("--version", required=True)
     dry.add_argument("--summary", type=Path)
+    _add_history_arguments(dry)
 
     evidence = subparsers.add_parser(
         "evidence",
@@ -3028,6 +3441,7 @@ def _parser() -> argparse.ArgumentParser:
     evidence.add_argument("--output", required=True, type=Path)
     evidence.add_argument("--signing-key", required=True, type=Path)
     evidence.add_argument("--public-key", required=True, type=Path)
+    _add_history_arguments(evidence)
 
     verify = subparsers.add_parser(
         "verify",
@@ -3035,6 +3449,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     verify.add_argument("--directory", required=True, type=Path)
     verify.add_argument("--public-key", required=True, type=Path)
+    _add_history_arguments(verify)
     return parser
 
 
@@ -3081,26 +3496,38 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "apply":
             apply_command(ROOT, args.version, allow_dirty=args.allow_dirty)
         elif args.command == "dry-run":
-            payload = dry_run(ROOT, args.version)
+            expected_previous, historical_manifest_paths = _history_arguments(args)
+            payload = dry_run(
+                ROOT,
+                args.version,
+                expected_previous=expected_previous,
+                historical_manifest_paths=historical_manifest_paths,
+            )
             rendered = json.dumps(payload, indent=2, sort_keys=True) + "\n"
             if args.summary is not None:
                 args.summary.parent.mkdir(parents=True, exist_ok=True)
                 args.summary.write_text(rendered, encoding="utf-8")
             print(rendered, end="")
         elif args.command == "evidence":
+            expected_previous, historical_manifest_paths = _history_arguments(args)
             payload = build_release_evidence(
                 ROOT,
                 args.version,
                 args.output.resolve(),
                 signing_key=args.signing_key.resolve(),
                 public_key=args.public_key.resolve(),
+                expected_previous=expected_previous,
+                historical_manifest_paths=historical_manifest_paths,
             )
             print(json.dumps(payload, indent=2, sort_keys=True))
         else:
+            expected_previous, historical_manifest_paths = _history_arguments(args)
             payload = verify_release_evidence(
                 ROOT,
                 args.directory.resolve(),
                 public_key=args.public_key.resolve(),
+                expected_previous=expected_previous,
+                historical_manifest_paths=historical_manifest_paths,
             )
             print(json.dumps(payload, indent=2, sort_keys=True))
     except (OSError, ReleaseError, subprocess.CalledProcessError) as exc:
