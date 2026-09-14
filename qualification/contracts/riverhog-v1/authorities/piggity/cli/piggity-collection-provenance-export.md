@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-collection-provenance-export:83decd640d -->
+<!-- contract-element: cli:piggity:piggity-collection-provenance-export:033c221964 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -24,6 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-23253560e6"></a>`output` | TyperOption | yes | {'class': 'typer.models.TyperPath', 'name': 'path'} | --output, -o |
 | <a id="s-4168b25082"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-b9062a41d1"></a>`help` | <a id="s-6ae652ee1a"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-e73019dc23"></a>`0` | <a id="s-cde9e6b05d"></a>`"noncontractual-framework-help"` | <a id="s-029ac51271"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-2bbaaf4c9c"></a>Result identity: `piggity-cli-result/collection/provenance/export/v1`
@@ -33,16 +39,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-54c365a877"></a>`completed` | <a id="s-3c77526821"></a>`0` | <a id="s-a3a0a70fd5"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-e9d03a6eb5"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-54c365a877"></a>`completed` | <a id="s-9eb5f8121b"></a>`{"kind":"command-completed"}` | <a id="s-3c77526821"></a>`0` | <a id="s-a3a0a70fd5"></a>`human: noncontractual-presentation-of-command-result; json: piggity-provenance-journal-export/v1` | <a id="s-e9d03a6eb5"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-d77f6a8f47"></a>`usage` | <a id="s-9dc652abf3"></a>`2` | <a id="s-b2d941374b"></a>`{"all":"empty"}` | <a id="s-d0e0ed8df9"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-cb2d3355cc"></a>`operational` | <a id="s-4bbf5dc3b2"></a>`1` | <a id="s-c9f2314d7e"></a>`{"human":"empty","json":"http-api-contracts.ErrorResponse"}` | <a id="s-b55e01adc5"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-d77f6a8f47"></a>`usage` | <a id="s-57925c97aa"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-9dc652abf3"></a>`2` | <a id="s-b2d941374b"></a>`all: empty` | <a id="s-d0e0ed8df9"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-cb2d3355cc"></a>`operational` | <a id="s-810fd80b39"></a>`{"kind":"application-error"}` | <a id="s-4bbf5dc3b2"></a>`1` | <a id="s-c9f2314d7e"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-b55e01adc5"></a>`human: noncontractual-diagnostic; json: empty` |
 
 ### Progression, limits, and lifecycle
 
@@ -65,8 +71,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-ef2a7c2d23"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-4ca167b170"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-25b98f52df"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-9fcc029a85"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -85,6 +91,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 - `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/name`
 - `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/parameters`
 - `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/result_contract`
+- `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/terminating_controls`
 
 ### Exact owned JSON
 
@@ -179,7 +186,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/result_contract`
 
-<!-- exact-contract-value: e4d5ec6b305581aff3066017f4efbc15e2f32aa40dcf4731118234fe10ddb28a -->
+<!-- exact-contract-value: c2ba458a610e115d8e3d76b8d593cc72c141855dc693caa007866036bcbfc4b0 -->
 
 ```json
 {
@@ -187,6 +194,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -197,13 +207,68 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "human": "noncontractual-diagnostic",
         "json": "empty"
       },
       "stdout": {
         "human": "empty",
-        "json": "http-api-contracts.ErrorResponse"
+        "json": {
+          "identity": "http-api-contracts.ErrorResponse",
+          "kind": "python-model",
+          "schema": {
+            "$defs": {
+              "ErrorBody": {
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "minLength": 1,
+                    "title": "Code",
+                    "type": "string"
+                  },
+                  "details": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "title": "Details"
+                  },
+                  "message": {
+                    "minLength": 1,
+                    "title": "Message",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "title": "ErrorBody",
+                "type": "object"
+              }
+            },
+            "additionalProperties": false,
+            "properties": {
+              "error": {
+                "$ref": "#/$defs/ErrorBody"
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "title": "ErrorResponse",
+            "type": "object"
+          }
+        }
       }
     }
   ],
@@ -215,14 +280,72 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed",
+      "selected_by": {
+        "kind": "command-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "identity": "piggity-provenance-journal-export/v1",
+          "kind": "cli-local-json-schema",
+          "schema": {
+            "additionalProperties": false,
+            "properties": {
+              "bytes": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "collection_id": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "journal_id": {
+                "type": "string"
+              },
+              "output": {
+                "type": "string"
+              },
+              "sha256": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "collection_id",
+              "journal_id",
+              "output",
+              "bytes",
+              "sha256"
+            ],
+            "type": "object"
+          }
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

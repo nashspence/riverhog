@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:riverhog-ftp-adapter:riverhog-ftp-adapter-listen:a15da06424 -->
+<!-- contract-element: cli:riverhog-ftp-adapter:riverhog-ftp-adapter-listen:bd530a9a23 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -30,6 +30,12 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-ba15d7ef39"></a>`max_connections` | _StoreAction | no | int | --max-connections |
 | <a id="s-9d17fa8370"></a>`max_connections_per_ip` | _StoreAction | no | int | --max-connections-per-ip |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-b390d20c71"></a>`help` | <a id="s-4b2f9abe0c"></a>`{"kind":"option-present","options":["-h","--help"]}` | <a id="s-569142a293"></a>`0` | <a id="s-3afa2b8e14"></a>`"noncontractual-framework-help"` | <a id="s-0b40535171"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-4370b398b3"></a>Result identity: `riverhog-ftp-adapter-cli-result/listen/v1`
@@ -39,19 +45,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-6480809c91"></a>`stopped` | <a id="s-6a005a8188"></a>`0` | <a id="s-8c583022a9"></a>`{"all":"no-command-result"}` | <a id="s-c92cc1fc9d"></a>`{"all":"noncontractual-runtime-log"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-6480809c91"></a>`stopped` | <a id="s-824feeff6b"></a>`{"kind":"service-runtime-returned"}` | <a id="s-6a005a8188"></a>`0` | <a id="s-8c583022a9"></a>`all: no-command-result` | <a id="s-c92cc1fc9d"></a>`all: noncontractual-runtime-log` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-6106114738"></a>`usage` | <a id="s-feab2fe227"></a>`2` | <a id="s-a2da385836"></a>`{"all":"empty"}` | <a id="s-0c2b6e6bd5"></a>`{"all":"noncontractual-usage-diagnostic"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-6106114738"></a>`usage` | <a id="s-df76c739e5"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-feab2fe227"></a>`2` | <a id="s-a2da385836"></a>`all: empty` | <a id="s-0c2b6e6bd5"></a>`all: noncontractual-usage-diagnostic` |
 
 ## Governing policies
 
-- <a id="pa-04f09a9b32"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-22462763aa"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -70,6 +76,7 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/cli/riverhog-ftp-adapter/commands/listen/name`
 - `/external_contract/cli/riverhog-ftp-adapter/commands/listen/parameters`
 - `/external_contract/cli/riverhog-ftp-adapter/commands/listen/result_contract`
+- `/external_contract/cli/riverhog-ftp-adapter/commands/listen/terminating_controls`
 
 ### Exact owned JSON
 
@@ -196,7 +203,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/riverhog-ftp-adapter/commands/listen/result_contract`
 
-<!-- exact-contract-value: a1051d6911f34bf35122c25c04735cb5d3f05a4ab5a6c48b673e146d28947c6d -->
+<!-- exact-contract-value: 44f4e21e2f98f8d51a9dfc943e67f161014bf8d9f7f15628b6b27363c3d971d9 -->
 
 ```json
 {
@@ -204,6 +211,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -220,6 +230,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "stopped",
+      "selected_by": {
+        "kind": "service-runtime-returned"
+      },
       "stderr": {
         "all": "noncontractual-runtime-log"
       },
@@ -229,4 +242,26 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   ]
 }
+```
+
+### `/external_contract/cli/riverhog-ftp-adapter/commands/listen/terminating_controls`
+
+<!-- exact-contract-value: 46c96c22d2ed8a51da57bba3ac0f2269bb35f98c5fd6dc3e3ba67e60f772ad72 -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "-h",
+        "--help"
+      ]
+    }
+  }
+]
 ```

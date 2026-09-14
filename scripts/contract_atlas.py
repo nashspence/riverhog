@@ -488,7 +488,9 @@ def _walk_cli(
         (*command_path, name) if not command_path or command_path[-1] != name else command_path
     )
     pointers = [
-        f"{pointer}/{key}" for key in ("name", "parameters", "result_contract") if key in node
+        f"{pointer}/{key}"
+        for key in ("name", "parameters", "terminating_controls", "result_contract")
+        if key in node
     ]
     result_contract = node.get("result_contract")
     details: dict[str, object] = {"command_path": list(current_path)}
@@ -499,6 +501,9 @@ def _walk_cli(
                 "result_identity": result_contract["identity"],
                 "result_profile_id": result_contract["profile_id"],
                 "structured_output": result_contract["structured_output"],
+                "terminating_control_count": len(
+                    cast(Sequence[object], node.get("terminating_controls", ()))
+                ),
             }
         )
     _add_element(
@@ -1952,6 +1957,25 @@ def _compact_json(value: object) -> str:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
+def _cli_channel_summary(value: Mapping[str, object]) -> str:
+    parts: list[str] = []
+    for mode, semantics in value.items():
+        if not isinstance(semantics, Mapping):
+            parts.append(f"{mode}: {semantics}")
+            continue
+        kind = str(semantics.get("kind", "authority"))
+        if kind == "http-operation-response":
+            label = (
+                f"HTTP {semantics.get('operation_id')} — {_shape_summary(semantics.get('schema'))}"
+            )
+        elif kind == "openapi-schema":
+            label = f"OpenAPI {semantics.get('application')}.{semantics.get('schema')}"
+        else:
+            label = str(semantics.get("identity", kind))
+        parts.append(f"{mode}: {label}")
+    return "; ".join(parts)
+
+
 def _shape_summary(value: object) -> str:
     if isinstance(value, Mapping):
         if set(value) == {"$ref"}:
@@ -2152,13 +2176,18 @@ def _render_cli(
     name_pointer = ""
     result_contract: Mapping[str, object] | None = None
     result_pointer = ""
+    terminating_controls: Sequence[Mapping[str, object]] = ()
+    terminating_controls_pointer = ""
     for pointer, value in zip(pointers, values, strict=True):
         if isinstance(value, str):
             name = value
             name_pointer = pointer
-        elif isinstance(value, list):
+        elif isinstance(value, list) and pointer.endswith("/parameters"):
             parameters = cast(Sequence[Mapping[str, object]], value)
             parameters_pointer = pointer
+        elif isinstance(value, list) and pointer.endswith("/terminating_controls"):
+            terminating_controls = cast(Sequence[Mapping[str, object]], value)
+            terminating_controls_pointer = pointer
         elif isinstance(value, Mapping):
             result_contract = value
             result_pointer = pointer
@@ -2186,6 +2215,30 @@ def _render_cli(
                 f"{'yes' if item.get('required') else 'no'} | {_md(item.get('type', ''))} | "
                 f"{_md(', '.join(cast(Sequence[str], item.get('options', ()))))} |"
             )
+    if terminating_controls:
+        lines.extend(
+            [
+                "",
+                "### Terminating controls",
+                "",
+                "| Identity | Trigger | Exit status | stdout | stderr |",
+                "|---|---|---:|---|---|",
+            ]
+        )
+        for index, control in enumerate(terminating_controls):
+            pointer = f"{terminating_controls_pointer}/{index}"
+            lines.append(
+                f"| {_subject_marker(f'{pointer}/id', placed_subjects)}"
+                f"`{_md(control['id'])}` | "
+                f"{_subject_marker(f'{pointer}/trigger', placed_subjects)}"
+                f"`{_md(_compact_json(control['trigger']))}` | "
+                f"{_subject_marker(f'{pointer}/exit_status', placed_subjects)}"
+                f"`{_md(control['exit_status'])}` | "
+                f"{_subject_marker(f'{pointer}/stdout', placed_subjects)}"
+                f"`{_md(_compact_json(control['stdout']))}` | "
+                f"{_subject_marker(f'{pointer}/stderr', placed_subjects)}"
+                f"`{_md(_compact_json(control['stderr']))}` |"
+            )
     if result_contract is not None:
         lines.extend(
             [
@@ -2210,8 +2263,8 @@ def _render_cli(
                     "",
                     f"#### {title}",
                     "",
-                    "| Identity | Exit status | stdout | stderr |",
-                    "|---|---|---|---|",
+                    "| Identity | Selected by | Exit status | stdout | stderr |",
+                    "|---|---|---|---|---|",
                 ]
             )
             for index, outcome in enumerate(outcomes):
@@ -2222,15 +2275,13 @@ def _render_cli(
                     if isinstance(status, Mapping)
                     else str(status)
                 )
-                stdout = json.dumps(
-                    outcome["stdout"], ensure_ascii=False, sort_keys=True, separators=(",", ":")
-                )
-                stderr = json.dumps(
-                    outcome["stderr"], ensure_ascii=False, sort_keys=True, separators=(",", ":")
-                )
+                stdout = _cli_channel_summary(cast(Mapping[str, object], outcome["stdout"]))
+                stderr = _cli_channel_summary(cast(Mapping[str, object], outcome["stderr"]))
                 lines.append(
                     f"| {_subject_marker(f'{outcome_pointer}/id', placed_subjects)}"
                     f"`{_md(outcome['id'])}` | "
+                    f"{_subject_marker(f'{outcome_pointer}/selected_by', placed_subjects)}"
+                    f"`{_md(_compact_json(outcome['selected_by']))}` | "
                     f"{_subject_marker(f'{outcome_pointer}/exit_status', placed_subjects)}"
                     f"`{_md(rendered_status)}` | "
                     f"{_subject_marker(f'{outcome_pointer}/stdout', placed_subjects)}"

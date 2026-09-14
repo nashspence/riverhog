@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0:5522a038a5 -->
+<!-- contract-element: cli:stove0-client:stove0:5c2b4266f3 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -19,13 +19,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| <a id="s-791a5ac62a"></a>`version` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --version |
-| <a id="s-ddcd5174d2"></a>`base_url` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --base-url |
-| <a id="s-7dc0e8294b"></a>`token` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --token |
-| <a id="s-f62c39ef75"></a>`json_output` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
-| <a id="s-aae0a62f35"></a>`allow_insecure_http` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --allow-insecure-http |
-| <a id="s-54084edd10"></a>`install_completion` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --install-completion |
-| <a id="s-5216637289"></a>`show_completion` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --show-completion |
+| <a id="s-791a5ac62a"></a>`base_url` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --base-url |
+| <a id="s-ddcd5174d2"></a>`token` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --token |
+| <a id="s-7dc0e8294b"></a>`json_output` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+| <a id="s-f62c39ef75"></a>`allow_insecure_http` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --allow-insecure-http |
+
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-93d55fec59"></a>`help` | <a id="s-957bcb3b93"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-72b1b57d0a"></a>`0` | <a id="s-b04cefcc77"></a>`"noncontractual-framework-help"` | <a id="s-42dd8a9d9f"></a>`"empty"` |
+| <a id="s-077cfb592e"></a>`version` | <a id="s-ff5c02073f"></a>`{"kind":"option-present","options":["--version"]}` | <a id="s-e0e077de9e"></a>`0` | <a id="s-33cce1ef1e"></a>`{"distribution":"stove0-client","kind":"installed-coordinated-release-version","serialization":"noncontractual"}` | <a id="s-0a31e295de"></a>`"empty"` |
 
 ### Progression, limits, and lifecycle
 
@@ -35,18 +39,15 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --allow-insecure-http](#s-aae0a62f35) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --base-url](#s-ddcd5174d2) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --install-completion](#s-54084edd10) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --json](#s-f62c39ef75) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --show-completion](#s-5216637289) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --token](#s-7dc0e8294b) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --version](#s-791a5ac62a) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --allow-insecure-http](#s-f62c39ef75) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --base-url](#s-791a5ac62a) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --json](#s-7dc0e8294b) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --token](#s-ddcd5174d2) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Governing policies
 
-- <a id="pa-2910538aca"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-eacd878b53"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-2f1807e08a"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-8f9c5c6ffb"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -64,6 +65,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - `/external_contract/cli/stove0/name`
 - `/external_contract/cli/stove0/parameters`
+- `/external_contract/cli/stove0/terminating_controls`
 
 ### Exact owned JSON
 
@@ -79,28 +81,10 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0/parameters`
 
-<!-- exact-contract-value: 27817a8b5af625ab0a68de36b2bb2e1429d160e66a7ebcca783657718cd8b547 -->
+<!-- exact-contract-value: 8d942a43b26a70a73cf6e5ff2094ee42434de3e07ea6056830159e06b185280b -->
 
 ```json
 [
-  {
-    "count": false,
-    "envvar": null,
-    "is_flag": true,
-    "kind": "TyperOption",
-    "multiple": false,
-    "name": "version",
-    "nargs": 1,
-    "options": [
-      "--version"
-    ],
-    "required": false,
-    "secondary_options": [],
-    "type": {
-      "class": "typer._click.types.BoolParamType",
-      "name": "boolean"
-    }
-  },
   {
     "count": false,
     "envvar": null,
@@ -175,41 +159,42 @@ The following JSON is the complete value owned at each machine-authority pointer
       "class": "typer._click.types.BoolParamType",
       "name": "boolean"
     }
-  },
+  }
+]
+```
+
+### `/external_contract/cli/stove0/terminating_controls`
+
+<!-- exact-contract-value: 33cf962c5cc0ddb9a977e17b3920d30afd6c17195073eaad342386d849e1a68c -->
+
+```json
+[
   {
-    "count": false,
-    "envvar": null,
-    "is_flag": true,
-    "kind": "TyperOption",
-    "multiple": false,
-    "name": "install_completion",
-    "nargs": 1,
-    "options": [
-      "--install-completion"
-    ],
-    "required": false,
-    "secondary_options": [],
-    "type": {
-      "class": "typer._click.types.BoolParamType",
-      "name": "boolean"
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
     }
   },
   {
-    "count": false,
-    "envvar": null,
-    "is_flag": true,
-    "kind": "TyperOption",
-    "multiple": false,
-    "name": "show_completion",
-    "nargs": 1,
-    "options": [
-      "--show-completion"
-    ],
-    "required": false,
-    "secondary_options": [],
-    "type": {
-      "class": "typer._click.types.BoolParamType",
-      "name": "boolean"
+    "exit_status": 0,
+    "id": "version",
+    "stderr": "empty",
+    "stdout": {
+      "distribution": "stove0-client",
+      "kind": "installed-coordinated-release-version",
+      "serialization": "noncontractual"
+    },
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--version"
+      ]
     }
   }
 ]

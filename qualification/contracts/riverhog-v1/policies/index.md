@@ -774,7 +774,7 @@ Applications: **1**
 | [extent-rule/extension-contract/v1](#p-75a89f9d1c) | 17 |
 | [extent-rule/no-semantic-maximum/v1](#p-574724b48a) | 166 |
 | [extent-rule/route-progression/v1](#p-6b76b527cb) | 67 |
-| [extent-rule/schema-bound/v1](#p-c0db822fc0) | 454 |
+| [extent-rule/schema-bound/v1](#p-c0db822fc0) | 451 |
 
 ### Definitions
 
@@ -1021,7 +1021,6 @@ Applications: **67**
   - [cli:stove0](../evidence/sources.md#src-6203ae7d88)
   - [cli:stove0-observer-schemas](../evidence/sources.md#src-e6175e3ae2)
   - [cli:stove0-review-sampler-conformance](../evidence/sources.md#src-5796b3dff4)
-  - [cli:stove0-review-sampler-schemas](../evidence/sources.md#src-a75c35f0c8)
   - [cli:stove0-target-schemas](../evidence/sources.md#src-71d64b87b5)
   - [configuration:mango-fish:configuration:mango-fish-config](../evidence/sources.md#src-fead015e98)
   - [configuration:riverhog-ftp-adapter:configuration:ftp-adapter-config](../evidence/sources.md#src-cf8c44826f)
@@ -1051,7 +1050,7 @@ Applications: **67**
   - [protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json](../evidence/sources.md#src-a3bfff3737)
   - [protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json](../evidence/sources.md#src-bd3602393c)
 
-Applications: **454**
+Applications: **451**
 
 ## Exclusion
 

@@ -18,6 +18,7 @@ from typing import Annotated, Any, Literal, TypedDict, cast
 
 import httpx
 import typer
+from http_api_contracts import ErrorResponse
 from riverhog_application_access import ApplicationPermission
 from riverhog_client import (
     COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES,
@@ -108,7 +109,75 @@ from piggity.output import (
 )
 from piggity.upload_progress import make_collection_upload_progress
 
-app = typer.Typer(help="Piggity reference client for Riverhog.")
+_ERROR_RESPONSE_OUTPUT = {
+    "kind": "python-model",
+    "identity": "http-api-contracts.ErrorResponse",
+    "schema": ErrorResponse.model_json_schema(),
+}
+
+
+def _cli_local_json(identity: str, schema: dict[str, object]) -> dict[str, object]:
+    return {"kind": "cli-local-json-schema", "identity": identity, "schema": schema}
+
+
+_STATE_STATUS_OUTPUT = _cli_local_json(
+    "state-schema-status/v1",
+    {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["name", "condition", "current_revision", "head_revision"],
+        "properties": {
+            "name": {"type": "string"},
+            "condition": {
+                "enum": ["empty", "current", "upgrade_required", "unversioned", "incompatible"]
+            },
+            "current_revision": {"type": ["string", "null"]},
+            "head_revision": {"type": "string"},
+        },
+    },
+)
+_LOCAL_COLLECTION_SCHEMA = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["collection_id", "created_at", "tag_count", "status", "files", "bytes"],
+    "properties": {
+        "collection_id": {"type": "integer", "minimum": 1},
+        "created_at": {"type": "string"},
+        "tag_count": {"type": "integer", "minimum": 0},
+        "status": {"enum": ["desired", "remote-deleted", "synchronizing"]},
+        "files": {"type": "integer", "minimum": 0},
+        "bytes": {"type": "integer", "minimum": 0},
+    },
+}
+_LOCAL_SYNC_OUTPUT = _cli_local_json(
+    "piggity-local-sync-result/v1",
+    {
+        "type": "object",
+        "required": ["status", "materialized_files"],
+        "properties": {
+            "status": {
+                "enum": [
+                    "requested",
+                    "ready",
+                    "cache-miss",
+                    "current",
+                    "materialized",
+                ]
+            },
+            "materialized_files": {"type": "integer", "minimum": 0},
+            "restore_policy": {"enum": ["allow", "never"]},
+            "unavailable_files": {"type": "integer", "minimum": 0},
+            "retrieval_id": {"type": "string"},
+            "retrieval": {"type": "object"},
+        },
+        "additionalProperties": False,
+    },
+)
+
+app = typer.Typer(
+    help="Piggity reference client for Riverhog.",
+    add_completion=False,
+)
 
 _CLI_RESULT_CONTRACT = {
     "schema": "riverhog-cli-result-contract/v1",
@@ -125,7 +194,7 @@ _CLI_RESULT_CONTRACT = {
                     "exit_status": 0,
                     "stdout": {
                         "human": "noncontractual-presentation-of-command-result",
-                        "json": "named-command-result",
+                        "json": "$command-json-output",
                     },
                     "stderr": {"all": "empty"},
                 }
@@ -142,7 +211,7 @@ _CLI_RESULT_CONTRACT = {
                     "exit_status": 1,
                     "stdout": {
                         "human": "empty",
-                        "json": "http-api-contracts.ErrorResponse",
+                        "json": _ERROR_RESPONSE_OUTPUT,
                     },
                     "stderr": {
                         "human": "noncontractual-diagnostic",
@@ -161,7 +230,7 @@ _CLI_RESULT_CONTRACT = {
                     "exit_status": 0,
                     "stdout": {
                         "human": "noncontractual-presentation-of-command-result",
-                        "json": "named-command-result",
+                        "json": "$command-json-output",
                     },
                     "stderr": {"all": "noncontractual-progress"},
                 }
@@ -178,7 +247,7 @@ _CLI_RESULT_CONTRACT = {
                     "exit_status": 1,
                     "stdout": {
                         "human": "empty",
-                        "json": "http-api-contracts.ErrorResponse",
+                        "json": _ERROR_RESPONSE_OUTPUT,
                     },
                     "stderr": {
                         "human": "noncontractual-diagnostic-or-progress",
@@ -200,7 +269,7 @@ _CLI_RESULT_CONTRACT = {
                     "exit_status": 0,
                     "stdout": {
                         "human": "noncontractual-presentation-of-command-result",
-                        "json": "named-command-result",
+                        "json": "$command-json-output",
                     },
                     "stderr": {"all": "noncontractual-progress"},
                 }
@@ -217,7 +286,7 @@ _CLI_RESULT_CONTRACT = {
                     "exit_status": 1,
                     "stdout": {
                         "human": "empty",
-                        "json": "http-api-contracts.ErrorResponse",
+                        "json": _ERROR_RESPONSE_OUTPUT,
                     },
                     "stderr": {
                         "human": "noncontractual-diagnostic-or-progress",
@@ -229,7 +298,7 @@ _CLI_RESULT_CONTRACT = {
                     "exit_status": 124,
                     "stdout": {
                         "human": "noncontractual-presentation-of-command-result",
-                        "json": "named-command-result",
+                        "json": "$command-json-output",
                     },
                     "stderr": {"all": "noncontractual-progress"},
                 },
@@ -248,7 +317,7 @@ _CLI_RESULT_CONTRACT = {
                     "exit_status": 1,
                     "stdout": {
                         "human": "empty",
-                        "json": "http-api-contracts.ErrorResponse",
+                        "json": _ERROR_RESPONSE_OUTPUT,
                     },
                     "stderr": {
                         "human": "noncontractual-diagnostic",
@@ -260,7 +329,7 @@ _CLI_RESULT_CONTRACT = {
                     "exit_status": 1,
                     "stdout": {
                         "human": "noncontractual-presentation-of-command-result",
-                        "json": "named-command-result",
+                        "json": "$command-json-output",
                     },
                     "stderr": {"all": "empty"},
                 },
@@ -268,6 +337,26 @@ _CLI_RESULT_CONTRACT = {
         },
         **{
             command: {
+                "success": [
+                    {
+                        "id": "planned",
+                        "exit_status": 0,
+                        "stdout": {
+                            "human": "noncontractual-presentation-of-command-result",
+                            "json": "$command-json-output",
+                        },
+                        "stderr": {"all": "empty"},
+                    },
+                    {
+                        "id": "executed",
+                        "exit_status": 0,
+                        "stdout": {
+                            "human": "noncontractual-presentation-of-command-result",
+                            "json": "$command-json-output",
+                        },
+                        "stderr": {"all": "empty"},
+                    },
+                ],
                 "failures": [
                     {
                         "id": "usage",
@@ -280,7 +369,7 @@ _CLI_RESULT_CONTRACT = {
                         "exit_status": 1,
                         "stdout": {
                             "human": "empty",
-                            "json": "http-api-contracts.ErrorResponse",
+                            "json": _ERROR_RESPONSE_OUTPUT,
                         },
                         "stderr": {
                             "human": "noncontractual-diagnostic",
@@ -299,7 +388,7 @@ _CLI_RESULT_CONTRACT = {
                         "stdout": {"human": "noncontractual-presentation-of-command-result"},
                         "stderr": {"human": "noncontractual-diagnostic"},
                     },
-                ]
+                ],
             }
             for command in (
                 "archive retire",
@@ -307,8 +396,251 @@ _CLI_RESULT_CONTRACT = {
                 "collection upload discard",
             )
         },
+        "local audit": {
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                },
+                {
+                    "id": "operational",
+                    "exit_status": 1,
+                    "stdout": {
+                        "human": "empty",
+                        "json": _ERROR_RESPONSE_OUTPUT,
+                    },
+                    "stderr": {
+                        "human": "noncontractual-diagnostic",
+                        "json": "empty",
+                    },
+                },
+                {
+                    "id": "audit-issues",
+                    "exit_status": 1,
+                    "stdout": {
+                        "human": "noncontractual-presentation-of-command-result",
+                        "json": "$command-json-output",
+                    },
+                    "stderr": {"all": "empty"},
+                },
+            ]
+        },
     },
     "executable_groups": [],
+    "outcome_selectors": {
+        "completed": {"kind": "command-completed"},
+        "planned": {"kind": "option-equals", "parameter": "dry_run", "value": True},
+        "executed": {"kind": "option-equals", "parameter": "dry_run", "value": False},
+        "usage": {"kind": "parser-rejected-invocation"},
+        "operational": {"kind": "application-error"},
+        "custody-timeout": {
+            "kind": "custody-deadline-expired",
+            "state": "not-finalized",
+        },
+        "terminal-job-failure": {
+            "kind": "archive-copy-state",
+            "state": "failed",
+        },
+        "blocked": {"kind": "plan-reported-blockers"},
+        "confirmation-declined": {"kind": "interactive-confirmation-mismatch"},
+        "audit-issues": {"kind": "local-audit-problem-count-positive"},
+    },
+    "output_authorities": {
+        "archive retire": {
+            "outcomes": {
+                "planned": {
+                    "kind": "operation-response",
+                    "operation_id": "plan_archive_copy_retirement",
+                },
+                "executed": {
+                    "kind": "operation-response",
+                    "operation_id": "retire_archive_copy",
+                },
+            }
+        },
+        "collection delete": {
+            "outcomes": {
+                "planned": {
+                    "kind": "operation-response",
+                    "operation_id": "plan_collection_deletion",
+                },
+                "executed": {
+                    "kind": "operation-response",
+                    "operation_id": "delete_collection",
+                },
+            }
+        },
+        "collection upload discard": {
+            "outcomes": {
+                "planned": {
+                    "kind": "operation-response",
+                    "operation_id": "plan_collection_upload_discard",
+                },
+                "executed": {
+                    "kind": "operation-response",
+                    "operation_id": "discard_collection_upload",
+                },
+            }
+        },
+        "collection describe": {
+            "kind": "operation-response",
+            "operation_id": "replace_collection_description",
+        },
+        "collection provenance verify": {
+            "kind": "openapi-schema",
+            "schema": "CollectionProvenanceVerificationJobOut",
+        },
+        "collection tag add": {
+            "kind": "operation-response",
+            "operation_id": "add_collection_tag",
+        },
+        "collection tag contains": {
+            "kind": "operation-response",
+            "operation_id": "collection_contains_tag",
+        },
+        "collection tag list": {
+            "kind": "operation-response",
+            "operation_id": "list_collection_tags",
+        },
+        "collection tag remove": {
+            "kind": "operation-response",
+            "operation_id": "remove_collection_tag",
+        },
+        "collection upload start": {
+            "kind": "operation-response",
+            "operation_id": "get_collection_upload_session",
+        },
+        "collection provenance export": _cli_local_json(
+            "piggity-provenance-journal-export/v1",
+            {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["collection_id", "journal_id", "output", "bytes", "sha256"],
+                "properties": {
+                    "collection_id": {"type": "integer", "minimum": 1},
+                    "journal_id": {"type": "string"},
+                    "output": {"type": "string"},
+                    "bytes": {"type": "integer", "minimum": 0},
+                    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+                },
+            },
+        ),
+        "local add": _cli_local_json(
+            "piggity-local-add-result/v1",
+            {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["status", "collection"],
+                "properties": {
+                    "status": {"const": "added"},
+                    "collection": _LOCAL_COLLECTION_SCHEMA,
+                },
+            },
+        ),
+        "local remove": _cli_local_json(
+            "piggity-local-remove-result/v1",
+            {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["status", "collection_id", "local_files", "retrievals_canceled"],
+                "properties": {
+                    "status": {"const": "removed"},
+                    "collection_id": {"type": "integer", "minimum": 1},
+                    "local_files": {"const": "retained"},
+                    "retrievals_canceled": {"type": "array", "items": {"type": "string"}},
+                },
+            },
+        ),
+        "local evict": _cli_local_json(
+            "piggity-local-evict-result/v1",
+            {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["status", "collection_id", "retrievals_canceled"],
+                "properties": {
+                    "status": {"const": "evicted"},
+                    "collection_id": {"type": "integer", "minimum": 1},
+                    "retrievals_canceled": {"type": "array", "items": {"type": "string"}},
+                },
+            },
+        ),
+        "local list": _cli_local_json(
+            "piggity-local-collection-list/v1",
+            {
+                "type": "object",
+                "additionalProperties": False,
+                "required": [
+                    "page_size",
+                    "next_page_token",
+                    "sort",
+                    "order",
+                    "query",
+                    "collections",
+                ],
+                "properties": {
+                    "page_size": {"type": "integer", "minimum": 1, "maximum": 100},
+                    "next_page_token": {"type": ["string", "null"]},
+                    "sort": {"enum": ["bytes", "collection_id", "created_at", "files", "status"]},
+                    "order": {"enum": ["asc", "desc"]},
+                    "query": {"type": ["string", "null"]},
+                    "collections": {"type": "array", "items": _LOCAL_COLLECTION_SCHEMA},
+                },
+            },
+        ),
+        "local show": _cli_local_json("piggity-local-collection/v1", _LOCAL_COLLECTION_SCHEMA),
+        "local sync": _LOCAL_SYNC_OUTPUT,
+        "local repair": _LOCAL_SYNC_OUTPUT,
+        "local audit": _cli_local_json(
+            "piggity-local-audit-result/v1",
+            {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["status", "problems", "samples", "samples_truncated"],
+                "properties": {
+                    "status": {"enum": ["ok", "issues"]},
+                    "problems": {"type": "integer", "minimum": 0},
+                    "samples": {"type": "array", "items": {"type": "string"}, "maxItems": 100},
+                    "samples_truncated": {"type": "boolean"},
+                },
+            },
+        ),
+        "local provenance-observer list": _cli_local_json(
+            "riverhog-provenance-observer-provider-list/v1",
+            {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["format", "providers"],
+                "properties": {
+                    "format": {"const": "riverhog-provenance-observer-provider-list/v1"},
+                    "providers": {"type": "array", "items": {"type": "object"}},
+                },
+            },
+        ),
+        "local provenance-observer show": _cli_local_json(
+            "riverhog-provenance-observer-binding/v1",
+            {
+                "type": "object",
+                "required": [
+                    "format",
+                    "name",
+                    "observer_id",
+                    "contract_provider",
+                    "contract_id",
+                    "contract_sha256",
+                    "schema_dialect",
+                    "format_policy",
+                    "schema_ids",
+                ],
+                "properties": {"format": {"const": "riverhog-provenance-observer-binding/v1"}},
+            },
+        ),
+        "local state status": _STATE_STATUS_OUTPUT,
+        "local state upgrade": _STATE_STATUS_OUTPUT,
+        "local state verify": _STATE_STATUS_OUTPUT,
+    },
+    "version_distribution": "piggity",
 }
 collection_app = typer.Typer(help="Collection catalog and upload operations.")
 collection_tag_app = typer.Typer(help="Exact collection tag authority.")

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-scheduler:548528f23c -->
+<!-- contract-element: cli:stove0-client:stove0-scheduler:417474e763 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -15,9 +15,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 - <a id="s-23be569f91"></a>Parser name: `scheduler`
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-fc56a2a295"></a>`help` | <a id="s-c29aac68cc"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-e507e6d97b"></a>`0` | <a id="s-bf5abd47f3"></a>`"noncontractual-framework-help"` | <a id="s-d100fb43ad"></a>`"empty"` |
+
 ## Governing policies
 
-- <a id="pa-99ce9bf11c"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-da9a490756"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -35,6 +41,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - `/external_contract/cli/stove0/commands/scheduler/name`
 - `/external_contract/cli/stove0/commands/scheduler/parameters`
+- `/external_contract/cli/stove0/commands/scheduler/terminating_controls`
 
 ### Exact owned JSON
 
@@ -54,4 +61,25 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ```json
 []
+```
+
+### `/external_contract/cli/stove0/commands/scheduler/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

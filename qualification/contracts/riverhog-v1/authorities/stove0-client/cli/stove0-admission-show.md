@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-admission-show:da5de1fd42 -->
+<!-- contract-element: cli:stove0-client:stove0-admission-show:40aad34e74 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -21,6 +21,12 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|---:|---|---|
 | <a id="s-d195271b1a"></a>`admission_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | admission_id |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-5f92a6a113"></a>`help` | <a id="s-8d4c6d80c1"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-633409a999"></a>`0` | <a id="s-f7ea0d307e"></a>`"noncontractual-framework-help"` | <a id="s-d838f9eb7b"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-b4c3a3f0de"></a>Result identity: `stove0-cli-result/admission/show/v1`
@@ -30,16 +36,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-954407e9c5"></a>`completed` | <a id="s-08abd8d8b3"></a>`0` | <a id="s-bc98471949"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-526439aaf8"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-954407e9c5"></a>`completed` | <a id="s-c9cb9b96ab"></a>`{"kind":"command-completed"}` | <a id="s-08abd8d8b3"></a>`0` | <a id="s-bc98471949"></a>`human: noncontractual-presentation-of-command-result; json: HTTP get_admission — #/components/schemas/AdmissionView` | <a id="s-526439aaf8"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-29b3e7fc43"></a>`usage` | <a id="s-96af832097"></a>`2` | <a id="s-ea5474628d"></a>`{"all":"empty"}` | <a id="s-25747f5e1c"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-2aad4b2f9f"></a>`operational` | <a id="s-d930265dac"></a>`1` | <a id="s-342a25eafd"></a>`{"all":"empty"}` | <a id="s-c32a63f0f4"></a>`{"all":"stove0-cli-diagnostic/v1"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-29b3e7fc43"></a>`usage` | <a id="s-290bf89815"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-96af832097"></a>`2` | <a id="s-ea5474628d"></a>`all: empty` | <a id="s-25747f5e1c"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-2aad4b2f9f"></a>`operational` | <a id="s-959b903a2a"></a>`{"kind":"application-error"}` | <a id="s-d930265dac"></a>`1` | <a id="s-342a25eafd"></a>`all: empty` | <a id="s-c32a63f0f4"></a>`all: stove0-cli-diagnostic/v1` |
 
 ### Progression, limits, and lifecycle
 
@@ -59,8 +65,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-99d733058c"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-642479d7dd"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-78ddb0bdb3"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-124f2ad43f"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -79,6 +85,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 - `/external_contract/cli/stove0/commands/admission/commands/show/name`
 - `/external_contract/cli/stove0/commands/admission/commands/show/parameters`
 - `/external_contract/cli/stove0/commands/admission/commands/show/result_contract`
+- `/external_contract/cli/stove0/commands/admission/commands/show/terminating_controls`
 
 ### Exact owned JSON
 
@@ -119,7 +126,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0/commands/admission/commands/show/result_contract`
 
-<!-- exact-contract-value: ab41dce68ce4dcb1c8652006068f06cb107e40d70ff6ef9d0e9aa442223a523a -->
+<!-- exact-contract-value: ca510fcc28d90b2c56a49f065329c518733051697b900e2ccbd550be4fec45ca -->
 
 ```json
 {
@@ -127,6 +134,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -137,6 +147,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "all": "stove0-cli-diagnostic/v1"
       },
@@ -153,14 +166,48 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed",
+      "selected_by": {
+        "kind": "command-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "application": "stove0",
+          "kind": "http-operation-response",
+          "method": "GET",
+          "operation_id": "get_admission",
+          "path": "/v1/admissions/{admission_id}",
+          "schema": {
+            "$ref": "#/components/schemas/AdmissionView"
+          },
+          "status": "200"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/stove0/commands/admission/commands/show/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

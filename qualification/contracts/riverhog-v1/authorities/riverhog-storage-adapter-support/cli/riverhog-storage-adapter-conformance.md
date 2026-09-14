@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:riverhog-storage-adapter-support:riverhog-storage-adapter-conformance:04fadb66ce -->
+<!-- contract-element: cli:riverhog-storage-adapter-support:riverhog-storage-adapter-conformance:0a062baac0 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -24,6 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-76ce9fec00"></a>`object_prefix` | _StoreAction | yes |  | --object-prefix |
 | <a id="s-785a5f2564"></a>`allow_insecure_http` | _StoreTrueAction | no |  | --allow-insecure-http |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-6869fb1242"></a>`help` | <a id="s-94bcbeb729"></a>`{"kind":"option-present","options":["-h","--help"]}` | <a id="s-fa392b722c"></a>`0` | <a id="s-06d31a9dcb"></a>`"noncontractual-framework-help"` | <a id="s-fa39933834"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-f9615a8394"></a>Result identity: `riverhog-storage-adapter-conformance-cli-result/root/v1`
@@ -33,15 +39,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-0779825aae"></a>`conformant` | <a id="s-a511e84d49"></a>`0` | <a id="s-545267f90c"></a>`{"json":"riverhog-storage-adapter-conformance-result/v1"}` | <a id="s-d8d26cc42e"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-0779825aae"></a>`conformant` | <a id="s-3356217d42"></a>`{"kind":"conformance-completed"}` | <a id="s-a511e84d49"></a>`0` | <a id="s-545267f90c"></a>`json: riverhog-storage-adapter-conformance-result/v1` | <a id="s-d8d26cc42e"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-7d57e24d70"></a>`usage` | <a id="s-4a1fdc4dd8"></a>`2` | <a id="s-a81996dea2"></a>`{"all":"empty"}` | <a id="s-c3045d7639"></a>`{"all":"noncontractual-usage-diagnostic"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-7d57e24d70"></a>`usage` | <a id="s-6b135baa08"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-4a1fdc4dd8"></a>`2` | <a id="s-a81996dea2"></a>`all: empty` | <a id="s-c3045d7639"></a>`all: noncontractual-usage-diagnostic` |
 
 ### Progression, limits, and lifecycle
 
@@ -55,8 +61,8 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-45b8c014dd"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-63d29d2e7e"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-8c3ae129c3"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-746de0798f"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -75,6 +81,7 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 - `/external_contract/cli/riverhog-storage-adapter-conformance/name`
 - `/external_contract/cli/riverhog-storage-adapter-conformance/parameters`
 - `/external_contract/cli/riverhog-storage-adapter-conformance/result_contract`
+- `/external_contract/cli/riverhog-storage-adapter-conformance/terminating_controls`
 
 ### Exact owned JSON
 
@@ -137,7 +144,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/riverhog-storage-adapter-conformance/result_contract`
 
-<!-- exact-contract-value: 46c6d4f0617b200385ecaca5d206def2119bb4c710cecfaed5a54c915d893652 -->
+<!-- exact-contract-value: c11d76dc83925f98b0fa2695bbc41e8b41731a55530827dbe8bd4ab31f48f57c -->
 
 ```json
 {
@@ -145,6 +152,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -161,13 +171,41 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "conformant",
+      "selected_by": {
+        "kind": "conformance-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
-        "json": "riverhog-storage-adapter-conformance-result/v1"
+        "json": {
+          "identity": "riverhog-storage-adapter-conformance-result/v1",
+          "kind": "semantic-format"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/riverhog-storage-adapter-conformance/terminating_controls`
+
+<!-- exact-contract-value: 46c96c22d2ed8a51da57bba3ac0f2269bb35f98c5fd6dc3e3ba67e60f772ad72 -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "-h",
+        "--help"
+      ]
+    }
+  }
+]
 ```

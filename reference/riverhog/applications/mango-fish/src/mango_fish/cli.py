@@ -12,6 +12,24 @@ from state_schema import StateSchemaError
 from mango_fish.relay import MangoFish, load_config, summarize_config
 from mango_fish.schema import state_schema
 
+_STATE_STATUS_OUTPUT = {
+    "kind": "cli-local-json-schema",
+    "identity": "state-schema-status/v1",
+    "schema": {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["name", "condition", "current_revision", "head_revision"],
+        "properties": {
+            "name": {"type": "string"},
+            "condition": {
+                "enum": ["empty", "current", "upgrade_required", "unversioned", "incompatible"]
+            },
+            "current_revision": {"type": ["string", "null"]},
+            "head_revision": {"type": "string"},
+        },
+    },
+}
+
 _CLI_RESULT_CONTRACT = {
     "schema": "riverhog-cli-result-contract/v1",
     "identity_prefix": "mango-fish-cli-result",
@@ -27,7 +45,7 @@ _CLI_RESULT_CONTRACT = {
                     "exit_status": 0,
                     "stdout": {
                         "human": "noncontractual-presentation-of-command-result",
-                        "json": "named-command-result",
+                        "json": "$command-json-output",
                     },
                     "stderr": {"all": "empty"},
                 }
@@ -84,6 +102,28 @@ _CLI_RESULT_CONTRACT = {
     "command_profiles": {"$root": "relay-runtime"},
     "command_overrides": {},
     "executable_groups": ["$root"],
+    "outcome_selectors": {
+        "completed": {"kind": "state-schema-operation-completed"},
+        "configuration-check": {
+            "kind": "option-equals",
+            "parameter": "check",
+            "value": True,
+        },
+        "relay-completed": {
+            "kind": "option-equals",
+            "parameter": "check",
+            "value": False,
+        },
+        "relay-pass-failed": {"kind": "relay-pass-reported-failures"},
+        "state-schema": {"kind": "state-schema-error"},
+        "usage": {"kind": "parser-rejected-invocation"},
+    },
+    "output_authorities": {
+        "state status": _STATE_STATUS_OUTPUT,
+        "state upgrade": _STATE_STATUS_OUTPUT,
+        "state verify": _STATE_STATUS_OUTPUT,
+    },
+    "version_distribution": "mango-fish",
 }
 
 

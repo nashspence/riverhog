@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt-provider-mounted-volume:462757a9f8 -->
+<!-- contract-element: cli:gogurt:gogurt-provider-mounted-volume:b50912f90b -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -15,9 +15,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 - <a id="s-d9ba8ed0af"></a>Parser name: `mounted-volume`
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-cd64177804"></a>`help` | <a id="s-ad6164b3ae"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-c92e64ebeb"></a>`0` | <a id="s-b7ca3a7931"></a>`"noncontractual-framework-help"` | <a id="s-34dc312412"></a>`"empty"` |
+
 ## Governing policies
 
-- <a id="pa-3ab12d7ee8"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-905564dac2"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -35,6 +41,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/name`
 - `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/parameters`
+- `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/terminating_controls`
 
 ### Exact owned JSON
 
@@ -54,4 +61,25 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ```json
 []
+```
+
+### `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

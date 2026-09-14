@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-tag-list:d59c400f99 -->
+<!-- contract-element: cli:piggity:piggity-tag-list:e9a77eba7c -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -25,6 +25,12 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-a807f725a0"></a>`ids` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --ids |
 | <a id="s-d20bc5727e"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-58901f5abc"></a>`help` | <a id="s-8633f23a30"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-fa9da087ef"></a>`0` | <a id="s-49384781f7"></a>`"noncontractual-framework-help"` | <a id="s-544218b483"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-ded72b6466"></a>Result identity: `piggity-cli-result/tag/list/v1`
@@ -34,16 +40,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-a05e463168"></a>`completed` | <a id="s-496a774c9f"></a>`0` | <a id="s-b9d68cad55"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-5a63271489"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-a05e463168"></a>`completed` | <a id="s-a2a5ec553a"></a>`{"kind":"command-completed"}` | <a id="s-496a774c9f"></a>`0` | <a id="s-b9d68cad55"></a>`human: noncontractual-presentation-of-command-result; json: HTTP list_tags — #/components/schemas/TagListOut` | <a id="s-5a63271489"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-a180cb17c2"></a>`usage` | <a id="s-4a180f0e0f"></a>`2` | <a id="s-ea8d7d76aa"></a>`{"all":"empty"}` | <a id="s-eb084bc36b"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-11ada88d84"></a>`operational` | <a id="s-c3ee9587cf"></a>`1` | <a id="s-285838b122"></a>`{"human":"empty","json":"http-api-contracts.ErrorResponse"}` | <a id="s-a840dda0b6"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-a180cb17c2"></a>`usage` | <a id="s-b347e5accc"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-4a180f0e0f"></a>`2` | <a id="s-ea8d7d76aa"></a>`all: empty` | <a id="s-eb084bc36b"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-11ada88d84"></a>`operational` | <a id="s-0a4e3ede2c"></a>`{"kind":"application-error"}` | <a id="s-c3ee9587cf"></a>`1` | <a id="s-285838b122"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-a840dda0b6"></a>`human: noncontractual-diagnostic; json: empty` |
 
 ### Progression, limits, and lifecycle
 
@@ -68,8 +74,8 @@ Shared facts for every subject below: minimum=1
 
 ## Governing policies
 
-- <a id="pa-dfaf7de310"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-e0c7bb393a"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-5815055a00"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-2b9e7cf528"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -88,6 +94,7 @@ Shared facts for every subject below: minimum=1
 - `/external_contract/cli/piggity/commands/tag/commands/list/name`
 - `/external_contract/cli/piggity/commands/tag/commands/list/parameters`
 - `/external_contract/cli/piggity/commands/tag/commands/list/result_contract`
+- `/external_contract/cli/piggity/commands/tag/commands/list/terminating_controls`
 
 ### Exact owned JSON
 
@@ -208,7 +215,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/tag/commands/list/result_contract`
 
-<!-- exact-contract-value: a69358d222a943015d1f73f60887e5a0027f034ec160cf80b87f1064aac9e687 -->
+<!-- exact-contract-value: 8c05b6d4355f55802eb78306ccebcb22193086a721c8c8e14a5e5a9331773a63 -->
 
 ```json
 {
@@ -216,6 +223,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -226,13 +236,68 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "human": "noncontractual-diagnostic",
         "json": "empty"
       },
       "stdout": {
         "human": "empty",
-        "json": "http-api-contracts.ErrorResponse"
+        "json": {
+          "identity": "http-api-contracts.ErrorResponse",
+          "kind": "python-model",
+          "schema": {
+            "$defs": {
+              "ErrorBody": {
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "minLength": 1,
+                    "title": "Code",
+                    "type": "string"
+                  },
+                  "details": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "title": "Details"
+                  },
+                  "message": {
+                    "minLength": 1,
+                    "title": "Message",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "title": "ErrorBody",
+                "type": "object"
+              }
+            },
+            "additionalProperties": false,
+            "properties": {
+              "error": {
+                "$ref": "#/$defs/ErrorBody"
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "title": "ErrorResponse",
+            "type": "object"
+          }
+        }
       }
     }
   ],
@@ -244,14 +309,48 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed",
+      "selected_by": {
+        "kind": "command-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "application": "riverhog",
+          "kind": "http-operation-response",
+          "method": "GET",
+          "operation_id": "list_tags",
+          "path": "/v1/tags",
+          "schema": {
+            "$ref": "#/components/schemas/TagListOut"
+          },
+          "status": "200"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/piggity/commands/tag/commands/list/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

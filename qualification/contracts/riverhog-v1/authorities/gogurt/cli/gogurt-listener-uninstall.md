@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt-listener-uninstall:8ee46ed425 -->
+<!-- contract-element: cli:gogurt:gogurt-listener-uninstall:3753ed9145 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -22,6 +22,12 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-9bf6e52d46"></a>`listener_host_provider` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --listener-host-provider |
 | <a id="s-9f84e8d6b1"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-f99533d9e1"></a>`help` | <a id="s-c3482ef18a"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-a37b25cb27"></a>`0` | <a id="s-ef6578ac86"></a>`"noncontractual-framework-help"` | <a id="s-f2150ba02b"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-7309472bd3"></a>Result identity: `gogurt-cli-result/listener/uninstall/v1`
@@ -31,16 +37,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-3d05495670"></a>`completed` | <a id="s-b5bb63891f"></a>`0` | <a id="s-f498ce6822"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-2752e77382"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-3d05495670"></a>`completed` | <a id="s-6a33c82bf9"></a>`{"kind":"command-completed"}` | <a id="s-b5bb63891f"></a>`0` | <a id="s-f498ce6822"></a>`human: noncontractual-presentation-of-command-result; json: gogurt-listener-status/v1` | <a id="s-2752e77382"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-a145130e57"></a>`usage` | <a id="s-1efb38269b"></a>`2` | <a id="s-c32269de3c"></a>`{"all":"empty"}` | <a id="s-17bfb09a33"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-af71b8dcf5"></a>`operational` | <a id="s-33bfc36d90"></a>`1` | <a id="s-5f08400698"></a>`{"human":"empty","json":"gogurt-cli-error/v1"}` | <a id="s-2428b3eefe"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-a145130e57"></a>`usage` | <a id="s-9c6f31135e"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-1efb38269b"></a>`2` | <a id="s-c32269de3c"></a>`all: empty` | <a id="s-17bfb09a33"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-af71b8dcf5"></a>`operational` | <a id="s-24673a8203"></a>`{"kind":"application-error"}` | <a id="s-33bfc36d90"></a>`1` | <a id="s-5f08400698"></a>`human: empty; json: gogurt-cli-error/v1` | <a id="s-2428b3eefe"></a>`human: noncontractual-diagnostic; json: empty` |
 
 ### Progression, limits, and lifecycle
 
@@ -55,8 +61,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-47ebdf327c"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-baedb65e65"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-972f5bfe39"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-f68352ce46"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -75,6 +81,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 - `/external_contract/cli/gogurt/commands/listener/commands/uninstall/name`
 - `/external_contract/cli/gogurt/commands/listener/commands/uninstall/parameters`
 - `/external_contract/cli/gogurt/commands/listener/commands/uninstall/result_contract`
+- `/external_contract/cli/gogurt/commands/listener/commands/uninstall/terminating_controls`
 
 ### Exact owned JSON
 
@@ -136,7 +143,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/gogurt/commands/listener/commands/uninstall/result_contract`
 
-<!-- exact-contract-value: 990398fc04b1dbd6e149cdb09313f20ce36abb28fbd0973a00001a39977a4da1 -->
+<!-- exact-contract-value: f53932b67963e5e36070f3e8442a55f66d6fed6f127faf98bd2252fe70567254 -->
 
 ```json
 {
@@ -144,6 +151,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -154,13 +164,47 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "human": "noncontractual-diagnostic",
         "json": "empty"
       },
       "stdout": {
         "human": "empty",
-        "json": "gogurt-cli-error/v1"
+        "json": {
+          "identity": "gogurt-cli-error/v1",
+          "kind": "cli-local-json-schema",
+          "schema": {
+            "additionalProperties": false,
+            "properties": {
+              "error": {
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "enum": [
+                      "config_error",
+                      "listener_error"
+                    ]
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "type": "object"
+          }
+        }
       }
     }
   ],
@@ -172,14 +216,191 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed",
+      "selected_by": {
+        "kind": "command-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "identity": "gogurt-listener-status/v1",
+          "kind": "cli-local-json-schema",
+          "schema": {
+            "additionalProperties": false,
+            "properties": {
+              "config_file": {
+                "type": "string"
+              },
+              "diagnostic": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "dispatches": {
+                "type": "object"
+              },
+              "enabled": {
+                "type": "boolean"
+              },
+              "executable": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "health": {
+                "enum": [
+                  "absent",
+                  "stopped",
+                  "failed",
+                  "starting",
+                  "healthy",
+                  "stale"
+                ]
+              },
+              "heartbeat": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "heartbeat_age_seconds": {
+                "minimum": 0,
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "installed": {
+                "type": "boolean"
+              },
+              "listener_host_provider": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "kind": {
+                        "enum": [
+                          "mounted-volume",
+                          "listener-host"
+                        ]
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "provider_id": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "name",
+                      "provider_id"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "manager_version": {
+                "type": "string"
+              },
+              "mount_attention": {
+                "type": "array"
+              },
+              "mounted_volume_provider": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "kind": {
+                        "enum": [
+                          "mounted-volume",
+                          "listener-host"
+                        ]
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "provider_id": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "name",
+                      "provider_id"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "platform": {
+                "type": "string"
+              },
+              "running": {
+                "type": "boolean"
+              },
+              "schema": {
+                "const": "gogurt-listener-status/v1"
+              },
+              "state_dir": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "schema",
+              "manager_version",
+              "platform",
+              "installed",
+              "enabled",
+              "running",
+              "health",
+              "config_file",
+              "state_dir",
+              "executable",
+              "mounted_volume_provider",
+              "listener_host_provider",
+              "heartbeat_age_seconds",
+              "heartbeat",
+              "dispatches",
+              "mount_attention",
+              "diagnostic"
+            ],
+            "type": "object"
+          }
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/gogurt/commands/listener/commands/uninstall/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

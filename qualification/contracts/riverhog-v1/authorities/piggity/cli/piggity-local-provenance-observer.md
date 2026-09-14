@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-local-provenance-observer:eb796dc79c -->
+<!-- contract-element: cli:piggity:piggity-local-provenance-observer:7bff0ce112 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -15,9 +15,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 - <a id="s-008acffa9c"></a>Parser name: `provenance-observer`
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-fff542a7ae"></a>`help` | <a id="s-936e878003"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-957b9b4c56"></a>`0` | <a id="s-eb7338fa94"></a>`"noncontractual-framework-help"` | <a id="s-46a6e46711"></a>`"empty"` |
+| <a id="s-4fca9d200b"></a>`implicit-help` | <a id="s-3b3a7b2631"></a>`{"kind":"empty-invocation"}` | <a id="s-6f2ae25895"></a>`2` | <a id="s-0bc1e58543"></a>`"empty"` | <a id="s-865afadb72"></a>`"noncontractual-framework-help"` |
+
 ## Governing policies
 
-- <a id="pa-72d07df2e7"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-7db385e56c"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -35,6 +42,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - `/external_contract/cli/piggity/commands/local/commands/provenance-observer/name`
 - `/external_contract/cli/piggity/commands/local/commands/provenance-observer/parameters`
+- `/external_contract/cli/piggity/commands/local/commands/provenance-observer/terminating_controls`
 
 ### Exact owned JSON
 
@@ -54,4 +62,34 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ```json
 []
+```
+
+### `/external_contract/cli/piggity/commands/local/commands/provenance-observer/terminating_controls`
+
+<!-- exact-contract-value: a96bedb6acb408986e7084c1d3216345e293f6c42987bb87a923c18807587f21 -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  },
+  {
+    "exit_status": 2,
+    "id": "implicit-help",
+    "stderr": "noncontractual-framework-help",
+    "stdout": "empty",
+    "trigger": {
+      "kind": "empty-invocation"
+    }
+  }
+]
 ```

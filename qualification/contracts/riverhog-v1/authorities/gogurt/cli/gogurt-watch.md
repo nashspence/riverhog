@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt-watch:a50066be43 -->
+<!-- contract-element: cli:gogurt:gogurt-watch:c738c3246e -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -27,6 +27,12 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-f5f158bdd9"></a>`dry_run` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --dry-run |
 | <a id="s-b1aab2a4f4"></a>`mounted_volume_provider` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --mounted-volume-provider |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-697a89a8bc"></a>`help` | <a id="s-96fe1be67f"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-0e07d55d5b"></a>`0` | <a id="s-fd17924e1c"></a>`"noncontractual-framework-help"` | <a id="s-175b0299d9"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-6df9422bdb"></a>Result identity: `gogurt-cli-result/watch/v1`
@@ -36,16 +42,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-08b0b33d5a"></a>`stopped` | <a id="s-65096d6a0a"></a>`0` | <a id="s-71850a738c"></a>`{"human":"no-command-result"}` | <a id="s-98ee100534"></a>`{"human":"noncontractual-runtime-status"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-08b0b33d5a"></a>`stopped` | <a id="s-fe64d7000f"></a>`{"kind":"listener-runtime-returned"}` | <a id="s-65096d6a0a"></a>`0` | <a id="s-71850a738c"></a>`human: no-command-result` | <a id="s-98ee100534"></a>`human: noncontractual-runtime-status` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-34f0427187"></a>`usage` | <a id="s-745561a71b"></a>`2` | <a id="s-e2ff4ffd41"></a>`{"human":"empty"}` | <a id="s-197b5b56cc"></a>`{"human":"noncontractual-usage-diagnostic"}` |
-| <a id="s-094ef85d1b"></a>`operational` | <a id="s-ccc9c5351d"></a>`1` | <a id="s-504d0d2d13"></a>`{"human":"empty"}` | <a id="s-369d48cc02"></a>`{"human":"noncontractual-diagnostic"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-34f0427187"></a>`usage` | <a id="s-7c42ea8a83"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-745561a71b"></a>`2` | <a id="s-e2ff4ffd41"></a>`human: empty` | <a id="s-197b5b56cc"></a>`human: noncontractual-usage-diagnostic` |
+| <a id="s-094ef85d1b"></a>`operational` | <a id="s-76c82c7c68"></a>`{"kind":"application-error"}` | <a id="s-ccc9c5351d"></a>`1` | <a id="s-504d0d2d13"></a>`human: empty` | <a id="s-369d48cc02"></a>`human: noncontractual-diagnostic` |
 
 ### Progression, limits, and lifecycle
 
@@ -64,8 +70,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-76b36569d3"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-e6826822fc"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-80259e6d8e"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-3534d8a60d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -84,6 +90,7 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/cli/gogurt/commands/watch/name`
 - `/external_contract/cli/gogurt/commands/watch/parameters`
 - `/external_contract/cli/gogurt/commands/watch/result_contract`
+- `/external_contract/cli/gogurt/commands/watch/terminating_controls`
 
 ### Exact owned JSON
 
@@ -240,7 +247,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/gogurt/commands/watch/result_contract`
 
-<!-- exact-contract-value: 62cc94ac9340df392a12e6590421a8c4df0e8d4d1925067fc7722f5afe9fdd7c -->
+<!-- exact-contract-value: 16141b88f4eb953926f795d310f341b4d6ab3549c13994817cb1b88555037234 -->
 
 ```json
 {
@@ -248,6 +255,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "human": "noncontractual-usage-diagnostic"
       },
@@ -258,6 +268,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "human": "noncontractual-diagnostic"
       },
@@ -274,6 +287,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "stopped",
+      "selected_by": {
+        "kind": "listener-runtime-returned"
+      },
       "stderr": {
         "human": "noncontractual-runtime-status"
       },
@@ -283,4 +299,25 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   ]
 }
+```
+
+### `/external_contract/cli/gogurt/commands/watch/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

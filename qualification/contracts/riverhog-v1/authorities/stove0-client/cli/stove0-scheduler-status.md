@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-scheduler-status:aafd557626 -->
+<!-- contract-element: cli:stove0-client:stove0-scheduler-status:448e391472 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -15,6 +15,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 - <a id="s-3d72f99e06"></a>Parser name: `status`
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-21dc67e019"></a>`help` | <a id="s-94e507bfaf"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-475297d962"></a>`0` | <a id="s-cf6256bc2b"></a>`"noncontractual-framework-help"` | <a id="s-e6b9407691"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-0319224d49"></a>Result identity: `stove0-cli-result/scheduler/status/v1`
@@ -24,16 +30,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-52cbd8040a"></a>`completed` | <a id="s-d388f73705"></a>`0` | <a id="s-e023aab05d"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-d555e20799"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-52cbd8040a"></a>`completed` | <a id="s-04b0c497fa"></a>`{"kind":"command-completed"}` | <a id="s-d388f73705"></a>`0` | <a id="s-e023aab05d"></a>`human: noncontractual-presentation-of-command-result; json: HTTP scheduler_status — #/components/schemas/SchedulerStatus` | <a id="s-d555e20799"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-96472c5c23"></a>`usage` | <a id="s-011eb9221b"></a>`2` | <a id="s-caba155fc7"></a>`{"all":"empty"}` | <a id="s-ac781ede89"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-c1fb3ccadc"></a>`operational` | <a id="s-81f91e13aa"></a>`1` | <a id="s-71df70d7cf"></a>`{"all":"empty"}` | <a id="s-7456733526"></a>`{"all":"stove0-cli-diagnostic/v1"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-96472c5c23"></a>`usage` | <a id="s-28b39827d3"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-011eb9221b"></a>`2` | <a id="s-caba155fc7"></a>`all: empty` | <a id="s-ac781ede89"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-c1fb3ccadc"></a>`operational` | <a id="s-2b08cf4d3c"></a>`{"kind":"application-error"}` | <a id="s-81f91e13aa"></a>`1` | <a id="s-71df70d7cf"></a>`all: empty` | <a id="s-7456733526"></a>`all: stove0-cli-diagnostic/v1` |
 
 ## Maintained corroboration
 
@@ -43,7 +49,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-85e13661aa"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-4c0eb2cfc5"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -62,6 +68,7 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/cli/stove0/commands/scheduler/commands/status/name`
 - `/external_contract/cli/stove0/commands/scheduler/commands/status/parameters`
 - `/external_contract/cli/stove0/commands/scheduler/commands/status/result_contract`
+- `/external_contract/cli/stove0/commands/scheduler/commands/status/terminating_controls`
 
 ### Exact owned JSON
 
@@ -85,7 +92,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0/commands/scheduler/commands/status/result_contract`
 
-<!-- exact-contract-value: da8be85c4cdc03a7955625ca477514156d19170ea8eaffd6e0b518d1c72608b1 -->
+<!-- exact-contract-value: 3a7885a8c4a8cdcc55e758814b07af0320e5e489745394fca8eca4ced05786e3 -->
 
 ```json
 {
@@ -93,6 +100,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -103,6 +113,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "all": "stove0-cli-diagnostic/v1"
       },
@@ -119,14 +132,48 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed",
+      "selected_by": {
+        "kind": "command-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "application": "stove0",
+          "kind": "http-operation-response",
+          "method": "GET",
+          "operation_id": "scheduler_status",
+          "path": "/v1/admin/scheduler",
+          "schema": {
+            "$ref": "#/components/schemas/SchedulerStatus"
+          },
+          "status": "200"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/stove0/commands/scheduler/commands/status/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

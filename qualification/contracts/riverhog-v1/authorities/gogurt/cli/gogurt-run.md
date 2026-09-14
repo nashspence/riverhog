@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt-run:033025c3bc -->
+<!-- contract-element: cli:gogurt:gogurt-run:093713ffe6 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -26,6 +26,12 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-1e601a6dd2"></a>`dry_run` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --dry-run |
 | <a id="s-2c39914b8b"></a>`mounted_volume_provider` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --mounted-volume-provider |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-2ac14836a3"></a>`help` | <a id="s-68f5a1449f"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-7f93c04341"></a>`0` | <a id="s-502c152b96"></a>`"noncontractual-framework-help"` | <a id="s-963fadb4fd"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-2790d5673a"></a>Result identity: `gogurt-cli-result/run/v1`
@@ -35,17 +41,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-df7255116d"></a>`completed-or-not-run` | <a id="s-5accadf616"></a>`0` | <a id="s-4e18a34210"></a>`{"human":"empty"}` | <a id="s-55d1e1187d"></a>`{"human":"noncontractual-action-status-or-empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-df7255116d"></a>`completed-or-not-run` | <a id="s-171e12c5c1"></a>`{"kind":"action-returned-zero"}` | <a id="s-5accadf616"></a>`0` | <a id="s-4e18a34210"></a>`human: empty` | <a id="s-55d1e1187d"></a>`human: noncontractual-action-status-or-empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-571ddc7f7f"></a>`usage` | <a id="s-438cffd1ea"></a>`2` | <a id="s-464bf046d5"></a>`{"human":"empty"}` | <a id="s-d0a103d44d"></a>`{"human":"noncontractual-usage-diagnostic"}` |
-| <a id="s-9c5aba5f76"></a>`operational` | <a id="s-3ac370c105"></a>`1` | <a id="s-62c1cb47a5"></a>`{"human":"empty"}` | <a id="s-19e1ff480b"></a>`{"human":"noncontractual-diagnostic"}` |
-| <a id="s-e52e46f45e"></a>`action-exit` | <a id="s-3601b6f0ed"></a>`{"kind":"delegated","maximum":255,"minimum":1}` | <a id="s-a0c4ce7255"></a>`{"human":"child-process-owned"}` | <a id="s-d08c31c5f8"></a>`{"human":"child-process-owned-and-action-status"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-571ddc7f7f"></a>`usage` | <a id="s-2d7cf89db4"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-438cffd1ea"></a>`2` | <a id="s-464bf046d5"></a>`human: empty` | <a id="s-d0a103d44d"></a>`human: noncontractual-usage-diagnostic` |
+| <a id="s-9c5aba5f76"></a>`operational` | <a id="s-af9f4b40e8"></a>`{"kind":"application-error"}` | <a id="s-3ac370c105"></a>`1` | <a id="s-62c1cb47a5"></a>`human: empty` | <a id="s-19e1ff480b"></a>`human: noncontractual-diagnostic` |
+| <a id="s-e52e46f45e"></a>`action-exit` | <a id="s-01f724acdf"></a>`{"kind":"delegated-action-returned-nonzero"}` | <a id="s-3601b6f0ed"></a>`{"kind":"delegated","maximum":255,"minimum":1}` | <a id="s-a0c4ce7255"></a>`human: child-process-owned` | <a id="s-d08c31c5f8"></a>`human: child-process-owned-and-action-status` |
 
 ### Progression, limits, and lifecycle
 
@@ -64,8 +70,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-8877b2009c"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-679a7b1142"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-298e0469a9"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-9dd4a4a276"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -84,6 +90,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 - `/external_contract/cli/gogurt/commands/run/name`
 - `/external_contract/cli/gogurt/commands/run/parameters`
 - `/external_contract/cli/gogurt/commands/run/result_contract`
+- `/external_contract/cli/gogurt/commands/run/terminating_controls`
 
 ### Exact owned JSON
 
@@ -216,7 +223,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/gogurt/commands/run/result_contract`
 
-<!-- exact-contract-value: ef86772f4e4691ec0c4697714efdede888d7c99a35c059b81f75d2e53fb93a18 -->
+<!-- exact-contract-value: f3c55fa703fcc528445b10ee6e7e785569ee31508516568ba1cc02d25978913f -->
 
 ```json
 {
@@ -224,6 +231,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "human": "noncontractual-usage-diagnostic"
       },
@@ -234,6 +244,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "human": "noncontractual-diagnostic"
       },
@@ -248,6 +261,9 @@ The following JSON is the complete value owned at each machine-authority pointer
         "minimum": 1
       },
       "id": "action-exit",
+      "selected_by": {
+        "kind": "delegated-action-returned-nonzero"
+      },
       "stderr": {
         "human": "child-process-owned-and-action-status"
       },
@@ -264,6 +280,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed-or-not-run",
+      "selected_by": {
+        "kind": "action-returned-zero"
+      },
       "stderr": {
         "human": "noncontractual-action-status-or-empty"
       },
@@ -273,4 +292,25 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   ]
 }
+```
+
+### `/external_contract/cli/gogurt/commands/run/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

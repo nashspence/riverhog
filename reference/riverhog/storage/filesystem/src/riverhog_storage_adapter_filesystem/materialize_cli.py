@@ -56,6 +56,13 @@ _CLI_RESULT_CONTRACT = {
     "command_profiles": {},
     "command_overrides": {},
     "executable_groups": [],
+    "outcome_selectors": {
+        "completed": {"kind": "materialization-completed"},
+        "usage": {"kind": "parser-rejected-invocation"},
+        "materialization": {"kind": "materialization-error"},
+    },
+    "output_authorities": {},
+    "version_distribution": "riverhog-storage-adapter-filesystem",
 }
 
 

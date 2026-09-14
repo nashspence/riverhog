@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-admission-policy-list:b10363508b -->
+<!-- contract-element: cli:stove0-client:stove0-admission-policy-list:cabf9e03e1 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -15,6 +15,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 - <a id="s-080a18bf21"></a>Parser name: `list`
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-116a6d3e38"></a>`help` | <a id="s-bb1395c480"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-918c92764d"></a>`0` | <a id="s-66fcd43c21"></a>`"noncontractual-framework-help"` | <a id="s-62b799fc07"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-9d2b532663"></a>Result identity: `stove0-cli-result/admission/policy/list/v1`
@@ -24,16 +30,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-dba6a47208"></a>`completed` | <a id="s-05a30182b7"></a>`0` | <a id="s-6ef08ab781"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-9bfab50558"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-dba6a47208"></a>`completed` | <a id="s-97c546086e"></a>`{"kind":"command-completed"}` | <a id="s-05a30182b7"></a>`0` | <a id="s-6ef08ab781"></a>`human: noncontractual-presentation-of-command-result; json: HTTP list_admission_policies — #/components/schemas/AdmissionPolicyCatalogView` | <a id="s-9bfab50558"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-f0cc8d88b4"></a>`usage` | <a id="s-055c90a286"></a>`2` | <a id="s-587607ac34"></a>`{"all":"empty"}` | <a id="s-373b7275c7"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-b84c872ee7"></a>`operational` | <a id="s-b6075ad180"></a>`1` | <a id="s-49b59dd950"></a>`{"all":"empty"}` | <a id="s-483b75cbe3"></a>`{"all":"stove0-cli-diagnostic/v1"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-f0cc8d88b4"></a>`usage` | <a id="s-a4520b13bb"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-055c90a286"></a>`2` | <a id="s-587607ac34"></a>`all: empty` | <a id="s-373b7275c7"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-b84c872ee7"></a>`operational` | <a id="s-19121d5672"></a>`{"kind":"application-error"}` | <a id="s-b6075ad180"></a>`1` | <a id="s-49b59dd950"></a>`all: empty` | <a id="s-483b75cbe3"></a>`all: stove0-cli-diagnostic/v1` |
 
 ## Maintained corroboration
 
@@ -43,7 +49,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-f18121ce7e"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-76988ac4eb"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -62,6 +68,7 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/cli/stove0/commands/admission/commands/policy/commands/list/name`
 - `/external_contract/cli/stove0/commands/admission/commands/policy/commands/list/parameters`
 - `/external_contract/cli/stove0/commands/admission/commands/policy/commands/list/result_contract`
+- `/external_contract/cli/stove0/commands/admission/commands/policy/commands/list/terminating_controls`
 
 ### Exact owned JSON
 
@@ -85,7 +92,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0/commands/admission/commands/policy/commands/list/result_contract`
 
-<!-- exact-contract-value: 80759c9e316f1e54bd2f3bfc72ed9d5b813bf7559e082b2cfd1c54f697215aa9 -->
+<!-- exact-contract-value: 145ae2e5d87b080145add7c08f95a0082d1f49684ca86acd43aca6f7e8d418cd -->
 
 ```json
 {
@@ -93,6 +100,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -103,6 +113,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "all": "stove0-cli-diagnostic/v1"
       },
@@ -119,14 +132,48 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed",
+      "selected_by": {
+        "kind": "command-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "application": "stove0",
+          "kind": "http-operation-response",
+          "method": "GET",
+          "operation_id": "list_admission_policies",
+          "path": "/v1/admission-policies",
+          "schema": {
+            "$ref": "#/components/schemas/AdmissionPolicyCatalogView"
+          },
+          "status": "200"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/stove0/commands/admission/commands/policy/commands/list/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

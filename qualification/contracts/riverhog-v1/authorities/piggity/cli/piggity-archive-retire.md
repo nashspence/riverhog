@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-archive-retire:b6ba8ab347 -->
+<!-- contract-element: cli:piggity:piggity-archive-retire:485e88c42e -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -25,6 +25,12 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-bc3027a32b"></a>`confirm` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --confirm |
 | <a id="s-bb4c28ef4b"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-dce607cc58"></a>`help` | <a id="s-f6b62f77e5"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-adf0b33750"></a>`0` | <a id="s-2feea014ef"></a>`"noncontractual-framework-help"` | <a id="s-48ae3289cd"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-f7b7d91e17"></a>Result identity: `piggity-cli-result/archive/retire/v1`
@@ -34,18 +40,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-99895d5327"></a>`completed` | <a id="s-679543bbd6"></a>`0` | <a id="s-755e242947"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-2f630eeedf"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-99895d5327"></a>`planned` | <a id="s-64a4de99c4"></a>`{"kind":"option-equals","parameter":"dry_run","value":true}` | <a id="s-679543bbd6"></a>`0` | <a id="s-755e242947"></a>`human: noncontractual-presentation-of-command-result; json: HTTP plan_archive_copy_retirement — #/components/schemas/ArchiveCopyRetirementPlanOut` | <a id="s-2f630eeedf"></a>`all: empty` |
+| <a id="s-bd985cbae6"></a>`executed` | <a id="s-d18be48412"></a>`{"kind":"option-equals","parameter":"dry_run","value":false}` | <a id="s-226a0ac440"></a>`0` | <a id="s-a5acf1c320"></a>`human: noncontractual-presentation-of-command-result; json: HTTP retire_archive_copy — #/components/schemas/ArchiveCopyRetirementResultOut` | <a id="s-6df3b708e4"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-8910a67b1f"></a>`usage` | <a id="s-a159384c27"></a>`2` | <a id="s-71881e206f"></a>`{"all":"empty"}` | <a id="s-e56b218030"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-8b235c6ce0"></a>`operational` | <a id="s-29c43e7cf1"></a>`1` | <a id="s-95921aba6c"></a>`{"human":"empty","json":"http-api-contracts.ErrorResponse"}` | <a id="s-a89dbe5a9b"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
-| <a id="s-8a42e3889d"></a>`blocked` | <a id="s-c8010cb636"></a>`1` | <a id="s-d0711626b5"></a>`{"human":"noncontractual-presentation-of-command-result"}` | <a id="s-47bee7eb9a"></a>`{"human":"empty"}` |
-| <a id="s-f0b56a096d"></a>`confirmation-declined` | <a id="s-a10a6558d9"></a>`1` | <a id="s-bf862a00be"></a>`{"human":"noncontractual-presentation-of-command-result"}` | <a id="s-df55cf1650"></a>`{"human":"noncontractual-diagnostic"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-8910a67b1f"></a>`usage` | <a id="s-2081e9c272"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-a159384c27"></a>`2` | <a id="s-71881e206f"></a>`all: empty` | <a id="s-e56b218030"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-8b235c6ce0"></a>`operational` | <a id="s-19506b04c0"></a>`{"kind":"application-error"}` | <a id="s-29c43e7cf1"></a>`1` | <a id="s-95921aba6c"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-a89dbe5a9b"></a>`human: noncontractual-diagnostic; json: empty` |
+| <a id="s-8a42e3889d"></a>`blocked` | <a id="s-da32c7e454"></a>`{"kind":"plan-reported-blockers"}` | <a id="s-c8010cb636"></a>`1` | <a id="s-d0711626b5"></a>`human: noncontractual-presentation-of-command-result` | <a id="s-47bee7eb9a"></a>`human: empty` |
+| <a id="s-f0b56a096d"></a>`confirmation-declined` | <a id="s-c156fe737f"></a>`{"kind":"interactive-confirmation-mismatch"}` | <a id="s-a10a6558d9"></a>`1` | <a id="s-bf862a00be"></a>`human: noncontractual-presentation-of-command-result` | <a id="s-df55cf1650"></a>`human: noncontractual-diagnostic` |
 
 ### Progression, limits, and lifecycle
 
@@ -70,8 +77,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-2c524e82ec"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-50e6828b95"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-70dbe11270"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-38adc8d19e"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -90,6 +97,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 - `/external_contract/cli/piggity/commands/archive/commands/retire/name`
 - `/external_contract/cli/piggity/commands/archive/commands/retire/parameters`
 - `/external_contract/cli/piggity/commands/archive/commands/retire/result_contract`
+- `/external_contract/cli/piggity/commands/archive/commands/retire/terminating_controls`
 
 ### Exact owned JSON
 
@@ -205,7 +213,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/archive/commands/retire/result_contract`
 
-<!-- exact-contract-value: e99c37e84bcf9fb7967e367c01e9ff5b94eb2dd6e1e88d8e41adbcafbfd52551 -->
+<!-- exact-contract-value: 906b540248de0bfad7e3d1127d0e123f63e9c5749b750e99903bea44ac853a2c -->
 
 ```json
 {
@@ -213,6 +221,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -223,18 +234,76 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "human": "noncontractual-diagnostic",
         "json": "empty"
       },
       "stdout": {
         "human": "empty",
-        "json": "http-api-contracts.ErrorResponse"
+        "json": {
+          "identity": "http-api-contracts.ErrorResponse",
+          "kind": "python-model",
+          "schema": {
+            "$defs": {
+              "ErrorBody": {
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "minLength": 1,
+                    "title": "Code",
+                    "type": "string"
+                  },
+                  "details": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "title": "Details"
+                  },
+                  "message": {
+                    "minLength": 1,
+                    "title": "Message",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "title": "ErrorBody",
+                "type": "object"
+              }
+            },
+            "additionalProperties": false,
+            "properties": {
+              "error": {
+                "$ref": "#/$defs/ErrorBody"
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "title": "ErrorResponse",
+            "type": "object"
+          }
+        }
       }
     },
     {
       "exit_status": 1,
       "id": "blocked",
+      "selected_by": {
+        "kind": "plan-reported-blockers"
+      },
       "stderr": {
         "human": "empty"
       },
@@ -245,6 +314,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "confirmation-declined",
+      "selected_by": {
+        "kind": "interactive-confirmation-mismatch"
+      },
       "stderr": {
         "human": "noncontractual-diagnostic"
       },
@@ -260,15 +332,77 @@ The following JSON is the complete value owned at each machine-authority pointer
   "success": [
     {
       "exit_status": 0,
-      "id": "completed",
+      "id": "planned",
+      "selected_by": {
+        "kind": "option-equals",
+        "parameter": "dry_run",
+        "value": true
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "application": "riverhog",
+          "kind": "http-operation-response",
+          "method": "POST",
+          "operation_id": "plan_archive_copy_retirement",
+          "path": "/v1/archive/copies/retirement-plan",
+          "schema": {
+            "$ref": "#/components/schemas/ArchiveCopyRetirementPlanOut"
+          },
+          "status": "200"
+        }
+      }
+    },
+    {
+      "exit_status": 0,
+      "id": "executed",
+      "selected_by": {
+        "kind": "option-equals",
+        "parameter": "dry_run",
+        "value": false
+      },
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "human": "noncontractual-presentation-of-command-result",
+        "json": {
+          "application": "riverhog",
+          "kind": "http-operation-response",
+          "method": "POST",
+          "operation_id": "retire_archive_copy",
+          "path": "/v1/archive/copies/retire",
+          "schema": {
+            "$ref": "#/components/schemas/ArchiveCopyRetirementResultOut"
+          },
+          "status": "200"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/piggity/commands/archive/commands/retire/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

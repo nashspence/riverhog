@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:mango-fish:mango-fish:0da0ebace4 -->
+<!-- contract-element: cli:mango-fish:mango-fish:9d3c7ccffa -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -19,10 +19,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| <a id="s-1368f192cf"></a>`version` | _VersionAction | no |  | --version |
-| <a id="s-b3bbac485d"></a>`config` | _StoreAction | yes | Path | --config |
-| <a id="s-55e6dc25a4"></a>`check` | _StoreTrueAction | no |  | --check |
-| <a id="s-04b810bfdf"></a>`once` | _StoreTrueAction | no |  | --once |
+| <a id="s-1368f192cf"></a>`config` | _StoreAction | yes | Path | --config |
+| <a id="s-b3bbac485d"></a>`check` | _StoreTrueAction | no |  | --check |
+| <a id="s-55e6dc25a4"></a>`once` | _StoreTrueAction | no |  | --once |
+
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-6d3ddd4fea"></a>`help` | <a id="s-69ef5bad0f"></a>`{"kind":"option-present","options":["-h","--help"]}` | <a id="s-7661109a30"></a>`0` | <a id="s-40a28d8a15"></a>`"noncontractual-framework-help"` | <a id="s-c1f516d4b0"></a>`"empty"` |
+| <a id="s-520dfcd066"></a>`version` | <a id="s-fb70f702fb"></a>`{"kind":"option-present","options":["--version"]}` | <a id="s-ff03ca9aea"></a>`0` | <a id="s-c321d0fa54"></a>`{"distribution":"mango-fish","kind":"installed-coordinated-release-version","serialization":"noncontractual"}` | <a id="s-7b38225c48"></a>`"empty"` |
 
 ### Result and failure contract
 
@@ -33,17 +39,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-c5c84fd8e9"></a>`configuration-check` | <a id="s-a0dd530aa6"></a>`0` | <a id="s-1c5b2334bf"></a>`{"all":"mango-fish-configuration-summary/v1"}` | <a id="s-0d4de0c37a"></a>`{"all":"noncontractual-runtime-log-or-empty"}` |
-| <a id="s-e4784b90bb"></a>`relay-completed` | <a id="s-22cd70bc63"></a>`0` | <a id="s-09536f2b2c"></a>`{"all":"no-command-result"}` | <a id="s-9bfa84e578"></a>`{"all":"noncontractual-runtime-log-or-empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-c5c84fd8e9"></a>`configuration-check` | <a id="s-962fda80ff"></a>`{"kind":"option-equals","parameter":"check","value":true}` | <a id="s-a0dd530aa6"></a>`0` | <a id="s-1c5b2334bf"></a>`all: mango-fish-configuration-summary/v1` | <a id="s-0d4de0c37a"></a>`all: noncontractual-runtime-log-or-empty` |
+| <a id="s-e4784b90bb"></a>`relay-completed` | <a id="s-50e91c7b08"></a>`{"kind":"option-equals","parameter":"check","value":false}` | <a id="s-22cd70bc63"></a>`0` | <a id="s-09536f2b2c"></a>`all: no-command-result` | <a id="s-9bfa84e578"></a>`all: noncontractual-runtime-log-or-empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-cdbaee25f6"></a>`usage` | <a id="s-c4a4f0a60b"></a>`2` | <a id="s-beb6fde10b"></a>`{"all":"empty"}` | <a id="s-dcf9ebe4b8"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-e215ef5c5f"></a>`relay-pass-failed` | <a id="s-aef55108b0"></a>`1` | <a id="s-33ac94278e"></a>`{"all":"no-command-result"}` | <a id="s-0469ca77fd"></a>`{"all":"noncontractual-runtime-log"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-cdbaee25f6"></a>`usage` | <a id="s-f10753be16"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-c4a4f0a60b"></a>`2` | <a id="s-beb6fde10b"></a>`all: empty` | <a id="s-dcf9ebe4b8"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-e215ef5c5f"></a>`relay-pass-failed` | <a id="s-0f5436649c"></a>`{"kind":"relay-pass-reported-failures"}` | <a id="s-aef55108b0"></a>`1` | <a id="s-33ac94278e"></a>`all: no-command-result` | <a id="s-0469ca77fd"></a>`all: noncontractual-runtime-log` |
 
 ### Progression, limits, and lifecycle
 
@@ -53,14 +59,13 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --version](#s-1368f192cf) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --check](#s-55e6dc25a4) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --once](#s-04b810bfdf) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --check](#s-b3bbac485d) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --once](#s-55e6dc25a4) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Governing policies
 
-- <a id="pa-519bad0cca"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-d96d013113"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-c9e5571731"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-d44632afe1"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -79,6 +84,7 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 - `/external_contract/cli/mango-fish/name`
 - `/external_contract/cli/mango-fish/parameters`
 - `/external_contract/cli/mango-fish/result_contract`
+- `/external_contract/cli/mango-fish/terminating_controls`
 
 ### Exact owned JSON
 
@@ -94,19 +100,10 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/mango-fish/parameters`
 
-<!-- exact-contract-value: 86e7f99d8c26c4a2af74645430cc84a84863561bbcf8a62fc165a551c7e65335 -->
+<!-- exact-contract-value: b096906e4d3ad7dfc114a853c3f02bf4cc135bc3f5843f13cfd8572456089113 -->
 
 ```json
 [
-  {
-    "dest": "version",
-    "kind": "_VersionAction",
-    "nargs": 0,
-    "options": [
-      "--version"
-    ],
-    "required": false
-  },
   {
     "dest": "config",
     "kind": "_StoreAction",
@@ -142,7 +139,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/mango-fish/result_contract`
 
-<!-- exact-contract-value: 966de8f840f449c632ed1270c472367463e238a55e1ea936a8a8e5bb2aaf5035 -->
+<!-- exact-contract-value: 59b679c639824c9bf1023ba2405f98f889b7c68260ce8041aba95bec777a9ffd -->
 
 ```json
 {
@@ -150,6 +147,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -160,6 +160,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "relay-pass-failed",
+      "selected_by": {
+        "kind": "relay-pass-reported-failures"
+      },
       "stderr": {
         "all": "noncontractual-runtime-log"
       },
@@ -176,6 +179,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "configuration-check",
+      "selected_by": {
+        "kind": "option-equals",
+        "parameter": "check",
+        "value": true
+      },
       "stderr": {
         "all": "noncontractual-runtime-log-or-empty"
       },
@@ -186,6 +194,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "relay-completed",
+      "selected_by": {
+        "kind": "option-equals",
+        "parameter": "check",
+        "value": false
+      },
       "stderr": {
         "all": "noncontractual-runtime-log-or-empty"
       },
@@ -195,4 +208,42 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   ]
 }
+```
+
+### `/external_contract/cli/mango-fish/terminating_controls`
+
+<!-- exact-contract-value: 565b13a16d5598879c9b05f935c428e916da3bfd7eb4eceff365b876b5bada56 -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "-h",
+        "--help"
+      ]
+    }
+  },
+  {
+    "exit_status": 0,
+    "id": "version",
+    "stderr": "empty",
+    "stdout": {
+      "distribution": "mango-fish",
+      "kind": "installed-coordinated-release-version",
+      "serialization": "noncontractual"
+    },
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--version"
+      ]
+    }
+  }
+]
 ```

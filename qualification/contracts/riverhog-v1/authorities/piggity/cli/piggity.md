@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity:c2de8fb83b -->
+<!-- contract-element: cli:piggity:piggity:b53c108c0c -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -15,30 +15,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 - <a id="s-14959e77d6"></a>Parser name: `piggity`
 
-### Parameters
+### Terminating controls
 
-| Name | Kind | Required | Type | Options |
+| Identity | Trigger | Exit status | stdout | stderr |
 |---|---|---:|---|---|
-| <a id="s-1179f261df"></a>`_version` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --version |
-| <a id="s-e9fe18e2e0"></a>`install_completion` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --install-completion |
-| <a id="s-b13f8792e0"></a>`show_completion` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --show-completion |
-
-### Progression, limits, and lifecycle
-
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
-
-Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [CLI parameter --version](#s-1179f261df) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --install-completion](#s-e9fe18e2e0) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --show-completion](#s-b13f8792e0) | `cardinality · values-per-occurrence · fixed` | shared above |
+| <a id="s-2c4eefdf23"></a>`help` | <a id="s-b1e4586d29"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-b211ced558"></a>`0` | <a id="s-bbb0677911"></a>`"noncontractual-framework-help"` | <a id="s-c9ab464264"></a>`"empty"` |
+| <a id="s-5beed3d4be"></a>`version` | <a id="s-90f29aa522"></a>`{"kind":"option-present","options":["--version"]}` | <a id="s-5c9ead7602"></a>`0` | <a id="s-600fa84ffb"></a>`{"distribution":"piggity","kind":"installed-coordinated-release-version","serialization":"noncontractual"}` | <a id="s-cd66052334"></a>`"empty"` |
 
 ## Governing policies
 
-- <a id="pa-8185b7512c"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-b347d97be5"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-d73a8c4387"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -56,6 +42,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - `/external_contract/cli/piggity/name`
 - `/external_contract/cli/piggity/parameters`
+- `/external_contract/cli/piggity/terminating_controls`
 
 ### Exact owned JSON
 
@@ -71,63 +58,44 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/parameters`
 
-<!-- exact-contract-value: 6c3eaa1e80ed7eec26f0605768d3652ccdb37504c04b8b85a9dc9a439b170363 -->
+<!-- exact-contract-value: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945 -->
+
+```json
+[]
+```
+
+### `/external_contract/cli/piggity/terminating_controls`
+
+<!-- exact-contract-value: 338b0ae5501d762e215d995fd6ea1b23d7e7d6f396dded6acc90f5e2c3d6472e -->
 
 ```json
 [
   {
-    "count": false,
-    "default": false,
-    "envvar": null,
-    "is_flag": true,
-    "kind": "TyperOption",
-    "multiple": false,
-    "name": "_version",
-    "nargs": 1,
-    "options": [
-      "--version"
-    ],
-    "required": false,
-    "secondary_options": [],
-    "type": {
-      "class": "typer._click.types.BoolParamType",
-      "name": "boolean"
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
     }
   },
   {
-    "count": false,
-    "envvar": null,
-    "is_flag": true,
-    "kind": "TyperOption",
-    "multiple": false,
-    "name": "install_completion",
-    "nargs": 1,
-    "options": [
-      "--install-completion"
-    ],
-    "required": false,
-    "secondary_options": [],
-    "type": {
-      "class": "typer._click.types.BoolParamType",
-      "name": "boolean"
-    }
-  },
-  {
-    "count": false,
-    "envvar": null,
-    "is_flag": true,
-    "kind": "TyperOption",
-    "multiple": false,
-    "name": "show_completion",
-    "nargs": 1,
-    "options": [
-      "--show-completion"
-    ],
-    "required": false,
-    "secondary_options": [],
-    "type": {
-      "class": "typer._click.types.BoolParamType",
-      "name": "boolean"
+    "exit_status": 0,
+    "id": "version",
+    "stderr": "empty",
+    "stdout": {
+      "distribution": "piggity",
+      "kind": "installed-coordinated-release-version",
+      "serialization": "noncontractual"
+    },
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--version"
+      ]
     }
   }
 ]

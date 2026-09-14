@@ -24,7 +24,7 @@ This layer answers whether the discovered external universe was accounted for ex
 | Resolved candidates | 3886 |
 | Explicit dispositions | 3886 |
 | Contract elements | 3851 |
-| Extent decisions | 1991 |
+| Extent decisions | 1976 |
 | Explicit exclusions | 35 |
 | Source authorities | 484 |
 

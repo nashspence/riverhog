@@ -17,7 +17,10 @@ from stove0_api_client import Stove0ApiClient, Stove0ApiError
 from stove0_protocol import CollectionRootRef
 from stove0_recipe_config import RecipeCatalog
 
-app = typer.Typer(help="Operate stove0 collection workflows.")
+app = typer.Typer(
+    help="Operate stove0 collection workflows.",
+    add_completion=False,
+)
 
 _CLI_RESULT_CONTRACT = {
     "schema": "riverhog-cli-result-contract/v1",
@@ -34,7 +37,7 @@ _CLI_RESULT_CONTRACT = {
                     "exit_status": 0,
                     "stdout": {
                         "human": "noncontractual-presentation-of-command-result",
-                        "json": "named-command-result",
+                        "json": "$command-json-output",
                     },
                     "stderr": {"all": "empty"},
                 }
@@ -58,6 +61,40 @@ _CLI_RESULT_CONTRACT = {
     "command_profiles": {},
     "command_overrides": {},
     "executable_groups": [],
+    "outcome_selectors": {
+        "completed": {"kind": "command-completed"},
+        "operational": {"kind": "application-error"},
+        "usage": {"kind": "parser-rejected-invocation"},
+    },
+    "output_authorities": {
+        "health": {
+            "kind": "openapi-schema",
+            "schema": "HealthResponse",
+        },
+        "recipe validate": {
+            "kind": "cli-local-json-schema",
+            "identity": "stove0-recipe-catalog-validation/v1",
+            "schema": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": [
+                    "format",
+                    "catalog_sha256",
+                    "operation_count",
+                    "recipe_count",
+                    "recipes",
+                ],
+                "properties": {
+                    "format": {"const": "stove0-recipe-catalog-validation/v1"},
+                    "catalog_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+                    "operation_count": {"type": "integer", "minimum": 0},
+                    "recipe_count": {"type": "integer", "minimum": 0},
+                    "recipes": {"type": "array", "items": {"type": "object"}},
+                },
+            },
+        },
+    },
+    "version_distribution": "stove0-client",
 }
 work_app = typer.Typer(help="Transformation work.")
 recipe_app = typer.Typer(help="Configured recipes.")

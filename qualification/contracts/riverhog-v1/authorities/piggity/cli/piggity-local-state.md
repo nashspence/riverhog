@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-local-state:a53c7cede2 -->
+<!-- contract-element: cli:piggity:piggity-local-state:5ae9c62211 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -15,9 +15,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 - <a id="s-1a8b32ba1e"></a>Parser name: `state`
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-26ffd89bcc"></a>`help` | <a id="s-a5e6da9541"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-0dfea6048d"></a>`0` | <a id="s-ca44c36595"></a>`"noncontractual-framework-help"` | <a id="s-dca74cbc82"></a>`"empty"` |
+| <a id="s-a6472af674"></a>`implicit-help` | <a id="s-d94f8ced5c"></a>`{"kind":"empty-invocation"}` | <a id="s-6a8e359ef9"></a>`2` | <a id="s-c8718b10d4"></a>`"empty"` | <a id="s-514758810e"></a>`"noncontractual-framework-help"` |
+
 ## Governing policies
 
-- <a id="pa-56d310ff49"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-bbc2acd97f"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -35,6 +42,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - `/external_contract/cli/piggity/commands/local/commands/state/name`
 - `/external_contract/cli/piggity/commands/local/commands/state/parameters`
+- `/external_contract/cli/piggity/commands/local/commands/state/terminating_controls`
 
 ### Exact owned JSON
 
@@ -54,4 +62,34 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ```json
 []
+```
+
+### `/external_contract/cli/piggity/commands/local/commands/state/terminating_controls`
+
+<!-- exact-contract-value: a96bedb6acb408986e7084c1d3216345e293f6c42987bb87a923c18807587f21 -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  },
+  {
+    "exit_status": 2,
+    "id": "implicit-help",
+    "stderr": "noncontractual-framework-help",
+    "stdout": "empty",
+    "trigger": {
+      "kind": "empty-invocation"
+    }
+  }
+]
 ```

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-evaluation-review:650d1dc774 -->
+<!-- contract-element: cli:stove0-client:stove0-evaluation-review:2c3e15c7ed -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -24,6 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-9c3cdf9820"></a>`rating` | TyperOption | no | {'class': 'typer._click.types.IntRange', 'maximum': 5, 'minimum': 1, 'name': 'integer range'} | --rating |
 | <a id="s-7944ac36f5"></a>`note` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --note |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-4501799f7c"></a>`help` | <a id="s-334abd1c30"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-3858957c0e"></a>`0` | <a id="s-619cb73a26"></a>`"noncontractual-framework-help"` | <a id="s-af2b576d3e"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-d0c428a900"></a>Result identity: `stove0-cli-result/evaluation/review/v1`
@@ -33,16 +39,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-53a29984fb"></a>`completed` | <a id="s-36afc45e35"></a>`0` | <a id="s-9f1ae67281"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-04329a4ad8"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-53a29984fb"></a>`completed` | <a id="s-eef49099d2"></a>`{"kind":"command-completed"}` | <a id="s-36afc45e35"></a>`0` | <a id="s-9f1ae67281"></a>`human: noncontractual-presentation-of-command-result; json: HTTP review_evaluation_variant — #/components/schemas/EvaluationView` | <a id="s-04329a4ad8"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-42e1fbfaa0"></a>`usage` | <a id="s-0e1e570e05"></a>`2` | <a id="s-e7c98e3419"></a>`{"all":"empty"}` | <a id="s-b76f8da6e1"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-3a8c36178d"></a>`operational` | <a id="s-c6e37e069c"></a>`1` | <a id="s-0bdf213c00"></a>`{"all":"empty"}` | <a id="s-ebb2d3185a"></a>`{"all":"stove0-cli-diagnostic/v1"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-42e1fbfaa0"></a>`usage` | <a id="s-72aca966d7"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-0e1e570e05"></a>`2` | <a id="s-e7c98e3419"></a>`all: empty` | <a id="s-b76f8da6e1"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-3a8c36178d"></a>`operational` | <a id="s-2a62627fc0"></a>`{"kind":"application-error"}` | <a id="s-c6e37e069c"></a>`1` | <a id="s-0bdf213c00"></a>`all: empty` | <a id="s-ebb2d3185a"></a>`all: stove0-cli-diagnostic/v1` |
 
 ### Progression, limits, and lifecycle
 
@@ -66,8 +72,8 @@ Shared facts for every subject below: minimum=1
 
 ## Governing policies
 
-- <a id="pa-c7cbbef852"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-8ea6ba92df"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-a5139ef873"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-c21532a272"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -86,6 +92,7 @@ Shared facts for every subject below: minimum=1
 - `/external_contract/cli/stove0/commands/evaluation/commands/review/name`
 - `/external_contract/cli/stove0/commands/evaluation/commands/review/parameters`
 - `/external_contract/cli/stove0/commands/evaluation/commands/review/result_contract`
+- `/external_contract/cli/stove0/commands/evaluation/commands/review/terminating_controls`
 
 ### Exact owned JSON
 
@@ -180,7 +187,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0/commands/evaluation/commands/review/result_contract`
 
-<!-- exact-contract-value: bffb59643d679e6df9a149cf58a294f590ef8575b17a415902157c0c987c3820 -->
+<!-- exact-contract-value: d683ed12747657e8b21dd7ebd0108c73cdd23f09064df50124df335f0edb51d3 -->
 
 ```json
 {
@@ -188,6 +195,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -198,6 +208,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "all": "stove0-cli-diagnostic/v1"
       },
@@ -214,14 +227,48 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed",
+      "selected_by": {
+        "kind": "command-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "application": "stove0",
+          "kind": "http-operation-response",
+          "method": "PUT",
+          "operation_id": "review_evaluation_variant",
+          "path": "/v1/evaluations/{evaluation_id}/variants/{variant_id}/review",
+          "schema": {
+            "$ref": "#/components/schemas/EvaluationView"
+          },
+          "status": "200"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/stove0/commands/evaluation/commands/review/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

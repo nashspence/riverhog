@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-collection-upload-discard:8e90d83ab4 -->
+<!-- contract-element: cli:piggity:piggity-collection-upload-discard:01ba11c0bc -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -24,6 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-9a049cc7bb"></a>`confirm` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --confirm |
 | <a id="s-38abeb20f1"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-b56a56efa1"></a>`help` | <a id="s-7178c14f48"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-8b7510ff89"></a>`0` | <a id="s-7807aab912"></a>`"noncontractual-framework-help"` | <a id="s-25bf514780"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-3a6aab496c"></a>Result identity: `piggity-cli-result/collection/upload/discard/v1`
@@ -33,18 +39,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-8e890f9515"></a>`completed` | <a id="s-ba00c57c4d"></a>`0` | <a id="s-1efaef072b"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-cf43b55869"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-8e890f9515"></a>`planned` | <a id="s-7807825178"></a>`{"kind":"option-equals","parameter":"dry_run","value":true}` | <a id="s-ba00c57c4d"></a>`0` | <a id="s-1efaef072b"></a>`human: noncontractual-presentation-of-command-result; json: HTTP plan_collection_upload_discard — #/components/schemas/CollectionUploadDiscardPlanOut` | <a id="s-cf43b55869"></a>`all: empty` |
+| <a id="s-775613b61e"></a>`executed` | <a id="s-5d91af2ea7"></a>`{"kind":"option-equals","parameter":"dry_run","value":false}` | <a id="s-a9abf5e803"></a>`0` | <a id="s-2a4cd02a62"></a>`human: noncontractual-presentation-of-command-result; json: HTTP discard_collection_upload — #/components/schemas/CollectionUploadDiscardResultOut` | <a id="s-ef4bfadd01"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-13699ddc9d"></a>`usage` | <a id="s-e991784d56"></a>`2` | <a id="s-48f1160a92"></a>`{"all":"empty"}` | <a id="s-e94088cf0a"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-df72a4715c"></a>`operational` | <a id="s-8eff56bb8d"></a>`1` | <a id="s-d38fcc4ce7"></a>`{"human":"empty","json":"http-api-contracts.ErrorResponse"}` | <a id="s-029d5235e1"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
-| <a id="s-8e6fdb3179"></a>`blocked` | <a id="s-64e3bd7a99"></a>`1` | <a id="s-5404debe72"></a>`{"human":"noncontractual-presentation-of-command-result"}` | <a id="s-e12b23c3b3"></a>`{"human":"empty"}` |
-| <a id="s-4e3f96da41"></a>`confirmation-declined` | <a id="s-6cdc9343f1"></a>`1` | <a id="s-46e349a5db"></a>`{"human":"noncontractual-presentation-of-command-result"}` | <a id="s-c77ebaac47"></a>`{"human":"noncontractual-diagnostic"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-13699ddc9d"></a>`usage` | <a id="s-0b4f49a657"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-e991784d56"></a>`2` | <a id="s-48f1160a92"></a>`all: empty` | <a id="s-e94088cf0a"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-df72a4715c"></a>`operational` | <a id="s-6bc7e75094"></a>`{"kind":"application-error"}` | <a id="s-8eff56bb8d"></a>`1` | <a id="s-d38fcc4ce7"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-029d5235e1"></a>`human: noncontractual-diagnostic; json: empty` |
+| <a id="s-8e6fdb3179"></a>`blocked` | <a id="s-5231b96fcc"></a>`{"kind":"plan-reported-blockers"}` | <a id="s-64e3bd7a99"></a>`1` | <a id="s-5404debe72"></a>`human: noncontractual-presentation-of-command-result` | <a id="s-e12b23c3b3"></a>`human: empty` |
+| <a id="s-4e3f96da41"></a>`confirmation-declined` | <a id="s-a22f20c789"></a>`{"kind":"interactive-confirmation-mismatch"}` | <a id="s-6cdc9343f1"></a>`1` | <a id="s-46e349a5db"></a>`human: noncontractual-presentation-of-command-result` | <a id="s-c77ebaac47"></a>`human: noncontractual-diagnostic` |
 
 ### Progression, limits, and lifecycle
 
@@ -68,8 +75,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-669c7ef6b8"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-e0a57a5dee"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-2c1122ad90"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-ba2553a2ae"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -88,6 +95,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 - `/external_contract/cli/piggity/commands/collection/commands/upload/commands/discard/name`
 - `/external_contract/cli/piggity/commands/collection/commands/upload/commands/discard/parameters`
 - `/external_contract/cli/piggity/commands/collection/commands/upload/commands/discard/result_contract`
+- `/external_contract/cli/piggity/commands/collection/commands/upload/commands/discard/terminating_controls`
 
 ### Exact owned JSON
 
@@ -185,7 +193,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/collection/commands/upload/commands/discard/result_contract`
 
-<!-- exact-contract-value: 1923085fd9b3459f5658c4528faaba248fa7fa4fa1ec1bf4c360f75ffd3c78da -->
+<!-- exact-contract-value: 6b4dd34fee425578036f4d45a50b4e73b88926d2ae952cf1a03672d7c6025dd0 -->
 
 ```json
 {
@@ -193,6 +201,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -203,18 +214,76 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "human": "noncontractual-diagnostic",
         "json": "empty"
       },
       "stdout": {
         "human": "empty",
-        "json": "http-api-contracts.ErrorResponse"
+        "json": {
+          "identity": "http-api-contracts.ErrorResponse",
+          "kind": "python-model",
+          "schema": {
+            "$defs": {
+              "ErrorBody": {
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "minLength": 1,
+                    "title": "Code",
+                    "type": "string"
+                  },
+                  "details": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "title": "Details"
+                  },
+                  "message": {
+                    "minLength": 1,
+                    "title": "Message",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "title": "ErrorBody",
+                "type": "object"
+              }
+            },
+            "additionalProperties": false,
+            "properties": {
+              "error": {
+                "$ref": "#/$defs/ErrorBody"
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "title": "ErrorResponse",
+            "type": "object"
+          }
+        }
       }
     },
     {
       "exit_status": 1,
       "id": "blocked",
+      "selected_by": {
+        "kind": "plan-reported-blockers"
+      },
       "stderr": {
         "human": "empty"
       },
@@ -225,6 +294,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "confirmation-declined",
+      "selected_by": {
+        "kind": "interactive-confirmation-mismatch"
+      },
       "stderr": {
         "human": "noncontractual-diagnostic"
       },
@@ -240,15 +312,77 @@ The following JSON is the complete value owned at each machine-authority pointer
   "success": [
     {
       "exit_status": 0,
-      "id": "completed",
+      "id": "planned",
+      "selected_by": {
+        "kind": "option-equals",
+        "parameter": "dry_run",
+        "value": true
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "application": "riverhog",
+          "kind": "http-operation-response",
+          "method": "POST",
+          "operation_id": "plan_collection_upload_discard",
+          "path": "/v1/collection-upload-sessions/{collection_id}/discard-plan",
+          "schema": {
+            "$ref": "#/components/schemas/CollectionUploadDiscardPlanOut"
+          },
+          "status": "200"
+        }
+      }
+    },
+    {
+      "exit_status": 0,
+      "id": "executed",
+      "selected_by": {
+        "kind": "option-equals",
+        "parameter": "dry_run",
+        "value": false
+      },
+      "stderr": {
+        "all": "empty"
+      },
+      "stdout": {
+        "human": "noncontractual-presentation-of-command-result",
+        "json": {
+          "application": "riverhog",
+          "kind": "http-operation-response",
+          "method": "POST",
+          "operation_id": "discard_collection_upload",
+          "path": "/v1/collection-upload-sessions/{collection_id}/discard",
+          "schema": {
+            "$ref": "#/components/schemas/CollectionUploadDiscardResultOut"
+          },
+          "status": "200"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/piggity/commands/collection/commands/upload/commands/discard/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

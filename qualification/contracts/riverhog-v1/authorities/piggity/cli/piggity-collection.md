@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-collection:ac5c00d4ad -->
+<!-- contract-element: cli:piggity:piggity-collection:ada74ac998 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -15,9 +15,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 - <a id="s-16421367c7"></a>Parser name: `collection`
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-0f7885c223"></a>`help` | <a id="s-bbb5917634"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-3576211e7c"></a>`0` | <a id="s-5a587a2460"></a>`"noncontractual-framework-help"` | <a id="s-9efc34a1e7"></a>`"empty"` |
+
 ## Governing policies
 
-- <a id="pa-a1052084b7"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-31de5cdbb2"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -35,6 +41,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - `/external_contract/cli/piggity/commands/collection/name`
 - `/external_contract/cli/piggity/commands/collection/parameters`
+- `/external_contract/cli/piggity/commands/collection/terminating_controls`
 
 ### Exact owned JSON
 
@@ -54,4 +61,25 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ```json
 []
+```
+
+### `/external_contract/cli/piggity/commands/collection/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

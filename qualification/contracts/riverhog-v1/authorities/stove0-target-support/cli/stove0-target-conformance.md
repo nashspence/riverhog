@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-target-support:stove0-target-conformance:d841c51477 -->
+<!-- contract-element: cli:stove0-target-support:stove0-target-conformance:3ebf652daa -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -22,6 +22,12 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-e562e2016c"></a>`base_url` | _StoreAction | yes |  |  |
 | <a id="s-e11b46d794"></a>`case` | _AppendAction | no | Path | --case |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-aa3d50f436"></a>`help` | <a id="s-20d511eefa"></a>`{"kind":"option-present","options":["-h","--help"]}` | <a id="s-6f8e2d7c3f"></a>`0` | <a id="s-5238b20ecc"></a>`"noncontractual-framework-help"` | <a id="s-4c8621e9c6"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-6249f0cc01"></a>Result identity: `stove0-target-conformance-cli-result/root/v1`
@@ -31,19 +37,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-0b0fd48900"></a>`conformant` | <a id="s-c13ae47cfe"></a>`0` | <a id="s-4ef2ecd06f"></a>`{"json":"stove0-target-conformance-result/v1"}` | <a id="s-dac23286c0"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-0b0fd48900"></a>`conformant` | <a id="s-93ffbe4e74"></a>`{"kind":"conformance-completed"}` | <a id="s-c13ae47cfe"></a>`0` | <a id="s-4ef2ecd06f"></a>`json: stove0-target-conformance-result/v1` | <a id="s-dac23286c0"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-e8837d64c5"></a>`usage` | <a id="s-93ddbb5b98"></a>`2` | <a id="s-b09afd9389"></a>`{"all":"empty"}` | <a id="s-abd1bb4830"></a>`{"all":"noncontractual-usage-diagnostic"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-e8837d64c5"></a>`usage` | <a id="s-d202e41e20"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-93ddbb5b98"></a>`2` | <a id="s-b09afd9389"></a>`all: empty` | <a id="s-abd1bb4830"></a>`all: noncontractual-usage-diagnostic` |
 
 ## Governing policies
 
-- <a id="pa-0099487305"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-c80f2bfdda"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -62,6 +68,7 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/cli/stove0-target-conformance/name`
 - `/external_contract/cli/stove0-target-conformance/parameters`
 - `/external_contract/cli/stove0-target-conformance/result_contract`
+- `/external_contract/cli/stove0-target-conformance/terminating_controls`
 
 ### Exact owned JSON
 
@@ -104,7 +111,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0-target-conformance/result_contract`
 
-<!-- exact-contract-value: 1e9e36978a593fbcf13b2359cc7d168a9d49c7d0bf605de866c28c705540e4e9 -->
+<!-- exact-contract-value: c75da1f62b41ec6c74a4700a0d059786a471b3f6ee369fa9d900d28d360b09f3 -->
 
 ```json
 {
@@ -112,6 +119,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -128,13 +138,41 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "conformant",
+      "selected_by": {
+        "kind": "conformance-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
-        "json": "stove0-target-conformance-result/v1"
+        "json": {
+          "identity": "stove0-target-conformance-result/v1",
+          "kind": "semantic-format"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/stove0-target-conformance/terminating_controls`
+
+<!-- exact-contract-value: 46c96c22d2ed8a51da57bba3ac0f2269bb35f98c5fd6dc3e3ba67e60f772ad72 -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "-h",
+        "--help"
+      ]
+    }
+  }
+]
 ```

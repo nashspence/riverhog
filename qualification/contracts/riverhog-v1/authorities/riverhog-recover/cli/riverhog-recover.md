@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:riverhog-recover:riverhog-recover:f71eceba61 -->
+<!-- contract-element: cli:riverhog-recover:riverhog-recover:13c5f602be -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -19,13 +19,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| <a id="s-bd0c880f02"></a>`version` | _VersionAction | no |  | --version |
-| <a id="s-3af69a838a"></a>`archive` | _StoreAction | yes | Path |  |
-| <a id="s-15d3edeac1"></a>`output` | _StoreAction | no | Path |  |
-| <a id="s-ae476bc569"></a>`description_only` | _StoreTrueAction | no |  | --description-only |
-| <a id="s-27589f8407"></a>`tags_only` | _StoreTrueAction | no |  | --tags-only |
-| <a id="s-bc196a2661"></a>`passphrases_file` | _StoreAction | no | Path | --passphrases-file |
-| <a id="s-95cdb2042d"></a>`age_command` | _StoreAction | no |  | --age-command |
+| <a id="s-bd0c880f02"></a>`archive` | _StoreAction | yes | Path |  |
+| <a id="s-3af69a838a"></a>`output` | _StoreAction | no | Path |  |
+| <a id="s-15d3edeac1"></a>`description_only` | _StoreTrueAction | no |  | --description-only |
+| <a id="s-ae476bc569"></a>`tags_only` | _StoreTrueAction | no |  | --tags-only |
+| <a id="s-27589f8407"></a>`passphrases_file` | _StoreAction | no | Path | --passphrases-file |
+| <a id="s-bc196a2661"></a>`age_command` | _StoreAction | no |  | --age-command |
+
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-39383577b3"></a>`help` | <a id="s-893a5ec67a"></a>`{"kind":"option-present","options":["-h","--help"]}` | <a id="s-4b2dcde78e"></a>`0` | <a id="s-34adca8f4a"></a>`"noncontractual-framework-help"` | <a id="s-3632e502b5"></a>`"empty"` |
+| <a id="s-ef8cb24105"></a>`version` | <a id="s-d91133bda3"></a>`{"kind":"option-present","options":["--version"]}` | <a id="s-c45dfa123a"></a>`0` | <a id="s-a5aeb70a7f"></a>`{"distribution":"riverhog-recover","kind":"installed-coordinated-release-version","serialization":"noncontractual"}` | <a id="s-dd0a526db8"></a>`"empty"` |
 
 ### Result and failure contract
 
@@ -36,18 +42,18 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-e6ffcd91df"></a>`archive-recovered` | <a id="s-cc80a4f4a0"></a>`0` | <a id="s-82103433e9"></a>`{"human":"noncontractual-recovery-summary"}` | <a id="s-1b310db431"></a>`{"all":"empty"}` |
-| <a id="s-1cd6f69133"></a>`description-recovered` | <a id="s-e8bbbcc49c"></a>`0` | <a id="s-bdf9e5feff"></a>`{"json":"riverhog-collection-description/v1-or-null"}` | <a id="s-018043ff9a"></a>`{"all":"empty"}` |
-| <a id="s-b4a66c971c"></a>`tags-recovered` | <a id="s-70c0bd4c11"></a>`0` | <a id="s-d382d2c367"></a>`{"json":"riverhog-recovered-collection-tags/v1-json-sequence"}` | <a id="s-cb2e774c6f"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-e6ffcd91df"></a>`archive-recovered` | <a id="s-b3f25cf921"></a>`{"kind":"options-absent","parameters":["description_only","tags_only"]}` | <a id="s-cc80a4f4a0"></a>`0` | <a id="s-82103433e9"></a>`human: noncontractual-recovery-summary` | <a id="s-1b310db431"></a>`all: empty` |
+| <a id="s-1cd6f69133"></a>`description-recovered` | <a id="s-228b200272"></a>`{"kind":"option-equals","parameter":"description_only","value":true}` | <a id="s-e8bbbcc49c"></a>`0` | <a id="s-bdf9e5feff"></a>`json: riverhog-collection-description/v1-or-null` | <a id="s-018043ff9a"></a>`all: empty` |
+| <a id="s-b4a66c971c"></a>`tags-recovered` | <a id="s-191ff5ecba"></a>`{"kind":"option-equals","parameter":"tags_only","value":true}` | <a id="s-70c0bd4c11"></a>`0` | <a id="s-d382d2c367"></a>`json: riverhog-recovered-collection-tags/v1-json-sequence` | <a id="s-cb2e774c6f"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-f02faf7dad"></a>`usage` | <a id="s-33edb1b1ec"></a>`2` | <a id="s-19f9334bbd"></a>`{"all":"empty"}` | <a id="s-2dfd45a472"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-4b8e5acd9d"></a>`recovery` | <a id="s-3c2553c1f0"></a>`1` | <a id="s-664d5b2d56"></a>`{"all":"empty"}` | <a id="s-8ca9ad09a8"></a>`{"all":"riverhog-recover-diagnostic/v1"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-f02faf7dad"></a>`usage` | <a id="s-140eafc026"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-33edb1b1ec"></a>`2` | <a id="s-19f9334bbd"></a>`all: empty` | <a id="s-2dfd45a472"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-4b8e5acd9d"></a>`recovery` | <a id="s-7253334adc"></a>`{"kind":"recovery-error"}` | <a id="s-3c2553c1f0"></a>`1` | <a id="s-664d5b2d56"></a>`all: empty` | <a id="s-8ca9ad09a8"></a>`all: riverhog-recover-diagnostic/v1` |
 
 ### Progression, limits, and lifecycle
 
@@ -57,14 +63,13 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --version](#s-bd0c880f02) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --description-only](#s-ae476bc569) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --tags-only](#s-27589f8407) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --description-only](#s-15d3edeac1) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --tags-only](#s-ae476bc569) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Governing policies
 
-- <a id="pa-4bcf7aaad1"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-5c7ad8b3c5"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-a4623d3500"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-c337dd4a4c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -83,6 +88,7 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 - `/external_contract/cli/riverhog-recover/name`
 - `/external_contract/cli/riverhog-recover/parameters`
 - `/external_contract/cli/riverhog-recover/result_contract`
+- `/external_contract/cli/riverhog-recover/terminating_controls`
 
 ### Exact owned JSON
 
@@ -98,19 +104,10 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/riverhog-recover/parameters`
 
-<!-- exact-contract-value: 1ddb9b9907f6820c593c5aa98f25e7a54c241550959f0d55be651897d4758548 -->
+<!-- exact-contract-value: 2d226e23c659f1ca7f09ce8b575f09a4c0b20bb3735e6b6435f110eebb3b772f -->
 
 ```json
 [
-  {
-    "dest": "version",
-    "kind": "_VersionAction",
-    "nargs": 0,
-    "options": [
-      "--version"
-    ],
-    "required": false
-  },
   {
     "dest": "archive",
     "kind": "_StoreAction",
@@ -172,7 +169,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/riverhog-recover/result_contract`
 
-<!-- exact-contract-value: 6a69a98e727be36bab32e649cea5d6206309c9d6b8691e8bb5bc6c28a23949f2 -->
+<!-- exact-contract-value: 051dcbc4c634d2280bcc82fdd9404df206ca730fe37b72075de50a18921333a3 -->
 
 ```json
 {
@@ -180,6 +177,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -190,6 +190,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "recovery",
+      "selected_by": {
+        "kind": "recovery-error"
+      },
       "stderr": {
         "all": "riverhog-recover-diagnostic/v1"
       },
@@ -206,6 +209,13 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "archive-recovered",
+      "selected_by": {
+        "kind": "options-absent",
+        "parameters": [
+          "description_only",
+          "tags_only"
+        ]
+      },
       "stderr": {
         "all": "empty"
       },
@@ -216,23 +226,77 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "description-recovered",
+      "selected_by": {
+        "kind": "option-equals",
+        "parameter": "description_only",
+        "value": true
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
-        "json": "riverhog-collection-description/v1-or-null"
+        "json": {
+          "identity": "riverhog-collection-description/v1-or-null",
+          "kind": "semantic-format"
+        }
       }
     },
     {
       "exit_status": 0,
       "id": "tags-recovered",
+      "selected_by": {
+        "kind": "option-equals",
+        "parameter": "tags_only",
+        "value": true
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
-        "json": "riverhog-recovered-collection-tags/v1-json-sequence"
+        "json": {
+          "identity": "riverhog-recovered-collection-tags/v1-json-sequence",
+          "kind": "semantic-format"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/riverhog-recover/terminating_controls`
+
+<!-- exact-contract-value: 28287265e454ba0fd87d06e8897b72e2b322d61f1e4ce958e186d2d298073c54 -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "-h",
+        "--help"
+      ]
+    }
+  },
+  {
+    "exit_status": 0,
+    "id": "version",
+    "stderr": "empty",
+    "stdout": {
+      "distribution": "riverhog-recover",
+      "kind": "installed-coordinated-release-version",
+      "serialization": "noncontractual"
+    },
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--version"
+      ]
+    }
+  }
+]
 ```

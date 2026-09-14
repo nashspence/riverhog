@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt-listener:9a50b16379 -->
+<!-- contract-element: cli:gogurt:gogurt-listener:e6dcc7578e -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -15,9 +15,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 - <a id="s-fab9428b9d"></a>Parser name: `listener`
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-e40059cd37"></a>`help` | <a id="s-8f3c5e4243"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-0398a327a5"></a>`0` | <a id="s-a41d082f85"></a>`"noncontractual-framework-help"` | <a id="s-84e437536d"></a>`"empty"` |
+
 ## Governing policies
 
-- <a id="pa-9201b86c18"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-84ac083be4"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -35,6 +41,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - `/external_contract/cli/gogurt/commands/listener/name`
 - `/external_contract/cli/gogurt/commands/listener/parameters`
+- `/external_contract/cli/gogurt/commands/listener/terminating_controls`
 
 ### Exact owned JSON
 
@@ -54,4 +61,25 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ```json
 []
+```
+
+### `/external_contract/cli/gogurt/commands/listener/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

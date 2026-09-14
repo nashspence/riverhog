@@ -42,6 +42,7 @@ from contract_discovery import (
     python_package_detections,
 )
 from gogurt.cli import app as gogurt_app
+from jsonschema import Draft202012Validator
 from mango_fish.cli import parser as mango_fish_parser
 from piggity.main import app as piggity_app
 from pydantic import BaseModel
@@ -694,6 +695,12 @@ def _click_parameter(parameter: Any) -> dict[str, object]:
 
 
 CLI_RESULT_CONTRACT_SCHEMA = "riverhog-cli-result-contract/v1"
+CLI_COMMAND_JSON_OUTPUT = "$command-json-output"
+CLI_OPERATION_APPLICATIONS = {
+    "piggity": "riverhog",
+    "riverhog-ftp-adapter": "riverhog-ftp-adapter",
+    "stove0": "stove0",
+}
 CLI_MODULES = {
     "gogurt": "gogurt.cli",
     "mango-fish": "mango_fish.cli",
@@ -716,10 +723,62 @@ CLI_MODULES = {
 }
 
 
+def _click_terminating_controls(command: Any) -> list[dict[str, object]]:
+    context = command.make_context(command.name or "command", [], resilient_parsing=True)
+    controls: list[dict[str, object]] = []
+    help_options = list(command.get_help_option_names(context))
+    if help_options:
+        controls.append(
+            {
+                "id": "help",
+                "trigger": {"kind": "option-present", "options": help_options},
+                "exit_status": 0,
+                "stdout": "noncontractual-framework-help",
+                "stderr": "empty",
+            }
+        )
+    for parameter in command.params:
+        options = list(getattr(parameter, "opts", ()))
+        if "--version" in options:
+            controls.append(
+                {
+                    "id": "version",
+                    "trigger": {"kind": "option-present", "options": options},
+                    "exit_status": 0,
+                    "stdout": {
+                        "kind": "installed-coordinated-release-version",
+                        "serialization": "noncontractual",
+                    },
+                    "stderr": "empty",
+                }
+            )
+        if any(option in {"--install-completion", "--show-completion"} for option in options):
+            raise ContractFreezeError(
+                f"released CLI exposes an unaccounted completion control: {command.name}: {options}"
+            )
+    if bool(getattr(command, "no_args_is_help", False)):
+        controls.append(
+            {
+                "id": "implicit-help",
+                "trigger": {"kind": "empty-invocation"},
+                "exit_status": 2,
+                "stdout": "empty",
+                "stderr": "noncontractual-framework-help",
+            }
+        )
+    return controls
+
+
 def _click_command(command: Any, *, name: str) -> dict[str, object]:
+    parameters = [
+        parameter
+        for parameter in command.params
+        if "--version" not in set(getattr(parameter, "opts", ()))
+    ]
     result: dict[str, object] = {
         "name": name,
-        "parameters": [_click_parameter(parameter) for parameter in command.params],
+        "parameters": [_click_parameter(parameter) for parameter in parameters],
+        "terminating_controls": _click_terminating_controls(command),
     }
     commands = getattr(command, "commands", None)
     if isinstance(commands, Mapping):
@@ -751,10 +810,42 @@ def _argparse_action(action: argparse.Action) -> dict[str, object]:
 def _argparse_command(
     parser: argparse.ArgumentParser, *, name: str | None = None
 ) -> dict[str, object]:
+    terminating_controls: list[dict[str, object]] = []
+    for action in parser._actions:
+        if isinstance(action, argparse._HelpAction):
+            terminating_controls.append(
+                {
+                    "id": "help",
+                    "trigger": {
+                        "kind": "option-present",
+                        "options": list(action.option_strings),
+                    },
+                    "exit_status": 0,
+                    "stdout": "noncontractual-framework-help",
+                    "stderr": "empty",
+                }
+            )
+        elif isinstance(action, argparse._VersionAction):
+            terminating_controls.append(
+                {
+                    "id": "version",
+                    "trigger": {
+                        "kind": "option-present",
+                        "options": list(action.option_strings),
+                    },
+                    "exit_status": 0,
+                    "stdout": {
+                        "kind": "installed-coordinated-release-version",
+                        "serialization": "noncontractual",
+                    },
+                    "stderr": "empty",
+                }
+            )
     actions = [
         action
         for action in parser._actions
         if not isinstance(action, argparse._HelpAction)
+        and not isinstance(action, argparse._VersionAction)
         and not isinstance(action, argparse._SubParsersAction)
     ]
     subparsers = next(
@@ -764,6 +855,7 @@ def _argparse_command(
     result: dict[str, object] = {
         "name": name or parser.prog,
         "parameters": [_argparse_action(action) for action in actions],
+        "terminating_controls": terminating_controls,
     }
     if subparsers is not None:
         result["commands"] = {
@@ -808,9 +900,18 @@ def _validate_cli_result_outcomes(
                 f"CLI {kind} outcome identity is missing or duplicate: {authority}: {command}"
             )
         identities.add(identity)
-        if set(outcome) != {"id", "exit_status", "stdout", "stderr"}:
+        if set(outcome) != {"id", "selected_by", "exit_status", "stdout", "stderr"}:
             raise ContractFreezeError(
                 f"CLI {kind} outcome shape is not exact: {authority}: {command}: {identity}"
+            )
+        selector = outcome["selected_by"]
+        if (
+            not isinstance(selector, Mapping)
+            or not isinstance(selector.get("kind"), str)
+            or not selector.get("kind")
+        ):
+            raise ContractFreezeError(
+                f"CLI {kind} outcome selector is invalid: {authority}: {command}: {identity}"
             )
         exit_status = outcome["exit_status"]
         if not isinstance(exit_status, int) and not (
@@ -830,7 +931,11 @@ def _validate_cli_result_outcomes(
                 not isinstance(value, Mapping)
                 or not value
                 or not all(
-                    mode in {"human", "json", "all"} and isinstance(semantics, str) and semantics
+                    mode in {"human", "json", "all"}
+                    and (
+                        isinstance(semantics, str)
+                        or (isinstance(semantics, Mapping) and bool(semantics))
+                    )
                     for mode, semantics in value.items()
                 )
             ):
@@ -839,7 +944,185 @@ def _validate_cli_result_outcomes(
                 )
 
 
-def _apply_cli_result_contract(authority: str, root: dict[str, object]) -> dict[str, object]:
+def _validate_cli_outcome_selector(
+    authority: str,
+    command: str,
+    outcome_id: str,
+    selector: Mapping[str, object],
+    parameters: Sequence[Mapping[str, object]],
+) -> None:
+    kind = selector.get("kind")
+    if kind not in {"option-equals", "option-present", "option-absent", "options-absent"}:
+        return
+    parameter_names = {
+        str(parameter.get("name") or parameter.get("dest"))
+        for parameter in parameters
+        if parameter.get("name") or parameter.get("dest")
+    }
+    if kind == "option-equals":
+        expected_keys = {"kind", "parameter", "value"}
+        selected = [selector.get("parameter")]
+    elif kind in {"option-present", "option-absent"}:
+        expected_keys = {"kind", "parameter"}
+        selected = [selector.get("parameter")]
+    else:
+        expected_keys = {"kind", "parameters"}
+        raw = selector.get("parameters")
+        if not isinstance(raw, list) or not raw:
+            raise ContractFreezeError(
+                f"CLI outcome selector has no parameters: {authority}: {command}: {outcome_id}"
+            )
+        selected = raw
+    if set(selector) != expected_keys or any(
+        not isinstance(parameter, str) or parameter not in parameter_names for parameter in selected
+    ):
+        raise ContractFreezeError(
+            f"CLI outcome selector does not resolve to discovered parameters: "
+            f"{authority}: {command}: {outcome_id}"
+        )
+
+
+def _operation_success_authority(
+    operation: operation_qualification.Operation,
+    openapi: Mapping[str, object],
+) -> dict[str, object]:
+    application = cast(Mapping[str, object], openapi[operation.application])
+    paths = cast(Mapping[str, object], application["paths"])
+    path_item = cast(Mapping[str, object], paths[operation.path])
+    operation_document = cast(Mapping[str, object], path_item[operation.method.casefold()])
+    responses = cast(Mapping[str, object], operation_document["responses"])
+    statuses = sorted(status for status in responses if status.startswith("2"))
+    if len(statuses) != 1:
+        raise ContractFreezeError(
+            f"CLI operation has no single successful response: "
+            f"{operation.application}: {operation.operation_id}: {statuses}"
+        )
+    status = statuses[0]
+    response = cast(Mapping[str, object], responses[status])
+    content = cast(Mapping[str, object], response.get("content", {}))
+    media = content.get("application/json")
+    if not isinstance(media, Mapping) or not isinstance(media.get("schema"), Mapping):
+        raise ContractFreezeError(
+            f"CLI JSON output operation has no JSON response schema: "
+            f"{operation.application}: {operation.operation_id}"
+        )
+    return {
+        "kind": "http-operation-response",
+        "application": operation.application,
+        "operation_id": operation.operation_id,
+        "method": operation.method,
+        "path": operation.path,
+        "status": status,
+        "schema": copy.deepcopy(media["schema"]),
+    }
+
+
+def _resolve_cli_output_authority(
+    *,
+    authority: str,
+    command: str,
+    outcome_id: str,
+    declared: object,
+    output_authorities: Mapping[str, object],
+    operations_by_command: Mapping[tuple[str, str], Sequence[operation_qualification.Operation]],
+    operations_by_id: Mapping[tuple[str, str], operation_qualification.Operation],
+    openapi: Mapping[str, object],
+) -> object:
+    if declared != CLI_COMMAND_JSON_OUTPUT:
+        if isinstance(declared, str):
+            if declared == "empty" or declared.startswith("noncontractual-"):
+                return declared
+            if not declared:
+                raise ContractFreezeError(
+                    f"CLI JSON format identity is empty: {authority}: {command}: {outcome_id}"
+                )
+            return {"kind": "semantic-format", "identity": declared}
+        if not isinstance(declared, Mapping):
+            raise ContractFreezeError(
+                f"CLI JSON output authority is invalid: {authority}: {command}: {outcome_id}"
+            )
+        kind = declared.get("kind")
+        identity = declared.get("identity")
+        schema = declared.get("schema")
+        if (
+            kind not in {"cli-local-json-schema", "python-model"}
+            or not isinstance(identity, str)
+            or not identity
+            or not isinstance(schema, Mapping)
+        ):
+            raise ContractFreezeError(
+                f"CLI JSON output authority is invalid: {authority}: {command}: {outcome_id}"
+            )
+        Draft202012Validator.check_schema(dict(schema))
+        return copy.deepcopy(declared)
+
+    application = CLI_OPERATION_APPLICATIONS.get(authority)
+    override = output_authorities.get(command)
+    if override is None:
+        candidates = operations_by_command.get((application or "", command), ())
+        if len(candidates) != 1:
+            raise ContractFreezeError(
+                f"CLI JSON output has no exact implementation-owned authority: "
+                f"{authority}: {command}: {len(candidates)} operation candidates"
+            )
+        return _operation_success_authority(candidates[0], openapi)
+    if not isinstance(override, Mapping):
+        raise ContractFreezeError(f"CLI output authority is invalid: {authority}: {command}")
+    by_outcome = override.get("outcomes")
+    selected = by_outcome.get(outcome_id) if isinstance(by_outcome, Mapping) else override
+    if not isinstance(selected, Mapping):
+        raise ContractFreezeError(
+            f"CLI output authority has no outcome mapping: {authority}: {command}: {outcome_id}"
+        )
+    selected_kind = selected.get("kind")
+    if selected_kind == "operation-response":
+        operation_id = selected.get("operation_id")
+        operation = operations_by_id.get((application or "", str(operation_id)))
+        if operation is None or command not in operation.cli_commands:
+            raise ContractFreezeError(
+                f"CLI output references an unrelated operation: "
+                f"{authority}: {command}: {operation_id}"
+            )
+        return _operation_success_authority(operation, openapi)
+    if selected_kind == "openapi-schema":
+        schema_name = selected.get("schema")
+        components = cast(
+            Mapping[str, object],
+            cast(Mapping[str, object], openapi[application or ""])["components"],
+        )
+        schemas = cast(Mapping[str, object], components.get("schemas", {}))
+        if not isinstance(schema_name, str) or schema_name not in schemas:
+            raise ContractFreezeError(
+                f"CLI output references an unknown OpenAPI schema: "
+                f"{authority}: {command}: {schema_name}"
+            )
+        return {
+            "kind": "openapi-schema",
+            "application": application,
+            "schema": schema_name,
+            "definition": copy.deepcopy(schemas[schema_name]),
+        }
+    if selected_kind == "cli-local-json-schema":
+        identity = selected.get("identity")
+        schema = selected.get("schema")
+        if not isinstance(identity, str) or not identity or not isinstance(schema, Mapping):
+            raise ContractFreezeError(
+                f"CLI-local output authority is invalid: {authority}: {command}"
+            )
+        Draft202012Validator.check_schema(dict(schema))
+        return copy.deepcopy(selected)
+    raise ContractFreezeError(
+        f"CLI output authority kind is invalid: {authority}: {command}: {selected_kind}"
+    )
+
+
+def _apply_cli_result_contract(
+    authority: str,
+    root: dict[str, object],
+    *,
+    operations: Sequence[operation_qualification.Operation],
+    openapi: Mapping[str, object],
+) -> dict[str, object]:
     module = importlib.import_module(CLI_MODULES[authority])
     declaration = getattr(module, "_CLI_RESULT_CONTRACT", None)
     if not isinstance(declaration, Mapping):
@@ -854,6 +1137,9 @@ def _apply_cli_result_contract(authority: str, root: dict[str, object]) -> dict[
         "command_profiles",
         "command_overrides",
         "executable_groups",
+        "outcome_selectors",
+        "output_authorities",
+        "version_distribution",
     }:
         raise ContractFreezeError(f"CLI result contract shape is invalid: {authority}")
     identity_prefix = declaration["identity_prefix"]
@@ -862,6 +1148,9 @@ def _apply_cli_result_contract(authority: str, root: dict[str, object]) -> dict[
     command_profiles = declaration["command_profiles"]
     command_overrides = declaration["command_overrides"]
     executable_groups = declaration["executable_groups"]
+    outcome_selectors = declaration["outcome_selectors"]
+    output_authorities = declaration["output_authorities"]
+    version_distribution = declaration["version_distribution"]
     if not isinstance(identity_prefix, str) or not identity_prefix:
         raise ContractFreezeError(f"CLI result identity prefix is invalid: {authority}")
     if not isinstance(default_profile, str) or not isinstance(profiles, Mapping):
@@ -872,6 +1161,19 @@ def _apply_cli_result_contract(authority: str, root: dict[str, object]) -> dict[
         isinstance(item, str) for item in executable_groups
     ):
         raise ContractFreezeError(f"CLI executable-group declarations are invalid: {authority}")
+    if not isinstance(outcome_selectors, Mapping) or not isinstance(output_authorities, Mapping):
+        raise ContractFreezeError(f"CLI outcome/output declarations are invalid: {authority}")
+    if version_distribution is not None and not isinstance(version_distribution, str):
+        raise ContractFreezeError(f"CLI version distribution is invalid: {authority}")
+
+    operations_by_command: dict[tuple[str, str], list[operation_qualification.Operation]] = (
+        defaultdict(list)
+    )
+    operations_by_id: dict[tuple[str, str], operation_qualification.Operation] = {}
+    for operation in operations:
+        operations_by_id[(operation.application, operation.operation_id)] = operation
+        for current in operation.cli_commands:
+            operations_by_command[(operation.application, current)].append(operation)
 
     seen_commands: set[str] = set()
     seen_groups: set[str] = set()
@@ -932,6 +1234,35 @@ def _apply_cli_result_contract(authority: str, root: dict[str, object]) -> dict[
                 raise ContractFreezeError(
                     f"CLI structured-output mode is invalid: {authority}: {command}"
                 )
+            for result_kind in ("success", "failures"):
+                for outcome in cast(list[dict[str, object]], result[result_kind]):
+                    selector = outcome_selectors.get(outcome["id"])
+                    if not isinstance(selector, Mapping):
+                        raise ContractFreezeError(
+                            f"CLI outcome has no implementation-owned selector: "
+                            f"{authority}: {command}: {outcome['id']}"
+                        )
+                    _validate_cli_outcome_selector(
+                        authority,
+                        command,
+                        str(outcome["id"]),
+                        selector,
+                        cast(Sequence[Mapping[str, object]], node.get("parameters", [])),
+                    )
+                    outcome["selected_by"] = copy.deepcopy(selector)
+                    for channel in ("stdout", "stderr"):
+                        channel_contract = cast(dict[str, object], outcome[channel])
+                        if "json" in channel_contract:
+                            channel_contract["json"] = _resolve_cli_output_authority(
+                                authority=authority,
+                                command=command,
+                                outcome_id=str(outcome["id"]),
+                                declared=channel_contract["json"],
+                                output_authorities=output_authorities,
+                                operations_by_command=operations_by_command,
+                                operations_by_id=operations_by_id,
+                                openapi=openapi,
+                            )
             _validate_cli_result_outcomes(authority, command, "success", result.get("success"))
             _validate_cli_result_outcomes(authority, command, "failure", result.get("failures"))
             suffix = "root" if not path else "/".join(path)
@@ -957,10 +1288,32 @@ def _apply_cli_result_contract(authority: str, root: dict[str, object]) -> dict[
             f"CLI executable-group declarations reference unknown groups: "
             f"{authority}: {sorted(unknown_groups)}"
         )
+    stale_outputs = set(output_authorities) - seen_commands
+    if stale_outputs:
+        raise ContractFreezeError(
+            f"CLI output declarations reference unknown commands: {authority}: "
+            f"{sorted(stale_outputs)}"
+        )
+    controls = cast(list[dict[str, object]], root.get("terminating_controls", []))
+    version_controls = [item for item in controls if item.get("id") == "version"]
+    if bool(version_controls) != bool(version_distribution):
+        raise ContractFreezeError(
+            f"CLI version declaration differs from discovered control: {authority}"
+        )
+    for control in version_controls:
+        stdout = cast(dict[str, object], control["stdout"])
+        stdout["distribution"] = version_distribution
     return root
 
 
-def _cli_surfaces() -> dict[str, object]:
+def _cli_surfaces(
+    operations: Sequence[operation_qualification.Operation] | None = None,
+    openapi: Mapping[str, object] | None = None,
+) -> dict[str, object]:
+    resolved_operations = (
+        operation_qualification.operation_matrix() if operations is None else operations
+    )
+    resolved_openapi = _openapi_surfaces() if openapi is None else openapi
     surfaces = {
         "gogurt": _click_command(get_command(gogurt_app), name="gogurt"),
         "mango-fish": _argparse_command(mango_fish_parser()),
@@ -982,7 +1335,12 @@ def _cli_surfaces() -> dict[str, object]:
         "stove0-target-schemas": _argparse_command(target_schemas_parser()),
     }
     return {
-        authority: _apply_cli_result_contract(authority, surface)
+        authority: _apply_cli_result_contract(
+            authority,
+            surface,
+            operations=resolved_operations,
+            openapi=resolved_openapi,
+        )
         for authority, surface in surfaces.items()
     }
 
@@ -2026,6 +2384,22 @@ def contract_projection() -> dict[str, object]:
     python_surfaces = _python_surfaces(projects)
     http_openapi = _openapi_surfaces()
     operations = operation_qualification.operation_matrix()
+    cli_surfaces = _cli_surfaces(operations, http_openapi)
+    published_distributions = {project.name for project in projects}
+    for authority, root in cli_surfaces.items():
+        controls = cast(
+            Sequence[object], cast(Mapping[str, object], root).get("terminating_controls", ())
+        )
+        for control in controls:
+            if not isinstance(control, Mapping) or control.get("id") != "version":
+                continue
+            stdout = control.get("stdout")
+            distribution = stdout.get("distribution") if isinstance(stdout, Mapping) else None
+            if distribution not in published_distributions:
+                raise ContractFreezeError(
+                    f"CLI version control does not resolve to a published distribution: "
+                    f"{authority}: {distribution}"
+                )
     external_contract: dict[str, object] = {
         "release": {
             "publication": release_contract.publication_contract(ROOT, projects),
@@ -2033,7 +2407,7 @@ def contract_projection() -> dict[str, object]:
         },
         "http_openapi": http_openapi,
         "http_route_supplements": _http_route_supplements(http_openapi, operations),
-        "cli": _cli_surfaces(),
+        "cli": cli_surfaces,
         "configuration_environment": _environment_names(projects),
         "configuration_environment_patterns": _configuration_environment_patterns(projects),
         "configuration_documents": _configuration_documents(projects),

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-recipe-validate:23e3ed1438 -->
+<!-- contract-element: cli:stove0-client:stove0-recipe-validate:160d004957 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -21,6 +21,12 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|---:|---|---|
 | <a id="s-b8713f6067"></a>`path` | TyperArgument | yes | {'class': 'typer.models.TyperPath', 'name': 'file'} | path |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-5d3d16ac70"></a>`help` | <a id="s-497325c2c6"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-dfe8d2ca7f"></a>`0` | <a id="s-2eb3f595b2"></a>`"noncontractual-framework-help"` | <a id="s-0a3310add6"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-25d9608b6e"></a>Result identity: `stove0-cli-result/recipe/validate/v1`
@@ -30,16 +36,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-c21881a37c"></a>`completed` | <a id="s-5dd3e89b2b"></a>`0` | <a id="s-a921e6957c"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-6c21a31a21"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-c21881a37c"></a>`completed` | <a id="s-20c5e936c6"></a>`{"kind":"command-completed"}` | <a id="s-5dd3e89b2b"></a>`0` | <a id="s-a921e6957c"></a>`human: noncontractual-presentation-of-command-result; json: stove0-recipe-catalog-validation/v1` | <a id="s-6c21a31a21"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-a468e4be4c"></a>`usage` | <a id="s-22932551d7"></a>`2` | <a id="s-4562e7c916"></a>`{"all":"empty"}` | <a id="s-1a8131ce7d"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-d9580518c5"></a>`operational` | <a id="s-cd98d79afb"></a>`1` | <a id="s-c1bc01a565"></a>`{"all":"empty"}` | <a id="s-0d4ee34a0b"></a>`{"all":"stove0-cli-diagnostic/v1"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-a468e4be4c"></a>`usage` | <a id="s-6bee01f5c8"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-22932551d7"></a>`2` | <a id="s-4562e7c916"></a>`all: empty` | <a id="s-1a8131ce7d"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-d9580518c5"></a>`operational` | <a id="s-4170cf0b97"></a>`{"kind":"application-error"}` | <a id="s-cd98d79afb"></a>`1` | <a id="s-c1bc01a565"></a>`all: empty` | <a id="s-0d4ee34a0b"></a>`all: stove0-cli-diagnostic/v1` |
 
 ### Progression, limits, and lifecycle
 
@@ -53,8 +59,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-994dedf0b9"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-69fc7a7322"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-022a496645"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-86af34119c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -73,6 +79,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 - `/external_contract/cli/stove0/commands/recipe/commands/validate/name`
 - `/external_contract/cli/stove0/commands/recipe/commands/validate/parameters`
 - `/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract`
+- `/external_contract/cli/stove0/commands/recipe/commands/validate/terminating_controls`
 
 ### Exact owned JSON
 
@@ -113,7 +120,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract`
 
-<!-- exact-contract-value: 3361e060953a29b0103e6e481a73ed6e0d2f9694f7b00975a1a342a58ca2d54f -->
+<!-- exact-contract-value: 176ac534ec8f3df0506552a672c8eee8be54807d7efcbc5da858d6dd4439d1e4 -->
 
 ```json
 {
@@ -121,6 +128,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -131,6 +141,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "all": "stove0-cli-diagnostic/v1"
       },
@@ -147,14 +160,75 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed",
+      "selected_by": {
+        "kind": "command-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "identity": "stove0-recipe-catalog-validation/v1",
+          "kind": "cli-local-json-schema",
+          "schema": {
+            "additionalProperties": false,
+            "properties": {
+              "catalog_sha256": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "format": {
+                "const": "stove0-recipe-catalog-validation/v1"
+              },
+              "operation_count": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "recipe_count": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "recipes": {
+                "items": {
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "format",
+              "catalog_sha256",
+              "operation_count",
+              "recipe_count",
+              "recipes"
+            ],
+            "type": "object"
+          }
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/stove0/commands/recipe/commands/validate/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

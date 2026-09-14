@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-collection-upload-start:481109ccb2 -->
+<!-- contract-element: cli:piggity:piggity-collection-upload-start:8a426b0dcf -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -30,6 +30,12 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-9bfdcc451f"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 | <a id="s-0cf6176bfa"></a>`dry_run` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --dry-run |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-6ea1f0da0c"></a>`help` | <a id="s-b2c6763b4a"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-b4f6223d61"></a>`0` | <a id="s-efe3fcd21f"></a>`"noncontractual-framework-help"` | <a id="s-7799839784"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-c641d0aa0f"></a>Result identity: `piggity-cli-result/collection/upload/start/v1`
@@ -39,17 +45,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-d730df7a18"></a>`completed` | <a id="s-8da7d6d337"></a>`0` | <a id="s-96b0ecc121"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-cd10769912"></a>`{"all":"noncontractual-progress"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-d730df7a18"></a>`completed` | <a id="s-116a05c58c"></a>`{"kind":"command-completed"}` | <a id="s-8da7d6d337"></a>`0` | <a id="s-96b0ecc121"></a>`human: noncontractual-presentation-of-command-result; json: HTTP get_collection_upload_session — #/components/schemas/CollectionUploadSessionOut` | <a id="s-cd10769912"></a>`all: noncontractual-progress` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-bf21d6c0bd"></a>`usage` | <a id="s-0b9cafeddc"></a>`2` | <a id="s-af0f020720"></a>`{"all":"empty"}` | <a id="s-dc49d5195d"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-50758df80a"></a>`operational` | <a id="s-647a0f71e3"></a>`1` | <a id="s-6843025be0"></a>`{"human":"empty","json":"http-api-contracts.ErrorResponse"}` | <a id="s-a441211ad2"></a>`{"human":"noncontractual-diagnostic-or-progress","json":"noncontractual-progress"}` |
-| <a id="s-701a9ab0d7"></a>`custody-timeout` | <a id="s-b595a7afb5"></a>`124` | <a id="s-79cbfef294"></a>`{"all":"empty"}` | <a id="s-ef4c7379fd"></a>`{"all":"noncontractual-progress"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-bf21d6c0bd"></a>`usage` | <a id="s-89b791cd8a"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-0b9cafeddc"></a>`2` | <a id="s-af0f020720"></a>`all: empty` | <a id="s-dc49d5195d"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-50758df80a"></a>`operational` | <a id="s-8c078b501e"></a>`{"kind":"application-error"}` | <a id="s-647a0f71e3"></a>`1` | <a id="s-6843025be0"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-a441211ad2"></a>`human: noncontractual-diagnostic-or-progress; json: noncontractual-progress` |
+| <a id="s-701a9ab0d7"></a>`custody-timeout` | <a id="s-537a092cd6"></a>`{"kind":"custody-deadline-expired","state":"not-finalized"}` | <a id="s-b595a7afb5"></a>`124` | <a id="s-79cbfef294"></a>`all: empty` | <a id="s-ef4c7379fd"></a>`all: noncontractual-progress` |
 
 ### Progression, limits, and lifecycle
 
@@ -94,9 +100,9 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-eb8c31444b"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-3ce87464c4"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
-- <a id="pa-2b8bdcfae9"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-0a7f36f8db"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-f0c076c1a9"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-dc514bd006"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -115,6 +121,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 - `/external_contract/cli/piggity/commands/collection/commands/upload/commands/start/name`
 - `/external_contract/cli/piggity/commands/collection/commands/upload/commands/start/parameters`
 - `/external_contract/cli/piggity/commands/collection/commands/upload/commands/start/result_contract`
+- `/external_contract/cli/piggity/commands/collection/commands/upload/commands/start/terminating_controls`
 
 ### Exact owned JSON
 
@@ -319,7 +326,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/collection/commands/upload/commands/start/result_contract`
 
-<!-- exact-contract-value: e5f5af6fb3123adc0844ee7679b896b844c727f143c6ffa7bfcb8a03b54fe77e -->
+<!-- exact-contract-value: 905ccbfea4ef0049ff3f4700ef0433eb8d6d60399aa1db02ccfcb5dfa804acee -->
 
 ```json
 {
@@ -327,6 +334,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -337,18 +347,77 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "human": "noncontractual-diagnostic-or-progress",
         "json": "noncontractual-progress"
       },
       "stdout": {
         "human": "empty",
-        "json": "http-api-contracts.ErrorResponse"
+        "json": {
+          "identity": "http-api-contracts.ErrorResponse",
+          "kind": "python-model",
+          "schema": {
+            "$defs": {
+              "ErrorBody": {
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "minLength": 1,
+                    "title": "Code",
+                    "type": "string"
+                  },
+                  "details": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "title": "Details"
+                  },
+                  "message": {
+                    "minLength": 1,
+                    "title": "Message",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "title": "ErrorBody",
+                "type": "object"
+              }
+            },
+            "additionalProperties": false,
+            "properties": {
+              "error": {
+                "$ref": "#/$defs/ErrorBody"
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "title": "ErrorResponse",
+            "type": "object"
+          }
+        }
       }
     },
     {
       "exit_status": 124,
       "id": "custody-timeout",
+      "selected_by": {
+        "kind": "custody-deadline-expired",
+        "state": "not-finalized"
+      },
       "stderr": {
         "all": "noncontractual-progress"
       },
@@ -365,14 +434,48 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed",
+      "selected_by": {
+        "kind": "command-completed"
+      },
       "stderr": {
         "all": "noncontractual-progress"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "application": "riverhog",
+          "kind": "http-operation-response",
+          "method": "GET",
+          "operation_id": "get_collection_upload_session",
+          "path": "/v1/collection-upload-sessions/{collection_id}",
+          "schema": {
+            "$ref": "#/components/schemas/CollectionUploadSessionOut"
+          },
+          "status": "200"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/piggity/commands/collection/commands/upload/commands/start/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

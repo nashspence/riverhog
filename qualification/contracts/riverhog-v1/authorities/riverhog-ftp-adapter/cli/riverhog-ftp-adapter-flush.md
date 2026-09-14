@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:riverhog-ftp-adapter:riverhog-ftp-adapter-flush:6c3fdc6a25 -->
+<!-- contract-element: cli:riverhog-ftp-adapter:riverhog-ftp-adapter-flush:c00a483763 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -21,6 +21,12 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|---:|---|---|
 | <a id="s-206a3aa721"></a>`source` | _StoreAction | yes |  |  |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-c7b79279f4"></a>`help` | <a id="s-dc3ee42c58"></a>`{"kind":"option-present","options":["-h","--help"]}` | <a id="s-928f9816fd"></a>`0` | <a id="s-e624db01e9"></a>`"noncontractual-framework-help"` | <a id="s-2c1d9b87d9"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-6169445427"></a>Result identity: `riverhog-ftp-adapter-cli-result/flush/v1`
@@ -30,15 +36,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-edfcdca2eb"></a>`completed` | <a id="s-f72133d8af"></a>`0` | <a id="s-3470129f43"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-4efd12c773"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-edfcdca2eb"></a>`completed` | <a id="s-c71b82840b"></a>`{"kind":"command-completed"}` | <a id="s-f72133d8af"></a>`0` | <a id="s-3470129f43"></a>`human: noncontractual-presentation-of-command-result; json: HTTP flush_ftp_adapter_source — type="object"; additional keys=`additionalProperties`` | <a id="s-4efd12c773"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-bcc74c7169"></a>`usage` | <a id="s-892dc37171"></a>`2` | <a id="s-72f6faf0e3"></a>`{"all":"empty"}` | <a id="s-3b2ab6a91b"></a>`{"all":"noncontractual-usage-diagnostic"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-bcc74c7169"></a>`usage` | <a id="s-61b75a97ff"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-892dc37171"></a>`2` | <a id="s-72f6faf0e3"></a>`all: empty` | <a id="s-3b2ab6a91b"></a>`all: noncontractual-usage-diagnostic` |
 
 ## Maintained corroboration
 
@@ -48,7 +54,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-c6fdcc9def"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-98bf678958"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -67,6 +73,7 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/cli/riverhog-ftp-adapter/commands/flush/name`
 - `/external_contract/cli/riverhog-ftp-adapter/commands/flush/parameters`
 - `/external_contract/cli/riverhog-ftp-adapter/commands/flush/result_contract`
+- `/external_contract/cli/riverhog-ftp-adapter/commands/flush/terminating_controls`
 
 ### Exact owned JSON
 
@@ -98,7 +105,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/riverhog-ftp-adapter/commands/flush/result_contract`
 
-<!-- exact-contract-value: e5d2dbd999fcadbe787bd59e390f7f1c5cec120f0dc4f9b2f1d7b6e9b1bd7034 -->
+<!-- exact-contract-value: 04981bd74804726908b811a02782843a5a647795ef801e5c727f0bb7ec569653 -->
 
 ```json
 {
@@ -106,6 +113,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -122,14 +132,51 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed",
+      "selected_by": {
+        "kind": "command-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "application": "riverhog-ftp-adapter",
+          "kind": "http-operation-response",
+          "method": "POST",
+          "operation_id": "flush_ftp_adapter_source",
+          "path": "/v1/sources/{source_id}/flush",
+          "schema": {
+            "additionalProperties": true,
+            "title": "Response Flush Ftp Adapter Source",
+            "type": "object"
+          },
+          "status": "200"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/riverhog-ftp-adapter/commands/flush/terminating_controls`
+
+<!-- exact-contract-value: 46c96c22d2ed8a51da57bba3ac0f2269bb35f98c5fd6dc3e3ba67e60f772ad72 -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "-h",
+        "--help"
+      ]
+    }
+  }
+]
 ```

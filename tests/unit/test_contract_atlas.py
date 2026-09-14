@@ -89,7 +89,7 @@ def test_every_machine_terminal_and_extent_decision_has_one_human_owner() -> Non
     coverage = discovery["projection_coverage"]
     assert coverage["projection_terminals"] > coverage["semantic_terminals"]
     assert coverage["policy_terminals"] == 3
-    assert coverage["extent_decisions"] == 1991
+    assert coverage["extent_decisions"] == 1976
     assert coverage["missing"] == 0
     assert coverage["multiply_represented"] == 0
     assert coverage["stale"] == 0
@@ -103,7 +103,7 @@ def test_atlas_rollups_and_dossiers_are_exact_and_descriptive() -> None:
     dossier_documents = [item for item in documents if item["kind"] == "dossier"]
 
     assert len(dossier_documents) == len(elements) == root["counts"]["contract_elements"]
-    assert root["counts"]["extent_decisions"] == 1991
+    assert root["counts"]["extent_decisions"] == 1976
     assert sum(root["counts"]["by_authority"].values()) == len(elements)
     assert sum(root["counts"]["by_interface"].values()) == len(elements)
     assert all(item["path"].endswith(".md") for item in documents)

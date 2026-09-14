@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:mango-fish:mango-fish-state-status:4acfec2a1a -->
+<!-- contract-element: cli:mango-fish:mango-fish-state-status:cf48899025 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -21,6 +21,12 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|---:|---|---|
 | <a id="s-f1aea638f4"></a>`json` | _StoreTrueAction | no |  | --json |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-6fddeb07ef"></a>`help` | <a id="s-f11b00cbe6"></a>`{"kind":"option-present","options":["-h","--help"]}` | <a id="s-484c49791a"></a>`0` | <a id="s-e1ddc154fb"></a>`"noncontractual-framework-help"` | <a id="s-1db75308e5"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-a7ffa71a3e"></a>Result identity: `mango-fish-cli-result/state/status/v1`
@@ -30,16 +36,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-1c9d261761"></a>`completed` | <a id="s-3576ac6723"></a>`0` | <a id="s-a41133c2a5"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-47792e58f1"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-1c9d261761"></a>`completed` | <a id="s-e088b7b87a"></a>`{"kind":"state-schema-operation-completed"}` | <a id="s-3576ac6723"></a>`0` | <a id="s-a41133c2a5"></a>`human: noncontractual-presentation-of-command-result; json: state-schema-status/v1` | <a id="s-47792e58f1"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-83d4e893ff"></a>`usage` | <a id="s-0ed756ac5e"></a>`2` | <a id="s-bde8a0e7e0"></a>`{"all":"empty"}` | <a id="s-ce98abc8ed"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-261943abb1"></a>`state-schema` | <a id="s-ff1a92103f"></a>`1` | <a id="s-f09a63bb89"></a>`{"all":"empty"}` | <a id="s-afd2ae98a4"></a>`{"all":"mango-fish-state-schema-diagnostic/v1"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-83d4e893ff"></a>`usage` | <a id="s-bb8605b1ca"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-0ed756ac5e"></a>`2` | <a id="s-bde8a0e7e0"></a>`all: empty` | <a id="s-ce98abc8ed"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-261943abb1"></a>`state-schema` | <a id="s-6c44ee637d"></a>`{"kind":"state-schema-error"}` | <a id="s-ff1a92103f"></a>`1` | <a id="s-f09a63bb89"></a>`all: empty` | <a id="s-afd2ae98a4"></a>`all: mango-fish-state-schema-diagnostic/v1` |
 
 ### Progression, limits, and lifecycle
 
@@ -53,8 +59,8 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-00efcc02dd"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-d4713fd46c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-b92318c69b"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-7ebab97cf9"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -73,6 +79,7 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 - `/external_contract/cli/mango-fish/commands/state/commands/status/name`
 - `/external_contract/cli/mango-fish/commands/state/commands/status/parameters`
 - `/external_contract/cli/mango-fish/commands/state/commands/status/result_contract`
+- `/external_contract/cli/mango-fish/commands/state/commands/status/terminating_controls`
 
 ### Exact owned JSON
 
@@ -107,7 +114,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/mango-fish/commands/state/commands/status/result_contract`
 
-<!-- exact-contract-value: 46a5c4f5f0c95232444051900df5e7af7d23441e381a3ea89dcca3fd22f2001f -->
+<!-- exact-contract-value: cf03b2ff16f4effb3de6553dcf1a06145c3c7899514df4d481a4c6b383567a83 -->
 
 ```json
 {
@@ -115,6 +122,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -125,6 +135,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "state-schema",
+      "selected_by": {
+        "kind": "state-schema-error"
+      },
       "stderr": {
         "all": "mango-fish-state-schema-diagnostic/v1"
       },
@@ -141,14 +154,75 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed",
+      "selected_by": {
+        "kind": "state-schema-operation-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "identity": "state-schema-status/v1",
+          "kind": "cli-local-json-schema",
+          "schema": {
+            "additionalProperties": false,
+            "properties": {
+              "condition": {
+                "enum": [
+                  "empty",
+                  "current",
+                  "upgrade_required",
+                  "unversioned",
+                  "incompatible"
+                ]
+              },
+              "current_revision": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "head_revision": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "condition",
+              "current_revision",
+              "head_revision"
+            ],
+            "type": "object"
+          }
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/mango-fish/commands/state/commands/status/terminating_controls`
+
+<!-- exact-contract-value: 46c96c22d2ed8a51da57bba3ac0f2269bb35f98c5fd6dc3e3ba67e60f772ad72 -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "-h",
+        "--help"
+      ]
+    }
+  }
+]
 ```

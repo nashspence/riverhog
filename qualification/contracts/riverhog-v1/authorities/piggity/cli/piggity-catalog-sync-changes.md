@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-catalog-sync-changes:5d5a50a1a7 -->
+<!-- contract-element: cli:piggity:piggity-catalog-sync-changes:fda2df6375 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -23,6 +23,12 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-5596b60bf3"></a>`limit` | TyperOption | no | {'class': 'typer._click.types.IntRange', 'maximum': 100, 'minimum': 1, 'name': 'integer range'} | --limit |
 | <a id="s-ad19e2621a"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-5096151b53"></a>`help` | <a id="s-097d081fd4"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-2316581323"></a>`0` | <a id="s-161d540501"></a>`"noncontractual-framework-help"` | <a id="s-e96f1aed55"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-874943888f"></a>Result identity: `piggity-cli-result/catalog-sync/changes/v1`
@@ -32,16 +38,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-b7a8ccf908"></a>`completed` | <a id="s-5c1f1c1eed"></a>`0` | <a id="s-83632840d4"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-8bf5b32ce4"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-b7a8ccf908"></a>`completed` | <a id="s-30a8afd188"></a>`{"kind":"command-completed"}` | <a id="s-5c1f1c1eed"></a>`0` | <a id="s-83632840d4"></a>`human: noncontractual-presentation-of-command-result; json: HTTP list_catalog_sync_changes — #/components/schemas/CatalogSyncChangePage` | <a id="s-8bf5b32ce4"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-84774d6f48"></a>`usage` | <a id="s-7d2289a7c5"></a>`2` | <a id="s-a464a64ce1"></a>`{"all":"empty"}` | <a id="s-b6934519cf"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-f07818d961"></a>`operational` | <a id="s-91e56464ad"></a>`1` | <a id="s-450409e802"></a>`{"human":"empty","json":"http-api-contracts.ErrorResponse"}` | <a id="s-890030578d"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-84774d6f48"></a>`usage` | <a id="s-77ca0270d4"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-7d2289a7c5"></a>`2` | <a id="s-a464a64ce1"></a>`all: empty` | <a id="s-b6934519cf"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-f07818d961"></a>`operational` | <a id="s-07af3097d8"></a>`{"kind":"application-error"}` | <a id="s-91e56464ad"></a>`1` | <a id="s-450409e802"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-890030578d"></a>`human: noncontractual-diagnostic; json: empty` |
 
 ### Progression, limits, and lifecycle
 
@@ -64,8 +70,8 @@ Shared facts for every subject below: minimum=1
 
 ## Governing policies
 
-- <a id="pa-b353a0e9d5"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-e0ccc0ca9f"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-5f4869d8a5"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-2deec15036"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -84,6 +90,7 @@ Shared facts for every subject below: minimum=1
 - `/external_contract/cli/piggity/commands/catalog-sync/commands/changes/name`
 - `/external_contract/cli/piggity/commands/catalog-sync/commands/changes/parameters`
 - `/external_contract/cli/piggity/commands/catalog-sync/commands/changes/result_contract`
+- `/external_contract/cli/piggity/commands/catalog-sync/commands/changes/terminating_controls`
 
 ### Exact owned JSON
 
@@ -166,7 +173,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/catalog-sync/commands/changes/result_contract`
 
-<!-- exact-contract-value: 18f0cf20a66e7f5a5c4772752000dac62b3f7183d6b91551a5d9c62d1627fa63 -->
+<!-- exact-contract-value: 88d367d034da730fa62c67991e1f1d6194842754ee7369a33efb9610f974bbd8 -->
 
 ```json
 {
@@ -174,6 +181,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -184,13 +194,68 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "human": "noncontractual-diagnostic",
         "json": "empty"
       },
       "stdout": {
         "human": "empty",
-        "json": "http-api-contracts.ErrorResponse"
+        "json": {
+          "identity": "http-api-contracts.ErrorResponse",
+          "kind": "python-model",
+          "schema": {
+            "$defs": {
+              "ErrorBody": {
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "minLength": 1,
+                    "title": "Code",
+                    "type": "string"
+                  },
+                  "details": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "title": "Details"
+                  },
+                  "message": {
+                    "minLength": 1,
+                    "title": "Message",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "title": "ErrorBody",
+                "type": "object"
+              }
+            },
+            "additionalProperties": false,
+            "properties": {
+              "error": {
+                "$ref": "#/$defs/ErrorBody"
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "title": "ErrorResponse",
+            "type": "object"
+          }
+        }
       }
     }
   ],
@@ -202,14 +267,48 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed",
+      "selected_by": {
+        "kind": "command-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "application": "riverhog",
+          "kind": "http-operation-response",
+          "method": "GET",
+          "operation_id": "list_catalog_sync_changes",
+          "path": "/v1/catalog-sync/changes",
+          "schema": {
+            "$ref": "#/components/schemas/CatalogSyncChangePage"
+          },
+          "status": "200"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/piggity/commands/catalog-sync/commands/changes/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

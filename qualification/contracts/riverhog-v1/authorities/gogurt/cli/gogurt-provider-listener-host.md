@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt-provider-listener-host:a23f82a5b9 -->
+<!-- contract-element: cli:gogurt:gogurt-provider-listener-host:8bce3c4ab9 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -15,9 +15,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 - <a id="s-460e5802a5"></a>Parser name: `listener-host`
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-dc5a283764"></a>`help` | <a id="s-3fb69cb99a"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-c4f863a856"></a>`0` | <a id="s-4a6c97b22a"></a>`"noncontractual-framework-help"` | <a id="s-d470f176cc"></a>`"empty"` |
+
 ## Governing policies
 
-- <a id="pa-0f58d6b693"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-c25dc88b28"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -35,6 +41,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - `/external_contract/cli/gogurt/commands/provider/commands/listener-host/name`
 - `/external_contract/cli/gogurt/commands/provider/commands/listener-host/parameters`
+- `/external_contract/cli/gogurt/commands/provider/commands/listener-host/terminating_controls`
 
 ### Exact owned JSON
 
@@ -54,4 +61,25 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ```json
 []
+```
+
+### `/external_contract/cli/gogurt/commands/provider/commands/listener-host/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

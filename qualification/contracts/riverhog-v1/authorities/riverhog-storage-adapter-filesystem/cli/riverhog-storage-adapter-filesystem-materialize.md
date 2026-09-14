@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:riverhog-storage-adapter-filesystem:riverhog-storage-adapter-filesystem-materialize:79f7f79673 -->
+<!-- contract-element: cli:riverhog-storage-adapter-filesystem:riverhog-storage-adapter-filesystem-materialize:c528e0a756 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -19,13 +19,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| <a id="s-d95ff1dd9e"></a>`version` | _VersionAction | no |  | --version |
-| <a id="s-232d4b583f"></a>`source` | _StoreAction | yes | Path |  |
-| <a id="s-19fb2fab9f"></a>`destination` | _StoreAction | yes | Path |  |
-| <a id="s-9b1cfd448a"></a>`path` | _AppendAction | no |  | --path |
-| <a id="s-8b00d9477e"></a>`prefix` | _AppendAction | no |  | --prefix |
-| <a id="s-8400a99a20"></a>`all_objects` | _StoreTrueAction | no |  | --all |
-| <a id="s-974d6e6d6f"></a>`json` | _StoreTrueAction | no |  | --json |
+| <a id="s-d95ff1dd9e"></a>`source` | _StoreAction | yes | Path |  |
+| <a id="s-232d4b583f"></a>`destination` | _StoreAction | yes | Path |  |
+| <a id="s-19fb2fab9f"></a>`path` | _AppendAction | no |  | --path |
+| <a id="s-9b1cfd448a"></a>`prefix` | _AppendAction | no |  | --prefix |
+| <a id="s-8b00d9477e"></a>`all_objects` | _StoreTrueAction | no |  | --all |
+| <a id="s-8400a99a20"></a>`json` | _StoreTrueAction | no |  | --json |
+
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-b896aec251"></a>`help` | <a id="s-dcd7c89fe8"></a>`{"kind":"option-present","options":["-h","--help"]}` | <a id="s-df4decbe88"></a>`0` | <a id="s-c631566fe1"></a>`"noncontractual-framework-help"` | <a id="s-7106f99f9e"></a>`"empty"` |
+| <a id="s-f0c8b38e7c"></a>`version` | <a id="s-7fbc5abc25"></a>`{"kind":"option-present","options":["--version"]}` | <a id="s-cba0ed7f0e"></a>`0` | <a id="s-4db5a4faa8"></a>`{"distribution":"riverhog-storage-adapter-filesystem","kind":"installed-coordinated-release-version","serialization":"noncontractual"}` | <a id="s-14f7eae9a2"></a>`"empty"` |
 
 ### Result and failure contract
 
@@ -36,16 +42,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-87aa6be67d"></a>`completed` | <a id="s-f75383c0b8"></a>`0` | <a id="s-cf82974b80"></a>`{"human":"noncontractual-presentation-of-command-result","json":"riverhog-filesystem-materialization-summary/v1"}` | <a id="s-be54da33ab"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-87aa6be67d"></a>`completed` | <a id="s-5214dd4180"></a>`{"kind":"materialization-completed"}` | <a id="s-f75383c0b8"></a>`0` | <a id="s-cf82974b80"></a>`human: noncontractual-presentation-of-command-result; json: riverhog-filesystem-materialization-summary/v1` | <a id="s-be54da33ab"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-ecfc6df42a"></a>`usage` | <a id="s-4317a5c11c"></a>`2` | <a id="s-86297cde3e"></a>`{"all":"empty"}` | <a id="s-22fb428ae1"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-4ccc914638"></a>`materialization` | <a id="s-87a8cd7159"></a>`1` | <a id="s-382bb6f12c"></a>`{"all":"empty"}` | <a id="s-57d17310a9"></a>`{"all":"riverhog-filesystem-materialization-diagnostic/v1"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-ecfc6df42a"></a>`usage` | <a id="s-67b1b1f3d7"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-4317a5c11c"></a>`2` | <a id="s-86297cde3e"></a>`all: empty` | <a id="s-22fb428ae1"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-4ccc914638"></a>`materialization` | <a id="s-5dbfe7b0f2"></a>`{"kind":"materialization-error"}` | <a id="s-87a8cd7159"></a>`1` | <a id="s-382bb6f12c"></a>`all: empty` | <a id="s-57d17310a9"></a>`all: riverhog-filesystem-materialization-diagnostic/v1` |
 
 ### Progression, limits, and lifecycle
 
@@ -55,14 +61,13 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --version](#s-d95ff1dd9e) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --all](#s-8400a99a20) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --json](#s-974d6e6d6f) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --all](#s-8b00d9477e) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --json](#s-8400a99a20) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Governing policies
 
-- <a id="pa-545ec076de"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-23c5f7a20c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-80c5b6cb3c"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-383a872168"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -81,6 +86,7 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 - `/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/name`
 - `/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/parameters`
 - `/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/result_contract`
+- `/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/terminating_controls`
 
 ### Exact owned JSON
 
@@ -96,19 +102,10 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/parameters`
 
-<!-- exact-contract-value: f8a7ef39da8b15ad5f557610d25478cad6509560fa0249ed688e23cc17e9cc01 -->
+<!-- exact-contract-value: 3a0c17fb8fafcbad481c10cdb6a3076acac8dcaab5929f59327941ffe88ff519 -->
 
 ```json
 [
-  {
-    "dest": "version",
-    "kind": "_VersionAction",
-    "nargs": 0,
-    "options": [
-      "--version"
-    ],
-    "required": false
-  },
   {
     "dest": "source",
     "kind": "_StoreAction",
@@ -170,7 +167,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/result_contract`
 
-<!-- exact-contract-value: 9c4d2dd31864aa013a97846fa19fe91e20ae83f2bd41c77356c1cb50a7a994dc -->
+<!-- exact-contract-value: e36b053ebd70219e22ca05bea24ca0297abf71c8e6bcfe90277a2c5d4ed4cee5 -->
 
 ```json
 {
@@ -178,6 +175,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -188,6 +188,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "materialization",
+      "selected_by": {
+        "kind": "materialization-error"
+      },
       "stderr": {
         "all": "riverhog-filesystem-materialization-diagnostic/v1"
       },
@@ -204,14 +207,58 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed",
+      "selected_by": {
+        "kind": "materialization-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "riverhog-filesystem-materialization-summary/v1"
+        "json": {
+          "identity": "riverhog-filesystem-materialization-summary/v1",
+          "kind": "semantic-format"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/terminating_controls`
+
+<!-- exact-contract-value: 57a2df765e96df1f97d812b5ceab4cf9a31bc36c0c29eaa090d6299af0ea04d0 -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "-h",
+        "--help"
+      ]
+    }
+  },
+  {
+    "exit_status": 0,
+    "id": "version",
+    "stderr": "empty",
+    "stdout": {
+      "distribution": "riverhog-storage-adapter-filesystem",
+      "kind": "installed-coordinated-release-version",
+      "serialization": "noncontractual"
+    },
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--version"
+      ]
+    }
+  }
+]
 ```

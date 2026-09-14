@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-app-key-rotate:ab9c94f847 -->
+<!-- contract-element: cli:piggity:piggity-app-key-rotate:e5e08c5136 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -23,6 +23,12 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-fa35dffec2"></a>`key_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | key_id |
 | <a id="s-6529995c44"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-6aba098818"></a>`help` | <a id="s-eee4d1e758"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-76ede61180"></a>`0` | <a id="s-0795b3748c"></a>`"noncontractual-framework-help"` | <a id="s-96b139cd20"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-a6b465fea1"></a>Result identity: `piggity-cli-result/app/key/rotate/v1`
@@ -32,16 +38,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-fb5f9c867f"></a>`completed` | <a id="s-c2d6dfd70a"></a>`0` | <a id="s-641a48ee38"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-79e7c04085"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-fb5f9c867f"></a>`completed` | <a id="s-a844de8be0"></a>`{"kind":"command-completed"}` | <a id="s-c2d6dfd70a"></a>`0` | <a id="s-641a48ee38"></a>`human: noncontractual-presentation-of-command-result; json: HTTP rotate_app_key — #/components/schemas/AppKeyCreatedOut` | <a id="s-79e7c04085"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-a0d9f03ecd"></a>`usage` | <a id="s-e126783be0"></a>`2` | <a id="s-9d3973c593"></a>`{"all":"empty"}` | <a id="s-fafdf928b0"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-4478e2c0c0"></a>`operational` | <a id="s-08ba5101a1"></a>`1` | <a id="s-c2fee5a1ca"></a>`{"human":"empty","json":"http-api-contracts.ErrorResponse"}` | <a id="s-13e3b07f3c"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-a0d9f03ecd"></a>`usage` | <a id="s-9c63676872"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-e126783be0"></a>`2` | <a id="s-9d3973c593"></a>`all: empty` | <a id="s-fafdf928b0"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-4478e2c0c0"></a>`operational` | <a id="s-46b464e97f"></a>`{"kind":"application-error"}` | <a id="s-08ba5101a1"></a>`1` | <a id="s-c2fee5a1ca"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-13e3b07f3c"></a>`human: noncontractual-diagnostic; json: empty` |
 
 ### Progression, limits, and lifecycle
 
@@ -63,8 +69,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-660a7abc34"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-e07d6105a5"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-334f51c921"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-9b50a38bff"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -83,6 +89,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 - `/external_contract/cli/piggity/commands/app/commands/key/commands/rotate/name`
 - `/external_contract/cli/piggity/commands/app/commands/key/commands/rotate/parameters`
 - `/external_contract/cli/piggity/commands/app/commands/key/commands/rotate/result_contract`
+- `/external_contract/cli/piggity/commands/app/commands/key/commands/rotate/terminating_controls`
 
 ### Exact owned JSON
 
@@ -158,7 +165,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/app/commands/key/commands/rotate/result_contract`
 
-<!-- exact-contract-value: 619034e28030576ed20c381d5271df96a6141a4d2beb7a56297836f41051cf05 -->
+<!-- exact-contract-value: b7cdf3e674e7aa652326af0a5146ffc5e718c590c0d47b22fa9d509405f7f26f -->
 
 ```json
 {
@@ -166,6 +173,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -176,13 +186,68 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "human": "noncontractual-diagnostic",
         "json": "empty"
       },
       "stdout": {
         "human": "empty",
-        "json": "http-api-contracts.ErrorResponse"
+        "json": {
+          "identity": "http-api-contracts.ErrorResponse",
+          "kind": "python-model",
+          "schema": {
+            "$defs": {
+              "ErrorBody": {
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "minLength": 1,
+                    "title": "Code",
+                    "type": "string"
+                  },
+                  "details": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "title": "Details"
+                  },
+                  "message": {
+                    "minLength": 1,
+                    "title": "Message",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "title": "ErrorBody",
+                "type": "object"
+              }
+            },
+            "additionalProperties": false,
+            "properties": {
+              "error": {
+                "$ref": "#/$defs/ErrorBody"
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "title": "ErrorResponse",
+            "type": "object"
+          }
+        }
       }
     }
   ],
@@ -194,14 +259,48 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed",
+      "selected_by": {
+        "kind": "command-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "application": "riverhog",
+          "kind": "http-operation-response",
+          "method": "POST",
+          "operation_id": "rotate_app_key",
+          "path": "/v1/apps/{app}/keys/{key_id}/rotate",
+          "schema": {
+            "$ref": "#/components/schemas/AppKeyCreatedOut"
+          },
+          "status": "200"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/piggity/commands/app/commands/key/commands/rotate/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

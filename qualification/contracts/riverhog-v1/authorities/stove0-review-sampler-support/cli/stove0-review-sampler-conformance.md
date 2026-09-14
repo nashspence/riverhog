@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-review-sampler-support:stove0-review-sampler-conformance:13ece4b55a -->
+<!-- contract-element: cli:stove0-review-sampler-support:stove0-review-sampler-conformance:b269c354a7 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -23,7 +23,13 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-01e4236343"></a>`token_file` | _StoreAction | yes | Path | --token-file |
 | <a id="s-503c002d8f"></a>`request` | _StoreAction | no | Path | --request |
 | <a id="s-e2cfd0f79c"></a>`allow_insecure_http` | _StoreTrueAction | no |  | --allow-insecure-http |
-| <a id="s-d47e544d0c"></a>`version` | _VersionAction | no |  | --version |
+
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-f464182d29"></a>`help` | <a id="s-ea22cb186a"></a>`{"kind":"option-present","options":["-h","--help"]}` | <a id="s-3ddc673f3d"></a>`0` | <a id="s-ff99577988"></a>`"noncontractual-framework-help"` | <a id="s-4fb8d54db3"></a>`"empty"` |
+| <a id="s-f683cfb357"></a>`version` | <a id="s-aee23356d2"></a>`{"kind":"option-present","options":["--version"]}` | <a id="s-164c44e397"></a>`0` | <a id="s-e2dcc98bc4"></a>`{"distribution":"stove0-review-sampler-support","kind":"installed-coordinated-release-version","serialization":"noncontractual"}` | <a id="s-97672c7a46"></a>`"empty"` |
 
 ### Result and failure contract
 
@@ -34,15 +40,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-151d33ac93"></a>`conformant` | <a id="s-3193d17a65"></a>`0` | <a id="s-7b6d3f9844"></a>`{"json":"stove0-review-sampler-conformance-result/v1"}` | <a id="s-6d3f8cfee1"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-151d33ac93"></a>`conformant` | <a id="s-b8d3fee4b1"></a>`{"kind":"conformance-completed"}` | <a id="s-3193d17a65"></a>`0` | <a id="s-7b6d3f9844"></a>`json: stove0-review-sampler-conformance-result/v1` | <a id="s-6d3f8cfee1"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-c3d5e2d565"></a>`usage` | <a id="s-bd61b61d40"></a>`2` | <a id="s-575d000400"></a>`{"all":"empty"}` | <a id="s-3efe152094"></a>`{"all":"noncontractual-usage-diagnostic"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-c3d5e2d565"></a>`usage` | <a id="s-fa2c1ebbd0"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-bd61b61d40"></a>`2` | <a id="s-575d000400"></a>`all: empty` | <a id="s-3efe152094"></a>`all: noncontractual-usage-diagnostic` |
 
 ### Progression, limits, and lifecycle
 
@@ -53,12 +59,11 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [CLI parameter --allow-insecure-http](#s-e2cfd0f79c) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --version](#s-d47e544d0c) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Governing policies
 
-- <a id="pa-8052e808b3"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-c408f6225d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-90c9f9e548"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-c791e78a6b"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -77,6 +82,7 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 - `/external_contract/cli/stove0-review-sampler-conformance/name`
 - `/external_contract/cli/stove0-review-sampler-conformance/parameters`
 - `/external_contract/cli/stove0-review-sampler-conformance/result_contract`
+- `/external_contract/cli/stove0-review-sampler-conformance/terminating_controls`
 
 ### Exact owned JSON
 
@@ -92,7 +98,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0-review-sampler-conformance/parameters`
 
-<!-- exact-contract-value: 49cca455fdf894c8d637d0b2169d59ee01d635b1ff796a41e3b609b0e826eb3e -->
+<!-- exact-contract-value: 9a711e5897766dcd0b70e1b83b962fc2abfdd6b507d91f68efe5207a2e88f70d -->
 
 ```json
 [
@@ -132,22 +138,13 @@ The following JSON is the complete value owned at each machine-authority pointer
       "--allow-insecure-http"
     ],
     "required": false
-  },
-  {
-    "dest": "version",
-    "kind": "_VersionAction",
-    "nargs": 0,
-    "options": [
-      "--version"
-    ],
-    "required": false
   }
 ]
 ```
 
 ### `/external_contract/cli/stove0-review-sampler-conformance/result_contract`
 
-<!-- exact-contract-value: 70d408ace59c1796138841e688904da066ca3e801bf10f85d595c0b4a46e5cc4 -->
+<!-- exact-contract-value: b796fd56b678d5fde4b11ff6fbc727c3d0693f185aa1bde77de00fd0f293acf8 -->
 
 ```json
 {
@@ -155,6 +152,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -171,13 +171,57 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "conformant",
+      "selected_by": {
+        "kind": "conformance-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
-        "json": "stove0-review-sampler-conformance-result/v1"
+        "json": {
+          "identity": "stove0-review-sampler-conformance-result/v1",
+          "kind": "semantic-format"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/stove0-review-sampler-conformance/terminating_controls`
+
+<!-- exact-contract-value: fcddd733b548f7fdee3021b986cc2c4b7650c7a1a689657a12af45cc7a2137de -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "-h",
+        "--help"
+      ]
+    }
+  },
+  {
+    "exit_status": 0,
+    "id": "version",
+    "stderr": "empty",
+    "stdout": {
+      "distribution": "stove0-review-sampler-support",
+      "kind": "installed-coordinated-release-version",
+      "serialization": "noncontractual"
+    },
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--version"
+      ]
+    }
+  }
+]
 ```

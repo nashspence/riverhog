@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-recipe-list:a6579043d1 -->
+<!-- contract-element: cli:stove0-client:stove0-recipe-list:42fc48e96d -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -15,6 +15,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 - <a id="s-9785a5ea66"></a>Parser name: `list`
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-4d57de814c"></a>`help` | <a id="s-a358d585b7"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-a4817c46a6"></a>`0` | <a id="s-462c16610a"></a>`"noncontractual-framework-help"` | <a id="s-fe89d95a56"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-edee39bb14"></a>Result identity: `stove0-cli-result/recipe/list/v1`
@@ -24,16 +30,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-f0457c88f9"></a>`completed` | <a id="s-f2feb057f0"></a>`0` | <a id="s-f1349e7de6"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-2c2fbdadc0"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-f0457c88f9"></a>`completed` | <a id="s-12cadb7e1a"></a>`{"kind":"command-completed"}` | <a id="s-f2feb057f0"></a>`0` | <a id="s-f1349e7de6"></a>`human: noncontractual-presentation-of-command-result; json: HTTP list_recipes — #/components/schemas/RecipeCatalogView` | <a id="s-2c2fbdadc0"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-079f1d376b"></a>`usage` | <a id="s-bd2686ceae"></a>`2` | <a id="s-a19663b429"></a>`{"all":"empty"}` | <a id="s-7b0d2f8785"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-83d7dc4cdb"></a>`operational` | <a id="s-68040b2c9d"></a>`1` | <a id="s-fc51d3932e"></a>`{"all":"empty"}` | <a id="s-911ecf6d08"></a>`{"all":"stove0-cli-diagnostic/v1"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-079f1d376b"></a>`usage` | <a id="s-f89324a614"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-bd2686ceae"></a>`2` | <a id="s-a19663b429"></a>`all: empty` | <a id="s-7b0d2f8785"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-83d7dc4cdb"></a>`operational` | <a id="s-c459c68121"></a>`{"kind":"application-error"}` | <a id="s-68040b2c9d"></a>`1` | <a id="s-fc51d3932e"></a>`all: empty` | <a id="s-911ecf6d08"></a>`all: stove0-cli-diagnostic/v1` |
 
 ## Maintained corroboration
 
@@ -43,7 +49,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-8693199f0d"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-6a8ecabb26"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -62,6 +68,7 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/cli/stove0/commands/recipe/commands/list/name`
 - `/external_contract/cli/stove0/commands/recipe/commands/list/parameters`
 - `/external_contract/cli/stove0/commands/recipe/commands/list/result_contract`
+- `/external_contract/cli/stove0/commands/recipe/commands/list/terminating_controls`
 
 ### Exact owned JSON
 
@@ -85,7 +92,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0/commands/recipe/commands/list/result_contract`
 
-<!-- exact-contract-value: cb3a3e714cf880173fe3ced8f6fc9b0c5b663aed8dd0c4e58e30bc43c703b465 -->
+<!-- exact-contract-value: aa8fcc55521207bcbd5aaf247d122b03a456f5619a32a0439048782084361496 -->
 
 ```json
 {
@@ -93,6 +100,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -103,6 +113,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "all": "stove0-cli-diagnostic/v1"
       },
@@ -119,14 +132,48 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed",
+      "selected_by": {
+        "kind": "command-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "application": "stove0",
+          "kind": "http-operation-response",
+          "method": "GET",
+          "operation_id": "list_recipes",
+          "path": "/v1/recipes",
+          "schema": {
+            "$ref": "#/components/schemas/RecipeCatalogView"
+          },
+          "status": "200"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/stove0/commands/recipe/commands/list/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

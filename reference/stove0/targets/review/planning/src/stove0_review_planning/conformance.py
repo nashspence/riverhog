@@ -9,7 +9,7 @@ from collections.abc import Sequence
 from stove0_media_sampling_observer_contracts import MEDIA_SAMPLING_OBSERVER_CONTRACT
 from stove0_review_target_contracts import REVIEW_MATERIALIZE_OPERATION
 
-_CLI_RESULT_CONTRACT = {
+_CLI_RESULT_CONTRACT: dict[str, object] = {
     "schema": "riverhog-cli-result-contract/v1",
     "identity_prefix": "stove0-review-planning-cli-result",
     "default_profile": "machine-report",
@@ -39,6 +39,12 @@ _CLI_RESULT_CONTRACT = {
     "command_profiles": {},
     "command_overrides": {},
     "executable_groups": [],
+    "outcome_selectors": {
+        "reported": {"kind": "contract-report-completed"},
+        "usage": {"kind": "parser-rejected-invocation"},
+    },
+    "output_authorities": {},
+    "version_distribution": None,
 }
 
 

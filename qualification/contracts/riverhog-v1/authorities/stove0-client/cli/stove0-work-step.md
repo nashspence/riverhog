@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-work-step:b259932016 -->
+<!-- contract-element: cli:stove0-client:stove0-work-step:c26a49228f -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -21,6 +21,12 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|---:|---|---|
 | <a id="s-d3ccf333f4"></a>`work_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | work_id |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-a1e3498f59"></a>`help` | <a id="s-06ba3ea128"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-534e6c6dba"></a>`0` | <a id="s-2cd53945ce"></a>`"noncontractual-framework-help"` | <a id="s-900b6f1ffd"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-aebb92ccfd"></a>Result identity: `stove0-cli-result/work/step/v1`
@@ -30,16 +36,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-950b0f98ea"></a>`completed` | <a id="s-90f5a6747c"></a>`0` | <a id="s-3a55413d01"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-f364ede102"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-950b0f98ea"></a>`completed` | <a id="s-ddfb852747"></a>`{"kind":"command-completed"}` | <a id="s-90f5a6747c"></a>`0` | <a id="s-3a55413d01"></a>`human: noncontractual-presentation-of-command-result; json: HTTP step_work — #/components/schemas/WorkView` | <a id="s-f364ede102"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-e9f51e67d3"></a>`usage` | <a id="s-9ef611ab8d"></a>`2` | <a id="s-d5040b0208"></a>`{"all":"empty"}` | <a id="s-465ea0b327"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-3af47fb6b8"></a>`operational` | <a id="s-90f1e1543f"></a>`1` | <a id="s-2c7b101c1b"></a>`{"all":"empty"}` | <a id="s-0436b48149"></a>`{"all":"stove0-cli-diagnostic/v1"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-e9f51e67d3"></a>`usage` | <a id="s-f4c931acf5"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-9ef611ab8d"></a>`2` | <a id="s-d5040b0208"></a>`all: empty` | <a id="s-465ea0b327"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-3af47fb6b8"></a>`operational` | <a id="s-9246297c52"></a>`{"kind":"application-error"}` | <a id="s-90f1e1543f"></a>`1` | <a id="s-2c7b101c1b"></a>`all: empty` | <a id="s-0436b48149"></a>`all: stove0-cli-diagnostic/v1` |
 
 ### Progression, limits, and lifecycle
 
@@ -59,8 +65,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-cfdb8c7f5a"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-0d7c3e5fa2"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-461baa35e5"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-f7b17af3ec"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -79,6 +85,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 - `/external_contract/cli/stove0/commands/work/commands/step/name`
 - `/external_contract/cli/stove0/commands/work/commands/step/parameters`
 - `/external_contract/cli/stove0/commands/work/commands/step/result_contract`
+- `/external_contract/cli/stove0/commands/work/commands/step/terminating_controls`
 
 ### Exact owned JSON
 
@@ -119,7 +126,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0/commands/work/commands/step/result_contract`
 
-<!-- exact-contract-value: e88387a1826cb839de28f48ee34fce557cafa951cc0cd26d453de0704ae6daf7 -->
+<!-- exact-contract-value: 48f460603640203b709eb2176a4e027952276614d4fed5fb71cae4db8f11dd20 -->
 
 ```json
 {
@@ -127,6 +134,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -137,6 +147,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "all": "stove0-cli-diagnostic/v1"
       },
@@ -153,14 +166,48 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed",
+      "selected_by": {
+        "kind": "command-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "application": "stove0",
+          "kind": "http-operation-response",
+          "method": "POST",
+          "operation_id": "step_work",
+          "path": "/v1/work/{work_id}/step",
+          "schema": {
+            "$ref": "#/components/schemas/WorkView"
+          },
+          "status": "200"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/stove0/commands/work/commands/step/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```

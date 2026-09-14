@@ -4,7 +4,7 @@ import importlib.metadata
 import json
 import sys
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, cast
 
 import typer
 from config_validation import ConfigError
@@ -49,7 +49,102 @@ def _json_text(payload: object) -> str:
     return json.dumps(payload, sort_keys=True, separators=(",", ":"))
 
 
-app = typer.Typer(help="Portable mounted-volume marker actions.")
+_CLI_ERROR_OUTPUT = {
+    "kind": "cli-local-json-schema",
+    "identity": "gogurt-cli-error/v1",
+    "schema": {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["error"],
+        "properties": {
+            "error": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["code", "message"],
+                "properties": {
+                    "code": {"enum": ["config_error", "listener_error"]},
+                    "message": {"type": "string"},
+                },
+            }
+        },
+    },
+}
+
+
+_PROVIDER_REFERENCE_SCHEMA = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["kind", "name", "provider_id"],
+    "properties": {
+        "kind": {"enum": ["mounted-volume", "listener-host"]},
+        "name": {"type": "string"},
+        "provider_id": {"type": "string"},
+    },
+}
+_PROVIDER_METADATA_SCHEMA = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["kind", "name", "entry_point", "distribution", "version"],
+    "properties": {
+        "kind": {"enum": ["mounted-volume", "listener-host"]},
+        "name": {"type": "string"},
+        "entry_point": {"type": "string"},
+        "distribution": {"type": ["string", "null"]},
+        "version": {"type": ["string", "null"]},
+    },
+}
+_LISTENER_STATUS_OUTPUT = {
+    "kind": "cli-local-json-schema",
+    "identity": "gogurt-listener-status/v1",
+    "schema": {
+        "type": "object",
+        "required": [
+            "schema",
+            "manager_version",
+            "platform",
+            "installed",
+            "enabled",
+            "running",
+            "health",
+            "config_file",
+            "state_dir",
+            "executable",
+            "mounted_volume_provider",
+            "listener_host_provider",
+            "heartbeat_age_seconds",
+            "heartbeat",
+            "dispatches",
+            "mount_attention",
+            "diagnostic",
+        ],
+        "properties": {
+            "schema": {"const": "gogurt-listener-status/v1"},
+            "manager_version": {"type": "string"},
+            "platform": {"type": "string"},
+            "installed": {"type": "boolean"},
+            "enabled": {"type": "boolean"},
+            "running": {"type": "boolean"},
+            "health": {"enum": ["absent", "stopped", "failed", "starting", "healthy", "stale"]},
+            "config_file": {"type": "string"},
+            "state_dir": {"type": "string"},
+            "executable": {"type": ["string", "null"]},
+            "mounted_volume_provider": {"anyOf": [_PROVIDER_REFERENCE_SCHEMA, {"type": "null"}]},
+            "listener_host_provider": {"anyOf": [_PROVIDER_REFERENCE_SCHEMA, {"type": "null"}]},
+            "heartbeat_age_seconds": {"type": ["number", "null"], "minimum": 0},
+            "heartbeat": {"type": ["object", "null"]},
+            "dispatches": {"type": "object"},
+            "mount_attention": {"type": "array"},
+            "diagnostic": {"type": ["string", "null"]},
+        },
+        "additionalProperties": False,
+    },
+}
+
+
+app = typer.Typer(
+    help="Portable mounted-volume marker actions.",
+    add_completion=False,
+)
 
 _CLI_RESULT_CONTRACT = {
     "schema": "riverhog-cli-result-contract/v1",
@@ -66,7 +161,7 @@ _CLI_RESULT_CONTRACT = {
                     "exit_status": 0,
                     "stdout": {
                         "human": "noncontractual-presentation-of-command-result",
-                        "json": "named-command-result",
+                        "json": "$command-json-output",
                     },
                     "stderr": {"all": "empty"},
                 }
@@ -83,7 +178,7 @@ _CLI_RESULT_CONTRACT = {
                     "exit_status": 1,
                     "stdout": {
                         "human": "empty",
-                        "json": "gogurt-cli-error/v1",
+                        "json": _CLI_ERROR_OUTPUT,
                     },
                     "stderr": {
                         "human": "noncontractual-diagnostic",
@@ -162,8 +257,167 @@ _CLI_RESULT_CONTRACT = {
         "run": "action",
         "watch": "listener-runtime",
     },
-    "command_overrides": {},
+    "command_overrides": {
+        "write": {
+            "success": [
+                {
+                    "id": "marker-preview",
+                    "exit_status": 0,
+                    "stdout": {
+                        "human": "noncontractual-presentation-of-command-result",
+                        "json": "$command-json-output",
+                    },
+                    "stderr": {"all": "empty"},
+                },
+                {
+                    "id": "marker-published",
+                    "exit_status": 0,
+                    "stdout": {
+                        "human": "noncontractual-presentation-of-command-result",
+                        "json": "$command-json-output",
+                    },
+                    "stderr": {"all": "empty"},
+                },
+            ]
+        }
+    },
     "executable_groups": [],
+    "outcome_selectors": {
+        "completed": {"kind": "command-completed"},
+        "completed-or-not-run": {"kind": "action-returned-zero"},
+        "stopped": {"kind": "listener-runtime-returned"},
+        "usage": {"kind": "parser-rejected-invocation"},
+        "operational": {"kind": "application-error"},
+        "action-exit": {"kind": "delegated-action-returned-nonzero"},
+        "marker-preview": {"kind": "option-equals", "parameter": "dry_run", "value": True},
+        "marker-published": {
+            "kind": "option-equals",
+            "parameter": "dry_run",
+            "value": False,
+        },
+    },
+    "output_authorities": {
+        "list": {
+            "kind": "cli-local-json-schema",
+            "identity": "gogurt-route-list/v1",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["route", "command"],
+                    "properties": {
+                        "route": {"type": "string"},
+                        "command": {"type": "array", "items": {"type": "string"}},
+                    },
+                },
+            },
+        },
+        "mounts": {
+            "kind": "cli-local-json-schema",
+            "identity": "gogurt-mounted-root-list/v1",
+            "schema": {"type": "array", "items": {"type": "string"}},
+        },
+        "provider listener-host list": {
+            "kind": "cli-local-json-schema",
+            "identity": "gogurt-provider-list/v1",
+            "schema": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["format", "kind", "providers"],
+                "properties": {
+                    "format": {"const": "gogurt-provider-list/v1"},
+                    "kind": {"enum": ["mounted-volume", "listener-host"]},
+                    "providers": {"type": "array", "items": _PROVIDER_METADATA_SCHEMA},
+                },
+            },
+        },
+        "provider mounted-volume list": {
+            "kind": "cli-local-json-schema",
+            "identity": "gogurt-provider-list/v1",
+            "schema": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["format", "kind", "providers"],
+                "properties": {
+                    "format": {"const": "gogurt-provider-list/v1"},
+                    "kind": {"enum": ["mounted-volume", "listener-host"]},
+                    "providers": {"type": "array", "items": _PROVIDER_METADATA_SCHEMA},
+                },
+            },
+        },
+        "provider listener-host show": {
+            "kind": "cli-local-json-schema",
+            "identity": "gogurt-provider-detail/v1",
+            "schema": {
+                **_PROVIDER_METADATA_SCHEMA,
+                "required": [
+                    *cast(list[str], _PROVIDER_METADATA_SCHEMA["required"]),
+                    "reference",
+                ],
+                "properties": {
+                    **cast(dict[str, object], _PROVIDER_METADATA_SCHEMA["properties"]),
+                    "reference": _PROVIDER_REFERENCE_SCHEMA,
+                },
+            },
+        },
+        "provider mounted-volume show": {
+            "kind": "cli-local-json-schema",
+            "identity": "gogurt-provider-detail/v1",
+            "schema": {
+                **_PROVIDER_METADATA_SCHEMA,
+                "required": [
+                    *cast(list[str], _PROVIDER_METADATA_SCHEMA["required"]),
+                    "reference",
+                ],
+                "properties": {
+                    **cast(dict[str, object], _PROVIDER_METADATA_SCHEMA["properties"]),
+                    "reference": _PROVIDER_REFERENCE_SCHEMA,
+                },
+            },
+        },
+        **{
+            command: _LISTENER_STATUS_OUTPUT
+            for command in (
+                "listener install",
+                "listener restart",
+                "listener start",
+                "listener status",
+                "listener stop",
+                "listener uninstall",
+            )
+        },
+        "write": {
+            "outcomes": {
+                "marker-preview": {
+                    "kind": "cli-local-json-schema",
+                    "identity": "gogurt-marker-write-plan/v1",
+                    "schema": {"type": "object"},
+                },
+                "marker-published": {
+                    "kind": "cli-local-json-schema",
+                    "identity": "gogurt-marker-publication/v1",
+                    "schema": {
+                        "type": "object",
+                        "additionalProperties": False,
+                        "required": [
+                            "mount_point",
+                            "mounted_volume_provider",
+                            "marker",
+                            "marker_identity",
+                        ],
+                        "properties": {
+                            "mount_point": {"type": "string"},
+                            "mounted_volume_provider": _PROVIDER_REFERENCE_SCHEMA,
+                            "marker": {"type": "object"},
+                            "marker_identity": {"type": "string"},
+                        },
+                    },
+                },
+            }
+        },
+    },
+    "version_distribution": "gogurt",
 }
 listener_app = typer.Typer(help="Install and manage the per-user Gogurt listener.")
 provider_app = typer.Typer(help="Inspect explicitly composable host providers.")

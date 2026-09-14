@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import importlib.metadata
 import importlib.util
 import json
 import sys
@@ -11,6 +12,7 @@ from typing import Any
 
 import pytest
 from http_api_contracts import ErrorResponse
+from jsonschema import Draft202012Validator
 from typer.testing import CliRunner
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -135,7 +137,12 @@ def test_cli_result_declaration_drift_fails_closed(monkeypatch: pytest.MonkeyPat
     root = contract._argparse_command(planning._parser())
 
     with pytest.raises(contract.ContractFreezeError, match="unknown commands"):
-        contract._apply_cli_result_contract("stove0-review-planning", root)
+        contract._apply_cli_result_contract(
+            "stove0-review-planning",
+            root,
+            operations=contract.operation_qualification.operation_matrix(),
+            openapi=contract._openapi_surfaces(),
+        )
 
 
 def test_machine_report_success_matches_its_discovered_contract(
@@ -152,7 +159,9 @@ def test_machine_report_success_matches_its_discovered_contract(
     )
     assert status == outcome["exit_status"] == 0
     assert captured.err == ""
-    assert json.loads(captured.out)["format"] == outcome["stdout"]["json"]
+    authority = outcome["stdout"]["json"]
+    assert isinstance(authority, Mapping)
+    assert json.loads(captured.out)["format"] == authority["identity"]
 
 
 def test_argparse_usage_failure_matches_its_discovered_contract(
@@ -194,7 +203,9 @@ def test_piggity_json_failure_matches_its_discovered_contract(
     )
     assert status == outcome["exit_status"] == 1
     assert captured.err == ""
-    assert outcome["stdout"]["json"] == "http-api-contracts.ErrorResponse"
+    authority = outcome["stdout"]["json"]
+    assert isinstance(authority, Mapping)
+    assert authority["identity"] == "http-api-contracts.ErrorResponse"
     assert ErrorResponse.model_validate_json(captured.out).error.code == "error"
 
 
@@ -216,10 +227,152 @@ def test_gogurt_json_failure_matches_its_discovered_contract(
     outcome = _outcome(_result(cli_surfaces, "gogurt", ("list",)), "failures", "operational")
     assert raised.value.code == outcome["exit_status"] == 1
     assert captured.err == ""
-    assert outcome["stdout"]["json"] == "gogurt-cli-error/v1"
+    authority = outcome["stdout"]["json"]
+    assert isinstance(authority, Mapping)
+    assert authority["identity"] == "gogurt-cli-error/v1"
     assert json.loads(captured.out) == {
         "error": {"code": "config_error", "message": "missing fixture"}
     }
+
+
+def test_every_json_result_resolves_to_an_exact_authority_and_selector(
+    cli_surfaces: Mapping[str, Mapping[str, object]],
+) -> None:
+    allowed = {
+        "cli-local-json-schema",
+        "http-operation-response",
+        "openapi-schema",
+        "python-model",
+        "semantic-format",
+    }
+    resolved = 0
+    for authority, root in cli_surfaces.items():
+        for path, node in _nodes(root):
+            result = node.get("result_contract")
+            if not isinstance(result, Mapping):
+                continue
+            for outcome_kind in ("success", "failures"):
+                outcomes = result[outcome_kind]
+                assert isinstance(outcomes, list)
+                for outcome in outcomes:
+                    assert isinstance(outcome, Mapping)
+                    selector = outcome["selected_by"]
+                    assert isinstance(selector, Mapping) and selector.get("kind")
+                    for channel in ("stdout", "stderr"):
+                        semantics = outcome[channel]
+                        assert isinstance(semantics, Mapping)
+                        json_authority = semantics.get("json")
+                        if json_authority is None:
+                            continue
+                        if isinstance(json_authority, str) and (
+                            json_authority == "empty"
+                            or json_authority.startswith("noncontractual-")
+                        ):
+                            continue
+                        assert isinstance(json_authority, Mapping), (authority, path, outcome)
+                        assert json_authority["kind"] in allowed
+                        assert "$command-json-output" not in json.dumps(json_authority)
+                        if json_authority["kind"] in {"cli-local-json-schema", "python-model"}:
+                            Draft202012Validator.check_schema(json_authority["schema"])
+                        resolved += 1
+    assert resolved > 100
+
+
+def test_framework_terminating_controls_are_discovered_without_completion_side_effects(
+    cli_surfaces: Mapping[str, Mapping[str, object]],
+) -> None:
+    control_ids: set[str] = set()
+    version_distributions: set[str] = set()
+    for root in cli_surfaces.values():
+        for _path, node in _nodes(root):
+            controls = node["terminating_controls"]
+            assert isinstance(controls, list)
+            for control in controls:
+                assert isinstance(control, Mapping)
+                identity = str(control["id"])
+                control_ids.add(identity)
+                assert control["exit_status"] in {0, 2}
+                trigger = control["trigger"]
+                assert isinstance(trigger, Mapping) and trigger.get("kind")
+                if identity == "version":
+                    stdout = control["stdout"]
+                    assert isinstance(stdout, Mapping)
+                    assert stdout["kind"] == "installed-coordinated-release-version"
+                    assert stdout["serialization"] == "noncontractual"
+                    version_distributions.add(str(stdout["distribution"]))
+                assert "completion" not in json.dumps(control).casefold()
+        root_parameters = root["parameters"]
+        assert isinstance(root_parameters, list)
+        assert all(
+            "completion" not in json.dumps(parameter).casefold() for parameter in root_parameters
+        )
+    assert {"help", "implicit-help", "version"} <= control_ids
+    assert {"gogurt", "mango-fish", "piggity", "stove0-client"} <= version_distributions
+
+
+@pytest.mark.parametrize(
+    ("module_name", "application_name", "distribution"),
+    [
+        ("gogurt.cli", "app", "gogurt"),
+        ("piggity.main", "app", "piggity"),
+        ("stove0_cli.main", "app", "stove0-client"),
+    ],
+)
+def test_typer_version_control_reports_the_installed_distribution_version(
+    module_name: str,
+    application_name: str,
+    distribution: str,
+) -> None:
+    module = importlib.import_module(module_name)
+    result = CliRunner().invoke(getattr(module, application_name), ["--version"])
+    assert result.exit_code == 0
+    assert importlib.metadata.version(distribution) in result.stdout.split()
+
+
+def test_argparse_version_control_reports_the_installed_distribution_version(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    mango_fish = importlib.import_module("mango_fish.cli")
+    with pytest.raises(SystemExit) as raised:
+        mango_fish.parser().parse_args(["--version"])
+    captured = capsys.readouterr()
+    assert raised.value.code == 0
+    assert importlib.metadata.version("mango-fish") in captured.out.split()
+    assert captured.err == ""
+
+
+def test_http_backed_and_local_outputs_keep_their_own_authorities(
+    cli_surfaces: Mapping[str, Mapping[str, object]],
+) -> None:
+    remote = _outcome(
+        _result(cli_surfaces, "piggity", ("collection", "show")),
+        "success",
+        "completed",
+    )["stdout"]["json"]
+    assert isinstance(remote, Mapping)
+    assert remote["kind"] == "http-operation-response"
+    assert remote["application"] == "riverhog"
+    assert remote["operation_id"] == "get_collection"
+
+    local = _outcome(
+        _result(cli_surfaces, "piggity", ("local", "list")),
+        "success",
+        "completed",
+    )["stdout"]["json"]
+    assert isinstance(local, Mapping)
+    assert local["kind"] == "cli-local-json-schema"
+    assert local["identity"] == "piggity-local-collection-list/v1"
+
+    retire = _result(cli_surfaces, "piggity", ("archive", "retire"))
+    planned = _outcome(retire, "success", "planned")
+    executed = _outcome(retire, "success", "executed")
+    assert planned["selected_by"] == {
+        "kind": "option-equals",
+        "parameter": "dry_run",
+        "value": True,
+    }
+    assert planned["stdout"]["json"]["operation_id"] == "plan_archive_copy_retirement"
+    assert executed["stdout"]["json"]["operation_id"] == "retire_archive_copy"
 
 
 def test_stove0_human_and_json_success_and_failure_match_the_profile(

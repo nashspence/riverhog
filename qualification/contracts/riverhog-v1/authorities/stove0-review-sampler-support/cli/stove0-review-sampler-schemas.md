@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-review-sampler-support:stove0-review-sampler-schemas:5110236e9e -->
+<!-- contract-element: cli:stove0-review-sampler-support:stove0-review-sampler-schemas:25719ca871 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -15,11 +15,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 - <a id="s-faa7bf9354"></a>Parser name: `stove0-review-sampler-schemas`
 
-### Parameters
+### Terminating controls
 
-| Name | Kind | Required | Type | Options |
+| Identity | Trigger | Exit status | stdout | stderr |
 |---|---|---:|---|---|
-| <a id="s-c1a6264e75"></a>`version` | _VersionAction | no |  | --version |
+| <a id="s-727e79b4a4"></a>`help` | <a id="s-a152d931fa"></a>`{"kind":"option-present","options":["-h","--help"]}` | <a id="s-1143d733ad"></a>`0` | <a id="s-c31755c46c"></a>`"noncontractual-framework-help"` | <a id="s-2210ab0ae9"></a>`"empty"` |
+| <a id="s-c479b6ab0c"></a>`version` | <a id="s-9f416db306"></a>`{"kind":"option-present","options":["--version"]}` | <a id="s-3da2dfb528"></a>`0` | <a id="s-1297cc6642"></a>`{"distribution":"stove0-review-sampler-support","kind":"installed-coordinated-release-version","serialization":"noncontractual"}` | <a id="s-916ad14b65"></a>`"empty"` |
 
 ### Result and failure contract
 
@@ -30,30 +31,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-a6da464362"></a>`emitted` | <a id="s-9c0954e1dc"></a>`0` | <a id="s-fc7431ee35"></a>`{"json":"stove0-review-sampler-schema-bundle/v1"}` | <a id="s-089e853279"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-a6da464362"></a>`emitted` | <a id="s-37a58d85d0"></a>`{"kind":"schema-bundle-emitted"}` | <a id="s-9c0954e1dc"></a>`0` | <a id="s-fc7431ee35"></a>`json: stove0-review-sampler-schema-bundle/v1` | <a id="s-089e853279"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-f8dd902aa6"></a>`usage` | <a id="s-14846d56db"></a>`2` | <a id="s-682c9abb41"></a>`{"all":"empty"}` | <a id="s-5f0da7803b"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-
-### Progression, limits, and lifecycle
-
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
-
-Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [CLI parameter --version](#s-c1a6264e75) | `cardinality · values-per-occurrence · fixed` | shared above |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-f8dd902aa6"></a>`usage` | <a id="s-a67815c66f"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-14846d56db"></a>`2` | <a id="s-682c9abb41"></a>`all: empty` | <a id="s-5f0da7803b"></a>`all: noncontractual-usage-diagnostic` |
 
 ## Governing policies
 
-- <a id="pa-b1fe8de037"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-71932e5f74"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-8a79810a69"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -72,6 +62,7 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 - `/external_contract/cli/stove0-review-sampler-schemas/name`
 - `/external_contract/cli/stove0-review-sampler-schemas/parameters`
 - `/external_contract/cli/stove0-review-sampler-schemas/result_contract`
+- `/external_contract/cli/stove0-review-sampler-schemas/terminating_controls`
 
 ### Exact owned JSON
 
@@ -87,25 +78,15 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0-review-sampler-schemas/parameters`
 
-<!-- exact-contract-value: 280890e414521dae90aaec62414808f8ed59735cf99b00ca647a8e328fd86c02 -->
+<!-- exact-contract-value: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945 -->
 
 ```json
-[
-  {
-    "dest": "version",
-    "kind": "_VersionAction",
-    "nargs": 0,
-    "options": [
-      "--version"
-    ],
-    "required": false
-  }
-]
+[]
 ```
 
 ### `/external_contract/cli/stove0-review-sampler-schemas/result_contract`
 
-<!-- exact-contract-value: 50f7993defb4944a661bb8899c2417fa2d0cfc371c0eadce634f46d2a544a012 -->
+<!-- exact-contract-value: 4e3149f34b4e3b1f6fa2f11cdb74d5868089410852e549ea5991616f13f514a8 -->
 
 ```json
 {
@@ -113,6 +94,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -129,13 +113,57 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "emitted",
+      "selected_by": {
+        "kind": "schema-bundle-emitted"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
-        "json": "stove0-review-sampler-schema-bundle/v1"
+        "json": {
+          "identity": "stove0-review-sampler-schema-bundle/v1",
+          "kind": "semantic-format"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/stove0-review-sampler-schemas/terminating_controls`
+
+<!-- exact-contract-value: fcddd733b548f7fdee3021b986cc2c4b7650c7a1a689657a12af45cc7a2137de -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "-h",
+        "--help"
+      ]
+    }
+  },
+  {
+    "exit_status": 0,
+    "id": "version",
+    "stderr": "empty",
+    "stdout": {
+      "distribution": "stove0-review-sampler-support",
+      "kind": "installed-coordinated-release-version",
+      "serialization": "noncontractual"
+    },
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--version"
+      ]
+    }
+  }
+]
 ```

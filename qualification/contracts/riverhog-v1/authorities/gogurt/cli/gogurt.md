@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt:962bf8db21 -->
+<!-- contract-element: cli:gogurt:gogurt:906ea30826 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -15,30 +15,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 - <a id="s-95ce7f0545"></a>Parser name: `gogurt`
 
-### Parameters
+### Terminating controls
 
-| Name | Kind | Required | Type | Options |
+| Identity | Trigger | Exit status | stdout | stderr |
 |---|---|---:|---|---|
-| <a id="s-fe8ab3fc14"></a>`_version` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --version |
-| <a id="s-68ad1ed6f7"></a>`install_completion` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --install-completion |
-| <a id="s-301a1a6b0e"></a>`show_completion` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --show-completion |
-
-### Progression, limits, and lifecycle
-
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
-
-Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [CLI parameter --version](#s-fe8ab3fc14) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --install-completion](#s-68ad1ed6f7) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --show-completion](#s-301a1a6b0e) | `cardinality · values-per-occurrence · fixed` | shared above |
+| <a id="s-c2278de9d5"></a>`help` | <a id="s-17d9584515"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-16ecc2b9b8"></a>`0` | <a id="s-4ac9696ef6"></a>`"noncontractual-framework-help"` | <a id="s-b411ea7995"></a>`"empty"` |
+| <a id="s-f9d31e785c"></a>`version` | <a id="s-797224f5ce"></a>`{"kind":"option-present","options":["--version"]}` | <a id="s-9e2c17798a"></a>`0` | <a id="s-b360733a7b"></a>`{"distribution":"gogurt","kind":"installed-coordinated-release-version","serialization":"noncontractual"}` | <a id="s-526d0b0093"></a>`"empty"` |
 
 ## Governing policies
 
-- <a id="pa-d6ef082067"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-7e69163053"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-87debe85ec"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -56,6 +42,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - `/external_contract/cli/gogurt/name`
 - `/external_contract/cli/gogurt/parameters`
+- `/external_contract/cli/gogurt/terminating_controls`
 
 ### Exact owned JSON
 
@@ -71,63 +58,44 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/gogurt/parameters`
 
-<!-- exact-contract-value: 6c3eaa1e80ed7eec26f0605768d3652ccdb37504c04b8b85a9dc9a439b170363 -->
+<!-- exact-contract-value: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945 -->
+
+```json
+[]
+```
+
+### `/external_contract/cli/gogurt/terminating_controls`
+
+<!-- exact-contract-value: 3f73674cb73ec4a87c5a15ffd64f2d2357e0c8804ad2cecf747339af135b6440 -->
 
 ```json
 [
   {
-    "count": false,
-    "default": false,
-    "envvar": null,
-    "is_flag": true,
-    "kind": "TyperOption",
-    "multiple": false,
-    "name": "_version",
-    "nargs": 1,
-    "options": [
-      "--version"
-    ],
-    "required": false,
-    "secondary_options": [],
-    "type": {
-      "class": "typer._click.types.BoolParamType",
-      "name": "boolean"
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
     }
   },
   {
-    "count": false,
-    "envvar": null,
-    "is_flag": true,
-    "kind": "TyperOption",
-    "multiple": false,
-    "name": "install_completion",
-    "nargs": 1,
-    "options": [
-      "--install-completion"
-    ],
-    "required": false,
-    "secondary_options": [],
-    "type": {
-      "class": "typer._click.types.BoolParamType",
-      "name": "boolean"
-    }
-  },
-  {
-    "count": false,
-    "envvar": null,
-    "is_flag": true,
-    "kind": "TyperOption",
-    "multiple": false,
-    "name": "show_completion",
-    "nargs": 1,
-    "options": [
-      "--show-completion"
-    ],
-    "required": false,
-    "secondary_options": [],
-    "type": {
-      "class": "typer._click.types.BoolParamType",
-      "name": "boolean"
+    "exit_status": 0,
+    "id": "version",
+    "stderr": "empty",
+    "stdout": {
+      "distribution": "gogurt",
+      "kind": "installed-coordinated-release-version",
+      "serialization": "noncontractual"
+    },
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--version"
+      ]
     }
   }
 ]

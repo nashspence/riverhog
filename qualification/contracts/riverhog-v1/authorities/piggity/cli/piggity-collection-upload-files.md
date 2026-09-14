@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-collection-upload-files:1860558bbd -->
+<!-- contract-element: cli:piggity:piggity-collection-upload-files:36009878d8 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -24,6 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-6eee9ffa9e"></a>`page_token` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --page-token |
 | <a id="s-f93622962b"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
+### Terminating controls
+
+| Identity | Trigger | Exit status | stdout | stderr |
+|---|---|---:|---|---|
+| <a id="s-33d1790b78"></a>`help` | <a id="s-484d68716f"></a>`{"kind":"option-present","options":["--help"]}` | <a id="s-2e13ae85c9"></a>`0` | <a id="s-2f005a71af"></a>`"noncontractual-framework-help"` | <a id="s-bd3579076e"></a>`"empty"` |
+
 ### Result and failure contract
 
 - <a id="s-8309ce81c8"></a>Result identity: `piggity-cli-result/collection/upload/files/v1`
@@ -33,16 +39,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### Success outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-29b84c5bcb"></a>`completed` | <a id="s-6f0a0ba1db"></a>`0` | <a id="s-e19ffdc2b2"></a>`{"human":"noncontractual-presentation-of-command-result","json":"named-command-result"}` | <a id="s-8b6e46d168"></a>`{"all":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-29b84c5bcb"></a>`completed` | <a id="s-0b044fe631"></a>`{"kind":"command-completed"}` | <a id="s-6f0a0ba1db"></a>`0` | <a id="s-e19ffdc2b2"></a>`human: noncontractual-presentation-of-command-result; json: HTTP list_collection_upload_session_files — #/components/schemas/ListCollectionUploadSessionFilesResponse` | <a id="s-8b6e46d168"></a>`all: empty` |
 
 #### Failure outcomes
 
-| Identity | Exit status | stdout | stderr |
-|---|---|---|---|
-| <a id="s-98e9f05d5e"></a>`usage` | <a id="s-41919d6915"></a>`2` | <a id="s-9bb86a9ea6"></a>`{"all":"empty"}` | <a id="s-e1e7f98ae1"></a>`{"all":"noncontractual-usage-diagnostic"}` |
-| <a id="s-eaab8fba54"></a>`operational` | <a id="s-486d1db487"></a>`1` | <a id="s-822fb9cf11"></a>`{"human":"empty","json":"http-api-contracts.ErrorResponse"}` | <a id="s-2a6d94a688"></a>`{"human":"noncontractual-diagnostic","json":"empty"}` |
+| Identity | Selected by | Exit status | stdout | stderr |
+|---|---|---|---|---|
+| <a id="s-98e9f05d5e"></a>`usage` | <a id="s-202d7c0504"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-41919d6915"></a>`2` | <a id="s-9bb86a9ea6"></a>`all: empty` | <a id="s-e1e7f98ae1"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-eaab8fba54"></a>`operational` | <a id="s-db12fd8f06"></a>`{"kind":"application-error"}` | <a id="s-486d1db487"></a>`1` | <a id="s-822fb9cf11"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-2a6d94a688"></a>`human: noncontractual-diagnostic; json: empty` |
 
 ### Progression, limits, and lifecycle
 
@@ -66,8 +72,8 @@ Shared facts for every subject below: minimum=1
 
 ## Governing policies
 
-- <a id="pa-ac3b3c4e30"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-d806dfeccf"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-d59a8b7abc"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-0f72019c56"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -86,6 +92,7 @@ Shared facts for every subject below: minimum=1
 - `/external_contract/cli/piggity/commands/collection/commands/upload/commands/files/name`
 - `/external_contract/cli/piggity/commands/collection/commands/upload/commands/files/parameters`
 - `/external_contract/cli/piggity/commands/collection/commands/upload/commands/files/result_contract`
+- `/external_contract/cli/piggity/commands/collection/commands/upload/commands/files/terminating_controls`
 
 ### Exact owned JSON
 
@@ -184,7 +191,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/collection/commands/upload/commands/files/result_contract`
 
-<!-- exact-contract-value: 07f0c6762037238fda54ab210c3e9f83cdf065595de4b47fbea7836ba52849e3 -->
+<!-- exact-contract-value: da108548403fe8c87a68bb76eef60c57f5dac7cdd658cce42df557e7d4d294eb -->
 
 ```json
 {
@@ -192,6 +199,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 2,
       "id": "usage",
+      "selected_by": {
+        "kind": "parser-rejected-invocation"
+      },
       "stderr": {
         "all": "noncontractual-usage-diagnostic"
       },
@@ -202,13 +212,68 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 1,
       "id": "operational",
+      "selected_by": {
+        "kind": "application-error"
+      },
       "stderr": {
         "human": "noncontractual-diagnostic",
         "json": "empty"
       },
       "stdout": {
         "human": "empty",
-        "json": "http-api-contracts.ErrorResponse"
+        "json": {
+          "identity": "http-api-contracts.ErrorResponse",
+          "kind": "python-model",
+          "schema": {
+            "$defs": {
+              "ErrorBody": {
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "minLength": 1,
+                    "title": "Code",
+                    "type": "string"
+                  },
+                  "details": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "title": "Details"
+                  },
+                  "message": {
+                    "minLength": 1,
+                    "title": "Message",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "title": "ErrorBody",
+                "type": "object"
+              }
+            },
+            "additionalProperties": false,
+            "properties": {
+              "error": {
+                "$ref": "#/$defs/ErrorBody"
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "title": "ErrorResponse",
+            "type": "object"
+          }
+        }
       }
     }
   ],
@@ -220,14 +285,48 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "exit_status": 0,
       "id": "completed",
+      "selected_by": {
+        "kind": "command-completed"
+      },
       "stderr": {
         "all": "empty"
       },
       "stdout": {
         "human": "noncontractual-presentation-of-command-result",
-        "json": "named-command-result"
+        "json": {
+          "application": "riverhog",
+          "kind": "http-operation-response",
+          "method": "GET",
+          "operation_id": "list_collection_upload_session_files",
+          "path": "/v1/collection-upload-sessions/{collection_id}/files",
+          "schema": {
+            "$ref": "#/components/schemas/ListCollectionUploadSessionFilesResponse"
+          },
+          "status": "200"
+        }
       }
     }
   ]
 }
+```
+
+### `/external_contract/cli/piggity/commands/collection/commands/upload/commands/files/terminating_controls`
+
+<!-- exact-contract-value: 654ffd6937a42b17b4204e0750fd74bd42751d2241f4a4632015efb38811a79c -->
+
+```json
+[
+  {
+    "exit_status": 0,
+    "id": "help",
+    "stderr": "empty",
+    "stdout": "noncontractual-framework-help",
+    "trigger": {
+      "kind": "option-present",
+      "options": [
+        "--help"
+      ]
+    }
+  }
+]
 ```
