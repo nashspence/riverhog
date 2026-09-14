@@ -56,9 +56,7 @@ from stove0_target_client import TargetCallbackClient
 _SCRIPT_DIRECTORY = Path(__file__).resolve().parent
 if str(_SCRIPT_DIRECTORY) not in sys.path:
     sys.path.insert(0, str(_SCRIPT_DIRECTORY))
-contract_atlas = importlib.import_module(
-    "scripts.contract_atlas" if __package__ else "contract_atlas"
-)
+contract_atlas = importlib.import_module("contract_atlas")
 
 SCHEMA = "riverhog-operation-qualification/v1"
 TIMING_SCHEMA = "riverhog-operation-timings/v1"
