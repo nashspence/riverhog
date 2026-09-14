@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.RiverhogApi](stove0-core-riverhogapi.md)
+- [RiverhogApi](stove0-core-riverhogapi.md)
 
 ## Governing policies
 

@@ -28,9 +28,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_target_support.ReviewTargetServiceBase.preflight](stove0-review-target-support-reviewtargetservicebase-preflight.md)
-- [stove0_review_target_support.ReviewTargetServiceBase.readiness](stove0-review-target-support-reviewtargetservicebase-readiness.md)
-- [stove0_review_target_support.ReviewTargetServiceBase.close](stove0-review-target-support-reviewtargetservicebase-close.md)
+- [preflight](stove0-review-target-support-reviewtargetservicebase-preflight.md)
+- [readiness](stove0-review-target-support-reviewtargetservicebase-readiness.md)
+- [close](stove0-review-target-support-reviewtargetservicebase-close.md)
 
 ## Governing policies
 

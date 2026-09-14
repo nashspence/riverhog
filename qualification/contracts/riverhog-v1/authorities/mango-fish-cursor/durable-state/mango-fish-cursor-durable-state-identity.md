@@ -28,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [mango-fish-cursor: source_cursors](mango-fish-cursor-source-cursors.md)
+- [source_cursors](mango-fish-cursor-source-cursors.md)
 
 ## Governing policies
 

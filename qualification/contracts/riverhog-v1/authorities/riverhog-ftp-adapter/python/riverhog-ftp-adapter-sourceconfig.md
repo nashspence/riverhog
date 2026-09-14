@@ -56,8 +56,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_ftp_adapter.SourceConfig.absolute_root](riverhog-ftp-adapter-sourceconfig-absolute-root.md)
-- [riverhog_ftp_adapter.SourceConfig.complete_policy](riverhog-ftp-adapter-sourceconfig-complete-policy.md)
+- [absolute_root](riverhog-ftp-adapter-sourceconfig-absolute-root.md)
+- [complete_policy](riverhog-ftp-adapter-sourceconfig-complete-policy.md)
 
 ## Governing policies
 

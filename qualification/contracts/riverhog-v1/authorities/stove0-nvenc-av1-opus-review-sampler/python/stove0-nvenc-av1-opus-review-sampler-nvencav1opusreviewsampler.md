@@ -28,8 +28,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_nvenc_av1_opus_review_sampler.NvencAv1OpusReviewSampler.descriptor](stove0-nvenc-av1-opus-review-sampler-nvencav1opusreviewsampler-descriptor.md)
-- [stove0_nvenc_av1_opus_review_sampler.NvencAv1OpusReviewSampler.sample](stove0-nvenc-av1-opus-review-sampler-nvencav1opusreviewsampler-sample.md)
+- [descriptor](stove0-nvenc-av1-opus-review-sampler-nvencav1opusreviewsampler-descriptor.md)
+- [sample](stove0-nvenc-av1-opus-review-sampler-nvencav1opusreviewsampler-sample.md)
 
 ## Governing policies
 

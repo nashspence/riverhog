@@ -51,11 +51,11 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ### Referenced contract dossiers
 
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: CollectionUploadListFiltersOut](schemas-collectionuploadlistfiltersout.md)
-- [schemas: CollectionUploadListItemOut](schemas-collectionuploadlistitemout.md)
-- [schemas: CollectionUploadSort](schemas-collectionuploadsort.md)
-- [schemas: SortOrder](schemas-sortorder.md)
+- [BrowsePageToken](schemas-browsepagetoken.md)
+- [CollectionUploadListFiltersOut](schemas-collectionuploadlistfiltersout.md)
+- [CollectionUploadListItemOut](schemas-collectionuploadlistitemout.md)
+- [CollectionUploadSort](schemas-collectionuploadsort.md)
+- [SortOrder](schemas-sortorder.md)
 
 ## Governing policies
 

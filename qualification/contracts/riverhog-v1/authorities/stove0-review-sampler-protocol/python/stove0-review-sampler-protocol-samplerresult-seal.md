@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_sampler_protocol.SamplerResult](stove0-review-sampler-protocol-samplerresult.md)
+- [SamplerResult](stove0-review-sampler-protocol-samplerresult.md)
 
 ## Governing policies
 

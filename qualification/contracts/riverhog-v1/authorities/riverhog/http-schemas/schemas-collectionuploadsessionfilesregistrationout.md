@@ -45,10 +45,10 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: CollectionUploadFileOut](schemas-collectionuploadfileout.md)
-- [schemas: CollectionUploadVolumeSummaryDocument](schemas-collectionuploadvolumesummarydocument.md)
+- [ArchiveStoreName](schemas-archivestorename.md)
+- [CollectionId](schemas-collectionid.md)
+- [CollectionUploadFileOut](schemas-collectionuploadfileout.md)
+- [CollectionUploadVolumeSummaryDocument](schemas-collectionuploadvolumesummarydocument.md)
 
 ## Governing policies
 

@@ -34,7 +34,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionDeletedData](schemas-collectiondeleteddata.md)
+- [CollectionDeletedData](schemas-collectiondeleteddata.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.WorkIdentity](stove0-protocol-workidentity.md)
+- [WorkIdentity](stove0-protocol-workidentity.md)
 
 ## Governing policies
 

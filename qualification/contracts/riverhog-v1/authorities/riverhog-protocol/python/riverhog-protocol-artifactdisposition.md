@@ -39,8 +39,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.ArtifactDisposition.as_dict](riverhog-protocol-artifactdisposition-as-dict.md)
-- [riverhog_protocol.ArtifactDisposition.from_mapping](riverhog-protocol-artifactdisposition-from-mapping.md)
+- [as_dict](riverhog-protocol-artifactdisposition-as-dict.md)
+- [from_mapping](riverhog-protocol-artifactdisposition-from-mapping.md)
 
 ## Governing policies
 

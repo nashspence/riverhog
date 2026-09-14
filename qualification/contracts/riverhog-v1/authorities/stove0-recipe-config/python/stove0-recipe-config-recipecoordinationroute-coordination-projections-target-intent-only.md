@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_recipe_config.RecipeCoordinationRoute](stove0-recipe-config-recipecoordinationroute.md)
+- [RecipeCoordinationRoute](stove0-recipe-config-recipecoordinationroute.md)
 
 ## Governing policies
 

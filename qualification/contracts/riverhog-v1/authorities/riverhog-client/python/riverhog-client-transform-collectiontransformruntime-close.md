@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.transform.CollectionTransformRuntime](riverhog-client-transform-collectiontransformruntime.md)
+- [CollectionTransformRuntime](riverhog-client-transform-collectiontransformruntime.md)
 
 ## Governing policies
 

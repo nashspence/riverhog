@@ -72,11 +72,11 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: BranchEffectSettlement](schemas-brancheffectsettlement.md)
-- [schemas: BranchSettlement](schemas-branchsettlement.md)
-- [schemas: CoordinationSettlement](schemas-coordinationsettlement.md)
-- [schemas: JoinPlan](schemas-joinplan.md)
-- [schemas: JoinSettlement](schemas-joinsettlement.md)
+- [BranchEffectSettlement](schemas-brancheffectsettlement.md)
+- [BranchSettlement](schemas-branchsettlement.md)
+- [CoordinationSettlement](schemas-coordinationsettlement.md)
+- [JoinPlan](schemas-joinplan.md)
+- [JoinSettlement](schemas-joinsettlement.md)
 
 ## Governing policies
 

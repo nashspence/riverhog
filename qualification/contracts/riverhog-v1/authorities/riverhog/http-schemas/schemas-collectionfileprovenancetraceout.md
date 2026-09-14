@@ -20,8 +20,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: CapturedCollectionFileProvenanceTraceOut](schemas-capturedcollectionfileprovenancetraceout.md)
-- [schemas: OmittedCollectionFileProvenanceTraceOut](schemas-omittedcollectionfileprovenancetraceout.md)
+- [CapturedCollectionFileProvenanceTraceOut](schemas-capturedcollectionfileprovenancetraceout.md)
+- [OmittedCollectionFileProvenanceTraceOut](schemas-omittedcollectionfileprovenancetraceout.md)
 
 ## Governing policies
 

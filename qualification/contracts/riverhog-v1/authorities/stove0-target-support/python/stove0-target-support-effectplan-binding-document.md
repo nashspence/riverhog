@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.EffectPlan](stove0-target-support-effectplan.md)
+- [EffectPlan](stove0-target-support-effectplan.md)
 
 ## Governing policies
 

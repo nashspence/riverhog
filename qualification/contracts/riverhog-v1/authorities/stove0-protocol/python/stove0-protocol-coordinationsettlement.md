@@ -63,9 +63,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.CoordinationSettlement.canonical_children](stove0-protocol-coordinationsettlement-canonical-children.md)
-- [stove0_protocol.CoordinationSettlement.seal](stove0-protocol-coordinationsettlement-seal.md)
-- [stove0_protocol.CoordinationSettlement.verify_contract](stove0-protocol-coordinationsettlement-verify-contract.md)
+- [canonical_children](stove0-protocol-coordinationsettlement-canonical-children.md)
+- [seal](stove0-protocol-coordinationsettlement-seal.md)
+- [verify_contract](stove0-protocol-coordinationsettlement-verify-contract.md)
 
 ## Governing policies
 

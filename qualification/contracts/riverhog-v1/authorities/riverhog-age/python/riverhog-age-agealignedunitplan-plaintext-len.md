@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_age.AgeAlignedUnitPlan](riverhog-age-agealignedunitplan.md)
+- [AgeAlignedUnitPlan](riverhog-age-agealignedunitplan.md)
 
 ## Governing policies
 

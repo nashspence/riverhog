@@ -54,9 +54,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.JoinDeclaration.canonical_members](stove0-protocol-joindeclaration-canonical-members.md)
-- [stove0_protocol.JoinDeclaration.seal](stove0-protocol-joindeclaration-seal.md)
-- [stove0_protocol.JoinDeclaration.verify_contract](stove0-protocol-joindeclaration-verify-contract.md)
+- [canonical_members](stove0-protocol-joindeclaration-canonical-members.md)
+- [seal](stove0-protocol-joindeclaration-seal.md)
+- [verify_contract](stove0-protocol-joindeclaration-verify-contract.md)
 
 ## Governing policies
 

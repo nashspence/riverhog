@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.WorkPayload](stove0-protocol-workpayload.md)
+- [WorkPayload](stove0-protocol-workpayload.md)
 
 ## Governing policies
 

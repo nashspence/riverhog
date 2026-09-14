@@ -28,21 +28,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.StorageAdapterPort.begin_write](riverhog-storage-adapter-protocol-storageadapterport-begin-write.md)
-- [riverhog_storage_adapter_protocol.StorageAdapterPort.read_status](riverhog-storage-adapter-protocol-storageadapterport-read-status.md)
-- [riverhog_storage_adapter_protocol.StorageAdapterPort.delete_prefix](riverhog-storage-adapter-protocol-storageadapterport-delete-prefix.md)
-- [riverhog_storage_adapter_protocol.StorageAdapterPort.find_completed_write](riverhog-storage-adapter-protocol-storageadapterport-find-completed-write.md)
-- [riverhog_storage_adapter_protocol.StorageAdapterPort.read_object](riverhog-storage-adapter-protocol-storageadapterport-read-object.md)
-- [riverhog_storage_adapter_protocol.StorageAdapterPort.write_segment](riverhog-storage-adapter-protocol-storageadapterport-write-segment.md)
-- [riverhog_storage_adapter_protocol.StorageAdapterPort.delete_object](riverhog-storage-adapter-protocol-storageadapterport-delete-object.md)
-- [riverhog_storage_adapter_protocol.StorageAdapterPort.descriptor](riverhog-storage-adapter-protocol-storageadapterport-descriptor.md)
-- [riverhog_storage_adapter_protocol.StorageAdapterPort.abort_write](riverhog-storage-adapter-protocol-storageadapterport-abort-write.md)
-- [riverhog_storage_adapter_protocol.StorageAdapterPort.list_segments](riverhog-storage-adapter-protocol-storageadapterport-list-segments.md)
-- [riverhog_storage_adapter_protocol.StorageAdapterPort.prepare_read](riverhog-storage-adapter-protocol-storageadapterport-prepare-read.md)
-- [riverhog_storage_adapter_protocol.StorageAdapterPort.complete_write](riverhog-storage-adapter-protocol-storageadapterport-complete-write.md)
-- [riverhog_storage_adapter_protocol.StorageAdapterPort.put_small_object](riverhog-storage-adapter-protocol-storageadapterport-put-small-object.md)
-- [riverhog_storage_adapter_protocol.StorageAdapterPort.cleanup_read](riverhog-storage-adapter-protocol-storageadapterport-cleanup-read.md)
-- [riverhog_storage_adapter_protocol.StorageAdapterPort.head_object](riverhog-storage-adapter-protocol-storageadapterport-head-object.md)
+- [begin_write](riverhog-storage-adapter-protocol-storageadapterport-begin-write.md)
+- [read_status](riverhog-storage-adapter-protocol-storageadapterport-read-status.md)
+- [delete_prefix](riverhog-storage-adapter-protocol-storageadapterport-delete-prefix.md)
+- [find_completed_write](riverhog-storage-adapter-protocol-storageadapterport-find-completed-write.md)
+- [read_object](riverhog-storage-adapter-protocol-storageadapterport-read-object.md)
+- [write_segment](riverhog-storage-adapter-protocol-storageadapterport-write-segment.md)
+- [delete_object](riverhog-storage-adapter-protocol-storageadapterport-delete-object.md)
+- [descriptor](riverhog-storage-adapter-protocol-storageadapterport-descriptor.md)
+- [abort_write](riverhog-storage-adapter-protocol-storageadapterport-abort-write.md)
+- [list_segments](riverhog-storage-adapter-protocol-storageadapterport-list-segments.md)
+- [prepare_read](riverhog-storage-adapter-protocol-storageadapterport-prepare-read.md)
+- [complete_write](riverhog-storage-adapter-protocol-storageadapterport-complete-write.md)
+- [put_small_object](riverhog-storage-adapter-protocol-storageadapterport-put-small-object.md)
+- [cleanup_read](riverhog-storage-adapter-protocol-storageadapterport-cleanup-read.md)
+- [head_object](riverhog-storage-adapter-protocol-storageadapterport-head-object.md)
 
 ## Governing policies
 

@@ -20,9 +20,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: CapturedCollectionFileProvenancePage](schemas-capturedcollectionfileprovenancepage.md)
-- [schemas: MixedCollectionFileProvenancePage](schemas-mixedcollectionfileprovenancepage.md)
-- [schemas: OmittedCollectionFileProvenancePage](schemas-omittedcollectionfileprovenancepage.md)
+- [CapturedCollectionFileProvenancePage](schemas-capturedcollectionfileprovenancepage.md)
+- [MixedCollectionFileProvenancePage](schemas-mixedcollectionfileprovenancepage.md)
+- [OmittedCollectionFileProvenancePage](schemas-omittedcollectionfileprovenancepage.md)
 
 ## Governing policies
 

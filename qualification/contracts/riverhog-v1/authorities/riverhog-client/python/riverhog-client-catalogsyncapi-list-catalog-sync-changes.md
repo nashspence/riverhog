@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.CatalogSyncApi](riverhog-client-catalogsyncapi.md)
+- [CatalogSyncApi](riverhog-client-catalogsyncapi.md)
 
 ## Governing policies
 

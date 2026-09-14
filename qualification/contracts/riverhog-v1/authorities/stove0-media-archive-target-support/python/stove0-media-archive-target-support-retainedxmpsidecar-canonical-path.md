@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_media_archive_target_support.RetainedXmpSidecar](stove0-media-archive-target-support-retainedxmpsidecar.md)
+- [RetainedXmpSidecar](stove0-media-archive-target-support-retainedxmpsidecar.md)
 
 ## Governing policies
 

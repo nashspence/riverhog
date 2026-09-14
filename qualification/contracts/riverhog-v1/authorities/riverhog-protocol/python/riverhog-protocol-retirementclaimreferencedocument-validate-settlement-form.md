@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.RetirementClaimReferenceDocument](riverhog-protocol-retirementclaimreferencedocument.md)
+- [RetirementClaimReferenceDocument](riverhog-protocol-retirementclaimreferencedocument.md)
 
 ## Governing policies
 

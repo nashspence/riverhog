@@ -48,7 +48,7 @@ Shared facts for every subject below: maximum=1000; minimum=1; reason="schema-ma
 
 ### Referenced contract dossiers
 
-- [schemas: ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
 
 ## Governing policies
 

@@ -47,7 +47,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionRootIdentityDocument.validate_identity](riverhog-protocol-collectionrootidentitydocument-validate-identity.md)
+- [validate_identity](riverhog-protocol-collectionrootidentitydocument-validate-identity.md)
 
 ## Governing policies
 

@@ -56,10 +56,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.EvaluationDefinition.child_work](stove0-protocol-evaluationdefinition-child-work.md)
-- [stove0_protocol.EvaluationDefinition.child_works](stove0-protocol-evaluationdefinition-child-works.md)
-- [stove0_protocol.EvaluationDefinition.seal](stove0-protocol-evaluationdefinition-seal.md)
-- [stove0_protocol.EvaluationDefinition.verify_digest](stove0-protocol-evaluationdefinition-verify-digest.md)
+- [child_work](stove0-protocol-evaluationdefinition-child-work.md)
+- [child_works](stove0-protocol-evaluationdefinition-child-works.md)
+- [seal](stove0-protocol-evaluationdefinition-seal.md)
+- [verify_digest](stove0-protocol-evaluationdefinition-verify-digest.md)
 
 ## Governing policies
 

@@ -44,7 +44,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_archive_contracts.PackArchiveVolume.to_mapping](riverhog-archive-contracts-packarchivevolume-to-mapping.md)
+- [to_mapping](riverhog-archive-contracts-packarchivevolume-to-mapping.md)
 
 ## Governing policies
 

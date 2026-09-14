@@ -6,4 +6,6 @@ Persisted structures, schema heads, and v1 transition obligations.
 
 ## Semantic dossiers
 
-- [riverhog-provenance-installation durable state](riverhog-provenance-installation-durable-state.md)
+| Exact unit | Kind |
+|---|---|
+| [document](riverhog-provenance-installation-durable-state.md) | Text document |

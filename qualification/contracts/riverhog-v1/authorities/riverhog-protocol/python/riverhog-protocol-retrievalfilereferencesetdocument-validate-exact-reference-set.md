@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.RetrievalFileReferenceSetDocument](riverhog-protocol-retrievalfilereferencesetdocument.md)
+- [RetrievalFileReferenceSetDocument](riverhog-protocol-retrievalfilereferencesetdocument.md)
 
 ## Governing policies
 

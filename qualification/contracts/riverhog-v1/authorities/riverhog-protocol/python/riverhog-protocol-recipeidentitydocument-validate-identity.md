@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.RecipeIdentityDocument](riverhog-protocol-recipeidentitydocument.md)
+- [RecipeIdentityDocument](riverhog-protocol-recipeidentitydocument.md)
 
 ## Governing policies
 

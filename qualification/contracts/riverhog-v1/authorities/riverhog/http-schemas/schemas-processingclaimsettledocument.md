@@ -30,9 +30,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionDerivationDocument](schemas-collectionderivationdocument.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: ProcessingOutcomeBindingDocument](schemas-processingoutcomebindingdocument.md)
+- [CollectionDerivationDocument](schemas-collectionderivationdocument.md)
+- [CollectionId](schemas-collectionid.md)
+- [ProcessingOutcomeBindingDocument](schemas-processingoutcomebindingdocument.md)
 
 ## Governing policies
 

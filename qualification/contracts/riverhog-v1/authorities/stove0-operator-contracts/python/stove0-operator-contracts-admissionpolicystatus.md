@@ -54,7 +54,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_operator_contracts.AdmissionPolicyStatus.exact_policy](stove0-operator-contracts-admissionpolicystatus-exact-policy.md)
+- [exact_policy](stove0-operator-contracts-admissionpolicystatus-exact-policy.md)
 
 ## Governing policies
 

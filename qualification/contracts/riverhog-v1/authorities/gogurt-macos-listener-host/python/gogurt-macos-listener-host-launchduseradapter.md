@@ -28,12 +28,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_macos_listener_host.LaunchdUserAdapter.register](gogurt-macos-listener-host-launchduseradapter-register.md)
-- [gogurt_macos_listener_host.LaunchdUserAdapter.process_is_running](gogurt-macos-listener-host-launchduseradapter-process-is-running.md)
-- [gogurt_macos_listener_host.LaunchdUserAdapter.unregister](gogurt-macos-listener-host-launchduseradapter-unregister.md)
-- [gogurt_macos_listener_host.LaunchdUserAdapter.start](gogurt-macos-listener-host-launchduseradapter-start.md)
-- [gogurt_macos_listener_host.LaunchdUserAdapter.status](gogurt-macos-listener-host-launchduseradapter-status.md)
-- [gogurt_macos_listener_host.LaunchdUserAdapter.stop](gogurt-macos-listener-host-launchduseradapter-stop.md)
+- [register](gogurt-macos-listener-host-launchduseradapter-register.md)
+- [process_is_running](gogurt-macos-listener-host-launchduseradapter-process-is-running.md)
+- [unregister](gogurt-macos-listener-host-launchduseradapter-unregister.md)
+- [start](gogurt-macos-listener-host-launchduseradapter-start.md)
+- [status](gogurt-macos-listener-host-launchduseradapter-status.md)
+- [stop](gogurt-macos-listener-host-launchduseradapter-stop.md)
 
 ## Governing policies
 

@@ -28,14 +28,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.__exit__](riverhog-ftp-adapter-api-client-riverhogftpadapterclient-exit.md)
-- [riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.close](riverhog-ftp-adapter-api-client-riverhogftpadapterclient-close.md)
-- [riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.__enter__](riverhog-ftp-adapter-api-client-riverhogftpadapterclient-enter.md)
-- [riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.get_ftp_adapter_status](riverhog-ftp-adapter-api-client-riverhogftpadapterclient-get-ftp-adapter-status.md)
-- [riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.flush_ftp_adapter_source](riverhog-ftp-adapter-api-client-riverhogftpadapterclient-flush-ftp-adapter-source.md)
-- [riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.ftp_adapter_health_live](riverhog-ftp-adapter-api-client-riverhogftpadapterclient-ftp-adapter-health-live.md)
-- [riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.run_ftp_adapter_pass](riverhog-ftp-adapter-api-client-riverhogftpadapterclient-run-ftp-adapter-pass.md)
-- [riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.ftp_adapter_health_ready](riverhog-ftp-adapter-api-client-riverhogftpadapterclient-ftp-adapter-health-ready.md)
+- [__exit__](riverhog-ftp-adapter-api-client-riverhogftpadapterclient-exit.md)
+- [close](riverhog-ftp-adapter-api-client-riverhogftpadapterclient-close.md)
+- [__enter__](riverhog-ftp-adapter-api-client-riverhogftpadapterclient-enter.md)
+- [get_ftp_adapter_status](riverhog-ftp-adapter-api-client-riverhogftpadapterclient-get-ftp-adapter-status.md)
+- [flush_ftp_adapter_source](riverhog-ftp-adapter-api-client-riverhogftpadapterclient-flush-ftp-adapter-source.md)
+- [ftp_adapter_health_live](riverhog-ftp-adapter-api-client-riverhogftpadapterclient-ftp-adapter-health-live.md)
+- [run_ftp_adapter_pass](riverhog-ftp-adapter-api-client-riverhogftpadapterclient-run-ftp-adapter-pass.md)
+- [ftp_adapter_health_ready](riverhog-ftp-adapter-api-client-riverhogftpadapterclient-ftp-adapter-health-ready.md)
 
 ## Governing policies
 

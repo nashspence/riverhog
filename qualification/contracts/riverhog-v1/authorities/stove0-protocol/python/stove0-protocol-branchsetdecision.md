@@ -73,12 +73,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.BranchSetDecision.branch_set_documents](stove0-protocol-branchsetdecision-branch-set-documents.md)
-- [stove0_protocol.BranchSetDecision.canonical_branch_sets](stove0-protocol-branchsetdecision-canonical-branch-sets.md)
-- [stove0_protocol.BranchSetDecision.canonical_selections](stove0-protocol-branchsetdecision-canonical-selections.md)
-- [stove0_protocol.BranchSetDecision.complete_documents](stove0-protocol-branchsetdecision-complete-documents.md)
-- [stove0_protocol.BranchSetDecision.leaf_branches](stove0-protocol-branchsetdecision-leaf-branches.md)
-- [stove0_protocol.BranchSetDecision.selection_documents](stove0-protocol-branchsetdecision-selection-documents.md)
+- [branch_set_documents](stove0-protocol-branchsetdecision-branch-set-documents.md)
+- [canonical_branch_sets](stove0-protocol-branchsetdecision-canonical-branch-sets.md)
+- [canonical_selections](stove0-protocol-branchsetdecision-canonical-selections.md)
+- [complete_documents](stove0-protocol-branchsetdecision-complete-documents.md)
+- [leaf_branches](stove0-protocol-branchsetdecision-leaf-branches.md)
+- [selection_documents](stove0-protocol-branchsetdecision-selection-documents.md)
 
 ## Governing policies
 

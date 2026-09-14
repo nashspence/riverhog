@@ -48,7 +48,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_media_metadata_observer_contracts.MediaMetadataFacts.canonical_artifacts](stove0-media-metadata-observer-contracts-mediametadatafacts-canonical-artifacts.md)
+- [canonical_artifacts](stove0-media-metadata-observer-contracts-mediametadatafacts-canonical-artifacts.md)
 
 ## Governing policies
 

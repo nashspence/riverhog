@@ -34,9 +34,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_path_volume_support.PathMountedVolumeAccess.discover](gogurt-path-volume-support-pathmountedvolumeaccess-discover.md)
-- [gogurt_path_volume_support.PathMountedVolumeAccess.publish_marker](gogurt-path-volume-support-pathmountedvolumeaccess-publish-marker.md)
-- [gogurt_path_volume_support.PathMountedVolumeAccess.observe_marker](gogurt-path-volume-support-pathmountedvolumeaccess-observe-marker.md)
+- [discover](gogurt-path-volume-support-pathmountedvolumeaccess-discover.md)
+- [publish_marker](gogurt-path-volume-support-pathmountedvolumeaccess-publish-marker.md)
+- [observe_marker](gogurt-path-volume-support-pathmountedvolumeaccess-observe-marker.md)
 
 ## Governing policies
 

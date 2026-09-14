@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.JoinPlan](stove0-protocol-joinplan.md)
+- [JoinPlan](stove0-protocol-joinplan.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.TargetPreflightResponse](stove0-target-protocol-targetpreflightresponse.md)
+- [TargetPreflightResponse](stove0-target-protocol-targetpreflightresponse.md)
 
 ## Governing policies
 

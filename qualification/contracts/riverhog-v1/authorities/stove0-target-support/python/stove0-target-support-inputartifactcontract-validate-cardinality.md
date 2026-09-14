@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.InputArtifactContract](stove0-target-support-inputartifactcontract.md)
+- [InputArtifactContract](stove0-target-support-inputartifactcontract.md)
 
 ## Governing policies
 

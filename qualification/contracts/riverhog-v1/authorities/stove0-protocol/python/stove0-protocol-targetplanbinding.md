@@ -50,7 +50,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.TargetPlanBinding.require_plan_document](stove0-protocol-targetplanbinding-require-plan-document.md)
+- [require_plan_document](stove0-protocol-targetplanbinding-require-plan-document.md)
 
 ## Governing policies
 

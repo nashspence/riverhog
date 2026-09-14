@@ -47,8 +47,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_application_access.ApplicationAccessGrant.as_access](riverhog-application-access-applicationaccessgrant-as-access.md)
-- [riverhog_application_access.ApplicationAccessGrant.validate_relationship](riverhog-application-access-applicationaccessgrant-validate-relationship.md)
+- [as_access](riverhog-application-access-applicationaccessgrant-as-access.md)
+- [validate_relationship](riverhog-application-access-applicationaccessgrant-validate-relationship.md)
 
 ## Governing policies
 

@@ -40,7 +40,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_media_archive_target_contracts.MediaGps.valid_position](stove0-media-archive-target-contracts-mediagps-valid-position.md)
+- [valid_position](stove0-media-archive-target-contracts-mediagps-valid-position.md)
 
 ## Governing policies
 

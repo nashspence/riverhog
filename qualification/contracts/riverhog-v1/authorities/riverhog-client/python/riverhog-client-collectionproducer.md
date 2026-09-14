@@ -28,8 +28,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.CollectionProducer.publish_inputs](riverhog-client-collectionproducer-publish-inputs.md)
-- [riverhog_client.CollectionProducer.publish](riverhog-client-collectionproducer-publish.md)
+- [publish_inputs](riverhog-client-collectionproducer-publish-inputs.md)
+- [publish](riverhog-client-collectionproducer-publish.md)
 
 ## Governing policies
 

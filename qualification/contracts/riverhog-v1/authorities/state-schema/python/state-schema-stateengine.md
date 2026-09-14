@@ -28,17 +28,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [state_schema.StateEngine.begin](state-schema-stateengine-begin.md)
-- [state_schema.StateEngine.clear_compiled_cache](state-schema-stateengine-clear-compiled-cache.md)
-- [state_schema.StateEngine.connect](state-schema-stateengine-connect.md)
-- [state_schema.StateEngine.dispose](state-schema-stateengine-dispose.md)
-- [state_schema.StateEngine.driver](state-schema-stateengine-driver.md)
-- [state_schema.StateEngine.engine](state-schema-stateengine-engine.md)
-- [state_schema.StateEngine.execution_options](state-schema-stateengine-execution-options.md)
-- [state_schema.StateEngine.get_execution_options](state-schema-stateengine-get-execution-options.md)
-- [state_schema.StateEngine.name](state-schema-stateengine-name.md)
-- [state_schema.StateEngine.raw_connection](state-schema-stateengine-raw-connection.md)
-- [state_schema.StateEngine.update_execution_options](state-schema-stateengine-update-execution-options.md)
+- [begin](state-schema-stateengine-begin.md)
+- [clear_compiled_cache](state-schema-stateengine-clear-compiled-cache.md)
+- [connect](state-schema-stateengine-connect.md)
+- [dispose](state-schema-stateengine-dispose.md)
+- [driver](state-schema-stateengine-driver.md)
+- [engine](state-schema-stateengine-engine.md)
+- [execution_options](state-schema-stateengine-execution-options.md)
+- [get_execution_options](state-schema-stateengine-get-execution-options.md)
+- [name](state-schema-stateengine-name.md)
+- [raw_connection](state-schema-stateengine-raw-connection.md)
+- [update_execution_options](state-schema-stateengine-update-execution-options.md)
 
 ## Governing policies
 

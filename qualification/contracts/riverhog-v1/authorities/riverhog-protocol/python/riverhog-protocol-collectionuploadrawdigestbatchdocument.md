@@ -41,7 +41,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionUploadRawDigestBatchDocument.canonical_path](riverhog-protocol-collectionuploadrawdigestbatchdocument-canonical-path.md)
+- [canonical_path](riverhog-protocol-collectionuploadrawdigestbatchdocument-canonical-path.md)
 
 ## Governing policies
 

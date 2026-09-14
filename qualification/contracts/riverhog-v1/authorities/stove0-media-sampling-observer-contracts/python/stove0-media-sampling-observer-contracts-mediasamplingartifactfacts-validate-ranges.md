@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_media_sampling_observer_contracts.MediaSamplingArtifactFacts](stove0-media-sampling-observer-contracts-mediasamplingartifactfacts.md)
+- [MediaSamplingArtifactFacts](stove0-media-sampling-observer-contracts-mediasamplingartifactfacts.md)
 
 ## Governing policies
 

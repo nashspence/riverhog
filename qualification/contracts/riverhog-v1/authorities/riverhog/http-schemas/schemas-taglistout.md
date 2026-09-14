@@ -48,8 +48,8 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ### Referenced contract dossiers
 
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: TagSummaryOut](schemas-tagsummaryout.md)
+- [BrowsePageToken](schemas-browsepagetoken.md)
+- [TagSummaryOut](schemas-tagsummaryout.md)
 
 ## Governing policies
 

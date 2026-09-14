@@ -41,8 +41,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_age.AgeAlignedUnitPlan.ciphertext_len](riverhog-age-agealignedunitplan-ciphertext-len.md)
-- [riverhog_age.AgeAlignedUnitPlan.plaintext_len](riverhog-age-agealignedunitplan-plaintext-len.md)
+- [ciphertext_len](riverhog-age-agealignedunitplan-ciphertext-len.md)
+- [plaintext_len](riverhog-age-agealignedunitplan-plaintext-len.md)
 
 ## Governing policies
 

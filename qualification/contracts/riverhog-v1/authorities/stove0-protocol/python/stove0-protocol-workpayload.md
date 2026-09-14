@@ -57,7 +57,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.WorkPayload.canonical_inputs](stove0-protocol-workpayload-canonical-inputs.md)
+- [canonical_inputs](stove0-protocol-workpayload-canonical-inputs.md)
 
 ## Governing policies
 

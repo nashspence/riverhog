@@ -41,7 +41,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.ArtifactSelectionRef.from_selection](stove0-protocol-artifactselectionref-from-selection.md)
+- [from_selection](stove0-protocol-artifactselectionref-from-selection.md)
 
 ## Governing policies
 

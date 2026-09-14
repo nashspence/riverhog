@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_archive_contracts.RecoveryDescriptor](riverhog-archive-contracts-recoverydescriptor.md)
+- [RecoveryDescriptor](riverhog-archive-contracts-recoverydescriptor.md)
 
 ## Governing policies
 

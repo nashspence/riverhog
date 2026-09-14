@@ -34,8 +34,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: CollectionProvenanceVerificationOut](schemas-collectionprovenanceverificationout.md)
+- [CollectionId](schemas-collectionid.md)
+- [CollectionProvenanceVerificationOut](schemas-collectionprovenanceverificationout.md)
 
 ## Governing policies
 

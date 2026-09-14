@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_provenance.LargeValueDisposition](riverhog-provenance-largevaluedisposition.md)
+- [LargeValueDisposition](riverhog-provenance-largevaluedisposition.md)
 
 ## Governing policies
 

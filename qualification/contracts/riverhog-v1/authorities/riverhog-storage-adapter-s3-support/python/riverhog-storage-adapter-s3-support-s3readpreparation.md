@@ -28,9 +28,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_s3_support.S3ReadPreparation.prepare](riverhog-storage-adapter-s3-support-s3readpreparation-prepare.md)
-- [riverhog_storage_adapter_s3_support.S3ReadPreparation.status](riverhog-storage-adapter-s3-support-s3readpreparation-status.md)
-- [riverhog_storage_adapter_s3_support.S3ReadPreparation.cleanup](riverhog-storage-adapter-s3-support-s3readpreparation-cleanup.md)
+- [prepare](riverhog-storage-adapter-s3-support-s3readpreparation-prepare.md)
+- [status](riverhog-storage-adapter-s3-support-s3readpreparation-status.md)
+- [cleanup](riverhog-storage-adapter-s3-support-s3readpreparation-cleanup.md)
 
 ## Governing policies
 

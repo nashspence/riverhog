@@ -40,8 +40,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: CollectionTag](schemas-collectiontag.md)
+- [CollectionId](schemas-collectionid.md)
+- [CollectionTag](schemas-collectiontag.md)
 
 ## Governing policies
 

@@ -52,8 +52,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.TargetSettlementAuthority.verify_digest](stove0-target-protocol-targetsettlementauthority-verify-digest.md)
-- [stove0_target_protocol.TargetSettlementAuthority.seal](stove0-target-protocol-targetsettlementauthority-seal.md)
+- [verify_digest](stove0-target-protocol-targetsettlementauthority-verify-digest.md)
+- [seal](stove0-target-protocol-targetsettlementauthority-seal.md)
 
 ## Governing policies
 

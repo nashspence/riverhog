@@ -50,8 +50,8 @@ Shared facts for every subject below: maximum=8192; minimum=1; reason="schema-ma
 
 ### Referenced contract dossiers
 
-- [schemas: ImmutableFileIdentityDocument](schemas-immutablefileidentitydocument.md)
-- [schemas: PortableCollectionInventoryAuthority](schemas-portablecollectioninventoryauthority.md)
+- [ImmutableFileIdentityDocument](schemas-immutablefileidentitydocument.md)
+- [PortableCollectionInventoryAuthority](schemas-portablecollectioninventoryauthority.md)
 
 ## Governing policies
 

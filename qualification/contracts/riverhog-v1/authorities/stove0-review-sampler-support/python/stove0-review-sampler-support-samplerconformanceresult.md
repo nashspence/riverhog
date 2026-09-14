@@ -61,7 +61,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_sampler_support.SamplerConformanceResult.validate_result](stove0-review-sampler-support-samplerconformanceresult-validate-result.md)
+- [validate_result](stove0-review-sampler-support-samplerconformanceresult-validate-result.md)
 
 ## Governing policies
 

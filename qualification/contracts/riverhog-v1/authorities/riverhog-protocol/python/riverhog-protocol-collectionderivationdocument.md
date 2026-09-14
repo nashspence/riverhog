@@ -59,7 +59,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionDerivationDocument.validate_derivation](riverhog-protocol-collectionderivationdocument-validate-derivation.md)
+- [validate_derivation](riverhog-protocol-collectionderivationdocument-validate-derivation.md)
 
 ## Governing policies
 

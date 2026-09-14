@@ -28,19 +28,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.TargetExecutionRuntime.iter_inputs](stove0-target-support-targetexecutionruntime-iter-inputs.md)
-- [stove0_target_support.TargetExecutionRuntime.effect_success](stove0-target-support-targetexecutionruntime-effect-success.md)
-- [stove0_target_support.TargetExecutionRuntime.open_collection_publication](stove0-target-support-targetexecutionruntime-open-collection-publication.md)
-- [stove0_target_support.TargetExecutionRuntime.resolve_input_ids](stove0-target-support-targetexecutionruntime-resolve-input-ids.md)
-- [stove0_target_support.TargetExecutionRuntime.refresh_capability](stove0-target-support-targetexecutionruntime-refresh-capability.md)
-- [stove0_target_support.TargetExecutionRuntime.open_workspace](stove0-target-support-targetexecutionruntime-open-workspace.md)
-- [stove0_target_support.TargetExecutionRuntime.completed](stove0-target-support-targetexecutionruntime-completed.md)
-- [stove0_target_support.TargetExecutionRuntime.prepare_inputs](stove0-target-support-targetexecutionruntime-prepare-inputs.md)
-- [stove0_target_support.TargetExecutionRuntime.declare_disposition](stove0-target-support-targetexecutionruntime-declare-disposition.md)
-- [stove0_target_support.TargetExecutionRuntime.from_request](stove0-target-support-targetexecutionruntime-from-request.md)
-- [stove0_target_support.TargetExecutionRuntime.__enter__](stove0-target-support-targetexecutionruntime-enter.md)
-- [stove0_target_support.TargetExecutionRuntime.__exit__](stove0-target-support-targetexecutionruntime-exit.md)
-- [stove0_target_support.TargetExecutionRuntime.job_id](stove0-target-support-targetexecutionruntime-job-id.md)
+- [iter_inputs](stove0-target-support-targetexecutionruntime-iter-inputs.md)
+- [effect_success](stove0-target-support-targetexecutionruntime-effect-success.md)
+- [open_collection_publication](stove0-target-support-targetexecutionruntime-open-collection-publication.md)
+- [resolve_input_ids](stove0-target-support-targetexecutionruntime-resolve-input-ids.md)
+- [refresh_capability](stove0-target-support-targetexecutionruntime-refresh-capability.md)
+- [open_workspace](stove0-target-support-targetexecutionruntime-open-workspace.md)
+- [completed](stove0-target-support-targetexecutionruntime-completed.md)
+- [prepare_inputs](stove0-target-support-targetexecutionruntime-prepare-inputs.md)
+- [declare_disposition](stove0-target-support-targetexecutionruntime-declare-disposition.md)
+- [from_request](stove0-target-support-targetexecutionruntime-from-request.md)
+- [__enter__](stove0-target-support-targetexecutionruntime-enter.md)
+- [__exit__](stove0-target-support-targetexecutionruntime-exit.md)
+- [job_id](stove0-target-support-targetexecutionruntime-job-id.md)
 
 ## Governing policies
 

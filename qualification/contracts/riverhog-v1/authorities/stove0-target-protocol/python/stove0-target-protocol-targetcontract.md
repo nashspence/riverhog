@@ -54,9 +54,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.TargetContract.seal](stove0-target-protocol-targetcontract-seal.md)
-- [stove0_target_protocol.TargetContract.support_for](stove0-target-protocol-targetcontract-support-for.md)
-- [stove0_target_protocol.TargetContract.verify_digest](stove0-target-protocol-targetcontract-verify-digest.md)
+- [seal](stove0-target-protocol-targetcontract-seal.md)
+- [support_for](stove0-target-protocol-targetcontract-support-for.md)
+- [verify_digest](stove0-target-protocol-targetcontract-verify-digest.md)
 
 ## Governing policies
 

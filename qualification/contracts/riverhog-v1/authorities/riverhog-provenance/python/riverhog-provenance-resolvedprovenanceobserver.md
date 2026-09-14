@@ -38,9 +38,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_provenance.ResolvedProvenanceObserver.observer_reference](riverhog-provenance-resolvedprovenanceobserver-observer-reference.md)
-- [riverhog_provenance.ResolvedProvenanceObserver.create](riverhog-provenance-resolvedprovenanceobserver-create.md)
-- [riverhog_provenance.ResolvedProvenanceObserver.as_dict](riverhog-provenance-resolvedprovenanceobserver-as-dict.md)
+- [observer_reference](riverhog-provenance-resolvedprovenanceobserver-observer-reference.md)
+- [create](riverhog-provenance-resolvedprovenanceobserver-create.md)
+- [as_dict](riverhog-provenance-resolvedprovenanceobserver-as-dict.md)
 
 ## Governing policies
 

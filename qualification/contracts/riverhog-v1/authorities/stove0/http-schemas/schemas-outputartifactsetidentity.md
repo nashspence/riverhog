@@ -49,7 +49,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: OutputArtifactRoleCount](schemas-outputartifactrolecount.md)
+- [OutputArtifactRoleCount](schemas-outputartifactrolecount.md)
 
 ## Governing policies
 

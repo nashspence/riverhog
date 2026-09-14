@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.BranchPlan](stove0-protocol-branchplan.md)
+- [BranchPlan](stove0-protocol-branchplan.md)
 
 ## Governing policies
 

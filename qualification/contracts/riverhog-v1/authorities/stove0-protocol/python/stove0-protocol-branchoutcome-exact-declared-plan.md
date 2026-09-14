@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.BranchOutcome](stove0-protocol-branchoutcome.md)
+- [BranchOutcome](stove0-protocol-branchoutcome.md)
 
 ## Governing policies
 

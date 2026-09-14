@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.TargetPlanBinding](stove0-protocol-targetplanbinding.md)
+- [TargetPlanBinding](stove0-protocol-targetplanbinding.md)
 
 ## Governing policies
 

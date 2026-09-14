@@ -40,7 +40,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_recipe_config.RecipeJoinMember.canonical_roles](stove0-recipe-config-recipejoinmember-canonical-roles.md)
+- [canonical_roles](stove0-recipe-config-recipejoinmember-canonical-roles.md)
 
 ## Governing policies
 

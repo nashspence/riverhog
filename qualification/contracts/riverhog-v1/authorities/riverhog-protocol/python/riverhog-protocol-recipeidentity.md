@@ -36,8 +36,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.RecipeIdentity.as_dict](riverhog-protocol-recipeidentity-as-dict.md)
-- [riverhog_protocol.RecipeIdentity.from_mapping](riverhog-protocol-recipeidentity-from-mapping.md)
+- [as_dict](riverhog-protocol-recipeidentity-as-dict.md)
+- [from_mapping](riverhog-protocol-recipeidentity-from-mapping.md)
 
 ## Governing policies
 

@@ -28,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_protocol.SemanticValidatorRegistry.resolve](stove0-observer-protocol-semanticvalidatorregistry-resolve.md)
+- [resolve](stove0-observer-protocol-semanticvalidatorregistry-resolve.md)
 
 ## Governing policies
 

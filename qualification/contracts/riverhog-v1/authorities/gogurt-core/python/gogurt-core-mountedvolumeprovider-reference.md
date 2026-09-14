@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_core.MountedVolumeProvider](gogurt-core-mountedvolumeprovider.md)
+- [MountedVolumeProvider](gogurt-core-mountedvolumeprovider.md)
 
 ## Governing policies
 

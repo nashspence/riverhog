@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.TargetCallbackAuthority](stove0-core-targetcallbackauthority.md)
+- [TargetCallbackAuthority](stove0-core-targetcallbackauthority.md)
 
 ## Governing policies
 

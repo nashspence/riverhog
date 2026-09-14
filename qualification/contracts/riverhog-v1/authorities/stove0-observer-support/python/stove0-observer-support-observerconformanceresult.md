@@ -68,7 +68,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_support.ObserverConformanceResult.validate_result](stove0-observer-support-observerconformanceresult-validate-result.md)
+- [validate_result](stove0-observer-support-observerconformanceresult-validate-result.md)
 
 ## Governing policies
 

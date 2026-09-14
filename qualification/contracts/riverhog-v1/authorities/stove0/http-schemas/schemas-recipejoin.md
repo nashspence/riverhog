@@ -47,9 +47,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: JsonValue](schemas-jsonvalue.md)
-- [schemas: OperationProjection](schemas-operationprojection.md)
-- [schemas: RecipeJoinMember](schemas-recipejoinmember.md)
+- [JsonValue](schemas-jsonvalue.md)
+- [OperationProjection](schemas-operationprojection.md)
+- [RecipeJoinMember](schemas-recipejoinmember.md)
 
 ## Governing policies
 

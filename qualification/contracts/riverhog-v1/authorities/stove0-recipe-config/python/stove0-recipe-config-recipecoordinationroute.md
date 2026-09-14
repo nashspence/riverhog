@@ -58,7 +58,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_recipe_config.RecipeCoordinationRoute.coordination_projections_target_intent_only](stove0-recipe-config-recipecoordinationroute-coordination-projections-target-intent-only.md)
+- [coordination_projections_target_intent_only](stove0-recipe-config-recipecoordinationroute-coordination-projections-target-intent-only.md)
 
 ## Governing policies
 

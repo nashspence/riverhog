@@ -28,12 +28,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_windows_listener_host.TaskSchedulerUserAdapter.status](gogurt-windows-listener-host-taskscheduleruseradapter-status.md)
-- [gogurt_windows_listener_host.TaskSchedulerUserAdapter.start](gogurt-windows-listener-host-taskscheduleruseradapter-start.md)
-- [gogurt_windows_listener_host.TaskSchedulerUserAdapter.unregister](gogurt-windows-listener-host-taskscheduleruseradapter-unregister.md)
-- [gogurt_windows_listener_host.TaskSchedulerUserAdapter.process_is_running](gogurt-windows-listener-host-taskscheduleruseradapter-process-is-running.md)
-- [gogurt_windows_listener_host.TaskSchedulerUserAdapter.stop](gogurt-windows-listener-host-taskscheduleruseradapter-stop.md)
-- [gogurt_windows_listener_host.TaskSchedulerUserAdapter.register](gogurt-windows-listener-host-taskscheduleruseradapter-register.md)
+- [status](gogurt-windows-listener-host-taskscheduleruseradapter-status.md)
+- [start](gogurt-windows-listener-host-taskscheduleruseradapter-start.md)
+- [unregister](gogurt-windows-listener-host-taskscheduleruseradapter-unregister.md)
+- [process_is_running](gogurt-windows-listener-host-taskscheduleruseradapter-process-is-running.md)
+- [stop](gogurt-windows-listener-host-taskscheduleruseradapter-stop.md)
+- [register](gogurt-windows-listener-host-taskscheduleruseradapter-register.md)
 
 ## Governing policies
 

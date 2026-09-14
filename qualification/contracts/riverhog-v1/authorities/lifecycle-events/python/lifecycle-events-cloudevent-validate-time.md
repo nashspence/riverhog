@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [lifecycle_events.CloudEvent](lifecycle-events-cloudevent.md)
+- [CloudEvent](lifecycle-events-cloudevent.md)
 
 ## Governing policies
 

@@ -125,8 +125,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.WorkRecord.validate_shape](stove0-core-workrecord-validate-shape.md)
-- [stove0_core.WorkRecord.work_id](stove0-core-workrecord-work-id.md)
+- [validate_shape](stove0-core-workrecord-validate-shape.md)
+- [work_id](stove0-core-workrecord-work-id.md)
 
 ## Governing policies
 

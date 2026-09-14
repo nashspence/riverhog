@@ -38,8 +38,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.transform.ClaimedArtifact.as_dict](riverhog-client-transform-claimedartifact-as-dict.md)
-- [riverhog_client.transform.ClaimedArtifact.key](riverhog-client-transform-claimedartifact-key.md)
+- [as_dict](riverhog-client-transform-claimedartifact-as-dict.md)
+- [key](riverhog-client-transform-claimedartifact-key.md)
 
 ## Governing policies
 

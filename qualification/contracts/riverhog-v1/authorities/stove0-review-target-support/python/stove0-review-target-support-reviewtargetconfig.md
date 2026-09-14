@@ -45,7 +45,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_target_support.ReviewTargetConfig.canonical_samplers](stove0-review-target-support-reviewtargetconfig-canonical-samplers.md)
+- [canonical_samplers](stove0-review-target-support-reviewtargetconfig-canonical-samplers.md)
 
 ## Governing policies
 

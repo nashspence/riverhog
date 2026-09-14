@@ -40,7 +40,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_media_archive_target_contracts.MediaFieldPreference.unique_fields](stove0-media-archive-target-contracts-mediafieldpreference-unique-fields.md)
+- [unique_fields](stove0-media-archive-target-contracts-mediafieldpreference-unique-fields.md)
 
 ## Governing policies
 

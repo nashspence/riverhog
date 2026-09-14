@@ -28,11 +28,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.TargetPort.cancel_job](stove0-core-targetport-cancel-job.md)
-- [stove0_core.TargetPort.contract](stove0-core-targetport-contract.md)
-- [stove0_core.TargetPort.get_job](stove0-core-targetport-get-job.md)
-- [stove0_core.TargetPort.preflight](stove0-core-targetport-preflight.md)
-- [stove0_core.TargetPort.put_job](stove0-core-targetport-put-job.md)
+- [cancel_job](stove0-core-targetport-cancel-job.md)
+- [contract](stove0-core-targetport-contract.md)
+- [get_job](stove0-core-targetport-get-job.md)
+- [preflight](stove0-core-targetport-preflight.md)
+- [put_job](stove0-core-targetport-put-job.md)
 
 ## Governing policies
 

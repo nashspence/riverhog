@@ -39,7 +39,7 @@ Shared facts for every subject below: maximum=128; minimum=1; progression={"prog
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionArtifactIdentityDocument](schemas-collectionartifactidentitydocument.md)
+- [CollectionArtifactIdentityDocument](schemas-collectionartifactidentitydocument.md)
 
 ## Governing policies
 

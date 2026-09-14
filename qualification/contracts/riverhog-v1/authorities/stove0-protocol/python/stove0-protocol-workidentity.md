@@ -58,9 +58,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.WorkIdentity.root_identities](stove0-protocol-workidentity-root-identities.md)
-- [stove0_protocol.WorkIdentity.seal](stove0-protocol-workidentity-seal.md)
-- [stove0_protocol.WorkIdentity.verify_digest](stove0-protocol-workidentity-verify-digest.md)
+- [root_identities](stove0-protocol-workidentity-root-identities.md)
+- [seal](stove0-protocol-workidentity-seal.md)
+- [verify_digest](stove0-protocol-workidentity-verify-digest.md)
 
 ## Governing policies
 

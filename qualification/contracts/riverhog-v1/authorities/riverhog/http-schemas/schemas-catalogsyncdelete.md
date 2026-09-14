@@ -39,7 +39,7 @@ Shared facts for every subject below: maximum=19; minimum=1; reason="schema-maxi
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionId](schemas-collectionid.md)
+- [CollectionId](schemas-collectionid.md)
 
 ## Governing policies
 

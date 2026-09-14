@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_protocol.ObservationRequest](stove0-observer-protocol-observationrequest.md)
+- [ObservationRequest](stove0-observer-protocol-observationrequest.md)
 
 ## Governing policies
 

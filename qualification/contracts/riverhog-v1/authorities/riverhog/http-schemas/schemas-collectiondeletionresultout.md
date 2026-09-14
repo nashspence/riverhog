@@ -42,7 +42,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionId](schemas-collectionid.md)
+- [CollectionId](schemas-collectionid.md)
 
 ## Governing policies
 

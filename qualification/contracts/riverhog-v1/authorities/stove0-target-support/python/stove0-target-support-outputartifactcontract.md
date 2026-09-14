@@ -42,8 +42,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.OutputArtifactContract.unique_roles](stove0-target-support-outputartifactcontract-unique-roles.md)
-- [stove0_target_support.OutputArtifactContract.validate_cardinality](stove0-target-support-outputartifactcontract-validate-cardinality.md)
+- [unique_roles](stove0-target-support-outputartifactcontract-unique-roles.md)
+- [validate_cardinality](stove0-target-support-outputartifactcontract-validate-cardinality.md)
 
 ## Governing policies
 

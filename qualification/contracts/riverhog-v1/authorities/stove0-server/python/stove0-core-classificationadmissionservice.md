@@ -28,11 +28,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.ClassificationAdmissionService.get_admission](stove0-core-classificationadmissionservice-get-admission.md)
-- [stove0_core.ClassificationAdmissionService.rebaseline](stove0-core-classificationadmissionservice-rebaseline.md)
-- [stove0_core.ClassificationAdmissionService.list_admissions](stove0-core-classificationadmissionservice-list-admissions.md)
-- [stove0_core.ClassificationAdmissionService.advance](stove0-core-classificationadmissionservice-advance.md)
-- [stove0_core.ClassificationAdmissionService.policies](stove0-core-classificationadmissionservice-policies.md)
+- [get_admission](stove0-core-classificationadmissionservice-get-admission.md)
+- [rebaseline](stove0-core-classificationadmissionservice-rebaseline.md)
+- [list_admissions](stove0-core-classificationadmissionservice-list-admissions.md)
+- [advance](stove0-core-classificationadmissionservice-advance.md)
+- [policies](stove0-core-classificationadmissionservice-policies.md)
 
 ## Governing policies
 

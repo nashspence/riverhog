@@ -40,8 +40,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_archive_contracts.ProvenanceRootIdentity.from_mapping](riverhog-archive-contracts-provenancerootidentity-from-mapping.md)
-- [riverhog_archive_contracts.ProvenanceRootIdentity.to_mapping](riverhog-archive-contracts-provenancerootidentity-to-mapping.md)
+- [from_mapping](riverhog-archive-contracts-provenancerootidentity-from-mapping.md)
+- [to_mapping](riverhog-archive-contracts-provenancerootidentity-to-mapping.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.TargetProductionSealResponse](stove0-target-protocol-targetproductionsealresponse.md)
+- [TargetProductionSealResponse](stove0-target-protocol-targetproductionsealresponse.md)
 
 ## Governing policies
 

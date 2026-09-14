@@ -28,10 +28,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.transform.ClaimedCollectionReader.close_retrievals](riverhog-client-transform-claimedcollectionreader-close-retrievals.md)
-- [riverhog_client.transform.ClaimedCollectionReader.prepare](riverhog-client-transform-claimedcollectionreader-prepare.md)
-- [riverhog_client.transform.ClaimedCollectionReader.replace_api](riverhog-client-transform-claimedcollectionreader-replace-api.md)
-- [riverhog_client.transform.ClaimedCollectionReader.iter_inventory](riverhog-client-transform-claimedcollectionreader-iter-inventory.md)
+- [close_retrievals](riverhog-client-transform-claimedcollectionreader-close-retrievals.md)
+- [prepare](riverhog-client-transform-claimedcollectionreader-prepare.md)
+- [replace_api](riverhog-client-transform-claimedcollectionreader-replace-api.md)
+- [iter_inventory](riverhog-client-transform-claimedcollectionreader-iter-inventory.md)
 
 ## Governing policies
 

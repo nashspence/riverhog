@@ -28,15 +28,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.transform.ClaimedCollectionRuntime.__enter__](riverhog-client-transform-claimedcollectionruntime-enter.md)
-- [riverhog_client.transform.ClaimedCollectionRuntime.prepare_inputs](riverhog-client-transform-claimedcollectionruntime-prepare-inputs.md)
-- [riverhog_client.transform.ClaimedCollectionRuntime.__exit__](riverhog-client-transform-claimedcollectionruntime-exit.md)
-- [riverhog_client.transform.ClaimedCollectionRuntime.open_workspace](riverhog-client-transform-claimedcollectionruntime-open-workspace.md)
-- [riverhog_client.transform.ClaimedCollectionRuntime.refresh_capability](riverhog-client-transform-claimedcollectionruntime-refresh-capability.md)
-- [riverhog_client.transform.ClaimedCollectionRuntime.iter_inventory](riverhog-client-transform-claimedcollectionruntime-iter-inventory.md)
-- [riverhog_client.transform.ClaimedCollectionRuntime.heartbeat](riverhog-client-transform-claimedcollectionruntime-heartbeat.md)
-- [riverhog_client.transform.ClaimedCollectionRuntime.close](riverhog-client-transform-claimedcollectionruntime-close.md)
-- [riverhog_client.transform.ClaimedCollectionRuntime.from_capability](riverhog-client-transform-claimedcollectionruntime-from-capability.md)
+- [__enter__](riverhog-client-transform-claimedcollectionruntime-enter.md)
+- [prepare_inputs](riverhog-client-transform-claimedcollectionruntime-prepare-inputs.md)
+- [__exit__](riverhog-client-transform-claimedcollectionruntime-exit.md)
+- [open_workspace](riverhog-client-transform-claimedcollectionruntime-open-workspace.md)
+- [refresh_capability](riverhog-client-transform-claimedcollectionruntime-refresh-capability.md)
+- [iter_inventory](riverhog-client-transform-claimedcollectionruntime-iter-inventory.md)
+- [heartbeat](riverhog-client-transform-claimedcollectionruntime-heartbeat.md)
+- [close](riverhog-client-transform-claimedcollectionruntime-close.md)
+- [from_capability](riverhog-client-transform-claimedcollectionruntime-from-capability.md)
 
 ## Governing policies
 

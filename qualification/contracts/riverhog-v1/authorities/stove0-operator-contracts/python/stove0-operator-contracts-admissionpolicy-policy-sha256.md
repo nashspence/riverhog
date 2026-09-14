@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_operator_contracts.AdmissionPolicy](stove0-operator-contracts-admissionpolicy.md)
+- [AdmissionPolicy](stove0-operator-contracts-admissionpolicy.md)
 
 ## Governing policies
 

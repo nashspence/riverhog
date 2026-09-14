@@ -49,7 +49,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_media_metadata_observer_contracts.MediaArtifactFacts.valid_state](stove0-media-metadata-observer-contracts-mediaartifactfacts-valid-state.md)
+- [valid_state](stove0-media-metadata-observer-contracts-mediaartifactfacts-valid-state.md)
 
 ## Governing policies
 

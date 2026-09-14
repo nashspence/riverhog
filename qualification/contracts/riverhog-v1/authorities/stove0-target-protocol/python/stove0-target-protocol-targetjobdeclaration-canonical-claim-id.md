@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.TargetJobDeclaration](stove0-target-protocol-targetjobdeclaration.md)
+- [TargetJobDeclaration](stove0-target-protocol-targetjobdeclaration.md)
 
 ## Governing policies
 

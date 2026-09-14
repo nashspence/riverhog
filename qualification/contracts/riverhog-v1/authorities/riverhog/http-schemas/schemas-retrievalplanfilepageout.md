@@ -51,7 +51,7 @@ Shared facts for every subject below: maximum=100; progression={"authority":"ret
 
 ### Referenced contract dossiers
 
-- [schemas: RetrievalPlanFileOut](schemas-retrievalplanfileout.md)
+- [RetrievalPlanFileOut](schemas-retrievalplanfileout.md)
 
 ## Governing policies
 

@@ -46,7 +46,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.ArchiveCopyStoreSelectionDocument.validate_distinct_stores](riverhog-protocol-archivecopystoreselectiondocument-validate-distinct-stores.md)
+- [validate_distinct_stores](riverhog-protocol-archivecopystoreselectiondocument-validate-distinct-stores.md)
 
 ## Governing policies
 

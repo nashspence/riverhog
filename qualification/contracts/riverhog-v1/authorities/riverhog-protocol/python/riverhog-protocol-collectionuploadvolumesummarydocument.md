@@ -41,7 +41,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionUploadVolumeSummaryDocument.validate_volume_identity](riverhog-protocol-collectionuploadvolumesummarydocument-validate-volume-identity.md)
+- [validate_volume_identity](riverhog-protocol-collectionuploadvolumesummarydocument-validate-volume-identity.md)
 
 ## Governing policies
 

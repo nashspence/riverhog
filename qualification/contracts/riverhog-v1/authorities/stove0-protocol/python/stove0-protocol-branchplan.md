@@ -67,8 +67,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.BranchPlan.bind_child_work](stove0-protocol-branchplan-bind-child-work.md)
-- [stove0_protocol.BranchPlan.build](stove0-protocol-branchplan-build.md)
+- [bind_child_work](stove0-protocol-branchplan-bind-child-work.md)
+- [build](stove0-protocol-branchplan-build.md)
 
 ## Governing policies
 

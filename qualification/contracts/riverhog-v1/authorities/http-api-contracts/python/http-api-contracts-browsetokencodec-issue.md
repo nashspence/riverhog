@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [http_api_contracts.BrowseTokenCodec](http-api-contracts-browsetokencodec.md)
+- [BrowseTokenCodec](http-api-contracts-browsetokencodec.md)
 
 ## Governing policies
 

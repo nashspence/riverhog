@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.InMemoryWorkStore](stove0-core-inmemoryworkstore.md)
+- [InMemoryWorkStore](stove0-core-inmemoryworkstore.md)
 
 ## Governing policies
 

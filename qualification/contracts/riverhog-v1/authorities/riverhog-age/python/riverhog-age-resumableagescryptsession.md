@@ -28,15 +28,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_age.ResumableAgeScryptSession.age_aligned_unit_plans](riverhog-age-resumableagescryptsession-age-aligned-unit-plans.md)
-- [riverhog_age.ResumableAgeScryptSession.age_prefix](riverhog-age-resumableagescryptsession-age-prefix.md)
-- [riverhog_age.ResumableAgeScryptSession.create](riverhog-age-resumableagescryptsession-create.md)
-- [riverhog_age.ResumableAgeScryptSession.decrypt_chunk](riverhog-age-resumableagescryptsession-decrypt-chunk.md)
-- [riverhog_age.ResumableAgeScryptSession.encrypt_plaintext](riverhog-age-resumableagescryptsession-encrypt-plaintext.md)
-- [riverhog_age.ResumableAgeScryptSession.encrypt_chunk](riverhog-age-resumableagescryptsession-encrypt-chunk.md)
-- [riverhog_age.ResumableAgeScryptSession.encrypt_part](riverhog-age-resumableagescryptsession-encrypt-part.md)
-- [riverhog_age.ResumableAgeScryptSession.export_state](riverhog-age-resumableagescryptsession-export-state.md)
-- [riverhog_age.ResumableAgeScryptSession.from_state](riverhog-age-resumableagescryptsession-from-state.md)
+- [age_aligned_unit_plans](riverhog-age-resumableagescryptsession-age-aligned-unit-plans.md)
+- [age_prefix](riverhog-age-resumableagescryptsession-age-prefix.md)
+- [create](riverhog-age-resumableagescryptsession-create.md)
+- [decrypt_chunk](riverhog-age-resumableagescryptsession-decrypt-chunk.md)
+- [encrypt_plaintext](riverhog-age-resumableagescryptsession-encrypt-plaintext.md)
+- [encrypt_chunk](riverhog-age-resumableagescryptsession-encrypt-chunk.md)
+- [encrypt_part](riverhog-age-resumableagescryptsession-encrypt-part.md)
+- [export_state](riverhog-age-resumableagescryptsession-export-state.md)
+- [from_state](riverhog-age-resumableagescryptsession-from-state.md)
 
 ## Governing policies
 

@@ -64,8 +64,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_protocol.ObservationResultPayload.validate_state_payload](stove0-observer-protocol-observationresultpayload-validate-state-payload.md)
-- [stove0_observer_protocol.ObservationResultPayload.canonical_subjects](stove0-observer-protocol-observationresultpayload-canonical-subjects.md)
+- [validate_state_payload](stove0-observer-protocol-observationresultpayload-validate-state-payload.md)
+- [canonical_subjects](stove0-observer-protocol-observationresultpayload-canonical-subjects.md)
 
 ## Governing policies
 

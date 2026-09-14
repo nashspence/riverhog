@@ -56,8 +56,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.OperationContractPayload.validate_roles](stove0-target-protocol-operationcontractpayload-validate-roles.md)
-- [stove0_target_protocol.OperationContractPayload.bind_semantic_conformance_vectors](stove0-target-protocol-operationcontractpayload-bind-semantic-conformance-vectors.md)
+- [validate_roles](stove0-target-protocol-operationcontractpayload-validate-roles.md)
+- [bind_semantic_conformance_vectors](stove0-target-protocol-operationcontractpayload-bind-semantic-conformance-vectors.md)
 
 ## Governing policies
 

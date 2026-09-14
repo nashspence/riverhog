@@ -26,11 +26,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog-ftp-custody: claim](riverhog-ftp-custody-claim.md)
-- [riverhog-ftp-custody: completion-log](riverhog-ftp-custody-completion-log.md)
-- [riverhog-ftp-custody: operational-database](riverhog-ftp-custody-operational-database.md)
-- [riverhog-ftp-custody: payload](riverhog-ftp-custody-payload.md)
-- [riverhog-ftp-custody: receipt](riverhog-ftp-custody-receipt.md)
+- [claim](riverhog-ftp-custody-claim.md)
+- [completion-log](riverhog-ftp-custody-completion-log.md)
+- [operational-database](riverhog-ftp-custody-operational-database.md)
+- [payload](riverhog-ftp-custody-payload.md)
+- [receipt](riverhog-ftp-custody-receipt.md)
 
 ## Governing policies
 

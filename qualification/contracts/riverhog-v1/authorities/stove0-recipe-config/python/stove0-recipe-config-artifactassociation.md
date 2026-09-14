@@ -41,7 +41,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_recipe_config.ArtifactAssociation.canonical_roles](stove0-recipe-config-artifactassociation-canonical-roles.md)
+- [canonical_roles](stove0-recipe-config-artifactassociation-canonical-roles.md)
 
 ## Governing policies
 

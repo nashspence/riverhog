@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_opus_review_sampler.OpusReviewSampler](stove0-opus-review-sampler-opusreviewsampler.md)
+- [OpusReviewSampler](stove0-opus-review-sampler-opusreviewsampler.md)
 
 ## Governing policies
 

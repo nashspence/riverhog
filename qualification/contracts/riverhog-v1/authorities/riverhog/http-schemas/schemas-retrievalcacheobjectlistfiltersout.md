@@ -33,11 +33,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: RetrievalCacheProtection](schemas-retrievalcacheprotection.md)
-- [schemas: RetrievalCacheState](schemas-retrievalcachestate.md)
-- [schemas: RetrievalCacheStoreName](schemas-retrievalcachestorename.md)
+- [ArchiveStoreName](schemas-archivestorename.md)
+- [CollectionId](schemas-collectionid.md)
+- [RetrievalCacheProtection](schemas-retrievalcacheprotection.md)
+- [RetrievalCacheState](schemas-retrievalcachestate.md)
+- [RetrievalCacheStoreName](schemas-retrievalcachestorename.md)
 
 ## Governing policies
 

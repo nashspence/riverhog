@@ -67,8 +67,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.ControllerEvidence.seal](stove0-protocol-controllerevidence-seal.md)
-- [stove0_protocol.ControllerEvidence.verify_digest](stove0-protocol-controllerevidence-verify-digest.md)
+- [seal](stove0-protocol-controllerevidence-seal.md)
+- [verify_digest](stove0-protocol-controllerevidence-verify-digest.md)
 
 ## Governing policies
 

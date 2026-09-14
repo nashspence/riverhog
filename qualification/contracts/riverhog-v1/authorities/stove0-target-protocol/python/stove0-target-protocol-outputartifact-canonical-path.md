@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.OutputArtifact](stove0-target-protocol-outputartifact.md)
+- [OutputArtifact](stove0-target-protocol-outputartifact.md)
 
 ## Governing policies
 

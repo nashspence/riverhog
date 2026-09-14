@@ -28,12 +28,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_listener_runtime.ListenerAdapter.process_is_running](gogurt-listener-runtime-listeneradapter-process-is-running.md)
-- [gogurt_listener_runtime.ListenerAdapter.register](gogurt-listener-runtime-listeneradapter-register.md)
-- [gogurt_listener_runtime.ListenerAdapter.start](gogurt-listener-runtime-listeneradapter-start.md)
-- [gogurt_listener_runtime.ListenerAdapter.status](gogurt-listener-runtime-listeneradapter-status.md)
-- [gogurt_listener_runtime.ListenerAdapter.stop](gogurt-listener-runtime-listeneradapter-stop.md)
-- [gogurt_listener_runtime.ListenerAdapter.unregister](gogurt-listener-runtime-listeneradapter-unregister.md)
+- [process_is_running](gogurt-listener-runtime-listeneradapter-process-is-running.md)
+- [register](gogurt-listener-runtime-listeneradapter-register.md)
+- [start](gogurt-listener-runtime-listeneradapter-start.md)
+- [status](gogurt-listener-runtime-listeneradapter-status.md)
+- [stop](gogurt-listener-runtime-listeneradapter-stop.md)
+- [unregister](gogurt-listener-runtime-listeneradapter-unregister.md)
 
 ## Governing policies
 

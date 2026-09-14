@@ -51,7 +51,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_protocol.ObserverContractPayload.bind_semantic_conformance_vectors](stove0-observer-protocol-observercontractpayload-bind-semantic-conformance-vectors.md)
+- [bind_semantic_conformance_vectors](stove0-observer-protocol-observercontractpayload-bind-semantic-conformance-vectors.md)
 
 ## Governing policies
 

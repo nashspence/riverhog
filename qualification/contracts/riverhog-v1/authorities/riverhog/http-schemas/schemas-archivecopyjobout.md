@@ -37,11 +37,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: ApplicationKeyId](schemas-applicationkeyid.md)
-- [schemas: ApplicationName](schemas-applicationname.md)
-- [schemas: ArchiveCopyState](schemas-archivecopystate.md)
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: CollectionId](schemas-collectionid.md)
+- [ApplicationKeyId](schemas-applicationkeyid.md)
+- [ApplicationName](schemas-applicationname.md)
+- [ArchiveCopyState](schemas-archivecopystate.md)
+- [ArchiveStoreName](schemas-archivestorename.md)
+- [CollectionId](schemas-collectionid.md)
 
 ## Governing policies
 

@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [piggity-local durable-state identity](piggity-local-durable-state-identity.md)
+- [Schema identity](piggity-local-durable-state-identity.md)
 
 ## Governing policies
 

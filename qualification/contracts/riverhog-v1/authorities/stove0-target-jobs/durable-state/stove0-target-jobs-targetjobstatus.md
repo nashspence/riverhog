@@ -62,7 +62,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0-target-jobs durable-state identity](stove0-target-jobs-durable-state-identity.md)
+- [Schema identity](stove0-target-jobs-durable-state-identity.md)
 
 ## Governing policies
 

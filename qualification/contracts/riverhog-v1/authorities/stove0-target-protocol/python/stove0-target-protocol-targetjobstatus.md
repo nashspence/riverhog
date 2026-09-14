@@ -69,8 +69,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.TargetJobStatus.canonical_derivation](stove0-target-protocol-targetjobstatus-canonical-derivation.md)
-- [stove0_target_protocol.TargetJobStatus.validate_terminal_shape](stove0-target-protocol-targetjobstatus-validate-terminal-shape.md)
+- [canonical_derivation](stove0-target-protocol-targetjobstatus-canonical-derivation.md)
+- [validate_terminal_shape](stove0-target-protocol-targetjobstatus-validate-terminal-shape.md)
 
 ## Governing policies
 

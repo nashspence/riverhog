@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_operator_contracts.WorkflowPreviewIn](stove0-operator-contracts-workflowpreviewin.md)
+- [WorkflowPreviewIn](stove0-operator-contracts-workflowpreviewin.md)
 
 ## Governing policies
 

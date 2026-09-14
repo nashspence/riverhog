@@ -49,10 +49,10 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: RetrievalCacheState](schemas-retrievalcachestate.md)
-- [schemas: RetrievalCacheStoreName](schemas-retrievalcachestorename.md)
+- [ArchiveStoreName](schemas-archivestorename.md)
+- [CollectionId](schemas-collectionid.md)
+- [RetrievalCacheState](schemas-retrievalcachestate.md)
+- [RetrievalCacheStoreName](schemas-retrievalcachestorename.md)
 
 ## Governing policies
 

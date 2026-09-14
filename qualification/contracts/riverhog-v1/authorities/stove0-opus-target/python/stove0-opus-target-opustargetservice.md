@@ -28,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_opus_target.OpusTargetService.preflight](stove0-opus-target-opustargetservice-preflight.md)
+- [preflight](stove0-opus-target-opustargetservice-preflight.md)
 
 ## Governing policies
 

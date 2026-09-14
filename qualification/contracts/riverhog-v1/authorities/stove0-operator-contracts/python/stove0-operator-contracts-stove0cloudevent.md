@@ -46,7 +46,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_operator_contracts.Stove0CloudEvent.exact_subject](stove0-operator-contracts-stove0cloudevent-exact-subject.md)
+- [exact_subject](stove0-operator-contracts-stove0cloudevent-exact-subject.md)
 
 ## Governing policies
 

@@ -55,9 +55,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: CoordinationChildSettlementRef](schemas-coordinationchildsettlementref.md)
-- [schemas: CoordinationCollectionResult](schemas-coordinationcollectionresult.md)
-- [schemas: WorkIdentity](schemas-workidentity.md)
+- [CoordinationChildSettlementRef](schemas-coordinationchildsettlementref.md)
+- [CoordinationCollectionResult](schemas-coordinationcollectionresult.md)
+- [WorkIdentity](schemas-workidentity.md)
 
 ## Governing policies
 

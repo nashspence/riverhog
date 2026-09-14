@@ -6,4 +6,4 @@ Cross-participant protocol identity, compatibility, and common acceptance rules.
 
 ## Semantic dossiers
 
-- [generated:stove0-observer protocol](generated-stove0-observer-protocol.md)
+- [generated:stove0-observer](generated-stove0-observer-protocol.md)

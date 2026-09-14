@@ -28,13 +28,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_client.TargetCallbackClient.seal_target_execution_production](stove0-target-client-targetcallbackclient-seal-target-execution-production.md)
-- [stove0_target_client.TargetCallbackClient.declare_target_execution_source_edge](stove0-target-client-targetcallbackclient-declare-target-execution-source-edge.md)
-- [stove0_target_client.TargetCallbackClient.iter_inputs](stove0-target-client-targetcallbackclient-iter-inputs.md)
-- [stove0_target_client.TargetCallbackClient.declare_target_execution_disposition](stove0-target-client-targetcallbackclient-declare-target-execution-disposition.md)
-- [stove0_target_client.TargetCallbackClient.get_target_execution_inputs](stove0-target-client-targetcallbackclient-get-target-execution-inputs.md)
-- [stove0_target_client.TargetCallbackClient.declare_target_execution_output](stove0-target-client-targetcallbackclient-declare-target-execution-output.md)
-- [stove0_target_client.TargetCallbackClient.close](stove0-target-client-targetcallbackclient-close.md)
+- [seal_target_execution_production](stove0-target-client-targetcallbackclient-seal-target-execution-production.md)
+- [declare_target_execution_source_edge](stove0-target-client-targetcallbackclient-declare-target-execution-source-edge.md)
+- [iter_inputs](stove0-target-client-targetcallbackclient-iter-inputs.md)
+- [declare_target_execution_disposition](stove0-target-client-targetcallbackclient-declare-target-execution-disposition.md)
+- [get_target_execution_inputs](stove0-target-client-targetcallbackclient-get-target-execution-inputs.md)
+- [declare_target_execution_output](stove0-target-client-targetcallbackclient-declare-target-execution-output.md)
+- [close](stove0-target-client-targetcallbackclient-close.md)
 
 ## Governing policies
 

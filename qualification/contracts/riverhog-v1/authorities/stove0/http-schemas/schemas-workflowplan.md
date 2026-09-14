@@ -60,10 +60,10 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: JsonValue](schemas-jsonvalue.md)
-- [schemas: ObservationEvidence](schemas-observationevidence.md)
-- [schemas: OperationRef](schemas-operationref.md)
-- [schemas: WorkIdentity](schemas-workidentity.md)
+- [JsonValue](schemas-jsonvalue.md)
+- [ObservationEvidence](schemas-observationevidence.md)
+- [OperationRef](schemas-operationref.md)
+- [WorkIdentity](schemas-workidentity.md)
 
 ## Governing policies
 

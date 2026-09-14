@@ -51,12 +51,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.ArtifactSelection.canonical_artifacts](stove0-protocol-artifactselection-canonical-artifacts.md)
-- [stove0_protocol.ArtifactSelection.canonical_bytes](stove0-protocol-artifactselection-canonical-bytes.md)
-- [stove0_protocol.ArtifactSelection.ref](stove0-protocol-artifactselection-ref.md)
-- [stove0_protocol.ArtifactSelection.roots](stove0-protocol-artifactselection-roots.md)
-- [stove0_protocol.ArtifactSelection.seal](stove0-protocol-artifactselection-seal.md)
-- [stove0_protocol.ArtifactSelection.verify_summary_and_digest](stove0-protocol-artifactselection-verify-summary-and-digest.md)
+- [canonical_artifacts](stove0-protocol-artifactselection-canonical-artifacts.md)
+- [canonical_bytes](stove0-protocol-artifactselection-canonical-bytes.md)
+- [ref](stove0-protocol-artifactselection-ref.md)
+- [roots](stove0-protocol-artifactselection-roots.md)
+- [seal](stove0-protocol-artifactselection-seal.md)
+- [verify_summary_and_digest](stove0-protocol-artifactselection-verify-summary-and-digest.md)
 
 ## Governing policies
 

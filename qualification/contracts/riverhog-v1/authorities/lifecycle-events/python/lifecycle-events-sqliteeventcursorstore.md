@@ -28,9 +28,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [lifecycle_events.SQLiteEventCursorStore.advance](lifecycle-events-sqliteeventcursorstore-advance.md)
-- [lifecycle_events.SQLiteEventCursorStore.cursor](lifecycle-events-sqliteeventcursorstore-cursor.md)
-- [lifecycle_events.SQLiteEventCursorStore.initialize](lifecycle-events-sqliteeventcursorstore-initialize.md)
+- [advance](lifecycle-events-sqliteeventcursorstore-advance.md)
+- [cursor](lifecycle-events-sqliteeventcursorstore-cursor.md)
+- [initialize](lifecycle-events-sqliteeventcursorstore-initialize.md)
 
 ## Governing policies
 

@@ -35,8 +35,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_core.GogurtRouteMarker.as_dict](gogurt-core-gogurtroutemarker-as-dict.md)
-- [gogurt_core.GogurtRouteMarker.from_mapping](gogurt-core-gogurtroutemarker-from-mapping.md)
+- [as_dict](gogurt-core-gogurtroutemarker-as-dict.md)
+- [from_mapping](gogurt-core-gogurtroutemarker-from-mapping.md)
 
 ## Governing policies
 

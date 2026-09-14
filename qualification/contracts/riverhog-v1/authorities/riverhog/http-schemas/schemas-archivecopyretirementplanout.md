@@ -58,10 +58,10 @@ Shared facts for every subject below: maximum=0; reason="state-conditioned-empty
 
 ### Referenced contract dossiers
 
-- [schemas: ArchiveCopyRetirementRetainedOut](schemas-archivecopyretirementretainedout.md)
-- [schemas: ArchiveCopyRetirementTargetOut](schemas-archivecopyretirementtargetout.md)
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: CollectionId](schemas-collectionid.md)
+- [ArchiveCopyRetirementRetainedOut](schemas-archivecopyretirementretainedout.md)
+- [ArchiveCopyRetirementTargetOut](schemas-archivecopyretirementtargetout.md)
+- [ArchiveStoreName](schemas-archivestorename.md)
+- [CollectionId](schemas-collectionid.md)
 
 ## Governing policies
 

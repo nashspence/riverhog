@@ -40,7 +40,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.ReadRequested.canonical_estimated_ready_at](riverhog-storage-adapter-protocol-readrequested-canonical-estimated-ready-at.md)
+- [canonical_estimated_ready_at](riverhog-storage-adapter-protocol-readrequested-canonical-estimated-ready-at.md)
 
 ## Governing policies
 

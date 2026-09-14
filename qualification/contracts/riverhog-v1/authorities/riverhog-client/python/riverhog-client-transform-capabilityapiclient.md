@@ -28,13 +28,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.transform.CapabilityApiClient.current](riverhog-client-transform-capabilityapiclient-current.md)
-- [riverhog_client.transform.CapabilityApiClient.__getattr__](riverhog-client-transform-capabilityapiclient-getattr.md)
-- [riverhog_client.transform.CapabilityApiClient.replace](riverhog-client-transform-capabilityapiclient-replace.md)
-- [riverhog_client.transform.CapabilityApiClient.close](riverhog-client-transform-capabilityapiclient-close.md)
-- [riverhog_client.transform.CapabilityApiClient.__enter__](riverhog-client-transform-capabilityapiclient-enter.md)
-- [riverhog_client.transform.CapabilityApiClient.__exit__](riverhog-client-transform-capabilityapiclient-exit.md)
-- [riverhog_client.transform.CapabilityApiClient.spawn](riverhog-client-transform-capabilityapiclient-spawn.md)
+- [current](riverhog-client-transform-capabilityapiclient-current.md)
+- [__getattr__](riverhog-client-transform-capabilityapiclient-getattr.md)
+- [replace](riverhog-client-transform-capabilityapiclient-replace.md)
+- [close](riverhog-client-transform-capabilityapiclient-close.md)
+- [__enter__](riverhog-client-transform-capabilityapiclient-enter.md)
+- [__exit__](riverhog-client-transform-capabilityapiclient-exit.md)
+- [spawn](riverhog-client-transform-capabilityapiclient-spawn.md)
 
 ## Governing policies
 

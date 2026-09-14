@@ -63,12 +63,12 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: ArtifactSubject](schemas-artifactsubject.md)
-- [schemas: JsonSchemaDocument](schemas-jsonschemadocument.md)
-- [schemas: JsonValue](schemas-jsonvalue.md)
-- [schemas: ObservationFailure](schemas-observationfailure.md)
-- [schemas: ObservationInapplicable](schemas-observationinapplicable.md)
-- [schemas: ObserverImplementation](schemas-observerimplementation.md)
+- [ArtifactSubject](schemas-artifactsubject.md)
+- [JsonSchemaDocument](schemas-jsonschemadocument.md)
+- [JsonValue](schemas-jsonvalue.md)
+- [ObservationFailure](schemas-observationfailure.md)
+- [ObservationInapplicable](schemas-observationinapplicable.md)
+- [ObserverImplementation](schemas-observerimplementation.md)
 
 ## Governing policies
 

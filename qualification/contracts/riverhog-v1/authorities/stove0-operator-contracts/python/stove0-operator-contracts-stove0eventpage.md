@@ -59,7 +59,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_operator_contracts.Stove0EventPage.require_progress_after](stove0-operator-contracts-stove0eventpage-require-progress-after.md)
+- [require_progress_after](stove0-operator-contracts-stove0eventpage-require-progress-after.md)
 
 ## Governing policies
 

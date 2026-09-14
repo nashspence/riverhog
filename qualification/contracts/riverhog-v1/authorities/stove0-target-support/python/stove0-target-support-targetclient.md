@@ -28,10 +28,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.TargetClient.contract](stove0-target-support-targetclient-contract.md)
-- [stove0_target_support.TargetClient.preflight](stove0-target-support-targetclient-preflight.md)
-- [stove0_target_support.TargetClient.put_job](stove0-target-support-targetclient-put-job.md)
-- [stove0_target_support.TargetClient.status](stove0-target-support-targetclient-status.md)
+- [contract](stove0-target-support-targetclient-contract.md)
+- [preflight](stove0-target-support-targetclient-preflight.md)
+- [put_job](stove0-target-support-targetclient-put-job.md)
+- [status](stove0-target-support-targetclient-status.md)
 
 ## Governing policies
 

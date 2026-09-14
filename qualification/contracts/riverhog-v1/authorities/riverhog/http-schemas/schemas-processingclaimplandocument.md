@@ -54,9 +54,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md)
-- [schemas: ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
-- [schemas: OperationIdentityDocument](schemas-operationidentitydocument.md)
+- [ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md)
+- [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [OperationIdentityDocument](schemas-operationidentitydocument.md)
 
 ## Governing policies
 

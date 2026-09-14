@@ -51,7 +51,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.PortableCollectionHeader.validate_provenance_binding](riverhog-protocol-portablecollectionheader-validate-provenance-binding.md)
+- [validate_provenance_binding](riverhog-protocol-portablecollectionheader-validate-provenance-binding.md)
 
 ## Governing policies
 

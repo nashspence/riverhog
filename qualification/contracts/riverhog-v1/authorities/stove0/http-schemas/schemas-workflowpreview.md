@@ -61,12 +61,12 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: ArtifactSelection](schemas-artifactselection.md)
-- [schemas: BranchSetPlan](schemas-branchsetplan.md)
-- [schemas: BranchTargetPreview](schemas-branchtargetpreview.md)
-- [schemas: ObservationEvidence](schemas-observationevidence.md)
-- [schemas: PreviewOutcome](schemas-previewoutcome.md)
-- [schemas: WorkIdentity](schemas-workidentity.md)
+- [ArtifactSelection](schemas-artifactselection.md)
+- [BranchSetPlan](schemas-branchsetplan.md)
+- [BranchTargetPreview](schemas-branchtargetpreview.md)
+- [ObservationEvidence](schemas-observationevidence.md)
+- [PreviewOutcome](schemas-previewoutcome.md)
+- [WorkIdentity](schemas-workidentity.md)
 
 ## Governing policies
 

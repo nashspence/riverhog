@@ -46,9 +46,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.CompletedObjectReceipt.canonical_completed_at](riverhog-storage-adapter-protocol-completedobjectreceipt-canonical-completed-at.md)
-- [riverhog_storage_adapter_protocol.CompletedObjectReceipt.canonical_path](riverhog-storage-adapter-protocol-completedobjectreceipt-canonical-path.md)
-- [riverhog_storage_adapter_protocol.CompletedObjectReceipt.canonical_metadata](riverhog-storage-adapter-protocol-completedobjectreceipt-canonical-metadata.md)
+- [canonical_completed_at](riverhog-storage-adapter-protocol-completedobjectreceipt-canonical-completed-at.md)
+- [canonical_path](riverhog-storage-adapter-protocol-completedobjectreceipt-canonical-path.md)
+- [canonical_metadata](riverhog-storage-adapter-protocol-completedobjectreceipt-canonical-metadata.md)
 
 ## Governing policies
 

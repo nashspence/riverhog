@@ -28,11 +28,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_sampler_client.ReviewSamplerClient.__enter__](stove0-review-sampler-client-reviewsamplerclient-enter.md)
-- [stove0_review_sampler_client.ReviewSamplerClient.close](stove0-review-sampler-client-reviewsamplerclient-close.md)
-- [stove0_review_sampler_client.ReviewSamplerClient.sample](stove0-review-sampler-client-reviewsamplerclient-sample.md)
-- [stove0_review_sampler_client.ReviewSamplerClient.descriptor](stove0-review-sampler-client-reviewsamplerclient-descriptor.md)
-- [stove0_review_sampler_client.ReviewSamplerClient.__exit__](stove0-review-sampler-client-reviewsamplerclient-exit.md)
+- [__enter__](stove0-review-sampler-client-reviewsamplerclient-enter.md)
+- [close](stove0-review-sampler-client-reviewsamplerclient-close.md)
+- [sample](stove0-review-sampler-client-reviewsamplerclient-sample.md)
+- [descriptor](stove0-review-sampler-client-reviewsamplerclient-descriptor.md)
+- [__exit__](stove0-review-sampler-client-reviewsamplerclient-exit.md)
 
 ## Governing policies
 

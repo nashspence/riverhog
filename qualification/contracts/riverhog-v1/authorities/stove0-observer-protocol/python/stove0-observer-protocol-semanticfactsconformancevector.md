@@ -52,7 +52,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_protocol.SemanticFactsConformanceVector.canonical_subjects](stove0-observer-protocol-semanticfactsconformancevector-canonical-subjects.md)
+- [canonical_subjects](stove0-observer-protocol-semanticfactsconformancevector-canonical-subjects.md)
 
 ## Governing policies
 

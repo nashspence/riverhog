@@ -28,10 +28,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [lifecycle_events.LifecycleEventClient.close](lifecycle-events-lifecycleeventclient-close.md)
-- [lifecycle_events.LifecycleEventClient.__enter__](lifecycle-events-lifecycleeventclient-enter.md)
-- [lifecycle_events.LifecycleEventClient.__exit__](lifecycle-events-lifecycleeventclient-exit.md)
-- [lifecycle_events.LifecycleEventClient.page](lifecycle-events-lifecycleeventclient-page.md)
+- [close](lifecycle-events-lifecycleeventclient-close.md)
+- [__enter__](lifecycle-events-lifecycleeventclient-enter.md)
+- [__exit__](lifecycle-events-lifecycleeventclient-exit.md)
+- [page](lifecycle-events-lifecycleeventclient-page.md)
 
 ## Governing policies
 

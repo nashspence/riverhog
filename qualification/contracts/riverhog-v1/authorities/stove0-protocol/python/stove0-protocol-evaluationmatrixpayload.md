@@ -47,7 +47,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.EvaluationMatrixPayload.canonical_variants](stove0-protocol-evaluationmatrixpayload-canonical-variants.md)
+- [canonical_variants](stove0-protocol-evaluationmatrixpayload-canonical-variants.md)
 
 ## Governing policies
 

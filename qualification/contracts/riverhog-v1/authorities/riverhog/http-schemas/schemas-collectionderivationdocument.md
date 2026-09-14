@@ -60,10 +60,10 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md)
-- [schemas: ClaimFenceDocument](schemas-claimfencedocument.md)
-- [schemas: OperationIdentityDocument](schemas-operationidentitydocument.md)
-- [schemas: RecipeIdentityDocument](schemas-recipeidentitydocument.md)
+- [ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md)
+- [ClaimFenceDocument](schemas-claimfencedocument.md)
+- [OperationIdentityDocument](schemas-operationidentitydocument.md)
+- [RecipeIdentityDocument](schemas-recipeidentitydocument.md)
 
 ## Governing policies
 

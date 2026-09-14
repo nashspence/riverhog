@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.TransformPlan](stove0-target-protocol-transformplan.md)
+- [TransformPlan](stove0-target-protocol-transformplan.md)
 
 ## Governing policies
 

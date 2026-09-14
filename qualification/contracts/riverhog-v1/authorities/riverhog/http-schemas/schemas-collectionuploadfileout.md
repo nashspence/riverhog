@@ -49,10 +49,10 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: CanonicalRelPath](schemas-canonicalrelpath.md)
-- [schemas: CapturedFileProvenanceBinding](schemas-capturedfileprovenancebinding.md)
-- [schemas: CollectionUploadArtifactCustodyReceiptDocument](schemas-collectionuploadartifactcustodyreceiptdocument.md)
-- [schemas: OmittedFileProvenanceBinding](schemas-omittedfileprovenancebinding.md)
+- [CanonicalRelPath](schemas-canonicalrelpath.md)
+- [CapturedFileProvenanceBinding](schemas-capturedfileprovenancebinding.md)
+- [CollectionUploadArtifactCustodyReceiptDocument](schemas-collectionuploadartifactcustodyreceiptdocument.md)
+- [OmittedFileProvenanceBinding](schemas-omittedfileprovenancebinding.md)
 
 ## Governing policies
 

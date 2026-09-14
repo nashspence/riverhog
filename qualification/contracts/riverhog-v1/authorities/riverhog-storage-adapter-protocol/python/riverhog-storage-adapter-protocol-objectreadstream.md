@@ -28,9 +28,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.ObjectReadStream.__exit__](riverhog-storage-adapter-protocol-objectreadstream-exit.md)
-- [riverhog_storage_adapter_protocol.ObjectReadStream.__enter__](riverhog-storage-adapter-protocol-objectreadstream-enter.md)
-- [riverhog_storage_adapter_protocol.ObjectReadStream.close](riverhog-storage-adapter-protocol-objectreadstream-close.md)
+- [__exit__](riverhog-storage-adapter-protocol-objectreadstream-exit.md)
+- [__enter__](riverhog-storage-adapter-protocol-objectreadstream-enter.md)
+- [close](riverhog-storage-adapter-protocol-objectreadstream-close.md)
 
 ## Governing policies
 

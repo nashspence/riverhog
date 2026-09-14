@@ -34,7 +34,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: RetrievalExpiredData](schemas-retrievalexpireddata.md)
+- [RetrievalExpiredData](schemas-retrievalexpireddata.md)
 
 ## Governing policies
 

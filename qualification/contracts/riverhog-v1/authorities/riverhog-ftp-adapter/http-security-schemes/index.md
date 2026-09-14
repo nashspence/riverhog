@@ -6,4 +6,4 @@ Supporting HTTP authorization definitions; these are not callable operations.
 
 ## Semantic dossiers
 
-- [securitySchemes: RiverhogFtpAdapterBearer](securityschemes-riverhogftpadapterbearer.md)
+- [RiverhogFtpAdapterBearer](securityschemes-riverhogftpadapterbearer.md)

@@ -40,7 +40,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.DeletePrefixRequest.canonical_prefix](riverhog-storage-adapter-protocol-deleteprefixrequest-canonical-prefix.md)
+- [canonical_prefix](riverhog-storage-adapter-protocol-deleteprefixrequest-canonical-prefix.md)
 
 ## Governing policies
 

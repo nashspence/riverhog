@@ -52,7 +52,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.ExternalEffectReceiptPayload.bounded_result](stove0-target-protocol-externaleffectreceiptpayload-bounded-result.md)
+- [bounded_result](stove0-target-protocol-externaleffectreceiptpayload-bounded-result.md)
 
 ## Governing policies
 

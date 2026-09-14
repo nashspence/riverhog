@@ -44,10 +44,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionTagHeadDocument.validate_identities](riverhog-protocol-collectiontagheaddocument-validate-identities.md)
-- [riverhog_protocol.CollectionTagHeadDocument.to_json_bytes](riverhog-protocol-collectiontagheaddocument-to-json-bytes.md)
-- [riverhog_protocol.CollectionTagHeadDocument.from_json_bytes](riverhog-protocol-collectiontagheaddocument-from-json-bytes.md)
-- [riverhog_protocol.CollectionTagHeadDocument.seal](riverhog-protocol-collectiontagheaddocument-seal.md)
+- [validate_identities](riverhog-protocol-collectiontagheaddocument-validate-identities.md)
+- [to_json_bytes](riverhog-protocol-collectiontagheaddocument-to-json-bytes.md)
+- [from_json_bytes](riverhog-protocol-collectiontagheaddocument-from-json-bytes.md)
+- [seal](riverhog-protocol-collectiontagheaddocument-seal.md)
 
 ## Governing policies
 

@@ -29,8 +29,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: ArtifactDispositionFailureDocument](schemas-artifactdispositionfailuredocument.md)
-- [schemas: ArtifactDispositionInputDocument](schemas-artifactdispositioninputdocument.md)
+- [ArtifactDispositionFailureDocument](schemas-artifactdispositionfailuredocument.md)
+- [ArtifactDispositionInputDocument](schemas-artifactdispositioninputdocument.md)
 
 ## Governing policies
 

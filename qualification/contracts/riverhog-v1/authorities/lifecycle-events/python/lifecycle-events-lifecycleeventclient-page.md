@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [lifecycle_events.LifecycleEventClient](lifecycle-events-lifecycleeventclient.md)
+- [LifecycleEventClient](lifecycle-events-lifecycleeventclient.md)
 
 ## Governing policies
 

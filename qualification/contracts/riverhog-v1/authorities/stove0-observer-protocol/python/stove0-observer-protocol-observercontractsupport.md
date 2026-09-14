@@ -53,7 +53,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_protocol.ObserverContractSupport.from_contract](stove0-observer-protocol-observercontractsupport-from-contract.md)
+- [from_contract](stove0-observer-protocol-observercontractsupport-from-contract.md)
 
 ## Governing policies
 

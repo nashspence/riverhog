@@ -20,8 +20,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: CapturedCollectionProvenanceVerification](schemas-capturedcollectionprovenanceverification.md)
-- [schemas: OmittedCollectionProvenanceVerification](schemas-omittedcollectionprovenanceverification.md)
+- [CapturedCollectionProvenanceVerification](schemas-capturedcollectionprovenanceverification.md)
+- [OmittedCollectionProvenanceVerification](schemas-omittedcollectionprovenanceverification.md)
 
 ## Governing policies
 

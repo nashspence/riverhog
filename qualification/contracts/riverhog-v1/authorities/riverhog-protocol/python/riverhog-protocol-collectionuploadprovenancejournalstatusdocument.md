@@ -55,7 +55,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument.validate_progress](riverhog-protocol-collectionuploadprovenancejournalstatusdocument-validate-progress.md)
+- [validate_progress](riverhog-protocol-collectionuploadprovenancejournalstatusdocument-validate-progress.md)
 
 ## Governing policies
 

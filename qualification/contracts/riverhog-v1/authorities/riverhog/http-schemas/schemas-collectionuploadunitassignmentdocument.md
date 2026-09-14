@@ -40,8 +40,8 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionUploadUnitWorkDocument](schemas-collectionuploadunitworkdocument.md)
-- [schemas: CollectionUploadVolumeSummaryDocument](schemas-collectionuploadvolumesummarydocument.md)
+- [CollectionUploadUnitWorkDocument](schemas-collectionuploadunitworkdocument.md)
+- [CollectionUploadVolumeSummaryDocument](schemas-collectionuploadvolumesummarydocument.md)
 
 ## Governing policies
 

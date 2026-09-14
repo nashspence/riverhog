@@ -58,7 +58,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_operator_contracts.AdmissionView.exact_stage](stove0-operator-contracts-admissionview-exact-stage.md)
+- [exact_stage](stove0-operator-contracts-admissionview-exact-stage.md)
 
 ## Governing policies
 

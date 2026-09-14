@@ -26,8 +26,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0-target-jobs: AcceptedTargetJob](stove0-target-jobs-acceptedtargetjob.md)
-- [stove0-target-jobs: TargetJobStatus](stove0-target-jobs-targetjobstatus.md)
+- [AcceptedTargetJob](stove0-target-jobs-acceptedtargetjob.md)
+- [TargetJobStatus](stove0-target-jobs-targetjobstatus.md)
 
 ## Governing policies
 

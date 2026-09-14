@@ -43,7 +43,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.EvaluationReview.meaningful](stove0-core-evaluationreview-meaningful.md)
+- [meaningful](stove0-core-evaluationreview-meaningful.md)
 
 ## Governing policies
 

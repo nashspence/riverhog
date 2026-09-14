@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.CollectionProducer](riverhog-client-collectionproducer.md)
+- [CollectionProducer](riverhog-client-collectionproducer.md)
 
 ## Governing policies
 

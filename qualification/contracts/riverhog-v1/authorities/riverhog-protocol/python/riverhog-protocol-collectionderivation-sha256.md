@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionDerivation](riverhog-protocol-collectionderivation.md)
+- [CollectionDerivation](riverhog-protocol-collectionderivation.md)
 
 ## Governing policies
 

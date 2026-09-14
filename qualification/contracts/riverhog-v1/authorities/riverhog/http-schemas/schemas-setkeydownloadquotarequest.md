@@ -27,7 +27,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: MonthlyDownloadQuotaBytes](schemas-monthlydownloadquotabytes.md)
+- [MonthlyDownloadQuotaBytes](schemas-monthlydownloadquotabytes.md)
 
 ## Governing policies
 

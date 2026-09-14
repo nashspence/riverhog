@@ -79,13 +79,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: CollectionDescription](schemas-collectiondescription.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: CollectionSummaryOut](schemas-collectionsummaryout.md)
-- [schemas: CollectionUploadRegistrationConstraintsOut](schemas-collectionuploadregistrationconstraintsout.md)
-- [schemas: CompleteCollectionUploadCustodyOut](schemas-completecollectionuploadcustodyout.md)
-- [schemas: PendingCollectionUploadCustodyOut](schemas-pendingcollectionuploadcustodyout.md)
+- [ArchiveStoreName](schemas-archivestorename.md)
+- [CollectionDescription](schemas-collectiondescription.md)
+- [CollectionId](schemas-collectionid.md)
+- [CollectionSummaryOut](schemas-collectionsummaryout.md)
+- [CollectionUploadRegistrationConstraintsOut](schemas-collectionuploadregistrationconstraintsout.md)
+- [CompleteCollectionUploadCustodyOut](schemas-completecollectionuploadcustodyout.md)
+- [PendingCollectionUploadCustodyOut](schemas-pendingcollectionuploadcustodyout.md)
 
 ## Governing policies
 

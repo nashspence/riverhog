@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.MemoryCollectionTagNodeStore](riverhog-protocol-memorycollectiontagnodestore.md)
+- [MemoryCollectionTagNodeStore](riverhog-protocol-memorycollectiontagnodestore.md)
 
 ## Governing policies
 

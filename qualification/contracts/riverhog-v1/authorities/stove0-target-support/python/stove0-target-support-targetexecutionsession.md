@@ -28,8 +28,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.TargetExecutionSession.completed_status](stove0-target-support-targetexecutionsession-completed-status.md)
-- [stove0_target_support.TargetExecutionSession.record_completed](stove0-target-support-targetexecutionsession-record-completed.md)
+- [completed_status](stove0-target-support-targetexecutionsession-completed-status.md)
+- [record_completed](stove0-target-support-targetexecutionsession-record-completed.md)
 
 ## Governing policies
 

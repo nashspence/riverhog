@@ -44,8 +44,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_sampler_protocol.SamplerOutput.canonical_sources](stove0-review-sampler-protocol-sampleroutput-canonical-sources.md)
-- [stove0_review_sampler_protocol.SamplerOutput.canonical_path](stove0-review-sampler-protocol-sampleroutput-canonical-path.md)
+- [canonical_sources](stove0-review-sampler-protocol-sampleroutput-canonical-sources.md)
+- [canonical_path](stove0-review-sampler-protocol-sampleroutput-canonical-path.md)
 
 ## Governing policies
 

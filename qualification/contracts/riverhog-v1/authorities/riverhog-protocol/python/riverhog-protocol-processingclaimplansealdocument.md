@@ -51,7 +51,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.ProcessingClaimPlanSealDocument.validate_plan](riverhog-protocol-processingclaimplansealdocument-validate-plan.md)
+- [validate_plan](riverhog-protocol-processingclaimplansealdocument-validate-plan.md)
 
 ## Governing policies
 

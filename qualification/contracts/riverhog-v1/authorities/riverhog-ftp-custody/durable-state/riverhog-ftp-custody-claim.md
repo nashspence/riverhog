@@ -47,7 +47,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog-ftp-custody durable-state identity](riverhog-ftp-custody-durable-state-identity.md)
+- [Schema identity](riverhog-ftp-custody-durable-state-identity.md)
 
 ## Governing policies
 

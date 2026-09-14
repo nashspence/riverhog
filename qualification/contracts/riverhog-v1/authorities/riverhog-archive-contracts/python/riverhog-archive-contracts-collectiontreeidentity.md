@@ -36,8 +36,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_archive_contracts.CollectionTreeIdentity.from_mapping](riverhog-archive-contracts-collectiontreeidentity-from-mapping.md)
-- [riverhog_archive_contracts.CollectionTreeIdentity.to_mapping](riverhog-archive-contracts-collectiontreeidentity-to-mapping.md)
+- [from_mapping](riverhog-archive-contracts-collectiontreeidentity-from-mapping.md)
+- [to_mapping](riverhog-archive-contracts-collectiontreeidentity-to-mapping.md)
 
 ## Governing policies
 

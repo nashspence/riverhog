@@ -28,10 +28,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_ftp_adapter.FtpAdapter.accept_completed_file](riverhog-ftp-adapter-ftpadapter-accept-completed-file.md)
-- [riverhog_ftp_adapter.FtpAdapter.flush](riverhog-ftp-adapter-ftpadapter-flush.md)
-- [riverhog_ftp_adapter.FtpAdapter.run_once](riverhog-ftp-adapter-ftpadapter-run-once.md)
-- [riverhog_ftp_adapter.FtpAdapter.status](riverhog-ftp-adapter-ftpadapter-status.md)
+- [accept_completed_file](riverhog-ftp-adapter-ftpadapter-accept-completed-file.md)
+- [flush](riverhog-ftp-adapter-ftpadapter-flush.md)
+- [run_once](riverhog-ftp-adapter-ftpadapter-run-once.md)
+- [status](riverhog-ftp-adapter-ftpadapter-status.md)
 
 ## Governing policies
 

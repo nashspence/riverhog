@@ -52,7 +52,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.InputArtifact.canonical_path](stove0-target-support-inputartifact-canonical-path.md)
+- [canonical_path](stove0-target-support-inputartifact-canonical-path.md)
 
 ## Governing policies
 

@@ -57,9 +57,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.EffectPlan.binding_document](stove0-target-support-effectplan-binding-document.md)
-- [stove0_target_support.EffectPlan.seal](stove0-target-support-effectplan-seal.md)
-- [stove0_target_support.EffectPlan.verify_digest](stove0-target-support-effectplan-verify-digest.md)
+- [binding_document](stove0-target-support-effectplan-binding-document.md)
+- [seal](stove0-target-support-effectplan-seal.md)
+- [verify_digest](stove0-target-support-effectplan-verify-digest.md)
 
 ## Governing policies
 

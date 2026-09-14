@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_api.Stove0Composition](stove0-api-stove0composition.md)
+- [Stove0Composition](stove0-api-stove0composition.md)
 
 ## Governing policies
 

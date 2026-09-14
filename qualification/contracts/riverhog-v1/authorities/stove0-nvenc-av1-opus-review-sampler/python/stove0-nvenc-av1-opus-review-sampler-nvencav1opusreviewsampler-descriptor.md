@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_nvenc_av1_opus_review_sampler.NvencAv1OpusReviewSampler](stove0-nvenc-av1-opus-review-sampler-nvencav1opusreviewsampler.md)
+- [NvencAv1OpusReviewSampler](stove0-nvenc-av1-opus-review-sampler-nvencav1opusreviewsampler.md)
 
 ## Governing policies
 

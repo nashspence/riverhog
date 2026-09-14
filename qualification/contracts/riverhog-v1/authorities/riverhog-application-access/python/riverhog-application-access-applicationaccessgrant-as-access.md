@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_application_access.ApplicationAccessGrant](riverhog-application-access-applicationaccessgrant.md)
+- [ApplicationAccessGrant](riverhog-application-access-applicationaccessgrant.md)
 
 ## Governing policies
 

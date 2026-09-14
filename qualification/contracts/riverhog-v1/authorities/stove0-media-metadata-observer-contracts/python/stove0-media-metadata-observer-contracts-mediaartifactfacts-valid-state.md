@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_media_metadata_observer_contracts.MediaArtifactFacts](stove0-media-metadata-observer-contracts-mediaartifactfacts.md)
+- [MediaArtifactFacts](stove0-media-metadata-observer-contracts-mediaartifactfacts.md)
 
 ## Governing policies
 

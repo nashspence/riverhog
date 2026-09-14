@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_age.ResumableAgeScryptSession](riverhog-age-resumableagescryptsession.md)
+- [ResumableAgeScryptSession](riverhog-age-resumableagescryptsession.md)
 
 ## Governing policies
 

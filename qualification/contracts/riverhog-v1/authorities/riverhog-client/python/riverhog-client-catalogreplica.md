@@ -28,13 +28,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.CatalogReplica.get](riverhog-client-catalogreplica-get.md)
-- [riverhog_client.CatalogReplica.page](riverhog-client-catalogreplica-page.md)
-- [riverhog_client.CatalogReplica.reclaim](riverhog-client-catalogreplica-reclaim.md)
-- [riverhog_client.CatalogReplica.start](riverhog-client-catalogreplica-start.md)
-- [riverhog_client.CatalogReplica.status](riverhog-client-catalogreplica-status.md)
-- [riverhog_client.CatalogReplica.step](riverhog-client-catalogreplica-step.md)
-- [riverhog_client.CatalogReplica.tag_page](riverhog-client-catalogreplica-tag-page.md)
+- [get](riverhog-client-catalogreplica-get.md)
+- [page](riverhog-client-catalogreplica-page.md)
+- [reclaim](riverhog-client-catalogreplica-reclaim.md)
+- [start](riverhog-client-catalogreplica-start.md)
+- [status](riverhog-client-catalogreplica-status.md)
+- [step](riverhog-client-catalogreplica-step.md)
+- [tag_page](riverhog-client-catalogreplica-tag-page.md)
 
 ## Governing policies
 

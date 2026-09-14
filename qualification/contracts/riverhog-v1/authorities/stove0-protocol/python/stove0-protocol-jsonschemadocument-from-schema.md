@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.JsonSchemaDocument](stove0-protocol-jsonschemadocument.md)
+- [JsonSchemaDocument](stove0-protocol-jsonschemadocument.md)
 
 ## Governing policies
 

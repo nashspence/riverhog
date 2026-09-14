@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.WorkflowPlanPayload](stove0-protocol-workflowplanpayload.md)
+- [WorkflowPlanPayload](stove0-protocol-workflowplanpayload.md)
 
 ## Governing policies
 

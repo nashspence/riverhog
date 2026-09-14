@@ -49,8 +49,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_protocol.JsonSchemaDocument.verify_digest](stove0-observer-protocol-jsonschemadocument-verify-digest.md)
-- [stove0_observer_protocol.JsonSchemaDocument.from_schema](stove0-observer-protocol-jsonschemadocument-from-schema.md)
+- [verify_digest](stove0-observer-protocol-jsonschemadocument-verify-digest.md)
+- [from_schema](stove0-observer-protocol-jsonschemadocument-from-schema.md)
 
 ## Governing policies
 

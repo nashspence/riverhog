@@ -23,12 +23,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: BranchSetAdmittedEvent](schemas-branchsetadmittedevent.md)
-- [schemas: EvaluationCreatedEvent](schemas-evaluationcreatedevent.md)
-- [schemas: EvaluationUpdatedEvent](schemas-evaluationupdatedevent.md)
-- [schemas: JoinAdmittedEvent](schemas-joinadmittedevent.md)
-- [schemas: WorkCreatedEvent](schemas-workcreatedevent.md)
-- [schemas: WorkUpdatedEvent](schemas-workupdatedevent.md)
+- [BranchSetAdmittedEvent](schemas-branchsetadmittedevent.md)
+- [EvaluationCreatedEvent](schemas-evaluationcreatedevent.md)
+- [EvaluationUpdatedEvent](schemas-evaluationupdatedevent.md)
+- [JoinAdmittedEvent](schemas-joinadmittedevent.md)
+- [WorkCreatedEvent](schemas-workcreatedevent.md)
+- [WorkUpdatedEvent](schemas-workupdatedevent.md)
 
 ## Governing policies
 

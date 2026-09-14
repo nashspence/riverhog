@@ -34,7 +34,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: EvaluationUpdatedEventData](schemas-evaluationupdatedeventdata.md)
+- [EvaluationUpdatedEventData](schemas-evaluationupdatedeventdata.md)
 
 ## Governing policies
 

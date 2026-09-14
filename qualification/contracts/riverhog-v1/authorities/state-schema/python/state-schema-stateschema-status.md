@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [state_schema.StateSchema](state-schema-stateschema.md)
+- [StateSchema](state-schema-stateschema.md)
 
 ## Governing policies
 

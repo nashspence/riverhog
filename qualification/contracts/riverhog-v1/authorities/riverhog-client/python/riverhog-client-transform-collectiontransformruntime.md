@@ -28,19 +28,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.transform.CollectionTransformRuntime.open_workspace](riverhog-client-transform-collectiontransformruntime-open-workspace.md)
-- [riverhog_client.transform.CollectionTransformRuntime.from_capability](riverhog-client-transform-collectiontransformruntime-from-capability.md)
-- [riverhog_client.transform.CollectionTransformRuntime.iter_inventory](riverhog-client-transform-collectiontransformruntime-iter-inventory.md)
-- [riverhog_client.transform.CollectionTransformRuntime.append_incremental_output](riverhog-client-transform-collectiontransformruntime-append-incremental-output.md)
-- [riverhog_client.transform.CollectionTransformRuntime.open_incremental_publication](riverhog-client-transform-collectiontransformruntime-open-incremental-publication.md)
-- [riverhog_client.transform.CollectionTransformRuntime.publish](riverhog-client-transform-collectiontransformruntime-publish.md)
-- [riverhog_client.transform.CollectionTransformRuntime.__enter__](riverhog-client-transform-collectiontransformruntime-enter.md)
-- [riverhog_client.transform.CollectionTransformRuntime.close](riverhog-client-transform-collectiontransformruntime-close.md)
-- [riverhog_client.transform.CollectionTransformRuntime.refresh_capability](riverhog-client-transform-collectiontransformruntime-refresh-capability.md)
-- [riverhog_client.transform.CollectionTransformRuntime.finish_incremental_publication](riverhog-client-transform-collectiontransformruntime-finish-incremental-publication.md)
-- [riverhog_client.transform.CollectionTransformRuntime.heartbeat](riverhog-client-transform-collectiontransformruntime-heartbeat.md)
-- [riverhog_client.transform.CollectionTransformRuntime.__exit__](riverhog-client-transform-collectiontransformruntime-exit.md)
-- [riverhog_client.transform.CollectionTransformRuntime.prepare_inputs](riverhog-client-transform-collectiontransformruntime-prepare-inputs.md)
+- [open_workspace](riverhog-client-transform-collectiontransformruntime-open-workspace.md)
+- [from_capability](riverhog-client-transform-collectiontransformruntime-from-capability.md)
+- [iter_inventory](riverhog-client-transform-collectiontransformruntime-iter-inventory.md)
+- [append_incremental_output](riverhog-client-transform-collectiontransformruntime-append-incremental-output.md)
+- [open_incremental_publication](riverhog-client-transform-collectiontransformruntime-open-incremental-publication.md)
+- [publish](riverhog-client-transform-collectiontransformruntime-publish.md)
+- [__enter__](riverhog-client-transform-collectiontransformruntime-enter.md)
+- [close](riverhog-client-transform-collectiontransformruntime-close.md)
+- [refresh_capability](riverhog-client-transform-collectiontransformruntime-refresh-capability.md)
+- [finish_incremental_publication](riverhog-client-transform-collectiontransformruntime-finish-incremental-publication.md)
+- [heartbeat](riverhog-client-transform-collectiontransformruntime-heartbeat.md)
+- [__exit__](riverhog-client-transform-collectiontransformruntime-exit.md)
+- [prepare_inputs](riverhog-client-transform-collectiontransformruntime-prepare-inputs.md)
 
 ## Governing policies
 

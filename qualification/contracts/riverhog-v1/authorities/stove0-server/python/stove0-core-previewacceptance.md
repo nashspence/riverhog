@@ -47,8 +47,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.PreviewAcceptance.canonical_targets](stove0-core-previewacceptance-canonical-targets.md)
-- [stove0_core.PreviewAcceptance.from_preview](stove0-core-previewacceptance-from-preview.md)
+- [canonical_targets](stove0-core-previewacceptance-canonical-targets.md)
+- [from_preview](stove0-core-previewacceptance-from-preview.md)
 
 ## Governing policies
 

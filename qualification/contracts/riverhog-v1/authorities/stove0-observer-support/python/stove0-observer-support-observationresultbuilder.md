@@ -28,10 +28,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_support.ObservationResultBuilder.failed](stove0-observer-support-observationresultbuilder-failed.md)
-- [stove0_observer_support.ObservationResultBuilder.inapplicable](stove0-observer-support-observationresultbuilder-inapplicable.md)
-- [stove0_observer_support.ObservationResultBuilder.canceled](stove0-observer-support-observationresultbuilder-canceled.md)
-- [stove0_observer_support.ObservationResultBuilder.observed](stove0-observer-support-observationresultbuilder-observed.md)
+- [failed](stove0-observer-support-observationresultbuilder-failed.md)
+- [inapplicable](stove0-observer-support-observationresultbuilder-inapplicable.md)
+- [canceled](stove0-observer-support-observationresultbuilder-canceled.md)
+- [observed](stove0-observer-support-observationresultbuilder-observed.md)
 
 ## Governing policies
 

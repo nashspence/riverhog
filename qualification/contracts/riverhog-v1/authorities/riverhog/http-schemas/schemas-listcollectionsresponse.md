@@ -54,11 +54,11 @@ Shared facts for every subject below: maximum=100
 
 ### Referenced contract dossiers
 
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: CollectionSort](schemas-collectionsort.md)
-- [schemas: CollectionSummaryOut](schemas-collectionsummaryout.md)
-- [schemas: CollectionTag](schemas-collectiontag.md)
-- [schemas: SortOrder](schemas-sortorder.md)
+- [BrowsePageToken](schemas-browsepagetoken.md)
+- [CollectionSort](schemas-collectionsort.md)
+- [CollectionSummaryOut](schemas-collectionsummaryout.md)
+- [CollectionTag](schemas-collectiontag.md)
+- [SortOrder](schemas-sortorder.md)
 
 ## Governing policies
 

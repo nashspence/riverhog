@@ -28,9 +28,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.transform.ClaimedCollectionRuntimeRegistry.bind](riverhog-client-transform-claimedcollectionruntimeregistry-bind.md)
-- [riverhog_client.transform.ClaimedCollectionRuntimeRegistry.discard](riverhog-client-transform-claimedcollectionruntimeregistry-discard.md)
-- [riverhog_client.transform.ClaimedCollectionRuntimeRegistry.refresh](riverhog-client-transform-claimedcollectionruntimeregistry-refresh.md)
+- [bind](riverhog-client-transform-claimedcollectionruntimeregistry-bind.md)
+- [discard](riverhog-client-transform-claimedcollectionruntimeregistry-discard.md)
+- [refresh](riverhog-client-transform-claimedcollectionruntimeregistry-refresh.md)
 
 ## Governing policies
 

@@ -50,10 +50,10 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ### Referenced contract dossiers
 
-- [schemas: ArchiveStoreOut](schemas-archivestoreout.md)
-- [schemas: ArchiveStoreSort](schemas-archivestoresort.md)
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: SortOrder](schemas-sortorder.md)
+- [ArchiveStoreOut](schemas-archivestoreout.md)
+- [ArchiveStoreSort](schemas-archivestoresort.md)
+- [BrowsePageToken](schemas-browsepagetoken.md)
+- [SortOrder](schemas-sortorder.md)
 
 ## Governing policies
 

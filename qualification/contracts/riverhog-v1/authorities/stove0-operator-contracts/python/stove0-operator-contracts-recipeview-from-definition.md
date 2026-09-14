@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_operator_contracts.RecipeView](stove0-operator-contracts-recipeview.md)
+- [RecipeView](stove0-operator-contracts-recipeview.md)
 
 ## Governing policies
 

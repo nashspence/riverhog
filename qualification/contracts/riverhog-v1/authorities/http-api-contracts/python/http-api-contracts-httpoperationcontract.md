@@ -44,9 +44,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [http_api_contracts.HttpOperationContract.accepts_error](http-api-contracts-httpoperationcontract-accepts-error.md)
-- [http_api_contracts.HttpOperationContract.error_statuses](http-api-contracts-httpoperationcontract-error-statuses.md)
-- [http_api_contracts.HttpOperationContract.matches](http-api-contracts-httpoperationcontract-matches.md)
+- [accepts_error](http-api-contracts-httpoperationcontract-accepts-error.md)
+- [error_statuses](http-api-contracts-httpoperationcontract-error-statuses.md)
+- [matches](http-api-contracts-httpoperationcontract-matches.md)
 
 ## Governing policies
 

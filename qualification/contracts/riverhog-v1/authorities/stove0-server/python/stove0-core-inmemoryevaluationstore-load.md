@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.InMemoryEvaluationStore](stove0-core-inmemoryevaluationstore.md)
+- [InMemoryEvaluationStore](stove0-core-inmemoryevaluationstore.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.EvaluationDefinitionPayload](stove0-protocol-evaluationdefinitionpayload.md)
+- [EvaluationDefinitionPayload](stove0-protocol-evaluationdefinitionpayload.md)
 
 ## Governing policies
 

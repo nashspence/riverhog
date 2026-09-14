@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [lifecycle_events.SQLiteEventCursorStore](lifecycle-events-sqliteeventcursorstore.md)
+- [SQLiteEventCursorStore](lifecycle-events-sqliteeventcursorstore.md)
 
 ## Governing policies
 

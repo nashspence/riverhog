@@ -6,4 +6,4 @@ Cross-participant protocol identity, compatibility, and common acceptance rules.
 
 ## Semantic dossiers
 
-- [generated:riverhog-storage-adapter protocol](generated-riverhog-storage-adapter-protocol.md)
+- [generated:riverhog-storage-adapter](generated-riverhog-storage-adapter-protocol.md)

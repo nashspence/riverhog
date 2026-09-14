@@ -49,7 +49,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.EvaluationChild.validate_output](stove0-core-evaluationchild-validate-output.md)
+- [validate_output](stove0-core-evaluationchild-validate-output.md)
 
 ## Governing policies
 

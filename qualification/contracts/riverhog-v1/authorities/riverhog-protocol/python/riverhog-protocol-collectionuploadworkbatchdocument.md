@@ -53,8 +53,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionUploadWorkBatchDocument.validate_completion](riverhog-protocol-collectionuploadworkbatchdocument-validate-completion.md)
-- [riverhog_protocol.CollectionUploadWorkBatchDocument.canonical_collection_id](riverhog-protocol-collectionuploadworkbatchdocument-canonical-collection-id.md)
+- [validate_completion](riverhog-protocol-collectionuploadworkbatchdocument-validate-completion.md)
+- [canonical_collection_id](riverhog-protocol-collectionuploadworkbatchdocument-canonical-collection-id.md)
 
 ## Governing policies
 

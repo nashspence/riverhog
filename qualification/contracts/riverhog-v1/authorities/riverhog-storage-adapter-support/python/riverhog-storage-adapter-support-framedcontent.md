@@ -28,9 +28,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_support.FramedContent.require_consumed](riverhog-storage-adapter-support-framedcontent-require-consumed.md)
-- [riverhog_storage_adapter_support.FramedContent.__iter__](riverhog-storage-adapter-support-framedcontent-iter.md)
-- [riverhog_storage_adapter_support.FramedContent.__next__](riverhog-storage-adapter-support-framedcontent-next.md)
+- [require_consumed](riverhog-storage-adapter-support-framedcontent-require-consumed.md)
+- [__iter__](riverhog-storage-adapter-support-framedcontent-iter.md)
+- [__next__](riverhog-storage-adapter-support-framedcontent-next.md)
 
 ## Governing policies
 

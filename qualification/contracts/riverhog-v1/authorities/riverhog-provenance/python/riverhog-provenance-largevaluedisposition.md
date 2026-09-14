@@ -36,8 +36,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_provenance.LargeValueDisposition.__format__](riverhog-provenance-largevaluedisposition-format.md)
-- [riverhog_provenance.LargeValueDisposition.__str__](riverhog-provenance-largevaluedisposition-str.md)
+- [__format__](riverhog-provenance-largevaluedisposition-format.md)
+- [__str__](riverhog-provenance-largevaluedisposition-str.md)
 
 ## Governing policies
 

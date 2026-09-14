@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.PreviewRiverhogPort](stove0-core-previewriverhogport.md)
+- [PreviewRiverhogPort](stove0-core-previewriverhogport.md)
 
 ## Governing policies
 

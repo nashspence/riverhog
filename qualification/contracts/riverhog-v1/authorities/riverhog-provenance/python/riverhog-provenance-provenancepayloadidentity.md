@@ -37,7 +37,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_provenance.ProvenancePayloadIdentity.to_mapping](riverhog-provenance-provenancepayloadidentity-to-mapping.md)
+- [to_mapping](riverhog-provenance-provenancepayloadidentity-to-mapping.md)
 
 ## Governing policies
 

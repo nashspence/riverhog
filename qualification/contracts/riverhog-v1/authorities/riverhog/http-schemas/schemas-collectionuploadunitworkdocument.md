@@ -42,7 +42,7 @@ Shared facts for every subject below: maximum=1000; minimum=null; progression={"
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionUploadUnitSourceDocument](schemas-collectionuploadunitsourcedocument.md)
+- [CollectionUploadUnitSourceDocument](schemas-collectionuploadunitsourcedocument.md)
 
 ## Governing policies
 

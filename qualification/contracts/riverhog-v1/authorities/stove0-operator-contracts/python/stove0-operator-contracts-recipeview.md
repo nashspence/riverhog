@@ -58,8 +58,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_operator_contracts.RecipeView.exact_digest](stove0-operator-contracts-recipeview-exact-digest.md)
-- [stove0_operator_contracts.RecipeView.from_definition](stove0-operator-contracts-recipeview-from-definition.md)
+- [exact_digest](stove0-operator-contracts-recipeview-exact-digest.md)
+- [from_definition](stove0-operator-contracts-recipeview-from-definition.md)
 
 ## Governing policies
 

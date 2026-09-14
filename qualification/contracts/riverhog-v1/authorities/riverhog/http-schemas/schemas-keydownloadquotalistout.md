@@ -52,11 +52,11 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ### Referenced contract dossiers
 
-- [schemas: ApplicationName](schemas-applicationname.md)
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: DownloadQuotaSort](schemas-downloadquotasort.md)
-- [schemas: KeyDownloadQuotaOut](schemas-keydownloadquotaout.md)
-- [schemas: SortOrder](schemas-sortorder.md)
+- [ApplicationName](schemas-applicationname.md)
+- [BrowsePageToken](schemas-browsepagetoken.md)
+- [DownloadQuotaSort](schemas-downloadquotasort.md)
+- [KeyDownloadQuotaOut](schemas-keydownloadquotaout.md)
+- [SortOrder](schemas-sortorder.md)
 
 ## Governing policies
 

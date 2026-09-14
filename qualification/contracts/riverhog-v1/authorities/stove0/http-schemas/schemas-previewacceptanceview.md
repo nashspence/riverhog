@@ -48,7 +48,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: PreviewTargetExpectationView](schemas-previewtargetexpectationview.md)
+- [PreviewTargetExpectationView](schemas-previewtargetexpectationview.md)
 
 ## Governing policies
 

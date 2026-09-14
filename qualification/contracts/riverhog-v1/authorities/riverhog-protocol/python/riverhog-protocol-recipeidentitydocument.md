@@ -41,7 +41,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.RecipeIdentityDocument.validate_identity](riverhog-protocol-recipeidentitydocument-validate-identity.md)
+- [validate_identity](riverhog-protocol-recipeidentitydocument-validate-identity.md)
 
 ## Governing policies
 

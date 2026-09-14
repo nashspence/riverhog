@@ -39,10 +39,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.ProducerEvidence.as_dict](riverhog-protocol-producerevidence-as-dict.md)
-- [riverhog_protocol.ProducerEvidence.from_mapping](riverhog-protocol-producerevidence-from-mapping.md)
-- [riverhog_protocol.ProducerEvidence.sha256](riverhog-protocol-producerevidence-sha256.md)
-- [riverhog_protocol.ProducerEvidence.to_json_bytes](riverhog-protocol-producerevidence-to-json-bytes.md)
+- [as_dict](riverhog-protocol-producerevidence-as-dict.md)
+- [from_mapping](riverhog-protocol-producerevidence-from-mapping.md)
+- [sha256](riverhog-protocol-producerevidence-sha256.md)
+- [to_json_bytes](riverhog-protocol-producerevidence-to-json-bytes.md)
 
 ## Governing policies
 

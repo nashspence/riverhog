@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.Stove0Coordinator](stove0-core-stove0coordinator.md)
+- [Stove0Coordinator](stove0-core-stove0coordinator.md)
 
 ## Governing policies
 

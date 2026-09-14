@@ -28,9 +28,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_core.MountedVolumeAccess.discover](gogurt-core-mountedvolumeaccess-discover.md)
-- [gogurt_core.MountedVolumeAccess.observe_marker](gogurt-core-mountedvolumeaccess-observe-marker.md)
-- [gogurt_core.MountedVolumeAccess.publish_marker](gogurt-core-mountedvolumeaccess-publish-marker.md)
+- [discover](gogurt-core-mountedvolumeaccess-discover.md)
+- [observe_marker](gogurt-core-mountedvolumeaccess-observe-marker.md)
+- [publish_marker](gogurt-core-mountedvolumeaccess-publish-marker.md)
 
 ## Governing policies
 

@@ -55,8 +55,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.WorkflowPreviewRequest.seal](stove0-protocol-workflowpreviewrequest-seal.md)
-- [stove0_protocol.WorkflowPreviewRequest.verify_digest](stove0-protocol-workflowpreviewrequest-verify-digest.md)
+- [seal](stove0-protocol-workflowpreviewrequest-seal.md)
+- [verify_digest](stove0-protocol-workflowpreviewrequest-verify-digest.md)
 
 ## Governing policies
 

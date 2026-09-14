@@ -48,8 +48,8 @@ Shared facts for every subject below: maximum=4096; reason="bounded-lifecycle-ev
 
 ### Referenced contract dossiers
 
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: CollectionId](schemas-collectionid.md)
+- [ArchiveStoreName](schemas-archivestorename.md)
+- [CollectionId](schemas-collectionid.md)
 
 ## Governing policies
 

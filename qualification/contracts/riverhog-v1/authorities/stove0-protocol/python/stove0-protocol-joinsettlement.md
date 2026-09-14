@@ -55,8 +55,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.JoinSettlement.seal](stove0-protocol-joinsettlement-seal.md)
-- [stove0_protocol.JoinSettlement.verify_digest](stove0-protocol-joinsettlement-verify-digest.md)
+- [seal](stove0-protocol-joinsettlement-seal.md)
+- [verify_digest](stove0-protocol-joinsettlement-verify-digest.md)
 
 ## Governing policies
 

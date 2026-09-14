@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_operator_contracts.Stove0EventPage](stove0-operator-contracts-stove0eventpage.md)
+- [Stove0EventPage](stove0-operator-contracts-stove0eventpage.md)
 
 ## Governing policies
 

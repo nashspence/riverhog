@@ -48,9 +48,9 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ### Referenced contract dossiers
 
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: CollectionUploadFileOut](schemas-collectionuploadfileout.md)
+- [BrowsePageToken](schemas-browsepagetoken.md)
+- [CollectionId](schemas-collectionid.md)
+- [CollectionUploadFileOut](schemas-collectionuploadfileout.md)
 
 ## Governing policies
 

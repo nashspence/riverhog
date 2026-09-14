@@ -52,7 +52,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CatalogSyncCollectionPage.validate_continuation](riverhog-protocol-catalogsynccollectionpage-validate-continuation.md)
+- [validate_continuation](riverhog-protocol-catalogsynccollectionpage-validate-continuation.md)
 
 ## Governing policies
 

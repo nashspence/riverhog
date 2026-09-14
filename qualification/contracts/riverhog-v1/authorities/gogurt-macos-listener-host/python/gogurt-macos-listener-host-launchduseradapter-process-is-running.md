@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_macos_listener_host.LaunchdUserAdapter](gogurt-macos-listener-host-launchduseradapter.md)
+- [LaunchdUserAdapter](gogurt-macos-listener-host-launchduseradapter.md)
 
 ## Governing policies
 

@@ -48,7 +48,7 @@ Shared facts for every subject below: maximum=200; minimum=1; reason="schema-max
 
 ### Referenced contract dossiers
 
-- [schemas: RetrievalFileReferenceDocument](schemas-retrievalfilereferencedocument.md)
+- [RetrievalFileReferenceDocument](schemas-retrievalfilereferencedocument.md)
 
 ## Governing policies
 

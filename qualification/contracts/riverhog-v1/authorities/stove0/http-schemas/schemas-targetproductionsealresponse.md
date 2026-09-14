@@ -28,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: TargetProductionAuthority](schemas-targetproductionauthority.md)
+- [TargetProductionAuthority](schemas-targetproductionauthority.md)
 
 ## Governing policies
 

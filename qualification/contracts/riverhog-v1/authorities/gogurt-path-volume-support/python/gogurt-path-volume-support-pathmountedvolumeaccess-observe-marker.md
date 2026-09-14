@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_path_volume_support.PathMountedVolumeAccess](gogurt-path-volume-support-pathmountedvolumeaccess.md)
+- [PathMountedVolumeAccess](gogurt-path-volume-support-pathmountedvolumeaccess.md)
 
 ## Governing policies
 

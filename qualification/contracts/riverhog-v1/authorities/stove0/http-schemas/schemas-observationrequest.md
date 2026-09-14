@@ -60,8 +60,8 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: ArtifactSubject](schemas-artifactsubject.md)
-- [schemas: JsonValue](schemas-jsonvalue.md)
+- [ArtifactSubject](schemas-artifactsubject.md)
+- [JsonValue](schemas-jsonvalue.md)
 
 ## Governing policies
 

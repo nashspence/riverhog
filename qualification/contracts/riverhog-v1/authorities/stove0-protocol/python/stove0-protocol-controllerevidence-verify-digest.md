@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.ControllerEvidence](stove0-protocol-controllerevidence.md)
+- [ControllerEvidence](stove0-protocol-controllerevidence.md)
 
 ## Governing policies
 

@@ -41,9 +41,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: ControllerEvidence](schemas-controllerevidence.md)
-- [schemas: EffectPlan](schemas-effectplan.md)
-- [schemas: TransformPlan](schemas-transformplan.md)
+- [ControllerEvidence](schemas-controllerevidence.md)
+- [EffectPlan](schemas-effectplan.md)
+- [TransformPlan](schemas-transformplan.md)
 
 ## Governing policies
 

@@ -28,8 +28,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.TargetCollectionPublication.append](stove0-target-support-targetcollectionpublication-append.md)
-- [stove0_target_support.TargetCollectionPublication.finish_success](stove0-target-support-targetcollectionpublication-finish-success.md)
+- [append](stove0-target-support-targetcollectionpublication-append.md)
+- [finish_success](stove0-target-support-targetcollectionpublication-finish-success.md)
 
 ## Governing policies
 

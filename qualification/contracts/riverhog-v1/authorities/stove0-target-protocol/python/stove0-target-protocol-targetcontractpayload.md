@@ -53,8 +53,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.TargetContractPayload.bind_result_kind](stove0-target-protocol-targetcontractpayload-bind-result-kind.md)
-- [stove0_target_protocol.TargetContractPayload.canonical_operations](stove0-target-protocol-targetcontractpayload-canonical-operations.md)
+- [bind_result_kind](stove0-target-protocol-targetcontractpayload-bind-result-kind.md)
+- [canonical_operations](stove0-target-protocol-targetcontractpayload-canonical-operations.md)
 
 ## Governing policies
 

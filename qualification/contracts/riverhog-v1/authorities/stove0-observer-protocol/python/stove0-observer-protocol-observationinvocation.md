@@ -53,7 +53,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_protocol.ObservationInvocation.canonical_claim_id](stove0-observer-protocol-observationinvocation-canonical-claim-id.md)
+- [canonical_claim_id](stove0-observer-protocol-observationinvocation-canonical-claim-id.md)
 
 ## Governing policies
 

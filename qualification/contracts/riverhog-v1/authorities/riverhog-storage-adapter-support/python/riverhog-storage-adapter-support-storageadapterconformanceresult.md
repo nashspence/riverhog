@@ -50,7 +50,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_support.StorageAdapterConformanceResult.validate_exact_coverage](riverhog-storage-adapter-support-storageadapterconformanceresult-validate-exact-coverage.md)
+- [validate_exact_coverage](riverhog-storage-adapter-support-storageadapterconformanceresult-validate-exact-coverage.md)
 
 ## Governing policies
 

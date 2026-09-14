@@ -49,9 +49,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: CompleteCollectionUploadCustodyOut](schemas-completecollectionuploadcustodyout.md)
-- [schemas: PendingCollectionUploadCustodyOut](schemas-pendingcollectionuploadcustodyout.md)
+- [CollectionId](schemas-collectionid.md)
+- [CompleteCollectionUploadCustodyOut](schemas-completecollectionuploadcustodyout.md)
+- [PendingCollectionUploadCustodyOut](schemas-pendingcollectionuploadcustodyout.md)
 
 ## Governing policies
 

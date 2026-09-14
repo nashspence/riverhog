@@ -52,10 +52,10 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: JoinMemberDeclaration](schemas-joinmemberdeclaration.md)
-- [schemas: JsonValue](schemas-jsonvalue.md)
-- [schemas: RecipeRef](schemas-reciperef.md)
-- [schemas: WorkflowPlanIntent](schemas-workflowplanintent.md)
+- [JoinMemberDeclaration](schemas-joinmemberdeclaration.md)
+- [JsonValue](schemas-jsonvalue.md)
+- [RecipeRef](schemas-reciperef.md)
+- [WorkflowPlanIntent](schemas-workflowplanintent.md)
 
 ## Governing policies
 

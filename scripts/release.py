@@ -35,6 +35,7 @@ from license_expression import (  # type: ignore[import-untyped]
 )
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.specifiers import InvalidSpecifier, SpecifierSet
+from packaging.utils import canonicalize_name
 from runtime_image_attribution import RuntimeAttributionError, locked_runtime_payloads
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -303,8 +304,23 @@ def _git_output(root: Path, *args: str) -> str:
     return _run(["git", *args], cwd=root, capture=True).stdout.strip()
 
 
-def _normalize_name(value: str) -> str:
-    return value.replace("_", "-").lower()
+def _canonical_distribution_name(value: str) -> str:
+    """Return the canonical Python distribution identity defined by packaging."""
+
+    return str(canonicalize_name(value))
+
+
+def _canonical_distribution_versions(
+    pairs: Sequence[tuple[str, str]],
+    *,
+    source: str,
+) -> dict[str, str]:
+    """Return an exact distribution-version map and reject canonical collisions."""
+
+    versions = {_canonical_distribution_name(name): version for name, version in pairs}
+    if len(versions) != len(pairs):
+        raise ReleaseError(f"{source} repeats a canonical distribution identity")
+    return versions
 
 
 def _version(value: str) -> tuple[int, int, int]:
@@ -478,7 +494,7 @@ def _dockerfile_distribution_roots(dockerfile: Path) -> list[str]:
         )
     words = shlex.split(commands[0])
     roots = [
-        _normalize_name(words[index + 1])
+        _canonical_distribution_name(words[index + 1])
         for index, word in enumerate(words[:-1])
         if word == "--package"
     ]
@@ -506,7 +522,7 @@ def _dependency_name(value: str) -> str:
     match = re.match(r"[A-Za-z0-9_.-]+", value)
     if match is None:
         raise ReleaseError(f"dependency has no distribution name: {value}")
-    return _normalize_name(match.group())
+    return _canonical_distribution_name(match.group())
 
 
 def _validate_locked_build_inputs(root: Path, uv_lock: dict[str, Any]) -> None:
@@ -668,7 +684,7 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
     seen_names: set[str] = set()
     for relative, pyproject in sorted(workspace.items()):
         metadata = _project_metadata(pyproject)
-        name = _normalize_name(str(metadata["name"]))
+        name = _canonical_distribution_name(str(metadata["name"]))
         if name in seen_names:
             raise ReleaseError(f"workspace repeats distribution name: {name}")
         seen_names.add(name)
@@ -759,11 +775,15 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
 
     locked = tomllib.loads((root / "uv.lock").read_text(encoding="utf-8"))
     _validate_locked_build_inputs(root, locked)
-    locked_versions = {
-        _normalize_name(str(item["name"])): str(item["version"])
+    locked_release_packages = [
+        item
         for item in locked["package"]
-        if _normalize_name(str(item["name"])) in seen_names
-    }
+        if _canonical_distribution_name(str(item["name"])) in seen_names
+    ]
+    locked_versions = _canonical_distribution_versions(
+        [(str(item["name"]), str(item["version"])) for item in locked_release_packages],
+        source="uv.lock release inventory",
+    )
     if set(locked_versions) != seen_names:
         raise ReleaseError("uv.lock does not contain every release distribution exactly once")
     if any(value != current_version for value in locked_versions.values()):
@@ -823,7 +843,7 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
     if set(runtime_images) | set(test_images) != _bake_targets(root):
         raise ReleaseError("release image inventory differs from docker-bake.hcl")
     image_distributions = {
-        _normalize_name(str(distribution))
+        _canonical_distribution_name(str(distribution))
         for value in runtime_images.values()
         for distribution in value.get("distributions", [])
     }
@@ -873,8 +893,11 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
             )
     for target, value in runtime_images.items():
         configured_roots = [
-            _normalize_name(str(distribution)) for distribution in value["distributions"]
+            _canonical_distribution_name(str(distribution))
+            for distribution in value["distributions"]
         ]
+        if len(configured_roots) != len(set(configured_roots)):
+            raise ReleaseError(f"runtime image repeats a canonical distribution root: {target}")
         if value["role"] == "reference":
             if any(
                 roles_by_name[root] not in {"reference_application", "reference_component"}
@@ -941,7 +964,7 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
         }:
             raise ReleaseError("release.toml durable-state owner is incomplete")
         state_id = str(owner["id"])
-        distribution = _normalize_name(str(owner["distribution"]))
+        distribution = _canonical_distribution_name(str(owner["distribution"]))
         fixtures = owner["fixtures"]
         if (
             not state_id
@@ -1190,7 +1213,7 @@ def _apply_release_version_to_lock(
             continue
         name_match = re.fullmatch(r'name = "([^"]+)"', content)
         if name_match is not None and current_name is None:
-            current_name = _normalize_name(name_match.group(1))
+            current_name = _canonical_distribution_name(name_match.group(1))
             continue
         if current_name not in names:
             continue
@@ -1440,6 +1463,15 @@ def _publication_license_inventory(
                 or not isinstance(expression, str)
             ):
                 raise ReleaseError("release publication license identity is incomplete")
+            kind = str(identity["kind"])
+            coordinate = str(identity["coordinate"])
+            if kind == "python-distribution":
+                canonical_coordinate = _canonical_distribution_name(coordinate)
+                if coordinate != canonical_coordinate:
+                    raise ReleaseError(
+                        "release publication uses a noncanonical Python distribution coordinate: "
+                        f"{coordinate}"
+                    )
             _canonical_spdx_expression(expression)
             records.append(
                 {
@@ -1509,6 +1541,9 @@ def _release_history_declaration(
         or re.fullmatch(r"[0-9a-f]{64}", expected_previous.get("manifest_sha256", "")) is None
     ):
         raise ReleaseError("a post-v1.0 release requires its authenticated predecessor")
+    previous_version = str(expected_previous["tag"])[1:]
+    if _version(previous_version) >= _version(version):
+        raise ReleaseError("a v1 manifest continuation must increase its predecessor version")
     return {
         "kind": "continuation",
         "previous_tag": expected_previous["tag"],
@@ -1542,6 +1577,12 @@ def _manifest_license_map(
             raise ReleaseError("release manifest publication-license identity is invalid")
         _canonical_spdx_expression(expression)
         key = (str(identity["kind"]), str(identity["coordinate"]))
+        if key[0] == "python-distribution":
+            canonical_coordinate = _canonical_distribution_name(key[1])
+            if key[1] != canonical_coordinate:
+                raise ReleaseError(
+                    f"release manifest uses a noncanonical Python distribution coordinate: {key[1]}"
+                )
         if key in result:
             raise ReleaseError(f"release manifest repeats a publication coordinate: {key}")
         result[key] = expression
@@ -1623,8 +1664,13 @@ def _verify_v1_manifest_history(
                 or not isinstance(declaration.get("previous_manifest_sha256"), str)
             ):
                 raise ReleaseError(f"release manifest predecessor is invalid at {current_tag}")
+            previous_tag = str(declaration["previous_tag"])
+            if _version(previous_tag[1:]) >= _version(str(manifest["version"])):
+                raise ReleaseError(
+                    f"release manifest continuation does not increase at {current_tag}"
+                )
             current = (
-                str(declaration["previous_tag"]),
+                previous_tag,
                 str(declaration["previous_manifest_sha256"]),
             )
         if [str(item["tag"]) for item, _digest in historical] != [
@@ -1888,7 +1934,13 @@ def _distribution_metadata(path: Path) -> tuple[str, str, str, str, set[str]]:
     dependencies = {
         _dependency_name(str(value)) for value in (metadata.get_all("Requires-Dist") or [])
     }
-    return _normalize_name(name), version, requires_python, license_expression, dependencies
+    return (
+        _canonical_distribution_name(name),
+        version,
+        requires_python,
+        license_expression,
+        dependencies,
+    )
 
 
 def _project_dependency_graph(
@@ -1929,12 +1981,10 @@ def _dependency_closure(graph: dict[str, set[str]], root: str) -> set[str]:
 
 def _locked_versions(root: Path) -> dict[str, str]:
     lock = tomllib.loads((root / "uv.lock").read_text(encoding="utf-8"))
-    versions = {
-        _normalize_name(str(item["name"])): str(item["version"]) for item in lock["package"]
-    }
-    if len(versions) != len(lock["package"]):
-        raise ReleaseError("uv.lock contains ambiguous package versions")
-    return versions
+    return _canonical_distribution_versions(
+        [(str(item["name"]), str(item["version"])) for item in lock["package"]],
+        source="uv.lock",
+    )
 
 
 def _validate_distribution_artifacts(
@@ -2275,7 +2325,7 @@ def _image_notice_components(
     ]:
         name = str(item.get("name", ""))
         kind = str(item.get("kind", ""))
-        if kind == "python" and _normalize_name(name) in first_party:
+        if kind == "python" and _canonical_distribution_name(name) in first_party:
             continue
         raw_notices = item.get("notices")
         if not isinstance(raw_notices, list) or not raw_notices:
@@ -2358,7 +2408,8 @@ def _build_release_images(
     records: list[dict[str, Any]] = []
     for target, image in config["images"]["runtime"].items():
         distributions = [
-            _normalize_name(str(distribution)) for distribution in image["distributions"]
+            _canonical_distribution_name(str(distribution))
+            for distribution in image["distributions"]
         ]
         distribution_roots_label = _image_distribution_roots_label(distributions)
         local_repository = f"riverhog-release-dry-run-{source_sha[:12]}/{target}"
@@ -2472,7 +2523,10 @@ def _build_release_images(
             capture=True,
         ).stdout
         installed_pairs = cast(list[list[str]], json.loads(installed_raw))
-        installed = {_normalize_name(name): value for name, value in installed_pairs}
+        installed = _canonical_distribution_versions(
+            [(name, value) for name, value in installed_pairs],
+            source=f"image {target}",
+        )
         expected_internal = set().union(
             *(_dependency_closure(graph, distribution) for distribution in distributions)
         )

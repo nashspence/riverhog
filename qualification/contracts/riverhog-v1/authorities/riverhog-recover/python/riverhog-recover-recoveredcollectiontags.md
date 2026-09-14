@@ -28,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_recover.RecoveredCollectionTags.iter_tags](riverhog-recover-recoveredcollectiontags-iter-tags.md)
+- [iter_tags](riverhog-recover-recoveredcollectiontags-iter-tags.md)
 
 ## Governing policies
 

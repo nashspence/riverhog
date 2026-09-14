@@ -35,8 +35,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.RawSourceHash.close](riverhog-client-rawsourcehash-close.md)
-- [riverhog_client.RawSourceHash.iter_batches](riverhog-client-rawsourcehash-iter-batches.md)
+- [close](riverhog-client-rawsourcehash-close.md)
+- [iter_batches](riverhog-client-rawsourcehash-iter-batches.md)
 
 ## Governing policies
 

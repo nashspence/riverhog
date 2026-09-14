@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.PortableCollectionInventoryPage](riverhog-protocol-portablecollectioninventorypage.md)
+- [PortableCollectionInventoryPage](riverhog-protocol-portablecollectioninventorypage.md)
 
 ## Governing policies
 

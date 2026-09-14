@@ -40,8 +40,8 @@ Shared facts for every subject below: maximum=128; progression={"authority":"pro
 
 ### Referenced contract dossiers
 
-- [schemas: ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
-- [schemas: ProcessingOutcomeIdentityDocument](schemas-processingoutcomeidentitydocument.md)
+- [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [ProcessingOutcomeIdentityDocument](schemas-processingoutcomeidentitydocument.md)
 
 ## Governing policies
 

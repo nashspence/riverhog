@@ -44,7 +44,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.OutputArtifact.canonical_path](stove0-target-protocol-outputartifact-canonical-path.md)
+- [canonical_path](stove0-target-protocol-outputartifact-canonical-path.md)
 
 ## Governing policies
 

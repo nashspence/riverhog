@@ -11,9 +11,9 @@ Executable commands: **4** · Command groups: **1**
 ### Executable commands
 
 - [mango-fish](mango-fish.md)
-- [state status](mango-fish-state-status.md)
-- [state upgrade](mango-fish-state-upgrade.md)
-- [state verify](mango-fish-state-verify.md)
+- [status](mango-fish-state-status.md)
+- [upgrade](mango-fish-state-upgrade.md)
+- [verify](mango-fish-state-verify.md)
 
 ### Command groups
 

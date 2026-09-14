@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.ExecutionEnvelope](stove0-protocol-executionenvelope.md)
+- [ExecutionEnvelope](stove0-protocol-executionenvelope.md)
 
 ## Governing policies
 

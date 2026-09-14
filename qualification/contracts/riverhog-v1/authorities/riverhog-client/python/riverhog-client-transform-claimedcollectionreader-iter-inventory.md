@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.transform.ClaimedCollectionReader](riverhog-client-transform-claimedcollectionreader.md)
+- [ClaimedCollectionReader](riverhog-client-transform-claimedcollectionreader.md)
 
 ## Governing policies
 

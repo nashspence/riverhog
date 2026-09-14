@@ -50,8 +50,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_target_contracts.ReviewSamplePlan.verify_digest](stove0-review-target-contracts-reviewsampleplan-verify-digest.md)
-- [stove0_review_target_contracts.ReviewSamplePlan.seal](stove0-review-target-contracts-reviewsampleplan-seal.md)
+- [verify_digest](stove0-review-target-contracts-reviewsampleplan-verify-digest.md)
+- [seal](stove0-review-target-contracts-reviewsampleplan-seal.md)
 
 ## Governing policies
 

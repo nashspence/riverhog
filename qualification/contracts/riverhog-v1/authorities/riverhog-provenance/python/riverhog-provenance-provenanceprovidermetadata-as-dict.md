@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_provenance.ProvenanceProviderMetadata](riverhog-provenance-provenanceprovidermetadata.md)
+- [ProvenanceProviderMetadata](riverhog-provenance-provenanceprovidermetadata.md)
 
 ## Governing policies
 

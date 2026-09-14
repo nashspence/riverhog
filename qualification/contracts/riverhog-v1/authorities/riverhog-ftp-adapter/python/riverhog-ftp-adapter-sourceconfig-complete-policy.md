@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_ftp_adapter.SourceConfig](riverhog-ftp-adapter-sourceconfig.md)
+- [SourceConfig](riverhog-ftp-adapter-sourceconfig.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionUploadRawDigestBatchDocument](riverhog-protocol-collectionuploadrawdigestbatchdocument.md)
+- [CollectionUploadRawDigestBatchDocument](riverhog-protocol-collectionuploadrawdigestbatchdocument.md)
 
 ## Governing policies
 

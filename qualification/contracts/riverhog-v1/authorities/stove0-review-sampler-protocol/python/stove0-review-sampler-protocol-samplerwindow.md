@@ -43,7 +43,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_sampler_protocol.SamplerWindow.canonical_output_path](stove0-review-sampler-protocol-samplerwindow-canonical-output-path.md)
+- [canonical_output_path](stove0-review-sampler-protocol-samplerwindow-canonical-output-path.md)
 
 ## Governing policies
 

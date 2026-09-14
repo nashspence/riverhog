@@ -36,11 +36,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.transform.TransformWorkspace.__enter__](riverhog-client-transform-transformworkspace-enter.md)
-- [riverhog_client.transform.TransformWorkspace.__exit__](riverhog-client-transform-transformworkspace-exit.md)
-- [riverhog_client.transform.TransformWorkspace.open](riverhog-client-transform-transformworkspace-open.md)
-- [riverhog_client.transform.TransformWorkspace.release](riverhog-client-transform-transformworkspace-release.md)
-- [riverhog_client.transform.TransformWorkspace.resolve](riverhog-client-transform-transformworkspace-resolve.md)
+- [__enter__](riverhog-client-transform-transformworkspace-enter.md)
+- [__exit__](riverhog-client-transform-transformworkspace-exit.md)
+- [open](riverhog-client-transform-transformworkspace-open.md)
+- [release](riverhog-client-transform-transformworkspace-release.md)
+- [resolve](riverhog-client-transform-transformworkspace-resolve.md)
 
 ## Governing policies
 

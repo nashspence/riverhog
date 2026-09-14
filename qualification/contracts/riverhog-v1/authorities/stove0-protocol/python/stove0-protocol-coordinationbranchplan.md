@@ -58,9 +58,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.CoordinationBranchPlan.bind_child_work](stove0-protocol-coordinationbranchplan-bind-child-work.md)
-- [stove0_protocol.CoordinationBranchPlan.build_work](stove0-protocol-coordinationbranchplan-build-work.md)
-- [stove0_protocol.CoordinationBranchPlan.build](stove0-protocol-coordinationbranchplan-build.md)
+- [bind_child_work](stove0-protocol-coordinationbranchplan-bind-child-work.md)
+- [build_work](stove0-protocol-coordinationbranchplan-build-work.md)
+- [build](stove0-protocol-coordinationbranchplan-build.md)
 
 ## Governing policies
 

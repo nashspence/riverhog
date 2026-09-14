@@ -37,10 +37,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_archive_contracts.CollectionArchiveVolumeDocument.to_mapping](riverhog-archive-contracts-collectionarchivevolumedocument-to-mapping.md)
-- [riverhog_archive_contracts.CollectionArchiveVolumeDocument.to_json_bytes](riverhog-archive-contracts-collectionarchivevolumedocument-to-json-bytes.md)
-- [riverhog_archive_contracts.CollectionArchiveVolumeDocument.from_mapping](riverhog-archive-contracts-collectionarchivevolumedocument-from-mapping.md)
-- [riverhog_archive_contracts.CollectionArchiveVolumeDocument.from_json_bytes](riverhog-archive-contracts-collectionarchivevolumedocument-from-json-bytes.md)
+- [to_mapping](riverhog-archive-contracts-collectionarchivevolumedocument-to-mapping.md)
+- [to_json_bytes](riverhog-archive-contracts-collectionarchivevolumedocument-to-json-bytes.md)
+- [from_mapping](riverhog-archive-contracts-collectionarchivevolumedocument-from-mapping.md)
+- [from_json_bytes](riverhog-archive-contracts-collectionarchivevolumedocument-from-json-bytes.md)
 
 ## Governing policies
 

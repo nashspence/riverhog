@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_core.GogurtRouteMarker](gogurt-core-gogurtroutemarker.md)
+- [GogurtRouteMarker](gogurt-core-gogurtroutemarker.md)
 
 ## Governing policies
 

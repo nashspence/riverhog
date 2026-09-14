@@ -28,13 +28,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.PersistentTargetService.cancel_job](stove0-target-support-persistenttargetservice-cancel-job.md)
-- [stove0_target_support.PersistentTargetService.get_job](stove0-target-support-persistenttargetservice-get-job.md)
-- [stove0_target_support.PersistentTargetService.prune_terminal_state](stove0-target-support-persistenttargetservice-prune-terminal-state.md)
-- [stove0_target_support.PersistentTargetService.put_job](stove0-target-support-persistenttargetservice-put-job.md)
-- [stove0_target_support.PersistentTargetService.preflight](stove0-target-support-persistenttargetservice-preflight.md)
-- [stove0_target_support.PersistentTargetService.contract](stove0-target-support-persistenttargetservice-contract.md)
-- [stove0_target_support.PersistentTargetService.close](stove0-target-support-persistenttargetservice-close.md)
+- [cancel_job](stove0-target-support-persistenttargetservice-cancel-job.md)
+- [get_job](stove0-target-support-persistenttargetservice-get-job.md)
+- [prune_terminal_state](stove0-target-support-persistenttargetservice-prune-terminal-state.md)
+- [put_job](stove0-target-support-persistenttargetservice-put-job.md)
+- [preflight](stove0-target-support-persistenttargetservice-preflight.md)
+- [contract](stove0-target-support-persistenttargetservice-contract.md)
+- [close](stove0-target-support-persistenttargetservice-close.md)
 
 ## Governing policies
 

@@ -35,8 +35,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: UploadedArchiveRootPublicationOut](schemas-uploadedarchiverootpublicationout.md)
+- [ArchiveStoreName](schemas-archivestorename.md)
+- [UploadedArchiveRootPublicationOut](schemas-uploadedarchiverootpublicationout.md)
 
 ## Governing policies
 

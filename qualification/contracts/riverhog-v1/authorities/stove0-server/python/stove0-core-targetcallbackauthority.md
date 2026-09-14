@@ -28,13 +28,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.TargetCallbackAuthority.declare_disposition](stove0-core-targetcallbackauthority-declare-disposition.md)
-- [stove0_core.TargetCallbackAuthority.declare_source_edge](stove0-core-targetcallbackauthority-declare-source-edge.md)
-- [stove0_core.TargetCallbackAuthority.declare_output](stove0-core-targetcallbackauthority-declare-output.md)
-- [stove0_core.TargetCallbackAuthority.input_page](stove0-core-targetcallbackauthority-input-page.md)
-- [stove0_core.TargetCallbackAuthority.issue_access](stove0-core-targetcallbackauthority-issue-access.md)
-- [stove0_core.TargetCallbackAuthority.process_due_production_seals](stove0-core-targetcallbackauthority-process-due-production-seals.md)
-- [stove0_core.TargetCallbackAuthority.seal_production](stove0-core-targetcallbackauthority-seal-production.md)
+- [declare_disposition](stove0-core-targetcallbackauthority-declare-disposition.md)
+- [declare_source_edge](stove0-core-targetcallbackauthority-declare-source-edge.md)
+- [declare_output](stove0-core-targetcallbackauthority-declare-output.md)
+- [input_page](stove0-core-targetcallbackauthority-input-page.md)
+- [issue_access](stove0-core-targetcallbackauthority-issue-access.md)
+- [process_due_production_seals](stove0-core-targetcallbackauthority-process-due-production-seals.md)
+- [seal_production](stove0-core-targetcallbackauthority-seal-production.md)
 
 ## Governing policies
 

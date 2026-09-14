@@ -49,8 +49,8 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: CanonicalRelPath](schemas-canonicalrelpath.md)
-- [schemas: CollectionId](schemas-collectionid.md)
+- [CanonicalRelPath](schemas-canonicalrelpath.md)
+- [CollectionId](schemas-collectionid.md)
 
 ## Governing policies
 

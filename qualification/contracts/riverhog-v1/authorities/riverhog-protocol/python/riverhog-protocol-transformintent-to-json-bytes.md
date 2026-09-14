@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.TransformIntent](riverhog-protocol-transformintent.md)
+- [TransformIntent](riverhog-protocol-transformintent.md)
 
 ## Governing policies
 

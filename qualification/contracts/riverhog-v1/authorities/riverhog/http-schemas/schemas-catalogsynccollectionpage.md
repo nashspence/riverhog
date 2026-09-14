@@ -51,7 +51,7 @@ Shared facts for every subject below: maximum=100; progression={"authority":"cat
 
 ### Referenced contract dossiers
 
-- [schemas: CatalogSyncDescriptor](schemas-catalogsyncdescriptor.md)
+- [CatalogSyncDescriptor](schemas-catalogsyncdescriptor.md)
 
 ## Governing policies
 

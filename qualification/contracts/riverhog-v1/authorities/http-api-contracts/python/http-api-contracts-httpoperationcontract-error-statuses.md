@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [http_api_contracts.HttpOperationContract](http-api-contracts-httpoperationcontract.md)
+- [HttpOperationContract](http-api-contracts-httpoperationcontract.md)
 
 ## Governing policies
 

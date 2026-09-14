@@ -44,7 +44,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.BranchOutcome.exact_declared_plan](stove0-protocol-branchoutcome-exact-declared-plan.md)
+- [exact_declared_plan](stove0-protocol-branchoutcome-exact-declared-plan.md)
 
 ## Governing policies
 

@@ -47,8 +47,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.TargetInputAuthority.from_selection](stove0-target-protocol-targetinputauthority-from-selection.md)
-- [stove0_target_protocol.TargetInputAuthority.validate_summary](stove0-target-protocol-targetinputauthority-validate-summary.md)
+- [from_selection](stove0-target-protocol-targetinputauthority-from-selection.md)
+- [validate_summary](stove0-target-protocol-targetinputauthority-validate-summary.md)
 
 ## Governing policies
 

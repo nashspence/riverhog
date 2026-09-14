@@ -59,8 +59,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_operator_contracts.AdmissionIntent.exact_identity](stove0-operator-contracts-admissionintent-exact-identity.md)
-- [stove0_operator_contracts.AdmissionIntent.seal](stove0-operator-contracts-admissionintent-seal.md)
+- [exact_identity](stove0-operator-contracts-admissionintent-exact-identity.md)
+- [seal](stove0-operator-contracts-admissionintent-seal.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.SqlAlchemyStateStore](stove0-core-sqlalchemystatestore.md)
+- [SqlAlchemyStateStore](stove0-core-sqlalchemystatestore.md)
 
 ## Governing policies
 

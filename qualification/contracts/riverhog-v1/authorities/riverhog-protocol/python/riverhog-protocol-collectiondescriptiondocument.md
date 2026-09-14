@@ -49,10 +49,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionDescriptionDocument.to_json_bytes](riverhog-protocol-collectiondescriptiondocument-to-json-bytes.md)
-- [riverhog_protocol.CollectionDescriptionDocument.from_json_bytes](riverhog-protocol-collectiondescriptiondocument-from-json-bytes.md)
-- [riverhog_protocol.CollectionDescriptionDocument.validate_identity](riverhog-protocol-collectiondescriptiondocument-validate-identity.md)
-- [riverhog_protocol.CollectionDescriptionDocument.seal](riverhog-protocol-collectiondescriptiondocument-seal.md)
+- [to_json_bytes](riverhog-protocol-collectiondescriptiondocument-to-json-bytes.md)
+- [from_json_bytes](riverhog-protocol-collectiondescriptiondocument-from-json-bytes.md)
+- [validate_identity](riverhog-protocol-collectiondescriptiondocument-validate-identity.md)
+- [seal](riverhog-protocol-collectiondescriptiondocument-seal.md)
 
 ## Governing policies
 

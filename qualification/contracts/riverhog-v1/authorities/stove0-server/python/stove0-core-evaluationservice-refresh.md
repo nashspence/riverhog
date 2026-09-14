@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.EvaluationService](stove0-core-evaluationservice.md)
+- [EvaluationService](stove0-core-evaluationservice.md)
 
 ## Governing policies
 

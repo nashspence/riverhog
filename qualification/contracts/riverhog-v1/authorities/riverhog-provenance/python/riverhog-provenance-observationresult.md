@@ -39,10 +39,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_provenance.ObservationResult.assertion_body](riverhog-provenance-observationresult-assertion-body.md)
-- [riverhog_provenance.ObservationResult.graph_fragment](riverhog-provenance-observationresult-graph-fragment.md)
-- [riverhog_provenance.ObservationResult.make_assertion_entry](riverhog-provenance-observationresult-make-assertion-entry.md)
-- [riverhog_provenance.ObservationResult.payload_binding](riverhog-provenance-observationresult-payload-binding.md)
+- [assertion_body](riverhog-provenance-observationresult-assertion-body.md)
+- [graph_fragment](riverhog-provenance-observationresult-graph-fragment.md)
+- [make_assertion_entry](riverhog-provenance-observationresult-make-assertion-entry.md)
+- [payload_binding](riverhog-provenance-observationresult-payload-binding.md)
 
 ## Governing policies
 

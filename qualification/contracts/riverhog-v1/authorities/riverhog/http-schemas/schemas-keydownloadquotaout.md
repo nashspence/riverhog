@@ -36,9 +36,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: ApplicationKeyId](schemas-applicationkeyid.md)
-- [schemas: ApplicationName](schemas-applicationname.md)
-- [schemas: MonthlyDownloadQuotaBytes](schemas-monthlydownloadquotabytes.md)
+- [ApplicationKeyId](schemas-applicationkeyid.md)
+- [ApplicationName](schemas-applicationname.md)
+- [MonthlyDownloadQuotaBytes](schemas-monthlydownloadquotabytes.md)
 
 ## Governing policies
 

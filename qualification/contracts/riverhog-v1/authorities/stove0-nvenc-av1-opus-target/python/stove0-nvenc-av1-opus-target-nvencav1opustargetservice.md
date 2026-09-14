@@ -28,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_nvenc_av1_opus_target.NvencAv1OpusTargetService.preflight](stove0-nvenc-av1-opus-target-nvencav1opustargetservice-preflight.md)
+- [preflight](stove0-nvenc-av1-opus-target-nvencav1opustargetservice-preflight.md)
 
 ## Governing policies
 

@@ -37,8 +37,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_core.GogurtProviderReference.as_dict](gogurt-core-gogurtproviderreference-as-dict.md)
-- [gogurt_core.GogurtProviderReference.from_mapping](gogurt-core-gogurtproviderreference-from-mapping.md)
+- [as_dict](gogurt-core-gogurtproviderreference-as-dict.md)
+- [from_mapping](gogurt-core-gogurtproviderreference-from-mapping.md)
 
 ## Governing policies
 

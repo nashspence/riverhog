@@ -57,9 +57,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: CanonicalRelPath](schemas-canonicalrelpath.md)
-- [schemas: ProvenanceJournalId](schemas-provenancejournalid.md)
-- [schemas: ProvenanceStateId](schemas-provenancestateid.md)
+- [CanonicalRelPath](schemas-canonicalrelpath.md)
+- [ProvenanceJournalId](schemas-provenancejournalid.md)
+- [ProvenanceStateId](schemas-provenancestateid.md)
 
 ## Governing policies
 

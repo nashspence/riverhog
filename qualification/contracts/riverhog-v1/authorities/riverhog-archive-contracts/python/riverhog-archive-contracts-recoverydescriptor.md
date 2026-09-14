@@ -36,8 +36,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_archive_contracts.RecoveryDescriptor.to_json_bytes](riverhog-archive-contracts-recoverydescriptor-to-json-bytes.md)
-- [riverhog_archive_contracts.RecoveryDescriptor.from_json_bytes](riverhog-archive-contracts-recoverydescriptor-from-json-bytes.md)
+- [to_json_bytes](riverhog-archive-contracts-recoverydescriptor-to-json-bytes.md)
+- [from_json_bytes](riverhog-archive-contracts-recoverydescriptor-from-json-bytes.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_operator_contracts.EvaluationChildView](stove0-operator-contracts-evaluationchildview.md)
+- [EvaluationChildView](stove0-operator-contracts-evaluationchildview.md)
 
 ## Governing policies
 

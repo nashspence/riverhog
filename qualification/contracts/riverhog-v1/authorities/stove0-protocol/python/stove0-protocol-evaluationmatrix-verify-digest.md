@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.EvaluationMatrix](stove0-protocol-evaluationmatrix.md)
+- [EvaluationMatrix](stove0-protocol-evaluationmatrix.md)
 
 ## Governing policies
 

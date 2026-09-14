@@ -51,11 +51,11 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ### Referenced contract dossiers
 
-- [schemas: AppAccessListFiltersOut](schemas-appaccesslistfiltersout.md)
-- [schemas: AppAccessListItemOut](schemas-appaccesslistitemout.md)
-- [schemas: ApplicationAccessSort](schemas-applicationaccesssort.md)
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: SortOrder](schemas-sortorder.md)
+- [AppAccessListFiltersOut](schemas-appaccesslistfiltersout.md)
+- [AppAccessListItemOut](schemas-appaccesslistitemout.md)
+- [ApplicationAccessSort](schemas-applicationaccesssort.md)
+- [BrowsePageToken](schemas-browsepagetoken.md)
+- [SortOrder](schemas-sortorder.md)
 
 ## Governing policies
 

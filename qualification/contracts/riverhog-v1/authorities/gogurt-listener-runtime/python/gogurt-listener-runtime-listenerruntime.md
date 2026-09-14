@@ -28,9 +28,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_listener_runtime.ListenerRuntime.request_stop](gogurt-listener-runtime-listenerruntime-request-stop.md)
-- [gogurt_listener_runtime.ListenerRuntime.run_once](gogurt-listener-runtime-listenerruntime-run-once.md)
-- [gogurt_listener_runtime.ListenerRuntime.run](gogurt-listener-runtime-listenerruntime-run.md)
+- [request_stop](gogurt-listener-runtime-listenerruntime-request-stop.md)
+- [run_once](gogurt-listener-runtime-listenerruntime-run-once.md)
+- [run](gogurt-listener-runtime-listenerruntime-run.md)
 
 ## Governing policies
 

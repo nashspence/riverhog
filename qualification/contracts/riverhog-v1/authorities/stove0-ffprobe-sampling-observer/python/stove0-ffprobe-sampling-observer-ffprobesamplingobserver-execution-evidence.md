@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_ffprobe_sampling_observer.FfprobeSamplingObserver](stove0-ffprobe-sampling-observer-ffprobesamplingobserver.md)
+- [FfprobeSamplingObserver](stove0-ffprobe-sampling-observer-ffprobesamplingobserver.md)
 
 ## Governing policies
 

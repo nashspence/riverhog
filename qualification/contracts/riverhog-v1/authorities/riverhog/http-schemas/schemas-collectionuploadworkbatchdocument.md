@@ -42,8 +42,8 @@ Shared facts for every subject below: maximum=64; minimum=null; progression={"pr
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: CollectionUploadUnitAssignmentDocument](schemas-collectionuploadunitassignmentdocument.md)
+- [CollectionId](schemas-collectionid.md)
+- [CollectionUploadUnitAssignmentDocument](schemas-collectionuploadunitassignmentdocument.md)
 
 ## Governing policies
 

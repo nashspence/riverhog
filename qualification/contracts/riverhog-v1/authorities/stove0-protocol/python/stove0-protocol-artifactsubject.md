@@ -52,7 +52,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.ArtifactSubject.canonical_path](stove0-protocol-artifactsubject-canonical-path.md)
+- [canonical_path](stove0-protocol-artifactsubject-canonical-path.md)
 
 ## Governing policies
 

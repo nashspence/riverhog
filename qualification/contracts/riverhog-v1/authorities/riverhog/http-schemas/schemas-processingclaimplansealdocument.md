@@ -51,7 +51,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: OperationIdentityDocument](schemas-operationidentitydocument.md)
+- [OperationIdentityDocument](schemas-operationidentitydocument.md)
 
 ## Governing policies
 

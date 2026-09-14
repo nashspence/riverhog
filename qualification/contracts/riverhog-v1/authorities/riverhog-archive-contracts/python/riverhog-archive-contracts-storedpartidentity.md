@@ -39,8 +39,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_archive_contracts.StoredPartIdentity.to_mapping](riverhog-archive-contracts-storedpartidentity-to-mapping.md)
-- [riverhog_archive_contracts.StoredPartIdentity.from_mapping](riverhog-archive-contracts-storedpartidentity-from-mapping.md)
+- [to_mapping](riverhog-archive-contracts-storedpartidentity-to-mapping.md)
+- [from_mapping](riverhog-archive-contracts-storedpartidentity-from-mapping.md)
 
 ## Governing policies
 

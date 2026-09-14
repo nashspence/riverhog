@@ -50,11 +50,11 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ### Referenced contract dossiers
 
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: ProcessingClaimDocument](schemas-processingclaimdocument.md)
-- [schemas: ProcessingClaimFiltersDocument](schemas-processingclaimfiltersdocument.md)
-- [schemas: ProcessingClaimSort](schemas-processingclaimsort.md)
-- [schemas: SortOrder](schemas-sortorder.md)
+- [BrowsePageToken](schemas-browsepagetoken.md)
+- [ProcessingClaimDocument](schemas-processingclaimdocument.md)
+- [ProcessingClaimFiltersDocument](schemas-processingclaimfiltersdocument.md)
+- [ProcessingClaimSort](schemas-processingclaimsort.md)
+- [SortOrder](schemas-sortorder.md)
 
 ## Governing policies
 

@@ -47,7 +47,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.DeleteObjectRequest.validate_revision](riverhog-storage-adapter-protocol-deleteobjectrequest-validate-revision.md)
+- [validate_revision](riverhog-storage-adapter-protocol-deleteobjectrequest-validate-revision.md)
 
 ## Governing policies
 

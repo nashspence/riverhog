@@ -28,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_provenance.FileStateObserver.observe](riverhog-provenance-filestateobserver-observe.md)
+- [observe](riverhog-provenance-filestateobserver-observe.md)
 
 ## Governing policies
 

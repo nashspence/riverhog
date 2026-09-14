@@ -28,8 +28,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionTagNodeStore.get](riverhog-protocol-collectiontagnodestore-get.md)
-- [riverhog_protocol.CollectionTagNodeStore.put](riverhog-protocol-collectiontagnodestore-put.md)
+- [get](riverhog-protocol-collectiontagnodestore-get.md)
+- [put](riverhog-protocol-collectiontagnodestore-put.md)
 
 ## Governing policies
 

@@ -29,8 +29,8 @@ Complete routing evidence: immutable request plus accepted result.
 
 ### Referenced contract dossiers
 
-- [schemas: ObservationRequest](schemas-observationrequest.md)
-- [schemas: ObservationResult](schemas-observationresult.md)
+- [ObservationRequest](schemas-observationrequest.md)
+- [ObservationResult](schemas-observationresult.md)
 
 ## Governing policies
 

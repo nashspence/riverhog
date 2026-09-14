@@ -46,7 +46,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_media_sampling_observer_contracts.MediaSamplingFacts.canonical_artifacts](stove0-media-sampling-observer-contracts-mediasamplingfacts-canonical-artifacts.md)
+- [canonical_artifacts](stove0-media-sampling-observer-contracts-mediasamplingfacts-canonical-artifacts.md)
 
 ## Governing policies
 

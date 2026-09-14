@@ -40,12 +40,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.TransformIntent.as_dict](riverhog-protocol-transformintent-as-dict.md)
-- [riverhog_protocol.TransformIntent.from_mapping](riverhog-protocol-transformintent-from-mapping.md)
-- [riverhog_protocol.TransformIntent.identity_payload](riverhog-protocol-transformintent-identity-payload.md)
-- [riverhog_protocol.TransformIntent.identity_sha256](riverhog-protocol-transformintent-identity-sha256.md)
-- [riverhog_protocol.TransformIntent.seal](riverhog-protocol-transformintent-seal.md)
-- [riverhog_protocol.TransformIntent.to_json_bytes](riverhog-protocol-transformintent-to-json-bytes.md)
+- [as_dict](riverhog-protocol-transformintent-as-dict.md)
+- [from_mapping](riverhog-protocol-transformintent-from-mapping.md)
+- [identity_payload](riverhog-protocol-transformintent-identity-payload.md)
+- [identity_sha256](riverhog-protocol-transformintent-identity-sha256.md)
+- [seal](riverhog-protocol-transformintent-seal.md)
+- [to_json_bytes](riverhog-protocol-transformintent-to-json-bytes.md)
 
 ## Governing policies
 

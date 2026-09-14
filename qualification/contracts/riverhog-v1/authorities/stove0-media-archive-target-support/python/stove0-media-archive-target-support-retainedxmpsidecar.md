@@ -40,7 +40,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_media_archive_target_support.RetainedXmpSidecar.canonical_path](stove0-media-archive-target-support-retainedxmpsidecar-canonical-path.md)
+- [canonical_path](stove0-media-archive-target-support-retainedxmpsidecar-canonical-path.md)
 
 ## Governing policies
 

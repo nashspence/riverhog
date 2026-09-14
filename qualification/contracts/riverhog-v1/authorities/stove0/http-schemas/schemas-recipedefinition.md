@@ -49,11 +49,11 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: ArtifactAssociation](schemas-artifactassociation.md)
-- [schemas: ObserverUse](schemas-observeruse.md)
-- [schemas: RecipeCoordinationRoute](schemas-recipecoordinationroute.md)
-- [schemas: RecipeJoin](schemas-recipejoin.md)
-- [schemas: RecipeRoute](schemas-reciperoute.md)
+- [ArtifactAssociation](schemas-artifactassociation.md)
+- [ObserverUse](schemas-observeruse.md)
+- [RecipeCoordinationRoute](schemas-recipecoordinationroute.md)
+- [RecipeJoin](schemas-recipejoin.md)
+- [RecipeRoute](schemas-reciperoute.md)
 
 ## Governing policies
 

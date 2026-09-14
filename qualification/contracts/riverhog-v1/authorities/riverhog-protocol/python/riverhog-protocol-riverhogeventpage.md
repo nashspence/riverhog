@@ -80,7 +80,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.RiverhogEventPage.require_progress_after](riverhog-protocol-riverhogeventpage-require-progress-after.md)
+- [require_progress_after](riverhog-protocol-riverhogeventpage-require-progress-after.md)
 
 ## Governing policies
 

@@ -28,12 +28,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_linux_listener_host.SystemdUserAdapter.process_is_running](gogurt-linux-listener-host-systemduseradapter-process-is-running.md)
-- [gogurt_linux_listener_host.SystemdUserAdapter.unregister](gogurt-linux-listener-host-systemduseradapter-unregister.md)
-- [gogurt_linux_listener_host.SystemdUserAdapter.register](gogurt-linux-listener-host-systemduseradapter-register.md)
-- [gogurt_linux_listener_host.SystemdUserAdapter.start](gogurt-linux-listener-host-systemduseradapter-start.md)
-- [gogurt_linux_listener_host.SystemdUserAdapter.status](gogurt-linux-listener-host-systemduseradapter-status.md)
-- [gogurt_linux_listener_host.SystemdUserAdapter.stop](gogurt-linux-listener-host-systemduseradapter-stop.md)
+- [process_is_running](gogurt-linux-listener-host-systemduseradapter-process-is-running.md)
+- [unregister](gogurt-linux-listener-host-systemduseradapter-unregister.md)
+- [register](gogurt-linux-listener-host-systemduseradapter-register.md)
+- [start](gogurt-linux-listener-host-systemduseradapter-start.md)
+- [status](gogurt-linux-listener-host-systemduseradapter-status.md)
+- [stop](gogurt-linux-listener-host-systemduseradapter-stop.md)
 
 ## Governing policies
 

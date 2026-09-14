@@ -28,10 +28,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.transform.IncrementalDerivedCollectionWriter.heartbeat](riverhog-client-transform-incrementalderivedcollectionwriter-heartbeat.md)
-- [riverhog_client.transform.IncrementalDerivedCollectionWriter.finish](riverhog-client-transform-incrementalderivedcollectionwriter-finish.md)
-- [riverhog_client.transform.IncrementalDerivedCollectionWriter.append](riverhog-client-transform-incrementalderivedcollectionwriter-append.md)
-- [riverhog_client.transform.IncrementalDerivedCollectionWriter.stop](riverhog-client-transform-incrementalderivedcollectionwriter-stop.md)
+- [heartbeat](riverhog-client-transform-incrementalderivedcollectionwriter-heartbeat.md)
+- [finish](riverhog-client-transform-incrementalderivedcollectionwriter-finish.md)
+- [append](riverhog-client-transform-incrementalderivedcollectionwriter-append.md)
+- [stop](riverhog-client-transform-incrementalderivedcollectionwriter-stop.md)
 
 ## Governing policies
 

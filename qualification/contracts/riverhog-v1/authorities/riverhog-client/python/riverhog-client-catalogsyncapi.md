@@ -28,10 +28,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.CatalogSyncApi.create_catalog_sync_checkpoint](riverhog-client-catalogsyncapi-create-catalog-sync-checkpoint.md)
-- [riverhog_client.CatalogSyncApi.list_catalog_sync_collections](riverhog-client-catalogsyncapi-list-catalog-sync-collections.md)
-- [riverhog_client.CatalogSyncApi.list_catalog_sync_changes](riverhog-client-catalogsyncapi-list-catalog-sync-changes.md)
-- [riverhog_client.CatalogSyncApi.list_collection_tags](riverhog-client-catalogsyncapi-list-collection-tags.md)
+- [create_catalog_sync_checkpoint](riverhog-client-catalogsyncapi-create-catalog-sync-checkpoint.md)
+- [list_catalog_sync_collections](riverhog-client-catalogsyncapi-list-catalog-sync-collections.md)
+- [list_catalog_sync_changes](riverhog-client-catalogsyncapi-list-catalog-sync-changes.md)
+- [list_collection_tags](riverhog-client-catalogsyncapi-list-collection-tags.md)
 
 ## Governing policies
 

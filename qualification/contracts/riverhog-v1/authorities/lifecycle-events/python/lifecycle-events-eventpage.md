@@ -47,7 +47,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [lifecycle_events.EventPage.require_progress_after](lifecycle-events-eventpage-require-progress-after.md)
+- [require_progress_after](lifecycle-events-eventpage-require-progress-after.md)
 
 ## Governing policies
 

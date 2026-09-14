@@ -44,7 +44,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_target_support.SamplerConfig.absolute_token_file](stove0-review-target-support-samplerconfig-absolute-token-file.md)
+- [absolute_token_file](stove0-review-target-support-samplerconfig-absolute-token-file.md)
 
 ## Governing policies
 

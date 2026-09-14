@@ -34,7 +34,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: JoinAdmittedEventData](schemas-joinadmittedeventdata.md)
+- [JoinAdmittedEventData](schemas-joinadmittedeventdata.md)
 
 ## Governing policies
 

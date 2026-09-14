@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.JoinWorkBinding](stove0-protocol-joinworkbinding.md)
+- [JoinWorkBinding](stove0-protocol-joinworkbinding.md)
 
 ## Governing policies
 

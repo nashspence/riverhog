@@ -40,8 +40,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.OperationRef.from_identity](stove0-protocol-operationref-from-identity.md)
-- [stove0_protocol.OperationRef.to_identity](stove0-protocol-operationref-to-identity.md)
+- [from_identity](stove0-protocol-operationref-from-identity.md)
+- [to_identity](stove0-protocol-operationref-to-identity.md)
 
 ## Governing policies
 

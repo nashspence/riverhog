@@ -45,7 +45,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.AdapterDescriptor.validate_segment_limits](riverhog-storage-adapter-protocol-adapterdescriptor-validate-segment-limits.md)
+- [validate_segment_limits](riverhog-storage-adapter-protocol-adapterdescriptor-validate-segment-limits.md)
 
 ## Governing policies
 

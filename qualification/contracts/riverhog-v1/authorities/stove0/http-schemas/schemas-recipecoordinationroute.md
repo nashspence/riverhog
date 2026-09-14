@@ -50,11 +50,11 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: ArtifactRule](schemas-artifactrule.md)
-- [schemas: FactPredicate](schemas-factpredicate.md)
-- [schemas: JsonValue](schemas-jsonvalue.md)
-- [schemas: OperationProjection](schemas-operationprojection.md)
-- [schemas: RecipeRef](schemas-reciperef.md)
+- [ArtifactRule](schemas-artifactrule.md)
+- [FactPredicate](schemas-factpredicate.md)
+- [JsonValue](schemas-jsonvalue.md)
+- [OperationProjection](schemas-operationprojection.md)
+- [RecipeRef](schemas-reciperef.md)
 
 ## Governing policies
 

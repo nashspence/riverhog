@@ -6,4 +6,4 @@ The HTTP service format and identity declaration; this is not a callable operati
 
 ## Semantic dossiers
 
-- [riverhog HTTP service](riverhog-http-service.md)
+- [Service declaration](riverhog-http-service.md)

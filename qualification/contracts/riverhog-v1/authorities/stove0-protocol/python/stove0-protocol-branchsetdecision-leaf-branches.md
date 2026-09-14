@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.BranchSetDecision](stove0-protocol-branchsetdecision.md)
+- [BranchSetDecision](stove0-protocol-branchsetdecision.md)
 
 ## Governing policies
 

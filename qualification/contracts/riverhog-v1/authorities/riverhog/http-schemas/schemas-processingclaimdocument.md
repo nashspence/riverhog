@@ -74,12 +74,12 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: OutcomeSetDocument](schemas-outcomesetdocument.md)
-- [schemas: ProcessingClaimConsumerDocument](schemas-processingclaimconsumerdocument.md)
-- [schemas: ProcessingClaimOutcomeSettlementDocument](schemas-processingclaimoutcomesettlementdocument.md)
-- [schemas: ProcessingClaimPlanDocument](schemas-processingclaimplandocument.md)
-- [schemas: ReceivingSetDocument](schemas-receivingsetdocument.md)
+- [CollectionId](schemas-collectionid.md)
+- [OutcomeSetDocument](schemas-outcomesetdocument.md)
+- [ProcessingClaimConsumerDocument](schemas-processingclaimconsumerdocument.md)
+- [ProcessingClaimOutcomeSettlementDocument](schemas-processingclaimoutcomesettlementdocument.md)
+- [ProcessingClaimPlanDocument](schemas-processingclaimplandocument.md)
+- [ReceivingSetDocument](schemas-receivingsetdocument.md)
 
 ## Governing policies
 

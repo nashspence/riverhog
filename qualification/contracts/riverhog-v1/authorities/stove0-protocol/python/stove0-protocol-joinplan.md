@@ -75,9 +75,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.JoinPlan.canonical_inputs](stove0-protocol-joinplan-canonical-inputs.md)
-- [stove0_protocol.JoinPlan.seal](stove0-protocol-joinplan-seal.md)
-- [stove0_protocol.JoinPlan.verify_contract](stove0-protocol-joinplan-verify-contract.md)
+- [canonical_inputs](stove0-protocol-joinplan-canonical-inputs.md)
+- [seal](stove0-protocol-joinplan-seal.md)
+- [verify_contract](stove0-protocol-joinplan-verify-contract.md)
 
 ## Governing policies
 

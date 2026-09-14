@@ -37,7 +37,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: ValidationError](schemas-validationerror.md)
+- [ValidationError](schemas-validationerror.md)
 
 ## Governing policies
 

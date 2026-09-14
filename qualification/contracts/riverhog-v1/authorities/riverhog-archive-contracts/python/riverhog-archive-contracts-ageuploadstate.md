@@ -37,8 +37,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_archive_contracts.AgeUploadState.from_mapping](riverhog-archive-contracts-ageuploadstate-from-mapping.md)
-- [riverhog_archive_contracts.AgeUploadState.to_mapping](riverhog-archive-contracts-ageuploadstate-to-mapping.md)
+- [from_mapping](riverhog-archive-contracts-ageuploadstate-from-mapping.md)
+- [to_mapping](riverhog-archive-contracts-ageuploadstate-to-mapping.md)
 
 ## Governing policies
 

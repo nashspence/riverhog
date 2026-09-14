@@ -27,7 +27,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: ArchiveCopyState](schemas-archivecopystate.md)
+- [ArchiveCopyState](schemas-archivecopystate.md)
 
 ## Governing policies
 

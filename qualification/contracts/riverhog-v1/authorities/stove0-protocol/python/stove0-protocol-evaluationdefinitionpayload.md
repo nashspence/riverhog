@@ -55,8 +55,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.EvaluationDefinitionPayload.canonical_inputs](stove0-protocol-evaluationdefinitionpayload-canonical-inputs.md)
-- [stove0_protocol.EvaluationDefinitionPayload.validate_purpose](stove0-protocol-evaluationdefinitionpayload-validate-purpose.md)
+- [canonical_inputs](stove0-protocol-evaluationdefinitionpayload-canonical-inputs.md)
+- [validate_purpose](stove0-protocol-evaluationdefinitionpayload-validate-purpose.md)
 
 ## Governing policies
 

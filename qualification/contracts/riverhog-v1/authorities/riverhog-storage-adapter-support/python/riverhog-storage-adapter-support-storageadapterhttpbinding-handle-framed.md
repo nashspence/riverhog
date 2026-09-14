@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_support.StorageAdapterHttpBinding](riverhog-storage-adapter-support-storageadapterhttpbinding.md)
+- [StorageAdapterHttpBinding](riverhog-storage-adapter-support-storageadapterhttpbinding.md)
 
 ## Governing policies
 

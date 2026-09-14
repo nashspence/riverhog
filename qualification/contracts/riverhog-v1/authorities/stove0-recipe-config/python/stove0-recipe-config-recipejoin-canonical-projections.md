@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_recipe_config.RecipeJoin](stove0-recipe-config-recipejoin.md)
+- [RecipeJoin](stove0-recipe-config-recipejoin.md)
 
 ## Governing policies
 

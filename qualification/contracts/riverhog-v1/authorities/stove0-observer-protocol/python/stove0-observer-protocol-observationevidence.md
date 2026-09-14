@@ -55,7 +55,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_protocol.ObservationEvidence.bind_result](stove0-observer-protocol-observationevidence-bind-result.md)
+- [bind_result](stove0-observer-protocol-observationevidence-bind-result.md)
 
 ## Governing policies
 

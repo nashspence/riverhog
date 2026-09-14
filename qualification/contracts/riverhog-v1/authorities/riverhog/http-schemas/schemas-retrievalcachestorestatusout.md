@@ -32,7 +32,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: RetrievalCacheStoreName](schemas-retrievalcachestorename.md)
+- [RetrievalCacheStoreName](schemas-retrievalcachestorename.md)
 
 ## Governing policies
 

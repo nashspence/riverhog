@@ -28,8 +28,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_aws.AwsCloudFrontObjectReader.close](riverhog-storage-adapter-aws-awscloudfrontobjectreader-close.md)
-- [riverhog_storage_adapter_aws.AwsCloudFrontObjectReader.read_object](riverhog-storage-adapter-aws-awscloudfrontobjectreader-read-object.md)
+- [close](riverhog-storage-adapter-aws-awscloudfrontobjectreader-close.md)
+- [read_object](riverhog-storage-adapter-aws-awscloudfrontobjectreader-read-object.md)
 
 ## Governing policies
 

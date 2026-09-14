@@ -28,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_sampler_support.SamplerHttpBinding.handle](stove0-review-sampler-support-samplerhttpbinding-handle.md)
+- [handle](stove0-review-sampler-support-samplerhttpbinding-handle.md)
 
 ## Governing policies
 

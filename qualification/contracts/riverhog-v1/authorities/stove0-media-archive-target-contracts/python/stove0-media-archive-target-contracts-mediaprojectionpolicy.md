@@ -52,10 +52,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_media_archive_target_contracts.MediaProjectionPolicy.canonical_preferences](stove0-media-archive-target-contracts-mediaprojectionpolicy-canonical-preferences.md)
-- [stove0_media_archive_target_contracts.MediaProjectionPolicy.canonical_creators](stove0-media-archive-target-contracts-mediaprojectionpolicy-canonical-creators.md)
-- [stove0_media_archive_target_contracts.MediaProjectionPolicy.canonical_tags](stove0-media-archive-target-contracts-mediaprojectionpolicy-canonical-tags.md)
-- [stove0_media_archive_target_contracts.MediaProjectionPolicy.canonical_optional_text](stove0-media-archive-target-contracts-mediaprojectionpolicy-canonical-optional-text.md)
+- [canonical_preferences](stove0-media-archive-target-contracts-mediaprojectionpolicy-canonical-preferences.md)
+- [canonical_creators](stove0-media-archive-target-contracts-mediaprojectionpolicy-canonical-creators.md)
+- [canonical_tags](stove0-media-archive-target-contracts-mediaprojectionpolicy-canonical-tags.md)
+- [canonical_optional_text](stove0-media-archive-target-contracts-mediaprojectionpolicy-canonical-optional-text.md)
 
 ## Governing policies
 

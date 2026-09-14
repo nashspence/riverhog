@@ -58,7 +58,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_protocol.ObservationRequestPayload.canonical_subjects](stove0-observer-protocol-observationrequestpayload-canonical-subjects.md)
+- [canonical_subjects](stove0-observer-protocol-observationrequestpayload-canonical-subjects.md)
 
 ## Governing policies
 

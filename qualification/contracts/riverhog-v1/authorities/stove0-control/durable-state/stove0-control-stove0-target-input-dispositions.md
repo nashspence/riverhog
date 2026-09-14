@@ -40,7 +40,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0-control durable-state identity](stove0-control-durable-state-identity.md)
+- [Schema identity](stove0-control-durable-state-identity.md)
 
 ## Governing policies
 

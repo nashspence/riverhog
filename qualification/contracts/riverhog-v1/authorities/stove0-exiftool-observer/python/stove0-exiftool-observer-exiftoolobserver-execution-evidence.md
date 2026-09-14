@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_exiftool_observer.ExiftoolObserver](stove0-exiftool-observer-exiftoolobserver.md)
+- [ExiftoolObserver](stove0-exiftool-observer-exiftoolobserver.md)
 
 ## Governing policies
 

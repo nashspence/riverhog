@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.ExternalEffectReceiptPayload](stove0-target-protocol-externaleffectreceiptpayload.md)
+- [ExternalEffectReceiptPayload](stove0-target-protocol-externaleffectreceiptpayload.md)
 
 ## Governing policies
 

@@ -109,7 +109,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_operator_contracts.WorkPage.from_page](stove0-operator-contracts-workpage-from-page.md)
+- [from_page](stove0-operator-contracts-workpage-from-page.md)
 
 ## Governing policies
 

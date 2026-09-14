@@ -40,7 +40,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.ObjectLocator.canonical_path](riverhog-storage-adapter-protocol-objectlocator-canonical-path.md)
+- [canonical_path](riverhog-storage-adapter-protocol-objectlocator-canonical-path.md)
 
 ## Governing policies
 

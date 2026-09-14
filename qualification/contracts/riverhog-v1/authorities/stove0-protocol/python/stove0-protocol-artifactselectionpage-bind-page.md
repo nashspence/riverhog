@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.ArtifactSelectionPage](stove0-protocol-artifactselectionpage.md)
+- [ArtifactSelectionPage](stove0-protocol-artifactselectionpage.md)
 
 ## Governing policies
 

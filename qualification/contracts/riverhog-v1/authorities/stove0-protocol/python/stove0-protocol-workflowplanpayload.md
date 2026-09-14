@@ -73,8 +73,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.WorkflowPlanPayload.canonical_observations](stove0-protocol-workflowplanpayload-canonical-observations.md)
-- [stove0_protocol.WorkflowPlanPayload.protect_evaluation_sources](stove0-protocol-workflowplanpayload-protect-evaluation-sources.md)
+- [canonical_observations](stove0-protocol-workflowplanpayload-canonical-observations.md)
+- [protect_evaluation_sources](stove0-protocol-workflowplanpayload-protect-evaluation-sources.md)
 
 ## Governing policies
 

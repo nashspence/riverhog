@@ -52,8 +52,8 @@ Shared facts for every subject below: maximum=100; progression={"cursor_paramete
 
 ### Referenced contract dossiers
 
-- [schemas: CatalogSyncDelete](schemas-catalogsyncdelete.md)
-- [schemas: CatalogSyncUpsert](schemas-catalogsyncupsert.md)
+- [CatalogSyncDelete](schemas-catalogsyncdelete.md)
+- [CatalogSyncUpsert](schemas-catalogsyncupsert.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.RecipePlanner](stove0-core-recipeplanner.md)
+- [RecipePlanner](stove0-core-recipeplanner.md)
 
 ## Governing policies
 

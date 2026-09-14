@@ -29,9 +29,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: AdmissionRun](schemas-admissionrun.md)
-- [schemas: SchedulerPruning](schemas-schedulerpruning.md)
-- [schemas: SchedulerWorkBatch](schemas-schedulerworkbatch.md)
+- [AdmissionRun](schemas-admissionrun.md)
+- [SchedulerPruning](schemas-schedulerpruning.md)
+- [SchedulerWorkBatch](schemas-schedulerworkbatch.md)
 
 ## Governing policies
 

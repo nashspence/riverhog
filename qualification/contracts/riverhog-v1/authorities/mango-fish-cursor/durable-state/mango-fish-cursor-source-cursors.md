@@ -33,7 +33,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [mango-fish-cursor durable-state identity](mango-fish-cursor-durable-state-identity.md)
+- [Schema identity](mango-fish-cursor-durable-state-identity.md)
 
 ## Governing policies
 

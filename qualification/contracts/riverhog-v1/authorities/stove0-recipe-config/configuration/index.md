@@ -6,4 +6,4 @@ Configuration Documents contract owned by stove0-recipe-config.
 
 ## Semantic dossiers
 
-- [stove0-recipe-config:configuration:recipe-catalog configuration](stove0-recipe-config-configuration-recipe-catalog-configuration.md)
+- [recipe-catalog](stove0-recipe-config-configuration-recipe-catalog-configuration.md)

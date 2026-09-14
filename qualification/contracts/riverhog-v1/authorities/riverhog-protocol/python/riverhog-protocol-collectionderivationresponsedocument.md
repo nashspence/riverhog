@@ -52,7 +52,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionDerivationResponseDocument.validate_identity](riverhog-protocol-collectionderivationresponsedocument-validate-identity.md)
+- [validate_identity](riverhog-protocol-collectionderivationresponsedocument-validate-identity.md)
 
 ## Governing policies
 

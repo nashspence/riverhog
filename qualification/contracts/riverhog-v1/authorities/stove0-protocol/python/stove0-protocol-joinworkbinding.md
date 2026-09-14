@@ -48,7 +48,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.JoinWorkBinding.canonical_members](stove0-protocol-joinworkbinding-canonical-members.md)
+- [canonical_members](stove0-protocol-joinworkbinding-canonical-members.md)
 
 ## Governing policies
 

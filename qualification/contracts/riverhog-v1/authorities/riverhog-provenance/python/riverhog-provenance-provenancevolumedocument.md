@@ -44,10 +44,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_provenance.ProvenanceVolumeDocument.from_json_bytes](riverhog-provenance-provenancevolumedocument-from-json-bytes.md)
-- [riverhog_provenance.ProvenanceVolumeDocument.metadata_path](riverhog-provenance-provenancevolumedocument-metadata-path.md)
-- [riverhog_provenance.ProvenanceVolumeDocument.to_json_bytes](riverhog-provenance-provenancevolumedocument-to-json-bytes.md)
-- [riverhog_provenance.ProvenanceVolumeDocument.to_mapping](riverhog-provenance-provenancevolumedocument-to-mapping.md)
+- [from_json_bytes](riverhog-provenance-provenancevolumedocument-from-json-bytes.md)
+- [metadata_path](riverhog-provenance-provenancevolumedocument-metadata-path.md)
+- [to_json_bytes](riverhog-provenance-provenancevolumedocument-to-json-bytes.md)
+- [to_mapping](riverhog-provenance-provenancevolumedocument-to-mapping.md)
 
 ## Governing policies
 

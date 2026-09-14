@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.transform.DerivedCollectionReceipt](riverhog-client-transform-derivedcollectionreceipt.md)
+- [DerivedCollectionReceipt](riverhog-client-transform-derivedcollectionreceipt.md)
 
 ## Governing policies
 

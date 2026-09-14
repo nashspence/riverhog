@@ -27,7 +27,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionDescription](schemas-collectiondescription.md)
+- [CollectionDescription](schemas-collectiondescription.md)
 
 ## Governing policies
 

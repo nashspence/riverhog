@@ -28,8 +28,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.PortableCollectionIdentityBuilder.add](riverhog-protocol-portablecollectionidentitybuilder-add.md)
-- [riverhog_protocol.PortableCollectionIdentityBuilder.identity](riverhog-protocol-portablecollectionidentitybuilder-identity.md)
+- [add](riverhog-protocol-portablecollectionidentitybuilder-add.md)
+- [identity](riverhog-protocol-portablecollectionidentitybuilder-identity.md)
 
 ## Governing policies
 

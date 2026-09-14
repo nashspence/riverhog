@@ -6,4 +6,4 @@ Configuration Documents contract owned by gogurt-core.
 
 ## Semantic dossiers
 
-- [gogurt-core:configuration:gogurt-routes-schema configuration](gogurt-core-configuration-gogurt-routes-schema-configuration.md)
+- [gogurt-routes-schema](gogurt-core-configuration-gogurt-routes-schema-configuration.md)

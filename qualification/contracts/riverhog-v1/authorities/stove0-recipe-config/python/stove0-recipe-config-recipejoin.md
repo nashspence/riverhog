@@ -54,7 +54,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_recipe_config.RecipeJoin.canonical_projections](stove0-recipe-config-recipejoin-canonical-projections.md)
+- [canonical_projections](stove0-recipe-config-recipejoin-canonical-projections.md)
 
 ## Governing policies
 

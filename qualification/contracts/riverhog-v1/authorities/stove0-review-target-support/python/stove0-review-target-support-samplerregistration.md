@@ -37,7 +37,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_target_support.SamplerRegistration.descriptor](stove0-review-target-support-samplerregistration-descriptor.md)
+- [descriptor](stove0-review-target-support-samplerregistration-descriptor.md)
 
 ## Governing policies
 

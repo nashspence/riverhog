@@ -48,7 +48,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: AdmissionIntent](schemas-admissionintent.md)
+- [AdmissionIntent](schemas-admissionintent.md)
 
 ## Governing policies
 

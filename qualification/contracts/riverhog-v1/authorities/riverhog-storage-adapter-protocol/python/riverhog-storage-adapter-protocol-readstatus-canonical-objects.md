@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.ReadStatus](riverhog-storage-adapter-protocol-readstatus.md)
+- [ReadStatus](riverhog-storage-adapter-protocol-readstatus.md)
 
 ## Governing policies
 

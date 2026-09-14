@@ -42,8 +42,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionUploadRawDigestProgressDocument.canonical_path](riverhog-protocol-collectionuploadrawdigestprogressdocument-canonical-path.md)
-- [riverhog_protocol.CollectionUploadRawDigestProgressDocument.validate_completion](riverhog-protocol-collectionuploadrawdigestprogressdocument-validate-completion.md)
+- [canonical_path](riverhog-protocol-collectionuploadrawdigestprogressdocument-canonical-path.md)
+- [validate_completion](riverhog-protocol-collectionuploadrawdigestprogressdocument-validate-completion.md)
 
 ## Governing policies
 

@@ -28,8 +28,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_sampler_support.ReviewSampler.descriptor](stove0-review-sampler-support-reviewsampler-descriptor.md)
-- [stove0_review_sampler_support.ReviewSampler.sample](stove0-review-sampler-support-reviewsampler-sample.md)
+- [descriptor](stove0-review-sampler-support-reviewsampler-descriptor.md)
+- [sample](stove0-review-sampler-support-reviewsampler-sample.md)
 
 ## Governing policies
 

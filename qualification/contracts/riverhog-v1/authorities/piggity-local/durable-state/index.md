@@ -6,10 +6,12 @@ Persisted structures, schema heads, and v1 transition obligations.
 
 ## Semantic dossiers
 
-- [piggity-local durable-state identity](piggity-local-durable-state-identity.md)
-- [piggity-local: desired_collection_tags](piggity-local-desired-collection-tags.md)
-- [piggity-local: desired_collections](piggity-local-desired-collections.md)
-- [piggity-local: desired_files](piggity-local-desired-files.md)
-- [piggity-local: retrieval_job_files](piggity-local-retrieval-job-files.md)
-- [piggity-local: retrieval_jobs](piggity-local-retrieval-jobs.md)
-- [piggity-local: settings](piggity-local-settings.md)
+| Exact unit | Kind |
+|---|---|
+| [Schema identity](piggity-local-durable-state-identity.md) | Schema identity |
+| [desired_collection_tags](piggity-local-desired-collection-tags.md) | Relational table |
+| [desired_collections](piggity-local-desired-collections.md) | Relational table |
+| [desired_files](piggity-local-desired-files.md) | Relational table |
+| [retrieval_job_files](piggity-local-retrieval-job-files.md) | Relational table |
+| [retrieval_jobs](piggity-local-retrieval-jobs.md) | Relational table |
+| [settings](piggity-local-settings.md) | Relational table |

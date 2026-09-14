@@ -49,7 +49,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.ReadStatus.canonical_objects](riverhog-storage-adapter-protocol-readstatus-canonical-objects.md)
+- [canonical_objects](riverhog-storage-adapter-protocol-readstatus-canonical-objects.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.transform.CapabilityApiClient](riverhog-client-transform-capabilityapiclient.md)
+- [CapabilityApiClient](riverhog-client-transform-capabilityapiclient.md)
 
 ## Governing policies
 

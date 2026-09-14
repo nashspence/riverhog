@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [lifecycle_events.SQLiteLifecycleEventLog](lifecycle-events-sqlitelifecycleeventlog.md)
+- [SQLiteLifecycleEventLog](lifecycle-events-sqlitelifecycleeventlog.md)
 
 ## Governing policies
 

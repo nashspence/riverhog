@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_target_support.ReviewTargetServiceBase](stove0-review-target-support-reviewtargetservicebase.md)
+- [ReviewTargetServiceBase](stove0-review-target-support-reviewtargetservicebase.md)
 
 ## Governing policies
 

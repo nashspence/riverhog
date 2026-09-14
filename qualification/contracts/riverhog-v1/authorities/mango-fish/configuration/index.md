@@ -6,4 +6,4 @@ Configuration Documents contract owned by mango-fish.
 
 ## Semantic dossiers
 
-- [mango-fish:configuration:mango-fish-config configuration](mango-fish-configuration-mango-fish-config-configuration.md)
+- [mango-fish-config](mango-fish-configuration-mango-fish-config-configuration.md)

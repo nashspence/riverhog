@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_protocol.SemanticValidationProfile](stove0-observer-protocol-semanticvalidationprofile.md)
+- [SemanticValidationProfile](stove0-observer-protocol-semanticvalidationprofile.md)
 
 ## Governing policies
 

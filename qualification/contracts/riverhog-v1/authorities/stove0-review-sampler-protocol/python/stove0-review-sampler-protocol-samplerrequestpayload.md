@@ -55,10 +55,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_sampler_protocol.SamplerRequestPayload.canonical_cancellation_path](stove0-review-sampler-protocol-samplerrequestpayload-canonical-cancellation-path.md)
-- [stove0_review_sampler_protocol.SamplerRequestPayload.references_exact_inputs](stove0-review-sampler-protocol-samplerrequestpayload-references-exact-inputs.md)
-- [stove0_review_sampler_protocol.SamplerRequestPayload.canonical_inputs](stove0-review-sampler-protocol-samplerrequestpayload-canonical-inputs.md)
-- [stove0_review_sampler_protocol.SamplerRequestPayload.canonical_windows](stove0-review-sampler-protocol-samplerrequestpayload-canonical-windows.md)
+- [canonical_cancellation_path](stove0-review-sampler-protocol-samplerrequestpayload-canonical-cancellation-path.md)
+- [references_exact_inputs](stove0-review-sampler-protocol-samplerrequestpayload-references-exact-inputs.md)
+- [canonical_inputs](stove0-review-sampler-protocol-samplerrequestpayload-canonical-inputs.md)
+- [canonical_windows](stove0-review-sampler-protocol-samplerrequestpayload-canonical-windows.md)
 
 ## Governing policies
 

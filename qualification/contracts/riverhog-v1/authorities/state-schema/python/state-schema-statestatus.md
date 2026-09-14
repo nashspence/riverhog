@@ -37,7 +37,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [state_schema.StateStatus.as_dict](state-schema-statestatus-as-dict.md)
+- [as_dict](state-schema-statestatus-as-dict.md)
 
 ## Governing policies
 

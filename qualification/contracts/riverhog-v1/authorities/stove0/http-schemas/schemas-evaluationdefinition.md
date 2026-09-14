@@ -52,10 +52,10 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionRootRef](schemas-collectionrootref.md)
-- [schemas: EvaluationMatrix](schemas-evaluationmatrix.md)
-- [schemas: JsonValue](schemas-jsonvalue.md)
-- [schemas: RecipeRef](schemas-reciperef.md)
+- [CollectionRootRef](schemas-collectionrootref.md)
+- [EvaluationMatrix](schemas-evaluationmatrix.md)
+- [JsonValue](schemas-jsonvalue.md)
+- [RecipeRef](schemas-reciperef.md)
 
 ## Governing policies
 

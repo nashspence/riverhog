@@ -51,11 +51,11 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ### Referenced contract dossiers
 
-- [schemas: ArchiveCopyJobListFiltersOut](schemas-archivecopyjoblistfiltersout.md)
-- [schemas: ArchiveCopyJobOut](schemas-archivecopyjobout.md)
-- [schemas: ArchiveCopySort](schemas-archivecopysort.md)
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: SortOrder](schemas-sortorder.md)
+- [ArchiveCopyJobListFiltersOut](schemas-archivecopyjoblistfiltersout.md)
+- [ArchiveCopyJobOut](schemas-archivecopyjobout.md)
+- [ArchiveCopySort](schemas-archivecopysort.md)
+- [BrowsePageToken](schemas-browsepagetoken.md)
+- [SortOrder](schemas-sortorder.md)
 
 ## Governing policies
 

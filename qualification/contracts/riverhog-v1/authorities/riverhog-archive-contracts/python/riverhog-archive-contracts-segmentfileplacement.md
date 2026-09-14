@@ -38,8 +38,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_archive_contracts.SegmentFilePlacement.to_mapping](riverhog-archive-contracts-segmentfileplacement-to-mapping.md)
-- [riverhog_archive_contracts.SegmentFilePlacement.from_mapping](riverhog-archive-contracts-segmentfileplacement-from-mapping.md)
+- [to_mapping](riverhog-archive-contracts-segmentfileplacement-to-mapping.md)
+- [from_mapping](riverhog-archive-contracts-segmentfileplacement-from-mapping.md)
 
 ## Governing policies
 

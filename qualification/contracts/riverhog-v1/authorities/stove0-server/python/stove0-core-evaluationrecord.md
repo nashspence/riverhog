@@ -59,8 +59,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.EvaluationRecord.evaluation_id](stove0-core-evaluationrecord-evaluation-id.md)
-- [stove0_core.EvaluationRecord.validate_children](stove0-core-evaluationrecord-validate-children.md)
+- [evaluation_id](stove0-core-evaluationrecord-evaluation-id.md)
+- [validate_children](stove0-core-evaluationrecord-validate-children.md)
 
 ## Governing policies
 

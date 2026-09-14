@@ -36,7 +36,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_protocol.SemanticValidatorBinding.from_profile](stove0-observer-protocol-semanticvalidatorbinding-from-profile.md)
+- [from_profile](stove0-observer-protocol-semanticvalidatorbinding-from-profile.md)
 
 ## Governing policies
 

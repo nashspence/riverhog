@@ -28,10 +28,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_sampler_support.SamplerWorkspace.resolve](stove0-review-sampler-support-samplerworkspace-resolve.md)
-- [stove0_review_sampler_support.SamplerWorkspace.canceled](stove0-review-sampler-support-samplerworkspace-canceled.md)
-- [stove0_review_sampler_support.SamplerWorkspace.verify_input](stove0-review-sampler-support-samplerworkspace-verify-input.md)
-- [stove0_review_sampler_support.SamplerWorkspace.output](stove0-review-sampler-support-samplerworkspace-output.md)
+- [resolve](stove0-review-sampler-support-samplerworkspace-resolve.md)
+- [canceled](stove0-review-sampler-support-samplerworkspace-canceled.md)
+- [verify_input](stove0-review-sampler-support-samplerworkspace-verify-input.md)
+- [output](stove0-review-sampler-support-samplerworkspace-output.md)
 
 ## Governing policies
 

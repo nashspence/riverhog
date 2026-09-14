@@ -51,8 +51,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.WriteSegmentPage.canonical_segments](riverhog-storage-adapter-protocol-writesegmentpage-canonical-segments.md)
-- [riverhog_storage_adapter_protocol.WriteSegmentPage.validate_terminal](riverhog-storage-adapter-protocol-writesegmentpage-validate-terminal.md)
+- [canonical_segments](riverhog-storage-adapter-protocol-writesegmentpage-canonical-segments.md)
+- [validate_terminal](riverhog-storage-adapter-protocol-writesegmentpage-validate-terminal.md)
 
 ## Governing policies
 

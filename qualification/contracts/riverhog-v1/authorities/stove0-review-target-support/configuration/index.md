@@ -6,4 +6,4 @@ Configuration Documents contract owned by stove0-review-target-support.
 
 ## Semantic dossiers
 
-- [stove0-review-target-support:configuration:review-target-config configuration](stove0-review-target-support-configuration-review-target-config-configuration.md)
+- [review-target-config](stove0-review-target-support-configuration-review-target-config-configuration.md)

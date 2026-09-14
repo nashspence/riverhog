@@ -28,11 +28,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.PlanningPort.observation_requests](stove0-core-planningport-observation-requests.md)
-- [stove0_core.PlanningPort.operation_contract](stove0-core-planningport-operation-contract.md)
-- [stove0_core.PlanningPort.target_input_selection](stove0-core-planningport-target-input-selection.md)
-- [stove0_core.PlanningPort.target_preflight_request](stove0-core-planningport-target-preflight-request.md)
-- [stove0_core.PlanningPort.workflow_plan](stove0-core-planningport-workflow-plan.md)
+- [observation_requests](stove0-core-planningport-observation-requests.md)
+- [operation_contract](stove0-core-planningport-operation-contract.md)
+- [target_input_selection](stove0-core-planningport-target-input-selection.md)
+- [target_preflight_request](stove0-core-planningport-target-preflight-request.md)
+- [workflow_plan](stove0-core-planningport-workflow-plan.md)
 
 ## Governing policies
 

@@ -42,7 +42,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.TargetProgress.validate_total](stove0-target-support-targetprogress-validate-total.md)
+- [validate_total](stove0-target-support-targetprogress-validate-total.md)
 
 ## Governing policies
 

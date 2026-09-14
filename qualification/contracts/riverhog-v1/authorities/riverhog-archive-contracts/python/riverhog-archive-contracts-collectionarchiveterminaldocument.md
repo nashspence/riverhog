@@ -38,10 +38,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_archive_contracts.CollectionArchiveTerminalDocument.to_json_bytes](riverhog-archive-contracts-collectionarchiveterminaldocument-to-json-bytes.md)
-- [riverhog_archive_contracts.CollectionArchiveTerminalDocument.from_mapping](riverhog-archive-contracts-collectionarchiveterminaldocument-from-mapping.md)
-- [riverhog_archive_contracts.CollectionArchiveTerminalDocument.from_json_bytes](riverhog-archive-contracts-collectionarchiveterminaldocument-from-json-bytes.md)
-- [riverhog_archive_contracts.CollectionArchiveTerminalDocument.to_mapping](riverhog-archive-contracts-collectionarchiveterminaldocument-to-mapping.md)
+- [to_json_bytes](riverhog-archive-contracts-collectionarchiveterminaldocument-to-json-bytes.md)
+- [from_mapping](riverhog-archive-contracts-collectionarchiveterminaldocument-from-mapping.md)
+- [from_json_bytes](riverhog-archive-contracts-collectionarchiveterminaldocument-from-json-bytes.md)
+- [to_mapping](riverhog-archive-contracts-collectionarchiveterminaldocument-to-mapping.md)
 
 ## Governing policies
 

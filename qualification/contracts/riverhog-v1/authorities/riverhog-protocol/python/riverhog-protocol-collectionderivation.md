@@ -45,10 +45,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionDerivation.as_dict](riverhog-protocol-collectionderivation-as-dict.md)
-- [riverhog_protocol.CollectionDerivation.from_mapping](riverhog-protocol-collectionderivation-from-mapping.md)
-- [riverhog_protocol.CollectionDerivation.sha256](riverhog-protocol-collectionderivation-sha256.md)
-- [riverhog_protocol.CollectionDerivation.to_json_bytes](riverhog-protocol-collectionderivation-to-json-bytes.md)
+- [as_dict](riverhog-protocol-collectionderivation-as-dict.md)
+- [from_mapping](riverhog-protocol-collectionderivation-from-mapping.md)
+- [sha256](riverhog-protocol-collectionderivation-sha256.md)
+- [to_json_bytes](riverhog-protocol-collectionderivation-to-json-bytes.md)
 
 ## Governing policies
 

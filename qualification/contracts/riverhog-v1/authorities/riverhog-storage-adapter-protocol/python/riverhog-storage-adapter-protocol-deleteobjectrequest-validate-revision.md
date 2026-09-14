@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.DeleteObjectRequest](riverhog-storage-adapter-protocol-deleteobjectrequest.md)
+- [DeleteObjectRequest](riverhog-storage-adapter-protocol-deleteobjectrequest.md)
 
 ## Governing policies
 

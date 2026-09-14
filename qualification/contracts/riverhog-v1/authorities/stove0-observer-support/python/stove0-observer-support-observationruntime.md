@@ -28,18 +28,18 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_support.ObservationRuntime.read_bytes](stove0-observer-support-observationruntime-read-bytes.md)
-- [stove0_observer_support.ObservationRuntime.open_workspace](stove0-observer-support-observationruntime-open-workspace.md)
-- [stove0_observer_support.ObservationRuntime.from_invocation](stove0-observer-support-observationruntime-from-invocation.md)
-- [stove0_observer_support.ObservationRuntime.materialize](stove0-observer-support-observationruntime-materialize.md)
-- [stove0_observer_support.ObservationRuntime.refresh_capability](stove0-observer-support-observationruntime-refresh-capability.md)
-- [stove0_observer_support.ObservationRuntime.close](stove0-observer-support-observationruntime-close.md)
-- [stove0_observer_support.ObservationRuntime.__enter__](stove0-observer-support-observationruntime-enter.md)
-- [stove0_observer_support.ObservationRuntime.__exit__](stove0-observer-support-observationruntime-exit.md)
-- [stove0_observer_support.ObservationRuntime.heartbeat](stove0-observer-support-observationruntime-heartbeat.md)
-- [stove0_observer_support.ObservationRuntime.prepare](stove0-observer-support-observationruntime-prepare.md)
-- [stove0_observer_support.ObservationRuntime.stream](stove0-observer-support-observationruntime-stream.md)
-- [stove0_observer_support.ObservationRuntime.subjects](stove0-observer-support-observationruntime-subjects.md)
+- [read_bytes](stove0-observer-support-observationruntime-read-bytes.md)
+- [open_workspace](stove0-observer-support-observationruntime-open-workspace.md)
+- [from_invocation](stove0-observer-support-observationruntime-from-invocation.md)
+- [materialize](stove0-observer-support-observationruntime-materialize.md)
+- [refresh_capability](stove0-observer-support-observationruntime-refresh-capability.md)
+- [close](stove0-observer-support-observationruntime-close.md)
+- [__enter__](stove0-observer-support-observationruntime-enter.md)
+- [__exit__](stove0-observer-support-observationruntime-exit.md)
+- [heartbeat](stove0-observer-support-observationruntime-heartbeat.md)
+- [prepare](stove0-observer-support-observationruntime-prepare.md)
+- [stream](stove0-observer-support-observationruntime-stream.md)
+- [subjects](stove0-observer-support-observationruntime-subjects.md)
 
 ## Governing policies
 

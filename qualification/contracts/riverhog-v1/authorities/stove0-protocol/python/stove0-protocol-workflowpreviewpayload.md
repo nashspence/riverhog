@@ -84,12 +84,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.WorkflowPreviewPayload.canonical_warnings](stove0-protocol-workflowpreviewpayload-canonical-warnings.md)
-- [stove0_protocol.WorkflowPreviewPayload.canonical_target_plans](stove0-protocol-workflowpreviewpayload-canonical-target-plans.md)
-- [stove0_protocol.WorkflowPreviewPayload.canonical_observations](stove0-protocol-workflowpreviewpayload-canonical-observations.md)
-- [stove0_protocol.WorkflowPreviewPayload.canonical_selections](stove0-protocol-workflowpreviewpayload-canonical-selections.md)
-- [stove0_protocol.WorkflowPreviewPayload.canonical_child_branch_sets](stove0-protocol-workflowpreviewpayload-canonical-child-branch-sets.md)
-- [stove0_protocol.WorkflowPreviewPayload.validate_state](stove0-protocol-workflowpreviewpayload-validate-state.md)
+- [canonical_warnings](stove0-protocol-workflowpreviewpayload-canonical-warnings.md)
+- [canonical_target_plans](stove0-protocol-workflowpreviewpayload-canonical-target-plans.md)
+- [canonical_observations](stove0-protocol-workflowpreviewpayload-canonical-observations.md)
+- [canonical_selections](stove0-protocol-workflowpreviewpayload-canonical-selections.md)
+- [canonical_child_branch_sets](stove0-protocol-workflowpreviewpayload-canonical-child-branch-sets.md)
+- [validate_state](stove0-protocol-workflowpreviewpayload-validate-state.md)
 
 ## Governing policies
 

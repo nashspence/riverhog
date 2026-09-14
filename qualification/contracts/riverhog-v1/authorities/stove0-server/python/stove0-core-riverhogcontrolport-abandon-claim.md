@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.RiverhogControlPort](stove0-core-riverhogcontrolport.md)
+- [RiverhogControlPort](stove0-core-riverhogcontrolport.md)
 
 ## Governing policies
 

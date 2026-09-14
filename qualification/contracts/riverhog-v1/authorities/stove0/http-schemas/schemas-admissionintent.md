@@ -58,9 +58,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: CatalogSyncDescriptor](schemas-catalogsyncdescriptor.md)
-- [schemas: CollectionTag](schemas-collectiontag.md)
-- [schemas: JsonValue](schemas-jsonvalue.md)
+- [CatalogSyncDescriptor](schemas-catalogsyncdescriptor.md)
+- [CollectionTag](schemas-collectiontag.md)
+- [JsonValue](schemas-jsonvalue.md)
 
 ## Governing policies
 

@@ -28,9 +28,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.PreviewRiverhogPort.abandon_preview_claim](stove0-core-previewriverhogport-abandon-preview-claim.md)
-- [stove0_core.PreviewRiverhogPort.acquire_preview_claim](stove0-core-previewriverhogport-acquire-preview-claim.md)
-- [stove0_core.PreviewRiverhogPort.observation_authority](stove0-core-previewriverhogport-observation-authority.md)
+- [abandon_preview_claim](stove0-core-previewriverhogport-abandon-preview-claim.md)
+- [acquire_preview_claim](stove0-core-previewriverhogport-acquire-preview-claim.md)
+- [observation_authority](stove0-core-previewriverhogport-observation-authority.md)
 
 ## Governing policies
 

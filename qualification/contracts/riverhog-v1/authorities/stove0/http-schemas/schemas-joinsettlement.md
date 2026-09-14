@@ -51,8 +51,8 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: ArtifactSelectionRef](schemas-artifactselectionref.md)
-- [schemas: CollectionRootRef](schemas-collectionrootref.md)
+- [ArtifactSelectionRef](schemas-artifactselectionref.md)
+- [CollectionRootRef](schemas-collectionrootref.md)
 
 ## Governing policies
 

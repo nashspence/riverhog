@@ -60,6 +60,14 @@ def _wheel_records(projects: list[Any]) -> list[dict[str, object]]:
     return records
 
 
+def test_installation_distribution_identities_use_packaging_canonical_names() -> None:
+    installation = _load("riverhog_release_installation_names", INSTALLATION_SCRIPT)
+
+    assert installation.canonical_distribution_name("foo.bar") == "foo-bar"
+    assert installation.canonical_distribution_name("foo_bar") == "foo-bar"
+    assert installation.canonical_distribution_name("foo--bar") == "foo-bar"
+
+
 def test_installation_artifacts_are_derived_and_mutually_consistent(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

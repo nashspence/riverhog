@@ -55,10 +55,10 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: JoinDeclaration](schemas-joindeclaration.md)
-- [schemas: JoinInputPlan](schemas-joininputplan.md)
-- [schemas: WorkIdentity](schemas-workidentity.md)
-- [schemas: WorkflowPlan](schemas-workflowplan.md)
+- [JoinDeclaration](schemas-joindeclaration.md)
+- [JoinInputPlan](schemas-joininputplan.md)
+- [WorkIdentity](schemas-workidentity.md)
+- [WorkflowPlan](schemas-workflowplan.md)
 
 ## Governing policies
 

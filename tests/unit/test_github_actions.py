@@ -266,6 +266,7 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     assert audit["needs"] == ["resolve", "ci"]
     assert audit["env"]["SOURCE_SHA"] == "${{ needs.resolve.outputs.sha }}"
     assert audit["env"]["SOURCE_REF"] == "${{ needs.resolve.outputs.ref }}"
+    assert audit["env"]["QUALIFICATION_MODE"] == "${{ needs.resolve.outputs.mode }}"
     assert audit["env"]["RIVERHOG_RELEASE_GHA_CACHE"] == "true"
     locate_evidence = next(
         step
@@ -289,6 +290,12 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     assert "Accept: application/octet-stream" in stage_history["run"]
     assert "RELEASE_PREVIOUS_TAG" in stage_history["run"]
     assert "RELEASE_PREVIOUS_MANIFEST_SHA256" in stage_history["run"]
+    assert 'QUALIFICATION_MODE" == "prospective' in stage_history["run"]
+    assert 'QUALIFICATION_MODE" == "historical' in stage_history["run"]
+    assert "does not follow current v1 head" in stage_history["run"]
+    assert "published-candidate.json" in stage_history["run"]
+    assert "Historical predecessor digest differs" in stage_history["run"]
+    assert "python -m json.tool --sort-keys --indent 2" in stage_history["run"]
     lifecycle_evidence = next(
         step
         for step in audit["steps"]
@@ -379,7 +386,13 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
         if step["name"] == "Resolve the selected ref once"
     )
     assert resolve_source["env"]["WORKFLOW_REF"] == "${{ github.ref }}"
+    assert resolve_source["env"]["GH_TOKEN"] == "${{ github.token }}"
     assert '[[ "$WORKFLOW_REF" != refs/heads/main ]]' in resolve_source["run"]
+    assert "latest_published_tag" in resolve_source["run"]
+    assert "mode=prospective" in resolve_source["run"]
+    assert "mode=historical" in resolve_source["run"]
+    assert '"$ref" != "v$version"' in resolve_source["run"]
+    assert workflow["jobs"]["resolve"]["outputs"]["mode"] == "${{ steps.source.outputs.mode }}"
     audit_checkout = next(
         step for step in audit["steps"] if step["name"] == "Check out workflow authority"
     )
@@ -406,6 +419,7 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     )
     assert '> "$QUALIFICATION_DIR/qualification.json"' in record["run"]
     assert "contract_projection_sha256" in record["run"]
+    assert "qualification_mode" in record["run"]
     assert "contract_trace_sha256" in record["run"]
     assert "extent_contract_sha256" in record["run"]
     assert "operation_evidence_sha256" in record["run"]

@@ -28,12 +28,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.RecipePlanner.create_work](stove0-core-recipeplanner-create-work.md)
-- [stove0_core.RecipePlanner.observation_requests](stove0-core-recipeplanner-observation-requests.md)
-- [stove0_core.RecipePlanner.operation_contract](stove0-core-recipeplanner-operation-contract.md)
-- [stove0_core.RecipePlanner.target_input_selection](stove0-core-recipeplanner-target-input-selection.md)
-- [stove0_core.RecipePlanner.target_preflight_request](stove0-core-recipeplanner-target-preflight-request.md)
-- [stove0_core.RecipePlanner.workflow_plan](stove0-core-recipeplanner-workflow-plan.md)
+- [create_work](stove0-core-recipeplanner-create-work.md)
+- [observation_requests](stove0-core-recipeplanner-observation-requests.md)
+- [operation_contract](stove0-core-recipeplanner-operation-contract.md)
+- [target_input_selection](stove0-core-recipeplanner-target-input-selection.md)
+- [target_preflight_request](stove0-core-recipeplanner-target-preflight-request.md)
+- [workflow_plan](stove0-core-recipeplanner-workflow-plan.md)
 
 ## Governing policies
 

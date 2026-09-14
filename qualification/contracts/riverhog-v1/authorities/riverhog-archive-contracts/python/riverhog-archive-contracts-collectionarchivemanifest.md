@@ -38,13 +38,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_archive_contracts.CollectionArchiveManifest.from_json_bytes](riverhog-archive-contracts-collectionarchivemanifest-from-json-bytes.md)
-- [riverhog_archive_contracts.CollectionArchiveManifest.bytes](riverhog-archive-contracts-collectionarchivemanifest-bytes.md)
-- [riverhog_archive_contracts.CollectionArchiveManifest.to_mapping](riverhog-archive-contracts-collectionarchivemanifest-to-mapping.md)
-- [riverhog_archive_contracts.CollectionArchiveManifest.from_mapping](riverhog-archive-contracts-collectionarchivemanifest-from-mapping.md)
-- [riverhog_archive_contracts.CollectionArchiveManifest.files](riverhog-archive-contracts-collectionarchivemanifest-files.md)
-- [riverhog_archive_contracts.CollectionArchiveManifest.tree_sha256](riverhog-archive-contracts-collectionarchivemanifest-tree-sha256.md)
-- [riverhog_archive_contracts.CollectionArchiveManifest.to_json_bytes](riverhog-archive-contracts-collectionarchivemanifest-to-json-bytes.md)
+- [from_json_bytes](riverhog-archive-contracts-collectionarchivemanifest-from-json-bytes.md)
+- [bytes](riverhog-archive-contracts-collectionarchivemanifest-bytes.md)
+- [to_mapping](riverhog-archive-contracts-collectionarchivemanifest-to-mapping.md)
+- [from_mapping](riverhog-archive-contracts-collectionarchivemanifest-from-mapping.md)
+- [files](riverhog-archive-contracts-collectionarchivemanifest-files.md)
+- [tree_sha256](riverhog-archive-contracts-collectionarchivemanifest-tree-sha256.md)
+- [to_json_bytes](riverhog-archive-contracts-collectionarchivemanifest-to-json-bytes.md)
 
 ## Governing policies
 

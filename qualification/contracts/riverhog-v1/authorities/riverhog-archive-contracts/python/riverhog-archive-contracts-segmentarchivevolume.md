@@ -41,9 +41,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_archive_contracts.SegmentArchiveVolume.file_offset](riverhog-archive-contracts-segmentarchivevolume-file-offset.md)
-- [riverhog_archive_contracts.SegmentArchiveVolume.to_mapping](riverhog-archive-contracts-segmentarchivevolume-to-mapping.md)
-- [riverhog_archive_contracts.SegmentArchiveVolume.source_file](riverhog-archive-contracts-segmentarchivevolume-source-file.md)
+- [file_offset](riverhog-archive-contracts-segmentarchivevolume-file-offset.md)
+- [to_mapping](riverhog-archive-contracts-segmentarchivevolume-to-mapping.md)
+- [source_file](riverhog-archive-contracts-segmentarchivevolume-source-file.md)
 
 ## Governing policies
 

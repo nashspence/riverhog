@@ -55,8 +55,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_sampler_protocol.SamplerDescriptor.seal](stove0-review-sampler-protocol-samplerdescriptor-seal.md)
-- [stove0_review_sampler_protocol.SamplerDescriptor.verify_digest](stove0-review-sampler-protocol-samplerdescriptor-verify-digest.md)
+- [seal](stove0-review-sampler-protocol-samplerdescriptor-seal.md)
+- [verify_digest](stove0-review-sampler-protocol-samplerdescriptor-verify-digest.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_recipe_config.FactPredicate](stove0-recipe-config-factpredicate.md)
+- [FactPredicate](stove0-recipe-config-factpredicate.md)
 
 ## Governing policies
 

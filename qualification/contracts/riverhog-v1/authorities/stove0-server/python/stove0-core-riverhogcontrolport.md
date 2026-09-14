@@ -28,18 +28,18 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.RiverhogControlPort.abandon_claim](stove0-core-riverhogcontrolport-abandon-claim.md)
-- [stove0_core.RiverhogControlPort.acquire_claim](stove0-core-riverhogcontrolport-acquire-claim.md)
-- [stove0_core.RiverhogControlPort.begin_retirement](stove0-core-riverhogcontrolport-begin-retirement.md)
-- [stove0_core.RiverhogControlPort.observation_authority](stove0-core-riverhogcontrolport-observation-authority.md)
-- [stove0_core.RiverhogControlPort.release_claim](stove0-core-riverhogcontrolport-release-claim.md)
-- [stove0_core.RiverhogControlPort.renew_claim](stove0-core-riverhogcontrolport-renew-claim.md)
-- [stove0_core.RiverhogControlPort.restart_claim](stove0-core-riverhogcontrolport-restart-claim.md)
-- [stove0_core.RiverhogControlPort.retire_input](stove0-core-riverhogcontrolport-retire-input.md)
-- [stove0_core.RiverhogControlPort.seal_execution](stove0-core-riverhogcontrolport-seal-execution.md)
-- [stove0_core.RiverhogControlPort.settle_outcomes](stove0-core-riverhogcontrolport-settle-outcomes.md)
-- [stove0_core.RiverhogControlPort.target_authority](stove0-core-riverhogcontrolport-target-authority.md)
-- [stove0_core.RiverhogControlPort.verify_and_settle](stove0-core-riverhogcontrolport-verify-and-settle.md)
+- [abandon_claim](stove0-core-riverhogcontrolport-abandon-claim.md)
+- [acquire_claim](stove0-core-riverhogcontrolport-acquire-claim.md)
+- [begin_retirement](stove0-core-riverhogcontrolport-begin-retirement.md)
+- [observation_authority](stove0-core-riverhogcontrolport-observation-authority.md)
+- [release_claim](stove0-core-riverhogcontrolport-release-claim.md)
+- [renew_claim](stove0-core-riverhogcontrolport-renew-claim.md)
+- [restart_claim](stove0-core-riverhogcontrolport-restart-claim.md)
+- [retire_input](stove0-core-riverhogcontrolport-retire-input.md)
+- [seal_execution](stove0-core-riverhogcontrolport-seal-execution.md)
+- [settle_outcomes](stove0-core-riverhogcontrolport-settle-outcomes.md)
+- [target_authority](stove0-core-riverhogcontrolport-target-authority.md)
+- [verify_and_settle](stove0-core-riverhogcontrolport-verify-and-settle.md)
 
 ## Governing policies
 

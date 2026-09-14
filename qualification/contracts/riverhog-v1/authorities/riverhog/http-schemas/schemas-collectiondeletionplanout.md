@@ -62,9 +62,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionDeletionArchiveCopyOut](schemas-collectiondeletionarchivecopyout.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: RetirementClaimReferenceDocument](schemas-retirementclaimreferencedocument.md)
+- [CollectionDeletionArchiveCopyOut](schemas-collectiondeletionarchivecopyout.md)
+- [CollectionId](schemas-collectionid.md)
+- [RetirementClaimReferenceDocument](schemas-retirementclaimreferencedocument.md)
 
 ## Governing policies
 

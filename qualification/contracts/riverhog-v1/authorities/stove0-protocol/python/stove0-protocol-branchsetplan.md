@@ -77,11 +77,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.BranchSetPlan.canonical_branches](stove0-protocol-branchsetplan-canonical-branches.md)
-- [stove0_protocol.BranchSetPlan.canonical_bytes](stove0-protocol-branchsetplan-canonical-bytes.md)
-- [stove0_protocol.BranchSetPlan.canonical_evidence](stove0-protocol-branchsetplan-canonical-evidence.md)
-- [stove0_protocol.BranchSetPlan.seal](stove0-protocol-branchsetplan-seal.md)
-- [stove0_protocol.BranchSetPlan.verify_contract](stove0-protocol-branchsetplan-verify-contract.md)
+- [canonical_branches](stove0-protocol-branchsetplan-canonical-branches.md)
+- [canonical_bytes](stove0-protocol-branchsetplan-canonical-bytes.md)
+- [canonical_evidence](stove0-protocol-branchsetplan-canonical-evidence.md)
+- [seal](stove0-protocol-branchsetplan-seal.md)
+- [verify_contract](stove0-protocol-branchsetplan-verify-contract.md)
 
 ## Governing policies
 

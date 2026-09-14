@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
 
 ## Governing policies
 

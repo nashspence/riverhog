@@ -36,8 +36,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.PortableCollectionFile.from_mapping](riverhog-protocol-portablecollectionfile-from-mapping.md)
-- [riverhog_protocol.PortableCollectionFile.to_mapping](riverhog-protocol-portablecollectionfile-to-mapping.md)
+- [from_mapping](riverhog-protocol-portablecollectionfile-from-mapping.md)
+- [to_mapping](riverhog-protocol-portablecollectionfile-to-mapping.md)
 
 ## Governing policies
 

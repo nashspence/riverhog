@@ -44,8 +44,8 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: OutputCollectionRef](schemas-outputcollectionref.md)
-- [schemas: TargetOutputBindingSetIdentity](schemas-targetoutputbindingsetidentity.md)
+- [OutputCollectionRef](schemas-outputcollectionref.md)
+- [TargetOutputBindingSetIdentity](schemas-targetoutputbindingsetidentity.md)
 
 ## Governing policies
 

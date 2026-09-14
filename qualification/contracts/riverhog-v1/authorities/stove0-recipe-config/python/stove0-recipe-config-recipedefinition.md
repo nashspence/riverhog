@@ -66,10 +66,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_recipe_config.RecipeDefinition.canonical_members](stove0-recipe-config-recipedefinition-canonical-members.md)
-- [stove0_recipe_config.RecipeDefinition.identity_document](stove0-recipe-config-recipedefinition-identity-document.md)
-- [stove0_recipe_config.RecipeDefinition.ref](stove0-recipe-config-recipedefinition-ref.md)
-- [stove0_recipe_config.RecipeDefinition.sha256](stove0-recipe-config-recipedefinition-sha256.md)
+- [canonical_members](stove0-recipe-config-recipedefinition-canonical-members.md)
+- [identity_document](stove0-recipe-config-recipedefinition-identity-document.md)
+- [ref](stove0-recipe-config-recipedefinition-ref.md)
+- [sha256](stove0-recipe-config-recipedefinition-sha256.md)
 
 ## Governing policies
 

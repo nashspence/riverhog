@@ -50,8 +50,8 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: ArtifactDispositionSetIdentity](schemas-artifactdispositionsetidentity.md)
-- [schemas: OutputArtifactSetIdentity](schemas-outputartifactsetidentity.md)
+- [ArtifactDispositionSetIdentity](schemas-artifactdispositionsetidentity.md)
+- [OutputArtifactSetIdentity](schemas-outputartifactsetidentity.md)
 
 ## Governing policies
 

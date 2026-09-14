@@ -60,8 +60,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_operator_contracts.EvaluationView.exact_identity](stove0-operator-contracts-evaluationview-exact-identity.md)
-- [stove0_operator_contracts.EvaluationView.from_record](stove0-operator-contracts-evaluationview-from-record.md)
+- [exact_identity](stove0-operator-contracts-evaluationview-exact-identity.md)
+- [from_record](stove0-operator-contracts-evaluationview-from-record.md)
 
 ## Governing policies
 

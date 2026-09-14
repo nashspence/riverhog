@@ -58,9 +58,9 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ### Referenced contract dossiers
 
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: EvaluationView](schemas-evaluationview.md)
-- [schemas: JsonValue](schemas-jsonvalue.md)
+- [BrowsePageToken](schemas-browsepagetoken.md)
+- [EvaluationView](schemas-evaluationview.md)
+- [JsonValue](schemas-jsonvalue.md)
 
 ## Governing policies
 

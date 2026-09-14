@@ -77,9 +77,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.TargetJobRequest.accepted](stove0-target-protocol-targetjobrequest-accepted.md)
-- [stove0_target_protocol.TargetJobRequest.seal](stove0-target-protocol-targetjobrequest-seal.md)
-- [stove0_target_protocol.TargetJobRequest.verify_digest](stove0-target-protocol-targetjobrequest-verify-digest.md)
+- [accepted](stove0-target-protocol-targetjobrequest-accepted.md)
+- [seal](stove0-target-protocol-targetjobrequest-seal.md)
+- [verify_digest](stove0-target-protocol-targetjobrequest-verify-digest.md)
 
 ## Governing policies
 

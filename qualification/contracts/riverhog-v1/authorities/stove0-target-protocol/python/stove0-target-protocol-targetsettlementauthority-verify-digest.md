@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.TargetSettlementAuthority](stove0-target-protocol-targetsettlementauthority.md)
+- [TargetSettlementAuthority](stove0-target-protocol-targetsettlementauthority.md)
 
 ## Governing policies
 

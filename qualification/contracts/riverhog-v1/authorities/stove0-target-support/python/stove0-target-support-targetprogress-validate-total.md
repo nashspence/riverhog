@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.TargetProgress](stove0-target-support-targetprogress.md)
+- [TargetProgress](stove0-target-support-targetprogress.md)
 
 ## Governing policies
 

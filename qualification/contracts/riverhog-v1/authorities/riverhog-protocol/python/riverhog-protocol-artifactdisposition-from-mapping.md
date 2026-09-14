@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.ArtifactDisposition](riverhog-protocol-artifactdisposition.md)
+- [ArtifactDisposition](riverhog-protocol-artifactdisposition.md)
 
 ## Governing policies
 

@@ -28,9 +28,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.InMemoryEvaluationStore.compare_and_swap](stove0-core-inmemoryevaluationstore-compare-and-swap.md)
-- [stove0_core.InMemoryEvaluationStore.create](stove0-core-inmemoryevaluationstore-create.md)
-- [stove0_core.InMemoryEvaluationStore.load](stove0-core-inmemoryevaluationstore-load.md)
+- [compare_and_swap](stove0-core-inmemoryevaluationstore-compare-and-swap.md)
+- [create](stove0-core-inmemoryevaluationstore-create.md)
+- [load](stove0-core-inmemoryevaluationstore-load.md)
 
 ## Governing policies
 

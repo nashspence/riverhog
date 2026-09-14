@@ -28,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: ProvenanceExternalStateReferenceOut](schemas-provenanceexternalstatereferenceout.md)
+- [ProvenanceExternalStateReferenceOut](schemas-provenanceexternalstatereferenceout.md)
 
 ## Governing policies
 

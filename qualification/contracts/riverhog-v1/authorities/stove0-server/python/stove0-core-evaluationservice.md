@@ -28,12 +28,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.EvaluationService.cancel](stove0-core-evaluationservice-cancel.md)
-- [stove0_core.EvaluationService.create_or_resume](stove0-core-evaluationservice-create-or-resume.md)
-- [stove0_core.EvaluationService.refresh](stove0-core-evaluationservice-refresh.md)
-- [stove0_core.EvaluationService.retry_failed](stove0-core-evaluationservice-retry-failed.md)
-- [stove0_core.EvaluationService.review](stove0-core-evaluationservice-review.md)
-- [stove0_core.EvaluationService.step](stove0-core-evaluationservice-step.md)
+- [cancel](stove0-core-evaluationservice-cancel.md)
+- [create_or_resume](stove0-core-evaluationservice-create-or-resume.md)
+- [refresh](stove0-core-evaluationservice-refresh.md)
+- [retry_failed](stove0-core-evaluationservice-retry-failed.md)
+- [review](stove0-core-evaluationservice-review.md)
+- [step](stove0-core-evaluationservice-step.md)
 
 ## Governing policies
 

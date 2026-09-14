@@ -46,9 +46,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.SmallObjectWriteRequest.validate_replacement_fence](riverhog-storage-adapter-protocol-smallobjectwriterequest-validate-replacement-fence.md)
-- [riverhog_storage_adapter_protocol.SmallObjectWriteRequest.canonical_metadata](riverhog-storage-adapter-protocol-smallobjectwriterequest-canonical-metadata.md)
-- [riverhog_storage_adapter_protocol.SmallObjectWriteRequest.canonical_path](riverhog-storage-adapter-protocol-smallobjectwriterequest-canonical-path.md)
+- [validate_replacement_fence](riverhog-storage-adapter-protocol-smallobjectwriterequest-validate-replacement-fence.md)
+- [canonical_metadata](riverhog-storage-adapter-protocol-smallobjectwriterequest-canonical-metadata.md)
+- [canonical_path](riverhog-storage-adapter-protocol-smallobjectwriterequest-canonical-path.md)
 
 ## Governing policies
 

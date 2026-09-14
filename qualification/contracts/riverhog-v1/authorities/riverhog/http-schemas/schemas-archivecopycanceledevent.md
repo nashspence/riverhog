@@ -34,7 +34,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: ArchiveCopyCanceledData](schemas-archivecopycanceleddata.md)
+- [ArchiveCopyCanceledData](schemas-archivecopycanceleddata.md)
 
 ## Governing policies
 

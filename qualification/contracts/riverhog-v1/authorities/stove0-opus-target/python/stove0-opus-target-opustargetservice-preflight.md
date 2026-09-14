@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_opus_target.OpusTargetService](stove0-opus-target-opustargetservice.md)
+- [OpusTargetService](stove0-opus-target-opustargetservice.md)
 
 ## Governing policies
 

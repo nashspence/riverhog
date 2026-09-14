@@ -6,4 +6,4 @@ Configuration Documents contract owned by stove0-operator-contracts.
 
 ## Semantic dossiers
 
-- [stove0-operator-contracts:configuration:admission-catalog configuration](stove0-operator-contracts-configuration-admission-catalog-configuration.md)
+- [admission-catalog](stove0-operator-contracts-configuration-admission-catalog-configuration.md)

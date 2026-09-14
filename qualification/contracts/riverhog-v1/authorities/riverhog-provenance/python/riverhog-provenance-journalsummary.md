@@ -46,7 +46,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_provenance.JournalSummary.tail](riverhog-provenance-journalsummary-tail.md)
+- [tail](riverhog-provenance-journalsummary-tail.md)
 
 ## Governing policies
 

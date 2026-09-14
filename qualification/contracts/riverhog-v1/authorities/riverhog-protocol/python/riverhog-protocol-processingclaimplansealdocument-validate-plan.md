@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.ProcessingClaimPlanSealDocument](riverhog-protocol-processingclaimplansealdocument.md)
+- [ProcessingClaimPlanSealDocument](riverhog-protocol-processingclaimplansealdocument.md)
 
 ## Governing policies
 

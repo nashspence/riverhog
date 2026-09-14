@@ -48,9 +48,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.OutputArtifactSetIdentity.validate_summary](stove0-target-protocol-outputartifactsetidentity-validate-summary.md)
-- [stove0_target_protocol.OutputArtifactSetIdentity.seal](stove0-target-protocol-outputartifactsetidentity-seal.md)
-- [stove0_target_protocol.OutputArtifactSetIdentity.seal_iterable](stove0-target-protocol-outputartifactsetidentity-seal-iterable.md)
+- [validate_summary](stove0-target-protocol-outputartifactsetidentity-validate-summary.md)
+- [seal](stove0-target-protocol-outputartifactsetidentity-seal.md)
+- [seal_iterable](stove0-target-protocol-outputartifactsetidentity-seal-iterable.md)
 
 ## Governing policies
 

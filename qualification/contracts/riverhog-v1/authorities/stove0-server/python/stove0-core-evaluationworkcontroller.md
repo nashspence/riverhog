@@ -28,9 +28,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.EvaluationWorkController.cancel](stove0-core-evaluationworkcontroller-cancel.md)
-- [stove0_core.EvaluationWorkController.retry](stove0-core-evaluationworkcontroller-retry.md)
-- [stove0_core.EvaluationWorkController.step](stove0-core-evaluationworkcontroller-step.md)
+- [cancel](stove0-core-evaluationworkcontroller-cancel.md)
+- [retry](stove0-core-evaluationworkcontroller-retry.md)
+- [step](stove0-core-evaluationworkcontroller-step.md)
 
 ## Governing policies
 

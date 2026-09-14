@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.EvaluationWorkController](stove0-core-evaluationworkcontroller.md)
+- [EvaluationWorkController](stove0-core-evaluationworkcontroller.md)
 
 ## Governing policies
 

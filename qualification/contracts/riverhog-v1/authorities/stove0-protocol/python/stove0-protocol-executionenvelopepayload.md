@@ -68,8 +68,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.ExecutionEnvelopePayload.canonical_claim_id](stove0-protocol-executionenvelopepayload-canonical-claim-id.md)
-- [stove0_protocol.ExecutionEnvelopePayload.bind_target](stove0-protocol-executionenvelopepayload-bind-target.md)
+- [canonical_claim_id](stove0-protocol-executionenvelopepayload-canonical-claim-id.md)
+- [bind_target](stove0-protocol-executionenvelopepayload-bind-target.md)
 
 ## Governing policies
 

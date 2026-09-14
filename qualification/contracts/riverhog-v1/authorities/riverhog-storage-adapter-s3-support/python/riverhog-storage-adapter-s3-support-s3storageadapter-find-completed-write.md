@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_s3_support.S3StorageAdapter](riverhog-storage-adapter-s3-support-s3storageadapter.md)
+- [S3StorageAdapter](riverhog-storage-adapter-s3-support-s3storageadapter.md)
 
 ## Governing policies
 

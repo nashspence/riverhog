@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_core.GogurtProviderReference](gogurt-core-gogurtproviderreference.md)
+- [GogurtProviderReference](gogurt-core-gogurtproviderreference.md)
 
 ## Governing policies
 

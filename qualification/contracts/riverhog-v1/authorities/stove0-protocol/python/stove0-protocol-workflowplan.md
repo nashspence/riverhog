@@ -74,8 +74,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.WorkflowPlan.seal](stove0-protocol-workflowplan-seal.md)
-- [stove0_protocol.WorkflowPlan.verify_digest](stove0-protocol-workflowplan-verify-digest.md)
+- [seal](stove0-protocol-workflowplan-seal.md)
+- [verify_digest](stove0-protocol-workflowplan-verify-digest.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_windows_listener_host.TaskSchedulerUserAdapter](gogurt-windows-listener-host-taskscheduleruseradapter.md)
+- [TaskSchedulerUserAdapter](gogurt-windows-listener-host-taskscheduleruseradapter.md)
 
 ## Governing policies
 

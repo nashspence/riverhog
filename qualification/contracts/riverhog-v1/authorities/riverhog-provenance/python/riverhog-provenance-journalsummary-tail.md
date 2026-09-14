@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_provenance.JournalSummary](riverhog-provenance-journalsummary.md)
+- [JournalSummary](riverhog-provenance-journalsummary.md)
 
 ## Governing policies
 

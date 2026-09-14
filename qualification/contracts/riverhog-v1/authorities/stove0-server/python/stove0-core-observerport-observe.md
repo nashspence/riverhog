@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.ObserverPort](stove0-core-observerport.md)
+- [ObserverPort](stove0-core-observerport.md)
 
 ## Governing policies
 

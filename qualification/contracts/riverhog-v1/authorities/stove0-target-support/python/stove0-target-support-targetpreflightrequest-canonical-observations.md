@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.TargetPreflightRequest](stove0-target-support-targetpreflightrequest.md)
+- [TargetPreflightRequest](stove0-target-support-targetpreflightrequest.md)
 
 ## Governing policies
 

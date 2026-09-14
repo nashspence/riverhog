@@ -52,11 +52,11 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ### Referenced contract dossiers
 
-- [schemas: AppKeyOut](schemas-appkeyout.md)
-- [schemas: ApplicationKeySort](schemas-applicationkeysort.md)
-- [schemas: ApplicationName](schemas-applicationname.md)
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: SortOrder](schemas-sortorder.md)
+- [AppKeyOut](schemas-appkeyout.md)
+- [ApplicationKeySort](schemas-applicationkeysort.md)
+- [ApplicationName](schemas-applicationname.md)
+- [BrowsePageToken](schemas-browsepagetoken.md)
+- [SortOrder](schemas-sortorder.md)
 
 ## Governing policies
 

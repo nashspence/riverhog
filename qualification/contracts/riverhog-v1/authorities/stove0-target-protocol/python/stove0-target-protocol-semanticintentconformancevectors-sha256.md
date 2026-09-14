@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.SemanticIntentConformanceVectors](stove0-target-protocol-semanticintentconformancevectors.md)
+- [SemanticIntentConformanceVectors](stove0-target-protocol-semanticintentconformancevectors.md)
 
 ## Governing policies
 

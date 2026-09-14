@@ -93,7 +93,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog-catalog durable-state identity](riverhog-catalog-durable-state-identity.md)
+- [Schema identity](riverhog-catalog-durable-state-identity.md)
 
 ## Governing policies
 

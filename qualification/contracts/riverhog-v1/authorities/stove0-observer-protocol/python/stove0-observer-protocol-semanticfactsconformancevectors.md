@@ -51,9 +51,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_protocol.SemanticFactsConformanceVectors.canonical_vectors](stove0-observer-protocol-semanticfactsconformancevectors-canonical-vectors.md)
-- [stove0_observer_protocol.SemanticFactsConformanceVectors.sha256](stove0-observer-protocol-semanticfactsconformancevectors-sha256.md)
-- [stove0_observer_protocol.SemanticFactsConformanceVectors.covers_acceptance_and_rejection](stove0-observer-protocol-semanticfactsconformancevectors-covers-acceptance-and-rejection.md)
+- [canonical_vectors](stove0-observer-protocol-semanticfactsconformancevectors-canonical-vectors.md)
+- [sha256](stove0-observer-protocol-semanticfactsconformancevectors-sha256.md)
+- [covers_acceptance_and_rejection](stove0-observer-protocol-semanticfactsconformancevectors-covers-acceptance-and-rejection.md)
 
 ## Governing policies
 

@@ -52,10 +52,10 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: RiverhogActor](schemas-riverhogactor.md)
-- [schemas: RiverhogEventCause](schemas-riverhogeventcause.md)
+- [ArchiveStoreName](schemas-archivestorename.md)
+- [CollectionId](schemas-collectionid.md)
+- [RiverhogActor](schemas-riverhogactor.md)
+- [RiverhogEventCause](schemas-riverhogeventcause.md)
 
 ## Governing policies
 

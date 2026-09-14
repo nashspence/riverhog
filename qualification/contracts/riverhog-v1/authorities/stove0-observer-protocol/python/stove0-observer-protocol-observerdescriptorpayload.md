@@ -53,7 +53,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_protocol.ObserverDescriptorPayload.unique_contracts](stove0-observer-protocol-observerdescriptorpayload-unique-contracts.md)
+- [unique_contracts](stove0-observer-protocol-observerdescriptorpayload-unique-contracts.md)
 
 ## Governing policies
 

@@ -52,10 +52,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument.seal](riverhog-protocol-collectionuploadartifactcustodyreceiptdocument-seal.md)
-- [riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument.validate_receipt](riverhog-protocol-collectionuploadartifactcustodyreceiptdocument-validate-receipt.md)
-- [riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument.canonical_path](riverhog-protocol-collectionuploadartifactcustodyreceiptdocument-canonical-path.md)
-- [riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument.canonical_collection_id](riverhog-protocol-collectionuploadartifactcustodyreceiptdocument-canonical-collection-id.md)
+- [seal](riverhog-protocol-collectionuploadartifactcustodyreceiptdocument-seal.md)
+- [validate_receipt](riverhog-protocol-collectionuploadartifactcustodyreceiptdocument-validate-receipt.md)
+- [canonical_path](riverhog-protocol-collectionuploadartifactcustodyreceiptdocument-canonical-path.md)
+- [canonical_collection_id](riverhog-protocol-collectionuploadartifactcustodyreceiptdocument-canonical-collection-id.md)
 
 ## Governing policies
 

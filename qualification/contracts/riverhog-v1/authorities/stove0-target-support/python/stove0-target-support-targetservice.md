@@ -28,11 +28,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.TargetService.cancel_job](stove0-target-support-targetservice-cancel-job.md)
-- [stove0_target_support.TargetService.contract](stove0-target-support-targetservice-contract.md)
-- [stove0_target_support.TargetService.get_job](stove0-target-support-targetservice-get-job.md)
-- [stove0_target_support.TargetService.preflight](stove0-target-support-targetservice-preflight.md)
-- [stove0_target_support.TargetService.put_job](stove0-target-support-targetservice-put-job.md)
+- [cancel_job](stove0-target-support-targetservice-cancel-job.md)
+- [contract](stove0-target-support-targetservice-contract.md)
+- [get_job](stove0-target-support-targetservice-get-job.md)
+- [preflight](stove0-target-support-targetservice-preflight.md)
+- [put_job](stove0-target-support-targetservice-put-job.md)
 
 ## Governing policies
 

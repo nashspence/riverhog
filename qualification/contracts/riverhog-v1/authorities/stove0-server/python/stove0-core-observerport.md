@@ -28,8 +28,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.ObserverPort.descriptor](stove0-core-observerport-descriptor.md)
-- [stove0_core.ObserverPort.observe](stove0-core-observerport-observe.md)
+- [descriptor](stove0-core-observerport-descriptor.md)
+- [observe](stove0-core-observerport-observe.md)
 
 ## Governing policies
 

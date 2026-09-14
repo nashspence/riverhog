@@ -28,11 +28,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionTagSet.contains](riverhog-protocol-collectiontagset-contains.md)
-- [riverhog_protocol.CollectionTagSet.discard](riverhog-protocol-collectiontagset-discard.md)
-- [riverhog_protocol.CollectionTagSet.identity](riverhog-protocol-collectiontagset-identity.md)
-- [riverhog_protocol.CollectionTagSet.insert](riverhog-protocol-collectiontagset-insert.md)
-- [riverhog_protocol.CollectionTagSet.iter_tags](riverhog-protocol-collectiontagset-iter-tags.md)
+- [contains](riverhog-protocol-collectiontagset-contains.md)
+- [discard](riverhog-protocol-collectiontagset-discard.md)
+- [identity](riverhog-protocol-collectiontagset-identity.md)
+- [insert](riverhog-protocol-collectiontagset-insert.md)
+- [iter_tags](riverhog-protocol-collectiontagset-iter-tags.md)
 
 ## Governing policies
 

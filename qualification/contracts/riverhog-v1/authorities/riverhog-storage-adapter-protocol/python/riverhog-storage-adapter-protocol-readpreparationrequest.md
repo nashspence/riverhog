@@ -45,7 +45,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.ReadPreparationRequest.canonical_objects](riverhog-storage-adapter-protocol-readpreparationrequest-canonical-objects.md)
+- [canonical_objects](riverhog-storage-adapter-protocol-readpreparationrequest-canonical-objects.md)
 
 ## Governing policies
 

@@ -54,10 +54,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_media_archive_target_support.MediaArchiveProjection.item_for](stove0-media-archive-target-support-mediaarchiveprojection-item-for.md)
-- [stove0_media_archive_target_support.MediaArchiveProjection.verify_digest](stove0-media-archive-target-support-mediaarchiveprojection-verify-digest.md)
-- [stove0_media_archive_target_support.MediaArchiveProjection.validate_plan_evidence](stove0-media-archive-target-support-mediaarchiveprojection-validate-plan-evidence.md)
-- [stove0_media_archive_target_support.MediaArchiveProjection.seal](stove0-media-archive-target-support-mediaarchiveprojection-seal.md)
+- [item_for](stove0-media-archive-target-support-mediaarchiveprojection-item-for.md)
+- [verify_digest](stove0-media-archive-target-support-mediaarchiveprojection-verify-digest.md)
+- [validate_plan_evidence](stove0-media-archive-target-support-mediaarchiveprojection-validate-plan-evidence.md)
+- [seal](stove0-media-archive-target-support-mediaarchiveprojection-seal.md)
 
 ## Governing policies
 

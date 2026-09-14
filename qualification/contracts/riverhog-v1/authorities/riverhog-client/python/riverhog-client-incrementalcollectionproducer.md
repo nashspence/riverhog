@@ -28,12 +28,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.IncrementalCollectionProducer.append_inputs](riverhog-client-incrementalcollectionproducer-append-inputs.md)
-- [riverhog_client.IncrementalCollectionProducer.heartbeat](riverhog-client-incrementalcollectionproducer-heartbeat.md)
-- [riverhog_client.IncrementalCollectionProducer.stage_provenance_journals](riverhog-client-incrementalcollectionproducer-stage-provenance-journals.md)
-- [riverhog_client.IncrementalCollectionProducer.append_derivation_evidence](riverhog-client-incrementalcollectionproducer-append-derivation-evidence.md)
-- [riverhog_client.IncrementalCollectionProducer.finish](riverhog-client-incrementalcollectionproducer-finish.md)
-- [riverhog_client.IncrementalCollectionProducer.stop](riverhog-client-incrementalcollectionproducer-stop.md)
+- [append_inputs](riverhog-client-incrementalcollectionproducer-append-inputs.md)
+- [heartbeat](riverhog-client-incrementalcollectionproducer-heartbeat.md)
+- [stage_provenance_journals](riverhog-client-incrementalcollectionproducer-stage-provenance-journals.md)
+- [append_derivation_evidence](riverhog-client-incrementalcollectionproducer-append-derivation-evidence.md)
+- [finish](riverhog-client-incrementalcollectionproducer-finish.md)
+- [stop](riverhog-client-incrementalcollectionproducer-stop.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_archive_contracts.StoredPartIdentity](riverhog-archive-contracts-storedpartidentity.md)
+- [StoredPartIdentity](riverhog-archive-contracts-storedpartidentity.md)
 
 ## Governing policies
 

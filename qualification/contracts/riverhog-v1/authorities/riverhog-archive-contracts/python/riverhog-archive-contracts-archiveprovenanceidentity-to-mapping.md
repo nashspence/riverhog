@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_archive_contracts.ArchiveProvenanceIdentity](riverhog-archive-contracts-archiveprovenanceidentity.md)
+- [ArchiveProvenanceIdentity](riverhog-archive-contracts-archiveprovenanceidentity.md)
 
 ## Governing policies
 

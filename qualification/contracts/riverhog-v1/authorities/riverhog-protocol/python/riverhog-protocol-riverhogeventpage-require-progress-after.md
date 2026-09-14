@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.RiverhogEventPage](riverhog-protocol-riverhogeventpage.md)
+- [RiverhogEventPage](riverhog-protocol-riverhogeventpage.md)
 
 ## Governing policies
 

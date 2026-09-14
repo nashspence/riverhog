@@ -35,9 +35,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_aws.AwsDeepArchiveReadPreparation.status](riverhog-storage-adapter-aws-awsdeeparchivereadpreparation-status.md)
-- [riverhog_storage_adapter_aws.AwsDeepArchiveReadPreparation.prepare](riverhog-storage-adapter-aws-awsdeeparchivereadpreparation-prepare.md)
-- [riverhog_storage_adapter_aws.AwsDeepArchiveReadPreparation.cleanup](riverhog-storage-adapter-aws-awsdeeparchivereadpreparation-cleanup.md)
+- [status](riverhog-storage-adapter-aws-awsdeeparchivereadpreparation-status.md)
+- [prepare](riverhog-storage-adapter-aws-awsdeeparchivereadpreparation-prepare.md)
+- [cleanup](riverhog-storage-adapter-aws-awsdeeparchivereadpreparation-cleanup.md)
 
 ## Governing policies
 

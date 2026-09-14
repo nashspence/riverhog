@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.JoinDeclaration](stove0-protocol-joindeclaration.md)
+- [JoinDeclaration](stove0-protocol-joindeclaration.md)
 
 ## Governing policies
 

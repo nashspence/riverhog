@@ -31,10 +31,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: ApplicationKeyId](schemas-applicationkeyid.md)
-- [schemas: ApplicationName](schemas-applicationname.md)
-- [schemas: ApplicationPermission](schemas-applicationpermission.md)
-- [schemas: ApplicationResource](schemas-applicationresource.md)
+- [ApplicationKeyId](schemas-applicationkeyid.md)
+- [ApplicationName](schemas-applicationname.md)
+- [ApplicationPermission](schemas-applicationpermission.md)
+- [ApplicationResource](schemas-applicationresource.md)
 
 ## Governing policies
 

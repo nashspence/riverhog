@@ -42,7 +42,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: TargetPlanBinding](schemas-targetplanbinding.md)
+- [TargetPlanBinding](schemas-targetplanbinding.md)
 
 ## Governing policies
 

@@ -42,7 +42,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.TransformCapabilityCreateDocument.validate_capability](riverhog-protocol-transformcapabilitycreatedocument-validate-capability.md)
+- [validate_capability](riverhog-protocol-transformcapabilitycreatedocument-validate-capability.md)
 
 ## Governing policies
 

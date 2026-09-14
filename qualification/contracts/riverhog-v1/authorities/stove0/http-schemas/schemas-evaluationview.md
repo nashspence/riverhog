@@ -53,9 +53,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: EvaluationChildView](schemas-evaluationchildview.md)
-- [schemas: EvaluationDefinition](schemas-evaluationdefinition.md)
-- [schemas: EvaluationReviewView](schemas-evaluationreviewview.md)
+- [EvaluationChildView](schemas-evaluationchildview.md)
+- [EvaluationDefinition](schemas-evaluationdefinition.md)
+- [EvaluationReviewView](schemas-evaluationreviewview.md)
 
 ## Governing policies
 

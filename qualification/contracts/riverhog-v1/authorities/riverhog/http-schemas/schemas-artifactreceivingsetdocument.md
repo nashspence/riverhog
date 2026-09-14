@@ -40,7 +40,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md)
+- [ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md)
 
 ## Governing policies
 

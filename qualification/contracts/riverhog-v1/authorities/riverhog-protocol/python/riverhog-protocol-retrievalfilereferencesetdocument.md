@@ -47,7 +47,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.RetrievalFileReferenceSetDocument.validate_exact_reference_set](riverhog-protocol-retrievalfilereferencesetdocument-validate-exact-reference-set.md)
+- [validate_exact_reference_set](riverhog-protocol-retrievalfilereferencesetdocument-validate-exact-reference-set.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.TransformCapabilityCreateDocument](riverhog-protocol-transformcapabilitycreatedocument.md)
+- [TransformCapabilityCreateDocument](riverhog-protocol-transformcapabilitycreatedocument.md)
 
 ## Governing policies
 

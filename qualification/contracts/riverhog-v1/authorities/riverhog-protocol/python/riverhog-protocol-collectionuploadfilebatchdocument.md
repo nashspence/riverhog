@@ -51,7 +51,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionUploadFileBatchDocument.validate_unique_file_paths](riverhog-protocol-collectionuploadfilebatchdocument-validate-unique-file-paths.md)
+- [validate_unique_file_paths](riverhog-protocol-collectionuploadfilebatchdocument-validate-unique-file-paths.md)
 
 ## Governing policies
 

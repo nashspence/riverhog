@@ -41,7 +41,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.SemanticValidationProfilePayload.canonical_rules](stove0-protocol-semanticvalidationprofilepayload-canonical-rules.md)
+- [canonical_rules](stove0-protocol-semanticvalidationprofilepayload-canonical-rules.md)
 
 ## Governing policies
 

@@ -28,11 +28,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.Stove0Coordinator.cancel](stove0-core-stove0coordinator-cancel.md)
-- [stove0_core.Stove0Coordinator.create_or_resume](stove0-core-stove0coordinator-create-or-resume.md)
-- [stove0_core.Stove0Coordinator.inspect_coordination](stove0-core-stove0coordinator-inspect-coordination.md)
-- [stove0_core.Stove0Coordinator.retry](stove0-core-stove0coordinator-retry.md)
-- [stove0_core.Stove0Coordinator.step](stove0-core-stove0coordinator-step.md)
+- [cancel](stove0-core-stove0coordinator-cancel.md)
+- [create_or_resume](stove0-core-stove0coordinator-create-or-resume.md)
+- [inspect_coordination](stove0-core-stove0coordinator-inspect-coordination.md)
+- [retry](stove0-core-stove0coordinator-retry.md)
+- [step](stove0-core-stove0coordinator-step.md)
 
 ## Governing policies
 

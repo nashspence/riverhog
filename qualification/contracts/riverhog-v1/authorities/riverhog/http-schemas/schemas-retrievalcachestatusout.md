@@ -44,8 +44,8 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: RetrievalCachePolicyOut](schemas-retrievalcachepolicyout.md)
-- [schemas: RetrievalCacheStoreStatusOut](schemas-retrievalcachestorestatusout.md)
+- [RetrievalCachePolicyOut](schemas-retrievalcachepolicyout.md)
+- [RetrievalCacheStoreStatusOut](schemas-retrievalcachestorestatusout.md)
 
 ## Governing policies
 

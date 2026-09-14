@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_media_archive_target_contracts.MediaProjectionPolicy](stove0-media-archive-target-contracts-mediaprojectionpolicy.md)
+- [MediaProjectionPolicy](stove0-media-archive-target-contracts-mediaprojectionpolicy.md)
 
 ## Governing policies
 

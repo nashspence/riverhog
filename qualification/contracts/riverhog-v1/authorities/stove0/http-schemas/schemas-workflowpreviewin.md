@@ -49,8 +49,8 @@ Shared facts for every subject below: maximum=160; minimum=1; reason="schema-max
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionRootRef](schemas-collectionrootref.md)
-- [schemas: JsonValue](schemas-jsonvalue.md)
+- [CollectionRootRef](schemas-collectionrootref.md)
+- [JsonValue](schemas-jsonvalue.md)
 
 ## Governing policies
 

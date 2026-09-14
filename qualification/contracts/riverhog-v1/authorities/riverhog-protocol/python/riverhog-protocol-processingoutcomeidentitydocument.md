@@ -49,7 +49,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.ProcessingOutcomeIdentityDocument.validate_identity](riverhog-protocol-processingoutcomeidentitydocument-validate-identity.md)
+- [validate_identity](riverhog-protocol-processingoutcomeidentitydocument-validate-identity.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_archive_contracts.AgeUploadState](riverhog-archive-contracts-ageuploadstate.md)
+- [AgeUploadState](riverhog-archive-contracts-ageuploadstate.md)
 
 ## Governing policies
 

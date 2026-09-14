@@ -6,7 +6,9 @@ Persisted structures, schema heads, and v1 transition obligations.
 
 ## Semantic dossiers
 
-- [gogurt-listener durable-state identity](gogurt-listener-durable-state-identity.md)
-- [gogurt-listener: dispatches](gogurt-listener-dispatches.md)
-- [gogurt-listener: listener_meta](gogurt-listener-listener-meta.md)
-- [gogurt-listener: observed_mounts](gogurt-listener-observed-mounts.md)
+| Exact unit | Kind |
+|---|---|
+| [Schema identity](gogurt-listener-durable-state-identity.md) | Schema identity |
+| [dispatches](gogurt-listener-dispatches.md) | Relational table |
+| [listener_meta](gogurt-listener-listener-meta.md) | Relational table |
+| [observed_mounts](gogurt-listener-observed-mounts.md) | Relational table |

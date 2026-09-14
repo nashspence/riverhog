@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_linux_listener_host.SystemdUserAdapter](gogurt-linux-listener-host-systemduseradapter.md)
+- [SystemdUserAdapter](gogurt-linux-listener-host-systemduseradapter.md)
 
 ## Governing policies
 

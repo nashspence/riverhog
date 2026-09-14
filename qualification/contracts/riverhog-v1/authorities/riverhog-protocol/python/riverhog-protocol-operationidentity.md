@@ -35,8 +35,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.OperationIdentity.as_dict](riverhog-protocol-operationidentity-as-dict.md)
-- [riverhog_protocol.OperationIdentity.from_mapping](riverhog-protocol-operationidentity-from-mapping.md)
+- [as_dict](riverhog-protocol-operationidentity-as-dict.md)
+- [from_mapping](riverhog-protocol-operationidentity-from-mapping.md)
 
 ## Governing policies
 

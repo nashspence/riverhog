@@ -52,7 +52,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.ArtifactSelectionPage.bind_page](stove0-protocol-artifactselectionpage-bind-page.md)
+- [bind_page](stove0-protocol-artifactselectionpage-bind-page.md)
 
 ## Governing policies
 

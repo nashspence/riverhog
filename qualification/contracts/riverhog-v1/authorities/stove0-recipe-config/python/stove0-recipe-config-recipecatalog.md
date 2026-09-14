@@ -64,12 +64,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_recipe_config.RecipeCatalog.load](stove0-recipe-config-recipecatalog-load.md)
-- [stove0_recipe_config.RecipeCatalog.operation](stove0-recipe-config-recipecatalog-operation.md)
-- [stove0_recipe_config.RecipeCatalog.recipe](stove0-recipe-config-recipecatalog-recipe.md)
-- [stove0_recipe_config.RecipeCatalog.sha256](stove0-recipe-config-recipecatalog-sha256.md)
-- [stove0_recipe_config.RecipeCatalog.valid_catalog](stove0-recipe-config-recipecatalog-valid-catalog.md)
-- [stove0_recipe_config.RecipeCatalog.validation_document](stove0-recipe-config-recipecatalog-validation-document.md)
+- [load](stove0-recipe-config-recipecatalog-load.md)
+- [operation](stove0-recipe-config-recipecatalog-operation.md)
+- [recipe](stove0-recipe-config-recipecatalog-recipe.md)
+- [sha256](stove0-recipe-config-recipecatalog-sha256.md)
+- [valid_catalog](stove0-recipe-config-recipecatalog-valid-catalog.md)
+- [validation_document](stove0-recipe-config-recipecatalog-validation-document.md)
 
 ## Governing policies
 

@@ -39,7 +39,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: SchedulerFailure](schemas-schedulerfailure.md)
+- [SchedulerFailure](schemas-schedulerfailure.md)
 
 ## Governing policies
 

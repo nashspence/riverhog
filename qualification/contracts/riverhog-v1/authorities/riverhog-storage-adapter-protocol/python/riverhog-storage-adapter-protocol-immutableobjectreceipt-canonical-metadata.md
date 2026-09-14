@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.ImmutableObjectReceipt](riverhog-storage-adapter-protocol-immutableobjectreceipt.md)
+- [ImmutableObjectReceipt](riverhog-storage-adapter-protocol-immutableobjectreceipt.md)
 
 ## Governing policies
 

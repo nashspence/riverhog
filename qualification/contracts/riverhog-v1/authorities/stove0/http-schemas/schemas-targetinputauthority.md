@@ -39,8 +39,8 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: ArtifactSelectionRef](schemas-artifactselectionref.md)
-- [schemas: TargetInputRoleCount](schemas-targetinputrolecount.md)
+- [ArtifactSelectionRef](schemas-artifactselectionref.md)
+- [TargetInputRoleCount](schemas-targetinputrolecount.md)
 
 ## Governing policies
 

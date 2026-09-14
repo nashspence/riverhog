@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.OperationRef](stove0-protocol-operationref.md)
+- [OperationRef](stove0-protocol-operationref.md)
 
 ## Governing policies
 

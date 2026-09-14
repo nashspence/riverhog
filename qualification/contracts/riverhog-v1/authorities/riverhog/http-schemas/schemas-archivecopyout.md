@@ -20,9 +20,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: FailedArchiveCopyOut](schemas-failedarchivecopyout.md)
-- [schemas: IncompleteArchiveCopyOut](schemas-incompletearchivecopyout.md)
-- [schemas: UploadedArchiveCopyOut](schemas-uploadedarchivecopyout.md)
+- [FailedArchiveCopyOut](schemas-failedarchivecopyout.md)
+- [IncompleteArchiveCopyOut](schemas-incompletearchivecopyout.md)
+- [UploadedArchiveCopyOut](schemas-uploadedarchivecopyout.md)
 
 ## Governing policies
 

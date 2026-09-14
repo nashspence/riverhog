@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_listener_runtime.ListenerRuntime](gogurt-listener-runtime-listenerruntime.md)
+- [ListenerRuntime](gogurt-listener-runtime-listenerruntime.md)
 
 ## Governing policies
 

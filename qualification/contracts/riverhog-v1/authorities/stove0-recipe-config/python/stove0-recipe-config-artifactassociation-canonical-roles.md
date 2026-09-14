@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_recipe_config.ArtifactAssociation](stove0-recipe-config-artifactassociation.md)
+- [ArtifactAssociation](stove0-recipe-config-artifactassociation.md)
 
 ## Governing policies
 

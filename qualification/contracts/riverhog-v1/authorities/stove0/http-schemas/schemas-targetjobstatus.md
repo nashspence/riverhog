@@ -60,13 +60,13 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: ExternalEffectReceipt](schemas-externaleffectreceipt.md)
-- [schemas: OutputCollectionRef](schemas-outputcollectionref.md)
-- [schemas: TargetExecutionEvidence](schemas-targetexecutionevidence.md)
-- [schemas: TargetFailure](schemas-targetfailure.md)
-- [schemas: TargetInapplicable](schemas-targetinapplicable.md)
-- [schemas: TargetProductionAuthority](schemas-targetproductionauthority.md)
-- [schemas: TargetProgress](schemas-targetprogress.md)
+- [ExternalEffectReceipt](schemas-externaleffectreceipt.md)
+- [OutputCollectionRef](schemas-outputcollectionref.md)
+- [TargetExecutionEvidence](schemas-targetexecutionevidence.md)
+- [TargetFailure](schemas-targetfailure.md)
+- [TargetInapplicable](schemas-targetinapplicable.md)
+- [TargetProductionAuthority](schemas-targetproductionauthority.md)
+- [TargetProgress](schemas-targetprogress.md)
 
 ## Governing policies
 

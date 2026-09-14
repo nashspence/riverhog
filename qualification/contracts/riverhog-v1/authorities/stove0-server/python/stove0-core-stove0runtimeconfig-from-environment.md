@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.Stove0RuntimeConfig](stove0-core-stove0runtimeconfig.md)
+- [Stove0RuntimeConfig](stove0-core-stove0runtimeconfig.md)
 
 ## Governing policies
 

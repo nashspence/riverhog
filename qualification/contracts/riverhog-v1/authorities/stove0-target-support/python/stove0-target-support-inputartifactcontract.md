@@ -42,8 +42,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.InputArtifactContract.validate_cardinality](stove0-target-support-inputartifactcontract-validate-cardinality.md)
-- [stove0_target_support.InputArtifactContract.canonical_dispositions](stove0-target-support-inputartifactcontract-canonical-dispositions.md)
+- [validate_cardinality](stove0-target-support-inputartifactcontract-validate-cardinality.md)
+- [canonical_dispositions](stove0-target-support-inputartifactcontract-canonical-dispositions.md)
 
 ## Governing policies
 

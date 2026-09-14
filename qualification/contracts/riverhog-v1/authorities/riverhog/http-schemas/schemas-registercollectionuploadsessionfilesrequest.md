@@ -37,7 +37,7 @@ Shared facts for every subject below: maximum=100; minimum=1; progression={"prog
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionUploadFileIn](schemas-collectionuploadfilein.md)
+- [CollectionUploadFileIn](schemas-collectionuploadfilein.md)
 
 ## Governing policies
 

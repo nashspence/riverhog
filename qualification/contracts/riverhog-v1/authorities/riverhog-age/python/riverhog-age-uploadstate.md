@@ -37,8 +37,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_age.UploadState.from_json_bytes](riverhog-age-uploadstate-from-json-bytes.md)
-- [riverhog_age.UploadState.to_json_bytes](riverhog-age-uploadstate-to-json-bytes.md)
+- [from_json_bytes](riverhog-age-uploadstate-from-json-bytes.md)
+- [to_json_bytes](riverhog-age-uploadstate-to-json-bytes.md)
 
 ## Governing policies
 

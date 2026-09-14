@@ -47,7 +47,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_media_sampling_observer_contracts.MediaSamplingArtifactFacts.validate_ranges](stove0-media-sampling-observer-contracts-mediasamplingartifactfacts-validate-ranges.md)
+- [validate_ranges](stove0-media-sampling-observer-contracts-mediasamplingartifactfacts-validate-ranges.md)
 
 ## Governing policies
 

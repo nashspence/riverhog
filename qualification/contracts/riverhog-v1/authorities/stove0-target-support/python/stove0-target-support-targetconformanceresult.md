@@ -103,7 +103,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.TargetConformanceResult.validate_result](stove0-target-support-targetconformanceresult-validate-result.md)
+- [validate_result](stove0-target-support-targetconformanceresult-validate-result.md)
 
 ## Governing policies
 

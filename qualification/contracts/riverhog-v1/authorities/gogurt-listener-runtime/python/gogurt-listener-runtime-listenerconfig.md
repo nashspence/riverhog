@@ -41,10 +41,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_listener_runtime.ListenerConfig.content](gogurt-listener-runtime-listenerconfig-content.md)
-- [gogurt_listener_runtime.ListenerConfig.payload](gogurt-listener-runtime-listenerconfig-payload.md)
-- [gogurt_listener_runtime.ListenerConfig.read](gogurt-listener-runtime-listenerconfig-read.md)
-- [gogurt_listener_runtime.ListenerConfig.write](gogurt-listener-runtime-listenerconfig-write.md)
+- [content](gogurt-listener-runtime-listenerconfig-content.md)
+- [payload](gogurt-listener-runtime-listenerconfig-payload.md)
+- [read](gogurt-listener-runtime-listenerconfig-read.md)
+- [write](gogurt-listener-runtime-listenerconfig-write.md)
 
 ## Governing policies
 

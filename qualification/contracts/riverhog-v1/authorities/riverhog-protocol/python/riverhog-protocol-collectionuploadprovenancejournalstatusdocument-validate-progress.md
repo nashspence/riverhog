@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument](riverhog-protocol-collectionuploadprovenancejournalstatusdocument.md)
+- [CollectionUploadProvenanceJournalStatusDocument](riverhog-protocol-collectionuploadprovenancejournalstatusdocument.md)
 
 ## Governing policies
 

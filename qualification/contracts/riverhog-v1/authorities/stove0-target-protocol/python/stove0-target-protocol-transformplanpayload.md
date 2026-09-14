@@ -56,7 +56,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.TransformPlanPayload.canonical_observation_results](stove0-target-protocol-transformplanpayload-canonical-observation-results.md)
+- [canonical_observation_results](stove0-target-protocol-transformplanpayload-canonical-observation-results.md)
 
 ## Governing policies
 

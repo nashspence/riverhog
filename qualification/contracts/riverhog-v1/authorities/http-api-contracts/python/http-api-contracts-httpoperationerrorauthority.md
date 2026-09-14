@@ -28,10 +28,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [http_api_contracts.HttpOperationErrorAuthority.errors_for](http-api-contracts-httpoperationerrorauthority-errors-for.md)
-- [http_api_contracts.HttpOperationErrorAuthority.from_codes](http-api-contracts-httpoperationerrorauthority-from-codes.md)
-- [http_api_contracts.HttpOperationErrorAuthority.operation_ids](http-api-contracts-httpoperationerrorauthority-operation-ids.md)
-- [http_api_contracts.HttpOperationErrorAuthority.accepts](http-api-contracts-httpoperationerrorauthority-accepts.md)
+- [errors_for](http-api-contracts-httpoperationerrorauthority-errors-for.md)
+- [from_codes](http-api-contracts-httpoperationerrorauthority-from-codes.md)
+- [operation_ids](http-api-contracts-httpoperationerrorauthority-operation-ids.md)
+- [accepts](http-api-contracts-httpoperationerrorauthority-accepts.md)
 
 ## Governing policies
 

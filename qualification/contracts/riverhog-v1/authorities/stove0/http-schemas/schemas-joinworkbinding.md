@@ -50,7 +50,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: JoinWorkMemberBinding](schemas-joinworkmemberbinding.md)
+- [JoinWorkMemberBinding](schemas-joinworkmemberbinding.md)
 
 ## Governing policies
 

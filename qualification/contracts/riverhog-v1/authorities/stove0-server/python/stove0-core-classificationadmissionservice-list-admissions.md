@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.ClassificationAdmissionService](stove0-core-classificationadmissionservice.md)
+- [ClassificationAdmissionService](stove0-core-classificationadmissionservice.md)
 
 ## Governing policies
 

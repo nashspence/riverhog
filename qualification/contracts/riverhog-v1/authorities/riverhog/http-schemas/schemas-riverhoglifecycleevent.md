@@ -23,20 +23,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: ArchiveCopyCanceledEvent](schemas-archivecopycanceledevent.md)
-- [schemas: ArchiveCopyCompletedEvent](schemas-archivecopycompletedevent.md)
-- [schemas: ArchiveCopyIssueEvent](schemas-archivecopyissueevent.md)
-- [schemas: ArchiveCopyRequestedEvent](schemas-archivecopyrequestedevent.md)
-- [schemas: CollectionDeletedEvent](schemas-collectiondeletedevent.md)
-- [schemas: CollectionFinalizedEvent](schemas-collectionfinalizedevent.md)
-- [schemas: RetrievalCanceledEvent](schemas-retrievalcanceledevent.md)
-- [schemas: RetrievalCompletedEvent](schemas-retrievalcompletedevent.md)
-- [schemas: RetrievalExpiredEvent](schemas-retrievalexpiredevent.md)
-- [schemas: RetrievalFailedEvent](schemas-retrievalfailedevent.md)
-- [schemas: RetrievalIssueEvent](schemas-retrievalissueevent.md)
-- [schemas: RetrievalReadyEvent](schemas-retrievalreadyevent.md)
-- [schemas: RetrievalRenewedEvent](schemas-retrievalrenewedevent.md)
-- [schemas: RetrievalRequestedEvent](schemas-retrievalrequestedevent.md)
+- [ArchiveCopyCanceledEvent](schemas-archivecopycanceledevent.md)
+- [ArchiveCopyCompletedEvent](schemas-archivecopycompletedevent.md)
+- [ArchiveCopyIssueEvent](schemas-archivecopyissueevent.md)
+- [ArchiveCopyRequestedEvent](schemas-archivecopyrequestedevent.md)
+- [CollectionDeletedEvent](schemas-collectiondeletedevent.md)
+- [CollectionFinalizedEvent](schemas-collectionfinalizedevent.md)
+- [RetrievalCanceledEvent](schemas-retrievalcanceledevent.md)
+- [RetrievalCompletedEvent](schemas-retrievalcompletedevent.md)
+- [RetrievalExpiredEvent](schemas-retrievalexpiredevent.md)
+- [RetrievalFailedEvent](schemas-retrievalfailedevent.md)
+- [RetrievalIssueEvent](schemas-retrievalissueevent.md)
+- [RetrievalReadyEvent](schemas-retrievalreadyevent.md)
+- [RetrievalRenewedEvent](schemas-retrievalrenewedevent.md)
+- [RetrievalRequestedEvent](schemas-retrievalrequestedevent.md)
 
 ## Governing policies
 

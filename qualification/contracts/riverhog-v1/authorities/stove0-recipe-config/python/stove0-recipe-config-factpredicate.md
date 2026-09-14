@@ -51,7 +51,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_recipe_config.FactPredicate.valid_scope](stove0-recipe-config-factpredicate-valid-scope.md)
+- [valid_scope](stove0-recipe-config-factpredicate-valid-scope.md)
 
 ## Governing policies
 

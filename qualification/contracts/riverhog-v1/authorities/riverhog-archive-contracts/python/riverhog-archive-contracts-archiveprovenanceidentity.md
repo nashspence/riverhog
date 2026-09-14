@@ -35,8 +35,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_archive_contracts.ArchiveProvenanceIdentity.to_mapping](riverhog-archive-contracts-archiveprovenanceidentity-to-mapping.md)
-- [riverhog_archive_contracts.ArchiveProvenanceIdentity.from_mapping](riverhog-archive-contracts-archiveprovenanceidentity-from-mapping.md)
+- [to_mapping](riverhog-archive-contracts-archiveprovenanceidentity-to-mapping.md)
+- [from_mapping](riverhog-archive-contracts-archiveprovenanceidentity-from-mapping.md)
 
 ## Governing policies
 

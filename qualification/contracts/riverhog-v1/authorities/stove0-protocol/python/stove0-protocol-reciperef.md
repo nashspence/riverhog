@@ -41,8 +41,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.RecipeRef.from_identity](stove0-protocol-reciperef-from-identity.md)
-- [stove0_protocol.RecipeRef.to_identity](stove0-protocol-reciperef-to-identity.md)
+- [from_identity](stove0-protocol-reciperef-from-identity.md)
+- [to_identity](stove0-protocol-reciperef-to-identity.md)
 
 ## Governing policies
 

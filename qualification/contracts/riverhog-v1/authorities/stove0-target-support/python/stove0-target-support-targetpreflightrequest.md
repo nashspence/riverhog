@@ -64,7 +64,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.TargetPreflightRequest.canonical_observations](stove0-target-support-targetpreflightrequest-canonical-observations.md)
+- [canonical_observations](stove0-target-support-targetpreflightrequest-canonical-observations.md)
 
 ## Governing policies
 

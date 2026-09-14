@@ -46,7 +46,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [lifecycle_events.CloudEvent.validate_time](lifecycle-events-cloudevent-validate-time.md)
+- [validate_time](lifecycle-events-cloudevent-validate-time.md)
 
 ## Governing policies
 

@@ -41,7 +41,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_operator_contracts.SchedulerFailure.one_subject](stove0-operator-contracts-schedulerfailure-one-subject.md)
+- [one_subject](stove0-operator-contracts-schedulerfailure-one-subject.md)
 
 ## Governing policies
 

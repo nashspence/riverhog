@@ -30,7 +30,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: ApplicationName](schemas-applicationname.md)
+- [ApplicationName](schemas-applicationname.md)
 
 ## Governing policies
 

@@ -54,7 +54,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_protocol.TargetInputPage.bind_page](stove0-target-protocol-targetinputpage-bind-page.md)
+- [bind_page](stove0-target-protocol-targetinputpage-bind-page.md)
 
 ## Governing policies
 

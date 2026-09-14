@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_protocol.SemanticFactsConformanceVector](stove0-observer-protocol-semanticfactsconformancevector.md)
+- [SemanticFactsConformanceVector](stove0-observer-protocol-semanticfactsconformancevector.md)
 
 ## Governing policies
 

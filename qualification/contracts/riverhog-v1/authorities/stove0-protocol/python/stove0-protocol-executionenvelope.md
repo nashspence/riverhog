@@ -69,8 +69,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.ExecutionEnvelope.seal](stove0-protocol-executionenvelope-seal.md)
-- [stove0_protocol.ExecutionEnvelope.verify_digest](stove0-protocol-executionenvelope-verify-digest.md)
+- [seal](stove0-protocol-executionenvelope-seal.md)
+- [verify_digest](stove0-protocol-executionenvelope-verify-digest.md)
 
 ## Governing policies
 

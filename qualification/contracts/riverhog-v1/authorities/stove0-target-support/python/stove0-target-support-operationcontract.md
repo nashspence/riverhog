@@ -57,8 +57,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.OperationContract.seal](stove0-target-support-operationcontract-seal.md)
-- [stove0_target_support.OperationContract.verify_digest](stove0-target-support-operationcontract-verify-digest.md)
+- [seal](stove0-target-support-operationcontract-seal.md)
+- [verify_digest](stove0-target-support-operationcontract-verify-digest.md)
 
 ## Governing policies
 

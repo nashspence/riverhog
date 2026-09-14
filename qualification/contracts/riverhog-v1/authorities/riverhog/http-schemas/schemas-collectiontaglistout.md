@@ -50,9 +50,9 @@ Shared facts for every subject below: progression={"authority":"collection-tag-s
 
 ### Referenced contract dossiers
 
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: CollectionTag](schemas-collectiontag.md)
+- [BrowsePageToken](schemas-browsepagetoken.md)
+- [CollectionId](schemas-collectionid.md)
+- [CollectionTag](schemas-collectiontag.md)
 
 ## Governing policies
 

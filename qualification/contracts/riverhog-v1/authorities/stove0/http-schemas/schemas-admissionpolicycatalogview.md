@@ -46,7 +46,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: AdmissionPolicyStatus](schemas-admissionpolicystatus.md)
+- [AdmissionPolicyStatus](schemas-admissionpolicystatus.md)
 
 ## Governing policies
 

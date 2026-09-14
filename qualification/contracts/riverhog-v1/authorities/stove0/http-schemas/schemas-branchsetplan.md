@@ -57,10 +57,10 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: BranchPlan](schemas-branchplan.md)
-- [schemas: CoordinationBranchPlan](schemas-coordinationbranchplan.md)
-- [schemas: JoinDeclaration](schemas-joindeclaration.md)
-- [schemas: WorkIdentity](schemas-workidentity.md)
+- [BranchPlan](schemas-branchplan.md)
+- [CoordinationBranchPlan](schemas-coordinationbranchplan.md)
+- [JoinDeclaration](schemas-joindeclaration.md)
+- [WorkIdentity](schemas-workidentity.md)
 
 ## Governing policies
 

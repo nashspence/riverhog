@@ -34,7 +34,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: WorkCreatedEventData](schemas-workcreatedeventdata.md)
+- [WorkCreatedEventData](schemas-workcreatedeventdata.md)
 
 ## Governing policies
 

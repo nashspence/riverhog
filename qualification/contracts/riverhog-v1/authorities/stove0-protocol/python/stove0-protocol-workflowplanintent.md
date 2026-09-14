@@ -54,9 +54,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.WorkflowPlanIntent.from_plan](stove0-protocol-workflowplanintent-from-plan.md)
-- [stove0_protocol.WorkflowPlanIntent.materialize](stove0-protocol-workflowplanintent-materialize.md)
-- [stove0_protocol.WorkflowPlanIntent.validate_retirement](stove0-protocol-workflowplanintent-validate-retirement.md)
+- [from_plan](stove0-protocol-workflowplanintent-from-plan.md)
+- [materialize](stove0-protocol-workflowplanintent-materialize.md)
+- [validate_retirement](stove0-protocol-workflowplanintent-validate-retirement.md)
 
 ## Governing policies
 

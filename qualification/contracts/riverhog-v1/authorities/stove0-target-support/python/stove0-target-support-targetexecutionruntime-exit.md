@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.TargetExecutionRuntime](stove0-target-support-targetexecutionruntime.md)
+- [TargetExecutionRuntime](stove0-target-support-targetexecutionruntime.md)
 
 ## Governing policies
 

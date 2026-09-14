@@ -28,8 +28,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.transform.DerivedCollectionWriter.replace_api](riverhog-client-transform-derivedcollectionwriter-replace-api.md)
-- [riverhog_client.transform.DerivedCollectionWriter.publish](riverhog-client-transform-derivedcollectionwriter-publish.md)
+- [replace_api](riverhog-client-transform-derivedcollectionwriter-replace-api.md)
+- [publish](riverhog-client-transform-derivedcollectionwriter-publish.md)
 
 ## Governing policies
 

@@ -42,8 +42,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_observer_protocol.SemanticValidationProfile.verify_digest](stove0-observer-protocol-semanticvalidationprofile-verify-digest.md)
-- [stove0_observer_protocol.SemanticValidationProfile.seal](stove0-observer-protocol-semanticvalidationprofile-seal.md)
+- [verify_digest](stove0-observer-protocol-semanticvalidationprofile-verify-digest.md)
+- [seal](stove0-observer-protocol-semanticvalidationprofile-seal.md)
 
 ## Governing policies
 

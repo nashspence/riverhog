@@ -29,8 +29,8 @@ One canonical public application-access request or response grant.
 
 ### Referenced contract dossiers
 
-- [schemas: ApplicationPermission](schemas-applicationpermission.md)
-- [schemas: ApplicationResource](schemas-applicationresource.md)
+- [ApplicationPermission](schemas-applicationpermission.md)
+- [ApplicationResource](schemas-applicationresource.md)
 
 ## Governing policies
 

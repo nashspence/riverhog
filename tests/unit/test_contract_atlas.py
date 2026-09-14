@@ -5,6 +5,7 @@ import json
 import re
 import sys
 from collections import Counter
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, cast
 
@@ -540,7 +541,7 @@ def test_cli_dossiers_expose_exact_result_and_failure_contracts() -> None:
         "### Command groups"
     )
     assert "piggity-cli-human-json/v1" not in piggity_index
-    assert "- [collection upload start](piggity-collection-upload-start.md)" in piggity_index
+    assert "- [upload start](piggity-collection-upload-start.md)" in piggity_index
 
     collection_list = next(
         item for item in executable if item["title"] == "piggity collection list"
@@ -694,6 +695,7 @@ def test_python_contract_units_are_exact_and_navigate_module_export_member() -> 
 
 def test_interface_inventory_labels_are_contextual_unique_and_canonically_ordered() -> None:
     checked = checked_atlas()
+    assert set(atlas.NAVIGATION_PROVIDERS) == set(atlas.INTERFACE_LABELS)
     runtime_path = "riverhog-v1/authorities/release/runtime-images/index.md"
     runtime_page = checked.files[runtime_path].decode()
     runtime_elements = sorted(
@@ -721,6 +723,31 @@ def test_interface_inventory_labels_are_contextual_unique_and_canonically_ordere
     mango = checked.files["riverhog-v1/authorities/mango-fish/cli/index.md"].decode()
     assert "- [mango-fish](mango-fish.md)" in mango
 
+    durable = checked.files[
+        "riverhog-v1/authorities/riverhog-catalog/durable-state/index.md"
+    ].decode()
+    assert "| Exact unit | Kind |" in durable
+    assert "| [Schema identity](riverhog-catalog-durable-state-identity.md) | " in durable
+    assert "| Relational table |" in durable
+
+    for authority in {str(item["authority"]) for item in checked.root["elements"]}:
+        for interface in {
+            str(item["interface"])
+            for item in checked.root["elements"]
+            if item["authority"] == authority
+        }:
+            values = [
+                item
+                for item in checked.root["elements"]
+                if item["authority"] == authority and item["interface"] == interface
+            ]
+            labels = atlas._interface_navigation_labels(interface, values)
+            page_path = atlas._interface_index_path(authority, interface)
+            page = checked.files[page_path].decode()
+            for item in values:
+                link = atlas._relative_link(page_path, str(item["dossier"]))
+                assert page.count(f"[{atlas._md(labels[str(item['id'])])}]({link})") == 1
+
     items = [
         {"id": "a", "title": "alpha.same"},
         {"id": "b", "title": "beta.same"},
@@ -734,6 +761,58 @@ def test_interface_inventory_labels_are_contextual_unique_and_canonically_ordere
             [{"id": "a", "title": "same"}, {"id": "b", "title": "same"}],
             lambda item: [str(item["title"])],
         )
+
+
+def test_navigation_is_representation_only(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    checked = checked_atlas()
+    component_descriptions = {
+        str(item["name"]): str(item["description"])
+        for item in checked.root["atlas"]["relationships"]["nodes"]
+        if item["kind"] == "component"
+    }
+    original = atlas.NAVIGATION_PROVIDERS["schema"]
+    semantic_identity_names = {
+        "boundary_canonical_sha256",
+        "boundary_legacy_sha256",
+        "external_contract_sha256",
+        "semantic_contract_sha256",
+        "coverage_sha256",
+        "trace_sha256",
+    }
+    semantic_identities = {key: checked.root["identities"][key] for key in semantic_identity_names}
+
+    def changed_schema_navigation(item: Mapping[str, object]) -> atlas.NavigationIdentity:
+        identity = original(item)
+        return atlas.NavigationIdentity(
+            (f"Rendered {identity.components[0]}",),
+            kind=identity.kind,
+        )
+
+    monkeypatch.setitem(atlas.NAVIGATION_PROVIDERS, "schema", changed_schema_navigation)
+    _files, documents, relationship = atlas._render_atlas(
+        checked.root["elements"],
+        checked.root["policies"],
+        checked.root["projection"],
+        checked.root["trace"],
+        checked.root["identities"],
+        checked.root["discovery"]["exclusions"],
+        checked.root["discovery"],
+        component_descriptions,
+    )
+
+    changed_representation = {
+        "schema": atlas.REPRESENTATION_IDENTITY_SCHEMA,
+        "documents": documents,
+        "relationships": relationship,
+    }
+    assert semantic_identities == {
+        key: checked.root["identities"][key] for key in semantic_identity_names
+    }
+    assert checked.root["identities"]["atlas_representation_sha256"] != atlas.canonical_sha256(
+        changed_representation
+    )
 
 
 def test_exact_protocol_and_python_unit_validation_fails_closed_on_drift() -> None:

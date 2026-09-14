@@ -52,12 +52,12 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: BranchWorkBinding](schemas-branchworkbinding.md)
-- [schemas: CollectionRootRef](schemas-collectionrootref.md)
-- [schemas: EvaluationBinding](schemas-evaluationbinding.md)
-- [schemas: JoinWorkBinding](schemas-joinworkbinding.md)
-- [schemas: JsonValue](schemas-jsonvalue.md)
-- [schemas: RecipeRef](schemas-reciperef.md)
+- [BranchWorkBinding](schemas-branchworkbinding.md)
+- [CollectionRootRef](schemas-collectionrootref.md)
+- [EvaluationBinding](schemas-evaluationbinding.md)
+- [JoinWorkBinding](schemas-joinworkbinding.md)
+- [JsonValue](schemas-jsonvalue.md)
+- [RecipeRef](schemas-reciperef.md)
 
 ## Governing policies
 

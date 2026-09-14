@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.transform.ClaimedArtifact](riverhog-client-transform-claimedartifact.md)
+- [ClaimedArtifact](riverhog-client-transform-claimedartifact.md)
 
 ## Governing policies
 

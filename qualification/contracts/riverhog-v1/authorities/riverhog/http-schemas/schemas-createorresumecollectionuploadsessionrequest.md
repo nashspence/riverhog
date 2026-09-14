@@ -62,9 +62,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: CollectionDescription](schemas-collectiondescription.md)
-- [schemas: CollectionTag](schemas-collectiontag.md)
+- [ArchiveStoreName](schemas-archivestorename.md)
+- [CollectionDescription](schemas-collectiondescription.md)
+- [CollectionTag](schemas-collectiontag.md)
 
 ## Governing policies
 

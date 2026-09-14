@@ -28,10 +28,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [state_schema.StateSchema.status](state-schema-stateschema-status.md)
-- [state_schema.StateSchema.upgrade_connection](state-schema-stateschema-upgrade-connection.md)
-- [state_schema.StateSchema.upgrade](state-schema-stateschema-upgrade.md)
-- [state_schema.StateSchema.validate](state-schema-stateschema-validate.md)
+- [status](state-schema-stateschema-status.md)
+- [upgrade_connection](state-schema-stateschema-upgrade-connection.md)
+- [upgrade](state-schema-stateschema-upgrade.md)
+- [validate](state-schema-stateschema-validate.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_archive_contracts.PackArchiveVolume](riverhog-archive-contracts-packarchivevolume.md)
+- [PackArchiveVolume](riverhog-archive-contracts-packarchivevolume.md)
 
 ## Governing policies
 

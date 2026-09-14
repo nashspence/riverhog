@@ -39,7 +39,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: TargetJobDeclaration](schemas-targetjobdeclaration.md)
+- [TargetJobDeclaration](schemas-targetjobdeclaration.md)
 
 ## Governing policies
 

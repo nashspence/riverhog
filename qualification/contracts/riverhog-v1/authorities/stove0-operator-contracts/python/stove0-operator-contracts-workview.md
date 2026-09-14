@@ -126,8 +126,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_operator_contracts.WorkView.exact_identity](stove0-operator-contracts-workview-exact-identity.md)
-- [stove0_operator_contracts.WorkView.from_record](stove0-operator-contracts-workview-from-record.md)
+- [exact_identity](stove0-operator-contracts-workview-exact-identity.md)
+- [from_record](stove0-operator-contracts-workview-from-record.md)
 
 ## Governing policies
 

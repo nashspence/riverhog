@@ -49,10 +49,10 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ### Referenced contract dossiers
 
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: ProvenanceJournalAgentOut](schemas-provenancejournalagentout.md)
-- [schemas: ProvenanceJournalId](schemas-provenancejournalid.md)
+- [BrowsePageToken](schemas-browsepagetoken.md)
+- [CollectionId](schemas-collectionid.md)
+- [ProvenanceJournalAgentOut](schemas-provenancejournalagentout.md)
+- [ProvenanceJournalId](schemas-provenancejournalid.md)
 
 ## Governing policies
 

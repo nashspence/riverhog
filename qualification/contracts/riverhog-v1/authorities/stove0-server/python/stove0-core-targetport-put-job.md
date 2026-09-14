@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.TargetPort](stove0-core-targetport.md)
+- [TargetPort](stove0-core-targetport.md)
 
 ## Governing policies
 

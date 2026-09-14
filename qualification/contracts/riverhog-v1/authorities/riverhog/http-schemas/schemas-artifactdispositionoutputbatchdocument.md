@@ -38,7 +38,7 @@ Shared facts for every subject below: maximum=128; minimum=1; progression={"prog
 
 ### Referenced contract dossiers
 
-- [schemas: ArtifactDispositionOutputDocument](schemas-artifactdispositionoutputdocument.md)
+- [ArtifactDispositionOutputDocument](schemas-artifactdispositionoutputdocument.md)
 
 ## Governing policies
 

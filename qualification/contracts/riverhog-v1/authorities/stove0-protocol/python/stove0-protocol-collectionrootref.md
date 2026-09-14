@@ -47,8 +47,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.CollectionRootRef.from_identity](stove0-protocol-collectionrootref-from-identity.md)
-- [stove0_protocol.CollectionRootRef.to_identity](stove0-protocol-collectionrootref-to-identity.md)
+- [from_identity](stove0-protocol-collectionrootref-from-identity.md)
+- [to_identity](stove0-protocol-collectionrootref-to-identity.md)
 
 ## Governing policies
 

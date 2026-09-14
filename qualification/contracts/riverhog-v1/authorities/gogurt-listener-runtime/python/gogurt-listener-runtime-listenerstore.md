@@ -28,13 +28,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt_listener_runtime.ListenerStore.create](gogurt-listener-runtime-listenerstore-create.md)
-- [gogurt_listener_runtime.ListenerStore.finish_dispatch](gogurt-listener-runtime-listenerstore-finish-dispatch.md)
-- [gogurt_listener_runtime.ListenerStore.mark_running_uncertain](gogurt-listener-runtime-listenerstore-mark-running-uncertain.md)
-- [gogurt_listener_runtime.ListenerStore.observe](gogurt-listener-runtime-listenerstore-observe.md)
-- [gogurt_listener_runtime.ListenerStore.runnable](gogurt-listener-runtime-listenerstore-runnable.md)
-- [gogurt_listener_runtime.ListenerStore.start_dispatch](gogurt-listener-runtime-listenerstore-start-dispatch.md)
-- [gogurt_listener_runtime.ListenerStore.summary](gogurt-listener-runtime-listenerstore-summary.md)
+- [create](gogurt-listener-runtime-listenerstore-create.md)
+- [finish_dispatch](gogurt-listener-runtime-listenerstore-finish-dispatch.md)
+- [mark_running_uncertain](gogurt-listener-runtime-listenerstore-mark-running-uncertain.md)
+- [observe](gogurt-listener-runtime-listenerstore-observe.md)
+- [runnable](gogurt-listener-runtime-listenerstore-runnable.md)
+- [start_dispatch](gogurt-listener-runtime-listenerstore-start-dispatch.md)
+- [summary](gogurt-listener-runtime-listenerstore-summary.md)
 
 ## Governing policies
 

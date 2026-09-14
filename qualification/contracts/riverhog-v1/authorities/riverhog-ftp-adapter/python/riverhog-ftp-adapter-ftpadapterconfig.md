@@ -59,9 +59,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_ftp_adapter.FtpAdapterConfig.provenance_authority](riverhog-ftp-adapter-ftpadapterconfig-provenance-authority.md)
-- [riverhog_ftp_adapter.FtpAdapterConfig.source](riverhog-ftp-adapter-ftpadapterconfig-source.md)
-- [riverhog_ftp_adapter.FtpAdapterConfig.unique_sources](riverhog-ftp-adapter-ftpadapterconfig-unique-sources.md)
+- [provenance_authority](riverhog-ftp-adapter-ftpadapterconfig-provenance-authority.md)
+- [source](riverhog-ftp-adapter-ftpadapterconfig-source.md)
+- [unique_sources](riverhog-ftp-adapter-ftpadapterconfig-unique-sources.md)
 
 ## Governing policies
 

@@ -39,7 +39,7 @@ Shared facts for every subject below: progression={"cursor_parameter":"after","k
 
 ### Referenced contract dossiers
 
-- [schemas: Stove0LifecycleEvent](schemas-stove0lifecycleevent.md)
+- [Stove0LifecycleEvent](schemas-stove0lifecycleevent.md)
 
 ## Governing policies
 

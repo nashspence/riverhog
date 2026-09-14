@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionUploadUnitSourceDocument](riverhog-protocol-collectionuploadunitsourcedocument.md)
+- [CollectionUploadUnitSourceDocument](riverhog-protocol-collectionuploadunitsourcedocument.md)
 
 ## Governing policies
 

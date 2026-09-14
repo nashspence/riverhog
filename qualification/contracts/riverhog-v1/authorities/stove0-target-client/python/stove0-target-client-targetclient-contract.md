@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_client.TargetClient](stove0-target-client-targetclient.md)
+- [TargetClient](stove0-target-client-targetclient.md)
 
 ## Governing policies
 

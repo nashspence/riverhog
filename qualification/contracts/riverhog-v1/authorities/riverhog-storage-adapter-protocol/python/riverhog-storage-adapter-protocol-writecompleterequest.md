@@ -51,8 +51,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.WriteCompleteRequest.canonical_metadata](riverhog-storage-adapter-protocol-writecompleterequest-canonical-metadata.md)
-- [riverhog_storage_adapter_protocol.WriteCompleteRequest.validate_bytes](riverhog-storage-adapter-protocol-writecompleterequest-validate-bytes.md)
+- [canonical_metadata](riverhog-storage-adapter-protocol-writecompleterequest-canonical-metadata.md)
+- [validate_bytes](riverhog-storage-adapter-protocol-writecompleterequest-validate-bytes.md)
 
 ## Governing policies
 

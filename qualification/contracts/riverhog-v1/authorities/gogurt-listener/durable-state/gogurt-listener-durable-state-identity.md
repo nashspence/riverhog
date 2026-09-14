@@ -28,9 +28,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt-listener: dispatches](gogurt-listener-dispatches.md)
-- [gogurt-listener: listener_meta](gogurt-listener-listener-meta.md)
-- [gogurt-listener: observed_mounts](gogurt-listener-observed-mounts.md)
+- [dispatches](gogurt-listener-dispatches.md)
+- [listener_meta](gogurt-listener-listener-meta.md)
+- [observed_mounts](gogurt-listener-observed-mounts.md)
 
 ## Governing policies
 

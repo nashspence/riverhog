@@ -28,11 +28,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [lifecycle_events.SQLiteLifecycleEventLog.expire_context](lifecycle-events-sqlitelifecycleeventlog-expire-context.md)
-- [lifecycle_events.SQLiteLifecycleEventLog.append_once](lifecycle-events-sqlitelifecycleeventlog-append-once.md)
-- [lifecycle_events.SQLiteLifecycleEventLog.append](lifecycle-events-sqlitelifecycleeventlog-append.md)
-- [lifecycle_events.SQLiteLifecycleEventLog.initialize](lifecycle-events-sqlitelifecycleeventlog-initialize.md)
-- [lifecycle_events.SQLiteLifecycleEventLog.page](lifecycle-events-sqlitelifecycleeventlog-page.md)
+- [expire_context](lifecycle-events-sqlitelifecycleeventlog-expire-context.md)
+- [append_once](lifecycle-events-sqlitelifecycleeventlog-append-once.md)
+- [append](lifecycle-events-sqlitelifecycleeventlog-append.md)
+- [initialize](lifecycle-events-sqlitelifecycleeventlog-initialize.md)
+- [page](lifecycle-events-sqlitelifecycleeventlog-page.md)
 
 ## Governing policies
 

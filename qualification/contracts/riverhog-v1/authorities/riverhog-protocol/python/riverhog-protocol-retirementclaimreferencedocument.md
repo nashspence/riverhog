@@ -51,7 +51,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.RetirementClaimReferenceDocument.validate_settlement_form](riverhog-protocol-retirementclaimreferencedocument-validate-settlement-form.md)
+- [validate_settlement_form](riverhog-protocol-retirementclaimreferencedocument-validate-settlement-form.md)
 
 ## Governing policies
 

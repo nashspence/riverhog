@@ -28,8 +28,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.Stove0Scheduler.advance](stove0-core-stove0scheduler-advance.md)
-- [stove0_core.Stove0Scheduler.run_once](stove0-core-stove0scheduler-run-once.md)
+- [advance](stove0-core-stove0scheduler-advance.md)
+- [run_once](stove0-core-stove0scheduler-run-once.md)
 
 ## Governing policies
 

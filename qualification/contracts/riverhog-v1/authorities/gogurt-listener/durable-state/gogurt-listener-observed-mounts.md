@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [gogurt-listener durable-state identity](gogurt-listener-durable-state-identity.md)
+- [Schema identity](gogurt-listener-durable-state-identity.md)
 
 ## Governing policies
 

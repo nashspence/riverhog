@@ -53,12 +53,12 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract dossiers
 
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: CanonicalRelPath](schemas-canonicalrelpath.md)
-- [schemas: CapturedFileProvenanceBinding](schemas-capturedfileprovenancebinding.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: ProvenanceJournalOut](schemas-provenancejournalout.md)
-- [schemas: ProvenanceTraceItemOut](schemas-provenancetraceitemout.md)
+- [BrowsePageToken](schemas-browsepagetoken.md)
+- [CanonicalRelPath](schemas-canonicalrelpath.md)
+- [CapturedFileProvenanceBinding](schemas-capturedfileprovenancebinding.md)
+- [CollectionId](schemas-collectionid.md)
+- [ProvenanceJournalOut](schemas-provenancejournalout.md)
+- [ProvenanceTraceItemOut](schemas-provenancetraceitemout.md)
 
 ## Governing policies
 

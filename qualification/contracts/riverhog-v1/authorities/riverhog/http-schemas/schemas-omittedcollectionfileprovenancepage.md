@@ -54,12 +54,12 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ### Referenced contract dossiers
 
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: OmittedCollectionFileProvenanceOut](schemas-omittedcollectionfileprovenanceout.md)
-- [schemas: ProvenanceSort](schemas-provenancesort.md)
-- [schemas: ProvenanceStatus](schemas-provenancestatus.md)
-- [schemas: SortOrder](schemas-sortorder.md)
+- [BrowsePageToken](schemas-browsepagetoken.md)
+- [CollectionId](schemas-collectionid.md)
+- [OmittedCollectionFileProvenanceOut](schemas-omittedcollectionfileprovenanceout.md)
+- [ProvenanceSort](schemas-provenancesort.md)
+- [ProvenanceStatus](schemas-provenancestatus.md)
+- [SortOrder](schemas-sortorder.md)
 
 ## Governing policies
 

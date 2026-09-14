@@ -53,7 +53,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.PortableCollectionInventoryPage.validate_page](riverhog-protocol-portablecollectioninventorypage-validate-page.md)
+- [validate_page](riverhog-protocol-portablecollectioninventorypage-validate-page.md)
 
 ## Governing policies
 

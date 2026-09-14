@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.TargetConformanceResult](stove0-target-support-targetconformanceresult.md)
+- [TargetConformanceResult](stove0-target-support-targetconformanceresult.md)
 
 ## Governing policies
 

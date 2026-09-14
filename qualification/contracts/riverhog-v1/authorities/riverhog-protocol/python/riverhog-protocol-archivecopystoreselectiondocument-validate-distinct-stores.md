@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.ArchiveCopyStoreSelectionDocument](riverhog-protocol-archivecopystoreselectiondocument.md)
+- [ArchiveCopyStoreSelectionDocument](riverhog-protocol-archivecopystoreselectiondocument.md)
 
 ## Governing policies
 

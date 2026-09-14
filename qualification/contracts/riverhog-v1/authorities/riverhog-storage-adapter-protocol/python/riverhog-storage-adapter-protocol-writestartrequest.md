@@ -43,8 +43,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.WriteStartRequest.canonical_metadata](riverhog-storage-adapter-protocol-writestartrequest-canonical-metadata.md)
-- [riverhog_storage_adapter_protocol.WriteStartRequest.canonical_path](riverhog-storage-adapter-protocol-writestartrequest-canonical-path.md)
+- [canonical_metadata](riverhog-storage-adapter-protocol-writestartrequest-canonical-metadata.md)
+- [canonical_path](riverhog-storage-adapter-protocol-writestartrequest-canonical-path.md)
 
 ## Governing policies
 

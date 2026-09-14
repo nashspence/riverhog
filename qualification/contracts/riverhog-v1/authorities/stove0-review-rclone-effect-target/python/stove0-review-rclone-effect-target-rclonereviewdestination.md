@@ -38,7 +38,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_rclone_effect_target.RcloneReviewDestination.commit](stove0-review-rclone-effect-target-rclonereviewdestination-commit.md)
+- [commit](stove0-review-rclone-effect-target-rclonereviewdestination-commit.md)
 
 ## Governing policies
 

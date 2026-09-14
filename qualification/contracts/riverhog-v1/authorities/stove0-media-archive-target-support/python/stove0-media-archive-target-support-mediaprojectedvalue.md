@@ -49,8 +49,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_media_archive_target_support.MediaProjectedValue.canonical_evidence](stove0-media-archive-target-support-mediaprojectedvalue-canonical-evidence.md)
-- [stove0_media_archive_target_support.MediaProjectedValue.bind_source](stove0-media-archive-target-support-mediaprojectedvalue-bind-source.md)
+- [canonical_evidence](stove0-media-archive-target-support-mediaprojectedvalue-canonical-evidence.md)
+- [bind_source](stove0-media-archive-target-support-mediaprojectedvalue-bind-source.md)
 
 ## Governing policies
 

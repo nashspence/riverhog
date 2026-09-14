@@ -49,8 +49,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_target_contracts.ReviewSamplePlanPayload.canonical_windows](stove0-review-target-contracts-reviewsampleplanpayload-canonical-windows.md)
-- [stove0_review_target_contracts.ReviewSamplePlanPayload.exact_declared_shape](stove0-review-target-contracts-reviewsampleplanpayload-exact-declared-shape.md)
+- [canonical_windows](stove0-review-target-contracts-reviewsampleplanpayload-canonical-windows.md)
+- [exact_declared_shape](stove0-review-target-contracts-reviewsampleplanpayload-exact-declared-shape.md)
 
 ## Governing policies
 

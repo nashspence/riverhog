@@ -31,8 +31,8 @@ One named required child work using the ordinary WorkflowPlan contract.
 
 ### Referenced contract dossiers
 
-- [schemas: ArtifactSelectionRef](schemas-artifactselectionref.md)
-- [schemas: WorkflowPlan](schemas-workflowplan.md)
+- [ArtifactSelectionRef](schemas-artifactselectionref.md)
+- [WorkflowPlan](schemas-workflowplan.md)
 
 ## Governing policies
 

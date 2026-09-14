@@ -48,7 +48,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.ObjectReadRequest.validate_range](riverhog-storage-adapter-protocol-objectreadrequest-validate-range.md)
+- [validate_range](riverhog-storage-adapter-protocol-objectreadrequest-validate-range.md)
 
 ## Governing policies
 

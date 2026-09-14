@@ -39,8 +39,8 @@ Shared facts for every subject below: progression={"cursor_parameter":"after","k
 
 ### Referenced contract dossiers
 
-- [schemas: LifecycleEventCursor](schemas-lifecycleeventcursor.md)
-- [schemas: RiverhogLifecycleEvent](schemas-riverhoglifecycleevent.md)
+- [LifecycleEventCursor](schemas-lifecycleeventcursor.md)
+- [RiverhogLifecycleEvent](schemas-riverhoglifecycleevent.md)
 
 ## Governing policies
 

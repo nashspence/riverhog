@@ -37,8 +37,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionArtifactIdentity.from_mapping](riverhog-protocol-collectionartifactidentity-from-mapping.md)
-- [riverhog_protocol.CollectionArtifactIdentity.as_dict](riverhog-protocol-collectionartifactidentity-as-dict.md)
+- [from_mapping](riverhog-protocol-collectionartifactidentity-from-mapping.md)
+- [as_dict](riverhog-protocol-collectionartifactidentity-as-dict.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_target_contracts.ReviewSamplePlanPayload](stove0-review-target-contracts-reviewsampleplanpayload.md)
+- [ReviewSamplePlanPayload](stove0-review-target-contracts-reviewsampleplanpayload.md)
 
 ## Governing policies
 

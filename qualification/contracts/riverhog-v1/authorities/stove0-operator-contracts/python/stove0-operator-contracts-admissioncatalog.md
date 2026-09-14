@@ -48,8 +48,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_operator_contracts.AdmissionCatalog.canonical_policies](stove0-operator-contracts-admissioncatalog-canonical-policies.md)
-- [stove0_operator_contracts.AdmissionCatalog.catalog_sha256](stove0-operator-contracts-admissioncatalog-catalog-sha256.md)
+- [canonical_policies](stove0-operator-contracts-admissioncatalog-canonical-policies.md)
+- [catalog_sha256](stove0-operator-contracts-admissioncatalog-catalog-sha256.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.WorkflowPreviewService](stove0-core-workflowpreviewservice.md)
+- [WorkflowPreviewService](stove0-core-workflowpreviewservice.md)
 
 ## Governing policies
 

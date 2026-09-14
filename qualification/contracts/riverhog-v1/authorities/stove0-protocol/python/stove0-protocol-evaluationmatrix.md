@@ -48,8 +48,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.EvaluationMatrix.seal](stove0-protocol-evaluationmatrix-seal.md)
-- [stove0_protocol.EvaluationMatrix.verify_digest](stove0-protocol-evaluationmatrix-verify-digest.md)
+- [seal](stove0-protocol-evaluationmatrix-seal.md)
+- [verify_digest](stove0-protocol-evaluationmatrix-verify-digest.md)
 
 ## Governing policies
 

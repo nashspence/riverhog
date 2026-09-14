@@ -45,7 +45,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_api.Stove0Composition.build](stove0-api-stove0composition-build.md)
+- [build](stove0-api-stove0composition-build.md)
 
 ## Governing policies
 

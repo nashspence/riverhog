@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_core.PlanningPort](stove0-core-planningport.md)
+- [PlanningPort](stove0-core-planningport.md)
 
 ## Governing policies
 

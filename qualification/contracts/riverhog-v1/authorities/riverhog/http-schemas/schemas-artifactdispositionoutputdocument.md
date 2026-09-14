@@ -28,8 +28,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: ArtifactDispositionInputDocument](schemas-artifactdispositioninputdocument.md)
-- [schemas: CanonicalRelPath](schemas-canonicalrelpath.md)
+- [ArtifactDispositionInputDocument](schemas-artifactdispositioninputdocument.md)
+- [CanonicalRelPath](schemas-canonicalrelpath.md)
 
 ## Governing policies
 

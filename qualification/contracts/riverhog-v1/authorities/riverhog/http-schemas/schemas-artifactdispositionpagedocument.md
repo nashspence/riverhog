@@ -40,8 +40,8 @@ Shared facts for every subject below: maximum=128; progression={"authority":"pro
 
 ### Referenced contract dossiers
 
-- [schemas: ArtifactDispositionDocument](schemas-artifactdispositiondocument.md)
-- [schemas: ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md)
+- [ArtifactDispositionDocument](schemas-artifactdispositiondocument.md)
+- [ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md)
 
 ## Governing policies
 

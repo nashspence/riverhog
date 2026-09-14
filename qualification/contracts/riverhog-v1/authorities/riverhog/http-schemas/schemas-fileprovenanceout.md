@@ -22,8 +22,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Referenced contract dossiers
 
-- [schemas: CapturedCollectionFileProvenanceOut](schemas-capturedcollectionfileprovenanceout.md)
-- [schemas: OmittedCollectionFileProvenanceOut](schemas-omittedcollectionfileprovenanceout.md)
+- [CapturedCollectionFileProvenanceOut](schemas-capturedcollectionfileprovenanceout.md)
+- [OmittedCollectionFileProvenanceOut](schemas-omittedcollectionfileprovenanceout.md)
 
 ## Governing policies
 

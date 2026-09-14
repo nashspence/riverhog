@@ -41,7 +41,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.ProcessingClaimOutcomesSettleDocument.validate_outcomes](riverhog-protocol-processingclaimoutcomessettledocument-validate-outcomes.md)
+- [validate_outcomes](riverhog-protocol-processingclaimoutcomessettledocument-validate-outcomes.md)
 
 ## Governing policies
 

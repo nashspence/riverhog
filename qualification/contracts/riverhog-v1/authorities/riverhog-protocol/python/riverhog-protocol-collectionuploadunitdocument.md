@@ -48,7 +48,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionUploadUnitDocument.validate_sources](riverhog-protocol-collectionuploadunitdocument-validate-sources.md)
+- [validate_sources](riverhog-protocol-collectionuploadunitdocument-validate-sources.md)
 
 ## Governing policies
 

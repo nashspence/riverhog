@@ -76,8 +76,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_target_support.TargetJobDeclaration.bind_execution](stove0-target-support-targetjobdeclaration-bind-execution.md)
-- [stove0_target_support.TargetJobDeclaration.canonical_claim_id](stove0-target-support-targetjobdeclaration-canonical-claim-id.md)
+- [bind_execution](stove0-target-support-targetjobdeclaration-bind-execution.md)
+- [canonical_claim_id](stove0-target-support-targetjobdeclaration-canonical-claim-id.md)
 
 ## Governing policies
 

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.CollectionRootRef](stove0-protocol-collectionrootref.md)
+- [CollectionRootRef](stove0-protocol-collectionrootref.md)
 
 ## Governing policies
 

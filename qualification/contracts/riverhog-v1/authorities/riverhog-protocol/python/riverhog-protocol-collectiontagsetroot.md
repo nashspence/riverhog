@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_protocol.CollectionTagSetRoot.seal](riverhog-protocol-collectiontagsetroot-seal.md)
+- [seal](riverhog-protocol-collectiontagsetroot-seal.md)
 
 ## Governing policies
 

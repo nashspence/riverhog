@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_review_rclone_effect_target.RcloneReviewDestination](stove0-review-rclone-effect-target-rclonereviewdestination.md)
+- [RcloneReviewDestination](stove0-review-rclone-effect-target-rclonereviewdestination.md)
 
 ## Governing policies
 

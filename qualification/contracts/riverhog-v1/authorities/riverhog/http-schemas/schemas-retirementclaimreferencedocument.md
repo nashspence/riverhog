@@ -53,8 +53,8 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract dossiers
 
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [CollectionId](schemas-collectionid.md)
+- [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
 
 ## Governing policies
 

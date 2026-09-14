@@ -28,17 +28,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.transform.ClaimedCollectionApi.renew_retrieval_job](riverhog-client-transform-claimedcollectionapi-renew-retrieval-job.md)
-- [riverhog_client.transform.ClaimedCollectionApi.acknowledge_retrieval_job](riverhog-client-transform-claimedcollectionapi-acknowledge-retrieval-job.md)
-- [riverhog_client.transform.ClaimedCollectionApi.get_retrieval_job](riverhog-client-transform-claimedcollectionapi-get-retrieval-job.md)
-- [riverhog_client.transform.ClaimedCollectionApi.get_collection](riverhog-client-transform-claimedcollectionapi-get-collection.md)
-- [riverhog_client.transform.ClaimedCollectionApi.download_retrieval_file](riverhog-client-transform-claimedcollectionapi-download-retrieval-file.md)
-- [riverhog_client.transform.ClaimedCollectionApi.get_portable_collection_inventory](riverhog-client-transform-claimedcollectionapi-get-portable-collection-inventory.md)
-- [riverhog_client.transform.ClaimedCollectionApi.list_retrieval_plan_files](riverhog-client-transform-claimedcollectionapi-list-retrieval-plan-files.md)
-- [riverhog_client.transform.ClaimedCollectionApi.plan_retrieval](riverhog-client-transform-claimedcollectionapi-plan-retrieval.md)
-- [riverhog_client.transform.ClaimedCollectionApi.create_retrieval_job](riverhog-client-transform-claimedcollectionapi-create-retrieval-job.md)
-- [riverhog_client.transform.ClaimedCollectionApi.cancel_retrieval_job](riverhog-client-transform-claimedcollectionapi-cancel-retrieval-job.md)
-- [riverhog_client.transform.ClaimedCollectionApi.stream_retrieval_file](riverhog-client-transform-claimedcollectionapi-stream-retrieval-file.md)
+- [renew_retrieval_job](riverhog-client-transform-claimedcollectionapi-renew-retrieval-job.md)
+- [acknowledge_retrieval_job](riverhog-client-transform-claimedcollectionapi-acknowledge-retrieval-job.md)
+- [get_retrieval_job](riverhog-client-transform-claimedcollectionapi-get-retrieval-job.md)
+- [get_collection](riverhog-client-transform-claimedcollectionapi-get-collection.md)
+- [download_retrieval_file](riverhog-client-transform-claimedcollectionapi-download-retrieval-file.md)
+- [get_portable_collection_inventory](riverhog-client-transform-claimedcollectionapi-get-portable-collection-inventory.md)
+- [list_retrieval_plan_files](riverhog-client-transform-claimedcollectionapi-list-retrieval-plan-files.md)
+- [plan_retrieval](riverhog-client-transform-claimedcollectionapi-plan-retrieval.md)
+- [create_retrieval_job](riverhog-client-transform-claimedcollectionapi-create-retrieval-job.md)
+- [cancel_retrieval_job](riverhog-client-transform-claimedcollectionapi-cancel-retrieval-job.md)
+- [stream_retrieval_file](riverhog-client-transform-claimedcollectionapi-stream-retrieval-file.md)
 
 ## Governing policies
 

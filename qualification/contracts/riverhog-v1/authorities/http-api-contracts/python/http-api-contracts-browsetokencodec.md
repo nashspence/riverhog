@@ -28,8 +28,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [http_api_contracts.BrowseTokenCodec.issue](http-api-contracts-browsetokencodec-issue.md)
-- [http_api_contracts.BrowseTokenCodec.verify](http-api-contracts-browsetokencodec-verify.md)
+- [issue](http-api-contracts-browsetokencodec-issue.md)
+- [verify](http-api-contracts-browsetokencodec-verify.md)
 
 ## Governing policies
 

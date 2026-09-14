@@ -40,7 +40,7 @@ Shared facts for every subject below: maximum=1; reason="wildcard-access-grant-i
 
 ### Referenced contract dossiers
 
-- [schemas: ApplicationAccessGrant](schemas-applicationaccessgrant.md)
+- [ApplicationAccessGrant](schemas-applicationaccessgrant.md)
 
 ## Governing policies
 

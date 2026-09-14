@@ -40,7 +40,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [stove0_protocol.JoinMemberDeclaration.canonical_roles](stove0-protocol-joinmemberdeclaration-canonical-roles.md)
+- [canonical_roles](stove0-protocol-joinmemberdeclaration-canonical-roles.md)
 
 ## Governing policies
 

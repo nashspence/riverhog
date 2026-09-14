@@ -28,17 +28,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.transform.ClaimedRetrieval.replace_api](riverhog-client-transform-claimedretrieval-replace-api.md)
-- [riverhog_client.transform.ClaimedRetrieval.cleanup_pending](riverhog-client-transform-claimedretrieval-cleanup-pending.md)
-- [riverhog_client.transform.ClaimedRetrieval.retry_close](riverhog-client-transform-claimedretrieval-retry-close.md)
-- [riverhog_client.transform.ClaimedRetrieval.read_bytes](riverhog-client-transform-claimedretrieval-read-bytes.md)
-- [riverhog_client.transform.ClaimedRetrieval.close](riverhog-client-transform-claimedretrieval-close.md)
-- [riverhog_client.transform.ClaimedRetrieval.closed](riverhog-client-transform-claimedretrieval-closed.md)
-- [riverhog_client.transform.ClaimedRetrieval.download](riverhog-client-transform-claimedretrieval-download.md)
-- [riverhog_client.transform.ClaimedRetrieval.__enter__](riverhog-client-transform-claimedretrieval-enter.md)
-- [riverhog_client.transform.ClaimedRetrieval.__exit__](riverhog-client-transform-claimedretrieval-exit.md)
-- [riverhog_client.transform.ClaimedRetrieval.renew](riverhog-client-transform-claimedretrieval-renew.md)
-- [riverhog_client.transform.ClaimedRetrieval.stream](riverhog-client-transform-claimedretrieval-stream.md)
+- [replace_api](riverhog-client-transform-claimedretrieval-replace-api.md)
+- [cleanup_pending](riverhog-client-transform-claimedretrieval-cleanup-pending.md)
+- [retry_close](riverhog-client-transform-claimedretrieval-retry-close.md)
+- [read_bytes](riverhog-client-transform-claimedretrieval-read-bytes.md)
+- [close](riverhog-client-transform-claimedretrieval-close.md)
+- [closed](riverhog-client-transform-claimedretrieval-closed.md)
+- [download](riverhog-client-transform-claimedretrieval-download.md)
+- [__enter__](riverhog-client-transform-claimedretrieval-enter.md)
+- [__exit__](riverhog-client-transform-claimedretrieval-exit.md)
+- [renew](riverhog-client-transform-claimedretrieval-renew.md)
+- [stream](riverhog-client-transform-claimedretrieval-stream.md)
 
 ## Governing policies
 

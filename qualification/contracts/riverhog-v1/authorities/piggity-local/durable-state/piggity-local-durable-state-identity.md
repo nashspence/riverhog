@@ -28,12 +28,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [piggity-local: desired_collection_tags](piggity-local-desired-collection-tags.md)
-- [piggity-local: desired_collections](piggity-local-desired-collections.md)
-- [piggity-local: desired_files](piggity-local-desired-files.md)
-- [piggity-local: retrieval_job_files](piggity-local-retrieval-job-files.md)
-- [piggity-local: retrieval_jobs](piggity-local-retrieval-jobs.md)
-- [piggity-local: settings](piggity-local-settings.md)
+- [desired_collection_tags](piggity-local-desired-collection-tags.md)
+- [desired_collections](piggity-local-desired-collections.md)
+- [desired_files](piggity-local-desired-files.md)
+- [retrieval_job_files](piggity-local-retrieval-job-files.md)
+- [retrieval_jobs](piggity-local-retrieval-jobs.md)
+- [settings](piggity-local-settings.md)
 
 ## Governing policies
 

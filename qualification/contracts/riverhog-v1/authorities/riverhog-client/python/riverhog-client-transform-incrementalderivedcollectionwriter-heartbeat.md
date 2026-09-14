@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_client.transform.IncrementalDerivedCollectionWriter](riverhog-client-transform-incrementalderivedcollectionwriter.md)
+- [IncrementalDerivedCollectionWriter](riverhog-client-transform-incrementalderivedcollectionwriter.md)
 
 ## Governing policies
 

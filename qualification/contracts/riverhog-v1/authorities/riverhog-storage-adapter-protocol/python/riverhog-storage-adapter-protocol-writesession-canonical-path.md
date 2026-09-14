@@ -29,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [riverhog_storage_adapter_protocol.WriteSession](riverhog-storage-adapter-protocol-writesession.md)
+- [WriteSession](riverhog-storage-adapter-protocol-writesession.md)
 
 ## Governing policies
 
