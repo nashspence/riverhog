@@ -537,11 +537,17 @@ def test_cli_dossiers_expose_exact_result_and_failure_contracts() -> None:
     assert "`124`" in page
     piggity_index = checked.files["riverhog-v1/authorities/piggity/cli/index.md"].decode()
     assert "Executable commands: **66** · Command groups: **20**" in piggity_index
-    assert piggity_index.index("### Executable commands") < piggity_index.index(
-        "### Command groups"
-    )
+    assert "### Command tree" in piggity_index
+    assert "### Executable commands" not in piggity_index
+    assert "### Command groups" not in piggity_index
     assert "piggity-cli-human-json/v1" not in piggity_index
-    assert "- [upload start](piggity-collection-upload-start.md)" in piggity_index
+    assert "- [piggity](piggity.md)" in piggity_index
+    assert "    - [upload](piggity-collection-upload.md)" in piggity_index
+    assert "      - [start](piggity-collection-upload-start.md)" in piggity_index
+    app_key_create = next(item for item in executable if item["title"] == "piggity app key create")
+    assert atlas._dossier_navigation_labels(upload, [app_key_create]) == {
+        app_key_create["id"]: "app key create"
+    }
 
     collection_list = next(
         item for item in executable if item["title"] == "piggity collection list"
@@ -729,6 +735,16 @@ def test_interface_inventory_labels_are_contextual_unique_and_canonically_ordere
     assert "| Exact unit | Kind |" in durable
     assert "| [Schema identity](riverhog-catalog-durable-state-identity.md) | " in durable
     assert "| Relational table |" in durable
+
+    versioning = checked.files["riverhog-v1/authorities/release/versioning-tags/index.md"].decode()
+    for label in (
+        "distribution version",
+        "versioning policy",
+        "versioning series",
+        "tag immutability",
+        "tag template",
+    ):
+        assert f"| [{label}](" in versioning
 
     for authority in {str(item["authority"]) for item in checked.root["elements"]}:
         for interface in {
