@@ -1441,6 +1441,22 @@ def _canonical_release_manifest_bytes(value: Mapping[str, object]) -> bytes:
     return (json.dumps(value, indent=2, sort_keys=True) + "\n").encode()
 
 
+def _verify_reproduced_release_manifest(generated: Path, expected: Path) -> None:
+    try:
+        expected_bytes = expected.read_bytes()
+        expected_value = json.loads(expected_bytes)
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ReleaseError(f"published release manifest is unreadable: {expected}") from exc
+    if not isinstance(expected_value, Mapping):
+        raise ReleaseError("published release manifest must be a JSON object")
+    if expected_bytes != _canonical_release_manifest_bytes(expected_value):
+        raise ReleaseError("published release manifest is not canonical JSON")
+    if generated.read_bytes() != expected_bytes:
+        raise ReleaseError(
+            "regenerated release manifest differs from the published canonical manifest"
+        )
+
+
 def _publication_license_inventory(
     publication: Mapping[str, object],
 ) -> list[dict[str, object]]:
@@ -3238,7 +3254,6 @@ def _generate_release_evidence(
         },
         "evidence": config["artifacts"]["evidence"],
         "signing": config["signing"],
-        "published": False,
     }
     _write_json(output / "release-manifest.json", manifest)
     _write_release_provenance(
@@ -3275,6 +3290,7 @@ def build_release_evidence(
     public_key: Path,
     expected_previous: Mapping[str, str] | None = None,
     historical_manifest_paths: Sequence[Path] = (),
+    expected_release_manifest: Path | None = None,
 ) -> dict[str, Any]:
     _ensure_clean(root)
     source_sha = _source_sha(root)
@@ -3365,6 +3381,11 @@ def build_release_evidence(
                 historical_manifest_paths=historical_manifest_paths,
                 publication=publication_contract(checkout, projects),
             )
+            if expected_release_manifest is not None:
+                _verify_reproduced_release_manifest(
+                    output / "release-manifest.json",
+                    expected_release_manifest,
+                )
     finally:
         _remove_release_image_tags(cleanup_tags, cwd=root)
     return {
@@ -3403,6 +3424,7 @@ def dry_run(
     *,
     expected_previous: Mapping[str, str] | None = None,
     historical_manifest_paths: Sequence[Path] = (),
+    expected_release_manifest: Path | None = None,
 ) -> dict[str, Any]:
     with tempfile.TemporaryDirectory(prefix="riverhog-release-dry-run.") as temporary:
         scratch = Path(temporary)
@@ -3430,6 +3452,7 @@ def dry_run(
             public_key=public_key,
             expected_previous=expected_previous,
             historical_manifest_paths=historical_manifest_paths,
+            expected_release_manifest=expected_release_manifest,
         )
 
 
@@ -3485,6 +3508,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     dry.add_argument("--version", required=True)
     dry.add_argument("--summary", type=Path)
+    dry.add_argument("--expected-release-manifest", type=Path)
     _add_history_arguments(dry)
 
     evidence = subparsers.add_parser(
@@ -3556,6 +3580,11 @@ def main(argv: list[str] | None = None) -> int:
                 args.version,
                 expected_previous=expected_previous,
                 historical_manifest_paths=historical_manifest_paths,
+                expected_release_manifest=(
+                    args.expected_release_manifest.resolve()
+                    if args.expected_release_manifest is not None
+                    else None
+                ),
             )
             rendered = json.dumps(payload, indent=2, sort_keys=True) + "\n"
             if args.summary is not None:
