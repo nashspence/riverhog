@@ -530,6 +530,37 @@ def test_dry_run_can_write_the_same_sha_bound_summary_it_prints(
     assert module.json.loads(capsys.readouterr().out) == payload
 
 
+def test_published_release_manifest_must_match_regenerated_canonical_bytes(
+    tmp_path: Path,
+) -> None:
+    module = load_script()
+    generated = tmp_path / "generated.json"
+    expected = tmp_path / "published.json"
+    payload = {"schema": "riverhog-release/v1", "version": "1.0.0"}
+    module._write_json(generated, payload)
+    module._write_json(expected, payload)
+
+    module._verify_reproduced_release_manifest(generated, expected)
+
+    module._write_json(expected, {**payload, "version": "1.0.1"})
+    with pytest.raises(module.ReleaseError, match="differs from the published canonical"):
+        module._verify_reproduced_release_manifest(generated, expected)
+
+
+def test_published_release_manifest_comparison_rejects_noncanonical_json(
+    tmp_path: Path,
+) -> None:
+    module = load_script()
+    generated = tmp_path / "generated.json"
+    expected = tmp_path / "published.json"
+    payload = {"schema": "riverhog-release/v1", "version": "1.0.0"}
+    module._write_json(generated, payload)
+    expected.write_text(module.json.dumps(payload), encoding="utf-8")
+
+    with pytest.raises(module.ReleaseError, match="is not canonical JSON"):
+        module._verify_reproduced_release_manifest(generated, expected)
+
+
 def test_release_plan_is_exact_sha_bound_and_excludes_the_test_image() -> None:
     module = load_script()
 
@@ -1198,7 +1229,7 @@ def test_release_evidence_is_complete_and_minisign_verified(
     assert (output / records[0]["sbom"]).is_file()
     assert (output / records[0]["notices"]).is_file()
     manifest = module.json.loads((output / "release-manifest.json").read_text(encoding="utf-8"))
-    assert manifest["published"] is False
+    assert "published" not in manifest
     assert manifest["subjects"] == sorted(
         records, key=lambda item: (str(item["kind"]), str(item["name"]))
     )

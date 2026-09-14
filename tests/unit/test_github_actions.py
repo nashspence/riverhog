@@ -279,6 +279,7 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     assert "OPERATIONS_TIMINGS" in locate_evidence["run"]
     assert "DATABASE_SUMMARY" in locate_evidence["run"]
     assert "RELEASE_HISTORY_DIR" in locate_evidence["run"]
+    assert "RELEASE_EXPECTED_MANIFEST" in locate_evidence["run"]
     stage_history = next(
         step
         for step in audit["steps"]
@@ -373,6 +374,8 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     assert "--previous-tag" in release_evidence["run"]
     assert "--previous-manifest-sha256" in release_evidence["run"]
     assert "--history-manifest" in release_evidence["run"]
+    assert "--expected-release-manifest" in release_evidence["run"]
+    assert 'QUALIFICATION_MODE" == "historical' in release_evidence["run"]
     assert "sort -Vr" in release_evidence["run"]
     verify_summary = next(
         step for step in audit["steps"] if step["name"] == "Verify exact-SHA nonpublication summary"
@@ -392,6 +395,8 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     assert "mode=prospective" in resolve_source["run"]
     assert "mode=historical" in resolve_source["run"]
     assert '"$ref" != "v$version"' in resolve_source["run"]
+    assert "Release-candidate qualification ref and version differ" in resolve_source["run"]
+    assert "${BASH_REMATCH[1]}" in resolve_source["run"]
     assert workflow["jobs"]["resolve"]["outputs"]["mode"] == "${{ steps.source.outputs.mode }}"
     audit_checkout = next(
         step for step in audit["steps"] if step["name"] == "Check out workflow authority"
