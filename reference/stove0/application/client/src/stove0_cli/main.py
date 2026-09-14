@@ -18,6 +18,47 @@ from stove0_protocol import CollectionRootRef
 from stove0_recipe_config import RecipeCatalog
 
 app = typer.Typer(help="Operate stove0 collection workflows.")
+
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "stove0-cli-result",
+    "default_profile": "human-json",
+    "profiles": {
+        "human-json": {
+            "id": "stove0-cli-human-json/v1",
+            "structured_output": "optional-json",
+            "human_json_relationship": "same-semantic-result",
+            "success": [
+                {
+                    "id": "completed",
+                    "exit_status": 0,
+                    "stdout": {
+                        "human": "noncontractual-presentation-of-command-result",
+                        "json": "named-command-result",
+                    },
+                    "stderr": {"all": "empty"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                },
+                {
+                    "id": "operational",
+                    "exit_status": 1,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "stove0-cli-diagnostic/v1"},
+                },
+            ],
+        }
+    },
+    "command_profiles": {},
+    "command_overrides": {},
+    "executable_groups": [],
+}
 work_app = typer.Typer(help="Transformation work.")
 recipe_app = typer.Typer(help="Configured recipes.")
 evaluation_app = typer.Typer(help="Materialized trials and evaluations.")

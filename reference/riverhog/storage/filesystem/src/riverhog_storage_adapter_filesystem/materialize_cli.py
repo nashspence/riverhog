@@ -17,6 +17,47 @@ from riverhog_storage_adapter_filesystem.materialize import (
 
 COMMAND = "riverhog-storage-adapter-filesystem-materialize"
 
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "riverhog-storage-adapter-filesystem-materialize-cli-result",
+    "default_profile": "human-json",
+    "profiles": {
+        "human-json": {
+            "id": "riverhog-storage-adapter-filesystem-materialize-cli/v1",
+            "structured_output": "optional-json",
+            "human_json_relationship": "same-semantic-result",
+            "success": [
+                {
+                    "id": "completed",
+                    "exit_status": 0,
+                    "stdout": {
+                        "human": "noncontractual-presentation-of-command-result",
+                        "json": "riverhog-filesystem-materialization-summary/v1",
+                    },
+                    "stderr": {"all": "empty"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                },
+                {
+                    "id": "materialization",
+                    "exit_status": 1,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "riverhog-filesystem-materialization-diagnostic/v1"},
+                },
+            ],
+        }
+    },
+    "command_profiles": {},
+    "command_overrides": {},
+    "executable_groups": [],
+}
+
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(

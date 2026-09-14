@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import importlib
 import inspect
@@ -692,15 +693,39 @@ def _click_parameter(parameter: Any) -> dict[str, object]:
     return result
 
 
-def _click_command(command: Any) -> dict[str, object]:
+CLI_RESULT_CONTRACT_SCHEMA = "riverhog-cli-result-contract/v1"
+CLI_MODULES = {
+    "gogurt": "gogurt.cli",
+    "mango-fish": "mango_fish.cli",
+    "piggity": "piggity.main",
+    "riverhog-ftp-adapter": "riverhog_ftp_adapter.app",
+    "riverhog-recover": "riverhog_recover.cli",
+    "riverhog-storage-adapter-conformance": "riverhog_storage_adapter_support.conformance",
+    "riverhog-storage-adapter-filesystem-materialize": (
+        "riverhog_storage_adapter_filesystem.materialize_cli"
+    ),
+    "riverhog-storage-adapter-schemas": "riverhog_storage_adapter_support.schemas",
+    "stove0": "stove0_cli.main",
+    "stove0-observer-conformance": "stove0_observer_support.conformance",
+    "stove0-observer-schemas": "stove0_observer_support.schemas",
+    "stove0-review-planning": "stove0_review_planning.conformance",
+    "stove0-review-sampler-conformance": "stove0_review_sampler_support.conformance",
+    "stove0-review-sampler-schemas": "stove0_review_sampler_support.schemas",
+    "stove0-target-conformance": "stove0_target_support.conformance",
+    "stove0-target-schemas": "stove0_target_support.schemas",
+}
+
+
+def _click_command(command: Any, *, name: str) -> dict[str, object]:
     result: dict[str, object] = {
-        "name": command.name,
+        "name": name,
         "parameters": [_click_parameter(parameter) for parameter in command.params],
     }
     commands = getattr(command, "commands", None)
     if isinstance(commands, Mapping):
         result["commands"] = {
-            name: _click_command(child) for name, child in sorted(commands.items())
+            child_name: _click_command(child, name=child_name)
+            for child_name, child in sorted(commands.items())
         }
     return result
 
@@ -723,7 +748,9 @@ def _argparse_action(action: argparse.Action) -> dict[str, object]:
     return result
 
 
-def _argparse_command(parser: argparse.ArgumentParser) -> dict[str, object]:
+def _argparse_command(
+    parser: argparse.ArgumentParser, *, name: str | None = None
+) -> dict[str, object]:
     actions = [
         action
         for action in parser._actions
@@ -735,21 +762,209 @@ def _argparse_command(parser: argparse.ArgumentParser) -> dict[str, object]:
         None,
     )
     result: dict[str, object] = {
-        "name": parser.prog,
+        "name": name or parser.prog,
         "parameters": [_argparse_action(action) for action in actions],
     }
     if subparsers is not None:
         result["commands"] = {
-            name: _argparse_command(child) for name, child in sorted(subparsers.choices.items())
+            child_name: _argparse_command(child, name=child_name)
+            for child_name, child in sorted(subparsers.choices.items())
         }
     return result
 
 
+def _merge_cli_result_contract(
+    base: Mapping[str, object], override: Mapping[str, object]
+) -> dict[str, object]:
+    result = copy.deepcopy(dict(base))
+    for key, value in override.items():
+        current = result.get(key)
+        if isinstance(current, Mapping) and isinstance(value, Mapping):
+            result[key] = _merge_cli_result_contract(current, value)
+        else:
+            result[key] = copy.deepcopy(value)
+    return result
+
+
+def _validate_cli_result_outcomes(
+    authority: str,
+    command: str,
+    kind: str,
+    outcomes: object,
+) -> None:
+    if not isinstance(outcomes, list) or not outcomes:
+        raise ContractFreezeError(
+            f"CLI {kind} outcomes must be a nonempty list: {authority}: {command}"
+        )
+    identities: set[str] = set()
+    for outcome in outcomes:
+        if not isinstance(outcome, Mapping):
+            raise ContractFreezeError(
+                f"CLI {kind} outcome must be an object: {authority}: {command}"
+            )
+        identity = outcome.get("id")
+        if not isinstance(identity, str) or not identity or identity in identities:
+            raise ContractFreezeError(
+                f"CLI {kind} outcome identity is missing or duplicate: {authority}: {command}"
+            )
+        identities.add(identity)
+        if set(outcome) != {"id", "exit_status", "stdout", "stderr"}:
+            raise ContractFreezeError(
+                f"CLI {kind} outcome shape is not exact: {authority}: {command}: {identity}"
+            )
+        exit_status = outcome["exit_status"]
+        if not isinstance(exit_status, int) and not (
+            isinstance(exit_status, Mapping)
+            and set(exit_status) == {"kind", "minimum", "maximum"}
+            and exit_status.get("kind") == "delegated"
+            and isinstance(exit_status.get("minimum"), int)
+            and isinstance(exit_status.get("maximum"), int)
+            and cast(int, exit_status["minimum"]) <= cast(int, exit_status["maximum"])
+        ):
+            raise ContractFreezeError(
+                f"CLI {kind} exit status is not exact: {authority}: {command}: {identity}"
+            )
+        for channel in ("stdout", "stderr"):
+            value = outcome[channel]
+            if (
+                not isinstance(value, Mapping)
+                or not value
+                or not all(
+                    mode in {"human", "json", "all"} and isinstance(semantics, str) and semantics
+                    for mode, semantics in value.items()
+                )
+            ):
+                raise ContractFreezeError(
+                    f"CLI {kind} {channel} contract is invalid: {authority}: {command}: {identity}"
+                )
+
+
+def _apply_cli_result_contract(authority: str, root: dict[str, object]) -> dict[str, object]:
+    module = importlib.import_module(CLI_MODULES[authority])
+    declaration = getattr(module, "_CLI_RESULT_CONTRACT", None)
+    if not isinstance(declaration, Mapping):
+        raise ContractFreezeError(f"CLI has no implementation-owned result contract: {authority}")
+    if declaration.get("schema") != CLI_RESULT_CONTRACT_SCHEMA:
+        raise ContractFreezeError(f"CLI result contract schema is invalid: {authority}")
+    if set(declaration) != {
+        "schema",
+        "identity_prefix",
+        "default_profile",
+        "profiles",
+        "command_profiles",
+        "command_overrides",
+        "executable_groups",
+    }:
+        raise ContractFreezeError(f"CLI result contract shape is invalid: {authority}")
+    identity_prefix = declaration["identity_prefix"]
+    default_profile = declaration["default_profile"]
+    profiles = declaration["profiles"]
+    command_profiles = declaration["command_profiles"]
+    command_overrides = declaration["command_overrides"]
+    executable_groups = declaration["executable_groups"]
+    if not isinstance(identity_prefix, str) or not identity_prefix:
+        raise ContractFreezeError(f"CLI result identity prefix is invalid: {authority}")
+    if not isinstance(default_profile, str) or not isinstance(profiles, Mapping):
+        raise ContractFreezeError(f"CLI result profiles are invalid: {authority}")
+    if not isinstance(command_profiles, Mapping) or not isinstance(command_overrides, Mapping):
+        raise ContractFreezeError(f"CLI command result mappings are invalid: {authority}")
+    if not isinstance(executable_groups, list) or not all(
+        isinstance(item, str) for item in executable_groups
+    ):
+        raise ContractFreezeError(f"CLI executable-group declarations are invalid: {authority}")
+
+    seen_commands: set[str] = set()
+    seen_groups: set[str] = set()
+
+    def walk(node: dict[str, object], path: tuple[str, ...]) -> None:
+        command = "$root" if not path else " ".join(path)
+        children = cast(Mapping[str, dict[str, object]], node.get("commands", {}))
+        if children:
+            seen_groups.add(command)
+        executable = not children or command in executable_groups
+        if executable:
+            seen_commands.add(command)
+            profile_name = command_profiles.get(command, default_profile)
+            profile = profiles.get(profile_name) if isinstance(profile_name, str) else None
+            if not isinstance(profile, Mapping):
+                raise ContractFreezeError(
+                    f"CLI command references an unknown result profile: "
+                    f"{authority}: {command}: {profile_name}"
+                )
+            override = command_overrides.get(command, {})
+            if not isinstance(override, Mapping):
+                raise ContractFreezeError(
+                    f"CLI command result override is invalid: {authority}: {command}"
+                )
+            result = _merge_cli_result_contract(profile, override)
+            profile_id = result.pop("id", None)
+            if set(result) != {
+                "structured_output",
+                "human_json_relationship",
+                "success",
+                "failures",
+            }:
+                raise ContractFreezeError(
+                    f"CLI result profile shape is invalid: {authority}: {command}"
+                )
+            relationship = result.get("human_json_relationship")
+            structured_output = result.get("structured_output")
+            if not isinstance(profile_id, str) or not profile_id:
+                raise ContractFreezeError(
+                    f"CLI result profile identity is invalid: {authority}: {command}"
+                )
+            if relationship not in {
+                "same-semantic-result",
+                "mode-specific-results",
+                "not-applicable",
+            }:
+                raise ContractFreezeError(
+                    f"CLI human/JSON relationship is invalid: {authority}: {command}"
+                )
+            output_relationships: dict[object, str] = {
+                "optional-json": "same-semantic-result",
+                "mode-specific": "mode-specific-results",
+                "always-json": "not-applicable",
+                "none": "not-applicable",
+            }
+            expected_relationship = output_relationships.get(structured_output)
+            if expected_relationship != relationship:
+                raise ContractFreezeError(
+                    f"CLI structured-output mode is invalid: {authority}: {command}"
+                )
+            _validate_cli_result_outcomes(authority, command, "success", result.get("success"))
+            _validate_cli_result_outcomes(authority, command, "failure", result.get("failures"))
+            suffix = "root" if not path else "/".join(path)
+            node["result_contract"] = {
+                "identity": f"{identity_prefix}/{suffix}/v1",
+                "profile_id": profile_id,
+                **result,
+            }
+        for child_name, child in sorted(children.items()):
+            walk(child, (*path, child_name))
+
+    walk(root, ())
+    declared_commands = set(command_profiles) | set(command_overrides)
+    stale_commands = declared_commands - seen_commands
+    if stale_commands:
+        raise ContractFreezeError(
+            f"CLI result declarations reference unknown commands: {authority}: "
+            f"{sorted(stale_commands)}"
+        )
+    unknown_groups = set(executable_groups) - seen_groups
+    if unknown_groups:
+        raise ContractFreezeError(
+            f"CLI executable-group declarations reference unknown groups: "
+            f"{authority}: {sorted(unknown_groups)}"
+        )
+    return root
+
+
 def _cli_surfaces() -> dict[str, object]:
-    return {
-        "gogurt": _click_command(get_command(gogurt_app)),
+    surfaces = {
+        "gogurt": _click_command(get_command(gogurt_app), name="gogurt"),
         "mango-fish": _argparse_command(mango_fish_parser()),
-        "piggity": _click_command(get_command(piggity_app)),
+        "piggity": _click_command(get_command(piggity_app), name="piggity"),
         "riverhog-ftp-adapter": _argparse_command(ftp_adapter_parser()),
         "riverhog-recover": _argparse_command(recovery_parser()),
         "riverhog-storage-adapter-conformance": _argparse_command(storage_conformance_parser()),
@@ -757,7 +972,7 @@ def _cli_surfaces() -> dict[str, object]:
             filesystem_materialize_parser()
         ),
         "riverhog-storage-adapter-schemas": _argparse_command(storage_schemas_parser()),
-        "stove0": _click_command(get_command(stove0_app)),
+        "stove0": _click_command(get_command(stove0_app), name="stove0"),
         "stove0-observer-conformance": _argparse_command(observer_conformance_parser()),
         "stove0-observer-schemas": _argparse_command(observer_schemas_parser()),
         "stove0-review-planning": _argparse_command(review_planning_parser()),
@@ -765,6 +980,10 @@ def _cli_surfaces() -> dict[str, object]:
         "stove0-review-sampler-schemas": _argparse_command(sampler_schemas_parser()),
         "stove0-target-conformance": _argparse_command(target_conformance_parser()),
         "stove0-target-schemas": _argparse_command(target_schemas_parser()),
+    }
+    return {
+        authority: _apply_cli_result_contract(authority, surface)
+        for authority, surface in surfaces.items()
     }
 
 
@@ -1327,28 +1546,8 @@ def _protocol_trace() -> list[dict[str, object]]:
 
 
 def _cli_trace(projects: list[release_contract.Project]) -> list[dict[str, object]]:
-    modules = {
-        "gogurt": "gogurt.cli",
-        "mango-fish": "mango_fish.cli",
-        "piggity": "piggity.main",
-        "riverhog-ftp-adapter": "riverhog_ftp_adapter.app",
-        "riverhog-recover": "riverhog_recover.cli",
-        "riverhog-storage-adapter-conformance": "riverhog_storage_adapter_support.conformance",
-        "riverhog-storage-adapter-filesystem-materialize": (
-            "riverhog_storage_adapter_filesystem.materialize_cli"
-        ),
-        "riverhog-storage-adapter-schemas": "riverhog_storage_adapter_support.schemas",
-        "stove0": "stove0_cli.main",
-        "stove0-observer-conformance": "stove0_observer_support.conformance",
-        "stove0-observer-schemas": "stove0_observer_support.schemas",
-        "stove0-review-planning": "stove0_review_planning.conformance",
-        "stove0-review-sampler-conformance": "stove0_review_sampler_support.conformance",
-        "stove0-review-sampler-schemas": "stove0_review_sampler_support.schemas",
-        "stove0-target-conformance": "stove0_target_support.conformance",
-        "stove0-target-schemas": "stove0_target_support.schemas",
-    }
     traced: list[dict[str, object]] = []
-    for name, module in sorted(modules.items()):
+    for name, module in sorted(CLI_MODULES.items()):
         source = _source_ref(importlib.import_module(module))
         traced.append(
             {

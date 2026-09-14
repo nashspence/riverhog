@@ -24,6 +24,38 @@ SAMPLER_CONFORMANCE_RESULT: Literal["stove0-review-sampler-conformance-result/v1
     "stove0-review-sampler-conformance-result/v1"
 )
 
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "stove0-review-sampler-conformance-cli-result",
+    "default_profile": "machine-report",
+    "profiles": {
+        "machine-report": {
+            "id": "stove0-review-sampler-conformance-cli/v1",
+            "structured_output": "always-json",
+            "human_json_relationship": "not-applicable",
+            "success": [
+                {
+                    "id": "conformant",
+                    "exit_status": 0,
+                    "stdout": {"json": SAMPLER_CONFORMANCE_RESULT},
+                    "stderr": {"all": "empty"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                }
+            ],
+        }
+    },
+    "command_profiles": {},
+    "command_overrides": {},
+    "executable_groups": [],
+}
+
 
 class _SamplerConformanceModel(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)

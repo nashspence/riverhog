@@ -16,6 +16,56 @@ from riverhog_recover.recovery import (
     recover_collection_tags,
 )
 
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "riverhog-recover-cli-result",
+    "default_profile": "recovery",
+    "profiles": {
+        "recovery": {
+            "id": "riverhog-recover-cli/v1",
+            "structured_output": "mode-specific",
+            "human_json_relationship": "mode-specific-results",
+            "success": [
+                {
+                    "id": "archive-recovered",
+                    "exit_status": 0,
+                    "stdout": {"human": "noncontractual-recovery-summary"},
+                    "stderr": {"all": "empty"},
+                },
+                {
+                    "id": "description-recovered",
+                    "exit_status": 0,
+                    "stdout": {"json": "riverhog-collection-description/v1-or-null"},
+                    "stderr": {"all": "empty"},
+                },
+                {
+                    "id": "tags-recovered",
+                    "exit_status": 0,
+                    "stdout": {"json": "riverhog-recovered-collection-tags/v1-json-sequence"},
+                    "stderr": {"all": "empty"},
+                },
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                },
+                {
+                    "id": "recovery",
+                    "exit_status": 1,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "riverhog-recover-diagnostic/v1"},
+                },
+            ],
+        }
+    },
+    "command_profiles": {},
+    "command_overrides": {},
+    "executable_groups": [],
+}
+
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(

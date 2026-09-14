@@ -41,6 +41,66 @@ from riverhog_ftp_adapter.listener import serve_ftp
 BEARER = HTTPBearer(auto_error=False, scheme_name="RiverhogFtpAdapterBearer")
 LOGGER = logging.getLogger(__name__)
 
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "riverhog-ftp-adapter-cli-result",
+    "default_profile": "operator-human-json",
+    "profiles": {
+        "operator-human-json": {
+            "id": "riverhog-ftp-adapter-cli-human-json/v1",
+            "structured_output": "optional-json",
+            "human_json_relationship": "same-semantic-result",
+            "success": [
+                {
+                    "id": "completed",
+                    "exit_status": 0,
+                    "stdout": {
+                        "human": "noncontractual-presentation-of-command-result",
+                        "json": "named-command-result",
+                    },
+                    "stderr": {"all": "empty"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                }
+            ],
+        },
+        "runtime": {
+            "id": "riverhog-ftp-adapter-cli-runtime/v1",
+            "structured_output": "none",
+            "human_json_relationship": "not-applicable",
+            "success": [
+                {
+                    "id": "stopped",
+                    "exit_status": 0,
+                    "stdout": {"all": "no-command-result"},
+                    "stderr": {"all": "noncontractual-runtime-log"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                }
+            ],
+        },
+    },
+    "command_profiles": {
+        "$root": "runtime",
+        "listen": "runtime",
+        "serve": "runtime",
+    },
+    "command_overrides": {},
+    "executable_groups": ["$root"],
+}
+
 
 @dataclass(frozen=True, slots=True)
 class FtpAdapterComposition:

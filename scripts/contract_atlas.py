@@ -487,7 +487,20 @@ def _walk_cli(
     current_path = (
         (*command_path, name) if not command_path or command_path[-1] != name else command_path
     )
-    pointers = [f"{pointer}/{key}" for key in ("name", "parameters") if key in node]
+    pointers = [
+        f"{pointer}/{key}" for key in ("name", "parameters", "result_contract") if key in node
+    ]
+    result_contract = node.get("result_contract")
+    details: dict[str, object] = {"command_path": list(current_path)}
+    if isinstance(result_contract, Mapping):
+        details.update(
+            {
+                "executable": True,
+                "result_identity": result_contract["identity"],
+                "result_profile_id": result_contract["profile_id"],
+                "structured_output": result_contract["structured_output"],
+            }
+        )
     _add_element(
         elements,
         authority=authority,
@@ -496,7 +509,7 @@ def _walk_cli(
         pointers=pointers,
         detector="cli-tree",
         source_ids=[source_id],
-        details={"command_path": list(current_path)},
+        details=details,
     )
     for child_name, child in sorted(
         cast(Mapping[str, Mapping[str, object]], node.get("commands", {})).items()
@@ -2137,6 +2150,8 @@ def _render_cli(
     parameters_pointer = ""
     name = ""
     name_pointer = ""
+    result_contract: Mapping[str, object] | None = None
+    result_pointer = ""
     for pointer, value in zip(pointers, values, strict=True):
         if isinstance(value, str):
             name = value
@@ -2144,6 +2159,9 @@ def _render_cli(
         elif isinstance(value, list):
             parameters = cast(Sequence[Mapping[str, object]], value)
             parameters_pointer = pointer
+        elif isinstance(value, Mapping):
+            result_contract = value
+            result_pointer = pointer
     lines = (
         [f"- {_subject_marker(name_pointer, placed_subjects)}Parser name: `{_md(name)}`"]
         if name
@@ -2161,12 +2179,65 @@ def _render_cli(
         )
         for index, item in enumerate(parameters):
             pointer = f"{parameters_pointer}/{index}"
+            parameter_name = item.get("name", item.get("dest", ""))
             lines.append(
-                f"| {_subject_marker(pointer, placed_subjects)}`{_md(item.get('name', ''))}` | "
+                f"| {_subject_marker(pointer, placed_subjects)}`{_md(parameter_name)}` | "
                 f"{_md(item.get('kind', ''))} | "
                 f"{'yes' if item.get('required') else 'no'} | {_md(item.get('type', ''))} | "
                 f"{_md(', '.join(cast(Sequence[str], item.get('options', ()))))} |"
             )
+    if result_contract is not None:
+        lines.extend(
+            [
+                "",
+                "### Result and failure contract",
+                "",
+                f"- {_subject_marker(f'{result_pointer}/identity', placed_subjects)}"
+                f"Result identity: `{_md(result_contract['identity'])}`",
+                f"- {_subject_marker(f'{result_pointer}/profile_id', placed_subjects)}"
+                f"Profile: `{_md(result_contract['profile_id'])}`",
+                f"- {_subject_marker(f'{result_pointer}/structured_output', placed_subjects)}"
+                f"Structured output: `{_md(result_contract['structured_output'])}`",
+                f"- {_subject_marker(f'{result_pointer}/human_json_relationship', placed_subjects)}"
+                "Human/JSON relationship: "
+                f"`{_md(result_contract['human_json_relationship'])}`",
+            ]
+        )
+        for key, title in (("success", "Success outcomes"), ("failures", "Failure outcomes")):
+            outcomes = cast(Sequence[Mapping[str, object]], result_contract[key])
+            lines.extend(
+                [
+                    "",
+                    f"#### {title}",
+                    "",
+                    "| Identity | Exit status | stdout | stderr |",
+                    "|---|---|---|---|",
+                ]
+            )
+            for index, outcome in enumerate(outcomes):
+                outcome_pointer = f"{result_pointer}/{key}/{index}"
+                status = outcome["exit_status"]
+                rendered_status = (
+                    json.dumps(status, sort_keys=True, separators=(",", ":"))
+                    if isinstance(status, Mapping)
+                    else str(status)
+                )
+                stdout = json.dumps(
+                    outcome["stdout"], ensure_ascii=False, sort_keys=True, separators=(",", ":")
+                )
+                stderr = json.dumps(
+                    outcome["stderr"], ensure_ascii=False, sort_keys=True, separators=(",", ":")
+                )
+                lines.append(
+                    f"| {_subject_marker(f'{outcome_pointer}/id', placed_subjects)}"
+                    f"`{_md(outcome['id'])}` | "
+                    f"{_subject_marker(f'{outcome_pointer}/exit_status', placed_subjects)}"
+                    f"`{_md(rendered_status)}` | "
+                    f"{_subject_marker(f'{outcome_pointer}/stdout', placed_subjects)}"
+                    f"`{_md(stdout)}` | "
+                    f"{_subject_marker(f'{outcome_pointer}/stderr', placed_subjects)}"
+                    f"`{_md(stderr)}` |"
+                )
     return lines
 
 
@@ -3805,6 +3876,42 @@ def _render_atlas(
                         f"({_relative_link(interface_path, str(release_item['dossier']))}) | "
                         f"{rendered_classification} |"
                     )
+            elif interface == "cli":
+                executable = sorted(
+                    (
+                        item
+                        for item in values
+                        if cast(Mapping[str, object], item.get("details", {})).get("executable")
+                    ),
+                    key=lambda item: str(item["title"]),
+                )
+                groups = sorted(
+                    (item for item in values if item not in executable),
+                    key=lambda item: str(item["title"]),
+                )
+                lines.extend(
+                    [
+                        f"Executable commands: **{len(executable)}** · "
+                        f"Command groups: **{len(groups)}**",
+                        "",
+                        "### Executable commands",
+                        "",
+                    ]
+                )
+                for item in executable:
+                    details = cast(Mapping[str, object], item["details"])
+                    lines.append(
+                        f"- [{_md(item['title'])}]"
+                        f"({_relative_link(interface_path, str(item['dossier']))}) — "
+                        f"`{_md(details['result_profile_id'])}`"
+                    )
+                if groups:
+                    lines.extend(["", "### Command groups", ""])
+                    for item in groups:
+                        lines.append(
+                            f"- [{_md(item['title'])}]"
+                            f"({_relative_link(interface_path, str(item['dossier']))})"
+                        )
             elif interface == "python":
                 by_module: dict[str, list[dict[str, object]]] = defaultdict(list)
                 for item in values:

@@ -109,6 +109,207 @@ from piggity.output import (
 from piggity.upload_progress import make_collection_upload_progress
 
 app = typer.Typer(help="Piggity reference client for Riverhog.")
+
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "piggity-cli-result",
+    "default_profile": "human-json",
+    "profiles": {
+        "human-json": {
+            "id": "piggity-cli-human-json/v1",
+            "structured_output": "optional-json",
+            "human_json_relationship": "same-semantic-result",
+            "success": [
+                {
+                    "id": "completed",
+                    "exit_status": 0,
+                    "stdout": {
+                        "human": "noncontractual-presentation-of-command-result",
+                        "json": "named-command-result",
+                    },
+                    "stderr": {"all": "empty"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                },
+                {
+                    "id": "operational",
+                    "exit_status": 1,
+                    "stdout": {
+                        "human": "empty",
+                        "json": "http-api-contracts.ErrorResponse",
+                    },
+                    "stderr": {
+                        "human": "noncontractual-diagnostic",
+                        "json": "empty",
+                    },
+                },
+            ],
+        }
+    },
+    "command_profiles": {},
+    "command_overrides": {
+        "collection upload start": {
+            "success": [
+                {
+                    "id": "completed",
+                    "exit_status": 0,
+                    "stdout": {
+                        "human": "noncontractual-presentation-of-command-result",
+                        "json": "named-command-result",
+                    },
+                    "stderr": {"all": "noncontractual-progress"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                },
+                {
+                    "id": "operational",
+                    "exit_status": 1,
+                    "stdout": {
+                        "human": "empty",
+                        "json": "http-api-contracts.ErrorResponse",
+                    },
+                    "stderr": {
+                        "human": "noncontractual-diagnostic-or-progress",
+                        "json": "noncontractual-progress",
+                    },
+                },
+                {
+                    "id": "custody-timeout",
+                    "exit_status": 124,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-progress"},
+                },
+            ],
+        },
+        "collection upload watch": {
+            "success": [
+                {
+                    "id": "completed",
+                    "exit_status": 0,
+                    "stdout": {
+                        "human": "noncontractual-presentation-of-command-result",
+                        "json": "named-command-result",
+                    },
+                    "stderr": {"all": "noncontractual-progress"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                },
+                {
+                    "id": "operational",
+                    "exit_status": 1,
+                    "stdout": {
+                        "human": "empty",
+                        "json": "http-api-contracts.ErrorResponse",
+                    },
+                    "stderr": {
+                        "human": "noncontractual-diagnostic-or-progress",
+                        "json": "noncontractual-progress",
+                    },
+                },
+                {
+                    "id": "custody-timeout",
+                    "exit_status": 124,
+                    "stdout": {
+                        "human": "noncontractual-presentation-of-command-result",
+                        "json": "named-command-result",
+                    },
+                    "stderr": {"all": "noncontractual-progress"},
+                },
+            ],
+        },
+        "archive copy watch": {
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                },
+                {
+                    "id": "operational",
+                    "exit_status": 1,
+                    "stdout": {
+                        "human": "empty",
+                        "json": "http-api-contracts.ErrorResponse",
+                    },
+                    "stderr": {
+                        "human": "noncontractual-diagnostic",
+                        "json": "empty",
+                    },
+                },
+                {
+                    "id": "terminal-job-failure",
+                    "exit_status": 1,
+                    "stdout": {
+                        "human": "noncontractual-presentation-of-command-result",
+                        "json": "named-command-result",
+                    },
+                    "stderr": {"all": "empty"},
+                },
+            ]
+        },
+        **{
+            command: {
+                "failures": [
+                    {
+                        "id": "usage",
+                        "exit_status": 2,
+                        "stdout": {"all": "empty"},
+                        "stderr": {"all": "noncontractual-usage-diagnostic"},
+                    },
+                    {
+                        "id": "operational",
+                        "exit_status": 1,
+                        "stdout": {
+                            "human": "empty",
+                            "json": "http-api-contracts.ErrorResponse",
+                        },
+                        "stderr": {
+                            "human": "noncontractual-diagnostic",
+                            "json": "empty",
+                        },
+                    },
+                    {
+                        "id": "blocked",
+                        "exit_status": 1,
+                        "stdout": {"human": "noncontractual-presentation-of-command-result"},
+                        "stderr": {"human": "empty"},
+                    },
+                    {
+                        "id": "confirmation-declined",
+                        "exit_status": 1,
+                        "stdout": {"human": "noncontractual-presentation-of-command-result"},
+                        "stderr": {"human": "noncontractual-diagnostic"},
+                    },
+                ]
+            }
+            for command in (
+                "archive retire",
+                "collection delete",
+                "collection upload discard",
+            )
+        },
+    },
+    "executable_groups": [],
+}
 collection_app = typer.Typer(help="Collection catalog and upload operations.")
 collection_tag_app = typer.Typer(help="Exact collection tag authority.")
 collection_upload_app = typer.Typer(help="Collection upload sessions.")
