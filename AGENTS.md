@@ -35,6 +35,12 @@ application's OpenAPI document, command syntax comes from `--help`, and configur
 shape comes from real parsers and checked executable examples. Do not add hand-maintained
 inventories of those surfaces to `main`; release reference is generated from a tag.
 
+GitHub issue bodies own durable scope, decisions, and issue-local acceptance. Use native
+sub-issues for decomposition, dependencies for hard prerequisites, and milestones for release
+membership; do not mirror child or transitive state in parent checklists or workflow title
+prefixes. When reopening an issue, narrow its body to the current residual and preserve completed
+history in comments; use checklists only for acceptance steps owned by that issue.
+
 Durable documentation has distinct roles:
 
 - [README](README.md) is the human entrypoint;
