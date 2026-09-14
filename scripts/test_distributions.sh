@@ -101,6 +101,36 @@ smoke_workspace_distribution() {
   )
 }
 
+assert_installed_cli_version() {
+  local environment="$1"
+  local executable="$2"
+  local distribution="$3"
+  local reported_version
+  local installed_version
+  reported_version="$(env -u PYTHONPATH "${SCRATCH}/${environment}/bin/${executable}" --version)"
+  installed_version="$(
+    "${SCRATCH}/${environment}/bin/python" -I -c \
+      "import importlib.metadata as m; print(m.version('${distribution}'))"
+  )"
+  "${SCRATCH}/${environment}/bin/python" -I -c \
+    'import re, sys; assert re.search(rf"(?<![0-9A-Za-z.]){re.escape(sys.argv[2])}(?![0-9A-Za-z.])", sys.argv[1])' \
+    "${reported_version}" "${installed_version}"
+}
+
+assert_cli_usage_failure() {
+  local environment="$1"
+  shift
+  set +e
+  env -u PYTHONPATH "${SCRATCH}/${environment}/bin/$1" "${@:2}" \
+    >"${SCRATCH}/${environment}-usage.stdout" \
+    2>"${SCRATCH}/${environment}-usage.stderr"
+  local status=$?
+  set -e
+  [[ "${status}" -eq 2 ]]
+  [[ ! -s "${SCRATCH}/${environment}-usage.stdout" ]]
+  [[ -s "${SCRATCH}/${environment}-usage.stderr" ]]
+}
+
 recovery_wheel="$(single_wheel 'riverhog_recover-*.whl')"
 server_wheel="$(single_wheel 'riverhog_server-*.whl')"
 
@@ -116,12 +146,8 @@ smoke_workspace_distribution \
   'piggity-*.whl' \
   'import importlib.metadata as m; import piggity.main; import piggity.cli_support; names = {d.metadata["Name"].lower() for d in m.distributions()}; native = {"riverhog-provenance-linux-observer", "riverhog-provenance-macos-observer", "riverhog-provenance-windows-observer"}; contracts = {"riverhog-provenance-linux-contracts", "riverhog-provenance-macos-contracts", "riverhog-provenance-windows-contracts"}; assert names.isdisjoint(native | contracts); assert "riverhog-provenance-contracts" in names; assert m.version("piggity")' \
   piggity
-piggity_version="$(env -u PYTHONPATH "${SCRATCH}/piggity/bin/piggity" --version)"
-installed_piggity_version="$(
-  "${SCRATCH}/piggity/bin/python" -I -c \
-    'import importlib.metadata as m; print(m.version("piggity"))'
-)"
-[[ "${piggity_version}" == "${installed_piggity_version}" ]]
+assert_installed_cli_version piggity piggity piggity
+assert_cli_usage_failure piggity piggity collection show
 
 linux_observer_wheel="$(single_wheel 'riverhog_provenance_linux_observer-*.whl')"
 mapfile -t linux_observer_wheels < <(
@@ -256,6 +282,7 @@ smoke_workspace_distribution \
   'stove0_client-*.whl' \
   'import importlib.metadata as m; import stove0_cli.main; m.version("stove0-client")' \
   stove0
+assert_installed_cli_version stove0-client stove0 stove0-client
 smoke_workspace_distribution \
   stove0-server \
   'stove0_server-*.whl' \
@@ -296,6 +323,14 @@ smoke_workspace_distribution \
   'stove0_review_target_support-*.whl' \
   'import importlib.metadata as m; import stove0_review_target_support; m.version("stove0-review-target-support")'
 smoke_workspace_distribution \
+  stove0-review-planning \
+  'stove0_review_planning-*.whl' \
+  'import importlib.metadata as m; import stove0_review_planning; m.version("stove0-review-planning")' \
+  stove0-review-planning
+env -u PYTHONPATH "${SCRATCH}/stove0-review-planning/bin/stove0-review-planning" \
+  | "${SCRATCH}/stove0-review-planning/bin/python" -I -c \
+    'import json, sys; assert json.load(sys.stdin)["format"] == "stove0-review-contract-report/v1"'
+smoke_workspace_distribution \
   stove0-review-materialize-target \
   'stove0_review_materialize_target-*.whl' \
   'import importlib.metadata as m; import stove0_review_materialize_target.app; m.version("stove0-review-materialize-target")' \
@@ -330,6 +365,15 @@ smoke_workspace_distribution \
   'gogurt-*.whl' \
   'import importlib.metadata as m; import gogurt.cli; import gogurt_listener_runtime.listener; m.version("gogurt"); names = {d.metadata["Name"].lower() for d in m.distributions()}; assert "gogurt-listener-runtime" in names; providers = {f"gogurt-{platform}-{capability}" for platform in ("linux", "macos", "windows") for capability in ("listener-host", "mounted-volume")}; assert names.isdisjoint(providers)' \
   gogurt
+assert_installed_cli_version gogurt gogurt gogurt
+set +e
+gogurt_error="$(env -u PYTHONPATH "${SCRATCH}/gogurt/bin/gogurt" list --json 2>/dev/null)"
+gogurt_status=$?
+set -e
+[[ "${gogurt_status}" -eq 1 ]]
+printf '%s' "${gogurt_error}" \
+  | "${SCRATCH}/gogurt/bin/python" -I -c \
+    'import json, sys; value = json.load(sys.stdin); assert value["error"]["code"] == "config_error"'
 linux_mounted_volume_wheel="$(single_wheel 'gogurt_linux_mounted_volume-*.whl')"
 mapfile -t linux_mounted_volume_wheels < <(
   workspace_wheel_closure "${linux_mounted_volume_wheel}"
@@ -357,5 +401,6 @@ smoke_workspace_distribution \
   'mango_fish-*.whl' \
   'import importlib.metadata as m; import mango_fish.cli; m.version("mango-fish")' \
   mango-fish
+assert_installed_cli_version mango-fish mango-fish mango-fish
 
 printf 'All application distribution smoke tests passed.\n'

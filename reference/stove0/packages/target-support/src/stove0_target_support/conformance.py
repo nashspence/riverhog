@@ -40,7 +40,7 @@ TARGET_CONFORMANCE_RESULT: Literal["stove0-target-conformance-result/v1"] = (
     "stove0-target-conformance-result/v1"
 )
 
-_CLI_RESULT_CONTRACT = {
+_CLI_RESULT_CONTRACT: dict[str, object] = {
     "schema": "riverhog-cli-result-contract/v1",
     "identity_prefix": "stove0-target-conformance-cli-result",
     "default_profile": "machine-report",
@@ -70,6 +70,12 @@ _CLI_RESULT_CONTRACT = {
     "command_profiles": {},
     "command_overrides": {},
     "executable_groups": [],
+    "outcome_selectors": {
+        "conformant": {"kind": "conformance-completed"},
+        "usage": {"kind": "parser-rejected-invocation"},
+    },
+    "output_authorities": {},
+    "version_distribution": None,
 }
 
 

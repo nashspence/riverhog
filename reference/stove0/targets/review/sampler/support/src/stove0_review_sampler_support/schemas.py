@@ -55,6 +55,12 @@ _CLI_RESULT_CONTRACT = {
     "command_profiles": {},
     "command_overrides": {},
     "executable_groups": [],
+    "outcome_selectors": {
+        "emitted": {"kind": "schema-bundle-emitted"},
+        "usage": {"kind": "parser-rejected-invocation"},
+    },
+    "output_authorities": {},
+    "version_distribution": "stove0-review-sampler-support",
 }
 
 

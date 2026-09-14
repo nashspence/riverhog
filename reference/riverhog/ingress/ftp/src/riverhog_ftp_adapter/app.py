@@ -56,7 +56,7 @@ _CLI_RESULT_CONTRACT = {
                     "exit_status": 0,
                     "stdout": {
                         "human": "noncontractual-presentation-of-command-result",
-                        "json": "named-command-result",
+                        "json": "$command-json-output",
                     },
                     "stderr": {"all": "empty"},
                 }
@@ -99,6 +99,28 @@ _CLI_RESULT_CONTRACT = {
     },
     "command_overrides": {},
     "executable_groups": ["$root"],
+    "outcome_selectors": {
+        "completed": {"kind": "command-completed"},
+        "stopped": {"kind": "service-runtime-returned"},
+        "usage": {"kind": "parser-rejected-invocation"},
+    },
+    "output_authorities": {
+        "check-config": {
+            "kind": "cli-local-json-schema",
+            "identity": "riverhog-ftp-adapter-config-check/v1",
+            "schema": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["format", "status", "sources"],
+                "properties": {
+                    "format": {"const": "riverhog-ftp-adapter-config-check/v1"},
+                    "status": {"const": "ok"},
+                    "sources": {"type": "integer", "minimum": 1},
+                },
+            },
+        }
+    },
+    "version_distribution": "riverhog-ftp-adapter",
 }
 
 

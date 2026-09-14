@@ -21,7 +21,7 @@ from riverhog_storage_adapter_support.http_binding import STORAGE_ADAPTER_HTTP_O
 
 STORAGE_ADAPTER_SCHEMA_BUNDLE_FORMAT = "riverhog-storage-adapter-schema-bundle/v1"
 
-_CLI_RESULT_CONTRACT = {
+_CLI_RESULT_CONTRACT: dict[str, object] = {
     "schema": "riverhog-cli-result-contract/v1",
     "identity_prefix": "riverhog-storage-adapter-schemas-cli-result",
     "default_profile": "json-or-file",
@@ -57,6 +57,13 @@ _CLI_RESULT_CONTRACT = {
     "command_profiles": {},
     "command_overrides": {},
     "executable_groups": [],
+    "outcome_selectors": {
+        "emitted": {"kind": "option-absent", "parameter": "output"},
+        "written": {"kind": "option-present", "parameter": "output"},
+        "usage": {"kind": "parser-rejected-invocation"},
+    },
+    "output_authorities": {},
+    "version_distribution": None,
 }
 
 

@@ -64,6 +64,26 @@ _CLI_RESULT_CONTRACT = {
     "command_profiles": {},
     "command_overrides": {},
     "executable_groups": [],
+    "outcome_selectors": {
+        "archive-recovered": {
+            "kind": "options-absent",
+            "parameters": ["description_only", "tags_only"],
+        },
+        "description-recovered": {
+            "kind": "option-equals",
+            "parameter": "description_only",
+            "value": True,
+        },
+        "tags-recovered": {
+            "kind": "option-equals",
+            "parameter": "tags_only",
+            "value": True,
+        },
+        "usage": {"kind": "parser-rejected-invocation"},
+        "recovery": {"kind": "recovery-error"},
+    },
+    "output_authorities": {},
+    "version_distribution": "riverhog-recover",
 }
 
 
