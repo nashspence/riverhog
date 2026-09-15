@@ -179,6 +179,11 @@ app = typer.Typer(
     add_completion=False,
 )
 
+# These repeated options pass their complete batch to the named HTTP selector through ApiClient.
+_CLI_OCCURRENCE_AUTHORITIES = {
+    "collection list": {"tag": {"operation_id": "list_collections", "parameter": "tags"}},
+}
+
 _CLI_RESULT_CONTRACT = {
     "schema": "riverhog-cli-result-contract/v1",
     "identity_prefix": "piggity-cli-result",

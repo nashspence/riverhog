@@ -235,39 +235,51 @@ def _direct_response_array_policies(
             if not isinstance(read, Mapping):
                 continue
             response = operation.get("responses", {}).get("200", {})
-            if not isinstance(response, Mapping):
-                continue
-            content = response.get("content", {})
-            if not isinstance(content, Mapping):
-                continue
-            response_schema = next(
-                (
-                    value.get("schema")
-                    for value in content.values()
-                    if isinstance(value, Mapping) and isinstance(value.get("schema"), Mapping)
-                ),
-                None,
-            )
-            if not isinstance(response_schema, Mapping):
-                continue
+            content = response.get("content", {}) if isinstance(response, Mapping) else {}
+            response_schemas = [
+                value["schema"]
+                for value in (content.values() if isinstance(content, Mapping) else ())
+                if isinstance(value, Mapping) and isinstance(value.get("schema"), Mapping)
+            ]
+            if response_schemas and any(
+                schema != response_schemas[0] for schema in response_schemas
+            ):
+                raise ExtentContractError("route page response has ambiguous media schemas")
+            response_schema = response_schemas[0] if response_schemas else {}
             reference = response_schema.get("$ref")
-            if not isinstance(reference, str) or not reference.startswith("#/components/schemas/"):
-                continue
-            model = reference.rsplit("/", 1)[-1]
-            model_schema = schemas.get(model)
-            if not isinstance(model_schema, Mapping):
-                continue
-            properties = model_schema.get("properties", {})
-            if not isinstance(properties, Mapping):
-                continue
+            model = (
+                reference.rsplit("/", 1)[-1]
+                if isinstance(reference, str) and reference.startswith("#/components/schemas/")
+                else ""
+            )
+            model_schema = schemas.get(model, {})
+            properties = (
+                model_schema.get("properties", {}) if isinstance(model_schema, Mapping) else {}
+            )
             direct_arrays = [
                 str(name)
-                for name, value in properties.items()
+                for name, value in (properties.items() if isinstance(properties, Mapping) else ())
                 if isinstance(value, Mapping) and value.get("type") == "array"
             ]
-            if len(direct_arrays) != 1:
+            declared_field = read.get("response_items_field")
+            if declared_field is not None:
+                if declared_field not in direct_arrays:
+                    raise ExtentContractError(
+                        f"route page field is not a direct response array: {model}:{declared_field}"
+                    )
+                field = str(declared_field)
+            elif len(direct_arrays) > 1:
+                raise ExtentContractError(
+                    f"route page response has ambiguous item arrays: {model}: {direct_arrays}"
+                )
+            elif not direct_arrays:
                 continue
-            result[(model, direct_arrays[0])] = dict(read)
+            else:
+                field = direct_arrays[0]
+            key = (model, field)
+            if key in result and result[key] != read:
+                raise ExtentContractError(f"route page response has conflicting policies: {key}")
+            result[key] = dict(read)
     return result
 
 
@@ -817,7 +829,7 @@ def _openapi_decisions(openapi_by_application: Mapping[str, Any]) -> list[dict[s
     return decisions
 
 
-def _cli_decisions(cli_by_application: Mapping[str, Any]) -> list[dict[str, object]]:
+def _cli_decisions(external_contract: Mapping[str, Any]) -> list[dict[str, object]]:
     decisions: list[dict[str, object]] = []
 
     def visit(application: str, command: Mapping[str, Any], command_path: tuple[str, ...]) -> None:
@@ -870,8 +882,10 @@ def _cli_decisions(cli_by_application: Mapping[str, Any]) -> list[dict[str, obje
                     )
                 )
             if parameter.get("multiple") is True or parameter.get("count") is True:
-                decisions.append(
-                    _open_extent_decision(
+                authority_pointer = parameter.get("occurrences_authority")
+                occurrence_decision: dict[str, object] | None
+                if authority_pointer is None:
+                    occurrence_decision = _open_extent_decision(
                         identity=f"{identity}:occurrences",
                         owner=application,
                         source_pointer=source_pointer,
@@ -880,7 +894,41 @@ def _cli_decisions(cli_by_application: Mapping[str, Any]) -> list[dict[str, obje
                         extension_owned=False,
                         configuration_document=False,
                     )
-                )
+                else:
+                    if not isinstance(authority_pointer, str) or not authority_pointer.startswith(
+                        "/external_contract/http_openapi/"
+                    ):
+                        raise ExtentContractError(
+                            f"CLI occurrence authority is invalid: {identity}"
+                        )
+                    source: Any = {"external_contract": external_contract}
+                    try:
+                        for encoded in authority_pointer[1:].split("/"):
+                            part = encoded.replace("~1", "/").replace("~0", "~")
+                            source = source[int(part)] if isinstance(source, list) else source[part]
+                    except (KeyError, IndexError, TypeError, ValueError) as exc:
+                        raise ExtentContractError(
+                            f"CLI occurrence authority does not resolve: {identity}"
+                        ) from exc
+                    if not isinstance(source, Mapping) or source.get("type") != "array":
+                        raise ExtentContractError(
+                            f"CLI occurrence authority is not an array: {identity}"
+                        )
+                    occurrence_decision = _declared_cardinality_decision(
+                        identity=f"{identity}:occurrences",
+                        owner=application,
+                        source_pointer=source_pointer,
+                        schema=source,
+                        maximum_keyword="maxItems",
+                        minimum_keyword="minItems",
+                        unit="occurrences",
+                    )
+                    if occurrence_decision is None:
+                        raise ExtentContractError(
+                            f"CLI occurrence authority has no bound: {identity}"
+                        )
+                    occurrence_decision["source_constraint"] = {"pointer": authority_pointer}
+                decisions.append(occurrence_decision)
             type_ = parameter.get("type")
             if isinstance(type_, Mapping):
                 maximum = type_.get("maximum")
@@ -908,7 +956,7 @@ def _cli_decisions(cli_by_application: Mapping[str, Any]) -> list[dict[str, obje
             if isinstance(child, Mapping):
                 visit(application, child, (*command_path, str(name)))
 
-    for application, root in sorted(cli_by_application.items()):
+    for application, root in sorted(external_contract["cli"].items()):
         if not isinstance(root, Mapping):
             raise ExtentContractError(f"CLI surface is invalid: {application}")
         visit(application, root, (application,))
@@ -984,7 +1032,7 @@ def extent_projection(external_contract: Mapping[str, Any]) -> dict[str, object]
     """Return every schema- and route-owned external extent decision exactly once."""
 
     decisions = _openapi_decisions(external_contract["http_openapi"])
-    decisions.extend(_cli_decisions(external_contract["cli"]))
+    decisions.extend(_cli_decisions(external_contract))
     decisions.extend(
         _configuration_environment_decisions(
             external_contract["configuration_environment"],

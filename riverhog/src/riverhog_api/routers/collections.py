@@ -113,7 +113,7 @@ _CLIENT_PROVENANCE_BINARY_OPERATION = {
 @router.get(
     "/collections",
     response_model=ListCollectionsResponse,
-    openapi_extra=mutable_browse_operation(),
+    openapi_extra=mutable_browse_operation(response_items_field="collections"),
 )
 def list_collections(
     container: ContainerDep,
