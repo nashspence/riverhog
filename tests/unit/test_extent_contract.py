@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import hashlib
 import importlib.util
 import json
@@ -100,6 +101,11 @@ def test_extent_projection_is_exhaustive_source_linked_and_self_identifying() ->
         assert decision["reason"]
         source = _resolve_pointer(projection, decision["source_pointer"])
         assert isinstance(source, dict)
+        constraint_pointer = decision.get("source_constraint", {}).get("pointer")
+        if constraint_pointer is not None:
+            assert source["occurrences_authority"] == constraint_pointer
+            source = _resolve_pointer(projection, constraint_pointer)
+            assert isinstance(source, dict)
         policy = decision["policy"]
         if policy in {"fixed", "contract_max"}:
             source_field = decision.get("source_constraint", {}).get("field")
@@ -154,6 +160,83 @@ def test_operation_parameter_extents_are_covered_from_the_openapi_authority() ->
         page_size["policy"],
         page_size["maximum"],
     )
+
+
+def test_collection_list_separates_logical_total_page_carrier_and_selector_batch() -> None:
+    projection = _checked_projection()
+    decisions = {
+        decision["id"]: decision
+        for decision in projection["external_contract"]["extents"]["decisions"]
+    }
+    total = decisions["http:riverhog:operation:list_collections:logical-result"]
+    page = decisions[
+        "http:riverhog:components:/schemas/ListCollectionsResponse/properties/collections:cardinality"
+    ]
+    tags = decisions[
+        "http:riverhog:components:/schemas/ListCollectionsResponse/properties/tags:cardinality"
+    ]
+    cli_tags = decisions["cli:piggity:piggity:collection:list:parameter:tag:occurrences"]
+    assert total["policy"] == page["policy"] == "segmented_no_total_max"
+    assert "maximum" not in total and "maximum" not in page
+    assert total["progression"] == page["progression"]
+    assert page["progression"]["maximum_page_size"] == 100
+    assert page["progression"]["response_items_field"] == "collections"
+    assert tags["policy"] == cli_tags["policy"] == "contract_max"
+    assert tags["maximum"] == cli_tags["maximum"] == 100
+    schema = _resolve_pointer(projection, cli_tags["source_constraint"]["pointer"])
+    assert isinstance(schema, dict)
+    assert schema["maxItems"] == cli_tags["maximum"]
+
+
+@pytest.mark.parametrize("failure", ["ambiguous", "stale", "conflicting", "response", "media"])
+def test_route_page_binding_rejects_ambiguous_stale_or_conflicting_authority(failure: str) -> None:
+    module = load_script().extent_contract
+    openapi = copy.deepcopy(_checked_projection()["external_contract"]["http_openapi"]["riverhog"])
+    operation = openapi["paths"]["/v1/collections"]["get"]
+    read = operation["x-riverhog-read-collection"]
+    if failure == "ambiguous":
+        del read["response_items_field"]
+    elif failure == "stale":
+        read["response_items_field"] = "missing"
+    elif failure == "response":
+        operation["responses"]["200"]["content"]["application/json"]["schema"] = {"type": "string"}
+    elif failure == "media":
+        operation["responses"]["200"]["content"]["application/fixture+json"] = {
+            "schema": {"type": "string"},
+        }
+    else:
+        other = copy.deepcopy(operation)
+        other["x-riverhog-read-collection"]["maximum_page_size"] = 50
+        openapi["paths"]["/fixture-conflict"] = {"get": other}
+    with pytest.raises(module.ExtentContractError, match="route page"):
+        module._direct_response_array_policies(openapi)
+
+
+def test_cli_occurrence_bound_tracks_its_source_and_rejects_missing_authority() -> None:
+    module = load_script().extent_contract
+    external = copy.deepcopy(_checked_projection()["external_contract"])
+    parameter = next(
+        parameter
+        for parameter in external["cli"]["piggity"]["commands"]["collection"]["commands"]["list"][
+            "parameters"
+        ]
+        if parameter["name"] == "tag"
+    )
+    schema = _resolve_pointer({"external_contract": external}, parameter["occurrences_authority"])
+    assert isinstance(schema, dict)
+    schema["maxItems"] = 7
+    decision = next(
+        item
+        for item in module._cli_decisions(external)
+        if item["id"] == "cli:piggity:piggity:collection:list:parameter:tag:occurrences"
+    )
+    assert decision["maximum"] == 7
+    del schema["maxItems"]
+    with pytest.raises(module.ExtentContractError, match="has no bound"):
+        module._cli_decisions(external)
+    parameter["occurrences_authority"] += "/missing"
+    with pytest.raises(module.ExtentContractError, match="does not resolve"):
+        module._cli_decisions(external)
 
 
 def test_schema_bounds_accept_the_boundary_and_reject_the_next_value() -> None:

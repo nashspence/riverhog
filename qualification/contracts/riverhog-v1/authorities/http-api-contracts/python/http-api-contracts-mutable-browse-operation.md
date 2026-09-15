@@ -22,7 +22,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Declared structure
 
 - <a id="s-1917885bf2"></a>`kind`: `"function"`
-- <a id="s-1f5ef45d1f"></a>`signature`: `"\"(*, default_page_size: 'int' = 25, maximum_page_size: 'int' = 100) -> 'dict[str, Any]'\""`
+- <a id="s-1f5ef45d1f"></a>`signature`: `"\"(*, default_page_size: 'int' = 25, maximum_page_size: 'int' = 100, response_items_field: 'str \| None' = None) -> 'dict[str, Any]'\""`
 
 ## Governing policies
 
@@ -48,13 +48,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d063dafca26ce1619a3b499c7f08a56feb3bb9c6fc734d13699ab78dc355567c -->
+<!-- exact-contract-value: 9d79352fd4908a0c33dfab44dfa5ed7f66c3762d3e0d2932592ee19f86a4b60b -->
 
 ```json
 {
   "contract": {
     "kind": "function",
-    "signature": "\"(*, default_page_size: 'int' = 25, maximum_page_size: 'int' = 100) -> 'dict[str, Any]'\""
+    "signature": "\"(*, default_page_size: 'int' = 25, maximum_page_size: 'int' = 100, response_items_field: 'str | None' = None) -> 'dict[str, Any]'\""
   },
   "distribution": "http-api-contracts",
   "module": "http_api_contracts",

@@ -674,6 +674,36 @@ def _render_cli(
                 f"{'yes' if item.get('required') else 'no'} | {_md(item.get('type', ''))} | "
                 f"{_md(', '.join(cast(Sequence[str], item.get('options', ()))))} |"
             )
+        for item in parameters:
+            authority_pointer = item.get("occurrences_authority")
+            if authority_pointer is None:
+                continue
+            if not isinstance(authority_pointer, str) or "/schema" not in authority_pointer:
+                raise ContractAtlasError("CLI occurrence authority is not a schema pointer")
+            target = _one_cli_authority_element(
+                (
+                    candidate
+                    for candidate in elements_by_id.values()
+                    if candidate["interface"] == "http-operations"
+                    and any(
+                        authority_pointer.startswith(f"{owned}/parameters/")
+                        for owned in cast(Sequence[str], candidate["pointers"])
+                    )
+                ),
+                kind="occurrence",
+            )
+            parameter_pointer = authority_pointer.rsplit("/schema", 1)[0]
+            source = cast(Mapping[str, object], pointer_value(projection, parameter_pointer))
+            schema = cast(Mapping[str, object], pointer_value(projection, authority_pointer))
+            link = _anchor_link(path, str(target["dossier"]), _subject_anchor(parameter_pointer))
+            lines.extend(
+                [
+                    "",
+                    f"Repeated `{_md(item['name'])}` accepts at most **{schema['maxItems']}** "
+                    f"occurrences, through "
+                    f"[{_md(target['title'])} · {_md(source['name'])}]({link}).",
+                ]
+            )
     if terminating_controls:
         lines.extend(
             [

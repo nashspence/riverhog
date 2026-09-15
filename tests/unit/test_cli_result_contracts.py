@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import importlib
 import importlib.metadata
 import importlib.util
@@ -33,6 +34,42 @@ def _contract_module() -> ModuleType:
 @pytest.fixture(scope="module")
 def cli_surfaces() -> Mapping[str, Mapping[str, object]]:
     return _contract_module()._cli_surfaces()
+
+
+@pytest.mark.parametrize("stale", ["command", "option", "operation", "query", "query-shape"])
+def test_cli_occurrence_authorities_must_resolve_to_discovered_inputs(
+    cli_surfaces: Mapping[str, Mapping[str, object]],
+    monkeypatch,
+    stale: str,
+) -> None:
+    import piggity.main
+
+    module = _contract_module()
+    bindings = copy.deepcopy(piggity.main._CLI_OCCURRENCE_AUTHORITIES)
+    if stale == "command":
+        bindings["collection missing"] = bindings.pop("collection list")
+    elif stale == "option":
+        bindings["collection list"]["missing"] = bindings["collection list"].pop("tag")
+    elif stale == "operation":
+        bindings["collection list"]["tag"]["operation_id"] = "get_collection"
+    elif stale == "query":
+        bindings["collection list"]["tag"]["parameter"] = "missing"
+    monkeypatch.setattr(piggity.main, "_CLI_OCCURRENCE_AUTHORITIES", bindings)
+    openapi = module._openapi_surfaces()
+    if stale == "query-shape":
+        query = next(
+            parameter
+            for parameter in openapi["riverhog"]["paths"]["/v1/collections"]["get"]["parameters"]
+            if parameter["name"] == "tags"
+        )
+        query["schema"] = {"type": "object", "properties": {"tags": query["schema"]}}
+    with pytest.raises(module.ContractFreezeError, match="CLI occurrence"):
+        module._apply_cli_occurrence_authorities(
+            "piggity",
+            copy.deepcopy(cli_surfaces["piggity"]),
+            operations=module.operation_qualification.operation_matrix(),
+            openapi=openapi,
+        )
 
 
 def _nodes(

@@ -110,6 +110,7 @@ def mutable_browse_operation(
     *,
     default_page_size: int = 25,
     maximum_page_size: int = 100,
+    response_items_field: str | None = None,
 ) -> dict[str, Any]:
     """Classify one bounded page through a mutable catalog projection."""
 
@@ -123,6 +124,7 @@ def mutable_browse_operation(
             "next_page_token_field": "next_page_token",
             "default_page_size": default_page_size,
             "maximum_page_size": maximum_page_size,
+            **({"response_items_field": response_items_field} if response_items_field else {}),
         }
     }
 

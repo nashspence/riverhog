@@ -33,13 +33,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
+Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token","response_items_field":"collections"}; reason="bounded-route-page"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field collections](#s-1d875f0d26) | `cardinality · items · operational_policy` | shared above |
+| [field collections](#s-1d875f0d26) | `cardinality · items · segmented_no_total_max` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
@@ -63,7 +63,7 @@ Shared facts for every subject below: maximum=100
 ## Governing policies
 
 - <a id="pa-364872d757"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
-- <a id="pa-78eff15eb7"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-d834266707"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 - <a id="pa-31950cc906"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence

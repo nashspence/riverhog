@@ -30,6 +30,8 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-593c3b8401"></a>`ids` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --ids |
 | <a id="s-18939bbec9"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
+Repeated `tag` accepts at most **100** occurrences, through [GET /v1/collections · tags](../../riverhog/http-operations/get-v1-collections.md#s-c928d33a4d).
+
 ### Terminating controls
 
 | Identity | Trigger | Exit status | stdout | stderr |
@@ -58,31 +60,22 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"piggity"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [CLI parameter --tag](#s-951ed89fcc) | `cardinality · occurrences · operational_policy` | shared above |
-
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
-Shared facts for every subject below: minimum=1
-
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --encryption-format](#s-2c75429912) | `cardinality · values-per-occurrence · fixed` | maximum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --ids](#s-593c3b8401) | `cardinality · values-per-occurrence · fixed` | maximum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --json](#s-18939bbec9) | `cardinality · values-per-occurrence · fixed` | maximum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --order](#s-30f31aa241) | `cardinality · values-per-occurrence · fixed` | maximum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --page-size](#s-95723ce082) | `value · cli-value · contract_max` | maximum=100; reason="schema-maximum"; source_constraint={"field":"type.maximum"} |
-| [CLI parameter --page-size](#s-95723ce082) | `cardinality · values-per-occurrence · fixed` | maximum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --page-token](#s-7444300279) | `cardinality · values-per-occurrence · fixed` | maximum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --passphrase-id](#s-366a7487de) | `cardinality · values-per-occurrence · fixed` | maximum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --query](#s-3ed58f0f21) | `cardinality · values-per-occurrence · fixed` | maximum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --sort](#s-06860e4c41) | `cardinality · values-per-occurrence · fixed` | maximum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --tag](#s-951ed89fcc) | `cardinality · values-per-occurrence · fixed` | maximum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --encryption-format](#s-2c75429912) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --ids](#s-593c3b8401) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --json](#s-18939bbec9) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --order](#s-30f31aa241) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --page-size](#s-95723ce082) | `value · cli-value · contract_max` | maximum=100; minimum=1; reason="schema-maximum"; source_constraint={"field":"type.maximum"} |
+| [CLI parameter --page-size](#s-95723ce082) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --page-token](#s-7444300279) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --passphrase-id](#s-366a7487de) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --query](#s-3ed58f0f21) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --sort](#s-06860e4c41) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --tag](#s-951ed89fcc) | `cardinality · occurrences · contract_max` | maximum=100; reason="bounded-exact-tag-selector-batch"; source_constraint={"pointer":"/external_contract/http_openapi/riverhog/paths/~1v1~1collections/get/parameters/7/schema/anyOf/0"} |
+| [CLI parameter --tag](#s-951ed89fcc) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
 
 ## Maintained corroboration
 
@@ -93,7 +86,6 @@ Shared facts for every subject below: minimum=1
 ## Governing policies
 
 - <a id="pa-1e717cc39e"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-5e6c00779c"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 - <a id="pa-d074e8411e"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
@@ -129,7 +121,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/collection/commands/list/parameters`
 
-<!-- exact-contract-value: fa0025a46cdf5c25f5576eab8a1b8299b564498475e6016e7c475f96b35269d6 -->
+<!-- exact-contract-value: 0c23c08e4f546aecc5b33af84ca36be02efa920fcbb1003a8f8d734bc7627044 -->
 
 ```json
 [
@@ -273,6 +265,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "multiple": true,
     "name": "tag",
     "nargs": 1,
+    "occurrences_authority": "/external_contract/http_openapi/riverhog/paths/~1v1~1collections/get/parameters/7/schema/anyOf/0",
     "options": [
       "--tag"
     ],

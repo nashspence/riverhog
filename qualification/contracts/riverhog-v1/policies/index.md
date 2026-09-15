@@ -798,8 +798,8 @@ Applications: **1**
 | [extent-rule/configuration-composition/v1](#p-dcd344e8e5) | 8 |
 | [extent-rule/configured-capacity/v1](#p-3ebc61fc99) | 66 |
 | [extent-rule/extension-contract/v1](#p-75a89f9d1c) | 17 |
-| [extent-rule/no-semantic-maximum/v1](#p-574724b48a) | 166 |
-| [extent-rule/route-progression/v1](#p-6b76b527cb) | 67 |
+| [extent-rule/no-semantic-maximum/v1](#p-574724b48a) | 164 |
+| [extent-rule/route-progression/v1](#p-6b76b527cb) | 68 |
 | [extent-rule/schema-bound/v1](#p-c0db822fc0) | 451 |
 
 ### Definitions
@@ -1002,7 +1002,7 @@ Applications: **17**
   - [protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json](../evidence/sources.md#src-a3bfff3737)
   - [protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json](../evidence/sources.md#src-bd3602393c)
 
-Applications: **166**
+Applications: **164**
 <a id="p-6b76b527cb"></a>
 #### `extent-rule/route-progression/v1`
 
@@ -1022,7 +1022,7 @@ Applications: **166**
   - [openapi:stove0](../evidence/sources.md#src-52e6e32124)
   - [operations:operation-matrix](../evidence/sources.md#src-b032bdc56b)
 
-Applications: **67**
+Applications: **68**
 <a id="p-c0db822fc0"></a>
 #### `extent-rule/schema-bound/v1`
 

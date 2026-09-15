@@ -3,11 +3,64 @@ from __future__ import annotations
 import json
 from typing import Any
 
+import httpx
 import piggity.main
+import pytest
 from piggity.main import app
+from riverhog_api.schemas.collections import ListCollectionsResponse
+from riverhog_client import ApiClient
+from riverhog_protocol import COLLECTION_TAG_REQUEST_MEMBERS_MAX
+from riverhog_protocol.errors import BadRequest
 from typer.testing import CliRunner
 
 runner = CliRunner()
+
+
+@pytest.mark.parametrize(
+    "count", [COLLECTION_TAG_REQUEST_MEMBERS_MAX, COLLECTION_TAG_REQUEST_MEMBERS_MAX + 1]
+)
+def test_collection_list_tag_batch_preserves_the_client_acceptance_boundary(
+    monkeypatch, count: int
+) -> None:
+    requests: list[httpx.Request] = []
+    tags = [f"fixture-{index}" for index in range(count)]
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        assert request.url.params.get_list("tags") == tags
+        payload = ListCollectionsResponse(
+            collections=[],
+            page_size=25,
+            next_page_token=None,
+            sort="id",
+            order="asc",
+            query=None,
+            encryption_format=None,
+            passphrase_id=None,
+            tags=tags,
+        )
+        return httpx.Response(200, json=payload.model_dump(mode="json"))
+
+    with ApiClient(base_url="https://riverhog.invalid", token="fixture") as api:
+        with httpx.Client(
+            base_url=api.base_url,
+            transport=httpx.MockTransport(handle),
+        ) as transport:
+            monkeypatch.setattr(api, "_persistent_client", lambda: transport)
+            monkeypatch.setattr(piggity.main, "client", lambda: api)
+            result = runner.invoke(
+                app,
+                ["collection", "list", "--json", *(arg for tag in tags for arg in ("--tag", tag))],
+            )
+    if count == COLLECTION_TAG_REQUEST_MEMBERS_MAX:
+        assert result.exit_code == 0, result.output
+        assert len(requests) == 1
+        assert json.loads(result.stdout)["tags"] == tags
+    else:
+        assert result.exit_code != 0
+        assert isinstance(result.exception, BadRequest)
+        assert "invalid cardinality" in str(result.exception)
+        assert requests == []
 
 
 def test_collection_list_ids_emits_one_pipeable_bounded_page(monkeypatch) -> None:

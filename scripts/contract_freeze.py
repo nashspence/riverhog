@@ -1462,6 +1462,103 @@ def _apply_cli_result_contract(
     return root
 
 
+def _apply_cli_occurrence_authorities(
+    authority: str,
+    root: dict[str, object],
+    *,
+    operations: Sequence[operation_qualification.Operation],
+    openapi: Mapping[str, object],
+) -> dict[str, object]:
+    """Resolve implementation-owned batch bindings against discovered commands and HTTP inputs."""
+
+    module = importlib.import_module(CLI_MODULES[authority])
+    declarations = getattr(module, "_CLI_OCCURRENCE_AUTHORITIES", {})
+    if not isinstance(declarations, Mapping):
+        raise ContractFreezeError(f"CLI occurrence authorities are invalid: {authority}")
+    application = CLI_OPERATION_APPLICATIONS.get(authority)
+    for command, bindings in declarations.items():
+        node = root
+        try:
+            for part in command.split():
+                node = cast(dict[str, dict[str, object]], node["commands"])[part]
+        except (AttributeError, KeyError, TypeError) as exc:
+            raise ContractFreezeError(
+                f"CLI occurrence authority references an unknown command: {authority}: {command}"
+            ) from exc
+        if not isinstance(bindings, Mapping):
+            raise ContractFreezeError(
+                f"CLI occurrence bindings are invalid: {authority}: {command}"
+            )
+        for name, binding in bindings.items():
+            if not isinstance(binding, Mapping) or set(binding) != {"operation_id", "parameter"}:
+                raise ContractFreezeError(f"CLI occurrence binding is invalid: {command}: {name}")
+            parameters = [
+                item
+                for item in cast(list[dict[str, object]], node["parameters"])
+                if item["name"] == name and item.get("multiple") is True and item.get("nargs") == 1
+            ]
+            candidates = [
+                operation
+                for operation in operations
+                if operation.application == application
+                and operation.operation_id == binding["operation_id"]
+                and command in operation.cli_commands
+            ]
+            if len(parameters) != 1 or len(candidates) != 1:
+                raise ContractFreezeError(
+                    f"CLI occurrence binding does not resolve uniquely: "
+                    f"{authority}: {command}: {name}"
+                )
+            operation = candidates[0]
+            operation_pointer = "/" + "/".join(
+                part.replace("~", "~0").replace("/", "~1")
+                for part in (
+                    "external_contract",
+                    "http_openapi",
+                    operation.application,
+                    "paths",
+                    operation.path,
+                    operation.method.casefold(),
+                )
+            )
+            document = cast(
+                Mapping[str, object],
+                pointer_value({"external_contract": {"http_openapi": openapi}}, operation_pointer),
+            )
+            inputs = [
+                index
+                for index, item in enumerate(cast(list[dict[str, object]], document["parameters"]))
+                if item.get("in") == "query" and item.get("name") == binding["parameter"]
+            ]
+            if len(inputs) != 1:
+                raise ContractFreezeError(
+                    f"CLI occurrence binding has no unique HTTP query parameter: {command}: {name}"
+                )
+            schema_pointer = f"{operation_pointer}/parameters/{inputs[0]}/schema"
+            schema = cast(
+                Mapping[str, object],
+                pointer_value({"external_contract": {"http_openapi": openapi}}, schema_pointer),
+            )
+            # A repeated scalar option supplies the entire query array, never a nested member.
+            variants = [(schema_pointer, schema)]
+            if "anyOf" in schema:
+                variants = [
+                    (f"{schema_pointer}/anyOf/{index}", branch)
+                    for index, branch in enumerate(
+                        cast(list[Mapping[str, object]], schema["anyOf"])
+                    )
+                ]
+            array_pointers = [
+                pointer for pointer, branch in variants if branch.get("type") == "array"
+            ]
+            if len(array_pointers) != 1:
+                raise ContractFreezeError(
+                    f"CLI occurrence binding has no unique HTTP array: {command}: {name}"
+                )
+            parameters[0]["occurrences_authority"] = array_pointers[0]
+    return root
+
+
 def _cli_surfaces(
     operations: Sequence[operation_qualification.Operation] | None = None,
     openapi: Mapping[str, object] | None = None,
@@ -1493,12 +1590,17 @@ def _cli_surfaces(
         "stove0-target-schemas": _argparse_command(target_schemas_parser()),
     }
     return {
-        authority: _apply_cli_result_contract(
+        authority: _apply_cli_occurrence_authorities(
             authority,
-            surface,
+            _apply_cli_result_contract(
+                authority,
+                surface,
+                operations=resolved_operations,
+                openapi=resolved_openapi,
+                schema_documents=resolved_schemas,
+            ),
             operations=resolved_operations,
             openapi=resolved_openapi,
-            schema_documents=resolved_schemas,
         )
         for authority, surface in surfaces.items()
     }

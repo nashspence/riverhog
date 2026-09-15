@@ -45,7 +45,7 @@ List Collections
 
 #### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
-Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-progression"
+Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token","response_items_field":"collections"}; reason="bounded-route-progression"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
@@ -117,7 +117,8 @@ This evidence proves maintained client, CLI, response-authority, and provider qu
     "maximum_page_size": 100,
     "next_page_token_field": "next_page_token",
     "page_size_parameter": "page_size",
-    "page_token_parameter": "page_token"
+    "page_token_parameter": "page_token",
+    "response_items_field": "collections"
   },
   "response_authority": "http-json"
 }
@@ -131,7 +132,7 @@ This evidence proves maintained client, CLI, response-authority, and provider qu
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1a2704e96ebf680261ded833af9841cca8d37c22826d887688a61564672126f8 -->
+<!-- exact-contract-value: 0caad8eb530cb8908e54f1ea864372b24ec2642191eebcd2cd9368561247d55e -->
 
 ```json
 {
@@ -342,7 +343,8 @@ The following JSON is the complete value owned at each machine-authority pointer
     "maximum_page_size": 100,
     "next_page_token_field": "next_page_token",
     "page_size_parameter": "page_size",
-    "page_token_parameter": "page_token"
+    "page_token_parameter": "page_token",
+    "response_items_field": "collections"
   }
 }
 ```
