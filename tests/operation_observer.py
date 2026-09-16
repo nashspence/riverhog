@@ -15,6 +15,8 @@ from fastapi import FastAPI, Request
 from fastapi.routing import APIRoute
 from fastapi.testclient import TestClient
 
+from scripts import qualification_source
+
 
 class TimeoutNeutralTestClient:
     """Adapt TestClient to official clients that always pass production timeouts."""
@@ -130,6 +132,14 @@ class OperationObserver:
 
 _OBSERVERS: list[OperationObserver] = []
 _EVENT_CURSOR_RESTARTS: list[dict[str, object]] = []
+_SOURCE_START: dict[str, object] | None = None
+
+
+def pytest_sessionstart(session: Any) -> None:
+    del session
+    global _SOURCE_START
+    if os.getenv("RIVERHOG_OPERATION_TIMINGS"):
+        _SOURCE_START = qualification_source.checkout_state()
 
 
 def pytest_runtest_logreport(report: Any) -> None:
@@ -169,6 +179,10 @@ def timing_evidence(*, source_sha: str, exit_status: int) -> dict[str, object]:
     return {
         "schema": "riverhog-operation-timings/v1",
         "source_sha": source_sha,
+        "source_checkout": {
+            "start": _SOURCE_START,
+            "finish": qualification_source.checkout_state(),
+        },
         "pytest_exit_status": exit_status,
         "operations": operations,
         "event_cursor_restarts": _EVENT_CURSOR_RESTARTS,

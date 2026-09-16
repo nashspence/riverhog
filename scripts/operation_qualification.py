@@ -57,6 +57,7 @@ _SCRIPT_DIRECTORY = Path(__file__).resolve().parent
 if str(_SCRIPT_DIRECTORY) not in sys.path:
     sys.path.insert(0, str(_SCRIPT_DIRECTORY))
 contract_atlas = importlib.import_module("contract_atlas")
+qualification_source = importlib.import_module("qualification_source")
 
 SCHEMA = "riverhog-operation-qualification/v1"
 TIMING_SCHEMA = "riverhog-operation-timings/v1"
@@ -790,24 +791,14 @@ def _summary(matrix: Sequence[Operation]) -> dict[str, object]:
     }
 
 
-def _git_head() -> str:
-    return subprocess.run(
-        ["git", "rev-parse", "--verify", "HEAD"],
-        check=True,
-        stdout=subprocess.PIPE,
-        text=True,
-    ).stdout.strip()
-
-
 def _source_sha(value: str) -> str:
-    normalized = value.strip().casefold()
-    if len(normalized) != 40 or any(
-        character not in SOURCE_SHA_PATTERN for character in normalized
-    ):
+    if len(value) != 40 or any(character not in SOURCE_SHA_PATTERN for character in value):
         raise QualificationError("source SHA must be an exact lowercase 40-character commit")
-    if _git_head() != normalized:
-        raise QualificationError("operation evidence source SHA does not match checked-out HEAD")
-    return normalized
+    if not qualification_source.matches_source(qualification_source.checkout_state(), value):
+        raise QualificationError(
+            "operation evidence requires a clean checkout at the exact source SHA"
+        )
+    return value
 
 
 def _contract_freeze_identity(path: Path = CONTRACT_FREEZE) -> dict[str, object]:
@@ -919,6 +910,15 @@ def _load_operation_timings(
         or payload.get("pytest_exit_status") != 0
     ):
         raise QualificationError("operation timing evidence identity or test result is invalid")
+    checkout = payload.get("source_checkout")
+    if not isinstance(checkout, dict) or not all(
+        qualification_source.matches_source(checkout.get(boundary), source_sha)
+        for boundary in ("start", "finish")
+    ):
+        raise QualificationError(
+            "operation observations require a clean checkout at the source SHA "
+            "at both test start and finish; rerun after committing source changes"
+        )
     rows = payload.get("operations")
     if not isinstance(rows, list):
         raise QualificationError("operation timing evidence rows are invalid")
@@ -968,6 +968,7 @@ def _load_operation_timings(
     return {
         "schema": TIMING_SCHEMA,
         "source_sha": source_sha,
+        "source_checkout": checkout,
         "event_cursor_restarts": payload.get("event_cursor_restarts", []),
         "operations": sorted(
             validated,
@@ -1058,10 +1059,11 @@ def _event_cursor_restart_claim(
 
 
 def evidence(*, source_sha: str, timings: Path) -> dict[str, object]:
+    source_sha = _source_sha(source_sha)
     matrix = operation_matrix()
     local_timings = _load_operation_timings(
         timings,
-        source_sha=_source_sha(source_sha),
+        source_sha=source_sha,
         matrix=matrix,
     )
     restart_claim = _event_cursor_restart_claim(
@@ -1069,7 +1071,7 @@ def evidence(*, source_sha: str, timings: Path) -> dict[str, object]:
         matrix=matrix,
         source_sha=source_sha,
     )
-    return {
+    payload: dict[str, object] = {
         "schema": SCHEMA,
         "source_sha": source_sha,
         "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
@@ -1126,6 +1128,8 @@ def evidence(*, source_sha: str, timings: Path) -> dict[str, object]:
         },
         "operations": [asdict(operation) for operation in matrix],
     }
+    _source_sha(source_sha)
+    return payload
 
 
 def evidence_markdown(payload: dict[str, Any]) -> str:
@@ -1136,6 +1140,10 @@ def evidence_markdown(payload: dict[str, Any]) -> str:
         "# Operation qualification",
         "",
         f"Source: [{payload['source_sha']}](https://github.com/nashspence/riverhog/commit/{payload['source_sha']})",
+        "",
+        "Checkout verified clean at test start and finish, and before and after report "
+        "construction. These checks require exclusive use of the checkout during each command; "
+        "Git-ignored caches and generated outputs are excluded.",
         "",
         "Observed successful API responses: "
         f"**{lifecycle['operations_with_successful_responses']} operations**. "

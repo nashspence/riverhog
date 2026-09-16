@@ -98,7 +98,8 @@ def observed_operation_evidence(
 ) -> tuple[ModuleType, dict[str, Any], Path]:
     module = load_script()
     source_sha = "a" * 40
-    monkeypatch.setattr(module, "_git_head", lambda: source_sha)
+    source_state = {"head": source_sha, "clean": True}
+    monkeypatch.setattr(module.qualification_source, "checkout_state", lambda: source_state)
     monkeypatch.setattr(
         module,
         "_cold_cli_timings",
@@ -132,6 +133,7 @@ def observed_operation_evidence(
             {
                 "schema": "riverhog-operation-timings/v1",
                 "source_sha": source_sha,
+                "source_checkout": {"start": source_state, "finish": source_state},
                 "pytest_exit_status": 0,
                 "operations": timing_rows,
             }
@@ -234,7 +236,7 @@ def test_release_disposable_selection_satisfies_current_observation_requirements
     monkeypatch,
 ) -> None:
     module = load_script()
-    source_sha = module._git_head()
+    source_sha = module.qualification_source.checkout_state()["head"]
     timings = tmp_path / "timings.json"
     selected = subprocess.run(
         [
@@ -263,11 +265,7 @@ def test_release_disposable_selection_satisfies_current_observation_requirements
 
     # Timing observations and passed restart assertions are separate inputs.
     matrix = module.operation_matrix()
-    observations = module._load_operation_timings(
-        timings,
-        source_sha=module._source_sha(source_sha),
-        matrix=matrix,
-    )
+    observations = json.loads(timings.read_text())
     assert observations["operations"]
     surfaces = module.application_surfaces()
     monkeypatch.setattr(module, "application_surfaces", lambda: surfaces)
@@ -282,16 +280,30 @@ def test_release_disposable_selection_satisfies_current_observation_requirements
     }
     assert all(item["status"] == "passed" for item in local["operations"])
     assert all(f"/blob/{source_sha}/" in item["assertion_source"] for item in local["operations"])
-    payload = module.evidence(source_sha=source_sha, timings=timings)
-    assert payload["qualification"]["event_cursor_restart_resume"] == claim
-    markdown = module.evidence_markdown(payload)
-    for item in local["operations"]:
-        assert (
-            f"[Restart assertions ({item['application']})]({item['assertion_source']})" in markdown
-        )
-    assert local["scope"] in markdown
-    assert local["limitations"] in markdown
-    assert "| event cursor restart resume | **not established** |" in markdown
+    if all(
+        module.qualification_source.matches_source(state, source_sha)
+        for state in observations["source_checkout"].values()
+    ):
+        # A clean committed run exercises the actual accepted producer path.
+        payload = module.evidence(source_sha=source_sha, timings=timings)
+        assert payload["qualification"]["event_cursor_restart_resume"] == claim
+        markdown = module.evidence_markdown(payload)
+        for item in local["operations"]:
+            assert (
+                f"[Restart assertions ({item['application']})]({item['assertion_source']})"
+                in markdown
+            )
+        assert local["scope"] in markdown
+        assert local["limitations"] in markdown
+        assert "| event cursor restart resume | **not established** |" in markdown
+        assert "Checkout verified clean at test start and finish" in markdown
+    else:
+        # Development still exercises the same tests and records observations,
+        # but these cannot become qualification evidence for the committed SHA.
+        with pytest.raises(module.QualificationError, match="clean checkout"):
+            module._load_operation_timings(timings, source_sha=source_sha, matrix=matrix)
+        with pytest.raises(module.QualificationError, match="clean checkout"):
+            module.evidence(source_sha=source_sha, timings=timings)
 
     for missing in ([], witnesses[:1]):
         partial = module._event_cursor_restart_claim(missing, matrix=matrix, source_sha=source_sha)
@@ -604,6 +616,10 @@ def test_timing_evidence_fails_closed_on_missing_local_operation(tmp_path: Path)
             {
                 "schema": "riverhog-operation-timings/v1",
                 "source_sha": source_sha,
+                "source_checkout": {
+                    "start": {"head": source_sha, "clean": True},
+                    "finish": {"head": source_sha, "clean": True},
+                },
                 "pytest_exit_status": 0,
                 "operations": [],
             }
