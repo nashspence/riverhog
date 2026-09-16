@@ -131,12 +131,14 @@ class OperationObserver:
 
 _OBSERVERS: list[OperationObserver] = []
 _CLI_CALLBACKS: dict[object, list[tuple[str, str]]] = defaultdict(list)
-_CLI_PROJECTIONS: dict[tuple[str, str], dict[bool, int]] = defaultdict(lambda: defaultdict(int))
+_CLI_CALLBACK_ENTRIES: dict[tuple[str, str], dict[bool, int]] = defaultdict(
+    lambda: defaultdict(int)
+)
 _PREVIOUS_PROFILE: Any = None
 
 
-def _install_cli_projection_observer() -> None:
-    """Observe real command callbacks in both supported output projections."""
+def _install_cli_callback_observer() -> None:
+    """Count callback entries, including failures; no success or parity assertion."""
 
     global _PREVIOUS_PROFILE
 
@@ -154,10 +156,10 @@ def _install_cli_projection_observer() -> None:
             if identity in required:
                 _CLI_CALLBACKS[callback.__code__].append(identity)
     _PREVIOUS_PROFILE = sys.getprofile()
-    sys.setprofile(_observe_cli_projection)
+    sys.setprofile(_observe_cli_callback_entry)
 
 
-def _observe_cli_projection(frame: Any, event: str, argument: object) -> None:
+def _observe_cli_callback_entry(frame: Any, event: str, argument: object) -> None:
     del argument
     identities = _CLI_CALLBACKS.get(frame.f_code) if event == "call" else None
     if not identities:
@@ -176,7 +178,7 @@ def _observe_cli_projection(frame: Any, event: str, argument: object) -> None:
         suffix = "enable" if enabled else "disable"
         identities = [identity for identity in identities if identity[1].endswith(suffix)]
     for identity in identities:
-        _CLI_PROJECTIONS[identity][json_mode] += 1
+        _CLI_CALLBACK_ENTRIES[identity][json_mode] += 1
 
 
 def _timing_summary(samples: list[float]) -> dict[str, int | float]:
@@ -210,14 +212,14 @@ def timing_evidence(*, source_sha: str, exit_status: int) -> dict[str, object]:
         "source_sha": source_sha,
         "pytest_exit_status": exit_status,
         "operations": operations,
-        "cli_projections": [
+        "cli_callback_entries": [
             {
                 "application": application,
                 "command": command,
-                "human_executions": modes[False],
-                "json_executions": modes[True],
+                "human_entries": modes[False],
+                "json_entries": modes[True],
             }
-            for (application, command), modes in sorted(_CLI_PROJECTIONS.items())
+            for (application, command), modes in sorted(_CLI_CALLBACK_ENTRIES.items())
         ],
     }
 
@@ -225,7 +227,7 @@ def timing_evidence(*, source_sha: str, exit_status: int) -> dict[str, object]:
 def pytest_sessionstart(session: Any) -> None:
     del session
     if os.getenv("RIVERHOG_OPERATION_TIMINGS"):
-        _install_cli_projection_observer()
+        _install_cli_callback_observer()
 
 
 def pytest_sessionfinish(session: Any, exitstatus: int) -> None:

@@ -1,4 +1,4 @@
-"""Nonnormative executable witnesses for segmented v1 extent decisions."""
+"""Nonnormative test bindings and open obligations for segmented v1 extents."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
-REQUIRED_CLAIMS = frozenset(
+PROGRESSION_OBLIGATIONS = frozenset(
     {
         "bounded_step",
         "forward_progress",
@@ -20,14 +20,14 @@ REQUIRED_CLAIMS = frozenset(
 
 @dataclass(frozen=True, slots=True)
 class SegmentedExtentWitness:
-    """One reviewed group of executable proofs for an owned progression rule."""
+    """Candidate tests for an owned progression rule, without a proof assertion."""
 
     id: str
     owner: str
     reasons: tuple[str, ...]
     test_node_ids: tuple[str, ...]
     gates: tuple[str, ...]
-    claims: tuple[str, ...] = tuple(sorted(REQUIRED_CLAIMS))
+    test_scopes: tuple[str, ...] = ()
 
 
 WITNESSES = (
@@ -151,12 +151,42 @@ WITNESSES = (
         test_node_ids=(
             "tests/unit/test_public_interface_parity.py::"
             "test_public_read_collection_selectors_are_bounded_and_frozen",
+            "tests/unit/test_collection_reads.py::"
+            "test_collection_list_query_count_is_independent_of_page_rows",
+            "tests/unit/test_collection_reads.py::"
+            "test_collection_encryption_filters_preserve_catalog_authorization",
+            "packages/http-api-contracts/tests/test_browse_tokens.py::"
+            "test_browse_token_round_trips_opaque_binary_position_across_restart",
+            "packages/http-api-contracts/tests/test_browse_tokens.py::"
+            "test_browse_token_fails_closed_outside_its_request_binding",
+            "tests/unit/test_operation_lifecycle_api.py::"
+            "test_riverhog_official_client_positive_disposable_lifecycle",
+            "tests/unit/test_cli_json_output.py::"
+            "test_collection_list_json_emits_the_api_response_without_a_second_model",
             "tests/unit/test_catalog_sync.py::"
             "test_catalog_sync_crosses_many_pages_and_repairs_fixed_frontier_changes",
             "tests/integration/test_lifecycle_event_concurrency.py::"
             "test_event_reads_and_concurrent_context_reapers_do_only_bounded_work",
         ),
         gates=("make unit", "make postgres-concurrency", "make database-qualification"),
+        test_scopes=(
+            "Structural OpenAPI checks for bounded read selectors; no traversal is executed.",
+            "Collection-list service query count and archive-object loading on one page; "
+            "does not test traversal or restart.",
+            "Collection-list service encryption filters and catalog authorization on one page.",
+            "Shared token codec reconstructs a position after codec recreation with the same "
+            "signing configuration; does not prove route wiring or database traversal.",
+            "Shared token codec rejects changed operation, principal, and selectors; "
+            "does not prove each route supplies those bindings correctly.",
+            "Real API and official client lifecycle includes a one-page collection list; "
+            "its restart assertion concerns events, not collection-list continuation.",
+            "Collection-list CLI accepts a current-schema fixture in both output modes, "
+            "preserves the entire JSON response, and displays its description and encryption "
+            "in human output; uses a fake client and does not establish general output parity.",
+            "Catalog-sync fixed-frontier traversal and repair; ordinary mutable collection "
+            "browsing has different semantics and gains no snapshot-completeness claim.",
+            "Lifecycle-event reads and concurrent context reaping; not collection browsing.",
+        ),
     ),
     SegmentedExtentWitness(
         id="stove0-read-collection-progression/v1",
@@ -289,15 +319,15 @@ def bind_segmented_decisions(
     root: Path,
     decisions: Sequence[Mapping[str, object]],
 ) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
-    """Bind every segmented decision to current reviewed executable proof sources."""
+    """Check routing and test-symbol existence, without certifying behavioral claims."""
 
     identities = [witness.id for witness in WITNESSES]
     if len(identities) != len(set(identities)):
         raise ExtentWitnessError("segmented extent witness identities are not unique")
     for witness in WITNESSES:
-        if set(witness.claims) != REQUIRED_CLAIMS:
+        if witness.test_scopes and len(witness.test_scopes) != len(witness.test_node_ids):
             raise ExtentWitnessError(
-                f"segmented extent witness has incomplete claims: {witness.id}"
+                f"segmented extent witness has incomplete test scopes: {witness.id}"
             )
         if not witness.test_node_ids or not witness.gates:
             raise ExtentWitnessError(f"segmented extent witness is not executable: {witness.id}")
@@ -323,7 +353,7 @@ def bind_segmented_decisions(
         ]
         if not matched:
             raise ExtentWitnessError(
-                "segmented extent has no executable extent witness: "
+                "segmented extent has no candidate test binding: "
                 f"{decision.get('id')} ({owner}; {reason})"
             )
         used.update(matched)
@@ -345,7 +375,13 @@ def bind_segmented_decisions(
             "reasons": list(witness.reasons),
             "test_node_ids": list(witness.test_node_ids),
             "gates": list(witness.gates),
-            "claims": list(witness.claims),
+            "unestablished_claims": sorted(PROGRESSION_OBLIGATIONS),
+            "test_scopes": [
+                {"node_id": node_id, "scope": scope}
+                for node_id, scope in zip(witness.test_node_ids, witness.test_scopes, strict=True)
+            ]
+            if witness.test_scopes
+            else [],
         }
         for witness in WITNESSES
         if witness.id in used
@@ -356,7 +392,7 @@ def bind_segmented_decisions(
 __all__ = [
     "SegmentedExtentWitness",
     "ExtentWitnessError",
-    "REQUIRED_CLAIMS",
+    "PROGRESSION_OBLIGATIONS",
     "WITNESSES",
     "bind_segmented_decisions",
 ]

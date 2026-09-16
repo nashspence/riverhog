@@ -20,6 +20,7 @@ from .model import (
     structural_json_schema,
 )
 from .navigation import (
+    _anchor_id,
     _anchor_link,
     _dossier_navigation_labels,
     _html_anchor,
@@ -1223,6 +1224,33 @@ def _render_dossier(
                 lines.append(f"| {subject} | `{_md(contract)}` | {rendered_bounds} |")
             lines.append("")
 
+        witness_ids = sorted(
+            {
+                str(witness_id)
+                for link in cast(Sequence[Mapping[str, object]], trace["extent_sources"])
+                if link["id"] in extent_ids
+                for witness_id in cast(Sequence[str], link.get("segmented_extent_witnesses", ()))
+            }
+        )
+        if witness_ids:
+            lines.extend(
+                [
+                    "### Progression evidence and open obligations",
+                    "",
+                    "These are candidate test bindings. Group-wide progression claims remain "
+                    "unestablished; inspect the test scopes before applying a result "
+                    "to this contract.",
+                    "",
+                    *(
+                        f"- [{_md(witness_id)}]"
+                        f"({_anchor_link(path, source_evidence_path, witness_anchor)})"
+                        for witness_id in witness_ids
+                        for witness_anchor in (_anchor_id("extent-witness", witness_id),)
+                    ),
+                    "",
+                ]
+            )
+
     related_ids = cast(Sequence[str], element["related_element_ids"])
     referenced = _local_contract_references(str(element["authority"]), values, elements_by_id)
     if related_ids or referenced:
@@ -1314,10 +1342,12 @@ def _render_dossier(
         lines.extend(
             [
                 "",
-                "### Operation qualification evidence",
+                "### Structural operation bindings",
                 "",
-                "This evidence proves maintained client, CLI, response-authority, and provider "
-                "qualification without creating a second semantic operation.",
+                "This generated record links maintained client, CLI, response-authority, and "
+                "provider routes. It checks interface structure, not executed qualification, "
+                "successful CLI execution, or human/JSON equivalence. Test bindings and "
+                "qualification commands are audit leads, not run results.",
                 "",
                 "```json",
                 _pretty_json(matching_records[0]),

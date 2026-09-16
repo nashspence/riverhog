@@ -6,6 +6,7 @@ import piggity.main
 from piggity.cli_support import emit
 from piggity.main import app
 from pytest import CaptureFixture
+from riverhog_api.schemas.collections import ListCollectionsResponse
 from typer.testing import CliRunner
 
 
@@ -14,38 +15,41 @@ def test_collection_list_json_emits_the_api_response_without_a_second_model(
 ) -> None:
     payload = {
         "page_size": 25,
-        "page_token": None,
-        "total": 1,
         "next_page_token": None,
         "sort": "id",
         "order": "asc",
         "query": None,
+        "encryption_format": None,
+        "passphrase_id": None,
+        "tags": [],
         "collections": [
             {
                 "id": 42,
                 "created_at": "2026-07-26T18:43:00.000000Z",
                 "description": "Morning footage — camera seven",
                 "description_identity": "a" * 64,
+                "description_revision": 1,
+                "description_publication": "current",
+                "tag_revision": 1,
+                "tag_set_identity": "b" * 64,
+                "tag_publication": "current",
+                "content_identity": "c" * 64,
+                "archive_root_sha256": "d" * 64,
                 "files": 2,
                 "bytes": 100,
                 "remote_storage_bytes": 128,
                 "encryption_format": "age-v1-scrypt",
                 "passphrase_id": "fixture-archive-key-v2",
-                "archive_copies": [
-                    {
-                        "store": "deep",
-                        "state": "uploaded",
-                        "storage_class": "DEEP_ARCHIVE",
-                        "stored_bytes": 128,
-                        "storage_prefix": "riverhog/archives/opaque",
-                    }
-                ],
+                "archive_copy_count": 1,
             }
         ],
     }
+    assert ListCollectionsResponse.model_validate(payload).model_dump(mode="json") == payload
+    calls: list[dict[str, object]] = []
 
     class FakeClient:
-        def list_collections(self, **_kwargs: object) -> dict[str, object]:
+        def list_collections(self, **kwargs: object) -> dict[str, object]:
+            calls.append(kwargs)
             return payload
 
     monkeypatch.setattr(piggity.main, "client", FakeClient)
@@ -55,6 +59,8 @@ def test_collection_list_json_emits_the_api_response_without_a_second_model(
     assert result.exit_code == 0
     assert json.loads(result.stdout) == payload
     assert human.exit_code == 0
+    assert len(calls) == 2
+    assert calls[0] == calls[1]
     assert "encryption=age-v1-scrypt:fixture-archive-key-v2" in human.stdout
     assert "description: Morning footage — camera seven" in human.stdout
 
