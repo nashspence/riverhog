@@ -251,26 +251,40 @@ def _class_surface(value: type[object]) -> dict[str, object]:
     return surface
 
 
-def _public_class_members(value: type[object]) -> dict[str, dict[str, str]]:
-    """Return directly declared callable/property units in one exported class."""
+def _public_class_members(
+    value: type[object], *, inherited_source_roots: Sequence[Path] = ()
+) -> dict[str, dict[str, str]]:
+    """Resolve public members, including bases defined in release-owned packages."""
 
     members: dict[str, dict[str, str]] = {}
-    for name, member in value.__dict__.items():
-        if name.startswith("_") and name not in PUBLIC_DATA_MODEL_METHODS:
-            continue
-        candidate: object = member
-        kind = "method"
-        if isinstance(member, classmethod):
-            candidate = member.__func__
-            kind = "classmethod"
-        elif isinstance(member, staticmethod):
-            candidate = member.__func__
-            kind = "staticmethod"
-        elif isinstance(member, property):
-            candidate = member.fget
-            kind = "property"
-        if callable(candidate):
-            members[name] = {"kind": kind, "signature": _signature(candidate)}
+    seen: set[str] = set()
+    for owner in value.__mro__:
+        declared = {name: member for name, member in vars(owner).items() if name not in seen}
+        # Every first definition shadows later bases, even when it is not a
+        # callable/property or belongs to a third-party implementation.
+        seen.update(vars(owner))
+        if owner is not value:
+            source = _source_ref(owner).get("path")
+            if source is None or not any(
+                (ROOT / source).is_relative_to(root) for root in inherited_source_roots
+            ):
+                continue
+        for name, member in declared.items():
+            if name.startswith("_") and name not in PUBLIC_DATA_MODEL_METHODS:
+                continue
+            candidate: object = member
+            kind = "method"
+            if isinstance(member, classmethod):
+                candidate = member.__func__
+                kind = "classmethod"
+            elif isinstance(member, staticmethod):
+                candidate = member.__func__
+                kind = "staticmethod"
+            elif isinstance(member, property):
+                candidate = member.fget
+                kind = "property"
+            if callable(candidate):
+                members[name] = {"kind": kind, "signature": _signature(candidate)}
     return members
 
 
@@ -302,8 +316,10 @@ def _python_surfaces(
         for item in exceptions["exclusion"]
         if item["candidate_id"].startswith("python:")
     }
+    detections = python_package_detections(ROOT, projects)
+    source_roots = tuple(sorted({(ROOT / str(item["path"])).parent for item in detections}))
     result: dict[str, dict[str, object]] = {}
-    for detection in python_package_detections(ROOT, projects):
+    for detection in detections:
         project = str(detection["distribution"])
         package = str(detection["module"])
         candidate_id = f"python:{project}:{package}"
@@ -343,7 +359,8 @@ def _python_surfaces(
                 "contract": _python_export(value),
             }
             if inspect.isclass(value):
-                for member_name, member_contract in sorted(_public_class_members(value).items()):
+                members = _public_class_members(value, inherited_source_roots=source_roots)
+                for member_name, member_contract in sorted(members.items()):
                     member_identity = f"{public_identity}.{member_name}"
                     if member_identity in result:
                         raise ContractFreezeError(
@@ -425,7 +442,8 @@ def _python_registry(
                             "disposition": "protected",
                             "policy_id": "compatibility/python-api/v1",
                             "reason": (
-                                "The release package explicitly exports this exact Python unit."
+                                "The declared release-package export exposes this exact "
+                                "public import or class member."
                             ),
                         }
                     )
@@ -2139,11 +2157,20 @@ def _operation_trace(external: Mapping[str, object]) -> list[dict[str, object]]:
                 if exported is not client_type:
                     continue
                 member = f"{identity}.{method}"
+                if member not in python or python[member]["unit"] != "member":
+                    raise ContractFreezeError(
+                        f"maintained operation client lacks a Python contract unit: {member}"
+                    )
                 client_bindings.append(
                     {
                         "public_identity": member,
                         "source": _linked_source_ref(getattr(client_type, method)),
                     }
+                )
+            if not client_bindings:
+                raise ContractFreezeError(
+                    f"maintained operation client lacks an exported Python owner: "
+                    f"{operation.application}:{operation.operation_id}:{operation.client}"
                 )
         record["client_bindings"] = client_bindings
         record["cli_bindings"] = [

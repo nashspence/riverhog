@@ -52,7 +52,10 @@ DETECTORS: tuple[dict[str, str], ...] = (
     {"id": "protocol-schema", "authority": "published standalone schema document"},
     {
         "id": "python-public-unit",
-        "authority": "declared release-package export or directly declared public member",
+        "authority": (
+            "declared release-package export or public member declared on its class "
+            "or inherited from a release-owned package, using Python method resolution"
+        ),
     },
     {"id": "release-metadata", "authority": "validated release contract"},
 )
@@ -953,12 +956,21 @@ def _link_operation_qualification(
         details = cast(dict[str, object], http_element["details"])
         details["qualification_key"] = list(key)
         related = [http_element]
+        if record["client"] is not None and not record["client_bindings"]:
+            raise ContractAtlasError(
+                f"operation qualification lacks a Python client binding: {key}"
+            )
         for binding in cast(Sequence[Mapping[str, object]], record["client_bindings"]):
             public_identity = str(binding["public_identity"])
-            if public_identity not in python:
-                # The callable binding is still useful evidence. The dossier
-                # renders this projection gap explicitly instead of inventing a unit.
-                continue
+            if (
+                public_identity not in python
+                or cast(Mapping[str, object], python[public_identity]["details"])["unit"]
+                != "member"
+            ):
+                raise ContractAtlasError(
+                    f"operation qualification lacks a Python contract member: {key}: "
+                    f"{public_identity}"
+                )
             related.append(python[public_identity])
         for command in cast(Sequence[str], record.get("cli_commands", ())):
             command_authority = cli_authority.get(key[0], key[0])

@@ -1444,24 +1444,6 @@ def _render_dossier(
             raise ContractAtlasError(
                 f"HTTP contract has ambiguous operation qualification evidence: {qualification_key}"
             )
-        python_identities = {
-            cast(Mapping[str, object], item["details"])["public_identity"]
-            for item in elements_by_id.values()
-            if item["interface"] == "python"
-        }
-        for binding in cast(Sequence[Mapping[str, object]], matching_records[0]["client_bindings"]):
-            if binding["public_identity"] in python_identities:
-                continue
-            link = _repository_source_link(
-                path, cast(Mapping[str, object], binding["source"]), str(binding["public_identity"])
-            )
-            lines.extend(
-                [
-                    "",
-                    f"**Accounting gap:** {link} is callable through the maintained client "
-                    "but has no Python contract dossier in the current freeze.",
-                ]
-            )
         lines.extend(
             [
                 "",

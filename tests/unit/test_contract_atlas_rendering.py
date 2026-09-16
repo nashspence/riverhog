@@ -19,7 +19,7 @@ if str(REPO_ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
 import contract_atlas as atlas  # noqa: E402
-from contract_atlas import dossier_rendering, navigation  # noqa: E402
+from contract_atlas import discovery, navigation  # noqa: E402
 
 ARTIFACT = REPO_ROOT / "qualification/contracts/riverhog-v1.json"
 _CHECKED_ATLAS: atlas.ContractAtlas | None = None
@@ -221,25 +221,55 @@ def test_collection_list_has_a_readable_mutual_http_client_cli_audit_path() -> N
         assert f"`{code}`" in response
 
 
-def test_missing_python_unit_is_visible_without_an_invented_dossier_link() -> None:
+@pytest.mark.parametrize("invalid_binding", ("missing-member", "export", "no-binding"))
+def test_operation_client_binding_requires_a_python_member(invalid_binding: str) -> None:
     checked = checked_atlas()
-    elements = {item["id"]: item for item in checked.root["elements"]}
-    operation = next(item for item in elements.values() if item["title"] == "GET /v1/collections")
+    elements = deepcopy(checked.root["elements"])
     trace = deepcopy(checked.root["trace"])
     record = next(
         item
         for item in trace["operation_qualification"]["records"]
         if item["application"] == "riverhog" and item["operation_id"] == "list_collections"
     )
-    record["client_bindings"][0]["public_identity"] = "example.Client.inherited_method"
+    if invalid_binding == "no-binding":
+        record["client_bindings"] = []
+    else:
+        record["client_bindings"][0]["public_identity"] = (
+            "example.Client.inherited_method"
+            if invalid_binding == "missing-member"
+            else "riverhog_client.ApiClient"
+        )
 
-    page = dossier_rendering._render_dossier(
-        operation, checked.root["projection"], trace, elements
-    ).decode()
+    with pytest.raises(atlas.ContractAtlasError, match="lacks a Python"):
+        discovery._link_operation_qualification(elements, trace)
 
-    assert "**Accounting gap:** [example.Client.inherited_method]" in page
-    assert "has no Python contract dossier in the current freeze" in page
-    assert "example-client-inherited-method.md" not in page
+
+def test_inherited_client_method_routes_to_http_and_its_actual_definition() -> None:
+    checked = checked_atlas()
+    selected = [
+        next(item for item in checked.root["elements"] if item["title"] == title)
+        for title in (
+            "GET /v1/collection-processing-claims",
+            "riverhog_client.ApiClient.list_processing_claims",
+        )
+    ]
+    http, client = selected
+    assert client["details"]["unit"] == "member"
+    assert client["details"]["owner"] == "riverhog_client.ApiClient"
+    for item, other in ((http, client), (client, http)):
+        assert other["id"] in item["related_element_ids"]
+        page = checked.files[item["dossier"]].decode()
+        assert f"]({navigation._relative_link(item['dossier'], other['dossier'])})" in page
+
+    definition = inspect.unwrap(ApiClient.list_processing_claims)
+    location = {
+        "path": Path(inspect.getsourcefile(definition)).relative_to(REPO_ROOT).as_posix(),
+        "line": inspect.getsourcelines(definition)[1],
+    }
+    label = f"{location['path']}::{definition.__qualname__}"
+    assert navigation._repository_source_link(client["dossier"], location, label) in (
+        checked.files[client["dossier"]].decode()
+    )
 
 
 @pytest.mark.parametrize(
