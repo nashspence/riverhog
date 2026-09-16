@@ -17,10 +17,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-8ae0b92557"></a>`host` | _StoreAction | no |  | --host |
-| <a id="s-cb5e793bc3"></a>`port` | _StoreAction | no | int | --port |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-8ae0b92557"></a>`host`<br>`--host` | optional option; 1 value | not recorded | `"127.0.0.1"` |
+| <a id="s-cb5e793bc3"></a>`port`<br>`--port` | optional option; 1 value | int | `8082` |
 
 ### Terminating controls
 
@@ -47,9 +49,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|---|---|---|
 | <a id="s-2d98dbad82"></a>`usage` | <a id="s-bffe4593cf"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-0ec318e545"></a>`2` | <a id="s-8a0b4eec4b"></a>all: `empty` | <a id="s-95095cb125"></a>all: `noncontractual-usage-diagnostic` |
 
+### Progression, limits, and lifecycle
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter --host](#s-8ae0b92557) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --port](#s-cb5e793bc3) | `cardinality · values-per-occurrence · fixed` | shared above |
+
 ## Governing policies
 
 - <a id="pa-0ebd3c77bc"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-f7b913e677"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 

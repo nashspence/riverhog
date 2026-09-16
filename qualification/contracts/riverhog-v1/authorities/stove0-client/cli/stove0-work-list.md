@@ -17,14 +17,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-c57dac5cff"></a>`page_size` | TyperOption | no | {'class': 'typer._click.types.IntRange', 'maximum': 100, 'minimum': 1, 'name': 'integer range'} | --page-size |
-| <a id="s-37ac272d38"></a>`page_token` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --page-token |
-| <a id="s-db3eaea3f6"></a>`phase` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --phase |
-| <a id="s-32a1a20eda"></a>`query` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --query, -q |
-| <a id="s-62f62ee964"></a>`sort` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --sort |
-| <a id="s-36f021e7bf"></a>`order` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --order |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-c57dac5cff"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1`; maximum=`100` | `25` |
+| <a id="s-37ac272d38"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
+| <a id="s-db3eaea3f6"></a>`phase`<br>`--phase` | optional option; 1 value | text | not recorded |
+| <a id="s-32a1a20eda"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded |
+| <a id="s-62f62ee964"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"updated_at"` |
+| <a id="s-36f021e7bf"></a>`order`<br>`--order` | optional option; 1 value | text | `"desc"` |
 
 ### Terminating controls
 

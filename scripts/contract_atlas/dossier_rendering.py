@@ -662,6 +662,46 @@ def _render_http(
     return lines
 
 
+def _cli_parameter_type(parameter: Mapping[str, object]) -> str:
+    type_ = parameter.get("type")
+    if isinstance(type_, Mapping):
+        parts = [_md(type_.get("name") or type_.get("class") or "not recorded")]
+        constraints = type_
+    else:
+        parts = [_md(type_) if type_ is not None else "not recorded"]
+        constraints = parameter
+    for key in ("choices", "minimum", "maximum"):
+        if key in constraints:
+            parts.append(f"{key}=`{_md(_compact_json(constraints[key]))}`")
+    return "; ".join(parts)
+
+
+def _cli_invocation_summary(
+    parameter: Mapping[str, object],
+    arity: Mapping[str, object],
+    occurrences: Mapping[str, object] | None,
+) -> str:
+    minimum, maximum = arity["minimum"], arity["maximum"]
+    positional = parameter.get("kind") == "TyperArgument" or not parameter.get("options")
+    form = "positional" if positional else "flag" if maximum == 0 else "option"
+    parts = [f"{'required' if parameter.get('required') else 'optional'} {form}"]
+    if maximum is None:
+        parts.append(f"{minimum}+ values; no parser maximum")
+    elif minimum == maximum:
+        parts.append(f"{maximum} {'value' if maximum == 1 else 'values'}")
+    else:
+        parts.append(f"{minimum}–{maximum} values")
+    if occurrences is not None:
+        parts.append("counts repeats" if parameter.get("count") else "collects repeats")
+        maximum = occurrences["maximum"]
+        parts.append(
+            "no declared occurrence maximum"
+            if maximum is None
+            else f"maximum {maximum} occurrences"
+        )
+    return "; ".join(parts)
+
+
 def _render_cli(
     pointers: Sequence[str],
     values: Sequence[object],
@@ -699,23 +739,64 @@ def _render_cli(
         else []
     )
     if parameters:
+        extents = cast(
+            Sequence[Mapping[str, object]],
+            cast(
+                Mapping[str, object],
+                cast(Mapping[str, object], projection["external_contract"])["extents"],
+            )["decisions"],
+        )
+        parameter_extents: dict[tuple[str, str], Mapping[str, object]] = {}
+        for decision in extents:
+            subject, unit = str(decision["source_pointer"]), str(decision["unit"])
+            if subject.startswith(f"{parameters_pointer}/") and unit in {
+                "values-per-occurrence",
+                "occurrences",
+            }:
+                extent_key = (subject, unit)
+                if extent_key in parameter_extents:
+                    raise ContractAtlasError(f"duplicate CLI parameter extent: {extent_key}")
+                parameter_extents[extent_key] = decision
         lines.extend(
             [
                 "",
                 "### Parameters",
                 "",
-                "| Name | Kind | Required | Type | Options |",
-                "|---|---|---:|---|---|",
+                "Value counts describe supplied CLI values per occurrence. Defaults and "
+                "environment inputs below are recorded parser metadata; **not recorded** "
+                "does not imply an explicit null default or the absence of other fallbacks.",
+                "",
+                "| Parameter / spelling | Invocation | Type / constraints | "
+                "Default / environment |",
+                "|---|---|---|---|",
             ]
         )
         for index, item in enumerate(parameters):
             pointer = f"{parameters_pointer}/{index}"
             parameter_name = item.get("name", item.get("dest", ""))
+            spellings = [
+                f"`{_md(option)}`" for option in cast(Sequence[str], item.get("options", ()))
+            ]
+            secondary = cast(Sequence[str], item.get("secondary_options", ()))
+            if secondary:
+                spellings.append(
+                    "alternate: " + ", ".join(f"`{_md(option)}`" for option in secondary)
+                )
+            arity = parameter_extents.get((pointer, "values-per-occurrence"))
+            if arity is None:
+                raise ContractAtlasError(f"CLI parameter lacks value arity: {pointer}")
+            invocation = _cli_invocation_summary(
+                item, arity, parameter_extents.get((pointer, "occurrences"))
+            )
+            default = (
+                f"`{_md(_compact_json(item['default']))}`" if "default" in item else "not recorded"
+            )
+            if item.get("envvar"):
+                default += f"<br>Env: `{_md(_compact_json(item['envvar']))}`"
             lines.append(
-                f"| {_subject_marker(pointer, placed_subjects)}`{_md(parameter_name)}` | "
-                f"{_md(item.get('kind', ''))} | "
-                f"{'yes' if item.get('required') else 'no'} | {_md(item.get('type', ''))} | "
-                f"{_md(', '.join(cast(Sequence[str], item.get('options', ()))))} |"
+                f"| {_subject_marker(pointer, placed_subjects)}`{_md(parameter_name)}`"
+                f"{'<br>' + ', '.join(spellings) if spellings else ''} | "
+                f"{invocation} | {_cli_parameter_type(item)} | {default} |"
             )
         for item in parameters:
             authority_pointer = item.get("occurrences_authority")

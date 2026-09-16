@@ -17,18 +17,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-f8d43e8cc9"></a>`root` | TyperArgument | yes | {'class': 'typer.models.TyperPath', 'name': 'path'} | root |
-| <a id="s-41c9f19b64"></a>`idempotency_key` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --idempotency-key |
-| <a id="s-50c5683cc5"></a>`archive_store` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --archive-store |
-| <a id="s-d25200e1bc"></a>`description` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --description |
-| <a id="s-02c396bde4"></a>`tag` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --tag |
-| <a id="s-d85e25fde3"></a>`provenance` | TyperOption | no | {'class': 'typer.models.TyperPath', 'name': 'path'} | --provenance |
-| <a id="s-0348cfd40b"></a>`omit_provenance` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --omit-provenance |
-| <a id="s-598a4f2a05"></a>`provenance_observer` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --provenance-observer |
-| <a id="s-9bfdcc451f"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
-| <a id="s-0cf6176bfa"></a>`dry_run` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --dry-run |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-f8d43e8cc9"></a>`root`<br>`root` | required positional; 1 value | path | not recorded |
+| <a id="s-41c9f19b64"></a>`idempotency_key`<br>`--idempotency-key` | optional option; 1 value | text | not recorded |
+| <a id="s-50c5683cc5"></a>`archive_store`<br>`--archive-store` | optional option; 1 value | text | not recorded |
+| <a id="s-d25200e1bc"></a>`description`<br>`--description` | optional option; 1 value | text | not recorded |
+| <a id="s-02c396bde4"></a>`tag`<br>`--tag` | optional option; 1 value; collects repeats; no declared occurrence maximum | text | not recorded |
+| <a id="s-d85e25fde3"></a>`provenance`<br>`--provenance` | optional option; 1 value | path | not recorded |
+| <a id="s-0348cfd40b"></a>`omit_provenance`<br>`--omit-provenance` | optional option; 1 value | text | not recorded |
+| <a id="s-598a4f2a05"></a>`provenance_observer`<br>`--provenance-observer` | optional option; 1 value | text | not recorded<br>Env: `"PIGGITY_PROVENANCE_OBSERVER"` |
+| <a id="s-9bfdcc451f"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-0cf6176bfa"></a>`dry_run`<br>`--dry-run` | optional flag; 0 values | boolean | `false` |
 
 ### Terminating controls
 
@@ -61,7 +63,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"piggity"}; maximum=null; reason="no-declared-semantic-maximum"
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"piggity"}; maximum=null; reason="no-declared-semantic-maximum"; source_constraint={"field":"multiple"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
@@ -69,20 +71,20 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
-Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --archive-store](#s-50c5683cc5) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --description](#s-d25200e1bc) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --dry-run](#s-0cf6176bfa) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --idempotency-key](#s-41c9f19b64) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --json](#s-9bfdcc451f) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --omit-provenance](#s-0348cfd40b) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --provenance](#s-d85e25fde3) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --provenance-observer](#s-598a4f2a05) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter root](#s-f8d43e8cc9) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --tag](#s-02c396bde4) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --archive-store](#s-50c5683cc5) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --description](#s-d25200e1bc) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --dry-run](#s-0cf6176bfa) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
+| [CLI parameter --idempotency-key](#s-41c9f19b64) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --json](#s-9bfdcc451f) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
+| [CLI parameter --omit-provenance](#s-0348cfd40b) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --provenance](#s-d85e25fde3) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --provenance-observer](#s-598a4f2a05) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter root](#s-f8d43e8cc9) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --tag](#s-02c396bde4) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
 
 ## Maintained corroboration
 

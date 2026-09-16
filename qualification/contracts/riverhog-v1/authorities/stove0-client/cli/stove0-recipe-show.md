@@ -17,10 +17,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-66aae1f8d7"></a>`recipe_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | recipe_id |
-| <a id="s-cda51628b9"></a>`revision` | TyperOption | no | {'class': 'typer._click.types.IntParamType', 'name': 'integer'} | --revision |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-66aae1f8d7"></a>`recipe_id`<br>`recipe_id` | required positional; 1 value | text | not recorded |
+| <a id="s-cda51628b9"></a>`revision`<br>`--revision` | optional option; 1 value | integer | not recorded |
 
 ### Terminating controls
 

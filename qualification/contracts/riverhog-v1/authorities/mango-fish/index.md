@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Contract elements: **6** · Extent decisions: **7**
+Contract elements: **6** · Extent decisions: **8**
 
 ## Interfaces
 

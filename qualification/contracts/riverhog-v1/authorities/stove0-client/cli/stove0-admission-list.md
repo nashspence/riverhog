@@ -17,15 +17,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-7949639bab"></a>`page_size` | TyperOption | no | {'class': 'typer._click.types.IntRange', 'maximum': 100, 'minimum': 1, 'name': 'integer range'} | --page-size |
-| <a id="s-f3c2ae9eeb"></a>`page_token` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --page-token |
-| <a id="s-279e13c010"></a>`policy_id` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --policy-id |
-| <a id="s-3b178f7301"></a>`state_filter` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --state |
-| <a id="s-9e85cafb07"></a>`query` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --query, -q |
-| <a id="s-a4618c1112"></a>`sort` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --sort |
-| <a id="s-fcdb8ef2ac"></a>`order` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --order |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-7949639bab"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1`; maximum=`100` | `25` |
+| <a id="s-f3c2ae9eeb"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
+| <a id="s-279e13c010"></a>`policy_id`<br>`--policy-id` | optional option; 1 value | text | not recorded |
+| <a id="s-3b178f7301"></a>`state_filter`<br>`--state` | optional option; 1 value | text | not recorded |
+| <a id="s-9e85cafb07"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded |
+| <a id="s-a4618c1112"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"created_at"` |
+| <a id="s-fcdb8ef2ac"></a>`order`<br>`--order` | optional option; 1 value | text | `"desc"` |
 
 ### Terminating controls
 

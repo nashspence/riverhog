@@ -17,10 +17,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-43a6ce6b6f"></a>`after` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --after |
-| <a id="s-247945017e"></a>`limit` | TyperOption | no | {'class': 'typer._click.types.IntRange', 'maximum': 100, 'minimum': 1, 'name': 'integer range'} | --limit |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-43a6ce6b6f"></a>`after`<br>`--after` | optional option; 1 value | text | not recorded |
+| <a id="s-247945017e"></a>`limit`<br>`--limit` | optional option; 1 value | integer range; minimum=`1`; maximum=`100` | `100` |
 
 ### Terminating controls
 

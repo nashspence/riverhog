@@ -17,10 +17,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-ca1077ee91"></a>`selector` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | selector |
-| <a id="s-12ddc39a1c"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-ca1077ee91"></a>`selector`<br>`selector` | required positional; 1 value | text | not recorded |
+| <a id="s-12ddc39a1c"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
 
 ### Terminating controls
 
@@ -52,12 +54,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
-Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --json](#s-12ddc39a1c) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter selector](#s-ca1077ee91) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --json](#s-12ddc39a1c) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
+| [CLI parameter selector](#s-ca1077ee91) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
 
 ## Maintained corroboration
 

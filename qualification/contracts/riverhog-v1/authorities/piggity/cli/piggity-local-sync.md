@@ -17,11 +17,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-6368e8bf41"></a>`wait` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --wait |
-| <a id="s-78b95fe0d7"></a>`restore_policy` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --restore-policy |
-| <a id="s-b7ec88d2f5"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-6368e8bf41"></a>`wait`<br>`--wait`, alternate: `--no-wait` | optional flag; 0 values | boolean | `false` |
+| <a id="s-78b95fe0d7"></a>`restore_policy`<br>`--restore-policy` | optional option; 1 value | text | `"allow"` |
+| <a id="s-b7ec88d2f5"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
 
 ### Terminating controls
 
@@ -53,13 +55,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
-Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --json](#s-b7ec88d2f5) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --restore-policy](#s-78b95fe0d7) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --wait](#s-6368e8bf41) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --json](#s-b7ec88d2f5) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
+| [CLI parameter --restore-policy](#s-78b95fe0d7) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --wait](#s-6368e8bf41) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
 
 ## Maintained corroboration
 

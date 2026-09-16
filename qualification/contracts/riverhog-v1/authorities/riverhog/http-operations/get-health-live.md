@@ -47,7 +47,7 @@ Health Live
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 - **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
-- **Handler:** [riverhog/src/riverhog_api/app.py::create_app.<locals>.health_live](../../../../../../riverhog/src/riverhog_api/app.py#L411)
+- **Handler:** [riverhog/src/riverhog_api/app.py::create_app.<locals>.health_live](../../../../../../riverhog/src/riverhog_api/app.py#L412)
 
 ### Structural operation bindings
 

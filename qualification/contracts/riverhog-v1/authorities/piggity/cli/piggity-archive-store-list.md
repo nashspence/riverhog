@@ -17,15 +17,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-b9de33da66"></a>`page_size` | TyperOption | no | {'class': 'typer._click.types.IntRange', 'maximum': 100, 'minimum': 1, 'name': 'integer range'} | --page-size |
-| <a id="s-5575423e77"></a>`page_token` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --page-token |
-| <a id="s-6150ea1df2"></a>`sort` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --sort |
-| <a id="s-6a7c5d1180"></a>`order` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --order |
-| <a id="s-4549dd6275"></a>`query` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --query, -q |
-| <a id="s-b95b2cd74f"></a>`ids` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --ids |
-| <a id="s-9bb8fdfb88"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-b9de33da66"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1`; maximum=`100` | `25` |
+| <a id="s-5575423e77"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
+| <a id="s-6150ea1df2"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"store"` |
+| <a id="s-6a7c5d1180"></a>`order`<br>`--order` | optional option; 1 value | text | `"asc"` |
+| <a id="s-4549dd6275"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded |
+| <a id="s-b95b2cd74f"></a>`ids`<br>`--ids` | optional flag; 0 values | boolean | `false` |
+| <a id="s-9bb8fdfb88"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
 
 ### Terminating controls
 
@@ -57,18 +59,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
-Shared facts for every subject below: minimum=1
-
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --ids](#s-b95b2cd74f) | `cardinality · values-per-occurrence · fixed` | maximum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --json](#s-9bb8fdfb88) | `cardinality · values-per-occurrence · fixed` | maximum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --order](#s-6a7c5d1180) | `cardinality · values-per-occurrence · fixed` | maximum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --page-size](#s-b9de33da66) | `value · cli-value · contract_max` | maximum=100; reason="schema-maximum"; source_constraint={"field":"type.maximum"} |
-| [CLI parameter --page-size](#s-b9de33da66) | `cardinality · values-per-occurrence · fixed` | maximum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --page-token](#s-5575423e77) | `cardinality · values-per-occurrence · fixed` | maximum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --query](#s-4549dd6275) | `cardinality · values-per-occurrence · fixed` | maximum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --sort](#s-6150ea1df2) | `cardinality · values-per-occurrence · fixed` | maximum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --ids](#s-b95b2cd74f) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"is_flag"} |
+| [CLI parameter --json](#s-9bb8fdfb88) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"is_flag"} |
+| [CLI parameter --order](#s-6a7c5d1180) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --page-size](#s-b9de33da66) | `value · cli-value · contract_max` | maximum=100; minimum=1; reason="schema-maximum"; source_constraint={"field":"type.maximum"} |
+| [CLI parameter --page-size](#s-b9de33da66) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --page-token](#s-5575423e77) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --query](#s-4549dd6275) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --sort](#s-6150ea1df2) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
 
 ## Maintained corroboration
 

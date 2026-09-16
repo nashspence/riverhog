@@ -17,9 +17,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-206a3aa721"></a>`source` | _StoreAction | yes |  |  |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-206a3aa721"></a>`source` | required positional; 1 value | not recorded | not recorded |
 
 ### Terminating controls
 
@@ -46,6 +48,16 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|---|---|---|
 | <a id="s-bcc74c7169"></a>`usage` | <a id="s-61b75a97ff"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-892dc37171"></a>`2` | <a id="s-72f6faf0e3"></a>all: `empty` | <a id="s-3b2ab6a91b"></a>all: `noncontractual-usage-diagnostic` |
 
+### Progression, limits, and lifecycle
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter 0](#s-206a3aa721) | `cardinality · values-per-occurrence · fixed` | shared above |
+
 ## Maintained corroboration
 
 ### Related interface records
@@ -56,6 +68,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## Governing policies
 
 - <a id="pa-98bf678958"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-63c0925571"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 

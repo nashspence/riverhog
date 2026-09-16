@@ -17,26 +17,6 @@ from .model import (
     pointer_value,
 )
 
-EXCLUSION_POLICIES: tuple[dict[str, str], ...] = (
-    {
-        "id": "exclusion/process-launcher-not-cli/v1",
-        "meaning": (
-            "The installed entry point starts a separately inventoried process protocol and "
-            "does not expose an independently maintained human or JSON CLI."
-        ),
-        "scope": "Installed service, adapter, observer, target, sampler, and effect launchers.",
-    },
-    {
-        "id": "exclusion/python-package-no-declared-api/v1",
-        "meaning": (
-            "The installed Python package declares no explicit __all__ surface and therefore "
-            "does not expose a freeze-protected Python API."
-        ),
-        "scope": "Importable packages carried by release wheels without declared exports.",
-    },
-)
-
-
 DETECTORS: tuple[dict[str, str], ...] = (
     {"id": "cli-tree", "authority": "installed parser tree"},
     {"id": "configuration-document", "authority": "validated configuration schema"},
@@ -157,7 +137,6 @@ def _policy_registry(projection: Mapping[str, object]) -> dict[str, object]:
             }
             for key, value in sorted(cast(Mapping[str, object], extents["rules"]).items())
         ],
-        "exclusion": list(EXCLUSION_POLICIES),
     }
 
 
@@ -1010,76 +989,6 @@ def _link_operation_qualification(
         )
 
 
-def _excluded_launchers(trace: Mapping[str, object]) -> list[dict[str, object]]:
-    registry = cast(Mapping[str, object], trace["console_script_registry"])
-    detections = {
-        str(item["id"]): item
-        for item in cast(Sequence[Mapping[str, object]], registry["detections"])
-    }
-    resolutions = {
-        str(item["candidate_id"]): item
-        for item in cast(Sequence[Mapping[str, object]], registry["resolutions"])
-    }
-    exclusions: list[dict[str, object]] = []
-    for disposition in cast(Sequence[Mapping[str, object]], registry["dispositions"]):
-        if disposition["disposition"] != "excluded":
-            continue
-        candidate_id = str(disposition["candidate_id"])
-        resolution = resolutions[candidate_id]
-        detection = detections[str(resolution["detection_id"])]
-        exclusions.append(
-            {
-                "id": f"excluded:{candidate_id}",
-                "candidate_id": candidate_id,
-                "kind": "console-script",
-                "detector": str(registry["detector"]),
-                "disposition": "excluded",
-                "policy_id": disposition["policy_id"],
-                "reason": disposition["reason"],
-                "boundary_pointer": detection["source_pointer"],
-                "source_authority_ids": ["release:release.toml"],
-                "installed_target": detection["target"],
-            }
-        )
-    return exclusions
-
-
-def _excluded_python_packages(trace: Mapping[str, object]) -> list[dict[str, object]]:
-    registry = cast(Mapping[str, object], trace["python_registry"])
-    detections = {
-        str(item["id"]): item
-        for item in cast(Sequence[Mapping[str, object]], registry["detections"])
-    }
-    resolutions = {
-        str(item["candidate_id"]): item
-        for item in cast(Sequence[Mapping[str, object]], registry["resolutions"])
-    }
-    exclusions: list[dict[str, object]] = []
-    for disposition in cast(Sequence[Mapping[str, object]], registry["dispositions"]):
-        if disposition["disposition"] != "excluded":
-            continue
-        candidate_id = str(disposition["candidate_id"])
-        resolution = resolutions[candidate_id]
-        detection = detections[str(resolution["detection_id"])]
-        distribution = str(detection["distribution"])
-        module = str(detection["module"])
-        exclusions.append(
-            {
-                "id": f"excluded:{candidate_id}",
-                "candidate_id": candidate_id,
-                "kind": "python-package",
-                "detector": registry["detector"],
-                "disposition": "excluded",
-                "policy_id": disposition["policy_id"],
-                "reason": disposition["reason"],
-                "boundary_pointer": detection["path"],
-                "source_authority_ids": [f"python:{distribution}:{module}"],
-                "installed_target": module,
-            }
-        )
-    return exclusions
-
-
 def _detector_meta_closure(
     projection: Mapping[str, object], trace: Mapping[str, object]
 ) -> dict[str, object]:
@@ -1158,18 +1067,12 @@ def _detector_meta_closure(
                 )
     ids = [str(channel["id"]) for channel in channels]
     detector_bindings: dict[str, list[str]] = defaultdict(list)
-    exclusion_bindings: dict[str, list[str]] = defaultdict(list)
     for channel in channels:
         detector_bindings[str(channel["detector"])].append(str(channel["id"]))
-        if channel.get("disposition") == "excluded":
-            exclusion_bindings[str(channel["policy_id"])].append(str(channel["id"]))
     return {
         "schema": DETECTOR_CLOSURE_SCHEMA,
         "detector_bindings": {
             key: sorted(value) for key, value in sorted(detector_bindings.items())
-        },
-        "exclusion_bindings": {
-            key: sorted(value) for key, value in sorted(exclusion_bindings.items())
         },
         "coverage": {
             "channels": len(channels),
@@ -1182,7 +1085,6 @@ def _detector_meta_closure(
                 )
             ),
             "protected": sum(item.get("disposition") == "protected" for item in channels),
-            "excluded": sum(item.get("disposition") == "excluded" for item in channels),
             "missing": 0,
             "duplicate": len(ids) - len(set(ids)),
             "stale": 0,
@@ -1214,6 +1116,7 @@ def _validate_staged_registry(
         or len(candidate_ids) != len(set(candidate_ids))
         or len(disposition_ids) != len(set(disposition_ids))
         or set(candidate_ids) != set(disposition_ids)
+        or any(item["disposition"] != "protected" for item in dispositions)
         or len(resolution_pairs) != len(set(resolution_pairs))
         or set(resolution_detection_ids) != set(detection_ids)
         or set(resolution_candidate_ids) != set(candidate_ids)
@@ -1228,19 +1131,14 @@ def _validate_staged_registry(
         or coverage.get("resolved") != len(cast(Sequence[object], registry["resolutions"]))
         or coverage.get("protected")
         != sum(item["disposition"] == "protected" for item in dispositions)
-        or coverage.get("excluded")
-        != sum(item["disposition"] == "excluded" for item in dispositions)
         or coverage.get("undispositioned") != 0
     ):
         raise ContractAtlasError(f"{label} discovery coverage is stale")
 
 
-def _counts(
-    elements: Sequence[Mapping[str, object]], exclusions: Sequence[Mapping[str, object]] = ()
-) -> dict[str, object]:
+def _counts(elements: Sequence[Mapping[str, object]]) -> dict[str, object]:
     return {
         "contract_elements": len(elements),
-        "excluded_candidates": len(exclusions),
         "extent_decisions": sum(
             len(cast(Sequence[object], item["extent_decision_ids"])) for item in elements
         ),
@@ -1254,7 +1152,6 @@ def _counts(
                         for item in elements
                         for policy in cast(Sequence[str], item["policy_ids"])
                     ]
-                    + [str(item["policy_id"]) for item in exclusions]
                 ).items()
             )
         ),
@@ -1263,7 +1160,7 @@ def _counts(
             sorted(
                 Counter(
                     source
-                    for item in [*elements, *exclusions]
+                    for item in elements
                     for source in cast(Sequence[str], item["source_authority_ids"])
                 ).items()
             )

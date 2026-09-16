@@ -9,7 +9,7 @@ Policies are defined once here and referenced from every dossier where they are 
 | Policy | Applications |
 |---|---:|
 | [compatibility/archive/v1](#p-915b8756ae) | 1 |
-| [compatibility/cli/v1](#p-48a89776de) | 168 |
+| [compatibility/cli/v1](#p-48a89776de) | 191 |
 | [compatibility/components/v1](#p-95e9a12259) | 213 |
 | [compatibility/configuration/v1](#p-8dc08bb461) | 260 |
 | [compatibility/durable-state/v1](#p-214a49c2de) | 138 |
@@ -43,23 +43,36 @@ Command names, options, exit status, and structured output remain backward compa
   - [cli:gogurt](../evidence/sources.md#src-3b2297c37d)
   - [cli:mango-fish](../evidence/sources.md#src-3dcd5eedf2)
   - [cli:piggity](../evidence/sources.md#src-094022231f)
+  - [cli:riverhog-api](../evidence/sources.md#src-18139c42dd)
   - [cli:riverhog-ftp-adapter](../evidence/sources.md#src-303f765bca)
   - [cli:riverhog-recover](../evidence/sources.md#src-375119d633)
+  - [cli:riverhog-storage-adapter-aws](../evidence/sources.md#src-e3262944a6)
+  - [cli:riverhog-storage-adapter-backblaze](../evidence/sources.md#src-f277cad16d)
   - [cli:riverhog-storage-adapter-conformance](../evidence/sources.md#src-7ab923569b)
+  - [cli:riverhog-storage-adapter-filesystem](../evidence/sources.md#src-ac98690b10)
   - [cli:riverhog-storage-adapter-filesystem-materialize](../evidence/sources.md#src-c89790480b)
   - [cli:riverhog-storage-adapter-schemas](../evidence/sources.md#src-b90a9d08ff)
   - [cli:stove0](../evidence/sources.md#src-6203ae7d88)
+  - [cli:stove0-exiftool-observer](../evidence/sources.md#src-55b0b4165f)
+  - [cli:stove0-ffprobe-sampling-observer](../evidence/sources.md#src-15564fb4b2)
+  - [cli:stove0-nvenc-av1-opus-review-sampler](../evidence/sources.md#src-eaca5681c1)
+  - [cli:stove0-nvenc-av1-opus-target](../evidence/sources.md#src-f133946353)
   - [cli:stove0-observer-conformance](../evidence/sources.md#src-5719d140a8)
   - [cli:stove0-observer-schemas](../evidence/sources.md#src-e6175e3ae2)
+  - [cli:stove0-opus-review-sampler](../evidence/sources.md#src-77383ced4a)
+  - [cli:stove0-opus-target](../evidence/sources.md#src-d300688475)
+  - [cli:stove0-review-materialize-target](../evidence/sources.md#src-7a955a3583)
   - [cli:stove0-review-planning](../evidence/sources.md#src-ae789ab860)
+  - [cli:stove0-review-rclone-effect-target](../evidence/sources.md#src-f14fced74d)
   - [cli:stove0-review-sampler-conformance](../evidence/sources.md#src-5796b3dff4)
   - [cli:stove0-review-sampler-schemas](../evidence/sources.md#src-a75c35f0c8)
+  - [cli:stove0-server](../evidence/sources.md#src-6f5bc9f6db)
   - [cli:stove0-target-conformance](../evidence/sources.md#src-7a44eec01b)
   - [cli:stove0-target-schemas](../evidence/sources.md#src-71d64b87b5)
   - [generator:contract-projection](../evidence/sources.md#src-47381a6c4f)
   - [release:release.toml](../evidence/sources.md#src-c5380dbe5f)
 
-Applications: **168**
+Applications: **191**
 <a id="p-95e9a12259"></a>
 #### `compatibility/components/v1`
 
@@ -503,7 +516,7 @@ Applications: **1**
 <a id="p-e574772ba5"></a>
 #### `compatibility/python-api/v1`
 
-Freeze-protected declared public-module exports, callable signatures, selected constants, enum members and values, and selected public model and dataclass structures remain backward compatible throughout v1; arbitrary implementation attributes and importable packages explicitly excluded from the Python surface are not Python API promises.
+Freeze-protected declared public-module exports, callable signatures, selected constants, enum members and values, and selected public model and dataclass structures remain backward compatible throughout v1.
 
 - Applicability: `["/external_contract/release/compatibility/python_api"]`
 - Observable result or violation: `{"conforming_result": "the observable surface satisfies the stated meaning", "violation": "the observable surface contradicts the stated meaning"}`
@@ -798,9 +811,9 @@ Applications: **1**
 | [extent-rule/configuration-composition/v1](#p-dcd344e8e5) | 8 |
 | [extent-rule/configured-capacity/v1](#p-3ebc61fc99) | 66 |
 | [extent-rule/extension-contract/v1](#p-75a89f9d1c) | 17 |
-| [extent-rule/no-semantic-maximum/v1](#p-574724b48a) | 164 |
+| [extent-rule/no-semantic-maximum/v1](#p-574724b48a) | 169 |
 | [extent-rule/route-progression/v1](#p-6b76b527cb) | 68 |
-| [extent-rule/schema-bound/v1](#p-c0db822fc0) | 451 |
+| [extent-rule/schema-bound/v1](#p-c0db822fc0) | 476 |
 
 ### Definitions
 
@@ -983,6 +996,10 @@ Applications: **17**
 - Observable result or violation: `{"hidden_maximum": "forbidden", "silent_truncation": "forbidden"}`
 - Executable authorities:
   - [cli:piggity](../evidence/sources.md#src-094022231f)
+  - [cli:riverhog-storage-adapter-filesystem-materialize](../evidence/sources.md#src-c89790480b)
+  - [cli:stove0](../evidence/sources.md#src-6203ae7d88)
+  - [cli:stove0-observer-conformance](../evidence/sources.md#src-5719d140a8)
+  - [cli:stove0-target-conformance](../evidence/sources.md#src-7a44eec01b)
   - [extent:extent-contract](../evidence/sources.md#src-5ac94d0a12)
   - [generator:contract-projection](../evidence/sources.md#src-47381a6c4f)
   - [openapi:riverhog](../evidence/sources.md#src-c42f268fc9)
@@ -1002,7 +1019,7 @@ Applications: **17**
   - [protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json](../evidence/sources.md#src-a3bfff3737)
   - [protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json](../evidence/sources.md#src-bd3602393c)
 
-Applications: **164**
+Applications: **169**
 <a id="p-6b76b527cb"></a>
 #### `extent-rule/route-progression/v1`
 
@@ -1039,14 +1056,29 @@ Applications: **68**
   - [cli:gogurt](../evidence/sources.md#src-3b2297c37d)
   - [cli:mango-fish](../evidence/sources.md#src-3dcd5eedf2)
   - [cli:piggity](../evidence/sources.md#src-094022231f)
+  - [cli:riverhog-api](../evidence/sources.md#src-18139c42dd)
   - [cli:riverhog-ftp-adapter](../evidence/sources.md#src-303f765bca)
   - [cli:riverhog-recover](../evidence/sources.md#src-375119d633)
+  - [cli:riverhog-storage-adapter-aws](../evidence/sources.md#src-e3262944a6)
+  - [cli:riverhog-storage-adapter-backblaze](../evidence/sources.md#src-f277cad16d)
   - [cli:riverhog-storage-adapter-conformance](../evidence/sources.md#src-7ab923569b)
+  - [cli:riverhog-storage-adapter-filesystem](../evidence/sources.md#src-ac98690b10)
   - [cli:riverhog-storage-adapter-filesystem-materialize](../evidence/sources.md#src-c89790480b)
   - [cli:riverhog-storage-adapter-schemas](../evidence/sources.md#src-b90a9d08ff)
   - [cli:stove0](../evidence/sources.md#src-6203ae7d88)
+  - [cli:stove0-exiftool-observer](../evidence/sources.md#src-55b0b4165f)
+  - [cli:stove0-ffprobe-sampling-observer](../evidence/sources.md#src-15564fb4b2)
+  - [cli:stove0-nvenc-av1-opus-review-sampler](../evidence/sources.md#src-eaca5681c1)
+  - [cli:stove0-nvenc-av1-opus-target](../evidence/sources.md#src-f133946353)
+  - [cli:stove0-observer-conformance](../evidence/sources.md#src-5719d140a8)
   - [cli:stove0-observer-schemas](../evidence/sources.md#src-e6175e3ae2)
+  - [cli:stove0-opus-review-sampler](../evidence/sources.md#src-77383ced4a)
+  - [cli:stove0-opus-target](../evidence/sources.md#src-d300688475)
+  - [cli:stove0-review-materialize-target](../evidence/sources.md#src-7a955a3583)
+  - [cli:stove0-review-rclone-effect-target](../evidence/sources.md#src-f14fced74d)
   - [cli:stove0-review-sampler-conformance](../evidence/sources.md#src-5796b3dff4)
+  - [cli:stove0-server](../evidence/sources.md#src-6f5bc9f6db)
+  - [cli:stove0-target-conformance](../evidence/sources.md#src-7a44eec01b)
   - [cli:stove0-target-schemas](../evidence/sources.md#src-71d64b87b5)
   - [configuration:mango-fish:configuration:mango-fish-config](../evidence/sources.md#src-fead015e98)
   - [configuration:riverhog-ftp-adapter:configuration:ftp-adapter-config](../evidence/sources.md#src-cf8c44826f)
@@ -1076,57 +1108,4 @@ Applications: **68**
   - [protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json](../evidence/sources.md#src-a3bfff3737)
   - [protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json](../evidence/sources.md#src-bd3602393c)
 
-Applications: **451**
-
-## Exclusion
-
-| Policy | Applications |
-|---|---:|
-| [exclusion/process-launcher-not-cli/v1](#p-572523784c) | 13 |
-| [exclusion/python-package-no-declared-api/v1](#p-b061d0042d) | 22 |
-
-### Definitions
-
-<a id="p-572523784c"></a>
-#### `exclusion/process-launcher-not-cli/v1`
-
-The installed entry point starts a separately inventoried process protocol and does not expose an independently maintained human or JSON CLI.
-
-- Applicability: `"Installed service, adapter, observer, target, sampler, and effect launchers."`
-- Observable result or violation: `{"conforming_result": "the observable surface satisfies the stated meaning", "violation": "the observable surface contradicts the stated meaning"}`
-- Executable authorities:
-  - [release:release.toml](../evidence/sources.md#src-c5380dbe5f)
-
-Applications: **13**
-<a id="p-b061d0042d"></a>
-#### `exclusion/python-package-no-declared-api/v1`
-
-The installed Python package declares no explicit __all__ surface and therefore does not expose a freeze-protected Python API.
-
-- Applicability: `"Importable packages carried by release wheels without declared exports."`
-- Observable result or violation: `{"conforming_result": "the observable surface satisfies the stated meaning", "violation": "the observable surface contradicts the stated meaning"}`
-- Executable authorities:
-  - [python:config-validation:config_validation](../evidence/sources.md#src-47bec59a9e)
-  - [python:gogurt:gogurt](../evidence/sources.md#src-11620caab6)
-  - [python:mango-fish:mango_fish](../evidence/sources.md#src-f1055f88c6)
-  - [python:mango-fish:mango_fish.state_migrations](../evidence/sources.md#src-96c45baf8e)
-  - [python:piggity:piggity](../evidence/sources.md#src-c057ec2476)
-  - [python:piggity:piggity.state_migrations](../evidence/sources.md#src-7d493ce5e0)
-  - [python:riverhog-provenance-linux-observer:riverhog_provenance_linux_observer](../evidence/sources.md#src-2abaac12f4)
-  - [python:riverhog-provenance-macos-observer:riverhog_provenance_macos_observer](../evidence/sources.md#src-2a56adac0b)
-  - [python:riverhog-provenance-windows-observer:riverhog_provenance_windows_observer](../evidence/sources.md#src-30471eb7d3)
-  - [python:riverhog-server:riverhog_api](../evidence/sources.md#src-067859de12)
-  - [python:riverhog-server:riverhog_api.routers](../evidence/sources.md#src-30d4a79478)
-  - [python:riverhog-server:riverhog_api.schemas](../evidence/sources.md#src-61d85b002b)
-  - [python:riverhog-server:riverhog_core](../evidence/sources.md#src-fcaa6d2479)
-  - [python:riverhog-server:riverhog_core.domain](../evidence/sources.md#src-7ed9f62613)
-  - [python:riverhog-server:riverhog_core.ports](../evidence/sources.md#src-d1f13c410c)
-  - [python:riverhog-server:riverhog_core.services](../evidence/sources.md#src-04f2db8645)
-  - [python:riverhog-server:riverhog_core.state_migrations](../evidence/sources.md#src-ea08488d9c)
-  - [python:riverhog-server:riverhog_core.stores](../evidence/sources.md#src-be0af349bc)
-  - [python:riverhog-storage-adapter-backblaze:riverhog_storage_adapter_backblaze](../evidence/sources.md#src-18cbb8f253)
-  - [python:stove0-client:stove0_cli](../evidence/sources.md#src-b2668b2370)
-  - [python:stove0-server:stove0_core.state_migrations](../evidence/sources.md#src-4e7fd480de)
-  - [python:time-formats:time_formats](../evidence/sources.md#src-4f4a8234ef)
-
-Applications: **22**
+Applications: **476**

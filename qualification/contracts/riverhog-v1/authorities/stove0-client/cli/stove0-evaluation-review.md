@@ -17,12 +17,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-5d4571c4fb"></a>`evaluation_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | evaluation_id |
-| <a id="s-988f27c018"></a>`variant_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | variant_id |
-| <a id="s-9c3cdf9820"></a>`rating` | TyperOption | no | {'class': 'typer._click.types.IntRange', 'maximum': 5, 'minimum': 1, 'name': 'integer range'} | --rating |
-| <a id="s-7944ac36f5"></a>`note` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --note |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-5d4571c4fb"></a>`evaluation_id`<br>`evaluation_id` | required positional; 1 value | text | not recorded |
+| <a id="s-988f27c018"></a>`variant_id`<br>`variant_id` | required positional; 1 value | text | not recorded |
+| <a id="s-9c3cdf9820"></a>`rating`<br>`--rating` | optional option; 1 value | integer range; minimum=`1`; maximum=`5` | not recorded |
+| <a id="s-7944ac36f5"></a>`note`<br>`--note` | optional option; 1 value | text | not recorded |
 
 ### Terminating controls
 

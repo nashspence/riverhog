@@ -17,13 +17,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-688412187a"></a>`recipe_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | recipe_id |
-| <a id="s-2e82af2b50"></a>`inputs` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | inputs |
-| <a id="s-ad519fa0aa"></a>`preview_sha256` | TyperOption | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --preview-sha256 |
-| <a id="s-cade0041ae"></a>`revision` | TyperOption | no | {'class': 'typer._click.types.IntParamType', 'name': 'integer'} | --revision |
-| <a id="s-ee4bb44d8c"></a>`intent` | TyperOption | no | {'class': 'typer.models.TyperPath', 'name': 'file'} | --intent |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-688412187a"></a>`recipe_id`<br>`recipe_id` | required positional; 1 value | text | not recorded |
+| <a id="s-2e82af2b50"></a>`inputs`<br>`inputs` | required positional; 1+ values; no parser maximum | text | not recorded |
+| <a id="s-ad519fa0aa"></a>`preview_sha256`<br>`--preview-sha256` | required option; 1 value | text | not recorded |
+| <a id="s-cade0041ae"></a>`revision`<br>`--revision` | optional option; 1 value | integer | not recorded |
+| <a id="s-ee4bb44d8c"></a>`intent`<br>`--intent` | optional option; 1 value | file | not recorded |
 
 ### Terminating controls
 
@@ -53,6 +55,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0"}; maximum=null; minimum=1; reason="no-declared-semantic-maximum"; source_constraint={"field":"nargs"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter inputs](#s-2e82af2b50) | `cardinality · values-per-occurrence · operational_policy` | shared above |
+
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
@@ -74,6 +84,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ## Governing policies
 
 - <a id="pa-b902ee1537"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-ff632a7eb0"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 - <a id="pa-066756486c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence

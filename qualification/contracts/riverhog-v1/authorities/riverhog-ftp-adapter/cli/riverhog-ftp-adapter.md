@@ -17,13 +17,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-90b07e9fd2"></a>`config` | _StoreAction | no | Path | --config |
-| <a id="s-f757f099cb"></a>`base_url` | _StoreAction | no |  | --base-url |
-| <a id="s-4088337b61"></a>`token` | _StoreAction | no |  | --token |
-| <a id="s-51acb7a74a"></a>`allow_insecure_http` | _StoreTrueAction | no |  | --allow-insecure-http |
-| <a id="s-a4af6d5982"></a>`json` | _StoreTrueAction | no |  | --json |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-90b07e9fd2"></a>`config`<br>`--config` | optional option; 1 value | Path | not recorded |
+| <a id="s-f757f099cb"></a>`base_url`<br>`--base-url` | optional option; 1 value | not recorded | not recorded |
+| <a id="s-4088337b61"></a>`token`<br>`--token` | optional option; 1 value | not recorded | not recorded |
+| <a id="s-51acb7a74a"></a>`allow_insecure_http`<br>`--allow-insecure-http` | optional flag; 0 values | not recorded | not recorded |
+| <a id="s-a4af6d5982"></a>`json`<br>`--json` | optional flag; 0 values | not recorded | `false` |
 
 ### Terminating controls
 
@@ -55,12 +57,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
-Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+Shared facts for every subject below: reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --allow-insecure-http](#s-51acb7a74a) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --json](#s-a4af6d5982) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --config](#s-90b07e9fd2) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1 |
+| [CLI parameter --base-url](#s-f757f099cb) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1 |
+| [CLI parameter --token](#s-4088337b61) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1 |
+| [CLI parameter --allow-insecure-http](#s-51acb7a74a) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0 |
+| [CLI parameter --json](#s-a4af6d5982) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0 |
 
 ## Governing policies
 

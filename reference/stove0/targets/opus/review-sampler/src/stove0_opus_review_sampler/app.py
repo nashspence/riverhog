@@ -120,13 +120,57 @@ def _image_digest(prefix: str) -> str:
     return value
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "stove0-opus-review-sampler-cli-result",
+    "default_profile": "runtime",
+    "profiles": {
+        "runtime": {
+            "id": "stove0-opus-review-sampler-cli-runtime/v1",
+            "structured_output": "none",
+            "human_json_relationship": "not-applicable",
+            "success": [
+                {
+                    "id": "stopped",
+                    "exit_status": 0,
+                    "stdout": {"all": "no-command-result"},
+                    "stderr": {"all": "noncontractual-runtime-log"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                }
+            ],
+        }
+    },
+    "command_profiles": {},
+    "command_overrides": {},
+    "executable_groups": [],
+    "outcome_selectors": {
+        "stopped": {"kind": "service-runtime-returned"},
+        "usage": {"kind": "parser-rejected-invocation"},
+    },
+    "output_authorities": {},
+    "version_distribution": "stove0-opus-review-sampler",
+}
+
+
+def _parser() -> argparse.ArgumentParser:
     prefix = "STOVE0_OPUS_REVIEW_SAMPLER"
     parser = argparse.ArgumentParser(prog=SERVICE)
     parser.add_argument("--version", action="version", version=importlib.metadata.version(SERVICE))
     parser.add_argument("--host", default=os.getenv(f"{prefix}_HOST", "127.0.0.1"))
     parser.add_argument("--port", type=int, default=int(os.getenv(f"{prefix}_PORT", "8080")))
-    args = parser.parse_args(argv)
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    prefix = "STOVE0_OPUS_REVIEW_SAMPLER"
+    args = _parser().parse_args(argv)
     sampler = OpusReviewSampler(
         workspace_root=Path(os.getenv(f"{prefix}_WORKSPACE", "/run/stove0-review")),
         ffmpeg=os.getenv("STOVE0_FFMPEG_BIN", "ffmpeg"),

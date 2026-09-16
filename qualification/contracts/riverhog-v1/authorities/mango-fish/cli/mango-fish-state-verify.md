@@ -17,9 +17,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-7505345121"></a>`json` | _StoreTrueAction | no |  | --json |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-7505345121"></a>`json`<br>`--json` | optional flag; 0 values | not recorded | `false` |
 
 ### Terminating controls
 

@@ -17,15 +17,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-e3296e8a22"></a>`route` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | route |
-| <a id="s-08581ea9b7"></a>`mount_point` | TyperArgument | yes | {'class': 'typer.models.TyperPath', 'name': 'path'} | mount_point |
-| <a id="s-f0b9492d8e"></a>`config` | TyperOption | no | {'class': 'typer.models.TyperPath', 'name': 'path'} | --config |
-| <a id="s-aba7dbf38e"></a>`force` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --force |
-| <a id="s-cef35a84fe"></a>`dry_run` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --dry-run |
-| <a id="s-d2fbb045b4"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
-| <a id="s-5d3f067691"></a>`mounted_volume_provider` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --mounted-volume-provider |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-e3296e8a22"></a>`route`<br>`route` | required positional; 1 value | text | not recorded |
+| <a id="s-08581ea9b7"></a>`mount_point`<br>`mount_point` | required positional; 1 value | path | not recorded |
+| <a id="s-f0b9492d8e"></a>`config`<br>`--config` | optional option; 1 value | path | not recorded |
+| <a id="s-aba7dbf38e"></a>`force`<br>`--force` | optional flag; 0 values | boolean | `false` |
+| <a id="s-cef35a84fe"></a>`dry_run`<br>`--dry-run` | optional flag; 0 values | boolean | `false` |
+| <a id="s-d2fbb045b4"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-5d3f067691"></a>`mounted_volume_provider`<br>`--mounted-volume-provider` | optional option; 1 value | text | not recorded<br>Env: `"GOGURT_MOUNTED_VOLUME_PROVIDER"` |
 
 ### Terminating controls
 
@@ -58,17 +60,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
-Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --config](#s-f0b9492d8e) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --dry-run](#s-cef35a84fe) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --force](#s-aba7dbf38e) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --json](#s-d2fbb045b4) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter mount_point](#s-08581ea9b7) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --mounted-volume-provider](#s-5d3f067691) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter route](#s-e3296e8a22) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --config](#s-f0b9492d8e) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --dry-run](#s-cef35a84fe) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
+| [CLI parameter --force](#s-aba7dbf38e) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
+| [CLI parameter --json](#s-d2fbb045b4) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
+| [CLI parameter mount_point](#s-08581ea9b7) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --mounted-volume-provider](#s-5d3f067691) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter route](#s-e3296e8a22) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
 
 ## Governing policies
 

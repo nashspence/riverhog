@@ -17,13 +17,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-a79c8f4d1c"></a>`collection` | TyperArgument | yes | {'class': 'typer._click.types.IntParamType', 'name': 'integer'} | collection |
-| <a id="s-c6fc67bf05"></a>`description` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --description |
-| <a id="s-6146b8bc01"></a>`clear` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --clear |
-| <a id="s-fe5337d00f"></a>`if_match` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --if-match |
-| <a id="s-92d36de323"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-a79c8f4d1c"></a>`collection`<br>`collection` | required positional; 1 value | integer | not recorded |
+| <a id="s-c6fc67bf05"></a>`description`<br>`--description` | optional option; 1 value | text | not recorded |
+| <a id="s-6146b8bc01"></a>`clear`<br>`--clear` | optional flag; 0 values | boolean | `false` |
+| <a id="s-fe5337d00f"></a>`if_match`<br>`--if-match` | optional option; 1 value | text | not recorded |
+| <a id="s-92d36de323"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
 
 ### Terminating controls
 
@@ -55,15 +57,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
-Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --clear](#s-6146b8bc01) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter collection](#s-a79c8f4d1c) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --description](#s-c6fc67bf05) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --if-match](#s-fe5337d00f) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --json](#s-92d36de323) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --clear](#s-6146b8bc01) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
+| [CLI parameter collection](#s-a79c8f4d1c) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --description](#s-c6fc67bf05) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --if-match](#s-fe5337d00f) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --json](#s-92d36de323) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
 
 ## Maintained corroboration
 

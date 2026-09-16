@@ -17,18 +17,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-726cd2685b"></a>`source` | _StoreAction | yes |  | --source |
-| <a id="s-1fa0ebe493"></a>`username` | _StoreAction | yes |  | --username |
-| <a id="s-1d574ff9ed"></a>`password_file` | _StoreAction | yes | Path | --password-file |
-| <a id="s-c920a0e180"></a>`host` | _StoreAction | no |  | --host |
-| <a id="s-c5f9e26111"></a>`port` | _StoreAction | no | int | --port |
-| <a id="s-5ab0d6d68c"></a>`passive_port_start` | _StoreAction | no | int | --passive-port-start |
-| <a id="s-c3c71e786a"></a>`passive_port_end` | _StoreAction | no | int | --passive-port-end |
-| <a id="s-afdf255e72"></a>`public_host` | _StoreAction | no |  | --public-host |
-| <a id="s-ba15d7ef39"></a>`max_connections` | _StoreAction | no | int | --max-connections |
-| <a id="s-9d17fa8370"></a>`max_connections_per_ip` | _StoreAction | no | int | --max-connections-per-ip |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-726cd2685b"></a>`source`<br>`--source` | required option; 1 value | not recorded | not recorded |
+| <a id="s-1fa0ebe493"></a>`username`<br>`--username` | required option; 1 value | not recorded | not recorded |
+| <a id="s-1d574ff9ed"></a>`password_file`<br>`--password-file` | required option; 1 value | Path | not recorded |
+| <a id="s-c920a0e180"></a>`host`<br>`--host` | optional option; 1 value | not recorded | `"127.0.0.1"` |
+| <a id="s-c5f9e26111"></a>`port`<br>`--port` | optional option; 1 value | int | `2121` |
+| <a id="s-5ab0d6d68c"></a>`passive_port_start`<br>`--passive-port-start` | optional option; 1 value | int | `30000` |
+| <a id="s-c3c71e786a"></a>`passive_port_end`<br>`--passive-port-end` | optional option; 1 value | int | `30039` |
+| <a id="s-afdf255e72"></a>`public_host`<br>`--public-host` | optional option; 1 value | not recorded | not recorded |
+| <a id="s-ba15d7ef39"></a>`max_connections`<br>`--max-connections` | optional option; 1 value | int | `256` |
+| <a id="s-9d17fa8370"></a>`max_connections_per_ip`<br>`--max-connections-per-ip` | optional option; 1 value | int | `32` |
 
 ### Terminating controls
 
@@ -55,9 +57,29 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|---|---|---|
 | <a id="s-6106114738"></a>`usage` | <a id="s-df76c739e5"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-feab2fe227"></a>`2` | <a id="s-a2da385836"></a>all: `empty` | <a id="s-0c2b6e6bd5"></a>all: `noncontractual-usage-diagnostic` |
 
+### Progression, limits, and lifecycle
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter --source](#s-726cd2685b) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --username](#s-1fa0ebe493) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --password-file](#s-1d574ff9ed) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --host](#s-c920a0e180) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --port](#s-c5f9e26111) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --passive-port-start](#s-5ab0d6d68c) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --passive-port-end](#s-c3c71e786a) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --public-host](#s-afdf255e72) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --max-connections](#s-ba15d7ef39) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --max-connections-per-ip](#s-9d17fa8370) | `cardinality · values-per-occurrence · fixed` | shared above |
+
 ## Governing policies
 
 - <a id="pa-22462763aa"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-26150cba1f"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 

@@ -17,14 +17,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-8087dcff61"></a>`mount_point` | TyperArgument | yes | {'class': 'typer.models.TyperPath', 'name': 'path'} | mount_point |
-| <a id="s-6f8a90a5e2"></a>`config` | TyperOption | no | {'class': 'typer.models.TyperPath', 'name': 'path'} | --config |
-| <a id="s-dad97bb92b"></a>`actions_dir` | TyperOption | no | {'class': 'typer.models.TyperPath', 'name': 'path'} | --actions-dir |
-| <a id="s-8cb427b8d5"></a>`autorun` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --autorun |
-| <a id="s-1e601a6dd2"></a>`dry_run` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --dry-run |
-| <a id="s-2c39914b8b"></a>`mounted_volume_provider` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --mounted-volume-provider |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-8087dcff61"></a>`mount_point`<br>`mount_point` | required positional; 1 value | path | not recorded |
+| <a id="s-6f8a90a5e2"></a>`config`<br>`--config` | optional option; 1 value | path | not recorded |
+| <a id="s-dad97bb92b"></a>`actions_dir`<br>`--actions-dir` | optional option; 1 value | path | not recorded |
+| <a id="s-8cb427b8d5"></a>`autorun`<br>`--autorun` | optional flag; 0 values | boolean | `false` |
+| <a id="s-1e601a6dd2"></a>`dry_run`<br>`--dry-run` | optional flag; 0 values | boolean | `false` |
+| <a id="s-2c39914b8b"></a>`mounted_volume_provider`<br>`--mounted-volume-provider` | optional option; 1 value | text | not recorded<br>Env: `"GOGURT_MOUNTED_VOLUME_PROVIDER"` |
 
 ### Terminating controls
 
@@ -57,16 +59,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
-Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --actions-dir](#s-dad97bb92b) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --autorun](#s-8cb427b8d5) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --config](#s-6f8a90a5e2) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --dry-run](#s-1e601a6dd2) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter mount_point](#s-8087dcff61) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --mounted-volume-provider](#s-2c39914b8b) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --actions-dir](#s-dad97bb92b) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --autorun](#s-8cb427b8d5) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
+| [CLI parameter --config](#s-6f8a90a5e2) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --dry-run](#s-1e601a6dd2) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
+| [CLI parameter mount_point](#s-8087dcff61) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --mounted-volume-provider](#s-2c39914b8b) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
 
 ## Governing policies
 

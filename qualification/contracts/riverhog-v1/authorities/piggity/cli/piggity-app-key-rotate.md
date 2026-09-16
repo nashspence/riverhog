@@ -17,11 +17,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-667bdb79a0"></a>`app_name` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | app_name |
-| <a id="s-fa35dffec2"></a>`key_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | key_id |
-| <a id="s-6529995c44"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-667bdb79a0"></a>`app_name`<br>`app_name` | required positional; 1 value | text | not recorded |
+| <a id="s-fa35dffec2"></a>`key_id`<br>`key_id` | required positional; 1 value | text | not recorded |
+| <a id="s-6529995c44"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
 
 ### Terminating controls
 
@@ -53,13 +55,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
-Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter app_name](#s-667bdb79a0) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --json](#s-6529995c44) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter key_id](#s-fa35dffec2) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter app_name](#s-667bdb79a0) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --json](#s-6529995c44) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
+| [CLI parameter key_id](#s-fa35dffec2) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
 
 ## Maintained corroboration
 

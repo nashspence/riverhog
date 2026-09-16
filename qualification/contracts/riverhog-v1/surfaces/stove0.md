@@ -8,15 +8,15 @@ Stove0 is a maintainer-selected, nonnormative Riverhog reference application. It
 
 | Semantic area | Exact authorities | Contract elements |
 |---|---:|---:|
-| Application | 7 | 948 |
-| Observers | 7 | 195 |
-| Targets | 8 | 413 |
-| Review | 10 | 193 |
+| Application | 7 | 955 |
+| Observers | 7 | 197 |
+| Targets | 8 | 415 |
+| Review | 10 | 197 |
 | Recipes | 1 | 31 |
 
 ## Application
 
-Authorities: **7** · Contract elements: **948**
+Authorities: **7** · Contract elements: **955**
 
 | Exact authority | Contract elements | Interfaces | Maintained purpose |
 |---|---:|---|---|
@@ -26,16 +26,16 @@ Authorities: **7** · Contract elements: **948**
 | [stove0-control](../authorities/stove0-control/index.md) | 23 | Durable State | Optional nonnormative content-opaque transformation reference application for Riverhog. |
 | [stove0-operator-contracts](../authorities/stove0-operator-contracts/index.md) | 125 | Configuration Documents, Python | Canonical public state contracts for the Stove0 v1 operator surface. |
 | [stove0-protocol](../authorities/stove0-protocol/index.md) | 205 | Python | Canonical content-opaque collection orchestration contracts for stove0. |
-| [stove0-server](../authorities/stove0-server/index.md) | 349 | Configuration Environment, Python | Optional nonnormative content-opaque transformation reference application for Riverhog. |
+| [stove0-server](../authorities/stove0-server/index.md) | 356 | CLI, Configuration Environment, Python | Optional nonnormative content-opaque transformation reference application for Riverhog. |
 
 ## Observers
 
-Authorities: **7** · Contract elements: **195**
+Authorities: **7** · Contract elements: **197**
 
 | Exact authority | Contract elements | Interfaces | Maintained purpose |
 |---|---:|---|---|
-| [stove0-exiftool-observer](../authorities/stove0-exiftool-observer/index.md) | 12 | Configuration Environment, Python | Optional nonnormative ExifTool observer reference for Stove0. |
-| [stove0-ffprobe-sampling-observer](../authorities/stove0-ffprobe-sampling-observer/index.md) | 12 | Configuration Environment, Python | Optional nonnormative FFprobe sampling-observer reference for Stove0. |
+| [stove0-exiftool-observer](../authorities/stove0-exiftool-observer/index.md) | 13 | CLI, Configuration Environment, Python | Optional nonnormative ExifTool observer reference for Stove0. |
+| [stove0-ffprobe-sampling-observer](../authorities/stove0-ffprobe-sampling-observer/index.md) | 13 | CLI, Configuration Environment, Python | Optional nonnormative FFprobe sampling-observer reference for Stove0. |
 | [stove0-media-metadata-observer-contracts](../authorities/stove0-media-metadata-observer-contracts/index.md) | 19 | Python | Optional nonnormative media-metadata contract reference for Stove0 observers. |
 | [stove0-media-sampling-observer-contracts](../authorities/stove0-media-sampling-observer-contracts/index.md) | 16 | Python | Optional nonnormative media-sampling contract reference for Stove0 observers. |
 | [stove0-observer-client](../authorities/stove0-observer-client/index.md) | 6 | Python | Narrow HTTP client for Stove0 content observers. |
@@ -44,14 +44,14 @@ Authorities: **7** · Contract elements: **195**
 
 ## Targets
 
-Authorities: **8** · Contract elements: **413**
+Authorities: **8** · Contract elements: **415**
 
 | Exact authority | Contract elements | Interfaces | Maintained purpose |
 |---|---:|---|---|
 | [stove0-media-archive-target-contracts](../authorities/stove0-media-archive-target-contracts/index.md) | 30 | Python | Optional nonnormative media-archive contract reference for Stove0 targets. |
 | [stove0-media-archive-target-support](../authorities/stove0-media-archive-target-support/index.md) | 24 | Python | Optional nonnormative projection support for Stove0 media-archive references. |
-| [stove0-nvenc-av1-opus-target](../authorities/stove0-nvenc-av1-opus-target/index.md) | 18 | Configuration Environment, Python | Optional nonnormative NVENC AV1 and Opus target reference for Stove0. |
-| [stove0-opus-target](../authorities/stove0-opus-target/index.md) | 17 | Configuration Environment, Python | Optional nonnormative Opus target reference for Stove0. |
+| [stove0-nvenc-av1-opus-target](../authorities/stove0-nvenc-av1-opus-target/index.md) | 19 | CLI, Configuration Environment, Python | Optional nonnormative NVENC AV1 and Opus target reference for Stove0. |
+| [stove0-opus-target](../authorities/stove0-opus-target/index.md) | 18 | CLI, Configuration Environment, Python | Optional nonnormative Opus target reference for Stove0. |
 | [stove0-target-client](../authorities/stove0-target-client/index.md) | 15 | Python | Narrow HTTP client for Stove0 transform targets. |
 | [stove0-target-jobs](../authorities/stove0-target-jobs/index.md) | 3 | Durable State | Dependency-light public contracts for external stove0 targets. |
 | [stove0-target-protocol](../authorities/stove0-target-protocol/index.md) | 137 | Python | Dependency-light public contracts for external stove0 targets. |
@@ -59,15 +59,15 @@ Authorities: **8** · Contract elements: **413**
 
 ## Review
 
-Authorities: **10** · Contract elements: **193**
+Authorities: **10** · Contract elements: **197**
 
 | Exact authority | Contract elements | Interfaces | Maintained purpose |
 |---|---:|---|---|
-| [stove0-nvenc-av1-opus-review-sampler](../authorities/stove0-nvenc-av1-opus-review-sampler/index.md) | 11 | Configuration Environment, Python | Optional nonnormative NVENC AV1 and Opus review-sampler reference for Stove0. |
-| [stove0-opus-review-sampler](../authorities/stove0-opus-review-sampler/index.md) | 11 | Configuration Environment, Python | Optional nonnormative Opus review-sampler reference for Stove0. |
-| [stove0-review-materialize-target](../authorities/stove0-review-materialize-target/index.md) | 19 | Configuration Environment, Python | Optional nonnormative review materialization target reference for Stove0. |
+| [stove0-nvenc-av1-opus-review-sampler](../authorities/stove0-nvenc-av1-opus-review-sampler/index.md) | 12 | CLI, Configuration Environment, Python | Optional nonnormative NVENC AV1 and Opus review-sampler reference for Stove0. |
+| [stove0-opus-review-sampler](../authorities/stove0-opus-review-sampler/index.md) | 12 | CLI, Configuration Environment, Python | Optional nonnormative Opus review-sampler reference for Stove0. |
+| [stove0-review-materialize-target](../authorities/stove0-review-materialize-target/index.md) | 20 | CLI, Configuration Environment, Python | Optional nonnormative review materialization target reference for Stove0. |
 | [stove0-review-planning](../authorities/stove0-review-planning/index.md) | 5 | CLI, Python | Optional nonnormative planning bridge for maintained Stove0 review references. |
-| [stove0-review-rclone-effect-target](../authorities/stove0-review-rclone-effect-target/index.md) | 26 | Configuration Environment, Python | Optional nonnormative rclone review-effect target reference for Stove0. |
+| [stove0-review-rclone-effect-target](../authorities/stove0-review-rclone-effect-target/index.md) | 27 | CLI, Configuration Environment, Python | Optional nonnormative rclone review-effect target reference for Stove0. |
 | [stove0-review-sampler-client](../authorities/stove0-review-sampler-client/index.md) | 7 | Python | Optional nonnormative sampler-client reference for the Stove0 review target. |
 | [stove0-review-sampler-protocol](../authorities/stove0-review-sampler-protocol/index.md) | 36 | Python | Optional nonnormative sampler-protocol reference for the Stove0 review target. |
 | [stove0-review-sampler-support](../authorities/stove0-review-sampler-support/index.md) | 31 | Process Protocol, Process Protocol Operations, Process Protocol Schemas, CLI, Python | Optional nonnormative sampler support for Stove0 review references. |

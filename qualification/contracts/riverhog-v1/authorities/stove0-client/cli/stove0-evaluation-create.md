@@ -17,9 +17,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-64aae09091"></a>`definition` | TyperArgument | yes | {'class': 'typer.models.TyperPath', 'name': 'path'} | definition |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-64aae09091"></a>`definition`<br>`definition` | required positional; 1 value | path | not recorded |
 
 ### Terminating controls
 

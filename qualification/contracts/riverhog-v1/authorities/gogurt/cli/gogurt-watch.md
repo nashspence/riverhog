@@ -17,15 +17,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-8c1c3a78df"></a>`config` | TyperOption | no | {'class': 'typer.models.TyperPath', 'name': 'path'} | --config |
-| <a id="s-e1a415005b"></a>`actions_dir` | TyperOption | no | {'class': 'typer.models.TyperPath', 'name': 'path'} | --actions-dir |
-| <a id="s-50b8960c86"></a>`interval_seconds` | TyperOption | no | {'class': 'typer._click.types.FloatRange', 'maximum': 3600, 'minimum': 0.1, 'name': 'float range'} | --interval |
-| <a id="s-de6a5f63a0"></a>`include_existing` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --include-existing |
-| <a id="s-efe1748062"></a>`autorun` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --autorun |
-| <a id="s-f5f158bdd9"></a>`dry_run` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --dry-run |
-| <a id="s-b1aab2a4f4"></a>`mounted_volume_provider` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --mounted-volume-provider |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-8c1c3a78df"></a>`config`<br>`--config` | optional option; 1 value | path | not recorded |
+| <a id="s-e1a415005b"></a>`actions_dir`<br>`--actions-dir` | optional option; 1 value | path | not recorded |
+| <a id="s-50b8960c86"></a>`interval_seconds`<br>`--interval` | optional option; 1 value | float range; minimum=`0.1`; maximum=`3600` | `2` |
+| <a id="s-de6a5f63a0"></a>`include_existing`<br>`--include-existing` | optional flag; 0 values | boolean | `false` |
+| <a id="s-efe1748062"></a>`autorun`<br>`--autorun` | optional flag; 0 values | boolean | `false` |
+| <a id="s-f5f158bdd9"></a>`dry_run`<br>`--dry-run` | optional flag; 0 values | boolean | `false` |
+| <a id="s-b1aab2a4f4"></a>`mounted_volume_provider`<br>`--mounted-volume-provider` | optional option; 1 value | text | not recorded<br>Env: `"GOGURT_MOUNTED_VOLUME_PROVIDER"` |
 
 ### Terminating controls
 
@@ -60,10 +62,10 @@ Exact externally visible contract owned by this semantic dossier.
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [CLI parameter --actions-dir](#s-e1a415005b) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --autorun](#s-efe1748062) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --autorun](#s-efe1748062) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"is_flag"} |
 | [CLI parameter --config](#s-8c1c3a78df) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --dry-run](#s-f5f158bdd9) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --include-existing](#s-de6a5f63a0) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --dry-run](#s-f5f158bdd9) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"is_flag"} |
+| [CLI parameter --include-existing](#s-de6a5f63a0) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"is_flag"} |
 | [CLI parameter --interval](#s-50b8960c86) | `value · cli-value · contract_max` | maximum=3600; minimum=0.1; reason="schema-maximum"; source_constraint={"field":"type.maximum"} |
 | [CLI parameter --interval](#s-50b8960c86) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
 | [CLI parameter --mounted-volume-provider](#s-b1aab2a4f4) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |

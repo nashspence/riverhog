@@ -8,14 +8,14 @@ Checked-in references form a closed, tightly scoped, maintainer-selected, nonnor
 
 | Semantic area | Exact authorities | Contract elements |
 |---|---:|---:|
-| Riverhog references | 11 | 209 |
+| Riverhog references | 11 | 212 |
 | Gogurt | 11 | 185 |
 | Mango Fish | 2 | 8 |
 | Piggity | 2 | 100 |
 
 ## Riverhog references
 
-Authorities: **11** · Contract elements: **209**
+Authorities: **11** · Contract elements: **212**
 
 | Exact authority | Contract elements | Interfaces | Maintained purpose |
 |---|---:|---|---|
@@ -26,9 +26,9 @@ Authorities: **11** · Contract elements: **209**
 | [riverhog-provenance-macos-contracts](../authorities/riverhog-provenance-macos-contracts/index.md) | 8 | Schemas, Python | Optional nonnormative macOS observation-contract reference for Riverhog provenance. |
 | [riverhog-provenance-windows-contracts](../authorities/riverhog-provenance-windows-contracts/index.md) | 14 | Schemas, Python | Optional nonnormative Windows observation-contract reference for Riverhog provenance. |
 | [riverhog-recover](../authorities/riverhog-recover/index.md) | 8 | CLI, Python | Optional nonnormative independent recovery reference application for Riverhog archives. |
-| [riverhog-storage-adapter-aws](../authorities/riverhog-storage-adapter-aws/index.md) | 37 | Configuration Environment, Python | Optional nonnormative AWS storage reference for Riverhog. |
-| [riverhog-storage-adapter-backblaze](../authorities/riverhog-storage-adapter-backblaze/index.md) | 20 | Configuration Environment | Optional nonnormative Backblaze B2 storage reference for Riverhog. |
-| [riverhog-storage-adapter-filesystem](../authorities/riverhog-storage-adapter-filesystem/index.md) | 30 | CLI, Configuration Environment, Python | Optional nonnormative Linux filesystem storage reference for Riverhog. |
+| [riverhog-storage-adapter-aws](../authorities/riverhog-storage-adapter-aws/index.md) | 38 | CLI, Configuration Environment, Python | Optional nonnormative AWS storage reference for Riverhog. |
+| [riverhog-storage-adapter-backblaze](../authorities/riverhog-storage-adapter-backblaze/index.md) | 21 | CLI, Configuration Environment | Optional nonnormative Backblaze B2 storage reference for Riverhog. |
+| [riverhog-storage-adapter-filesystem](../authorities/riverhog-storage-adapter-filesystem/index.md) | 31 | CLI, Configuration Environment, Python | Optional nonnormative Linux filesystem storage reference for Riverhog. |
 | [riverhog-storage-adapter-s3-support](../authorities/riverhog-storage-adapter-s3-support/index.md) | 24 | Python | Optional nonnormative S3 support for Riverhog storage references. |
 
 ## Gogurt

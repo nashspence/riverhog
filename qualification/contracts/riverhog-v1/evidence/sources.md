@@ -12,14 +12,14 @@ This page routes audit work to executable sources and qualification commands. A 
 | <a id="q-413b0b241b"></a>`make compose-smoke` | 805 |
 | <a id="q-8c74349e71"></a>`make contract-freeze` | 12 |
 | <a id="q-27f281b51e"></a>`make database-qualification` | 137 |
-| <a id="q-0ba2578a3e"></a>`make dist-smoke` | 3215 |
-| <a id="q-dd95e4459f"></a>`make operation-qualification` | 725 |
+| <a id="q-0ba2578a3e"></a>`make dist-smoke` | 3238 |
+| <a id="q-dd95e4459f"></a>`make operation-qualification` | 748 |
 | <a id="q-8d8d22d6a6"></a>`make release-check` | 256 |
 | <a id="q-ce47068f50"></a>`make unit` | 259 |
 
 ## Source authorities
 
-Source authorities: **484**
+Source authorities: **475**
 
 | Source authority | Applications | Executable location |
 |---|---:|---|
@@ -27,17 +27,30 @@ Source authorities: **484**
 | <a id="src-3b2297c37d"></a>`cli:gogurt` | 21 | `reference/gogurt/application/src/gogurt/cli.py::<module>` |
 | <a id="src-3dcd5eedf2"></a>`cli:mango-fish` | 5 | `reference/riverhog/applications/mango-fish/src/mango_fish/cli.py::<module>` |
 | <a id="src-094022231f"></a>`cli:piggity` | 86 | `reference/riverhog/applications/piggity/src/piggity/main.py::<module>` |
+| <a id="src-18139c42dd"></a>`cli:riverhog-api` | 5 | `riverhog/src/riverhog_api/app.py::<module>` |
 | <a id="src-303f765bca"></a>`cli:riverhog-ftp-adapter` | 7 | `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::<module>` |
 | <a id="src-375119d633"></a>`cli:riverhog-recover` | 1 | `reference/riverhog/recovery/src/riverhog_recover/cli.py::<module>` |
+| <a id="src-e3262944a6"></a>`cli:riverhog-storage-adapter-aws` | 1 | `reference/riverhog/storage/aws/src/riverhog_storage_adapter_aws/app.py::<module>` |
+| <a id="src-f277cad16d"></a>`cli:riverhog-storage-adapter-backblaze` | 1 | `reference/riverhog/storage/backblaze/src/riverhog_storage_adapter_backblaze/app.py::<module>` |
 | <a id="src-7ab923569b"></a>`cli:riverhog-storage-adapter-conformance` | 1 | `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/conformance.py::<module>` |
+| <a id="src-ac98690b10"></a>`cli:riverhog-storage-adapter-filesystem` | 1 | `reference/riverhog/storage/filesystem/src/riverhog_storage_adapter_filesystem/app.py::<module>` |
 | <a id="src-c89790480b"></a>`cli:riverhog-storage-adapter-filesystem-materialize` | 1 | `reference/riverhog/storage/filesystem/src/riverhog_storage_adapter_filesystem/materialize_cli.py::<module>` |
 | <a id="src-b90a9d08ff"></a>`cli:riverhog-storage-adapter-schemas` | 1 | `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::<module>` |
 | <a id="src-6203ae7d88"></a>`cli:stove0` | 37 | `reference/stove0/application/client/src/stove0_cli/main.py::<module>` |
+| <a id="src-55b0b4165f"></a>`cli:stove0-exiftool-observer` | 1 | `reference/stove0/observers/exiftool/src/stove0_exiftool_observer/app.py::<module>` |
+| <a id="src-15564fb4b2"></a>`cli:stove0-ffprobe-sampling-observer` | 1 | `reference/stove0/observers/ffprobe-sampling/src/stove0_ffprobe_sampling_observer/app.py::<module>` |
+| <a id="src-eaca5681c1"></a>`cli:stove0-nvenc-av1-opus-review-sampler` | 1 | `reference/stove0/targets/nvenc-av1-opus/review-sampler/src/stove0_nvenc_av1_opus_review_sampler/app.py::<module>` |
+| <a id="src-f133946353"></a>`cli:stove0-nvenc-av1-opus-target` | 1 | `reference/stove0/targets/nvenc-av1-opus/target/src/stove0_nvenc_av1_opus_target/app.py::<module>` |
 | <a id="src-5719d140a8"></a>`cli:stove0-observer-conformance` | 1 | `reference/stove0/packages/observer-support/src/stove0_observer_support/conformance.py::<module>` |
 | <a id="src-e6175e3ae2"></a>`cli:stove0-observer-schemas` | 1 | `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::<module>` |
+| <a id="src-77383ced4a"></a>`cli:stove0-opus-review-sampler` | 1 | `reference/stove0/targets/opus/review-sampler/src/stove0_opus_review_sampler/app.py::<module>` |
+| <a id="src-d300688475"></a>`cli:stove0-opus-target` | 1 | `reference/stove0/targets/opus/target/src/stove0_opus_target/app.py::<module>` |
+| <a id="src-7a955a3583"></a>`cli:stove0-review-materialize-target` | 1 | `reference/stove0/targets/review/materialize-target/src/stove0_review_materialize_target/app.py::<module>` |
 | <a id="src-ae789ab860"></a>`cli:stove0-review-planning` | 1 | `reference/stove0/targets/review/planning/src/stove0_review_planning/conformance.py::<module>` |
+| <a id="src-f14fced74d"></a>`cli:stove0-review-rclone-effect-target` | 1 | `reference/stove0/targets/review/rclone-effect-target/src/stove0_review_rclone_effect_target/app.py::<module>` |
 | <a id="src-5796b3dff4"></a>`cli:stove0-review-sampler-conformance` | 1 | `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/conformance.py::<module>` |
 | <a id="src-a75c35f0c8"></a>`cli:stove0-review-sampler-schemas` | 1 | `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::<module>` |
+| <a id="src-6f5bc9f6db"></a>`cli:stove0-server` | 7 | `reference/stove0/application/server/src/stove0_api/app.py::<module>` |
 | <a id="src-7a44eec01b"></a>`cli:stove0-target-conformance` | 1 | `reference/stove0/packages/target-support/src/stove0_target_support/conformance.py::<module>` |
 | <a id="src-71d64b87b5"></a>`cli:stove0-target-schemas` | 1 | `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::<module>` |
 | <a id="src-3071ba44b3"></a>`configuration-environment-pattern:riverhog-server:RIVERHOG_ARCHIVE_STORE_{store}_{setting}` | 1 | `riverhog/src/riverhog_core/runtime_config.py` |
@@ -300,7 +313,7 @@ Source authorities: **484**
 | <a id="src-28686050a7"></a>`configuration:stove0-recipe-config:configuration:recipe-catalog` | 1 | `reference/stove0/packages/recipe-config/src/stove0_recipe_config/models.py::RecipeCatalog` |
 | <a id="src-cca9387ce6"></a>`configuration:stove0-review-target-support:configuration:review-target-config` | 1 | `reference/stove0/targets/review/support/src/stove0_review_target_support/app.py::ReviewTargetConfig` |
 | <a id="src-5ac94d0a12"></a>`extent:extent-contract` | 12 | `scripts/extent_contract.py::extent_projection` |
-| <a id="src-47381a6c4f"></a>`generator:contract-projection` | 4169 | `scripts/contract_freeze.py::contract_projection` |
+| <a id="src-47381a6c4f"></a>`generator:contract-projection` | 4192 | `scripts/contract_freeze.py::contract_projection` |
 | <a id="src-c42f268fc9"></a>`openapi:riverhog` | 364 | `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI` |
 | <a id="src-c3a51ac29a"></a>`openapi:riverhog-ftp-adapter` | 12 | `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI` |
 | <a id="src-52e6e32124"></a>`openapi:stove0` | 170 | `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI` |
@@ -340,7 +353,6 @@ Source authorities: **484**
 | <a id="src-a639df0ba1"></a>`protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-terminal-v1.schema.json` | 1 | `packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-terminal-v1.schema.json` |
 | <a id="src-a3bfff3737"></a>`protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json` | 1 | `packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-volume-v1.schema.json` |
 | <a id="src-bd3602393c"></a>`protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json` | 1 | `packages/riverhog-archive-contracts/schemas/riverhog-recovery-descriptor-v1.schema.json` |
-| <a id="src-47bec59a9e"></a>`python:config-validation:config_validation` | 1 | `packages/config-validation/src/config_validation/__init__.py` |
 | <a id="src-e253e4a684"></a>`python:gogurt-core:gogurt_core` | 43 | `reference/gogurt/packages/core/src/gogurt_core/__init__.py` |
 | <a id="src-78f263d456"></a>`python:gogurt-linux-listener-host:gogurt_linux_listener_host` | 12 | `reference/gogurt/listener-host/linux/src/gogurt_linux_listener_host/__init__.py` |
 | <a id="src-dfbc0b0c2f"></a>`python:gogurt-linux-mounted-volume:gogurt_linux_mounted_volume` | 3 | `reference/gogurt/mounted-volume/linux/src/gogurt_linux_mounted_volume/__init__.py` |
@@ -350,13 +362,8 @@ Source authorities: **484**
 | <a id="src-a67d948855"></a>`python:gogurt-path-volume-support:gogurt_path_volume_support` | 7 | `reference/gogurt/mounted-volume/path-support/src/gogurt_path_volume_support/__init__.py` |
 | <a id="src-ec25d3db2b"></a>`python:gogurt-windows-listener-host:gogurt_windows_listener_host` | 16 | `reference/gogurt/listener-host/windows/src/gogurt_windows_listener_host/__init__.py` |
 | <a id="src-3af4750524"></a>`python:gogurt-windows-mounted-volume:gogurt_windows_mounted_volume` | 3 | `reference/gogurt/mounted-volume/windows/src/gogurt_windows_mounted_volume/__init__.py` |
-| <a id="src-11620caab6"></a>`python:gogurt:gogurt` | 1 | `reference/gogurt/application/src/gogurt/__init__.py` |
 | <a id="src-a522df4cfd"></a>`python:http-api-contracts:http_api_contracts` | 63 | `packages/http-api-contracts/src/http_api_contracts/__init__.py` |
 | <a id="src-7ab82f5e27"></a>`python:lifecycle-events:lifecycle_events` | 26 | `packages/lifecycle-events/src/lifecycle_events/__init__.py` |
-| <a id="src-f1055f88c6"></a>`python:mango-fish:mango_fish` | 1 | `reference/riverhog/applications/mango-fish/src/mango_fish/__init__.py` |
-| <a id="src-96c45baf8e"></a>`python:mango-fish:mango_fish.state_migrations` | 1 | `reference/riverhog/applications/mango-fish/src/mango_fish/state_migrations/__init__.py` |
-| <a id="src-c057ec2476"></a>`python:piggity:piggity` | 1 | `reference/riverhog/applications/piggity/src/piggity/__init__.py` |
-| <a id="src-7d493ce5e0"></a>`python:piggity:piggity.state_migrations` | 1 | `reference/riverhog/applications/piggity/src/piggity/state_migrations/__init__.py` |
 | <a id="src-a842e50b8b"></a>`python:riverhog-age:riverhog_age` | 34 | `packages/riverhog-age/src/riverhog_age/__init__.py` |
 | <a id="src-9d9ce5fdac"></a>`python:riverhog-application-access:riverhog_application_access` | 47 | `packages/riverhog-application-access/src/riverhog_application_access/__init__.py` |
 | <a id="src-4557222ddc"></a>`python:riverhog-archive-contracts:riverhog_archive_contracts` | 72 | `packages/riverhog-archive-contracts/src/riverhog_archive_contracts/__init__.py` |
@@ -367,32 +374,18 @@ Source authorities: **484**
 | <a id="src-19e35f15d9"></a>`python:riverhog-protocol:riverhog_protocol` | 323 | `packages/riverhog-protocol/src/riverhog_protocol/__init__.py` |
 | <a id="src-9b6289a988"></a>`python:riverhog-provenance-contracts:riverhog_provenance_contracts` | 16 | `packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/__init__.py` |
 | <a id="src-2cb2292124"></a>`python:riverhog-provenance-linux-contracts:riverhog_provenance_linux_contracts` | 4 | `reference/riverhog/provenance/contracts/linux/src/riverhog_provenance_linux_contracts/__init__.py` |
-| <a id="src-2abaac12f4"></a>`python:riverhog-provenance-linux-observer:riverhog_provenance_linux_observer` | 1 | `reference/riverhog/provenance/observers/linux/src/riverhog_provenance_linux_observer/__init__.py` |
 | <a id="src-75fa891e7c"></a>`python:riverhog-provenance-macos-contracts:riverhog_provenance_macos_contracts` | 4 | `reference/riverhog/provenance/contracts/macos/src/riverhog_provenance_macos_contracts/__init__.py` |
-| <a id="src-2a56adac0b"></a>`python:riverhog-provenance-macos-observer:riverhog_provenance_macos_observer` | 1 | `reference/riverhog/provenance/observers/macos/src/riverhog_provenance_macos_observer/__init__.py` |
 | <a id="src-0d5e61922a"></a>`python:riverhog-provenance-windows-contracts:riverhog_provenance_windows_contracts` | 4 | `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/__init__.py` |
-| <a id="src-30471eb7d3"></a>`python:riverhog-provenance-windows-observer:riverhog_provenance_windows_observer` | 1 | `reference/riverhog/provenance/observers/windows/src/riverhog_provenance_windows_observer/__init__.py` |
 | <a id="src-38ef3a6054"></a>`python:riverhog-provenance:riverhog_provenance` | 105 | `packages/riverhog-provenance/src/riverhog_provenance/__init__.py` |
 | <a id="src-dbfe6c5e2e"></a>`python:riverhog-recover:riverhog_recover` | 7 | `reference/riverhog/recovery/src/riverhog_recover/__init__.py` |
-| <a id="src-067859de12"></a>`python:riverhog-server:riverhog_api` | 1 | `riverhog/src/riverhog_api/__init__.py` |
-| <a id="src-30d4a79478"></a>`python:riverhog-server:riverhog_api.routers` | 1 | `riverhog/src/riverhog_api/routers/__init__.py` |
-| <a id="src-61d85b002b"></a>`python:riverhog-server:riverhog_api.schemas` | 1 | `riverhog/src/riverhog_api/schemas/__init__.py` |
-| <a id="src-fcaa6d2479"></a>`python:riverhog-server:riverhog_core` | 1 | `riverhog/src/riverhog_core/__init__.py` |
-| <a id="src-7ed9f62613"></a>`python:riverhog-server:riverhog_core.domain` | 1 | `riverhog/src/riverhog_core/domain/__init__.py` |
-| <a id="src-d1f13c410c"></a>`python:riverhog-server:riverhog_core.ports` | 1 | `riverhog/src/riverhog_core/ports/__init__.py` |
-| <a id="src-04f2db8645"></a>`python:riverhog-server:riverhog_core.services` | 1 | `riverhog/src/riverhog_core/services/__init__.py` |
-| <a id="src-ea08488d9c"></a>`python:riverhog-server:riverhog_core.state_migrations` | 1 | `riverhog/src/riverhog_core/state_migrations/__init__.py` |
-| <a id="src-be0af349bc"></a>`python:riverhog-server:riverhog_core.stores` | 1 | `riverhog/src/riverhog_core/stores/__init__.py` |
 | <a id="src-faaefe65d4"></a>`python:riverhog-storage-adapter-asgi-support:riverhog_storage_adapter_asgi_support` | 1 | `packages/riverhog-storage-adapter-asgi-support/src/riverhog_storage_adapter_asgi_support/__init__.py` |
 | <a id="src-5059355196"></a>`python:riverhog-storage-adapter-aws:riverhog_storage_adapter_aws` | 7 | `reference/riverhog/storage/aws/src/riverhog_storage_adapter_aws/__init__.py` |
-| <a id="src-18cbb8f253"></a>`python:riverhog-storage-adapter-backblaze:riverhog_storage_adapter_backblaze` | 1 | `reference/riverhog/storage/backblaze/src/riverhog_storage_adapter_backblaze/__init__.py` |
 | <a id="src-e075952170"></a>`python:riverhog-storage-adapter-filesystem:riverhog_storage_adapter_filesystem` | 21 | `reference/riverhog/storage/filesystem/src/riverhog_storage_adapter_filesystem/__init__.py` |
 | <a id="src-2da8857a83"></a>`python:riverhog-storage-adapter-protocol:riverhog_storage_adapter_protocol` | 121 | `packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/__init__.py` |
 | <a id="src-aa14de5031"></a>`python:riverhog-storage-adapter-s3-support:riverhog_storage_adapter_s3_support` | 24 | `reference/riverhog/storage/s3-support/src/riverhog_storage_adapter_s3_support/__init__.py` |
 | <a id="src-284271cd54"></a>`python:riverhog-storage-adapter-support:riverhog_storage_adapter_support` | 45 | `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/__init__.py` |
 | <a id="src-57d87d192c"></a>`python:state-schema:state_schema` | 58 | `packages/state-schema/src/state_schema/__init__.py` |
 | <a id="src-5d52ac5998"></a>`python:stove0-api-client:stove0_api_client` | 34 | `reference/stove0/packages/api-client/src/stove0_api_client/__init__.py` |
-| <a id="src-b2668b2370"></a>`python:stove0-client:stove0_cli` | 1 | `reference/stove0/application/client/src/stove0_cli/__init__.py` |
 | <a id="src-18b5d27762"></a>`python:stove0-exiftool-observer:stove0_exiftool_observer` | 4 | `reference/stove0/observers/exiftool/src/stove0_exiftool_observer/__init__.py` |
 | <a id="src-7974c3bc25"></a>`python:stove0-ffprobe-sampling-observer:stove0_ffprobe_sampling_observer` | 4 | `reference/stove0/observers/ffprobe-sampling/src/stove0_ffprobe_sampling_observer/__init__.py` |
 | <a id="src-dfeb5229f2"></a>`python:stove0-media-archive-target-contracts:stove0_media_archive_target_contracts` | 30 | `reference/stove0/targets/media-archive/contracts/src/stove0_media_archive_target_contracts/__init__.py` |
@@ -419,11 +412,9 @@ Source authorities: **484**
 | <a id="src-2a89a71c41"></a>`python:stove0-review-target-support:stove0_review_target_support` | 20 | `reference/stove0/targets/review/support/src/stove0_review_target_support/__init__.py` |
 | <a id="src-d5a12e8c56"></a>`python:stove0-server:stove0_api` | 3 | `reference/stove0/application/server/src/stove0_api/__init__.py` |
 | <a id="src-7558b08e7f"></a>`python:stove0-server:stove0_core` | 321 | `reference/stove0/application/server/src/stove0_core/__init__.py` |
-| <a id="src-4e7fd480de"></a>`python:stove0-server:stove0_core.state_migrations` | 1 | `reference/stove0/application/server/src/stove0_core/state_migrations/__init__.py` |
 | <a id="src-be4c80156f"></a>`python:stove0-target-client:stove0_target_client` | 15 | `reference/stove0/packages/target-client/src/stove0_target_client/__init__.py` |
 | <a id="src-f4f0b22026"></a>`python:stove0-target-protocol:stove0_target_protocol` | 137 | `reference/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py` |
 | <a id="src-3c01163237"></a>`python:stove0-target-support:stove0_target_support` | 152 | `reference/stove0/packages/target-support/src/stove0_target_support/__init__.py` |
-| <a id="src-4f4a8234ef"></a>`python:time-formats:time_formats` | 1 | `packages/time-formats/src/time_formats/__init__.py` |
 | <a id="src-391296b020"></a>`release-distribution:config-validation` | 1 | `packages/config-validation/pyproject.toml` |
 | <a id="src-3e7b582a54"></a>`release-distribution:gogurt` | 2 | `reference/gogurt/application/pyproject.toml` |
 | <a id="src-2850fdf46b"></a>`release-distribution:gogurt-core` | 1 | `reference/gogurt/packages/core/pyproject.toml` |
@@ -498,7 +489,7 @@ Source authorities: **484**
 | <a id="src-8d3f4df21c"></a>`release-images:docker-bake` | 13 | `docker-bake.hcl` |
 | <a id="src-d1a927fc4b"></a>`release-installation:planner` | 4 | `scripts/release_installation.py::INSTALLATION_POLICY` |
 | <a id="src-03a2f48338"></a>`release-publication:planner` | 110 | `scripts/release.py::publication_contract` |
-| <a id="src-c5380dbe5f"></a>`release:release.toml` | 132 | `release.toml` |
+| <a id="src-c5380dbe5f"></a>`release:release.toml` | 119 | `release.toml` |
 | <a id="src-6b3ecfced3"></a>`state:gogurt-listener` | 4 | `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/listener.py` |
 | <a id="src-b1cc215b8d"></a>`state:mango-fish-cursor` | 2 | `reference/riverhog/applications/mango-fish/src/mango_fish/state_migrations/v1_ddl.py` |
 | <a id="src-f6a1289f67"></a>`state:piggity-local` | 7 | `reference/riverhog/applications/piggity/src/piggity/state_migrations/v1_ddl.py` |

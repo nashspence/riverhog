@@ -17,10 +17,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-e562e2016c"></a>`base_url` | _StoreAction | yes |  |  |
-| <a id="s-e11b46d794"></a>`case` | _AppendAction | no | Path | --case |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-e562e2016c"></a>`base_url` | required positional; 1 value | not recorded | not recorded |
+| <a id="s-e11b46d794"></a>`case`<br>`--case` | optional option; 1 value; collects repeats; no declared occurrence maximum | Path | `[]` |
 
 ### Terminating controls
 
@@ -47,9 +49,30 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|---|---|---|
 | <a id="s-e8837d64c5"></a>`usage` | <a id="s-d202e41e20"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-93ddbb5b98"></a>`2` | <a id="s-b09afd9389"></a>all: `empty` | <a id="s-abd1bb4830"></a>all: `noncontractual-usage-diagnostic` |
 
+### Progression, limits, and lifecycle
+
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0-target-conformance"}; maximum=null; reason="no-declared-semantic-maximum"; source_constraint={"field":"kind"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter --case](#s-e11b46d794) | `cardinality · occurrences · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter 0](#s-e562e2016c) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --case](#s-e11b46d794) | `cardinality · values-per-occurrence · fixed` | shared above |
+
 ## Governing policies
 
 - <a id="pa-c80f2bfdda"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-433cb878e5"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-4b80575089"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 

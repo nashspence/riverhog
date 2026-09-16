@@ -17,10 +17,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-3a8e06a180"></a>`selection_sha256` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | selection_sha256 |
-| <a id="s-5f3ed31399"></a>`continuation` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --continuation |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-3a8e06a180"></a>`selection_sha256`<br>`selection_sha256` | required positional; 1 value | text | not recorded |
+| <a id="s-5f3ed31399"></a>`continuation`<br>`--continuation` | optional option; 1 value | text | not recorded |
 
 ### Terminating controls
 

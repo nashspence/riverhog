@@ -310,27 +310,16 @@ def _python_export(value: object) -> dict[str, object]:
 def _python_surfaces(
     projects: list[release_contract.Project],
 ) -> dict[str, dict[str, object]]:
-    exceptions = load_exceptions(CONTRACT_FREEZE_EXCEPTIONS)
-    excluded = {
-        item["candidate_id"]
-        for item in exceptions["exclusion"]
-        if item["candidate_id"].startswith("python:")
-    }
     detections = python_package_detections(ROOT, projects)
     source_roots = tuple(sorted({(ROOT / str(item["path"])).parent for item in detections}))
     result: dict[str, dict[str, object]] = {}
     for detection in detections:
         project = str(detection["distribution"])
         package = str(detection["module"])
-        candidate_id = f"python:{project}:{package}"
         module = importlib.import_module(package)
         exports = getattr(module, "__all__", None)
         if exports is None:
             continue
-        if candidate_id in excluded:
-            raise ContractFreezeError(
-                f"declared public Python API cannot be hidden by an exclusion: {candidate_id}"
-            )
         if (
             not isinstance(exports, list)
             or not exports
@@ -382,108 +371,50 @@ def _python_registry(
     *,
     include_dispositions: bool = True,
 ) -> dict[str, object]:
-    exceptions = load_exceptions(CONTRACT_FREEZE_EXCEPTIONS)
-    detections = python_package_detections(ROOT, projects)
-    excluded = {
-        item["candidate_id"]: item
-        for item in exceptions["exclusion"]
-        if item["candidate_id"].startswith("python:")
-    }
-    candidate_ids = {f"python:{item['distribution']}:{item['module']}" for item in detections}
-    stale = sorted(set(excluded) - candidate_ids) if include_dispositions else []
-    if stale:
-        raise ContractFreezeError(f"contract-freeze exclusions are stale: {stale}")
-    protected_surfaces = _python_surfaces(projects)
+    # Wheel roots are search inputs. Declared public exports define Python API exposure.
+    detections = [
+        item
+        for item in python_package_detections(ROOT, projects)
+        if getattr(importlib.import_module(str(item["module"])), "__all__", None) is not None
+    ]
+    surfaces = _python_surfaces(projects)
     resolutions: list[dict[str, object]] = []
     candidates: list[dict[str, object]] = []
     dispositions: list[dict[str, str]] = []
     for detection in detections:
-        distribution = str(detection["distribution"])
-        module_name = str(detection["module"])
-        package_candidate_id = f"python:{distribution}:{module_name}"
-        module = importlib.import_module(module_name)
-        exports = getattr(module, "__all__", None)
-        declared = exports is not None
-        if declared:
-            if package_candidate_id in excluded:
-                raise ContractFreezeError(
-                    "declared public Python API cannot be hidden by an exclusion: "
-                    f"{package_candidate_id}"
-                )
-            module_surfaces = {
-                public_identity: surface
-                for public_identity, surface in protected_surfaces.items()
-                if surface["distribution"] == distribution and surface["module"] == module_name
-            }
-            for public_identity, surface in module_surfaces.items():
-                candidate_id = f"python:{distribution}:{public_identity}"
-                resolution = {
+        distribution, module = str(detection["distribution"]), str(detection["module"])
+        for public_identity, surface in surfaces.items():
+            if surface["distribution"] != distribution or surface["module"] != module:
+                continue
+            candidate_id = f"python:{distribution}:{public_identity}"
+            resolutions.append(
+                {
                     "detection_id": detection["id"],
                     "candidate_id": candidate_id,
                     "authority": distribution,
-                    "module": module_name,
+                    "module": module,
                     "public_identity": public_identity,
                     "unit": surface["unit"],
                 }
-                resolutions.append(resolution)
-                candidates.append(
-                    {
-                        "id": candidate_id,
-                        "authority": distribution,
-                        "module": module_name,
-                        "public_identity": public_identity,
-                        "unit": surface["unit"],
-                    }
-                )
-                if include_dispositions:
-                    dispositions.append(
-                        {
-                            "candidate_id": candidate_id,
-                            "disposition": "protected",
-                            "policy_id": "compatibility/python-api/v1",
-                            "reason": (
-                                "The declared release-package export exposes this exact "
-                                "public import or class member."
-                            ),
-                        }
-                    )
-            continue
-
-        resolutions.append(
-            {
-                "detection_id": detection["id"],
-                "candidate_id": package_candidate_id,
-                "authority": distribution,
-                "module": module_name,
-                "declared_exports": False,
-            }
-        )
-        candidates.append(
-            {
-                "id": package_candidate_id,
-                "authority": distribution,
-                "module": module_name,
-                "unit": "package",
-            }
-        )
-        if include_dispositions:
-            exception = excluded.get(package_candidate_id)
-            dispositions.append(
+            )
+            candidates.append(
                 {
-                    "candidate_id": package_candidate_id,
-                    "disposition": "excluded",
-                    "policy_id": (
-                        exception["policy_id"]
-                        if exception is not None
-                        else "exclusion/python-package-no-declared-api/v1"
-                    ),
-                    "reason": (
-                        exception["reason"]
-                        if exception is not None
-                        else "The importable package declares no public Python export surface."
-                    ),
+                    "id": candidate_id,
+                    "authority": distribution,
+                    "module": module,
+                    "public_identity": public_identity,
+                    "unit": surface["unit"],
                 }
             )
+            if include_dispositions:
+                dispositions.append(
+                    {
+                        "candidate_id": candidate_id,
+                        "disposition": "protected",
+                        "policy_id": "compatibility/python-api/v1",
+                        "reason": "The public export exposes this exact import or class member.",
+                    }
+                )
     return {
         "detector": "release-wheel-package",
         "detections": detections,
@@ -493,11 +424,9 @@ def _python_registry(
         "coverage": {
             "detected": len(detections),
             "resolved": len(resolutions),
-            "protected": sum(item["disposition"] == "protected" for item in dispositions),
-            "excluded": sum(item["disposition"] == "excluded" for item in dispositions),
+            "protected": len(dispositions),
             "unresolved": 0,
             "undispositioned": len(candidates) - len(dispositions),
-            "stale_exceptions": 0,
         },
     }
 
@@ -724,6 +653,19 @@ CLI_OPERATION_APPLICATIONS = {
     "stove0": "stove0",
 }
 CLI_MODULES = {
+    "riverhog-api": "riverhog_api.app",
+    "riverhog-storage-adapter-aws": "riverhog_storage_adapter_aws.app",
+    "riverhog-storage-adapter-backblaze": "riverhog_storage_adapter_backblaze.app",
+    "riverhog-storage-adapter-filesystem": "riverhog_storage_adapter_filesystem.app",
+    "stove0-exiftool-observer": "stove0_exiftool_observer.app",
+    "stove0-ffprobe-sampling-observer": "stove0_ffprobe_sampling_observer.app",
+    "stove0-nvenc-av1-opus-review-sampler": "stove0_nvenc_av1_opus_review_sampler.app",
+    "stove0-nvenc-av1-opus-target": "stove0_nvenc_av1_opus_target.app",
+    "stove0-opus-review-sampler": "stove0_opus_review_sampler.app",
+    "stove0-opus-target": "stove0_opus_target.app",
+    "stove0-review-materialize-target": "stove0_review_materialize_target.app",
+    "stove0-review-rclone-effect-target": "stove0_review_rclone_effect_target.app",
+    "stove0-server": "stove0_api.app",
     "gogurt": "gogurt.cli",
     "mango-fish": "mango_fish.cli",
     "piggity": "piggity.main",
@@ -1607,6 +1549,9 @@ def _cli_surfaces(
         "stove0-target-conformance": _argparse_command(target_conformance_parser()),
         "stove0-target-schemas": _argparse_command(target_schemas_parser()),
     }
+    for name in sorted(set(CLI_MODULES) - set(surfaces)):
+        module = importlib.import_module(CLI_MODULES[name])
+        surfaces[name] = _argparse_command(module._parser())
     return {
         authority: _apply_cli_occurrence_authorities(
             authority,
@@ -1634,12 +1579,6 @@ def _console_script_registry(
     boundaries = cast(Mapping[str, object], projection["boundaries"])
     external = cast(Mapping[str, object], projection["external_contract"])
     cli_names = set(cast(Mapping[str, object], external["cli"]))
-    exceptions = load_exceptions(CONTRACT_FREEZE_EXCEPTIONS)
-    excluded = {
-        item["candidate_id"]: item
-        for item in exceptions["exclusion"]
-        if item["candidate_id"].startswith("console-script:")
-    }
     detections: list[dict[str, str]] = []
     resolutions: list[dict[str, str]] = []
     dispositions: list[dict[str, str]] = []
@@ -1677,38 +1616,20 @@ def _console_script_registry(
             )
             if not include_dispositions:
                 continue
-            if name in cli_names:
-                if candidate_id in excluded:
-                    raise ContractFreezeError(
-                        f"protected CLI cannot also be excluded: {candidate_id}"
-                    )
-                protected_names.add(name)
-                dispositions.append(
-                    {
-                        "candidate_id": candidate_id,
-                        "disposition": "protected",
-                        "policy_id": "compatibility/cli/v1",
-                        "reason": "The installed entry point exposes a maintained CLI parser tree.",
-                    }
-                )
-                continue
-            exception = excluded.get(candidate_id)
-            if exception is None:
+            if name not in cli_names:
                 raise ContractFreezeError(
-                    f"installed entry point lacks an explicit disposition: {candidate_id}"
+                    f"installed entry point has no discovered CLI contract: {candidate_id}"
                 )
+            protected_names.add(name)
             dispositions.append(
                 {
                     "candidate_id": candidate_id,
-                    "disposition": "excluded",
-                    "policy_id": exception["policy_id"],
-                    "reason": exception["reason"],
+                    "disposition": "protected",
+                    "policy_id": "compatibility/cli/v1",
+                    "reason": "The installed entry point exposes this executable CLI parser tree.",
                 }
             )
     candidate_ids = {item["candidate_id"] for item in resolutions}
-    stale = sorted(set(excluded) - candidate_ids) if include_dispositions else []
-    if stale:
-        raise ContractFreezeError(f"console-script exclusions are stale: {stale}")
     missing_cli = sorted(cli_names - protected_names) if include_dispositions else []
     if missing_cli:
         raise ContractFreezeError(f"maintained CLIs lack installed entry points: {missing_cli}")
@@ -1729,10 +1650,8 @@ def _console_script_registry(
             "detected": len(detections),
             "resolved": len(resolutions),
             "protected": sum(item["disposition"] == "protected" for item in dispositions),
-            "excluded": sum(item["disposition"] == "excluded" for item in dispositions),
             "unresolved": 0,
             "undispositioned": len(candidate_ids) - len(dispositions),
-            "stale_exceptions": 0,
         },
     }
 
@@ -2541,7 +2460,6 @@ def _configuration_document_registry(
             "detected": len(detections),
             "resolved": len(resolutions),
             "protected": len(dispositions),
-            "excluded": 0,
             "unresolved": 0,
             "duplicate_conflicts": 0,
             "undispositioned": len(candidates) - len(dispositions),
@@ -2889,7 +2807,6 @@ def _parser() -> argparse.ArgumentParser:
     list_parser = subparsers.add_parser("list", help="List native semantic contract elements.")
     list_parser.add_argument("--authority", "--owner", dest="authority")
     list_parser.add_argument("--interface", "--kind", dest="interface")
-    list_parser.add_argument("--disposition", choices=("protected", "excluded"))
     list_parser.add_argument("--policy")
     show_parser = subparsers.add_parser("show", help="Print one complete semantic dossier as JSON.")
     show_parser.add_argument("element_id")
@@ -2950,21 +2867,9 @@ def _listed_elements(atlas: ContractAtlas, args: argparse.Namespace) -> list[dic
             continue
         if args.interface and element["interface"] != args.interface:
             continue
-        if args.disposition and element["disposition"] != args.disposition:
-            continue
         if args.policy and args.policy not in cast(Sequence[str], element["policy_ids"]):
             continue
         result.append(element)
-    if not args.disposition or args.disposition == "excluded":
-        for exclusion in cast(
-            Sequence[dict[str, object]],
-            cast(Mapping[str, object], atlas.root["discovery"])["exclusions"],
-        ):
-            if args.authority or args.interface:
-                continue
-            if args.policy and exclusion["policy_id"] != args.policy:
-                continue
-            result.append(exclusion)
     return result
 
 

@@ -1,6 +1,6 @@
 schema = "riverhog-contract-freeze-exceptions/v1"
 
-# This audit-only overlay may resolve or disposition only identities discovered
+# This audit-only overlay may resolve only identities discovered
 # independently from release artifacts and implementation. It never defines the
 # candidate universe or any candidate's external semantics.
 
@@ -33,68 +33,3 @@ reason = "The source-owned FTP configuration document supplies the secret enviro
 detection_id = "configuration-read:riverhog-ftp-adapter:d69305fda9399057"
 source_authority_id = "configuration:riverhog-ftp-adapter:configuration:ftp-adapter-config"
 reason = "The source-owned FTP configuration document supplies the secret environment-variable name."
-
-[[exclusion]]
-candidate_id = "console-script:riverhog-server:riverhog-api"
-policy_id = "exclusion/process-launcher-not-cli/v1"
-reason = "The installed entry point starts the Riverhog HTTP service and has no independent CLI contract."
-
-[[exclusion]]
-candidate_id = "console-script:riverhog-storage-adapter-aws:riverhog-storage-adapter-aws"
-policy_id = "exclusion/process-launcher-not-cli/v1"
-reason = "The installed entry point starts a storage-adapter process governed by its process protocol."
-
-[[exclusion]]
-candidate_id = "console-script:riverhog-storage-adapter-backblaze:riverhog-storage-adapter-backblaze"
-policy_id = "exclusion/process-launcher-not-cli/v1"
-reason = "The installed entry point starts a storage-adapter process governed by its process protocol."
-
-[[exclusion]]
-candidate_id = "console-script:riverhog-storage-adapter-filesystem:riverhog-storage-adapter-filesystem"
-policy_id = "exclusion/process-launcher-not-cli/v1"
-reason = "The installed entry point starts a storage-adapter process governed by its process protocol."
-
-[[exclusion]]
-candidate_id = "console-script:stove0-server:stove0-server"
-policy_id = "exclusion/process-launcher-not-cli/v1"
-reason = "The installed entry point starts the Stove0 HTTP service and has no independent CLI contract."
-
-[[exclusion]]
-candidate_id = "console-script:stove0-exiftool-observer:stove0-exiftool-observer"
-policy_id = "exclusion/process-launcher-not-cli/v1"
-reason = "The installed entry point starts an observer process governed by its process protocol."
-
-[[exclusion]]
-candidate_id = "console-script:stove0-ffprobe-sampling-observer:stove0-ffprobe-sampling-observer"
-policy_id = "exclusion/process-launcher-not-cli/v1"
-reason = "The installed entry point starts an observer process governed by its process protocol."
-
-[[exclusion]]
-candidate_id = "console-script:stove0-nvenc-av1-opus-review-sampler:stove0-nvenc-av1-opus-review-sampler"
-policy_id = "exclusion/process-launcher-not-cli/v1"
-reason = "The installed entry point starts a review-sampler process governed by its process protocol."
-
-[[exclusion]]
-candidate_id = "console-script:stove0-nvenc-av1-opus-target:stove0-nvenc-av1-opus-target"
-policy_id = "exclusion/process-launcher-not-cli/v1"
-reason = "The installed entry point starts a transform-target process governed by its process protocol."
-
-[[exclusion]]
-candidate_id = "console-script:stove0-opus-review-sampler:stove0-opus-review-sampler"
-policy_id = "exclusion/process-launcher-not-cli/v1"
-reason = "The installed entry point starts a review-sampler process governed by its process protocol."
-
-[[exclusion]]
-candidate_id = "console-script:stove0-opus-target:stove0-opus-target"
-policy_id = "exclusion/process-launcher-not-cli/v1"
-reason = "The installed entry point starts a transform-target process governed by its process protocol."
-
-[[exclusion]]
-candidate_id = "console-script:stove0-review-materialize-target:stove0-review-materialize-target"
-policy_id = "exclusion/process-launcher-not-cli/v1"
-reason = "The installed entry point starts an effect-target process governed by its process protocol."
-
-[[exclusion]]
-candidate_id = "console-script:stove0-review-rclone-effect-target:stove0-review-rclone-effect-target"
-policy_id = "exclusion/process-launcher-not-cli/v1"
-reason = "The installed entry point starts an effect-target process governed by its process protocol."

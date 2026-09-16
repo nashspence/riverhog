@@ -35,12 +35,55 @@ _BYTE_FACTORS = {
 }
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "riverhog-storage-adapter-filesystem-cli-result",
+    "default_profile": "runtime",
+    "profiles": {
+        "runtime": {
+            "id": "riverhog-storage-adapter-filesystem-cli-runtime/v1",
+            "structured_output": "none",
+            "human_json_relationship": "not-applicable",
+            "success": [
+                {
+                    "id": "stopped",
+                    "exit_status": 0,
+                    "stdout": {"all": "no-command-result"},
+                    "stderr": {"all": "noncontractual-runtime-log"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                }
+            ],
+        }
+    },
+    "command_profiles": {},
+    "command_overrides": {},
+    "executable_groups": [],
+    "outcome_selectors": {
+        "stopped": {"kind": "service-runtime-returned"},
+        "usage": {"kind": "parser-rejected-invocation"},
+    },
+    "output_authorities": {},
+    "version_distribution": "riverhog-storage-adapter-filesystem",
+}
+
+
+def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog=SERVICE)
     parser.add_argument("--version", action="version", version=_version())
     parser.add_argument("--host", default=os.getenv(f"{_PREFIX}HOST", "127.0.0.1"))
     parser.add_argument("--port", type=int, default=int(os.getenv(f"{_PREFIX}PORT", "8080")))
-    args = parser.parse_args(argv)
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    args = _parser().parse_args(argv)
 
     os.umask(0o077)
     token = _secret("TOKEN")

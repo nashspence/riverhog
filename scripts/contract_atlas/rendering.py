@@ -469,7 +469,6 @@ def _render_atlas(
     projection: Mapping[str, object],
     trace: Mapping[str, object],
     identities: Mapping[str, object],
-    exclusions: Sequence[Mapping[str, object]],
     discovery: Mapping[str, object],
     component_descriptions: Mapping[str, str],
 ) -> tuple[dict[str, bytes], list[dict[str, object]], dict[str, object]]:
@@ -496,14 +495,11 @@ def _render_atlas(
     ]
     applications = Counter(
         [policy for item in elements for policy in cast(Sequence[str], item["policy_ids"])]
-        + [str(item["policy_id"]) for item in exclusions]
     )
     policy_applications: dict[str, list[Mapping[str, object]]] = defaultdict(list)
     for element in elements:
         for policy_id in cast(Sequence[str], element["policy_ids"]):
             policy_applications[policy_id].append(element)
-    for exclusion in exclusions:
-        policy_applications[str(exclusion["policy_id"])].append(exclusion)
     for category, values in policies.items():
         category_policies = cast(Sequence[Mapping[str, object]], values)
         policy_lines.extend(
@@ -764,83 +760,14 @@ def _render_atlas(
     files.update(surface_files)
     files.update(extension_files)
 
-    root_counts = _counts(elements, exclusions)
+    root_counts = _counts(elements)
     root_path = f"{ATLAS_DIRECTORY}/index.md"
     evidence_path = f"{ATLAS_DIRECTORY}/evidence/index.md"
-    exclusion_path = f"{ATLAS_DIRECTORY}/evidence/exclusions.md"
     authority_evidence_path = f"{ATLAS_DIRECTORY}/evidence/authorities.md"
     configuration_evidence_path = f"{ATLAS_DIRECTORY}/evidence/configuration.md"
     source_evidence_path = f"{ATLAS_DIRECTORY}/evidence/sources.md"
     relationship_evidence_path = f"{ATLAS_DIRECTORY}/evidence/relationships.md"
     identity_evidence_path = f"{ATLAS_DIRECTORY}/evidence/identities.md"
-    policy_by_id = {
-        str(policy["id"]): policy
-        for values in policies.values()
-        for policy in cast(Sequence[Mapping[str, object]], values)
-    }
-    exclusion_lines = [
-        "# Explicitly excluded candidates",
-        "",
-        f"[Atlas]({_relative_link(exclusion_path, root_path)}) · "
-        f"[Freeze evidence]({_relative_link(exclusion_path, evidence_path)}) · "
-        f"[Policies]({_relative_link(exclusion_path, policy_path)})",
-        "",
-        "This page supports the ‘no more’ side of the audit by naming every discovered release "
-        "candidate intentionally excluded from freeze protection.",
-        "",
-        f"Excluded candidates: **{len(exclusions)}**",
-        "",
-    ]
-    for policy_id in sorted({str(item["policy_id"]) for item in exclusions}):
-        policy = policy_by_id[policy_id]
-        exclusion_lines.extend(
-            [
-                f"## [{policy_id}]"
-                f"({_anchor_link(exclusion_path, policy_path, _policy_anchor(policy_id))})",
-                "",
-                str(policy["meaning"]),
-                "",
-                "### Excluded candidates",
-                "",
-            ]
-        )
-        for exclusion in sorted(
-            (item for item in exclusions if item["policy_id"] == policy_id),
-            key=lambda value: str(value["id"]),
-        ):
-            exclusion_lines.extend(
-                [
-                    f"- {_anchor_marker('exclusion', str(exclusion['id']))}`{exclusion['id']}`",
-                    f"  - kind: `{exclusion['kind']}`",
-                    f"  - installed target: `{exclusion['installed_target']}`",
-                ]
-            )
-        exclusion_lines.extend(
-            [
-                "",
-                "### Exact accounting",
-                "",
-                "| Candidate | Boundary source | Detector | Source authority |",
-                "|---|---|---|---|",
-            ]
-        )
-        for exclusion in sorted(
-            (item for item in exclusions if item["policy_id"] == policy_id),
-            key=lambda value: str(value["id"]),
-        ):
-            source_links = ", ".join(
-                f"[{_md(source)}]"
-                f"({_anchor_link(exclusion_path, source_evidence_path, _source_anchor(source))})"
-                for source in cast(Sequence[str], exclusion["source_authority_ids"])
-            )
-            exclusion_lines.append(
-                f"| [{_md(exclusion['id'])}]"
-                f"(#{_anchor_id('exclusion', str(exclusion['id']))}) | "
-                f"`{_md(exclusion['boundary_pointer'])}` | "
-                f"`{_md(exclusion['detector'])}` | {source_links} |"
-            )
-    files[exclusion_path] = ("\n".join(exclusion_lines).rstrip() + "\n").encode()
-
     source_index = _source_index(trace)
     source_counts = cast(Mapping[str, object], root_counts["by_source_authority"])
     source_lines = [
@@ -1268,6 +1195,9 @@ def _render_atlas(
         "Machine closure does not assert that the contract is minimal, desirable, or freeze-ready; "
         "that remains the human audit decision.",
         "",
+        "Discovery identifies externally exposed contract surfaces. Every discovered candidate "
+        "is included automatically; no separate acceptance decision is required.",
+        "",
         "## What the machine proves",
         "",
         "| Check | Result |",
@@ -1284,15 +1214,13 @@ def _render_atlas(
         f"| Detected constructs | {len(cast(Sequence[object], discovery['detections']))} |",
         f"| Exact resolutions | {len(cast(Sequence[object], discovery['resolutions']))} |",
         f"| Resolved candidates | {len(cast(Sequence[object], discovery['candidates']))} |",
-        f"| Explicit dispositions | {len(cast(Sequence[object], discovery['dispositions']))} |",
+        f"| Included candidates | {len(cast(Sequence[object], discovery['dispositions']))} |",
         f"| Contract elements | {root_counts['contract_elements']} |",
         f"| Extent decisions | {root_counts['extent_decisions']} |",
-        f"| Explicit exclusions | {root_counts['excluded_candidates']} |",
         f"| Source authorities | {len(source_index)} |",
         "",
         "## Exact evidence",
         "",
-        f"- [Explicit exclusions]({_relative_link(evidence_path, exclusion_path)})",
         f"- [Exact authority inventory]({_relative_link(evidence_path, authority_evidence_path)})",
         "- [Configuration ownership registry]"
         f"({_relative_link(evidence_path, configuration_evidence_path)})",
@@ -1321,7 +1249,7 @@ def _render_atlas(
         "",
         "## Freeze evidence",
         "",
-        f"[Verify completeness, exclusions, ownership, identities, and proof.]"
+        f"[Verify completeness, ownership, identities, and proof.]"
         f"({_relative_link(root_path, evidence_path)})",
     ]
     files[root_path] = ("\n".join(root_lines).rstrip() + "\n").encode()
@@ -1340,14 +1268,10 @@ def _render_atlas(
                 "policies": sum(len(cast(Sequence[object], value)) for value in policies.values())
             }
             kind = "policy-index"
-        elif path == exclusion_path:
-            document_counts = {"excluded_candidates": len(exclusions)}
-            kind = "exclusion-index"
         elif path == evidence_path:
             document_counts = {
                 "contract_elements": root_counts["contract_elements"],
                 "extent_decisions": root_counts["extent_decisions"],
-                "excluded_candidates": len(exclusions),
                 "source_authorities": len(source_index),
             }
             kind = "evidence-index"

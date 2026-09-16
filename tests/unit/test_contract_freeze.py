@@ -109,17 +109,30 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "gogurt",
         "mango-fish",
         "piggity",
+        "riverhog-api",
         "riverhog-ftp-adapter",
         "riverhog-recover",
+        "riverhog-storage-adapter-aws",
+        "riverhog-storage-adapter-backblaze",
         "riverhog-storage-adapter-conformance",
+        "riverhog-storage-adapter-filesystem",
         "riverhog-storage-adapter-filesystem-materialize",
         "riverhog-storage-adapter-schemas",
         "stove0",
+        "stove0-exiftool-observer",
+        "stove0-ffprobe-sampling-observer",
+        "stove0-nvenc-av1-opus-review-sampler",
+        "stove0-nvenc-av1-opus-target",
         "stove0-observer-conformance",
         "stove0-observer-schemas",
+        "stove0-opus-review-sampler",
+        "stove0-opus-target",
+        "stove0-review-materialize-target",
         "stove0-review-planning",
+        "stove0-review-rclone-effect-target",
         "stove0-review-sampler-conformance",
         "stove0-review-sampler-schemas",
+        "stove0-server",
         "stove0-target-conformance",
         "stove0-target-schemas",
     }
@@ -171,13 +184,13 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     assert trace["schema"] == "riverhog-contract-trace/v1"
     assert trace["coverage"]["source_kinds"] == {
         "audit": 1,
-        "cli": 16,
+        "cli": 29,
         "configuration": 7,
         "configuration-environment": 250,
         "configuration-environment-pattern": 2,
         "openapi": 3,
         "protocol": 35,
-        "python": 84,
+        "python": 62,
         "release": 1,
         "release-distribution": 71,
         "release-images": 1,
@@ -188,13 +201,11 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     assert trace["coverage"]["extent_decisions"] == len(extents["decisions"])
     assert trace["coverage"]["operation_qualification_records"] == 147
     assert trace["python_registry"]["coverage"] == {
-        "detected": 84,
+        "detected": 62,
         "resolved": len(trace["python_registry"]["resolutions"]),
         "protected": len(external["python"]),
-        "excluded": 22,
         "unresolved": 0,
         "undispositioned": 0,
-        "stale_exceptions": 0,
     }
     authority_registry = trace["authority_registry"]
     assert authority_registry["schema"] == "riverhog-contract-authority-registry/v1"
@@ -541,7 +552,6 @@ def test_python_surface_preserves_methods_moved_into_unexported_mixins(
             }
         ],
     )
-    monkeypatch.setattr(module, "load_exceptions", lambda *_: {"exclusion": []})
     monkeypatch.setattr(module.importlib, "import_module", lambda _: public)
 
     before = module._python_surfaces([])
@@ -550,6 +560,68 @@ def test_python_surface_preserves_methods_moved_into_unexported_mixins(
 
     assert set(after) == {"example_api.Worker", "example_api.Worker.run"}
     assert after == before
+
+
+def test_python_external_discovery_uses_public_exports_and_includes_them_automatically(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = load_script()
+    package = ModuleType("example_api")
+
+    def exposed(value: str) -> str:
+        return value
+
+    package.exposed = exposed
+    detection = {
+        "id": "python-package:example-dist:example_api",
+        "kind": "python-package",
+        "distribution": "example-dist",
+        "module": "example_api",
+        "path": Path(__file__).relative_to(REPO_ROOT).as_posix(),
+    }
+    monkeypatch.setattr(module, "python_package_detections", lambda *_: [detection])
+    monkeypatch.setattr(module.importlib, "import_module", lambda _: package)
+    assert module._python_registry([])["candidates"] == []
+    package.__all__ = ["exposed"]
+    registry = module._python_registry([])
+    assert registry["detections"] == [detection]
+    assert {item["id"] for item in registry["candidates"]} == {
+        "python:example-dist:example_api.exposed"
+    }
+    assert {item["disposition"] for item in registry["dispositions"]} == {"protected"}
+
+
+def test_installed_entry_points_all_resolve_to_included_cli_trees(
+    checked_contract_closure: dict[str, Any],
+) -> None:
+    checked = checked_contract_closure["atlas"]
+    projection, trace = checked.root["projection"], checked.root["trace"]
+    installed = {
+        name
+        for component in projection["boundaries"]["components"]
+        for name in component["console_scripts"]
+    }
+    cli = projection["external_contract"]["cli"]
+    registry = trace["console_script_registry"]
+    assert set(cli) == installed
+    assert {item["name"] for item in registry["candidates"]} == installed
+    assert {item["disposition"] for item in registry["dispositions"]} == {"protected"}
+    assert {item["candidate_id"] for item in registry["dispositions"]} == {
+        item["id"] for item in registry["candidates"]
+    }
+    for authority in ("riverhog-api", "stove0-server"):
+        commands = cli[authority]["commands"]["state"]["commands"]
+        assert set(commands) == {"status", "upgrade", "verify"}
+        assert all(
+            item["result_contract"]["structured_output"] == "optional-json"
+            for item in commands.values()
+        )
+    port = next(
+        item
+        for item in cli["stove0-server"]["commands"]["serve"]["parameters"]
+        if item["dest"] == "port"
+    )
+    assert port["default"] == 8080
 
 
 def test_python_model_schema_ignores_only_schema_prose_annotations() -> None:
@@ -685,7 +757,6 @@ def test_python_surface_discovery_detects_reexports_and_member_mutation(
         for distribution, name in (("first-dist", "first_api"), ("second-dist", "second_api"))
     ]
     monkeypatch.setattr(module, "python_package_detections", lambda *_: detections)
-    monkeypatch.setattr(module, "load_exceptions", lambda *_: {"exclusion": []})
     monkeypatch.setattr(
         module.importlib,
         "import_module",
@@ -715,10 +786,9 @@ def test_exception_overlay_cannot_create_or_describe_a_candidate(tmp_path: Path)
         "\n".join(
             (
                 'schema = "riverhog-contract-freeze-exceptions/v1"',
-                "resolution = []",
-                "[[exclusion]]",
-                'candidate_id = "not-detected"',
-                'policy_id = "exclusion/example/v1"',
+                "[[resolution]]",
+                'detection_id = "not-detected"',
+                'source_authority_id = "configuration:example"',
                 'reason = "example"',
                 'name = "RIVERHOG_INVENTED"',
             )
@@ -735,18 +805,17 @@ def test_exception_overlay_cannot_create_an_undetected_candidate(
     module = load_script()
     changed = (
         (REPO_ROOT / "qualification/contract-freeze-exceptions.toml").read_text(encoding="utf-8")
-        + "\n[[exclusion]]\n"
-        + 'candidate_id = "console-script:missing:missing"\n'
-        + 'policy_id = "exclusion/process-launcher-not-cli/v1"\n'
+        + "\n[[resolution]]\n"
+        + 'detection_id = "configuration-read:missing:missing"\n'
+        + 'source_authority_id = "configuration:missing"\n'
         + 'reason = "not actually detected"\n'
     )
     path = tmp_path / "contract-freeze-exceptions.toml"
     path.write_text(changed, encoding="utf-8")
     monkeypatch.setattr(module, "CONTRACT_FREEZE_EXCEPTIONS", path)
-    projection = module.contract_projection()
-
-    with pytest.raises(module.ContractFreezeError, match="exclusions are stale"):
-        module._console_script_registry(projection)
+    projects = module.release_contract.validate_release_contract(REPO_ROOT)
+    with pytest.raises(module.ContractFreezeError, match="resolution exception is stale"):
+        module._environment_resolutions(projects)
 
 
 def test_removing_resolution_hints_preserves_detection_and_fails_unresolved(
@@ -757,7 +826,7 @@ def test_removing_resolution_hints_preserves_detection_and_fails_unresolved(
     before = module._environment_detections(projects)
     path = tmp_path / "contract-freeze-exceptions.toml"
     path.write_text(
-        'schema = "riverhog-contract-freeze-exceptions/v1"\nresolution = []\nexclusion = []\n',
+        'schema = "riverhog-contract-freeze-exceptions/v1"\nresolution = []\n',
         encoding="utf-8",
     )
     monkeypatch.setattr(module, "CONTRACT_FREEZE_EXCEPTIONS", path)

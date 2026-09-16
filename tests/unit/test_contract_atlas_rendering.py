@@ -19,7 +19,7 @@ if str(REPO_ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
 import contract_atlas as atlas  # noqa: E402
-from contract_atlas import discovery, navigation  # noqa: E402
+from contract_atlas import discovery, dossier_rendering, navigation  # noqa: E402
 
 ARTIFACT = REPO_ROOT / "qualification/contracts/riverhog-v1.json"
 _CHECKED_ATLAS: atlas.ContractAtlas | None = None
@@ -46,7 +46,9 @@ def test_atlas_rollups_and_dossiers_are_exact_and_descriptive() -> None:
     dossier_documents = [item for item in documents if item["kind"] == "dossier"]
 
     assert len(dossier_documents) == len(elements) == root["counts"]["contract_elements"]
-    assert root["counts"]["extent_decisions"] == 1976
+    assert root["counts"]["extent_decisions"] == len(
+        root["projection"]["external_contract"]["extents"]["decisions"]
+    )
     assert sum(root["counts"]["by_authority"].values()) == len(elements)
     assert sum(root["counts"]["by_interface"].values()) == len(elements)
     assert all(item["path"].endswith(".md") for item in documents)
@@ -329,6 +331,110 @@ def test_every_dossier_is_lossless_and_representative_contract_classes_are_seman
         page = checked.files[item["dossier"]].decode()
         assert page.index("## External contract") < page.index("## Governing policies")
         assert page.index("## Governing policies") < page.index("## Evidence")
+
+
+@pytest.mark.parametrize(
+    "title,parameter,expected",
+    [
+        (
+            "piggity collection list",
+            "page_size",
+            ("`--page-size`", "optional option; 1 value", "minimum=`1`; maximum=`100`", "| `25` |"),
+        ),
+        (
+            "piggity collection list",
+            "json_mode",
+            ("optional flag; 0 values", "boolean", "| `false` |"),
+        ),
+        (
+            "piggity collection list",
+            "tag",
+            ("collects repeats; maximum 100 occurrences", "not recorded"),
+        ),
+        (
+            "piggity app key access list",
+            "active",
+            ("`--active`", "alternate: `--inactive`", "0 values"),
+        ),
+        (
+            "gogurt listener install",
+            "mounted_volume_provider",
+            ('Env: `"GOGURT_MOUNTED_VOLUME_PROVIDER"`', "not recorded"),
+        ),
+        (
+            "riverhog-ftp-adapter status",
+            "page_size",
+            ("optional option; 1 value", "| int | `25` |"),
+        ),
+        (
+            "riverhog-recover",
+            "output",
+            ("optional positional; 0–1 values", "| Path | not recorded |"),
+        ),
+        ("stove0 preview", "inputs", ("required positional; 1+ values; no parser maximum",)),
+        (
+            "riverhog-storage-adapter-filesystem-materialize",
+            "path",
+            ("collects repeats; no declared occurrence maximum", "| `[]` |"),
+        ),
+    ],
+)
+def test_cli_primary_reading_path_exposes_parameter_semantics(
+    title: str, parameter: str, expected: tuple[str, ...]
+) -> None:
+    checked = checked_atlas()
+    element = next(item for item in checked.root["elements"] if item["title"] == title)
+    page = checked.files[element["dossier"]].decode().split("## Maintained corroboration", 1)[0]
+    row = next(line for line in page.splitlines() if f"</a>`{parameter}`" in line)
+    assert all(fragment in row for fragment in expected), row
+    assert "{'class':" not in row
+
+
+@pytest.mark.parametrize("default", [False, 0, "", [], None])
+def test_cli_renderer_preserves_recorded_defaults_and_choices(default: object) -> None:
+    pointer = "/external_contract/cli/probe/parameters"
+    parameter = {
+        "name": "value",
+        "kind": "TyperOption",
+        "options": ["--value", "-v"],
+        "default": default,
+        "type": {"name": "choice", "choices": ["a", "b"]},
+    }
+    projection = {
+        "external_contract": {
+            "extents": {
+                "decisions": [
+                    {
+                        "source_pointer": f"{pointer}/0",
+                        "unit": "values-per-occurrence",
+                        "minimum": 1,
+                        "maximum": 1,
+                    },
+                ]
+            }
+        }
+    }
+
+    def render() -> str:
+        return "\n".join(
+            dossier_rendering._render_cli(
+                [pointer],
+                [[parameter]],
+                set(),
+                element={},
+                path="probe.md",
+                projection=projection,
+                elements_by_id={},
+            )
+        )
+
+    row = next(line for line in render().splitlines() if "</a>`value`" in line)
+    assert f"| `{dossier_rendering._compact_json(default)}` |" in row
+    assert 'choice; choices=`["a","b"]`' in row
+    assert "`--value`, `-v`" in row
+    del parameter["default"]
+    row = next(line for line in render().splitlines() if "</a>`value`" in line)
+    assert row.endswith("| not recorded |")
 
 
 def test_cli_authority_resolution_fails_closed() -> None:

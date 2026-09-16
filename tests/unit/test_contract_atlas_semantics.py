@@ -150,7 +150,7 @@ def test_every_machine_terminal_and_extent_decision_has_one_human_owner() -> Non
     coverage = discovery["projection_coverage"]
     assert coverage["projection_terminals"] > coverage["semantic_terminals"]
     assert coverage["policy_terminals"] == 3
-    assert coverage["extent_decisions"] == 1976
+    assert coverage["extent_decisions"] == checked.root["counts"]["extent_decisions"]
     assert coverage["missing"] == 0
     assert coverage["multiply_represented"] == 0
     assert coverage["stale"] == 0
@@ -232,13 +232,9 @@ def test_policy_registry_is_contract_focused_and_application_counted() -> None:
     assert "external-contract-fact/v1" not in declared
     assert all("implementation-witness" not in identity for identity in declared)
     assert checked.root["counts"]["by_policy"]
-    assert checked.root["counts"]["by_policy"]["exclusion/process-launcher-not-cli/v1"] == 13
-    assert checked.root["counts"]["by_policy"]["exclusion/python-package-no-declared-api/v1"] == 22
-    assert checked.root["counts"]["excluded_candidates"] == 35
+    assert applied == declared
     policy_page = checked.files["riverhog-v1/policies/index.md"].decode()
     assert "Applications:" in policy_page
-    assert "Applications: **13**" in policy_page
-    assert "Applications: **22**" in policy_page
     assert policy_page.count("- Applicability:") == len(declared)
     assert policy_page.count("- Observable result or violation:") == len(declared)
     assert policy_page.count("- Executable authorities:") == len(declared)

@@ -17,18 +17,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-95723ce082"></a>`page_size` | TyperOption | no | {'class': 'typer._click.types.IntRange', 'maximum': 100, 'minimum': 1, 'name': 'integer range'} | --page-size |
-| <a id="s-7444300279"></a>`page_token` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --page-token |
-| <a id="s-06860e4c41"></a>`sort` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --sort |
-| <a id="s-30f31aa241"></a>`order` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --order |
-| <a id="s-3ed58f0f21"></a>`query` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --query, -q |
-| <a id="s-2c75429912"></a>`encryption_format` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --encryption-format |
-| <a id="s-366a7487de"></a>`passphrase_id` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --passphrase-id |
-| <a id="s-951ed89fcc"></a>`tag` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --tag |
-| <a id="s-593c3b8401"></a>`ids` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --ids |
-| <a id="s-18939bbec9"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-95723ce082"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1`; maximum=`100` | `25` |
+| <a id="s-7444300279"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
+| <a id="s-06860e4c41"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"id"` |
+| <a id="s-30f31aa241"></a>`order`<br>`--order` | optional option; 1 value | text | `"asc"` |
+| <a id="s-3ed58f0f21"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded |
+| <a id="s-2c75429912"></a>`encryption_format`<br>`--encryption-format` | optional option; 1 value | text | not recorded |
+| <a id="s-366a7487de"></a>`passphrase_id`<br>`--passphrase-id` | optional option; 1 value | text | not recorded |
+| <a id="s-951ed89fcc"></a>`tag`<br>`--tag` | optional option; 1 value; collects repeats; maximum 100 occurrences | text | not recorded |
+| <a id="s-593c3b8401"></a>`ids`<br>`--ids` | optional flag; 0 values | boolean | `false` |
+| <a id="s-18939bbec9"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
 
 Repeated `tag` accepts at most **100** occurrences, through [GET /v1/collections · tags](../../riverhog/http-operations/get-v1-collections.md#s-c928d33a4d).
 
@@ -65,8 +67,8 @@ Repeated `tag` accepts at most **100** occurrences, through [GET /v1/collections
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [CLI parameter --encryption-format](#s-2c75429912) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --ids](#s-593c3b8401) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --json](#s-18939bbec9) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
+| [CLI parameter --ids](#s-593c3b8401) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"is_flag"} |
+| [CLI parameter --json](#s-18939bbec9) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"is_flag"} |
 | [CLI parameter --order](#s-30f31aa241) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
 | [CLI parameter --page-size](#s-95723ce082) | `value · cli-value · contract_max` | maximum=100; minimum=1; reason="schema-maximum"; source_constraint={"field":"type.maximum"} |
 | [CLI parameter --page-size](#s-95723ce082) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |

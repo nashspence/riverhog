@@ -17,10 +17,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-f54fd55b02"></a>`page_size` | _StoreAction | no | int | --page-size |
-| <a id="s-2a51aae1b2"></a>`page_token` | _StoreAction | no |  | --page-token |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-f54fd55b02"></a>`page_size`<br>`--page-size` | optional option; 1 value | int | `25` |
+| <a id="s-2a51aae1b2"></a>`page_token`<br>`--page-token` | optional option; 1 value | not recorded | not recorded |
 
 ### Terminating controls
 
@@ -47,6 +49,17 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|---|---|---|
 | <a id="s-04d532acf3"></a>`usage` | <a id="s-795120a6b4"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-71989a06f8"></a>`2` | <a id="s-53ee405f4e"></a>all: `empty` | <a id="s-fccc131e6b"></a>all: `noncontractual-usage-diagnostic` |
 
+### Progression, limits, and lifecycle
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter --page-size](#s-f54fd55b02) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --page-token](#s-2a51aae1b2) | `cardinality · values-per-occurrence · fixed` | shared above |
+
 ## Maintained corroboration
 
 ### Related interface records
@@ -57,6 +70,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## Governing policies
 
 - <a id="pa-c6d52ac243"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-9814a30812"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 

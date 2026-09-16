@@ -17,14 +17,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-d95ff1dd9e"></a>`source` | _StoreAction | yes | Path |  |
-| <a id="s-232d4b583f"></a>`destination` | _StoreAction | yes | Path |  |
-| <a id="s-19fb2fab9f"></a>`path` | _AppendAction | no |  | --path |
-| <a id="s-9b1cfd448a"></a>`prefix` | _AppendAction | no |  | --prefix |
-| <a id="s-8b00d9477e"></a>`all_objects` | _StoreTrueAction | no |  | --all |
-| <a id="s-8400a99a20"></a>`json` | _StoreTrueAction | no |  | --json |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-d95ff1dd9e"></a>`source` | required positional; 1 value | Path | not recorded |
+| <a id="s-232d4b583f"></a>`destination` | required positional; 1 value | Path | not recorded |
+| <a id="s-19fb2fab9f"></a>`path`<br>`--path` | optional option; 1 value; collects repeats; no declared occurrence maximum | not recorded | `[]` |
+| <a id="s-9b1cfd448a"></a>`prefix`<br>`--prefix` | optional option; 1 value; collects repeats; no declared occurrence maximum | not recorded | `[]` |
+| <a id="s-8b00d9477e"></a>`all_objects`<br>`--all` | optional flag; 0 values | not recorded | `false` |
+| <a id="s-8400a99a20"></a>`json`<br>`--json` | optional flag; 0 values | not recorded | `false` |
 
 ### Terminating controls
 
@@ -55,18 +57,32 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
-Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog-storage-adapter-filesystem-materialize"}; maximum=null; reason="no-declared-semantic-maximum"; source_constraint={"field":"kind"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --all](#s-8b00d9477e) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --json](#s-8400a99a20) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --path](#s-19fb2fab9f) | `cardinality · occurrences · operational_policy` | shared above |
+| [CLI parameter --prefix](#s-9b1cfd448a) | `cardinality · occurrences · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+
+Shared facts for every subject below: reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter 0](#s-d95ff1dd9e) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1 |
+| [CLI parameter 1](#s-232d4b583f) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1 |
+| [CLI parameter --path](#s-19fb2fab9f) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1 |
+| [CLI parameter --prefix](#s-9b1cfd448a) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1 |
+| [CLI parameter --all](#s-8b00d9477e) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0 |
+| [CLI parameter --json](#s-8400a99a20) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0 |
 
 ## Governing policies
 
 - <a id="pa-80c5b6cb3c"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-45f873127f"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 - <a id="pa-383a872168"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence

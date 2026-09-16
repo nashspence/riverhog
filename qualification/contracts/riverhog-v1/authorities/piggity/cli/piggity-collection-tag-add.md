@@ -17,14 +17,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-89f773ed42"></a>`collection_id` | TyperArgument | yes | {'class': 'typer._click.types.IntParamType', 'name': 'integer'} | collection_id |
-| <a id="s-59325e9744"></a>`tag` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | tag |
-| <a id="s-487a06b9dc"></a>`revision` | TyperOption | no | {'class': 'typer._click.types.IntRange', 'minimum': 1, 'name': 'integer range'} | --revision |
-| <a id="s-a62b2b4357"></a>`tag_set_identity` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --tag-set-identity |
-| <a id="s-5f64c2a2b6"></a>`operation_id` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --operation-id |
-| <a id="s-0fed947d41"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-89f773ed42"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded |
+| <a id="s-59325e9744"></a>`tag`<br>`tag` | required positional; 1 value | text | not recorded |
+| <a id="s-487a06b9dc"></a>`revision`<br>`--revision` | optional option; 1 value | integer range; minimum=`1` | not recorded |
+| <a id="s-a62b2b4357"></a>`tag_set_identity`<br>`--tag-set-identity` | optional option; 1 value | text | not recorded |
+| <a id="s-5f64c2a2b6"></a>`operation_id`<br>`--operation-id` | optional option; 1 value | text | not recorded |
+| <a id="s-0fed947d41"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
 
 ### Terminating controls
 
@@ -56,16 +58,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
-Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter collection_id](#s-89f773ed42) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --json](#s-0fed947d41) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --operation-id](#s-5f64c2a2b6) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --revision](#s-487a06b9dc) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter tag](#s-59325e9744) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --tag-set-identity](#s-a62b2b4357) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter collection_id](#s-89f773ed42) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --json](#s-0fed947d41) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
+| [CLI parameter --operation-id](#s-5f64c2a2b6) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --revision](#s-487a06b9dc) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter tag](#s-59325e9744) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --tag-set-identity](#s-a62b2b4357) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
 
 ## Maintained corroboration
 

@@ -66,6 +66,7 @@
   - [riverhog-catalog](authorities/riverhog-catalog/index.md) — Encrypted archive management, catalog, and retrieval.
     - [Durable State](authorities/riverhog-catalog/durable-state/index.md) (91)
   - [riverhog-server](authorities/riverhog-server/index.md) — Encrypted archive management, catalog, and retrieval.
+    - [CLI](authorities/riverhog-server/cli/index.md) (5)
     - [Configuration Environment](authorities/riverhog-server/configuration-environment/index.md) (52)
   - [state-schema](authorities/state-schema/index.md) — Forward-only relational state schema and migration contracts.
     - [Python](authorities/state-schema/python/index.md) (58)
@@ -100,12 +101,14 @@
     - [CLI](authorities/riverhog-recover/cli/index.md) (1)
     - [Python](authorities/riverhog-recover/python/index.md) (7)
   - [riverhog-storage-adapter-aws](authorities/riverhog-storage-adapter-aws/index.md) — Optional nonnormative AWS storage reference for Riverhog. Implements protocol: [riverhog-storage-adapter](extensions/process-protocol-riverhog-storage-adapter.md).
+    - [CLI](authorities/riverhog-storage-adapter-aws/cli/index.md) (1)
     - [Configuration Environment](authorities/riverhog-storage-adapter-aws/configuration-environment/index.md) (30)
     - [Python](authorities/riverhog-storage-adapter-aws/python/index.md) (7)
   - [riverhog-storage-adapter-backblaze](authorities/riverhog-storage-adapter-backblaze/index.md) — Optional nonnormative Backblaze B2 storage reference for Riverhog. Implements protocol: [riverhog-storage-adapter](extensions/process-protocol-riverhog-storage-adapter.md).
+    - [CLI](authorities/riverhog-storage-adapter-backblaze/cli/index.md) (1)
     - [Configuration Environment](authorities/riverhog-storage-adapter-backblaze/configuration-environment/index.md) (20)
   - [riverhog-storage-adapter-filesystem](authorities/riverhog-storage-adapter-filesystem/index.md) — Optional nonnormative Linux filesystem storage reference for Riverhog. Implements protocol: [riverhog-storage-adapter](extensions/process-protocol-riverhog-storage-adapter.md).
-    - [CLI](authorities/riverhog-storage-adapter-filesystem/cli/index.md) (1)
+    - [CLI](authorities/riverhog-storage-adapter-filesystem/cli/index.md) (2)
     - [Configuration Environment](authorities/riverhog-storage-adapter-filesystem/configuration-environment/index.md) (8)
     - [Python](authorities/riverhog-storage-adapter-filesystem/python/index.md) (21)
   - [riverhog-storage-adapter-s3-support](authorities/riverhog-storage-adapter-s3-support/index.md) — Optional nonnormative S3 support for Riverhog storage references.
@@ -167,13 +170,16 @@
     - [stove0-protocol](authorities/stove0-protocol/index.md) — Canonical content-opaque collection orchestration contracts for stove0.
       - [Python](authorities/stove0-protocol/python/index.md) (205)
     - [stove0-server](authorities/stove0-server/index.md) — Optional nonnormative content-opaque transformation reference application for Riverhog.
+      - [CLI](authorities/stove0-server/cli/index.md) (7)
       - [Configuration Environment](authorities/stove0-server/configuration-environment/index.md) (25)
       - [Python](authorities/stove0-server/python/index.md) (324)
   - [Observers](surfaces/stove0.md#observers)
     - [stove0-exiftool-observer](authorities/stove0-exiftool-observer/index.md) — Optional nonnormative ExifTool observer reference for Stove0. Implements protocol: [stove0-observer](extensions/process-protocol-stove0-observer.md).
+      - [CLI](authorities/stove0-exiftool-observer/cli/index.md) (1)
       - [Configuration Environment](authorities/stove0-exiftool-observer/configuration-environment/index.md) (8)
       - [Python](authorities/stove0-exiftool-observer/python/index.md) (4)
     - [stove0-ffprobe-sampling-observer](authorities/stove0-ffprobe-sampling-observer/index.md) — Optional nonnormative FFprobe sampling-observer reference for Stove0. Implements protocol: [stove0-observer](extensions/process-protocol-stove0-observer.md).
+      - [CLI](authorities/stove0-ffprobe-sampling-observer/cli/index.md) (1)
       - [Configuration Environment](authorities/stove0-ffprobe-sampling-observer/configuration-environment/index.md) (8)
       - [Python](authorities/stove0-ffprobe-sampling-observer/python/index.md) (4)
     - [stove0-media-metadata-observer-contracts](authorities/stove0-media-metadata-observer-contracts/index.md) — Optional nonnormative media-metadata contract reference for Stove0 observers. Provider for extension: [stove0.observer-semantic-validators](extensions/extension-point-stove0-observer-semantic-validators.md).
@@ -196,9 +202,11 @@
     - [stove0-media-archive-target-support](authorities/stove0-media-archive-target-support/index.md) — Optional nonnormative projection support for Stove0 media-archive references.
       - [Python](authorities/stove0-media-archive-target-support/python/index.md) (24)
     - [stove0-nvenc-av1-opus-target](authorities/stove0-nvenc-av1-opus-target/index.md) — Optional nonnormative NVENC AV1 and Opus target reference for Stove0. Implements protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
+      - [CLI](authorities/stove0-nvenc-av1-opus-target/cli/index.md) (1)
       - [Configuration Environment](authorities/stove0-nvenc-av1-opus-target/configuration-environment/index.md) (10)
       - [Python](authorities/stove0-nvenc-av1-opus-target/python/index.md) (8)
     - [stove0-opus-target](authorities/stove0-opus-target/index.md) — Optional nonnormative Opus target reference for Stove0. Implements protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
+      - [CLI](authorities/stove0-opus-target/cli/index.md) (1)
       - [Configuration Environment](authorities/stove0-opus-target/configuration-environment/index.md) (9)
       - [Python](authorities/stove0-opus-target/python/index.md) (8)
     - [stove0-target-client](authorities/stove0-target-client/index.md) — Narrow HTTP client for Stove0 transform targets.
@@ -216,18 +224,22 @@
       - [Python](authorities/stove0-target-support/python/index.md) (152)
   - [Review](surfaces/stove0.md#review)
     - [stove0-nvenc-av1-opus-review-sampler](authorities/stove0-nvenc-av1-opus-review-sampler/index.md) — Optional nonnormative NVENC AV1 and Opus review-sampler reference for Stove0. Implements protocol: [stove0-review-sampler](extensions/process-protocol-stove0-review-sampler.md).
+      - [CLI](authorities/stove0-nvenc-av1-opus-review-sampler/cli/index.md) (1)
       - [Configuration Environment](authorities/stove0-nvenc-av1-opus-review-sampler/configuration-environment/index.md) (8)
       - [Python](authorities/stove0-nvenc-av1-opus-review-sampler/python/index.md) (3)
     - [stove0-opus-review-sampler](authorities/stove0-opus-review-sampler/index.md) — Optional nonnormative Opus review-sampler reference for Stove0. Implements protocol: [stove0-review-sampler](extensions/process-protocol-stove0-review-sampler.md).
+      - [CLI](authorities/stove0-opus-review-sampler/cli/index.md) (1)
       - [Configuration Environment](authorities/stove0-opus-review-sampler/configuration-environment/index.md) (8)
       - [Python](authorities/stove0-opus-review-sampler/python/index.md) (3)
     - [stove0-review-materialize-target](authorities/stove0-review-materialize-target/index.md) — Optional nonnormative review materialization target reference for Stove0. Implements protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
+      - [CLI](authorities/stove0-review-materialize-target/cli/index.md) (1)
       - [Configuration Environment](authorities/stove0-review-materialize-target/configuration-environment/index.md) (10)
       - [Python](authorities/stove0-review-materialize-target/python/index.md) (9)
     - [stove0-review-planning](authorities/stove0-review-planning/index.md) — Optional nonnormative planning bridge for maintained Stove0 review references.
       - [CLI](authorities/stove0-review-planning/cli/index.md) (1)
       - [Python](authorities/stove0-review-planning/python/index.md) (4)
     - [stove0-review-rclone-effect-target](authorities/stove0-review-rclone-effect-target/index.md) — Optional nonnormative rclone review-effect target reference for Stove0. Implements protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
+      - [CLI](authorities/stove0-review-rclone-effect-target/cli/index.md) (1)
       - [Configuration Environment](authorities/stove0-review-rclone-effect-target/configuration-environment/index.md) (15)
       - [Python](authorities/stove0-review-rclone-effect-target/python/index.md) (11)
     - [stove0-review-sampler-client](authorities/stove0-review-sampler-client/index.md) — Optional nonnormative sampler-client reference for the Stove0 review target.
@@ -262,4 +274,4 @@
 
 ## Freeze evidence
 
-[Verify completeness, exclusions, ownership, identities, and proof.](evidence/index.md)
+[Verify completeness, ownership, identities, and proof.](evidence/index.md)

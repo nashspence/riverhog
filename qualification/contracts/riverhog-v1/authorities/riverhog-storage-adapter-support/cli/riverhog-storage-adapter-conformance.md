@@ -17,12 +17,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-da9cd0d5da"></a>`base_url` | _StoreAction | yes |  | --base-url |
-| <a id="s-4db4323e5a"></a>`token_file` | _StoreAction | yes | Path | --token-file |
-| <a id="s-76ce9fec00"></a>`object_prefix` | _StoreAction | yes |  | --object-prefix |
-| <a id="s-785a5f2564"></a>`allow_insecure_http` | _StoreTrueAction | no |  | --allow-insecure-http |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-da9cd0d5da"></a>`base_url`<br>`--base-url` | required option; 1 value | not recorded | not recorded |
+| <a id="s-4db4323e5a"></a>`token_file`<br>`--token-file` | required option; 1 value | Path | not recorded |
+| <a id="s-76ce9fec00"></a>`object_prefix`<br>`--object-prefix` | required option; 1 value | not recorded | not recorded |
+| <a id="s-785a5f2564"></a>`allow_insecure_http`<br>`--allow-insecure-http` | optional flag; 0 values | not recorded | `false` |
 
 ### Terminating controls
 
@@ -53,11 +55,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
-Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+Shared facts for every subject below: reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --allow-insecure-http](#s-785a5f2564) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --base-url](#s-da9cd0d5da) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1 |
+| [CLI parameter --token-file](#s-4db4323e5a) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1 |
+| [CLI parameter --object-prefix](#s-76ce9fec00) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1 |
+| [CLI parameter --allow-insecure-http](#s-785a5f2564) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0 |
 
 ## Governing policies
 

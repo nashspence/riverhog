@@ -17,10 +17,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-2ed9764c8b"></a>`output` | _StoreAction | no | Path | --output |
-| <a id="s-e30f06cf81"></a>`compact` | _StoreTrueAction | no |  | --compact |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-2ed9764c8b"></a>`output`<br>`--output` | optional option; 1 value | Path | not recorded |
+| <a id="s-e30f06cf81"></a>`compact`<br>`--compact` | optional flag; 0 values | not recorded | `false` |
 
 ### Terminating controls
 
@@ -52,11 +54,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
-Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+Shared facts for every subject below: reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --compact](#s-e30f06cf81) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --output](#s-2ed9764c8b) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1 |
+| [CLI parameter --compact](#s-e30f06cf81) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0 |
 
 ## Governing policies
 

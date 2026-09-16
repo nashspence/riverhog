@@ -17,14 +17,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-bd0c880f02"></a>`archive` | _StoreAction | yes | Path |  |
-| <a id="s-3af69a838a"></a>`output` | _StoreAction | no | Path |  |
-| <a id="s-15d3edeac1"></a>`description_only` | _StoreTrueAction | no |  | --description-only |
-| <a id="s-ae476bc569"></a>`tags_only` | _StoreTrueAction | no |  | --tags-only |
-| <a id="s-27589f8407"></a>`passphrases_file` | _StoreAction | no | Path | --passphrases-file |
-| <a id="s-bc196a2661"></a>`age_command` | _StoreAction | no |  | --age-command |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-bd0c880f02"></a>`archive` | required positional; 1 value | Path | not recorded |
+| <a id="s-3af69a838a"></a>`output` | optional positional; 0–1 values | Path | not recorded |
+| <a id="s-15d3edeac1"></a>`description_only`<br>`--description-only` | optional flag; 0 values | not recorded | `false` |
+| <a id="s-ae476bc569"></a>`tags_only`<br>`--tags-only` | optional flag; 0 values | not recorded | `false` |
+| <a id="s-27589f8407"></a>`passphrases_file`<br>`--passphrases-file` | optional option; 1 value | Path | not recorded |
+| <a id="s-bc196a2661"></a>`age_command`<br>`--age-command` | optional option; 1 value | not recorded | `"age"` |
 
 ### Terminating controls
 
@@ -59,12 +61,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
-Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+Shared facts for every subject below: source_constraint={"field":"nargs"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --description-only](#s-15d3edeac1) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --tags-only](#s-ae476bc569) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter 0](#s-bd0c880f02) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity" |
+| [CLI parameter 1](#s-3af69a838a) | `cardinality · values-per-occurrence · contract_max` | maximum=1; minimum=0; reason="optional-command-argument-arity" |
+| [CLI parameter --description-only](#s-15d3edeac1) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; reason="fixed-command-argument-arity" |
+| [CLI parameter --tags-only](#s-ae476bc569) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; reason="fixed-command-argument-arity" |
+| [CLI parameter --passphrases-file](#s-27589f8407) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity" |
+| [CLI parameter --age-command](#s-bc196a2661) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity" |
 
 ## Governing policies
 

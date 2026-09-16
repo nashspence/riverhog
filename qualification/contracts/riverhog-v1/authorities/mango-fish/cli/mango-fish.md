@@ -17,11 +17,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-1368f192cf"></a>`config` | _StoreAction | yes | Path | --config |
-| <a id="s-b3bbac485d"></a>`check` | _StoreTrueAction | no |  | --check |
-| <a id="s-55e6dc25a4"></a>`once` | _StoreTrueAction | no |  | --once |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-1368f192cf"></a>`config`<br>`--config` | required option; 1 value | Path | not recorded |
+| <a id="s-b3bbac485d"></a>`check`<br>`--check` | optional flag; 0 values | not recorded | `false` |
+| <a id="s-55e6dc25a4"></a>`once`<br>`--once` | optional flag; 0 values | not recorded | `false` |
 
 ### Terminating controls
 
@@ -55,12 +57,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
-Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+Shared facts for every subject below: reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --check](#s-b3bbac485d) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --once](#s-55e6dc25a4) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --config](#s-1368f192cf) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1 |
+| [CLI parameter --check](#s-b3bbac485d) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0 |
+| [CLI parameter --once](#s-55e6dc25a4) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0 |
 
 ## Governing policies
 

@@ -17,12 +17,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Parameters
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| <a id="s-915c20851a"></a>`app_name` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | app_name |
-| <a id="s-0c2c77e0a6"></a>`allow` | TyperOption | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --allow |
-| <a id="s-7e21fddcb2"></a>`expires_in` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --expires-in |
-| <a id="s-389739a812"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+Value counts describe supplied CLI values per occurrence. Defaults and environment inputs below are recorded parser metadata; **not recorded** does not imply an explicit null default or the absence of other fallbacks.
+
+| Parameter / spelling | Invocation | Type / constraints | Default / environment |
+|---|---|---|---|
+| <a id="s-915c20851a"></a>`app_name`<br>`app_name` | required positional; 1 value | text | not recorded |
+| <a id="s-0c2c77e0a6"></a>`allow`<br>`--allow` | required option; 1 value; collects repeats; no declared occurrence maximum | text | not recorded |
+| <a id="s-7e21fddcb2"></a>`expires_in`<br>`--expires-in` | optional option; 1 value | text | not recorded |
+| <a id="s-389739a812"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
 
 ### Terminating controls
 
@@ -54,7 +56,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 #### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"piggity"}; maximum=null; reason="no-declared-semantic-maximum"
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"piggity"}; maximum=null; reason="no-declared-semantic-maximum"; source_constraint={"field":"multiple"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
@@ -62,14 +64,14 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
-Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --allow](#s-0c2c77e0a6) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter app_name](#s-915c20851a) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --expires-in](#s-7e21fddcb2) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --json](#s-389739a812) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --allow](#s-0c2c77e0a6) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter app_name](#s-915c20851a) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --expires-in](#s-7e21fddcb2) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --json](#s-389739a812) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
 
 ## Maintained corroboration
 
