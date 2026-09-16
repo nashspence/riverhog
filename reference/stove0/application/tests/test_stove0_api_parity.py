@@ -870,7 +870,7 @@ def test_target_callback_surface_has_one_current_target_client_and_real_api_witn
             target_callbacks=cast(Any, callbacks),
         )
     )
-    observer = OperationObserver.install(application, application="stove0-target-callback")
+    observer = OperationObserver.install(application, application="stove0")
     access = TargetCallbackAccess(
         stove0_base_url="http://testserver",
         token="target-callback-token",

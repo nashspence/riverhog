@@ -958,51 +958,6 @@ def _load_operation_timings(
         raise QualificationError(
             f"official-client operations lack client wall timings: {missing_client}"
         )
-    raw_entries = payload.get("cli_callback_entries")
-    if not isinstance(raw_entries, list):
-        raise QualificationError("CLI callback-entry evidence rows are invalid")
-    required_commands = {
-        (item.application, command)
-        for item in matrix
-        if item.classification == "human-cli+json"
-        for command in item.cli_commands
-    }
-    entries: list[dict[str, object]] = []
-    entry_identities: set[tuple[str, str]] = set()
-    entered_commands: set[tuple[str, str]] = set()
-    for raw in raw_entries:
-        if not isinstance(raw, dict):
-            raise QualificationError("CLI callback-entry evidence row is invalid")
-        identity = (str(raw.get("application") or ""), str(raw.get("command") or ""))
-        if identity not in required_commands or identity in entry_identities:
-            raise QualificationError(f"CLI callback-entry evidence identity is invalid: {identity}")
-        entry_identities.add(identity)
-        human = raw.get("human_entries")
-        machine = raw.get("json_entries")
-        if (
-            not isinstance(human, int)
-            or isinstance(human, bool)
-            or human < 0
-            or not isinstance(machine, int)
-            or isinstance(machine, bool)
-            or machine < 0
-        ):
-            raise QualificationError(f"CLI callback-entry evidence counts are invalid: {identity}")
-        if human > 0 and machine > 0:
-            entered_commands.add(identity)
-        entries.append(
-            {
-                "application": identity[0],
-                "command": identity[1],
-                "human_entries": human,
-                "json_entries": machine,
-            }
-        )
-    missing_cli_commands = sorted(required_commands - entered_commands)
-    if missing_cli_commands:
-        raise QualificationError(
-            f"CLI commands lack human/JSON callback entries: {missing_cli_commands}"
-        )
     return {
         "schema": TIMING_SCHEMA,
         "source_sha": source_sha,
@@ -1010,11 +965,6 @@ def _load_operation_timings(
             validated,
             key=lambda item: (str(item["application"]), str(item["operation_id"])),
         ),
-        "cli_callback_entries": sorted(
-            entries,
-            key=lambda item: (str(item["application"]), str(item["command"])),
-        ),
-        "entered_cli_commands": len(entered_commands),
     }
 
 
@@ -1045,12 +995,9 @@ def evidence(*, source_sha: str, timings: Path) -> dict[str, object]:
             },
             "cli_human_json_projection": {
                 "status": "not_established",
-                "reason": "Callback entries establish neither successful command execution "
-                "nor human/JSON output equivalence.",
+                "reason": "This timing report does not record successful CLI projection "
+                "assertions.",
                 "operations": sum(item.classification == "human-cli+json" for item in matrix),
-                "commands_with_both_callback_modes": cast(
-                    int, local_timings["entered_cli_commands"]
-                ),
             },
             "bounded_state_access": {
                 "status": "not_established",
