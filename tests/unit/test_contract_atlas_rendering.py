@@ -350,7 +350,13 @@ def test_every_dossier_is_lossless_and_representative_contract_classes_are_seman
         (
             "piggity collection list",
             "page_size",
-            ("`--page-size`", "optional option; 1 value", "minimum=`1`; maximum=`100`", "| `25` |"),
+            (
+                "`--page-size`",
+                "optional option; 1 value",
+                "minimum=`1` (inclusive); maximum=`100` (inclusive)",
+                "outside range: reject",
+                "| `25` |",
+            ),
         ),
         (
             "piggity collection list",
@@ -384,6 +390,32 @@ def test_every_dossier_is_lossless_and_representative_contract_classes_are_seman
         ),
         ("stove0 preview", "inputs", ("required positional; 1+ values; no parser maximum",)),
         (
+            "stove0 recipe validate",
+            "path",
+            (
+                "existence required",
+                "regular files allowed",
+                "directories rejected",
+                "access checks on existing paths: read",
+                "resolve absolute path and symlinks: no",
+                "dash uses normal path checks",
+            ),
+        ),
+        (
+            "stove0 preview",
+            "intent",
+            ("existence required", "directories rejected", "access checks on existing paths: read"),
+        ),
+        (
+            "gogurt list",
+            "config",
+            (
+                "existence not required",
+                "directories allowed",
+                "access checks on existing paths: read",
+            ),
+        ),
+        (
             "riverhog-storage-adapter-filesystem-materialize",
             "path",
             ("collects repeats; no declared occurrence maximum", "| `[]` |"),
@@ -399,6 +431,54 @@ def test_cli_primary_reading_path_exposes_parameter_semantics(
     row = next(line for line in page.splitlines() if f"</a>`{parameter}`" in line)
     assert all(fragment in row for fragment in expected), row
     assert "{'class':" not in row
+
+
+@pytest.mark.parametrize(
+    ("title", "expected"),
+    [
+        (
+            "riverhog-recover",
+            (
+                "Unique long-option abbreviations: accepted.",
+                "### Argument combinations",
+                "At most one of:",
+                "[`--description-only`](#",
+                "[`--tags-only`](#",
+            ),
+        ),
+        ("riverhog-api", ("Subcommand selection: optional.",)),
+        ("stove0-server", ("Subcommand selection: required.",)),
+        (
+            "stove0",
+            (
+                "Subcommand selection: required.",
+                "Extra arguments at this parser: accepted. "
+                "Subcommand selection and child parsing still apply.",
+                "Options after positional arguments at this parser: left as arguments.",
+                "Unknown options at this parser: rejected.",
+            ),
+        ),
+        (
+            "stove0 recipe validate",
+            (
+                "Extra arguments at this parser: rejected.",
+                "Options after positional arguments at this parser: parsed as options.",
+                "Unknown options at this parser: rejected.",
+            ),
+        ),
+    ],
+)
+def test_cli_primary_reading_path_exposes_command_rules(
+    title: str, expected: tuple[str, ...]
+) -> None:
+    checked = checked_atlas()
+    element = next(
+        item
+        for item in checked.root["elements"]
+        if item["interface"] == "cli" and item["title"] == title
+    )
+    page = checked.files[element["dossier"]].decode().split("## Maintained corroboration", 1)[0]
+    assert all(fragment in page for fragment in expected), page
 
 
 @pytest.mark.parametrize("default", [False, 0, "", [], None])

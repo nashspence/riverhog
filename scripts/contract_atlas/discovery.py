@@ -221,7 +221,18 @@ def _walk_cli(
     )
     pointers = [
         f"{pointer}/{key}"
-        for key in ("name", "parameters", "terminating_controls", "result_contract")
+        for key in (
+            "name",
+            "parameters",
+            "subcommand_required",
+            "allow_abbrev",
+            "allow_extra_args",
+            "allow_interspersed_args",
+            "ignore_unknown_options",
+            "mutually_exclusive_groups",
+            "terminating_controls",
+            "result_contract",
+        )
         if key in node
     ]
     result_contract = node.get("result_contract")

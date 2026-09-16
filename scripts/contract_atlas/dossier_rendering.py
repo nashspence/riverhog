@@ -672,7 +672,37 @@ def _cli_parameter_type(parameter: Mapping[str, object]) -> str:
         constraints = parameter
     for key in ("choices", "minimum", "maximum"):
         if key in constraints:
-            parts.append(f"{key}=`{_md(_compact_json(constraints[key]))}`")
+            bound = f"{key}=`{_md(_compact_json(constraints[key]))}`"
+            open_key = {"minimum": "min_open", "maximum": "max_open"}.get(key)
+            if open_key is not None and open_key in constraints:
+                bound += " (exclusive)" if constraints[open_key] else " (inclusive)"
+            parts.append(bound)
+    if "clamp" in constraints:
+        parts.append(
+            "outside range: clamp to boundary" if constraints["clamp"] else "outside range: reject"
+        )
+    if "exists" in constraints:
+        parts.extend(
+            [
+                "existence required" if constraints["exists"] else "existence not required",
+                "regular files allowed" if constraints["file_okay"] else "regular files rejected",
+                "directories allowed" if constraints["dir_okay"] else "directories rejected",
+                "access checks on existing paths: "
+                + (
+                    ", ".join(
+                        name
+                        for key, name in (("readable", "read"), ("writable", "write"))
+                        if constraints[key]
+                    )
+                    or "none"
+                ),
+                "resolve absolute path and symlinks: "
+                + ("yes" if constraints["resolve_path"] else "no"),
+                "dash bypasses path checks when files are allowed"
+                if constraints["allow_dash"]
+                else "dash uses normal path checks",
+            ]
+        )
     return "; ".join(parts)
 
 
@@ -720,6 +750,9 @@ def _render_cli(
     result_pointer = ""
     terminating_controls: Sequence[Mapping[str, object]] = ()
     terminating_controls_pointer = ""
+    command_rules: dict[str, tuple[str, object]] = {}
+    exclusive_groups: Sequence[Mapping[str, object]] = ()
+    exclusive_groups_pointer = ""
     for pointer, value in zip(pointers, values, strict=True):
         if isinstance(value, str):
             name = value
@@ -730,6 +763,17 @@ def _render_cli(
         elif isinstance(value, list) and pointer.endswith("/terminating_controls"):
             terminating_controls = cast(Sequence[Mapping[str, object]], value)
             terminating_controls_pointer = pointer
+        elif isinstance(value, list) and pointer.endswith("/mutually_exclusive_groups"):
+            exclusive_groups = cast(Sequence[Mapping[str, object]], value)
+            exclusive_groups_pointer = pointer
+        elif pointer.rsplit("/", 1)[-1] in {
+            "subcommand_required",
+            "allow_abbrev",
+            "allow_extra_args",
+            "allow_interspersed_args",
+            "ignore_unknown_options",
+        }:
+            command_rules[pointer.rsplit("/", 1)[-1]] = (pointer, value)
         elif isinstance(value, Mapping):
             result_contract = value
             result_pointer = pointer
@@ -738,6 +782,31 @@ def _render_cli(
         if name
         else []
     )
+    for key, label, yes, no in (
+        ("subcommand_required", "Subcommand selection", "required", "optional"),
+        ("allow_abbrev", "Unique long-option abbreviations", "accepted", "not accepted"),
+        ("allow_extra_args", "Extra arguments at this parser", "accepted", "rejected"),
+        (
+            "allow_interspersed_args",
+            "Options after positional arguments at this parser",
+            "parsed as options",
+            "left as arguments",
+        ),
+        (
+            "ignore_unknown_options",
+            "Unknown options at this parser",
+            "left as arguments",
+            "rejected",
+        ),
+    ):
+        if key in command_rules:
+            rule_pointer, enabled = command_rules[key]
+            lines.append(
+                f"- {_subject_marker(rule_pointer, placed_subjects)}"
+                f"{label}: {yes if enabled else no}."
+            )
+            if key == "allow_extra_args" and enabled and "subcommand_required" in command_rules:
+                lines[-1] += " Subcommand selection and child parsing still apply."
     if parameters:
         extents = cast(
             Sequence[Mapping[str, object]],
@@ -827,6 +896,25 @@ def _render_cli(
                     f"occurrences, through "
                     f"[{_md(target['title'])} · {_md(source['name'])}]({link}).",
                 ]
+            )
+    if exclusive_groups:
+        lines.extend(["", "### Argument combinations", ""])
+        for index, group in enumerate(exclusive_groups):
+            members = []
+            for parameter_index in cast(Sequence[int], group["parameters"]):
+                if not 0 <= parameter_index < len(parameters):
+                    raise ContractAtlasError(
+                        "CLI mutually exclusive group has an unresolved member"
+                    )
+                parameter = parameters[parameter_index]
+                options = cast(Sequence[str], parameter.get("options", ()))
+                label = ", ".join(options) or str(parameter.get("dest", parameter.get("name")))
+                anchor = _subject_anchor(f"{parameters_pointer}/{parameter_index}")
+                members.append(f"[`{_md(label)}`](#{anchor})")
+            rule = "Exactly one" if group["required"] else "At most one"
+            lines.append(
+                f"- {_subject_marker(f'{exclusive_groups_pointer}/{index}', placed_subjects)}"
+                f"{rule} of: {', '.join(members)}."
             )
     if terminating_controls:
         lines.extend(

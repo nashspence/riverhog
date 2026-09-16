@@ -620,6 +620,20 @@ def _click_type(parameter: Any) -> dict[str, object]:
         result["minimum"] = minimum
     if maximum is not None:
         result["maximum"] = maximum
+    for attribute in (
+        "min_open",
+        "max_open",
+        "clamp",
+        "exists",
+        "file_okay",
+        "dir_okay",
+        "readable",
+        "writable",
+        "resolve_path",
+        "allow_dash",
+    ):
+        if hasattr(type_, attribute):
+            result[attribute] = _json_value(getattr(type_, attribute))
     return result
 
 
@@ -710,8 +724,7 @@ CLI_SIMPLE_OUTCOME_SELECTOR_KINDS = frozenset(
 )
 
 
-def _click_terminating_controls(command: Any) -> list[dict[str, object]]:
-    context = command.make_context(command.name or "command", [], resilient_parsing=True)
+def _click_terminating_controls(command: Any, context: Any) -> list[dict[str, object]]:
     controls: list[dict[str, object]] = []
     help_options = list(command.get_help_option_names(context))
     if help_options:
@@ -757,6 +770,7 @@ def _click_terminating_controls(command: Any) -> list[dict[str, object]]:
 
 
 def _click_command(command: Any, *, name: str) -> dict[str, object]:
+    context = command.make_context(command.name or "command", [], resilient_parsing=True)
     parameters = [
         parameter
         for parameter in command.params
@@ -765,10 +779,14 @@ def _click_command(command: Any, *, name: str) -> dict[str, object]:
     result: dict[str, object] = {
         "name": name,
         "parameters": [_click_parameter(parameter) for parameter in parameters],
-        "terminating_controls": _click_terminating_controls(command),
+        "allow_extra_args": context.allow_extra_args,
+        "allow_interspersed_args": context.allow_interspersed_args,
+        "ignore_unknown_options": context.ignore_unknown_options,
+        "terminating_controls": _click_terminating_controls(command, context),
     }
     commands = getattr(command, "commands", None)
     if isinstance(commands, Mapping):
+        result["subcommand_required"] = not command.invoke_without_command
         result["commands"] = {
             child_name: _click_command(child, name=child_name)
             for child_name, child in sorted(commands.items())
@@ -842,9 +860,25 @@ def _argparse_command(
     result: dict[str, object] = {
         "name": name or parser.prog,
         "parameters": [_argparse_action(action) for action in actions],
+        "allow_abbrev": parser.allow_abbrev,
         "terminating_controls": terminating_controls,
     }
+    if parser._mutually_exclusive_groups:
+        groups = []
+        for group in parser._mutually_exclusive_groups:
+            if any(action not in actions for action in group._group_actions):
+                raise ContractFreezeError(
+                    f"CLI mutually exclusive group has an unaccounted member: {parser.prog}"
+                )
+            groups.append(
+                {
+                    "required": group.required,
+                    "parameters": [actions.index(action) for action in group._group_actions],
+                }
+            )
+        result["mutually_exclusive_groups"] = groups
     if subparsers is not None:
+        result["subcommand_required"] = subparsers.required
         result["commands"] = {
             child_name: _argparse_command(child, name=child_name)
             for child_name, child in sorted(subparsers.choices.items())
