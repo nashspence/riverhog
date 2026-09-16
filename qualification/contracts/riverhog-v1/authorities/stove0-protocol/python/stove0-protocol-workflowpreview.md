@@ -85,7 +85,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [canonical_observations](stove0-protocol-workflowpreview-canonical-observations.md)
+- [canonical_target_plans](stove0-protocol-workflowpreview-canonical-target-plans.md)
+- [canonical_child_branch_sets](stove0-protocol-workflowpreview-canonical-child-branch-sets.md)
+- [canonical_selections](stove0-protocol-workflowpreview-canonical-selections.md)
+- [canonical_warnings](stove0-protocol-workflowpreview-canonical-warnings.md)
 - [seal](stove0-protocol-workflowpreview-seal.md)
+- [validate_state](stove0-protocol-workflowpreview-validate-state.md)
 - [verify_digest](stove0-protocol-workflowpreview-verify-digest.md)
 
 ## Governing policies

@@ -48,6 +48,13 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | <a id="s-d6a962fc6b"></a>`BranchSetAdmittedEventData` | type="object"; fields=`admitted_work_count`, `branch_count`, `branch_set_sha256`, `phase`, `revision`, `work_id`; additional keys=`additionalProperties`, `required` |
 
+## Maintained corroboration
+
+### Related interface records
+
+- [exact_subject](stove0-operator-contracts-branchsetadmittedevent-exact-subject.md)
+- [validate_time](stove0-operator-contracts-branchsetadmittedevent-validate-time.md)
+
 ## Governing policies
 
 - <a id="pa-bab00bf4cd"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)

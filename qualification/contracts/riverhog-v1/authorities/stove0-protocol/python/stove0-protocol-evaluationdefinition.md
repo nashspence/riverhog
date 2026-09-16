@@ -56,9 +56,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [canonical_inputs](stove0-protocol-evaluationdefinition-canonical-inputs.md)
 - [child_work](stove0-protocol-evaluationdefinition-child-work.md)
 - [child_works](stove0-protocol-evaluationdefinition-child-works.md)
 - [seal](stove0-protocol-evaluationdefinition-seal.md)
+- [validate_purpose](stove0-protocol-evaluationdefinition-validate-purpose.md)
 - [verify_digest](stove0-protocol-evaluationdefinition-verify-digest.md)
 
 ## Governing policies

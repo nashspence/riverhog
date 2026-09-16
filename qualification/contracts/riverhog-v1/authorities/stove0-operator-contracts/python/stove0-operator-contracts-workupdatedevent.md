@@ -48,6 +48,13 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | <a id="s-2e033a7744"></a>`WorkUpdatedEventData` | type="object"; fields=`phase`, `revision`, `work_id`; additional keys=`additionalProperties`, `required` |
 
+## Maintained corroboration
+
+### Related interface records
+
+- [exact_subject](stove0-operator-contracts-workupdatedevent-exact-subject.md)
+- [validate_time](stove0-operator-contracts-workupdatedevent-validate-time.md)
+
 ## Governing policies
 
 - <a id="pa-ab31ef4dcf"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)

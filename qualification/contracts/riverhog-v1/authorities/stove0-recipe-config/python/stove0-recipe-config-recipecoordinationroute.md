@@ -58,6 +58,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [canonical_members](stove0-recipe-config-recipecoordinationroute-canonical-members.md)
 - [coordination_projections_target_intent_only](stove0-recipe-config-recipecoordinationroute-coordination-projections-target-intent-only.md)
 
 ## Governing policies

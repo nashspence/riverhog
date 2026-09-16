@@ -24,6 +24,8 @@ Declared public imports and their selected exact structural contracts.
 - [REVIEW_VIDEO_ROLE](stove0-review-target-contracts-review-video-role.md)
 - [ReviewMaterializeIntent](stove0-review-target-contracts-reviewmaterializeintent.md)
 - [ReviewSamplePlan](stove0-review-target-contracts-reviewsampleplan.md)
+  - [canonical_windows](stove0-review-target-contracts-reviewsampleplan-canonical-windows.md)
+  - [exact_declared_shape](stove0-review-target-contracts-reviewsampleplan-exact-declared-shape.md)
   - [seal](stove0-review-target-contracts-reviewsampleplan-seal.md)
   - [verify_digest](stove0-review-target-contracts-reviewsampleplan-verify-digest.md)
 - [ReviewSamplePlanPayload](stove0-review-target-contracts-reviewsampleplanpayload.md)

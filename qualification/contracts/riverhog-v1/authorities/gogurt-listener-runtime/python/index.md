@@ -30,6 +30,8 @@ Declared public imports and their selected exact structural contracts.
 - [ListenerError](gogurt-listener-runtime-listenererror.md)
 - [ListenerHostProviderBinding](gogurt-listener-runtime-listenerhostproviderbinding.md)
 - [ListenerLock](gogurt-listener-runtime-listenerlock.md)
+  - [__enter__](gogurt-listener-runtime-listenerlock-enter.md)
+  - [__exit__](gogurt-listener-runtime-listenerlock-exit.md)
 - [ListenerPlatformError](gogurt-listener-runtime-listenerplatformerror.md)
 - [ListenerRuntime](gogurt-listener-runtime-listenerruntime.md)
   - [request_stop](gogurt-listener-runtime-listenerruntime-request-stop.md)

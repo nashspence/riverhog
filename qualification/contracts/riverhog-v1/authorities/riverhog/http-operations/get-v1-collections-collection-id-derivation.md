@@ -37,6 +37,10 @@ Get Collection Derivation
 
 ## Maintained corroboration
 
+### Related interface records
+
+- [riverhog_client.ApiClient.get_collection_derivation](../../riverhog-client/python/riverhog-client-apiclient-get-collection-derivation.md)
+
 ### Referenced contract dossiers
 
 - [schemas: CollectionDerivationResponseDocument](../http-schemas/schemas-collectionderivationresponsedocument.md)
@@ -59,8 +63,6 @@ Get Collection Derivation
 - **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
 - **Handler:** [riverhog/src/riverhog_api/routers/workflows.py::get_collection_derivation](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L723)
-
-**Accounting gap:** [riverhog_client.ApiClient.get_collection_derivation](../../../../../../packages/riverhog-client/src/riverhog_client/workflows.py#L672) is callable through the maintained client but has no Python contract dossier in the current freeze.
 
 ### Structural operation bindings
 

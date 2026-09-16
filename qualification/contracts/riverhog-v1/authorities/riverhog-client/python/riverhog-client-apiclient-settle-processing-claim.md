@@ -1,0 +1,74 @@
+# riverhog_client.ApiClient.settle_processing_claim
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-client:riverhog-client-apiclient-settle-processing-claim:a24ab540a1 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-client](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-96df7adcb6"></a>
+- <a id="s-93418f11d1"></a>`distribution`: `riverhog-client`
+- <a id="s-8b34979055"></a>`module`: `riverhog_client`
+- <a id="s-73bbb09546"></a>`name`: `settle_processing_claim`
+- <a id="s-186a9c66b0"></a>`owner`: `riverhog_client.ApiClient`
+- <a id="s-d30ab160f5"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-2072b53422"></a>`kind`: `"method"`
+- <a id="s-12820faf4a"></a>`signature`: `"\"(self, claim_id: 'ProcessingClaimId', *, fence: 'int', output_collection_id: 'CollectionId', derivation: 'DerivationInput', outcome_claim_id: 'ProcessingClaimId \| None' = None, outcome_fence: 'int \| None' = None, outcome_id: 'str \| None' = None) -> 'ProcessingClaimDocument'\""`
+
+## Maintained corroboration
+
+### Related interface records
+
+- [POST /v1/collection-processing-claims/{claim_id}/settle](../../riverhog/http-operations/post-v1-collection-processing-claims-claim-id-settle.md)
+- [ApiClient](riverhog-client-apiclient.md)
+
+## Governing policies
+
+- <a id="pa-1e483af328"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
+- **Client method:** [packages/riverhog-client/src/riverhog_client/workflows.py::CollectionWorkflowMethods.settle_processing_claim](../../../../../../packages/riverhog-client/src/riverhog_client/workflows.py#L465)
+
+### Machine authority
+
+- `/external_contract/python/riverhog_client.ApiClient.settle_processing_claim`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 2809b077502dea31fa25ebd3e5666a5b3d7b5ae6ad29ce482519670e35180bdf -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, claim_id: 'ProcessingClaimId', *, fence: 'int', output_collection_id: 'CollectionId', derivation: 'DerivationInput', outcome_claim_id: 'ProcessingClaimId | None' = None, outcome_fence: 'int | None' = None, outcome_id: 'str | None' = None) -> 'ProcessingClaimDocument'\""
+  },
+  "distribution": "riverhog-client",
+  "module": "riverhog_client",
+  "name": "settle_processing_claim",
+  "owner": "riverhog_client.ApiClient",
+  "unit": "member"
+}
+```

@@ -43,7 +43,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [__getitem__](riverhog-protocol-processingclaimcreatedocument-getitem.md)
 - [validate_claim](riverhog-protocol-processingclaimcreatedocument-validate-claim.md)
+- [get](riverhog-protocol-processingclaimcreatedocument-get.md)
 
 ## Governing policies
 

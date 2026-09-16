@@ -36,6 +36,13 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-c6ad8973f0"></a>`fence` | yes | type="integer"; minimum=1 |  |
 | <a id="s-c75d18c697"></a>`lease_seconds` | no | type="integer"; minimum=30; maximum=86400 |  |
 
+## Maintained corroboration
+
+### Related interface records
+
+- [__getitem__](riverhog-protocol-processingclaimrenewdocument-getitem.md)
+- [get](riverhog-protocol-processingclaimrenewdocument-get.md)
+
 ## Governing policies
 
 - <a id="pa-842e0b955a"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)

@@ -58,6 +58,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [canonical_inputs](stove0-protocol-workidentity-canonical-inputs.md)
 - [root_identities](stove0-protocol-workidentity-root-identities.md)
 - [seal](stove0-protocol-workidentity-seal.md)
 - [verify_digest](stove0-protocol-workidentity-verify-digest.md)

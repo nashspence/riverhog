@@ -40,10 +40,10 @@
     - [Python](authorities/riverhog-archive-contracts/python/index.md) (72)
   - [riverhog-client](authorities/riverhog-client/index.md) — Typed generic Riverhog client and capability-scoped collection-processing runtime.
     - [Configuration Environment](authorities/riverhog-client/configuration-environment/index.md) (12)
-    - [Python](authorities/riverhog-client/python/index.md) (238)
+    - [Python](authorities/riverhog-client/python/index.md) (269)
   - [riverhog-protocol](authorities/riverhog-protocol/index.md) — Canonical Riverhog wire and identity contracts.
     - [Schemas](authorities/riverhog-protocol/schema/index.md) (1)
-    - [Python](authorities/riverhog-protocol/python/index.md) (278)
+    - [Python](authorities/riverhog-protocol/python/index.md) (323)
   - [riverhog-provenance](authorities/riverhog-provenance/index.md) — Portable Riverhog v1 per-file provenance journals and validation.
     - [Schemas](authorities/riverhog-provenance/schema/index.md) (7)
     - [Configuration Environment](authorities/riverhog-provenance/configuration-environment/index.md) (3)
@@ -115,7 +115,7 @@
     - [CLI](authorities/gogurt/cli/index.md) (21)
   - [gogurt-core](authorities/gogurt-core/index.md) — Portable Gogurt marker, routing, action, and watch semantics.
     - [Configuration Documents](authorities/gogurt-core/configuration/index.md) (1)
-    - [Python](authorities/gogurt-core/python/index.md) (40) — Defines extension: [gogurt.mounted-volume-providers](extensions/extension-point-gogurt-mounted-volume-providers.md).
+    - [Python](authorities/gogurt-core/python/index.md) (43) — Defines extension: [gogurt.mounted-volume-providers](extensions/extension-point-gogurt-mounted-volume-providers.md).
   - [gogurt-linux-listener-host](authorities/gogurt-linux-listener-host/index.md) — Optional nonnormative Linux systemd-user listener-host reference for Gogurt. Provider for extension: [gogurt.listener-host-providers](extensions/extension-point-gogurt-listener-host-providers.md).
     - [Configuration Environment](authorities/gogurt-linux-listener-host/configuration-environment/index.md) (2)
     - [Python](authorities/gogurt-linux-listener-host/python/index.md) (12)
@@ -124,7 +124,7 @@
   - [gogurt-listener](authorities/gogurt-listener/index.md) — Portable durable listener runtime and native-platform port for Gogurt.
     - [Durable State](authorities/gogurt-listener/durable-state/index.md) (4)
   - [gogurt-listener-runtime](authorities/gogurt-listener-runtime/index.md) — Portable durable listener runtime and native-platform port for Gogurt.
-    - [Python](authorities/gogurt-listener-runtime/python/index.md) (53) — Defines extension: [gogurt.listener-host-providers](extensions/extension-point-gogurt-listener-host-providers.md).
+    - [Python](authorities/gogurt-listener-runtime/python/index.md) (55) — Defines extension: [gogurt.listener-host-providers](extensions/extension-point-gogurt-listener-host-providers.md).
   - [gogurt-macos-listener-host](authorities/gogurt-macos-listener-host/index.md) — Optional nonnormative macOS launchd listener-host reference for Gogurt. Provider for extension: [gogurt.listener-host-providers](extensions/extension-point-gogurt-listener-host-providers.md).
     - [Python](authorities/gogurt-macos-listener-host/python/index.md) (12)
   - [gogurt-macos-mounted-volume](authorities/gogurt-macos-mounted-volume/index.md) — Optional nonnormative macOS mounted-volume reference for Gogurt. Provider for extension: [gogurt.mounted-volume-providers](extensions/extension-point-gogurt-mounted-volume-providers.md).
@@ -163,9 +163,9 @@
       - [Durable State](authorities/stove0-control/durable-state/index.md) (23)
     - [stove0-operator-contracts](authorities/stove0-operator-contracts/index.md) — Canonical public state contracts for the Stove0 v1 operator surface.
       - [Configuration Documents](authorities/stove0-operator-contracts/configuration/index.md) (1)
-      - [Python](authorities/stove0-operator-contracts/python/index.md) (98)
+      - [Python](authorities/stove0-operator-contracts/python/index.md) (124)
     - [stove0-protocol](authorities/stove0-protocol/index.md) — Canonical content-opaque collection orchestration contracts for stove0.
-      - [Python](authorities/stove0-protocol/python/index.md) (190)
+      - [Python](authorities/stove0-protocol/python/index.md) (205)
     - [stove0-server](authorities/stove0-server/index.md) — Optional nonnormative content-opaque transformation reference application for Riverhog.
       - [Configuration Environment](authorities/stove0-server/configuration-environment/index.md) (25)
       - [Python](authorities/stove0-server/python/index.md) (324)
@@ -183,7 +183,7 @@
     - [stove0-observer-client](authorities/stove0-observer-client/index.md) — Narrow HTTP client for Stove0 content observers.
       - [Python](authorities/stove0-observer-client/python/index.md) (6) — Defines extension: [stove0.observer-semantic-validators](extensions/extension-point-stove0-observer-semantic-validators.md).
     - [stove0-observer-protocol](authorities/stove0-observer-protocol/index.md) — Dependency-light public contracts for external stove0 content observers.
-      - [Python](authorities/stove0-observer-protocol/python/index.md) (75) — Defines protocol: [stove0-observer](extensions/process-protocol-stove0-observer.md).
+      - [Python](authorities/stove0-observer-protocol/python/index.md) (81) — Defines protocol: [stove0-observer](extensions/process-protocol-stove0-observer.md).
     - [stove0-observer-support](authorities/stove0-observer-support/index.md) — External-author protocol, runtime, and conformance support for stove0 content observers.
       - [Process Protocol](authorities/stove0-observer-support/process-protocol/index.md) (1)
       - [Process Protocol Operations](authorities/stove0-observer-support/process-protocol-operations/index.md) (2)
@@ -194,26 +194,26 @@
     - [stove0-media-archive-target-contracts](authorities/stove0-media-archive-target-contracts/index.md) — Optional nonnormative media-archive contract reference for Stove0 targets.
       - [Python](authorities/stove0-media-archive-target-contracts/python/index.md) (30)
     - [stove0-media-archive-target-support](authorities/stove0-media-archive-target-support/index.md) — Optional nonnormative projection support for Stove0 media-archive references.
-      - [Python](authorities/stove0-media-archive-target-support/python/index.md) (23)
+      - [Python](authorities/stove0-media-archive-target-support/python/index.md) (24)
     - [stove0-nvenc-av1-opus-target](authorities/stove0-nvenc-av1-opus-target/index.md) — Optional nonnormative NVENC AV1 and Opus target reference for Stove0. Implements protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
       - [Configuration Environment](authorities/stove0-nvenc-av1-opus-target/configuration-environment/index.md) (10)
-      - [Python](authorities/stove0-nvenc-av1-opus-target/python/index.md) (2)
+      - [Python](authorities/stove0-nvenc-av1-opus-target/python/index.md) (8)
     - [stove0-opus-target](authorities/stove0-opus-target/index.md) — Optional nonnormative Opus target reference for Stove0. Implements protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
       - [Configuration Environment](authorities/stove0-opus-target/configuration-environment/index.md) (9)
-      - [Python](authorities/stove0-opus-target/python/index.md) (2)
+      - [Python](authorities/stove0-opus-target/python/index.md) (8)
     - [stove0-target-client](authorities/stove0-target-client/index.md) — Narrow HTTP client for Stove0 transform targets.
       - [Python](authorities/stove0-target-client/python/index.md) (15)
     - [stove0-target-jobs](authorities/stove0-target-jobs/index.md) — Dependency-light public contracts for external stove0 targets.
       - [Durable State](authorities/stove0-target-jobs/durable-state/index.md) (3)
     - [stove0-target-protocol](authorities/stove0-target-protocol/index.md) — Dependency-light public contracts for external stove0 targets.
-      - [Python](authorities/stove0-target-protocol/python/index.md) (129) — Defines protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
+      - [Python](authorities/stove0-target-protocol/python/index.md) (137) — Defines protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
     - [stove0-target-support](authorities/stove0-target-support/index.md) — Hardware-neutral target protocol, runtime, and conformance support for stove0.
       - [Process Protocol](authorities/stove0-target-support/process-protocol/index.md) (1)
       - [Process Protocol Operations](authorities/stove0-target-support/process-protocol-operations/index.md) (5)
       - [Process Protocol Schemas](authorities/stove0-target-support/process-protocol-schemas/index.md) (8)
       - [CLI](authorities/stove0-target-support/cli/index.md) (2)
       - [Configuration Environment](authorities/stove0-target-support/configuration-environment/index.md) (1)
-      - [Python](authorities/stove0-target-support/python/index.md) (145)
+      - [Python](authorities/stove0-target-support/python/index.md) (152)
   - [Review](surfaces/stove0.md#review)
     - [stove0-nvenc-av1-opus-review-sampler](authorities/stove0-nvenc-av1-opus-review-sampler/index.md) — Optional nonnormative NVENC AV1 and Opus review-sampler reference for Stove0. Implements protocol: [stove0-review-sampler](extensions/process-protocol-stove0-review-sampler.md).
       - [Configuration Environment](authorities/stove0-nvenc-av1-opus-review-sampler/configuration-environment/index.md) (8)
@@ -223,17 +223,17 @@
       - [Python](authorities/stove0-opus-review-sampler/python/index.md) (3)
     - [stove0-review-materialize-target](authorities/stove0-review-materialize-target/index.md) — Optional nonnormative review materialization target reference for Stove0. Implements protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
       - [Configuration Environment](authorities/stove0-review-materialize-target/configuration-environment/index.md) (10)
-      - [Python](authorities/stove0-review-materialize-target/python/index.md) (1)
+      - [Python](authorities/stove0-review-materialize-target/python/index.md) (9)
     - [stove0-review-planning](authorities/stove0-review-planning/index.md) — Optional nonnormative planning bridge for maintained Stove0 review references.
       - [CLI](authorities/stove0-review-planning/cli/index.md) (1)
       - [Python](authorities/stove0-review-planning/python/index.md) (4)
     - [stove0-review-rclone-effect-target](authorities/stove0-review-rclone-effect-target/index.md) — Optional nonnormative rclone review-effect target reference for Stove0. Implements protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
       - [Configuration Environment](authorities/stove0-review-rclone-effect-target/configuration-environment/index.md) (15)
-      - [Python](authorities/stove0-review-rclone-effect-target/python/index.md) (3)
+      - [Python](authorities/stove0-review-rclone-effect-target/python/index.md) (11)
     - [stove0-review-sampler-client](authorities/stove0-review-sampler-client/index.md) — Optional nonnormative sampler-client reference for the Stove0 review target.
       - [Python](authorities/stove0-review-sampler-client/python/index.md) (7)
     - [stove0-review-sampler-protocol](authorities/stove0-review-sampler-protocol/index.md) — Optional nonnormative sampler-protocol reference for the Stove0 review target.
-      - [Python](authorities/stove0-review-sampler-protocol/python/index.md) (30) — Defines protocol: [stove0-review-sampler](extensions/process-protocol-stove0-review-sampler.md).
+      - [Python](authorities/stove0-review-sampler-protocol/python/index.md) (36) — Defines protocol: [stove0-review-sampler](extensions/process-protocol-stove0-review-sampler.md).
     - [stove0-review-sampler-support](authorities/stove0-review-sampler-support/index.md) — Optional nonnormative sampler support for Stove0 review references.
       - [Process Protocol](authorities/stove0-review-sampler-support/process-protocol/index.md) (1)
       - [Process Protocol Operations](authorities/stove0-review-sampler-support/process-protocol-operations/index.md) (2)
@@ -241,14 +241,14 @@
       - [CLI](authorities/stove0-review-sampler-support/cli/index.md) (2)
       - [Python](authorities/stove0-review-sampler-support/python/index.md) (21)
     - [stove0-review-target-contracts](authorities/stove0-review-target-contracts/index.md) — Optional nonnormative review contract reference for Stove0 targets.
-      - [Python](authorities/stove0-review-target-contracts/python/index.md) (24)
+      - [Python](authorities/stove0-review-target-contracts/python/index.md) (26)
     - [stove0-review-target-support](authorities/stove0-review-target-support/index.md) — Optional nonnormative shared review-target support reference for Stove0.
       - [Configuration Documents](authorities/stove0-review-target-support/configuration/index.md) (1)
-      - [Python](authorities/stove0-review-target-support/python/index.md) (15)
+      - [Python](authorities/stove0-review-target-support/python/index.md) (20)
   - [Recipes](surfaces/stove0.md#recipes)
     - [stove0-recipe-config](authorities/stove0-recipe-config/index.md) — Portable deployment-owned Stove0 recipe catalog contracts and validation.
       - [Configuration Documents](authorities/stove0-recipe-config/configuration/index.md) (1)
-      - [Python](authorities/stove0-recipe-config/python/index.md) (28)
+      - [Python](authorities/stove0-recipe-config/python/index.md) (30)
 
 ### [Cross-cutting v1 authorities](surfaces/cross-cutting.md)
 

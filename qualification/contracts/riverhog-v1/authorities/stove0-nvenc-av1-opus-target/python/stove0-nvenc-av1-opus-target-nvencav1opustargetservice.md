@@ -28,6 +28,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [prune_terminal_state](stove0-nvenc-av1-opus-target-nvencav1opustargetservice-prune-terminal-state.md)
+- [put_job](stove0-nvenc-av1-opus-target-nvencav1opustargetservice-put-job.md)
+- [get_job](stove0-nvenc-av1-opus-target-nvencav1opustargetservice-get-job.md)
+- [contract](stove0-nvenc-av1-opus-target-nvencav1opustargetservice-contract.md)
+- [cancel_job](stove0-nvenc-av1-opus-target-nvencav1opustargetservice-cancel-job.md)
+- [close](stove0-nvenc-av1-opus-target-nvencav1opustargetservice-close.md)
 - [preflight](stove0-nvenc-av1-opus-target-nvencav1opustargetservice-preflight.md)
 
 ## Governing policies

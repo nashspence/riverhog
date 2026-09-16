@@ -50,6 +50,13 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-c7e96fccf8"></a>`ProcessingOutcomeBindingDocument` | type="object"; fields=`claim_id`, `fence`, `outcome_id`; additional keys=`additionalProperties`, `required` |
 | <a id="s-7b57800bfc"></a>`RecipeIdentityDocument` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
 
+## Maintained corroboration
+
+### Related interface records
+
+- [__getitem__](riverhog-protocol-processingclaimsettledocument-getitem.md)
+- [get](riverhog-protocol-processingclaimsettledocument-get.md)
+
 ## Governing policies
 
 - <a id="pa-b29df7919f"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)

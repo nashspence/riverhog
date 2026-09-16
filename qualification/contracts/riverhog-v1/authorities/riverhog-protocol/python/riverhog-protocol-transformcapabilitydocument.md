@@ -56,7 +56,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [__getitem__](riverhog-protocol-transformcapabilitydocument-getitem.md)
 - [validate_capability](riverhog-protocol-transformcapabilitydocument-validate-capability.md)
+- [get](riverhog-protocol-transformcapabilitydocument-get.md)
 
 ## Governing policies
 

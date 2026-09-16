@@ -9,7 +9,7 @@ Checked-in references form a closed, tightly scoped, maintainer-selected, nonnor
 | Semantic area | Exact authorities | Contract elements |
 |---|---:|---:|
 | Riverhog references | 11 | 209 |
-| Gogurt | 11 | 180 |
+| Gogurt | 11 | 185 |
 | Mango Fish | 2 | 8 |
 | Piggity | 2 | 100 |
 
@@ -33,16 +33,16 @@ Authorities: **11** · Contract elements: **209**
 
 ## Gogurt
 
-Authorities: **11** · Contract elements: **180**
+Authorities: **11** · Contract elements: **185**
 
 | Exact authority | Contract elements | Interfaces | Maintained purpose |
 |---|---:|---|---|
 | [gogurt](../authorities/gogurt/index.md) | 21 | CLI | Optional nonnormative mounted-volume ingestion reference application for Riverhog. |
-| [gogurt-core](../authorities/gogurt-core/index.md) | 41 | Configuration Documents, Python | Portable Gogurt marker, routing, action, and watch semantics. |
+| [gogurt-core](../authorities/gogurt-core/index.md) | 44 | Configuration Documents, Python | Portable Gogurt marker, routing, action, and watch semantics. |
 | [gogurt-linux-listener-host](../authorities/gogurt-linux-listener-host/index.md) | 14 | Configuration Environment, Python | Optional nonnormative Linux systemd-user listener-host reference for Gogurt. |
 | [gogurt-linux-mounted-volume](../authorities/gogurt-linux-mounted-volume/index.md) | 3 | Python | Optional nonnormative Linux mounted-volume reference for Gogurt. |
 | [gogurt-listener](../authorities/gogurt-listener/index.md) | 4 | Durable State | Portable durable listener runtime and native-platform port for Gogurt. |
-| [gogurt-listener-runtime](../authorities/gogurt-listener-runtime/index.md) | 53 | Python | Portable durable listener runtime and native-platform port for Gogurt. |
+| [gogurt-listener-runtime](../authorities/gogurt-listener-runtime/index.md) | 55 | Python | Portable durable listener runtime and native-platform port for Gogurt. |
 | [gogurt-macos-listener-host](../authorities/gogurt-macos-listener-host/index.md) | 12 | Python | Optional nonnormative macOS launchd listener-host reference for Gogurt. |
 | [gogurt-macos-mounted-volume](../authorities/gogurt-macos-mounted-volume/index.md) | 3 | Python | Optional nonnormative macOS mounted-volume reference for Gogurt. |
 | [gogurt-path-volume-support](../authorities/gogurt-path-volume-support/index.md) | 7 | Python | Optional nonnormative path-mounted-volume support for Gogurt reference providers. |

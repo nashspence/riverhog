@@ -58,6 +58,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [binding_document](stove0-target-support-transformplan-binding-document.md)
+- [canonical_observation_results](stove0-target-support-transformplan-canonical-observation-results.md)
 - [seal](stove0-target-support-transformplan-seal.md)
 - [verify_digest](stove0-target-support-transformplan-verify-digest.md)
 

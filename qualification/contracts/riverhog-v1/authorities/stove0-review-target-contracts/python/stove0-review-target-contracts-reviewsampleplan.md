@@ -50,7 +50,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [canonical_windows](stove0-review-target-contracts-reviewsampleplan-canonical-windows.md)
 - [verify_digest](stove0-review-target-contracts-reviewsampleplan-verify-digest.md)
+- [exact_declared_shape](stove0-review-target-contracts-reviewsampleplan-exact-declared-shape.md)
 - [seal](stove0-review-target-contracts-reviewsampleplan-seal.md)
 
 ## Governing policies

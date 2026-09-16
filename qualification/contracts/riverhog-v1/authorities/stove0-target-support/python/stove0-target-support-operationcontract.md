@@ -57,7 +57,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [bind_semantic_conformance_vectors](stove0-target-support-operationcontract-bind-semantic-conformance-vectors.md)
 - [seal](stove0-target-support-operationcontract-seal.md)
+- [validate_roles](stove0-target-support-operationcontract-validate-roles.md)
 - [verify_digest](stove0-target-support-operationcontract-verify-digest.md)
 
 ## Governing policies

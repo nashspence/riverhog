@@ -37,6 +37,13 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-9dfc5dfc90"></a>`phase` | yes | type="string"; enum=["planning","running","partially_complete","complete","failed","canceled"] |  |
 | <a id="s-c11da2d2fd"></a>`revision` | yes | type="integer"; minimum=2 |  |
 
+## Maintained corroboration
+
+### Related interface records
+
+- [__getitem__](stove0-operator-contracts-evaluationupdatedeventdata-getitem.md)
+- [get](stove0-operator-contracts-evaluationupdatedeventdata-get.md)
+
 ## Governing policies
 
 - <a id="pa-0a407365fb"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)

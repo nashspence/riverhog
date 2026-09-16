@@ -1,0 +1,72 @@
+# riverhog_protocol.ProcessingClaimPageDocument.get
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-protocol:riverhog-protocol-processingclaimpagedocument-get:f2793d2ec8 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-protocol](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-9c309b438c"></a>
+- <a id="s-bce635ab20"></a>`distribution`: `riverhog-protocol`
+- <a id="s-e745f02693"></a>`module`: `riverhog_protocol`
+- <a id="s-28a17f9b2f"></a>`name`: `get`
+- <a id="s-bf630e2d54"></a>`owner`: `riverhog_protocol.ProcessingClaimPageDocument`
+- <a id="s-e050a7f6c0"></a>`unit`: `member`
+
+### Declared structure
+
+- <a id="s-cde99ef0cd"></a>`kind`: `"method"`
+- <a id="s-117e77e9c1"></a>`signature`: `"\"(self, key: 'str', default: 'Any' = None) -> 'Any'\""`
+
+## Maintained corroboration
+
+### Related interface records
+
+- [ProcessingClaimPageDocument](riverhog-protocol-processingclaimpagedocument.md)
+
+## Governing policies
+
+- <a id="pa-a4dc059f34"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-protocol:riverhog_protocol](../../../evidence/sources.md#src-19e35f15d9) — `packages/riverhog-protocol/src/riverhog_protocol/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_protocol.ProcessingClaimPageDocument.get`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: f8c52412438a73eaf6067c1e9ea4e6a30133edacdb02afa04054cb1d772b091a -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, key: 'str', default: 'Any' = None) -> 'Any'\""
+  },
+  "distribution": "riverhog-protocol",
+  "module": "riverhog_protocol",
+  "name": "get",
+  "owner": "riverhog_protocol.ProcessingClaimPageDocument",
+  "unit": "member"
+}
+```

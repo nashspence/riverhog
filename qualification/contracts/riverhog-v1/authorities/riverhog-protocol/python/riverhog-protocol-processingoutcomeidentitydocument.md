@@ -49,6 +49,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [get](riverhog-protocol-processingoutcomeidentitydocument-get.md)
+- [__getitem__](riverhog-protocol-processingoutcomeidentitydocument-getitem.md)
 - [validate_identity](riverhog-protocol-processingoutcomeidentitydocument-validate-identity.md)
 
 ## Governing policies

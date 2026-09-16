@@ -45,6 +45,12 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | <a id="s-daf8b1a175"></a>`CollectionUploadUnitSourceDocument` | type="object"; fields=`artifact_sha256`, `bytes`, `offset`, `path`; additional keys=`additionalProperties`, `required` |
 
+## Maintained corroboration
+
+### Related interface records
+
+- [validate_sources](riverhog-protocol-collectionuploadunitworkdocument-validate-sources.md)
+
 ## Governing policies
 
 - <a id="pa-2918ee7ee4"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)

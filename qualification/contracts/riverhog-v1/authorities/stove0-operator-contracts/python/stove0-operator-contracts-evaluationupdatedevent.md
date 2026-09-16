@@ -48,6 +48,13 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | <a id="s-267e631fd0"></a>`EvaluationUpdatedEventData` | type="object"; fields=`evaluation_id`, `phase`, `revision`; additional keys=`additionalProperties`, `required` |
 
+## Maintained corroboration
+
+### Related interface records
+
+- [validate_time](stove0-operator-contracts-evaluationupdatedevent-validate-time.md)
+- [exact_subject](stove0-operator-contracts-evaluationupdatedevent-exact-subject.md)
+
 ## Governing policies
 
 - <a id="pa-3f67e8b575"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)

@@ -48,6 +48,13 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | <a id="s-6085de5cba"></a>`WorkCreatedEventData` | type="object"; fields=`branch_set_sha256`, `join_plan_sha256`, `parent_work_id`, `phase`, `work_id`; additional keys=`additionalProperties`, `required` |
 
+## Maintained corroboration
+
+### Related interface records
+
+- [exact_subject](stove0-operator-contracts-workcreatedevent-exact-subject.md)
+- [validate_time](stove0-operator-contracts-workcreatedevent-validate-time.md)
+
 ## Governing policies
 
 - <a id="pa-8a2b43ce0a"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)

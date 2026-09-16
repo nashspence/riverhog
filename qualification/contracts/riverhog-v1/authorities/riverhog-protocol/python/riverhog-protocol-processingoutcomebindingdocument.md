@@ -37,6 +37,13 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-78fcecbf52"></a>`fence` | yes | type="integer"; minimum=1 |  |
 | <a id="s-280acd085f"></a>`outcome_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
+## Maintained corroboration
+
+### Related interface records
+
+- [__getitem__](riverhog-protocol-processingoutcomebindingdocument-getitem.md)
+- [get](riverhog-protocol-processingoutcomebindingdocument-get.md)
+
 ## Governing policies
 
 - <a id="pa-f054bd7fb0"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)

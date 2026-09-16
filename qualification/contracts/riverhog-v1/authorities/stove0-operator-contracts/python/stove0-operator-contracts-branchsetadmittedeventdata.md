@@ -40,6 +40,13 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-40244e82a2"></a>`revision` | yes | type="integer"; minimum=2 |  |
 | <a id="s-75357cccc4"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
+## Maintained corroboration
+
+### Related interface records
+
+- [__getitem__](stove0-operator-contracts-branchsetadmittedeventdata-getitem.md)
+- [get](stove0-operator-contracts-branchsetadmittedeventdata-get.md)
+
 ## Governing policies
 
 - <a id="pa-72f39e283f"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)

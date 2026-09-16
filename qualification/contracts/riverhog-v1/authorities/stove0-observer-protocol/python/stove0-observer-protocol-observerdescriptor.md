@@ -54,6 +54,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [unique_contracts](stove0-observer-protocol-observerdescriptor-unique-contracts.md)
 - [verify_digest](stove0-observer-protocol-observerdescriptor-verify-digest.md)
 - [support_for](stove0-observer-protocol-observerdescriptor-support-for.md)
 - [seal](stove0-observer-protocol-observerdescriptor-seal.md)

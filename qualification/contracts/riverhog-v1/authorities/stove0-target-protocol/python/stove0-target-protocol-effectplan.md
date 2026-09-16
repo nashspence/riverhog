@@ -58,6 +58,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [binding_document](stove0-target-protocol-effectplan-binding-document.md)
+- [canonical_observation_results](stove0-target-protocol-effectplan-canonical-observation-results.md)
 - [seal](stove0-target-protocol-effectplan-seal.md)
 - [verify_digest](stove0-target-protocol-effectplan-verify-digest.md)
 

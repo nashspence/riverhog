@@ -65,6 +65,10 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ## Maintained corroboration
 
+### Related interface records
+
+- [riverhog_client.ApiClient.list_processing_claims](../../riverhog-client/python/riverhog-client-apiclient-list-processing-claims.md)
+
 ### Referenced contract dossiers
 
 - [schemas: BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)
@@ -90,8 +94,6 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
 - **Handler:** [riverhog/src/riverhog_api/routers/workflows.py::list_processing_claims](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L240)
-
-**Accounting gap:** [riverhog_client.ApiClient.list_processing_claims](../../../../../../packages/riverhog-client/src/riverhog_client/workflows.py#L225) is callable through the maintained client but has no Python contract dossier in the current freeze.
 
 ### Structural operation bindings
 

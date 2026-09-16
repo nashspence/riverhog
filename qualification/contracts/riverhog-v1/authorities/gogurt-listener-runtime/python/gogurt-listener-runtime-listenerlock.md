@@ -24,6 +24,13 @@ Exact externally visible contract owned by this semantic dossier.
 - <a id="s-aae8c667b4"></a>`kind`: `"class"`
 - <a id="s-30d5522e3d"></a>`signature`: `"\"(path: 'Path') -> 'None'\""`
 
+## Maintained corroboration
+
+### Related interface records
+
+- [__enter__](gogurt-listener-runtime-listenerlock-enter.md)
+- [__exit__](gogurt-listener-runtime-listenerlock-exit.md)
+
 ## Governing policies
 
 - <a id="pa-5b228b5aee"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)

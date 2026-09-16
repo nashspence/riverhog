@@ -60,6 +60,8 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [validate_derivation](riverhog-protocol-collectionderivationdocument-validate-derivation.md)
+- [__getitem__](riverhog-protocol-collectionderivationdocument-getitem.md)
+- [get](riverhog-protocol-collectionderivationdocument-get.md)
 
 ## Governing policies
 

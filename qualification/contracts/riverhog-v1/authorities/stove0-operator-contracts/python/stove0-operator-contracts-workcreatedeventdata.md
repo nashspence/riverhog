@@ -44,6 +44,8 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [exact_parent_binding](stove0-operator-contracts-workcreatedeventdata-exact-parent-binding.md)
+- [__getitem__](stove0-operator-contracts-workcreatedeventdata-getitem.md)
+- [get](stove0-operator-contracts-workcreatedeventdata-get.md)
 
 ## Governing policies
 

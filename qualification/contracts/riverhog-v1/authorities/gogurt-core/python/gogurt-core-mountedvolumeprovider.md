@@ -28,6 +28,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [discover](gogurt-core-mountedvolumeprovider-discover.md)
+- [observe_marker](gogurt-core-mountedvolumeprovider-observe-marker.md)
+- [publish_marker](gogurt-core-mountedvolumeprovider-publish-marker.md)
 - [reference](gogurt-core-mountedvolumeprovider-reference.md)
 
 ## Governing policies

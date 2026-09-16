@@ -59,6 +59,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [canonical_subjects](stove0-observer-protocol-observationrequest-canonical-subjects.md)
 - [verify_digest](stove0-observer-protocol-observationrequest-verify-digest.md)
 - [seal](stove0-observer-protocol-observationrequest-seal.md)
 

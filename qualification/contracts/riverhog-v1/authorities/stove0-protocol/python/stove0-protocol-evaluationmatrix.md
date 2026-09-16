@@ -48,6 +48,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [canonical_variants](stove0-protocol-evaluationmatrix-canonical-variants.md)
 - [seal](stove0-protocol-evaluationmatrix-seal.md)
 - [verify_digest](stove0-protocol-evaluationmatrix-verify-digest.md)
 

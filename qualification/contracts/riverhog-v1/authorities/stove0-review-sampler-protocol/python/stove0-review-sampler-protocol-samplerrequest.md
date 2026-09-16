@@ -56,7 +56,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [canonical_cancellation_path](stove0-review-sampler-protocol-samplerrequest-canonical-cancellation-path.md)
 - [verify_digest](stove0-review-sampler-protocol-samplerrequest-verify-digest.md)
+- [references_exact_inputs](stove0-review-sampler-protocol-samplerrequest-references-exact-inputs.md)
+- [canonical_inputs](stove0-review-sampler-protocol-samplerrequest-canonical-inputs.md)
+- [canonical_windows](stove0-review-sampler-protocol-samplerrequest-canonical-windows.md)
 - [seal](stove0-review-sampler-protocol-samplerrequest-seal.md)
 
 ## Governing policies

@@ -28,7 +28,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [contract](stove0-review-target-support-reviewtargetservicebase-contract.md)
+- [prune_terminal_state](stove0-review-target-support-reviewtargetservicebase-prune-terminal-state.md)
+- [cancel_job](stove0-review-target-support-reviewtargetservicebase-cancel-job.md)
 - [preflight](stove0-review-target-support-reviewtargetservicebase-preflight.md)
+- [get_job](stove0-review-target-support-reviewtargetservicebase-get-job.md)
+- [put_job](stove0-review-target-support-reviewtargetservicebase-put-job.md)
 - [readiness](stove0-review-target-support-reviewtargetservicebase-readiness.md)
 - [close](stove0-review-target-support-reviewtargetservicebase-close.md)
 

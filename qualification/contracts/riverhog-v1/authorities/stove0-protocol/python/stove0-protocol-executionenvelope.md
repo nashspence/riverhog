@@ -69,6 +69,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [bind_target](stove0-protocol-executionenvelope-bind-target.md)
+- [canonical_claim_id](stove0-protocol-executionenvelope-canonical-claim-id.md)
 - [seal](stove0-protocol-executionenvelope-seal.md)
 - [verify_digest](stove0-protocol-executionenvelope-verify-digest.md)
 

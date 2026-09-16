@@ -56,7 +56,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [canonical_outputs](stove0-review-sampler-protocol-samplerresult-canonical-outputs.md)
 - [verify_digest](stove0-review-sampler-protocol-samplerresult-verify-digest.md)
+- [state_shape](stove0-review-sampler-protocol-samplerresult-state-shape.md)
 - [seal](stove0-review-sampler-protocol-samplerresult-seal.md)
 
 ## Governing policies

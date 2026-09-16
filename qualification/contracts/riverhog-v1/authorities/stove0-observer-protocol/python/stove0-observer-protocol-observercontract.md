@@ -53,6 +53,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [verify_digest](stove0-observer-protocol-observercontract-verify-digest.md)
+- [bind_semantic_conformance_vectors](stove0-observer-protocol-observercontract-bind-semantic-conformance-vectors.md)
 - [seal](stove0-observer-protocol-observercontract-seal.md)
 
 ## Governing policies

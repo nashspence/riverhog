@@ -54,6 +54,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [bind_result_kind](stove0-target-support-targetcontract-bind-result-kind.md)
+- [canonical_operations](stove0-target-support-targetcontract-canonical-operations.md)
 - [seal](stove0-target-support-targetcontract-seal.md)
 - [support_for](stove0-target-support-targetcontract-support-for.md)
 - [verify_digest](stove0-target-support-targetcontract-verify-digest.md)

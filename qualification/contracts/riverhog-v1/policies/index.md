@@ -15,7 +15,7 @@ Policies are defined once here and referenced from every dossier where they are 
 | [compatibility/durable-state/v1](#p-214a49c2de) | 138 |
 | [compatibility/http-api/v1](#p-5bc717c2c0) | 547 |
 | [compatibility/licensing/v1](#p-c6988e244a) | 1 |
-| [compatibility/python-api/v1](#p-e574772ba5) | 2641 |
+| [compatibility/python-api/v1](#p-e574772ba5) | 2828 |
 | [compatibility/recovery/v1](#p-04aa4508f1) | 1 |
 
 ### Definitions
@@ -573,7 +573,7 @@ Freeze-protected declared public-module exports, callable signatures, selected c
   - [python:stove0-target-support:stove0_target_support](../evidence/sources.md#src-3c01163237)
   - [release:release.toml](../evidence/sources.md#src-c5380dbe5f)
 
-Applications: **2641**
+Applications: **2828**
 <a id="p-04aa4508f1"></a>
 #### `compatibility/recovery/v1`
 

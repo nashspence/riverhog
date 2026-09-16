@@ -47,6 +47,12 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-efa4ba92d2"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
 | <a id="s-ed02433ff9"></a>`JsonValue` | empty object |
 
+## Maintained corroboration
+
+### Related interface records
+
+- [canonical_inputs](stove0-operator-contracts-workcreatein-canonical-inputs.md)
+
 ## Governing policies
 
 - <a id="pa-566c0baa8d"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)

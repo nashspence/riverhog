@@ -11,6 +11,7 @@ Declared public imports and their selected exact structural contracts.
 - [MEDIA_FACT_PROJECTION_FIELDS](stove0-media-archive-target-support-media-fact-projection-fields.md)
 - [MEDIA_PROJECTION_FORMAT](stove0-media-archive-target-support-media-projection-format.md)
 - [MediaArchiveProjection](stove0-media-archive-target-support-mediaarchiveprojection.md)
+  - [canonical_members](stove0-media-archive-target-support-mediaarchiveprojection-canonical-members.md)
   - [item_for](stove0-media-archive-target-support-mediaarchiveprojection-item-for.md)
   - [seal](stove0-media-archive-target-support-mediaarchiveprojection-seal.md)
   - [validate_plan_evidence](stove0-media-archive-target-support-mediaarchiveprojection-validate-plan-evidence.md)

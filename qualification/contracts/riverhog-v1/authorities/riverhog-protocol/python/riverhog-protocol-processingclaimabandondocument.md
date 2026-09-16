@@ -36,6 +36,13 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-a8233096bd"></a>`fence` | yes | type="integer"; minimum=1 |  |
 | <a id="s-929d3be474"></a>`reason` | yes | type="string"; minLength=1; maxLength=1000 |  |
 
+## Maintained corroboration
+
+### Related interface records
+
+- [__getitem__](riverhog-protocol-processingclaimabandondocument-getitem.md)
+- [get](riverhog-protocol-processingclaimabandondocument-get.md)
+
 ## Governing policies
 
 - <a id="pa-02b31155c2"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)

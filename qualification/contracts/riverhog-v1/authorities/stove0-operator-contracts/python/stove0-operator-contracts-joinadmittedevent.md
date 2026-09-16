@@ -48,6 +48,13 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | <a id="s-1698a3ec14"></a>`JoinAdmittedEventData` | type="object"; fields=`branch_set_sha256`, `join_plan_sha256`, `join_work_id`, `phase`, `revision`, `work_id`; additional keys=`additionalProperties`, `required` |
 
+## Maintained corroboration
+
+### Related interface records
+
+- [exact_subject](stove0-operator-contracts-joinadmittedevent-exact-subject.md)
+- [validate_time](stove0-operator-contracts-joinadmittedevent-validate-time.md)
+
 ## Governing policies
 
 - <a id="pa-729dab7ac8"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)

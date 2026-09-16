@@ -59,6 +59,13 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-4631ed20b1"></a>`ReceivingSetDocument` | type="object"; fields=`authority`, `count`, `state`; additional keys=`additionalProperties`, `required` |
 | <a id="s-8b46b0fee4"></a>`SortOrder` | type="string"; enum=["asc","desc"] |
 
+## Maintained corroboration
+
+### Related interface records
+
+- [__getitem__](riverhog-protocol-processingclaimpagedocument-getitem.md)
+- [get](riverhog-protocol-processingclaimpagedocument-get.md)
+
 ## Governing policies
 
 - <a id="pa-efe7905141"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)

@@ -24,6 +24,19 @@ Exact externally visible contract owned by this semantic dossier.
 - <a id="s-83b8cf3dda"></a>`kind`: `"class"`
 - <a id="s-49e2d64d54"></a>`signature`: `"\"(*, state_root: 'Path', workspace_root: 'Path', samplers: 'tuple[SamplerRegistration, ...]', source_revision: 'str' = 'unknown', image_digest: 'str', implementation_version: 'str', terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""`
 
+## Maintained corroboration
+
+### Related interface records
+
+- [preflight](stove0-review-materialize-target-reviewmaterializetargetservice-preflight.md)
+- [get_job](stove0-review-materialize-target-reviewmaterializetargetservice-get-job.md)
+- [close](stove0-review-materialize-target-reviewmaterializetargetservice-close.md)
+- [cancel_job](stove0-review-materialize-target-reviewmaterializetargetservice-cancel-job.md)
+- [put_job](stove0-review-materialize-target-reviewmaterializetargetservice-put-job.md)
+- [contract](stove0-review-materialize-target-reviewmaterializetargetservice-contract.md)
+- [prune_terminal_state](stove0-review-materialize-target-reviewmaterializetargetservice-prune-terminal-state.md)
+- [readiness](stove0-review-materialize-target-reviewmaterializetargetservice-readiness.md)
+
 ## Governing policies
 
 - <a id="pa-3137800b3d"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)

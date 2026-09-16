@@ -57,6 +57,7 @@ Exact externally visible contract owned by this semantic dossier.
 - [item_for](stove0-media-archive-target-support-mediaarchiveprojection-item-for.md)
 - [verify_digest](stove0-media-archive-target-support-mediaarchiveprojection-verify-digest.md)
 - [validate_plan_evidence](stove0-media-archive-target-support-mediaarchiveprojection-validate-plan-evidence.md)
+- [canonical_members](stove0-media-archive-target-support-mediaarchiveprojection-canonical-members.md)
 - [seal](stove0-media-archive-target-support-mediaarchiveprojection-seal.md)
 
 ## Governing policies

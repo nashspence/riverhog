@@ -56,6 +56,12 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-e7e622e77a"></a>`JsonValue` | empty object |
 | <a id="s-26ad3b2e40"></a>`OperationProjection` | type="object"; fields=`destination`, `destination_pointer`, `source`, `source_pointer`; additional keys=`additionalProperties`, `required` |
 
+## Maintained corroboration
+
+### Related interface records
+
+- [canonical_members](stove0-recipe-config-reciperoute-canonical-members.md)
+
 ## Governing policies
 
 - <a id="pa-c3f2a2860e"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)

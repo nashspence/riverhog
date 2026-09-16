@@ -54,6 +54,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [verify_digest](stove0-target-support-externaleffectreceipt-verify-digest.md)
+- [bounded_result](stove0-target-support-externaleffectreceipt-bounded-result.md)
 - [seal](stove0-target-support-externaleffectreceipt-seal.md)
 
 ## Governing policies

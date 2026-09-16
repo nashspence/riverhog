@@ -438,6 +438,120 @@ def test_python_class_surface_preserves_selected_enum_model_and_dataclass_struct
     ]
 
 
+def test_python_members_follow_effective_mro_and_preserve_descriptor_kinds() -> None:
+    module = load_script()
+
+    class Common:
+        def run(self, value: int) -> int:
+            return value
+
+        def masked(self) -> None:
+            pass
+
+    class Left(Common):
+        pass
+
+    class Right(Common):
+        def run(self, value: str) -> str:  # type: ignore[override]
+            return value
+
+        @property
+        def status(self) -> str:
+            raise AssertionError("discovery must not execute a property")
+
+        @classmethod
+        def create(cls, value: int) -> int:
+            return value
+
+        @staticmethod
+        def normalize(value: str) -> str:
+            return value
+
+        def __enter__(self) -> object:
+            return self
+
+        def _private(self) -> None:
+            pass
+
+    class Exported(Left, Right):
+        masked = None  # type: ignore[assignment]
+
+    members = module._public_class_members(
+        Exported, inherited_source_roots=(Path(__file__).parent,)
+    )
+
+    assert set(members) == {"run", "status", "create", "normalize", "__enter__"}
+    assert members["run"]["signature"] == module._signature(Right.run)
+    assert members["status"] == {
+        "kind": "property",
+        "signature": module._signature(Right.status.fget),
+    }
+    assert members["create"] == {
+        "kind": "classmethod",
+        "signature": module._signature(vars(Right)["create"].__func__),
+    }
+    assert members["normalize"]["kind"] == "staticmethod"
+
+
+def test_python_inheritance_stays_within_release_owned_packages() -> None:
+    module = load_script()
+
+    class OwnedModel(BaseModel):
+        def describe(self) -> str:
+            return "owned behavior"
+
+    class Exported(OwnedModel):
+        pass
+
+    members = module._public_class_members(
+        Exported, inherited_source_roots=(Path(__file__).parent,)
+    )
+
+    assert members == {
+        "describe": {"kind": "method", "signature": module._signature(OwnedModel.describe)}
+    }
+
+
+def test_python_surface_preserves_methods_moved_into_unexported_mixins(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = load_script()
+    public = ModuleType("example_api")
+
+    class Behavior:
+        def run(self, value: int) -> int:
+            return value
+
+    class Direct:
+        run = Behavior.run
+
+    class Inherited(Behavior):
+        pass
+
+    public.__all__ = ["Worker"]
+    public.Worker = Direct
+    monkeypatch.setattr(
+        module,
+        "python_package_detections",
+        lambda *_: [
+            {
+                "distribution": "example-dist",
+                "module": "example_api",
+                "path": Path(__file__).relative_to(REPO_ROOT).as_posix(),
+            }
+        ],
+    )
+    monkeypatch.setattr(module, "load_exceptions", lambda *_: {"exclusion": []})
+    monkeypatch.setattr(module.importlib, "import_module", lambda _: public)
+
+    before = module._python_surfaces([])
+    public.Worker = Inherited
+    after = module._python_surfaces([])
+
+    assert set(after) == {"example_api.Worker", "example_api.Worker.run"}
+    assert after == before
+
+
 def test_python_model_schema_ignores_only_schema_prose_annotations() -> None:
     module = load_script()
 
@@ -521,6 +635,27 @@ def test_python_public_import_paths_and_special_methods_are_exact_units() -> Non
     assert "riverhog_provenance.LargeValueDisposition.__str__" in surfaces
 
 
+@pytest.mark.parametrize(
+    "missing_identity",
+    ("riverhog_client.ApiClient.list_processing_claims", "riverhog_client.ApiClient"),
+)
+def test_operation_clients_require_exported_owners_and_member_units(missing_identity: str) -> None:
+    module = load_script()
+    projects = module.release_contract.validate_release_contract(REPO_ROOT)
+    surfaces = module._python_surfaces(projects)
+    records = module._operation_trace({"python": surfaces})
+
+    for record in records:
+        if record["client"] is not None:
+            assert record["client_bindings"]
+        for binding in record["client_bindings"]:
+            assert surfaces[binding["public_identity"]]["unit"] == "member"
+
+    del surfaces[missing_identity]
+    with pytest.raises(module.ContractFreezeError, match="maintained operation client lacks"):
+        module._operation_trace({"python": surfaces})
+
+
 def test_python_surface_discovery_detects_reexports_and_member_mutation(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -542,8 +677,12 @@ def test_python_surface_discovery_detects_reexports_and_member_mutation(
     second.__all__ = ["Shared"]
     second.Shared = shared
     detections = [
-        {"distribution": "first-dist", "module": "first_api"},
-        {"distribution": "second-dist", "module": "second_api"},
+        {
+            "distribution": distribution,
+            "module": name,
+            "path": Path(__file__).relative_to(REPO_ROOT).as_posix(),
+        }
+        for distribution, name in (("first-dist", "first_api"), ("second-dist", "second_api"))
     ]
     monkeypatch.setattr(module, "python_package_detections", lambda *_: detections)
     monkeypatch.setattr(module, "load_exceptions", lambda *_: {"exclusion": []})

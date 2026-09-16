@@ -50,6 +50,10 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Maintained corroboration
 
+### Related interface records
+
+- [riverhog_client.ApiClient.seal_processing_claim_artifacts](../../riverhog-client/python/riverhog-client-apiclient-seal-processing-claim-artifacts.md)
+
 ### Referenced contract dossiers
 
 - [schemas: ArtifactReceivingSetDocument](../http-schemas/schemas-artifactreceivingsetdocument.md)
@@ -74,8 +78,6 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
 - **Handler:** [riverhog/src/riverhog_api/routers/workflows.py::seal_processing_claim_artifacts](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L190)
-
-**Accounting gap:** [riverhog_client.ApiClient.seal_processing_claim_artifacts](../../../../../../packages/riverhog-client/src/riverhog_client/workflows.py#L347) is callable through the maintained client but has no Python contract dossier in the current freeze.
 
 ### Structural operation bindings
 

@@ -25,6 +25,7 @@ Declared public imports and their selected exact structural contracts.
   - [valid_catalog](stove0-recipe-config-recipecatalog-valid-catalog.md)
   - [validation_document](stove0-recipe-config-recipecatalog-validation-document.md)
 - [RecipeCoordinationRoute](stove0-recipe-config-recipecoordinationroute.md)
+  - [canonical_members](stove0-recipe-config-recipecoordinationroute-canonical-members.md)
   - [coordination_projections_target_intent_only](stove0-recipe-config-recipecoordinationroute-coordination-projections-target-intent-only.md)
 - [RecipeDefinition](stove0-recipe-config-recipedefinition.md)
   - [canonical_members](stove0-recipe-config-recipedefinition-canonical-members.md)
@@ -36,3 +37,4 @@ Declared public imports and their selected exact structural contracts.
 - [RecipeJoinMember](stove0-recipe-config-recipejoinmember.md)
   - [canonical_roles](stove0-recipe-config-recipejoinmember-canonical-roles.md)
 - [RecipeRoute](stove0-recipe-config-reciperoute.md)
+  - [canonical_members](stove0-recipe-config-reciperoute-canonical-members.md)
