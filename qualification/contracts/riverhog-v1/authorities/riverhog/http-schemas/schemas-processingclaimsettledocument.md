@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2c33191341"></a>`derivation` | yes | #/components/schemas/CollectionDerivationDocument |  |
-| <a id="s-3353cd3ebf"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-593c65a4f2"></a>`outcome` | no | anyOf=(#/components/schemas/ProcessingOutcomeBindingDocument) \| (type="null") |  |
-| <a id="s-bc8bb48614"></a>`output_collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-2c33191341"></a>`derivation` | yes | [CollectionDerivationDocument](schemas-collectionderivationdocument.md) |  |
+| <a id="s-3353cd3ebf"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-593c65a4f2"></a>`outcome` | no | anyOf=[([ProcessingOutcomeBindingDocument](schemas-processingoutcomebindingdocument.md)); (type="null")] |  |
+| <a id="s-bc8bb48614"></a>`output_collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
 
 ## Maintained corroboration
 

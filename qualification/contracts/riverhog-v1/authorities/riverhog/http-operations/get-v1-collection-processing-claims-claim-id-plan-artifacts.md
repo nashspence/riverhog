@@ -14,17 +14,21 @@ List Processing Claim Artifacts
 ## External contract
 
 <a id="s-cf894df1c2"></a>
-- <a id="s-00f49e2ae8"></a>`operationId`: list_processing_claim_artifacts
-- <a id="s-22aad46c09"></a>`summary`: List Processing Claim Artifacts
-- <a id="s-040d3e9296"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-00f49e2ae8"></a>`operationId`: `"list_processing_claim_artifacts"`
+- <a id="s-040d3e9296"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-22aad46c09"></a>`summary`: `"List Processing Claim Artifacts"`
+- <a id="s-27225c0490"></a>`tags`: `["collection-workflows"]`
+- <a id="s-86eb8dada3"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-c1a802c593"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control","collection-transforms:execute"]}]`
+- <a id="s-661bc6a412"></a>`x-riverhog-read-collection`: `{"authority":"processing-claim-artifacts","authority_parameter":"authority_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-54928f2c7e"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
-| <a id="s-ea94e7774c"></a>`authority_sha256` | query | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
-| <a id="s-6c3ca564c5"></a>`start_ordinal` | query | no | `0` | type="integer"; minimum=0 |
+| <a id="s-54928f2c7e"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
+| <a id="s-ea94e7774c"></a>`authority_sha256` | query | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Authority Sha256" |
+| <a id="s-6c3ca564c5"></a>`start_ordinal` | query | no | `0` | type="integer"; minimum=0; title="Start Ordinal" |
 
 ### Responses
 

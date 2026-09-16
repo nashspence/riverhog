@@ -24,16 +24,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-35a1adfc05"></a>`disposition_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-74bb4956e0"></a>`disposition_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ad8b45f4a0"></a>`format` | no | type="string"; const="stove0-target-production/v1"; default="stove0-target-production/v1" |  |
-| <a id="s-47b3af76c1"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-4c5e8f7dd1"></a>`outputs` | yes | #/components/schemas/OutputArtifactSetIdentity |  |
-| <a id="s-261797bf17"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ac23675726"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-3899c18b17"></a>`riverhog_disposition_set` | yes | #/components/schemas/ArtifactDispositionSetIdentity |  |
-| <a id="s-196ffe30d1"></a>`source_edge_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-488a513f4e"></a>`source_edge_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-35a1adfc05"></a>`disposition_count` | yes | type="integer"; minimum=1; title="Disposition Count" |  |
+| <a id="s-74bb4956e0"></a>`disposition_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Disposition Sha256" |  |
+| <a id="s-ad8b45f4a0"></a>`format` | no | type="string"; const="stove0-target-production/v1"; default="stove0-target-production/v1"; title="Format" |  |
+| <a id="s-47b3af76c1"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Job Id" |  |
+| <a id="s-4c5e8f7dd1"></a>`outputs` | yes | [OutputArtifactSetIdentity](schemas-outputartifactsetidentity.md) |  |
+| <a id="s-261797bf17"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
+| <a id="s-ac23675726"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Production Sha256" |  |
+| <a id="s-3899c18b17"></a>`riverhog_disposition_set` | yes | [ArtifactDispositionSetIdentity](schemas-artifactdispositionsetidentity.md) |  |
+| <a id="s-196ffe30d1"></a>`source_edge_count` | yes | type="integer"; minimum=1; title="Source Edge Count" |  |
+| <a id="s-488a513f4e"></a>`source_edge_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Source Edge Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

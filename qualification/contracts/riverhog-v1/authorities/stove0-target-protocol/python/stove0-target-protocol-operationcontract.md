@@ -37,7 +37,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-f6d8680260"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a7dc046b5b"></a>`effect_receipt_schema` | no | anyOf=([JsonSchemaDocument](#s-7a2ac5bc4d)) \| (type="null"); default=null |  |
+| <a id="s-a7dc046b5b"></a>`effect_receipt_schema` | no | anyOf=[([JsonSchemaDocument](#s-7a2ac5bc4d)); (type="null")]; default=null |  |
 | <a id="s-3d1390ddcf"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-ed60cb2c72"></a>`inputs` | yes | type="array"; items=([InputArtifactContract](#s-1a2857588b)); minItems=1 |  |
 | <a id="s-96c8da7257"></a>`intent_schema` | yes | [JsonSchemaDocument](#s-7a2ac5bc4d) |  |
@@ -64,8 +64,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-03c5e1078b"></a>`allowed_dispositions` | no | anyOf=(type="array"; items=(type="string"; enum=["transformed","preserved","omitted","rejected"])) \| (type="null"); default=null |  |
-| <a id="s-20f3a838c4"></a>`maximum` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
+| <a id="s-03c5e1078b"></a>`allowed_dispositions` | no | anyOf=[(type="array"; items=(type="string"; enum=["transformed","preserved","omitted","rejected"])); (type="null")]; default=null |  |
+| <a id="s-20f3a838c4"></a>`maximum` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null |  |
 | <a id="s-917f8232dc"></a>`minimum` | no | type="integer"; minimum=0; default=1 |  |
 | <a id="s-08ea461de6"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
@@ -100,7 +100,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-5def165c87"></a>`derived_from_roles` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
-| <a id="s-bc4f034e46"></a>`maximum` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
+| <a id="s-bc4f034e46"></a>`maximum` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null |  |
 | <a id="s-6c37152753"></a>`minimum` | no | type="integer"; minimum=0; default=1 |  |
 | <a id="s-d07acb7b37"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
@@ -114,7 +114,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-61d38d74ba"></a>`conformance_vectors_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-61d38d74ba"></a>`conformance_vectors_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-f31af12031"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-35772521e3"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-2e908da765"></a>`rules` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |

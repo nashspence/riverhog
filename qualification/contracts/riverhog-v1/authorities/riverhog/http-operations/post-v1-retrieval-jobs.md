@@ -14,19 +14,26 @@ Create Retrieval Job
 ## External contract
 
 <a id="s-75436bdcc8"></a>
-- <a id="s-1b2e0cfdae"></a>`operationId`: create_retrieval_job
-- <a id="s-a09136103c"></a>`summary`: Create Retrieval Job
-- <a id="s-78c10226e6"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-1b2e0cfdae"></a>`operationId`: `"create_retrieval_job"`
+- <a id="s-78c10226e6"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-a09136103c"></a>`summary`: `"Create Retrieval Job"`
+- <a id="s-e1d2b227da"></a>`tags`: `["retrieval"]`
+- <a id="s-3c30cec4db"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-87ed606d78"></a>`x-riverhog-permission-requirements`: `[{"any_of":["retrieval:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-791d68906d"></a>`If-Match` | header | yes | not declared | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
+| <a id="s-791d68906d"></a>`If-Match` | header | yes | not declared | type="string"; pattern="^\"[0-9a-f]{64}\"$"; title="If-Match" |
 
 ### <a id="s-b4debbc758"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateRetrievalJobRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [CreateRetrievalJobRequest](../http-schemas/schemas-createretrievaljobrequest.md) |
 
 ### Responses
 

@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6dcca94a00"></a>`count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-f439bc63da"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-6dcca94a00"></a>`count` | yes | type="integer"; minimum=1; title="Count" |  |
+| <a id="s-f439bc63da"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Role" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -39,7 +39,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-41111b1770"></a>`number` | yes | type="integer"; minimum=1 |  |
 | <a id="s-8e844b4616"></a>`segment_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
 | <a id="s-2114107bd7"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-a22f06e6d5"></a>`stored_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-a22f06e6d5"></a>`stored_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 
 ## Governing policies
 

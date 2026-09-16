@@ -24,14 +24,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8b859e9f63"></a>`evaluation_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-fd976e6001"></a>`evaluations` | yes | type="integer"; minimum=0 |  |
-| <a id="s-3448818870"></a>`event_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-09489dff04"></a>`events` | yes | type="integer"; minimum=0 |  |
-| <a id="s-dd591fce04"></a>`selection_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-9addac7c48"></a>`selections` | yes | type="integer"; minimum=0 |  |
-| <a id="s-9cf0537268"></a>`work` | yes | type="integer"; minimum=0 |  |
-| <a id="s-2445982f0c"></a>`work_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-8b859e9f63"></a>`evaluation_bytes` | yes | type="integer"; minimum=0; title="Evaluation Bytes" |  |
+| <a id="s-fd976e6001"></a>`evaluations` | yes | type="integer"; minimum=0; title="Evaluations" |  |
+| <a id="s-3448818870"></a>`event_bytes` | yes | type="integer"; minimum=0; title="Event Bytes" |  |
+| <a id="s-09489dff04"></a>`events` | yes | type="integer"; minimum=0; title="Events" |  |
+| <a id="s-dd591fce04"></a>`selection_bytes` | yes | type="integer"; minimum=0; title="Selection Bytes" |  |
+| <a id="s-9addac7c48"></a>`selections` | yes | type="integer"; minimum=0; title="Selections" |  |
+| <a id="s-9cf0537268"></a>`work` | yes | type="integer"; minimum=0; title="Work" |  |
+| <a id="s-2445982f0c"></a>`work_bytes` | yes | type="integer"; minimum=0; title="Work Bytes" |  |
 
 ## Governing policies
 

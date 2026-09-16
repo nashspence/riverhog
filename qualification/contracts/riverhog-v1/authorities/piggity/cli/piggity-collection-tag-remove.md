@@ -24,12 +24,12 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-994c7acfc4"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded |
-| <a id="s-01caf1ef16"></a>`tag`<br>`tag` | required positional; 1 value | text | not recorded |
-| <a id="s-cf4f590958"></a>`revision`<br>`--revision` | optional option; 1 value | integer range; minimum=`1` (inclusive); outside range: reject | not recorded |
-| <a id="s-fb180fbdab"></a>`tag_set_identity`<br>`--tag-set-identity` | optional option; 1 value | text | not recorded |
-| <a id="s-2c49b4996b"></a>`operation_id`<br>`--operation-id` | optional option; 1 value | text | not recorded |
-| <a id="s-ecd83e721f"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-994c7acfc4"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded<br>Env: `null` |
+| <a id="s-01caf1ef16"></a>`tag`<br>`tag` | required positional; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-cf4f590958"></a>`revision`<br>`--revision` | optional option; 1 value | integer range; minimum=`1` (inclusive); outside range: reject | not recorded<br>Env: `null` |
+| <a id="s-fb180fbdab"></a>`tag_set_identity`<br>`--tag-set-identity` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-2c49b4996b"></a>`operation_id`<br>`--operation-id` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-ecd83e721f"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -48,14 +48,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-79a0930f60"></a>`completed` | <a id="s-0b9aea87d2"></a>`{"kind":"command-completed"}` | <a id="s-52766ae6db"></a>`0` | <a id="s-bd5b7ba211"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP remove_collection_tag response 200](../../riverhog/http-operations/post-v1-collections-collection-id-tags-remove.md#s-ea545b124d) | <a id="s-acb6eba5bf"></a>all: `empty` |
+| <a id="s-79a0930f60"></a>`completed` | <a id="s-0b9aea87d2"></a>`{"kind":"command-completed"}` | <a id="s-52766ae6db"></a>`0` | <a id="s-bd5b7ba211"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP remove_collection_tag response 200](../../riverhog/http-operations/post-v1-collections-collection-id-tags-remove.md#s-ea545b124d) | <a id="s-acb6eba5bf"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-88fc3ada2c"></a>`usage` | <a id="s-6aad6cc09e"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-c34ecccce7"></a>`2` | <a id="s-956c4c9be8"></a>all: `empty` | <a id="s-c2232b9412"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-f22681ab50"></a>`operational` | <a id="s-7dcdc0c9c6"></a>`{"kind":"application-error"}` | <a id="s-9db791b331"></a>`1` | <a id="s-a0ae7de968"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-e078959ad2"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-88fc3ada2c"></a>`usage` | <a id="s-6aad6cc09e"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-c34ecccce7"></a>`2` | <a id="s-956c4c9be8"></a>all: `"empty"` | <a id="s-c2232b9412"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-f22681ab50"></a>`operational` | <a id="s-7dcdc0c9c6"></a>`{"kind":"application-error"}` | <a id="s-9db791b331"></a>`1` | <a id="s-a0ae7de968"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-e078959ad2"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 

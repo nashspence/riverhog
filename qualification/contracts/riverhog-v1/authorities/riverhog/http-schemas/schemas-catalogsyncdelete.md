@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ba3c39e6c8"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-ca1b3b01b0"></a>`operation` | no | type="string"; const="delete"; default="delete" |  |
-| <a id="s-8a05c66a42"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+| <a id="s-ba3c39e6c8"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-ca1b3b01b0"></a>`operation` | no | type="string"; const="delete"; default="delete"; title="Operation" |  |
+| <a id="s-8a05c66a42"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$"; title="Revision" |  |
 
 ### Progression, limits, and lifecycle
 

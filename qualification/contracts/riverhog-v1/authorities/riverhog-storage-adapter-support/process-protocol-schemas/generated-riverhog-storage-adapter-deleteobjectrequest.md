@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-25cdfe5616"></a>`expected_current_stored_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
-| <a id="s-e096d56146"></a>`mode` | yes | type="string"; enum=["current","exact_revision","all_versions"] |  |
+| <a id="s-25cdfe5616"></a>`expected_current_stored_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null; title="Expected Current Stored Sha256" |  |
+| <a id="s-e096d56146"></a>`mode` | yes | type="string"; enum=["current","exact_revision","all_versions"]; title="Mode" |  |
 | <a id="s-9578123839"></a>`object` | yes | [ObjectLocator](#s-1c064e0ef6) |  |
 
 ### Definitions
@@ -43,8 +43,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e96704bca9"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-6c4d81adfa"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-e96704bca9"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
+| <a id="s-6c4d81adfa"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null; title="Revision" |  |
 
 ### Progression, limits, and lifecycle
 

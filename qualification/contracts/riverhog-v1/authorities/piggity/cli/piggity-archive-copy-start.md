@@ -24,10 +24,10 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-46f197ecd8"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded |
-| <a id="s-4494707e36"></a>`destination_store`<br>`--to` | required option; 1 value | text | not recorded |
-| <a id="s-4d08291539"></a>`source_store`<br>`--from` | optional option; 1 value | text | not recorded |
-| <a id="s-57c4862dba"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-46f197ecd8"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded<br>Env: `null` |
+| <a id="s-4494707e36"></a>`destination_store`<br>`--to` | required option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-4d08291539"></a>`source_store`<br>`--from` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-57c4862dba"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -46,14 +46,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-5e6aecaa4f"></a>`completed` | <a id="s-4eaf853c5b"></a>`{"kind":"command-completed"}` | <a id="s-b70e3eb72c"></a>`0` | <a id="s-70b315d303"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP create_or_resume_archive_copy response 200](../../riverhog/http-operations/post-v1-archive-copies.md#s-39d8493e84) | <a id="s-b096b0b70f"></a>all: `empty` |
+| <a id="s-5e6aecaa4f"></a>`completed` | <a id="s-4eaf853c5b"></a>`{"kind":"command-completed"}` | <a id="s-b70e3eb72c"></a>`0` | <a id="s-70b315d303"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP create_or_resume_archive_copy response 200](../../riverhog/http-operations/post-v1-archive-copies.md#s-39d8493e84) | <a id="s-b096b0b70f"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-45d0107ee7"></a>`usage` | <a id="s-8a6722c886"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-f19906c148"></a>`2` | <a id="s-3d7f6ea8f2"></a>all: `empty` | <a id="s-5e81abfb29"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-58949d1fcd"></a>`operational` | <a id="s-e7f57de25e"></a>`{"kind":"application-error"}` | <a id="s-b3060936cb"></a>`1` | <a id="s-f44be5715e"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-844d1d5a77"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-45d0107ee7"></a>`usage` | <a id="s-8a6722c886"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-f19906c148"></a>`2` | <a id="s-3d7f6ea8f2"></a>all: `"empty"` | <a id="s-5e81abfb29"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-58949d1fcd"></a>`operational` | <a id="s-e7f57de25e"></a>`{"kind":"application-error"}` | <a id="s-b3060936cb"></a>`1` | <a id="s-f44be5715e"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-844d1d5a77"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 

@@ -37,8 +37,8 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-9d2841908e"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](#s-ad2c6770c7)) |  |
-| <a id="s-4272ceb064"></a>`evaluation` | no | anyOf=([EvaluationBinding](#s-ed54a486b1)) \| (type="null"); default=null |  |
-| <a id="s-9d54a2d47b"></a>`fork_join` | no | anyOf=(discriminator={"mapping":{"branch":"[BranchWorkBinding](#s-c6a1e077ed)","join":"[JoinWorkBinding](#s-e1f4afc65b)"},"propertyName":"kind"}; oneOf=([BranchWorkBinding](#s-c6a1e077ed)) \| ([JoinWorkBinding](#s-e1f4afc65b))) \| (type="null"); default=null |  |
+| <a id="s-4272ceb064"></a>`evaluation` | no | anyOf=[([EvaluationBinding](#s-ed54a486b1)); (type="null")]; default=null |  |
+| <a id="s-9d54a2d47b"></a>`fork_join` | no | anyOf=[(discriminator={"mapping":{"branch":"#/$defs/BranchWorkBinding","join":"#/$defs/JoinWorkBinding"},"propertyName":"kind"}; oneOf=[([BranchWorkBinding](#s-c6a1e077ed)); ([JoinWorkBinding](#s-e1f4afc65b))]); (type="null")]; default=null |  |
 | <a id="s-e89ea0fa5c"></a>`format` | no | type="string"; const="stove0-work/v1"; default="stove0-work/v1" |  |
 | <a id="s-07544b90a3"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](#s-d63064b523)); minItems=1 |  |
 | <a id="s-03b0aa019f"></a>`recipe` | yes | [RecipeRef](#s-205ecdb9f4) |  |
@@ -131,7 +131,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-095684f4e3"></a>`artifact_selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-8c5064d3fb"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-ca364d78e1"></a>`producer_settlement_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-ca364d78e1"></a>`producer_settlement_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-ad48e114bd"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-ad2c6770c7"></a>definition `JsonValue`

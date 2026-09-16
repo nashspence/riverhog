@@ -25,9 +25,9 @@ One append-only bounded slice of a registered raw source digest sequence.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-65e7a28bb3"></a>`first_part` | yes | type="integer"; minimum=0 |  |
-| <a id="s-a0efbe2329"></a>`path` | yes | type="string" |  |
-| <a id="s-2c06441938"></a>`sha256s` | yes | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$"); maxItems=1024; minItems=1; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"first_part","reason":"bounded-raw-digest-append"} |  |
+| <a id="s-65e7a28bb3"></a>`first_part` | yes | type="integer"; minimum=0; title="First Part" |  |
+| <a id="s-a0efbe2329"></a>`path` | yes | type="string"; title="Path" |  |
+| <a id="s-2c06441938"></a>`sha256s` | yes | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$"); maxItems=1024; minItems=1; title="Sha256S"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"first_part","reason":"bounded-raw-digest-append"} |  |
 
 ### Progression, limits, and lifecycle
 

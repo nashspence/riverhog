@@ -38,12 +38,12 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-952c714e0a"></a>`admissions` | yes | type="array"; items=([AdmissionView](#s-fc72800bc8)) |  |
 | <a id="s-2948a285e9"></a>`filters` | yes | type="object"; additionalProperties=([JsonValue](#s-d964e44e24)) |  |
-| <a id="s-e3d29015b4"></a>`next_page_token` | yes | anyOf=([BrowsePageToken](#s-dd3b10a08d)) \| (type="null") |  |
+| <a id="s-e3d29015b4"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](#s-dd3b10a08d)); (type="null")] |  |
 | <a id="s-28c237f628"></a>`order` | yes | type="string"; enum=["asc","desc"] |  |
 | <a id="s-b4ef672c5f"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-ac58678d09"></a>`policy_id` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-ac58678d09"></a>`policy_id` | yes | anyOf=[(type="string"); (type="null")] |  |
 | <a id="s-73752f95bc"></a>`sort` | yes | type="string"; enum=["created_at","updated_at","state","admission_id"] |  |
-| <a id="s-02027fe057"></a>`state` | yes | anyOf=(type="string"; enum=["intent","previewed","work_bound"]) \| (type="null") |  |
+| <a id="s-02027fe057"></a>`state` | yes | anyOf=[(type="string"; enum=["intent","previewed","work_bound"]); (type="null")] |  |
 
 ##### Definitions
 
@@ -90,13 +90,13 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-6eebed3c01"></a>`attempt_count` | yes | type="integer"; minimum=0 |  |
 | <a id="s-6bf0141e7c"></a>`created_at` | yes | type="string"; maxLength=40; minLength=1 |  |
-| <a id="s-93fba00a1c"></a>`failure` | no | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-93fba00a1c"></a>`failure` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; default=null |  |
 | <a id="s-5600181fb9"></a>`intent` | yes | [AdmissionIntent](#s-715abe15ea) |  |
-| <a id="s-5d21396028"></a>`next_attempt_at` | no | anyOf=(type="string"; maxLength=40; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-12e9d8c692"></a>`preview_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-5d21396028"></a>`next_attempt_at` | no | anyOf=[(type="string"; maxLength=40; minLength=1); (type="null")]; default=null |  |
+| <a id="s-12e9d8c692"></a>`preview_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-966df76680"></a>`state` | yes | type="string"; enum=["intent","previewed","work_bound"] |  |
 | <a id="s-0ff1be1354"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
-| <a id="s-fe6b190aa1"></a>`work_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-fe6b190aa1"></a>`work_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 
 ##### <a id="s-dd3b10a08d"></a>definition `BrowsePageToken`
 
@@ -117,7 +117,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-090771ae58"></a>`archive_root_sha256` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-c1bcd8f367"></a>`collection_id` | yes | [CollectionId](#s-a599deb515) |  |
 | <a id="s-f8fb8db6c8"></a>`content_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-9cea4d339d"></a>`description` | yes | anyOf=([CollectionDescription](#s-fd5c292b93)) \| (type="null") |  |
+| <a id="s-9cea4d339d"></a>`description` | yes | anyOf=[([CollectionDescription](#s-fd5c292b93)); (type="null")] |  |
 | <a id="s-711b538401"></a>`description_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-1dc677d28b"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
 | <a id="s-984c3d6b23"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |

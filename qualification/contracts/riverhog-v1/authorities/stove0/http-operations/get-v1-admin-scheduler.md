@@ -14,8 +14,9 @@ Scheduler Status
 ## External contract
 
 <a id="s-ee6f210edd"></a>
-- <a id="s-e826eae1b9"></a>`operationId`: scheduler_status
-- <a id="s-04c2c6ac04"></a>`summary`: Scheduler Status
+- <a id="s-e826eae1b9"></a>`operationId`: `"scheduler_status"`
+- <a id="s-04c2c6ac04"></a>`summary`: `"Scheduler Status"`
+- <a id="s-087247a106"></a>`tags`: `["scheduler"]`
 
 ### Responses
 

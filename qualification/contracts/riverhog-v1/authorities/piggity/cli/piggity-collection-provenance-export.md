@@ -24,10 +24,10 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-546fc23aad"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded |
-| <a id="s-918685ae19"></a>`journal_id`<br>`journal_id` | required positional; 1 value | text | not recorded |
-| <a id="s-23253560e6"></a>`output`<br>`--output`, `-o` | required option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
-| <a id="s-4168b25082"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-546fc23aad"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded<br>Env: `null` |
+| <a id="s-918685ae19"></a>`journal_id`<br>`journal_id` | required positional; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-23253560e6"></a>`output`<br>`--output`, `-o` | required option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded<br>Env: `null` |
+| <a id="s-4168b25082"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -46,14 +46,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-54c365a877"></a>`completed` | <a id="s-9eb5f8121b"></a>`{"kind":"command-completed"}` | <a id="s-3c77526821"></a>`0` | <a id="s-a3a0a70fd5"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-provenance-journal-export/v1](#s-b542d66ff6) | <a id="s-e9d03a6eb5"></a>all: `empty` |
+| <a id="s-54c365a877"></a>`completed` | <a id="s-9eb5f8121b"></a>`{"kind":"command-completed"}` | <a id="s-3c77526821"></a>`0` | <a id="s-a3a0a70fd5"></a>human: `"noncontractual-presentation-of-command-result"`; json: [piggity-provenance-journal-export/v1](#s-b542d66ff6) | <a id="s-e9d03a6eb5"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-d77f6a8f47"></a>`usage` | <a id="s-57925c97aa"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-9dc652abf3"></a>`2` | <a id="s-b2d941374b"></a>all: `empty` | <a id="s-d0e0ed8df9"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-cb2d3355cc"></a>`operational` | <a id="s-810fd80b39"></a>`{"kind":"application-error"}` | <a id="s-4bbf5dc3b2"></a>`1` | <a id="s-c9f2314d7e"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-b55e01adc5"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-d77f6a8f47"></a>`usage` | <a id="s-57925c97aa"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-9dc652abf3"></a>`2` | <a id="s-b2d941374b"></a>all: `"empty"` | <a id="s-d0e0ed8df9"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-cb2d3355cc"></a>`operational` | <a id="s-810fd80b39"></a>`{"kind":"application-error"}` | <a id="s-4bbf5dc3b2"></a>`1` | <a id="s-c9f2314d7e"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-b55e01adc5"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Local structured outputs
 

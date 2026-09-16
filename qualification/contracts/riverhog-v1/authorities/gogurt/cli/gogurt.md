@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-95ce7f0545"></a>Parser name: `gogurt`
+
+| Field | Value |
+|---|---|
+| <a id="s-16f3a6ae44"></a>`parameters` | `[]` |
 - <a id="s-e0f68ef987"></a>Subcommand selection: required.
 - <a id="s-c01feafb43"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
 - <a id="s-56e9a6fe58"></a>Options after positional arguments at this parser: left as arguments.

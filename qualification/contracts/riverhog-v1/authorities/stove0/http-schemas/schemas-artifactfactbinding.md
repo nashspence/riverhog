@@ -25,8 +25,8 @@ Locate subject-keyed records inside one observer's declared facts schema.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ced3f84eac"></a>`artifact_id_pointer` | no | type="string"; default="/artifact_id"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
-| <a id="s-1cd1f7bbbe"></a>`records_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
+| <a id="s-ced3f84eac"></a>`artifact_id_pointer` | no | type="string"; default="/artifact_id"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$"; title="Artifact Id Pointer" |  |
+| <a id="s-1cd1f7bbbe"></a>`records_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$"; title="Records Pointer" |  |
 
 ## Governing policies
 

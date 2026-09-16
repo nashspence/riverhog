@@ -14,15 +14,17 @@ Get Collection Upload Session
 ## External contract
 
 <a id="s-9877cbec4a"></a>
-- <a id="s-d95219fd68"></a>`operationId`: get_collection_upload_session
-- <a id="s-300fa0ab50"></a>`summary`: Get Collection Upload Session
-- <a id="s-cf9f0e9198"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-d95219fd68"></a>`operationId`: `"get_collection_upload_session"`
+- <a id="s-cf9f0e9198"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-300fa0ab50"></a>`summary`: `"Get Collection Upload Session"`
+- <a id="s-4a48c427a0"></a>`tags`: `["collections"]`
+- <a id="s-823bee5047"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:create","collections:delete"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-656878bb3a"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-656878bb3a"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
 
 ### Responses
 

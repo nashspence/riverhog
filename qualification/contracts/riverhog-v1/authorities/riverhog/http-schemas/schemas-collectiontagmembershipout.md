@@ -24,11 +24,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-20b865a229"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-0ec7923b52"></a>`present` | yes | type="boolean" |  |
-| <a id="s-a0e672fd9e"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
-| <a id="s-977d735939"></a>`tag` | yes | #/components/schemas/CollectionTag |  |
-| <a id="s-a9469d3ec3"></a>`tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-20b865a229"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-0ec7923b52"></a>`present` | yes | type="boolean"; title="Present" |  |
+| <a id="s-a0e672fd9e"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991; title="Revision" |  |
+| <a id="s-977d735939"></a>`tag` | yes | [CollectionTag](schemas-collectiontag.md) |  |
+| <a id="s-a9469d3ec3"></a>`tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Tag Set Identity" |  |
 
 ### Progression, limits, and lifecycle
 

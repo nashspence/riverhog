@@ -16,12 +16,12 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-c7ce8a7896"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-9489d667cb"></a>`application` | riverhog |
-| <a id="s-d2f6cb9473"></a>`classification` | standard-tool/protocol |
-| <a id="s-038a94b1d0"></a>`method` | HEAD |
-| <a id="s-f72082f88f"></a>`operation_id` | head_retrieval_file |
-| <a id="s-3260b16d53"></a>`path` | /v1/retrieval-jobs/{job_id}/content |
-| <a id="s-4a64c9ee67"></a>`response_authority` | stream-or-empty |
+| <a id="s-9489d667cb"></a>`application` | `"riverhog"` |
+| <a id="s-d2f6cb9473"></a>`classification` | `"standard-tool/protocol"` |
+| <a id="s-038a94b1d0"></a>`method` | `"HEAD"` |
+| <a id="s-f72082f88f"></a>`operation_id` | `"head_retrieval_file"` |
+| <a id="s-3260b16d53"></a>`path` | `"/v1/retrieval-jobs/{job_id}/content"` |
+| <a id="s-4a64c9ee67"></a>`response_authority` | `"stream-or-empty"` |
 
 ## Governing policies
 

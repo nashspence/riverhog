@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-30ce7a571b"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-166059e92d"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-30ce7a571b"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-166059e92d"></a>`store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
 
 ## Maintained corroboration
 

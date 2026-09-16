@@ -24,10 +24,10 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-915c20851a"></a>`app_name`<br>`app_name` | required positional; 1 value | text | not recorded |
-| <a id="s-0c2c77e0a6"></a>`allow`<br>`--allow` | required option; 1 value; collects repeats; no declared occurrence maximum | text | not recorded |
-| <a id="s-7e21fddcb2"></a>`expires_in`<br>`--expires-in` | optional option; 1 value | text | not recorded |
-| <a id="s-389739a812"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-915c20851a"></a>`app_name`<br>`app_name` | required positional; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-0c2c77e0a6"></a>`allow`<br>`--allow` | required option; 1 value; collects repeats; no declared occurrence maximum | text | not recorded<br>Env: `null` |
+| <a id="s-7e21fddcb2"></a>`expires_in`<br>`--expires-in` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-389739a812"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -46,14 +46,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-25025c7991"></a>`completed` | <a id="s-2391276cf2"></a>`{"kind":"command-completed"}` | <a id="s-aad8620f4d"></a>`0` | <a id="s-a8f63c83cf"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP create_app_key response 200](../../riverhog/http-operations/post-v1-apps-app-keys.md#s-642e16127e) | <a id="s-c54f0e928a"></a>all: `empty` |
+| <a id="s-25025c7991"></a>`completed` | <a id="s-2391276cf2"></a>`{"kind":"command-completed"}` | <a id="s-aad8620f4d"></a>`0` | <a id="s-a8f63c83cf"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP create_app_key response 200](../../riverhog/http-operations/post-v1-apps-app-keys.md#s-642e16127e) | <a id="s-c54f0e928a"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-c5ea356348"></a>`usage` | <a id="s-411ea9a24c"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-c7db24a29a"></a>`2` | <a id="s-3db518e142"></a>all: `empty` | <a id="s-4c4eb50a00"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-7c1cfa0b3a"></a>`operational` | <a id="s-48d3b4ca17"></a>`{"kind":"application-error"}` | <a id="s-b4c6e7900e"></a>`1` | <a id="s-f247165e5f"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-19b7d3244e"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-c5ea356348"></a>`usage` | <a id="s-411ea9a24c"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-c7db24a29a"></a>`2` | <a id="s-3db518e142"></a>all: `"empty"` | <a id="s-4c4eb50a00"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-7c1cfa0b3a"></a>`operational` | <a id="s-48d3b4ca17"></a>`{"kind":"application-error"}` | <a id="s-b4c6e7900e"></a>`1` | <a id="s-f247165e5f"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-19b7d3244e"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 

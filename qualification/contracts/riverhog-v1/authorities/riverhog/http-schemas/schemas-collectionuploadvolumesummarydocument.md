@@ -25,9 +25,9 @@ Protocol-owned identity of one immutable collection archive volume.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7130580c64"></a>`kind` | yes | type="string"; enum=["pack","segment"] |  |
-| <a id="s-34ae7e2e00"></a>`sequence` | yes | type="integer"; minimum=0 |  |
-| <a id="s-1329a434a5"></a>`volume_id` | yes | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$" |  |
+| <a id="s-7130580c64"></a>`kind` | yes | type="string"; enum=["pack","segment"]; title="Kind" |  |
+| <a id="s-34ae7e2e00"></a>`sequence` | yes | type="integer"; minimum=0; title="Sequence" |  |
+| <a id="s-1329a434a5"></a>`volume_id` | yes | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$"; title="Volume Id" |  |
 
 ## Governing policies
 

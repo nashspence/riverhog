@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-3d72f99e06"></a>Parser name: `status`
+
+| Field | Value |
+|---|---|
+| <a id="s-5d895a90b4"></a>`parameters` | `[]` |
 - <a id="s-594e26f72f"></a>Extra arguments at this parser: rejected.
 - <a id="s-fa54b3cebb"></a>Options after positional arguments at this parser: parsed as options.
 - <a id="s-7879908724"></a>Unknown options at this parser: rejected.
@@ -35,14 +39,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-52cbd8040a"></a>`completed` | <a id="s-04b0c497fa"></a>`{"kind":"command-completed"}` | <a id="s-d388f73705"></a>`0` | <a id="s-e023aab05d"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP scheduler_status response 200](../../stove0/http-operations/get-v1-admin-scheduler.md#s-5842ab8baa) | <a id="s-d555e20799"></a>all: `empty` |
+| <a id="s-52cbd8040a"></a>`completed` | <a id="s-04b0c497fa"></a>`{"kind":"command-completed"}` | <a id="s-d388f73705"></a>`0` | <a id="s-e023aab05d"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP scheduler_status response 200](../../stove0/http-operations/get-v1-admin-scheduler.md#s-5842ab8baa) | <a id="s-d555e20799"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-96472c5c23"></a>`usage` | <a id="s-28b39827d3"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-011eb9221b"></a>`2` | <a id="s-caba155fc7"></a>all: `empty` | <a id="s-ac781ede89"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-c1fb3ccadc"></a>`operational` | <a id="s-2b08cf4d3c"></a>`{"kind":"application-error"}` | <a id="s-81f91e13aa"></a>`1` | <a id="s-71df70d7cf"></a>all: `empty` | <a id="s-7456733526"></a>all: `noncontractual-diagnostic` |
+| <a id="s-96472c5c23"></a>`usage` | <a id="s-28b39827d3"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-011eb9221b"></a>`2` | <a id="s-caba155fc7"></a>all: `"empty"` | <a id="s-ac781ede89"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-c1fb3ccadc"></a>`operational` | <a id="s-2b08cf4d3c"></a>`{"kind":"application-error"}` | <a id="s-81f91e13aa"></a>`1` | <a id="s-71df70d7cf"></a>all: `"empty"` | <a id="s-7456733526"></a>all: `"noncontractual-diagnostic"` |
 
 ## Maintained corroboration
 

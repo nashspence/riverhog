@@ -24,11 +24,11 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-26476668d5"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded |
-| <a id="s-2482b9c520"></a>`tag`<br>`tag` | required positional; 1 value | text | not recorded |
-| <a id="s-4f6f468c54"></a>`revision`<br>`--revision` | optional option; 1 value | integer range; minimum=`1` (inclusive); outside range: reject | not recorded |
-| <a id="s-3380feb855"></a>`tag_set_identity`<br>`--tag-set-identity` | optional option; 1 value | text | not recorded |
-| <a id="s-dbfd84e078"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-26476668d5"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded<br>Env: `null` |
+| <a id="s-2482b9c520"></a>`tag`<br>`tag` | required positional; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-4f6f468c54"></a>`revision`<br>`--revision` | optional option; 1 value | integer range; minimum=`1` (inclusive); outside range: reject | not recorded<br>Env: `null` |
+| <a id="s-3380feb855"></a>`tag_set_identity`<br>`--tag-set-identity` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-dbfd84e078"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -47,14 +47,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-cb1e96f23c"></a>`completed` | <a id="s-e15078e80e"></a>`{"kind":"command-completed"}` | <a id="s-cce5a8053c"></a>`0` | <a id="s-642d4e9f5f"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP collection_contains_tag response 200](../../riverhog/http-operations/get-v1-collections-collection-id-tags-contains.md#s-02989a39c4) | <a id="s-addc816fa3"></a>all: `empty` |
+| <a id="s-cb1e96f23c"></a>`completed` | <a id="s-e15078e80e"></a>`{"kind":"command-completed"}` | <a id="s-cce5a8053c"></a>`0` | <a id="s-642d4e9f5f"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP collection_contains_tag response 200](../../riverhog/http-operations/get-v1-collections-collection-id-tags-contains.md#s-02989a39c4) | <a id="s-addc816fa3"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-5ce775ed08"></a>`usage` | <a id="s-b4495bb2a2"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-8ce329d0b4"></a>`2` | <a id="s-56f2161c4c"></a>all: `empty` | <a id="s-eacb26b0b9"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-af1778233a"></a>`operational` | <a id="s-bbd1de1f49"></a>`{"kind":"application-error"}` | <a id="s-92a6d9d9e1"></a>`1` | <a id="s-8c0219d819"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-17e7c8e235"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-5ce775ed08"></a>`usage` | <a id="s-b4495bb2a2"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-8ce329d0b4"></a>`2` | <a id="s-56f2161c4c"></a>all: `"empty"` | <a id="s-eacb26b0b9"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-af1778233a"></a>`operational` | <a id="s-bbd1de1f49"></a>`{"kind":"application-error"}` | <a id="s-92a6d9d9e1"></a>`1` | <a id="s-8c0219d819"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-17e7c8e235"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 

@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6548249a87"></a>`last_verified_at` | yes | type="string" |  |
-| <a id="s-ae86cb6aca"></a>`remote_storage_bytes` | yes | type="integer" |  |
-| <a id="s-a38cb1ae87"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-6548249a87"></a>`last_verified_at` | yes | type="string"; title="Last Verified At" |  |
+| <a id="s-ae86cb6aca"></a>`remote_storage_bytes` | yes | type="integer"; title="Remote Storage Bytes" |  |
+| <a id="s-a38cb1ae87"></a>`store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
 
 ## Maintained corroboration
 

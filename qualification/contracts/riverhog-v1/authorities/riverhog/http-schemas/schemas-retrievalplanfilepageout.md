@@ -24,13 +24,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-328cd49682"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-02762d6e31"></a>`etag` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-20cf25d13a"></a>`files` | yes | type="array"; items=(#/components/schemas/RetrievalPlanFileOut); maxItems=100 |  |
-| <a id="s-3f4953179c"></a>`format` | yes | type="string"; const="riverhog-retrieval-plan-files/v1" |  |
-| <a id="s-b41186f25a"></a>`next_ordinal` | no | anyOf=(type="integer"; minimum=1; maximum=10000) \| (type="null") |  |
-| <a id="s-a644293808"></a>`plan_id` | yes | type="string" |  |
-| <a id="s-8dc3c38e1e"></a>`start_ordinal` | yes | type="integer"; minimum=0; maximum=10000 |  |
+| <a id="s-328cd49682"></a>`complete` | yes | type="boolean"; title="Complete" |  |
+| <a id="s-02762d6e31"></a>`etag` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Etag" |  |
+| <a id="s-20cf25d13a"></a>`files` | yes | type="array"; items=([RetrievalPlanFileOut](schemas-retrievalplanfileout.md)); maxItems=100; title="Files" |  |
+| <a id="s-3f4953179c"></a>`format` | yes | type="string"; const="riverhog-retrieval-plan-files/v1"; title="Format" |  |
+| <a id="s-b41186f25a"></a>`next_ordinal` | no | anyOf=[(type="integer"; minimum=1; maximum=10000); (type="null")]; title="Next Ordinal" |  |
+| <a id="s-a644293808"></a>`plan_id` | yes | type="string"; title="Plan Id" |  |
+| <a id="s-8dc3c38e1e"></a>`start_ordinal` | yes | type="integer"; minimum=0; maximum=10000; title="Start Ordinal" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -26,9 +26,9 @@ Adapter-observed identity and range for one single-pass read.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-036b19f39b"></a>`object` | yes | [ObjectLocator](#s-43c741ab8f) |  |
-| <a id="s-66b82b7e4f"></a>`offset` | yes | type="integer"; minimum=0 |  |
-| <a id="s-cbc2c869b9"></a>`read_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-214b4e2d30"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-66b82b7e4f"></a>`offset` | yes | type="integer"; minimum=0; title="Offset" |  |
+| <a id="s-cbc2c869b9"></a>`read_bytes` | yes | type="integer"; minimum=0; title="Read Bytes" |  |
+| <a id="s-214b4e2d30"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
 
 ### Definitions
 
@@ -45,8 +45,8 @@ Adapter-observed identity and range for one single-pass read.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-bb4835dae2"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-d0c342614f"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-bb4835dae2"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
+| <a id="s-d0c342614f"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null; title="Revision" |  |
 
 ### Progression, limits, and lifecycle
 

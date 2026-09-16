@@ -37,13 +37,13 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-00acfbcadc"></a>`completed_at` | yes | type="string"; maxLength=100; minLength=1 |  |
-| <a id="s-cde06a44fe"></a>`content_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-9677d60952"></a>`entity_token` | no | anyOf=(type="string"; maxLength=4000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-cde06a44fe"></a>`content_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
+| <a id="s-9677d60952"></a>`entity_token` | no | anyOf=[(type="string"; maxLength=4000; minLength=1); (type="null")]; default=null |  |
 | <a id="s-c3f8823a41"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-cd09a53850"></a>`observed_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} |  |
-| <a id="s-066c38dc7c"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-066c38dc7c"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null |  |
 | <a id="s-e2d56684bf"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-c7938f3880"></a>`stored_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-c7938f3880"></a>`stored_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-749f31ee61"></a>`verified_placement` | yes | type="string"; enum=["archive","immediate"] |  |
 
 ## Maintained corroboration

@@ -14,12 +14,17 @@ Create Evaluation
 ## External contract
 
 <a id="s-cd6a7cc532"></a>
-- <a id="s-2d04567f85"></a>`operationId`: create_evaluation
-- <a id="s-69f2b2da84"></a>`summary`: Create Evaluation
+- <a id="s-2d04567f85"></a>`operationId`: `"create_evaluation"`
+- <a id="s-69f2b2da84"></a>`summary`: `"Create Evaluation"`
+- <a id="s-985805b80e"></a>`tags`: `["evaluations"]`
 
 ### <a id="s-5f4b6ec140"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/EvaluationDefinition"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [EvaluationDefinition](../http-schemas/schemas-evaluationdefinition.md) |
 
 ### Responses
 

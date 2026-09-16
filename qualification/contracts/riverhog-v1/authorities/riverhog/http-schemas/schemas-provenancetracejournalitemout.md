@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e5d6e0d334"></a>`journal` | yes | #/components/schemas/ProvenanceJournalOut |  |
-| <a id="s-08fd7d5fdc"></a>`kind` | yes | type="string"; const="journal" |  |
+| <a id="s-e5d6e0d334"></a>`journal` | yes | [ProvenanceJournalOut](schemas-provenancejournalout.md) |  |
+| <a id="s-08fd7d5fdc"></a>`kind` | yes | type="string"; const="journal"; title="Kind" |  |
 
 ## Maintained corroboration
 

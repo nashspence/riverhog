@@ -14,13 +14,19 @@ Retire Archive Copy
 ## External contract
 
 <a id="s-d742ef1582"></a>
-- <a id="s-ace6734f77"></a>`operationId`: retire_archive_copy
-- <a id="s-f1554f94a5"></a>`summary`: Retire Archive Copy
-- <a id="s-7d4d4809de"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-ace6734f77"></a>`operationId`: `"retire_archive_copy"`
+- <a id="s-7d4d4809de"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-f1554f94a5"></a>`summary`: `"Retire Archive Copy"`
+- <a id="s-63f95a931e"></a>`tags`: `["archive"]`
+- <a id="s-8fee959f1d"></a>`x-riverhog-permission-requirements`: `[{"any_of":["archives:manage"]}]`
 
 ### <a id="s-c3063a6228"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/RetireArchiveCopyRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [RetireArchiveCopyRequest](../http-schemas/schemas-retirearchivecopyrequest.md) |
 
 ### Responses
 

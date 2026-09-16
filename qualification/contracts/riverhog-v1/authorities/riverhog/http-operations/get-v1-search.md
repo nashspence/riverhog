@@ -14,20 +14,23 @@ Search
 ## External contract
 
 <a id="s-779c836913"></a>
-- <a id="s-137c644476"></a>`operationId`: search
-- <a id="s-6855d9b806"></a>`summary`: Search
-- <a id="s-7c440c79b7"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-137c644476"></a>`operationId`: `"search"`
+- <a id="s-7c440c79b7"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-6855d9b806"></a>`summary`: `"Search"`
+- <a id="s-b84f445e20"></a>`tags`: `["search"]`
+- <a id="s-5482d47713"></a>`x-riverhog-permission-requirements`: `[{"any_of":["catalog:read"]}]`
+- <a id="s-07d59dfa0e"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-fa52230b61"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
-| <a id="s-0897c641b3"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-ff9d1780de"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
+| <a id="s-fa52230b61"></a>`q` | query | no | not declared | anyOf=[([BrowseQuery](../http-schemas/schemas-browsequery.md)); (type="null")]; title="Q" |
+| <a id="s-0897c641b3"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-ff9d1780de"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
 | <a id="s-a72f8fa8f6"></a>`sort` | query | no | `"file_ref"` | [SearchSort](../http-schemas/schemas-searchsort.md) |
 | <a id="s-4fd93c17d0"></a>`order` | query | no | `"asc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
-| <a id="s-fc2236a28f"></a>`collection` | query | no | not declared | anyOf=([CollectionIdParameter](../http-schemas/schemas-collectionidparameter.md)) \| (type="null") |
+| <a id="s-fc2236a28f"></a>`collection` | query | no | not declared | anyOf=[([CollectionIdParameter](../http-schemas/schemas-collectionidparameter.md)); (type="null")]; title="Collection" |
 
 ### Responses
 

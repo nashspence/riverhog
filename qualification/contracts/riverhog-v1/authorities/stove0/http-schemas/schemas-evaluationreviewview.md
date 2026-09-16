@@ -24,11 +24,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-24c43eadff"></a>`note` | no | anyOf=(type="string"; maxLength=4000; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$") \| (type="null") |  |
-| <a id="s-f75f344358"></a>`rating` | no | anyOf=(type="integer"; minimum=1; maximum=5) \| (type="null") |  |
-| <a id="s-689703e9c5"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
-| <a id="s-2d55a4ad50"></a>`updated_by` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-27564cd680"></a>`variant_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-24c43eadff"></a>`note` | no | anyOf=[(type="string"; maxLength=4000; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$"); (type="null")]; title="Note" |  |
+| <a id="s-f75f344358"></a>`rating` | no | anyOf=[(type="integer"; minimum=1; maximum=5); (type="null")]; title="Rating" |  |
+| <a id="s-689703e9c5"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1; title="Updated At" |  |
+| <a id="s-2d55a4ad50"></a>`updated_by` | yes | type="string"; maxLength=160; minLength=1; title="Updated By" |  |
+| <a id="s-27564cd680"></a>`variant_id` | yes | type="string"; maxLength=160; minLength=1; title="Variant Id" |  |
 
 ### Progression, limits, and lifecycle
 

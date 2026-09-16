@@ -37,7 +37,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-48822d277f"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-172774a064"></a>`description` | yes | anyOf=([CollectionDescription](#s-fadeb35b68)) \| (type="null") |  |
+| <a id="s-172774a064"></a>`description` | yes | anyOf=[([CollectionDescription](#s-fadeb35b68)); (type="null")] |  |
 | <a id="s-239bd713b7"></a>`description_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-45d157bf54"></a>`format` | no | type="string"; const="riverhog-collection-description/v1"; default="riverhog-collection-description/v1" |  |
 | <a id="s-0e0fc4ee3d"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991; x-riverhog-extent={"policy":"fixed","reason":"exact-json-safe-monotonic-description-revision"} |  |

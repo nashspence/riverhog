@@ -14,19 +14,26 @@ Record Processing Claim Dispositions
 ## External contract
 
 <a id="s-1e853b4a4a"></a>
-- <a id="s-e2cda43cfa"></a>`operationId`: record_processing_claim_dispositions
-- <a id="s-c775017c57"></a>`summary`: Record Processing Claim Dispositions
-- <a id="s-c98a570ad2"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-e2cda43cfa"></a>`operationId`: `"record_processing_claim_dispositions"`
+- <a id="s-c98a570ad2"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-c775017c57"></a>`summary`: `"Record Processing Claim Dispositions"`
+- <a id="s-6dc9be789f"></a>`tags`: `["collection-workflows"]`
+- <a id="s-327c3b7bc9"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-77c18cfab5"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control","collection-transforms:execute"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-93b6d490bc"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-93b6d490bc"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
 
 ### <a id="s-387236627b"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ArtifactDispositionBatchDocument"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [ArtifactDispositionBatchDocument](../http-schemas/schemas-artifactdispositionbatchdocument.md) |
 
 ### Responses
 

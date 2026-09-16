@@ -14,19 +14,21 @@ List Evaluations
 ## External contract
 
 <a id="s-6f02aa28eb"></a>
-- <a id="s-771b1ec25f"></a>`operationId`: list_evaluations
-- <a id="s-dd705ffbff"></a>`summary`: List Evaluations
+- <a id="s-771b1ec25f"></a>`operationId`: `"list_evaluations"`
+- <a id="s-dd705ffbff"></a>`summary`: `"List Evaluations"`
+- <a id="s-9e84f3c19b"></a>`tags`: `["evaluations"]`
+- <a id="s-01a09ae022"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-625d3cc50a"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-88b28d2b89"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
-| <a id="s-7af6efcb9f"></a>`phase` | query | no | not declared | anyOf=(type="string"; enum=["planning","running","partially_complete","complete","failed","canceled"]) \| (type="null") |
-| <a id="s-976d157f93"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
-| <a id="s-6e6ff27ba8"></a>`sort` | query | no | `"updated_at"` | type="string"; enum=["updated_at","phase","evaluation_id"] |
-| <a id="s-97dc8ae11c"></a>`order` | query | no | `"desc"` | type="string"; enum=["asc","desc"] |
+| <a id="s-625d3cc50a"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-88b28d2b89"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
+| <a id="s-7af6efcb9f"></a>`phase` | query | no | not declared | anyOf=[(type="string"; enum=["planning","running","partially_complete","complete","failed","canceled"]); (type="null")]; title="Phase" |
+| <a id="s-976d157f93"></a>`q` | query | no | not declared | anyOf=[([BrowseQuery](../http-schemas/schemas-browsequery.md)); (type="null")]; title="Q" |
+| <a id="s-6e6ff27ba8"></a>`sort` | query | no | `"updated_at"` | type="string"; enum=["updated_at","phase","evaluation_id"]; title="Sort" |
+| <a id="s-97dc8ae11c"></a>`order` | query | no | `"desc"` | type="string"; enum=["asc","desc"]; title="Order" |
 
 ### Responses
 

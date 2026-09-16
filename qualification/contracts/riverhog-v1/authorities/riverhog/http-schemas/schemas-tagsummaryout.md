@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f58a1f322e"></a>`collection_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-06c71a59c8"></a>`tag` | yes | #/components/schemas/CollectionTag |  |
+| <a id="s-f58a1f322e"></a>`collection_count` | yes | type="integer"; minimum=1; title="Collection Count" |  |
+| <a id="s-06c71a59c8"></a>`tag` | yes | [CollectionTag](schemas-collectiontag.md) |  |
 
 ## Maintained corroboration
 

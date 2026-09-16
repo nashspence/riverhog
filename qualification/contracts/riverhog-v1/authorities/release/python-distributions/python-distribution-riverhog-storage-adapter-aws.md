@@ -16,15 +16,15 @@ Optional nonnormative AWS storage reference for Riverhog.
 <a id="s-5755c0d086"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-cc65c34eb4"></a>`artifacts` | [{"coordinate": "dist/riverhog_storage_adapter_aws-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_storage_adapter_aws-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-2d9cb18522"></a>`channel` | github-release |
-| <a id="s-38ce21d607"></a>`description` | Optional nonnormative AWS storage reference for Riverhog. |
-| <a id="s-d1c178b7ba"></a>`license_baseline` | first-v1-publication |
-| <a id="s-a0aa1d00bd"></a>`license_expression` | CAL-1.0 |
-| <a id="s-969d1d44b1"></a>`publication_identity` | {"coordinate": "riverhog-storage-adapter-aws", "kind": "python-distribution"} |
-| <a id="s-ba98c971ef"></a>`requires_python` | >=3.12 |
-| <a id="s-6c226a6ffc"></a>`role` | reference_component |
-| <a id="s-b2c1a6cf70"></a>`source` | reference/riverhog/storage/aws/pyproject.toml |
+| <a id="s-cc65c34eb4"></a>`artifacts` | `[{"coordinate":"dist/riverhog_storage_adapter_aws-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/riverhog_storage_adapter_aws-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-2d9cb18522"></a>`channel` | `"github-release"` |
+| <a id="s-38ce21d607"></a>`description` | `"Optional nonnormative AWS storage reference for Riverhog."` |
+| <a id="s-d1c178b7ba"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-a0aa1d00bd"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-969d1d44b1"></a>`publication_identity` | `{"coordinate":"riverhog-storage-adapter-aws","kind":"python-distribution"}` |
+| <a id="s-ba98c971ef"></a>`requires_python` | `">=3.12"` |
+| <a id="s-6c226a6ffc"></a>`role` | `"reference_component"` |
+| <a id="s-b2c1a6cf70"></a>`source` | `"reference/riverhog/storage/aws/pyproject.toml"` |
 
 ## Existing ownership context
 

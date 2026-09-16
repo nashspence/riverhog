@@ -24,14 +24,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-465ff42a9e"></a>`configured` | yes | type="boolean" |  |
-| <a id="s-c6e56b6d72"></a>`new_archive_enabled` | yes | type="boolean" |  |
-| <a id="s-c9532554b8"></a>`objects` | yes | type="integer" |  |
-| <a id="s-02c055a623"></a>`policy` | yes | #/components/schemas/RetrievalCachePolicyOut |  |
-| <a id="s-e00db8b231"></a>`protected_objects` | yes | type="integer" |  |
-| <a id="s-579f91048c"></a>`stored_bytes` | yes | type="integer" |  |
-| <a id="s-5f68891811"></a>`stores` | yes | type="array"; items=(#/components/schemas/RetrievalCacheStoreStatusOut) |  |
-| <a id="s-04f46513ac"></a>`unleased_objects` | yes | type="integer" |  |
+| <a id="s-465ff42a9e"></a>`configured` | yes | type="boolean"; title="Configured" |  |
+| <a id="s-c6e56b6d72"></a>`new_archive_enabled` | yes | type="boolean"; title="New Archive Enabled" |  |
+| <a id="s-c9532554b8"></a>`objects` | yes | type="integer"; title="Objects" |  |
+| <a id="s-02c055a623"></a>`policy` | yes | [RetrievalCachePolicyOut](schemas-retrievalcachepolicyout.md) |  |
+| <a id="s-e00db8b231"></a>`protected_objects` | yes | type="integer"; title="Protected Objects" |  |
+| <a id="s-579f91048c"></a>`stored_bytes` | yes | type="integer"; title="Stored Bytes" |  |
+| <a id="s-5f68891811"></a>`stores` | yes | type="array"; items=([RetrievalCacheStoreStatusOut](schemas-retrievalcachestorestatusout.md)); title="Stores" |  |
+| <a id="s-04f46513ac"></a>`unleased_objects` | yes | type="integer"; title="Unleased Objects" |  |
 
 ### Progression, limits, and lifecycle
 

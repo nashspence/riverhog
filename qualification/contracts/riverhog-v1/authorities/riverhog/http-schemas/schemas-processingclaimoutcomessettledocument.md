@@ -26,9 +26,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f42f23efd4"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-4816a9f240"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
-| <a id="s-4cb34386fa"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
+| <a id="s-f42f23efd4"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-4816a9f240"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Retirement Grace Seconds" |  |
+| <a id="s-4cb34386fa"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Retirement Policy" |  |
 
 ### <a id="s-097084343c"></a>`if`
 

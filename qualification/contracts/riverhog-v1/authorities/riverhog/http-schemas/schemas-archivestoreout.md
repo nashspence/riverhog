@@ -24,14 +24,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ed8363ddd4"></a>`collections` | yes | type="integer" |  |
-| <a id="s-6d9173b8e5"></a>`download_allowance` | yes | anyOf=(#/components/schemas/ArchiveDownloadAllowanceOut) \| (type="null") |  |
-| <a id="s-e4bb5e060b"></a>`objects` | yes | type="integer" |  |
-| <a id="s-831daffcba"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"] |  |
-| <a id="s-97417b240e"></a>`read_priority` | yes | type="integer" |  |
-| <a id="s-889112d32d"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-61213aadde"></a>`stored_bytes` | yes | type="integer" |  |
-| <a id="s-94e63b11f8"></a>`write_target` | yes | type="boolean" |  |
+| <a id="s-ed8363ddd4"></a>`collections` | yes | type="integer"; title="Collections" |  |
+| <a id="s-6d9173b8e5"></a>`download_allowance` | yes | anyOf=[([ArchiveDownloadAllowanceOut](schemas-archivedownloadallowanceout.md)); (type="null")] |  |
+| <a id="s-e4bb5e060b"></a>`objects` | yes | type="integer"; title="Objects" |  |
+| <a id="s-831daffcba"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"]; title="Read Mode" |  |
+| <a id="s-97417b240e"></a>`read_priority` | yes | type="integer"; title="Read Priority" |  |
+| <a id="s-889112d32d"></a>`store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
+| <a id="s-61213aadde"></a>`stored_bytes` | yes | type="integer"; title="Stored Bytes" |  |
+| <a id="s-94e63b11f8"></a>`write_target` | yes | type="boolean"; title="Write Target" |  |
 
 ## Maintained corroboration
 

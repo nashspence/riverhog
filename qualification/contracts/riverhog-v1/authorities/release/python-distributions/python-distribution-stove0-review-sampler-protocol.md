@@ -16,15 +16,15 @@ Optional nonnormative sampler-protocol reference for the Stove0 review target.
 <a id="s-2afbaa2baf"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-4a8e493e03"></a>`artifacts` | [{"coordinate": "dist/stove0_review_sampler_protocol-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_review_sampler_protocol-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-224943edcd"></a>`channel` | github-release |
-| <a id="s-626f8b4721"></a>`description` | Optional nonnormative sampler-protocol reference for the Stove0 review target. |
-| <a id="s-ddd10fc988"></a>`license_baseline` | first-v1-publication |
-| <a id="s-7530168627"></a>`license_expression` | Apache-2.0 |
-| <a id="s-b211febbee"></a>`publication_identity` | {"coordinate": "stove0-review-sampler-protocol", "kind": "python-distribution"} |
-| <a id="s-3cfca2bd52"></a>`requires_python` | >=3.12 |
-| <a id="s-a8475cdd33"></a>`role` | reference_component |
-| <a id="s-ef7f12f4b5"></a>`source` | reference/stove0/targets/review/sampler/protocol/pyproject.toml |
+| <a id="s-4a8e493e03"></a>`artifacts` | `[{"coordinate":"dist/stove0_review_sampler_protocol-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_review_sampler_protocol-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-224943edcd"></a>`channel` | `"github-release"` |
+| <a id="s-626f8b4721"></a>`description` | `"Optional nonnormative sampler-protocol reference for the Stove0 review target."` |
+| <a id="s-ddd10fc988"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-7530168627"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-b211febbee"></a>`publication_identity` | `{"coordinate":"stove0-review-sampler-protocol","kind":"python-distribution"}` |
+| <a id="s-3cfca2bd52"></a>`requires_python` | `">=3.12"` |
+| <a id="s-a8475cdd33"></a>`role` | `"reference_component"` |
+| <a id="s-ef7f12f4b5"></a>`source` | `"reference/stove0/targets/review/sampler/protocol/pyproject.toml"` |
 
 ## Existing ownership context
 

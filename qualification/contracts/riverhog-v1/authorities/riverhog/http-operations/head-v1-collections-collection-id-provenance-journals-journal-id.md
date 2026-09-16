@@ -16,12 +16,12 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-e23dde9f13"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-127d3b9ffc"></a>`application` | riverhog |
-| <a id="s-72283abfb6"></a>`classification` | standard-tool/protocol |
-| <a id="s-e43aa3542e"></a>`method` | HEAD |
-| <a id="s-b4d97430d8"></a>`operation_id` | head_collection_provenance_journal |
-| <a id="s-ceac4a812e"></a>`path` | /v1/collections/{collection_id}/provenance/journals/{journal_id} |
-| <a id="s-9634f16196"></a>`response_authority` | stream-or-empty |
+| <a id="s-127d3b9ffc"></a>`application` | `"riverhog"` |
+| <a id="s-72283abfb6"></a>`classification` | `"standard-tool/protocol"` |
+| <a id="s-e43aa3542e"></a>`method` | `"HEAD"` |
+| <a id="s-b4d97430d8"></a>`operation_id` | `"head_collection_provenance_journal"` |
+| <a id="s-ceac4a812e"></a>`path` | `"/v1/collections/{collection_id}/provenance/journals/{journal_id}"` |
+| <a id="s-9634f16196"></a>`response_authority` | `"stream-or-empty"` |
 
 ## Governing policies
 

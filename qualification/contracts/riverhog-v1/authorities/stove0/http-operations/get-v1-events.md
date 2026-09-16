@@ -14,15 +14,17 @@ List Events
 ## External contract
 
 <a id="s-c121822cc7"></a>
-- <a id="s-8ba22d7602"></a>`operationId`: list_events
-- <a id="s-b0960e7d18"></a>`summary`: List Events
+- <a id="s-8ba22d7602"></a>`operationId`: `"list_events"`
+- <a id="s-b0960e7d18"></a>`summary`: `"List Events"`
+- <a id="s-6baed32652"></a>`tags`: `["events"]`
+- <a id="s-b9fa909230"></a>`x-riverhog-read-collection`: `{"cursor_parameter":"after","kind":"cursor-feed","limit_parameter":"limit"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-31c522de73"></a>`after` | query | no | not declared | anyOf=(type="string") \| (type="null") |
-| <a id="s-f727189551"></a>`limit` | query | no | `100` | type="integer"; minimum=1; maximum=100 |
+| <a id="s-31c522de73"></a>`after` | query | no | not declared | anyOf=[(type="string"); (type="null")]; title="After" |
+| <a id="s-f727189551"></a>`limit` | query | no | `100` | type="integer"; minimum=1; maximum=100; title="Limit" |
 
 ### Responses
 

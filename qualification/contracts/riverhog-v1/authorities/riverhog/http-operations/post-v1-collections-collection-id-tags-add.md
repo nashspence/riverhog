@@ -14,19 +14,25 @@ Add Collection Tag
 ## External contract
 
 <a id="s-0f07299467"></a>
-- <a id="s-0293a9e51d"></a>`operationId`: add_collection_tag
-- <a id="s-67fda963fd"></a>`summary`: Add Collection Tag
-- <a id="s-0a22a69f35"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-0293a9e51d"></a>`operationId`: `"add_collection_tag"`
+- <a id="s-0a22a69f35"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-67fda963fd"></a>`summary`: `"Add Collection Tag"`
+- <a id="s-4163328a35"></a>`tags`: `["collection-tags"]`
+- <a id="s-2bea4b2090"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-tags:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-8ea57df8d0"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-8ea57df8d0"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
 
 ### <a id="s-4543d27edd"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CollectionTagMutationRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [CollectionTagMutationRequest](../http-schemas/schemas-collectiontagmutationrequest.md) |
 
 ### Responses
 

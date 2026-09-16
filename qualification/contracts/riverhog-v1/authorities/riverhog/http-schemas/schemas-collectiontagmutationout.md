@@ -24,16 +24,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-fc10489016"></a>`action` | yes | type="string"; enum=["add","remove"] |  |
-| <a id="s-bf22d32e68"></a>`changed` | yes | type="boolean" |  |
-| <a id="s-25eed2eb6d"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-a43f16bafa"></a>`head_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-6553f7477d"></a>`operation_id` | yes | type="string"; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
-| <a id="s-342f60d573"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
-| <a id="s-13adc8225c"></a>`root_sha256` | yes | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-89bc2fdc81"></a>`state` | yes | type="string"; enum=["pending","retry_wait","succeeded"] |  |
-| <a id="s-a413ee5a7c"></a>`tag` | yes | #/components/schemas/CollectionTag |  |
-| <a id="s-61ac4c695c"></a>`tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-fc10489016"></a>`action` | yes | type="string"; enum=["add","remove"]; title="Action" |  |
+| <a id="s-bf22d32e68"></a>`changed` | yes | type="boolean"; title="Changed" |  |
+| <a id="s-25eed2eb6d"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-a43f16bafa"></a>`head_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Head Identity" |  |
+| <a id="s-6553f7477d"></a>`operation_id` | yes | type="string"; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$"; title="Operation Id" |  |
+| <a id="s-342f60d573"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991; title="Revision" |  |
+| <a id="s-13adc8225c"></a>`root_sha256` | yes | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Root Sha256" |  |
+| <a id="s-89bc2fdc81"></a>`state` | yes | type="string"; enum=["pending","retry_wait","succeeded"]; title="State" |  |
+| <a id="s-a413ee5a7c"></a>`tag` | yes | [CollectionTag](schemas-collectiontag.md) |  |
+| <a id="s-61ac4c695c"></a>`tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Tag Set Identity" |  |
 
 ### Progression, limits, and lifecycle
 

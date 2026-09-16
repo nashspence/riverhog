@@ -24,22 +24,22 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f4ff3def0c"></a>`archive_copies` | yes | type="array"; items=(#/components/schemas/CollectionDeletionArchiveCopyOut) |  |
-| <a id="s-0781b71d79"></a>`archive_object_count` | yes | type="integer" |  |
-| <a id="s-003b0a0272"></a>`billing_note` | yes | type="string" |  |
-| <a id="s-327ac9fe43"></a>`blockers` | yes | type="array"; items=(type="string"); maxItems=55; x-riverhog-extent={"policy":"contract_max","reason":"bounded-diagnostic-sample-with-explicit-overflow-markers"} |  |
-| <a id="s-c328f97416"></a>`bytes` | yes | type="integer" |  |
-| <a id="s-3c2ff39367"></a>`challenge` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-73ba2d2bee"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-f0db1aa2f2"></a>`expires_at` | yes | type="string" |  |
-| <a id="s-4551e18b33"></a>`file_count` | yes | type="integer" |  |
-| <a id="s-0c27dfe4e3"></a>`inventory_identity` | yes | type="string" |  |
-| <a id="s-ce48510009"></a>`metadata_rows` | yes | type="object"; additionalProperties=(type="integer") |  |
-| <a id="s-137b210b76"></a>`remote_storage_bytes` | yes | type="integer" |  |
-| <a id="s-6ac0cd51f1"></a>`retirement_claim` | no | anyOf=(#/components/schemas/RetirementClaimReferenceDocument) \| (type="null") |  |
-| <a id="s-dfa08a8c5d"></a>`status` | yes | type="string"; enum=["ready","blocked","deleting"] |  |
-| <a id="s-0d4f73bd55"></a>`upload_file_count` | yes | type="integer" |  |
-| <a id="s-653b88a8cb"></a>`warning` | yes | type="string" |  |
+| <a id="s-f4ff3def0c"></a>`archive_copies` | yes | type="array"; items=([CollectionDeletionArchiveCopyOut](schemas-collectiondeletionarchivecopyout.md)); title="Archive Copies" |  |
+| <a id="s-0781b71d79"></a>`archive_object_count` | yes | type="integer"; title="Archive Object Count" |  |
+| <a id="s-003b0a0272"></a>`billing_note` | yes | type="string"; title="Billing Note" |  |
+| <a id="s-327ac9fe43"></a>`blockers` | yes | type="array"; items=(type="string"); maxItems=55; title="Blockers"; x-riverhog-extent={"policy":"contract_max","reason":"bounded-diagnostic-sample-with-explicit-overflow-markers"} |  |
+| <a id="s-c328f97416"></a>`bytes` | yes | type="integer"; title="Bytes" |  |
+| <a id="s-3c2ff39367"></a>`challenge` | yes | anyOf=[(type="string"); (type="null")]; title="Challenge" |  |
+| <a id="s-73ba2d2bee"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-f0db1aa2f2"></a>`expires_at` | yes | type="string"; title="Expires At" |  |
+| <a id="s-4551e18b33"></a>`file_count` | yes | type="integer"; title="File Count" |  |
+| <a id="s-0c27dfe4e3"></a>`inventory_identity` | yes | type="string"; title="Inventory Identity" |  |
+| <a id="s-ce48510009"></a>`metadata_rows` | yes | type="object"; additionalProperties=(type="integer"); title="Metadata Rows" |  |
+| <a id="s-137b210b76"></a>`remote_storage_bytes` | yes | type="integer"; title="Remote Storage Bytes" |  |
+| <a id="s-6ac0cd51f1"></a>`retirement_claim` | no | anyOf=[([RetirementClaimReferenceDocument](schemas-retirementclaimreferencedocument.md)); (type="null")] |  |
+| <a id="s-dfa08a8c5d"></a>`status` | yes | type="string"; enum=["ready","blocked","deleting"]; title="Status" |  |
+| <a id="s-0d4f73bd55"></a>`upload_file_count` | yes | type="integer"; title="Upload File Count" |  |
+| <a id="s-653b88a8cb"></a>`warning` | yes | type="string"; title="Warning" |  |
 
 ### Exactly one must match (`oneOf`)
 

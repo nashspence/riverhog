@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-83cd2c8930"></a>`authorization_view_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-dc231f2428"></a>`catalog_cursor` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-cc40445d90"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1"; default="riverhog-catalog-sync/v1" |  |
-| <a id="s-e8505dafc9"></a>`source_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-83cd2c8930"></a>`authorization_view_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$"; title="Authorization View Identity" |  |
+| <a id="s-dc231f2428"></a>`catalog_cursor` | yes | type="string"; maxLength=4096; minLength=1; title="Catalog Cursor" |  |
+| <a id="s-cc40445d90"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1"; default="riverhog-catalog-sync/v1"; title="Format" |  |
+| <a id="s-e8505dafc9"></a>`source_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$"; title="Source Identity" |  |
 
 ### Progression, limits, and lifecycle
 

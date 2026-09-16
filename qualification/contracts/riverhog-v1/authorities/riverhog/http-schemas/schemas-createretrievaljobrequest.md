@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7437f6cbd1"></a>`event_context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null") |  |
-| <a id="s-56cc2e0453"></a>`plan_id` | yes | type="string" |  |
+| <a id="s-7437f6cbd1"></a>`event_context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; title="Event Context" |  |
+| <a id="s-56cc2e0453"></a>`plan_id` | yes | type="string"; title="Plan Id" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -14,15 +14,17 @@ Cancel Collection Provenance Verification
 ## External contract
 
 <a id="s-8b0234e95b"></a>
-- <a id="s-2d83551345"></a>`operationId`: cancel_collection_provenance_verification
-- <a id="s-e4a0e350f0"></a>`summary`: Cancel Collection Provenance Verification
-- <a id="s-83b8c96050"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-2d83551345"></a>`operationId`: `"cancel_collection_provenance_verification"`
+- <a id="s-83b8c96050"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-e4a0e350f0"></a>`summary`: `"Cancel Collection Provenance Verification"`
+- <a id="s-19ca49277c"></a>`tags`: `["provenance"]`
+- <a id="s-3351ed03f3"></a>`x-riverhog-permission-requirements`: `[{"any_of":["provenance:read"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-a219e42480"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-a219e42480"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
 
 ### Responses
 

@@ -36,8 +36,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-00b7280fd0"></a>`completion` | no | anyOf=([WriteCompletionAuthority](#s-bdd5ecbe60)) \| (type="null"); default=null |  |
-| <a id="s-9930afc595"></a>`next_after_number` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
+| <a id="s-00b7280fd0"></a>`completion` | no | anyOf=[([WriteCompletionAuthority](#s-bdd5ecbe60)); (type="null")]; default=null |  |
+| <a id="s-9930afc595"></a>`next_after_number` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null |  |
 | <a id="s-c7cb242b01"></a>`segments` | no | type="array"; default=[]; items=([WriteSegmentReceipt](#s-f1c59d947a)); maxItems=128; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"exact-adapter-write-traversal","reason":"bounded-storage-write-segment-page"} |  |
 | <a id="s-19c41d3e62"></a>`session` | yes | [WriteSession](#s-3303effcc4) |  |
 | <a id="s-a60eb0650f"></a>`traversal_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
@@ -75,7 +75,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-04a6cbda43"></a>`number` | yes | type="integer"; minimum=1 |  |
 | <a id="s-16e346847c"></a>`segment_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
 | <a id="s-5d370e6e2f"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-ed65f66ca2"></a>`stored_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-ed65f66ca2"></a>`stored_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 
 ##### <a id="s-3303effcc4"></a>definition `WriteSession`
 

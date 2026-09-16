@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ae86822e7b"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-d2903ea8f6"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-c15a7ad579"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ae86822e7b"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
+| <a id="s-d2903ea8f6"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-c15a7ad579"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
 
 ### Progression, limits, and lifecycle
 

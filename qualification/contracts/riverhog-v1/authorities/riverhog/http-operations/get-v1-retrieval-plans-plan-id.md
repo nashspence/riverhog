@@ -14,15 +14,18 @@ Get Retrieval Plan
 ## External contract
 
 <a id="s-48f06c082e"></a>
-- <a id="s-10dcd91d40"></a>`operationId`: get_retrieval_plan
-- <a id="s-986315c391"></a>`summary`: Get Retrieval Plan
-- <a id="s-badba5ee8f"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-10dcd91d40"></a>`operationId`: `"get_retrieval_plan"`
+- <a id="s-badba5ee8f"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-986315c391"></a>`summary`: `"Get Retrieval Plan"`
+- <a id="s-ed08b22534"></a>`tags`: `["retrieval"]`
+- <a id="s-0ee9774a9d"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-69ffe28db3"></a>`x-riverhog-permission-requirements`: `[{"any_of":["retrieval:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-ede014861e"></a>`plan_id` | path | yes | not declared | type="string" |
+| <a id="s-ede014861e"></a>`plan_id` | path | yes | not declared | type="string"; title="Plan Id" |
 
 ### Responses
 

@@ -16,15 +16,15 @@ External-author protocol, runtime, and conformance support for stove0 content ob
 <a id="s-003ab09374"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-3b04c26417"></a>`artifacts` | [{"coordinate": "dist/stove0_observer_support-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_observer_support-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-80217009cc"></a>`channel` | github-release |
-| <a id="s-9341b4b5e3"></a>`description` | External-author protocol, runtime, and conformance support for stove0 content observers. |
-| <a id="s-7cdfc39d96"></a>`license_baseline` | first-v1-publication |
-| <a id="s-37004ebfc6"></a>`license_expression` | Apache-2.0 |
-| <a id="s-a285ba5e82"></a>`publication_identity` | {"coordinate": "stove0-observer-support", "kind": "python-distribution"} |
-| <a id="s-f71635f80b"></a>`requires_python` | >=3.12 |
-| <a id="s-a58ce03ca5"></a>`role` | reusable_library |
-| <a id="s-8945f9bd59"></a>`source` | reference/stove0/packages/observer-support/pyproject.toml |
+| <a id="s-3b04c26417"></a>`artifacts` | `[{"coordinate":"dist/stove0_observer_support-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_observer_support-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-80217009cc"></a>`channel` | `"github-release"` |
+| <a id="s-9341b4b5e3"></a>`description` | `"External-author protocol, runtime, and conformance support for stove0 content observers."` |
+| <a id="s-7cdfc39d96"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-37004ebfc6"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-a285ba5e82"></a>`publication_identity` | `{"coordinate":"stove0-observer-support","kind":"python-distribution"}` |
+| <a id="s-f71635f80b"></a>`requires_python` | `">=3.12"` |
+| <a id="s-a58ce03ca5"></a>`role` | `"reusable_library"` |
+| <a id="s-8945f9bd59"></a>`source` | `"reference/stove0/packages/observer-support/pyproject.toml"` |
 
 ## Existing ownership context
 

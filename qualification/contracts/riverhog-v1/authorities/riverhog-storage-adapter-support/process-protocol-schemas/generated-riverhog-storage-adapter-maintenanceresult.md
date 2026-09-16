@@ -24,7 +24,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-11316610fc"></a>`affected` | yes | type="integer"; minimum=0 |  |
+| <a id="s-11316610fc"></a>`affected` | yes | type="integer"; minimum=0; title="Affected" |  |
 
 ## Maintained corroboration
 

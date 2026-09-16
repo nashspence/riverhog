@@ -31,12 +31,12 @@ identity while preserving the full document in the execution envelope.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-413e96b2fe"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-993b6f21cd"></a>`plan` | yes | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-8280a47826"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-9dd294d2a7"></a>`protocol` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-d9f811c470"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-f996140a29"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-413e96b2fe"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Operation Contract Sha256" |  |
+| <a id="s-993b6f21cd"></a>`plan` | yes | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Plan" |  |
+| <a id="s-8280a47826"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
+| <a id="s-9dd294d2a7"></a>`protocol` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Protocol" |  |
+| <a id="s-d9f811c470"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
+| <a id="s-f996140a29"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Target Implementation Id" |  |
 
 ### Progression, limits, and lifecycle
 

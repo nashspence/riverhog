@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-008acffa9c"></a>Parser name: `provenance-observer`
+
+| Field | Value |
+|---|---|
+| <a id="s-e4f1e23abb"></a>`parameters` | `[]` |
 - <a id="s-fa7442b073"></a>Subcommand selection: required.
 - <a id="s-c084649bef"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
 - <a id="s-8793d5fb27"></a>Options after positional arguments at this parser: left as arguments.

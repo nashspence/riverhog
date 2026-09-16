@@ -37,12 +37,12 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-4e055628c3"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-f9aa3a9c3c)) |  |
-| <a id="s-5aa0ee3812"></a>`facts` | no | anyOf=(type="object"; additionalProperties=([JsonValue](#s-f9aa3a9c3c))) \| (type="null"); default=null |  |
-| <a id="s-b539e9f399"></a>`facts_schema` | no | anyOf=([JsonSchemaDocument](#s-df19d8c006)) \| (type="null"); default=null |  |
-| <a id="s-1b672888eb"></a>`facts_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
-| <a id="s-5e22481dcd"></a>`failure` | no | anyOf=([ObservationFailure](#s-1bd4e79cf5)) \| (type="null"); default=null |  |
+| <a id="s-5aa0ee3812"></a>`facts` | no | anyOf=[(type="object"; additionalProperties=([JsonValue](#s-f9aa3a9c3c))); (type="null")]; default=null |  |
+| <a id="s-b539e9f399"></a>`facts_schema` | no | anyOf=[([JsonSchemaDocument](#s-df19d8c006)); (type="null")]; default=null |  |
+| <a id="s-1b672888eb"></a>`facts_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
+| <a id="s-5e22481dcd"></a>`failure` | no | anyOf=[([ObservationFailure](#s-1bd4e79cf5)); (type="null")]; default=null |  |
 | <a id="s-707b4adcd5"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1" |  |
-| <a id="s-fd6bca3715"></a>`inapplicable` | no | anyOf=([ObservationInapplicable](#s-f8f7672fdd)) \| (type="null"); default=null |  |
+| <a id="s-fd6bca3715"></a>`inapplicable` | no | anyOf=[([ObservationInapplicable](#s-f8f7672fdd)); (type="null")]; default=null |  |
 | <a id="s-f64abe282d"></a>`observer` | yes | [ObserverImplementation](#s-4e82d6a5bd) |  |
 | <a id="s-6bcb9af691"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-6efb5f5caa"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -74,7 +74,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-244a76f0b1"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-2a4f286294"></a>`collection` | yes | [CollectionRootRef](#s-c67ac7bc46) |  |
 | <a id="s-8509c8632b"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-09b4fb06ce"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-09b4fb06ce"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
 | <a id="s-603bc219b6"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-324a557d5b"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-7b23c8a6d6"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |

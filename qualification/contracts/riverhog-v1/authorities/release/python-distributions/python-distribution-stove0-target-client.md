@@ -16,15 +16,15 @@ Narrow HTTP client for Stove0 transform targets.
 <a id="s-8942069ec1"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-9e27a2563a"></a>`artifacts` | [{"coordinate": "dist/stove0_target_client-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_target_client-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-7fd919475a"></a>`channel` | github-release |
-| <a id="s-8c88c6b4af"></a>`description` | Narrow HTTP client for Stove0 transform targets. |
-| <a id="s-6d143f7f47"></a>`license_baseline` | first-v1-publication |
-| <a id="s-0b75e39474"></a>`license_expression` | Apache-2.0 |
-| <a id="s-5874aefd83"></a>`publication_identity` | {"coordinate": "stove0-target-client", "kind": "python-distribution"} |
-| <a id="s-cb102729fa"></a>`requires_python` | >=3.12 |
-| <a id="s-f66a0dc4a7"></a>`role` | reusable_library |
-| <a id="s-b4c91f375a"></a>`source` | reference/stove0/packages/target-client/pyproject.toml |
+| <a id="s-9e27a2563a"></a>`artifacts` | `[{"coordinate":"dist/stove0_target_client-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_target_client-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-7fd919475a"></a>`channel` | `"github-release"` |
+| <a id="s-8c88c6b4af"></a>`description` | `"Narrow HTTP client for Stove0 transform targets."` |
+| <a id="s-6d143f7f47"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-0b75e39474"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-5874aefd83"></a>`publication_identity` | `{"coordinate":"stove0-target-client","kind":"python-distribution"}` |
+| <a id="s-cb102729fa"></a>`requires_python` | `">=3.12"` |
+| <a id="s-f66a0dc4a7"></a>`role` | `"reusable_library"` |
+| <a id="s-b4c91f375a"></a>`source` | `"reference/stove0/packages/target-client/pyproject.toml"` |
 
 ## Existing ownership context
 

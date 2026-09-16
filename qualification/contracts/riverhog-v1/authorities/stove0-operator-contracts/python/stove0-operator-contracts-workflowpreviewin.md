@@ -39,7 +39,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-2d9430f995"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](#s-e10ebafa23)) |  |
 | <a id="s-21bef1f98d"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](#s-c90b432181)); minItems=1 |  |
 | <a id="s-f25e9c76e6"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-0a6f3ccb15"></a>`recipe_revision` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
+| <a id="s-0a6f3ccb15"></a>`recipe_revision` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null |  |
 
 ##### Definitions
 

@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b581e74b72"></a>`active_keys` | yes | type="integer" |  |
-| <a id="s-ce23c1fe47"></a>`keys` | yes | type="integer" |  |
-| <a id="s-7cdb392047"></a>`last_used_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-514d86a11e"></a>`name` | yes | #/components/schemas/ApplicationName |  |
+| <a id="s-b581e74b72"></a>`active_keys` | yes | type="integer"; title="Active Keys" |  |
+| <a id="s-ce23c1fe47"></a>`keys` | yes | type="integer"; title="Keys" |  |
+| <a id="s-7cdb392047"></a>`last_used_at` | yes | anyOf=[(type="string"); (type="null")]; title="Last Used At" |  |
+| <a id="s-514d86a11e"></a>`name` | yes | [ApplicationName](schemas-applicationname.md) |  |
 
 ## Maintained corroboration
 

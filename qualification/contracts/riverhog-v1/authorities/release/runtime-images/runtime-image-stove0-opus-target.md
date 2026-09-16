@@ -16,17 +16,17 @@ Optional nonnormative Opus target reference for Stove0.
 <a id="s-cb18d0661e"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-c0a4ab77dc"></a>`build_target` | stove0-opus-target |
-| <a id="s-d92b0b7680"></a>`description` | Optional nonnormative Opus target reference for Stove0. |
-| <a id="s-6f67b15332"></a>`distribution_roots` | ["stove0-opus-target", "stove0-opus-review-sampler"] |
-| <a id="s-627b5e2cdc"></a>`format` | oci-image |
-| <a id="s-5313035ce0"></a>`license_baseline` | first-v1-publication |
-| <a id="s-682eda2978"></a>`license_expression` | CAL-1.0 |
-| <a id="s-ea76c70402"></a>`platforms` | ["linux/amd64"] |
-| <a id="s-63616d3996"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-stove0-opus-target", "kind": "oci-repository"} |
-| <a id="s-65067a059b"></a>`repository` | ghcr.io/nashspence/riverhog-stove0-opus-target |
-| <a id="s-6b9062690b"></a>`role` | reference |
-| <a id="s-20860bcd0d"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-stove0-opus-target:{version}", "ghcr.io/nashspence/riverhog-stove0-opus-target:sha-{source_sha}"] |
+| <a id="s-c0a4ab77dc"></a>`build_target` | `"stove0-opus-target"` |
+| <a id="s-d92b0b7680"></a>`description` | `"Optional nonnormative Opus target reference for Stove0."` |
+| <a id="s-6f67b15332"></a>`distribution_roots` | `["stove0-opus-target","stove0-opus-review-sampler"]` |
+| <a id="s-627b5e2cdc"></a>`format` | `"oci-image"` |
+| <a id="s-5313035ce0"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-682eda2978"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-ea76c70402"></a>`platforms` | `["linux/amd64"]` |
+| <a id="s-63616d3996"></a>`publication_identity` | `{"coordinate":"ghcr.io/nashspence/riverhog-stove0-opus-target","kind":"oci-repository"}` |
+| <a id="s-65067a059b"></a>`repository` | `"ghcr.io/nashspence/riverhog-stove0-opus-target"` |
+| <a id="s-6b9062690b"></a>`role` | `"reference"` |
+| <a id="s-20860bcd0d"></a>`tag_templates` | `["ghcr.io/nashspence/riverhog-stove0-opus-target:{version}","ghcr.io/nashspence/riverhog-stove0-opus-target:sha-{source_sha}"]` |
 
 ## Existing ownership context
 

@@ -24,13 +24,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8871b88c1f"></a>`authorization_view_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-432e1a3267"></a>`caught_up` | yes | type="boolean" |  |
-| <a id="s-6ab6578eda"></a>`changes` | yes | type="array"; items=(discriminator={"mapping":{"delete":"#/components/schemas/CatalogSyncDelete","upsert":"#/components/schemas/CatalogSyncUpsert"},"propertyName":"operation"}; oneOf=(#/components/schemas/CatalogSyncUpsert) \| (#/components/schemas/CatalogSyncDelete)); maxItems=100 |  |
-| <a id="s-7b7de7e14d"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1"; default="riverhog-catalog-sync/v1" |  |
-| <a id="s-e059c8b7fc"></a>`next_cursor` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-aad3b69d89"></a>`source_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-7679cb53ca"></a>`through_revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+| <a id="s-8871b88c1f"></a>`authorization_view_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$"; title="Authorization View Identity" |  |
+| <a id="s-432e1a3267"></a>`caught_up` | yes | type="boolean"; title="Caught Up" |  |
+| <a id="s-6ab6578eda"></a>`changes` | yes | type="array"; items=(discriminator={"mapping":{"delete":"#/components/schemas/CatalogSyncDelete","upsert":"#/components/schemas/CatalogSyncUpsert"},"propertyName":"operation"}; oneOf=[([CatalogSyncUpsert](schemas-catalogsyncupsert.md)); ([CatalogSyncDelete](schemas-catalogsyncdelete.md))]); maxItems=100; title="Changes" |  |
+| <a id="s-7b7de7e14d"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1"; default="riverhog-catalog-sync/v1"; title="Format" |  |
+| <a id="s-e059c8b7fc"></a>`next_cursor` | yes | type="string"; maxLength=4096; minLength=1; title="Next Cursor" |  |
+| <a id="s-aad3b69d89"></a>`source_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$"; title="Source Identity" |  |
+| <a id="s-7679cb53ca"></a>`through_revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18})$"; title="Through Revision" |  |
 
 ### Progression, limits, and lifecycle
 

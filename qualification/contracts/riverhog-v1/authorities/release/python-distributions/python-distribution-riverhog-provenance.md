@@ -16,15 +16,15 @@ Portable Riverhog v1 per-file provenance journals and validation.
 <a id="s-cfee2f0d94"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-53dcd05eda"></a>`artifacts` | [{"coordinate": "dist/riverhog_provenance-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_provenance-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-8c3203294a"></a>`channel` | github-release |
-| <a id="s-ff0786b31c"></a>`description` | Portable Riverhog v1 per-file provenance journals and validation. |
-| <a id="s-4b753f664a"></a>`license_baseline` | first-v1-publication |
-| <a id="s-a9f5e31450"></a>`license_expression` | Apache-2.0 |
-| <a id="s-ddf33a08a6"></a>`publication_identity` | {"coordinate": "riverhog-provenance", "kind": "python-distribution"} |
-| <a id="s-2f0919c65a"></a>`requires_python` | >=3.12 |
-| <a id="s-68a74a45c0"></a>`role` | reusable_library |
-| <a id="s-dd34473425"></a>`source` | packages/riverhog-provenance/pyproject.toml |
+| <a id="s-53dcd05eda"></a>`artifacts` | `[{"coordinate":"dist/riverhog_provenance-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/riverhog_provenance-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-8c3203294a"></a>`channel` | `"github-release"` |
+| <a id="s-ff0786b31c"></a>`description` | `"Portable Riverhog v1 per-file provenance journals and validation."` |
+| <a id="s-4b753f664a"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-a9f5e31450"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-ddf33a08a6"></a>`publication_identity` | `{"coordinate":"riverhog-provenance","kind":"python-distribution"}` |
+| <a id="s-2f0919c65a"></a>`requires_python` | `">=3.12"` |
+| <a id="s-68a74a45c0"></a>`role` | `"reusable_library"` |
+| <a id="s-dd34473425"></a>`source` | `"packages/riverhog-provenance/pyproject.toml"` |
 
 ## Existing ownership context
 

@@ -43,13 +43,13 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-b535643730"></a>`stopped` | <a id="s-c0ec901854"></a>`{"kind":"service-runtime-returned"}` | <a id="s-60b675e3f7"></a>`0` | <a id="s-2fa96ca046"></a>all: `no-command-result` | <a id="s-53a70ed72e"></a>all: `noncontractual-runtime-log` |
+| <a id="s-b535643730"></a>`stopped` | <a id="s-c0ec901854"></a>`{"kind":"service-runtime-returned"}` | <a id="s-60b675e3f7"></a>`0` | <a id="s-2fa96ca046"></a>all: `"no-command-result"` | <a id="s-53a70ed72e"></a>all: `"noncontractual-runtime-log"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-0976338f20"></a>`usage` | <a id="s-afdc2e9860"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-2e318f88ed"></a>`2` | <a id="s-037a372f7e"></a>all: `empty` | <a id="s-2a949bad3c"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-0976338f20"></a>`usage` | <a id="s-afdc2e9860"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-2e318f88ed"></a>`2` | <a id="s-037a372f7e"></a>all: `"empty"` | <a id="s-2a949bad3c"></a>all: `"noncontractual-usage-diagnostic"` |
 
 ### Progression, limits, and lifecycle
 

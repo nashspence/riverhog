@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c023e38ade"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-d1a9ffbb93"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-ed65033b3d"></a>`outcome_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-c023e38ade"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |  |
+| <a id="s-d1a9ffbb93"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-ed65033b3d"></a>`outcome_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Outcome Id" |  |
 
 ### Progression, limits, and lifecycle
 

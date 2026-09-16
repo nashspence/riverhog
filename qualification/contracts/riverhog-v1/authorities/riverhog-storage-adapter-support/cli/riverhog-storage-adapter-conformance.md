@@ -44,13 +44,13 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-0779825aae"></a>`conformant` | <a id="s-3356217d42"></a>`{"kind":"conformance-completed"}` | <a id="s-a511e84d49"></a>`0` | <a id="s-545267f90c"></a>json: [generated:riverhog-storage-adapter: StorageAdapterConformanceResult](../process-protocol-schemas/generated-riverhog-storage-adapter-storageadapterconformanceresult.md) | <a id="s-d8d26cc42e"></a>all: `empty` |
+| <a id="s-0779825aae"></a>`conformant` | <a id="s-3356217d42"></a>`{"kind":"conformance-completed"}` | <a id="s-a511e84d49"></a>`0` | <a id="s-545267f90c"></a>json: [generated:riverhog-storage-adapter: StorageAdapterConformanceResult](../process-protocol-schemas/generated-riverhog-storage-adapter-storageadapterconformanceresult.md) | <a id="s-d8d26cc42e"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-7d57e24d70"></a>`usage` | <a id="s-6b135baa08"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-4a1fdc4dd8"></a>`2` | <a id="s-a81996dea2"></a>all: `empty` | <a id="s-c3045d7639"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-7d57e24d70"></a>`usage` | <a id="s-6b135baa08"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-4a1fdc4dd8"></a>`2` | <a id="s-a81996dea2"></a>all: `"empty"` | <a id="s-c3045d7639"></a>all: `"noncontractual-usage-diagnostic"` |
 
 ### Progression, limits, and lifecycle
 

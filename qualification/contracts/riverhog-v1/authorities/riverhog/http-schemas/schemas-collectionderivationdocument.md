@@ -24,18 +24,18 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-5950ee9b49"></a>`artifact_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ba90eb4af8"></a>`claim` | yes | #/components/schemas/ClaimFenceDocument |  |
-| <a id="s-b4e114877f"></a>`controller_evidence` | yes | type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
-| <a id="s-86b6e19970"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-bd5a5d40f4"></a>`disposition_set` | yes | #/components/schemas/ArtifactDispositionSetIdentityDocument |  |
-| <a id="s-ad4497c421"></a>`execution_envelope_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ace8b4689c"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-9babeae319"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a259beccb3"></a>`format` | yes | type="string"; const="riverhog-collection-derivation/v1" |  |
-| <a id="s-666e892b51"></a>`input_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a2f6926964"></a>`operation` | yes | #/components/schemas/OperationIdentityDocument |  |
-| <a id="s-ada19b2ae3"></a>`recipe` | yes | #/components/schemas/RecipeIdentityDocument |  |
+| <a id="s-5950ee9b49"></a>`artifact_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Artifact Set Sha256" |  |
+| <a id="s-ba90eb4af8"></a>`claim` | yes | [ClaimFenceDocument](schemas-claimfencedocument.md) |  |
+| <a id="s-b4e114877f"></a>`controller_evidence` | yes | type="object"; additionalProperties=(any JSON value); title="Controller Evidence"; x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
+| <a id="s-86b6e19970"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Controller Evidence Sha256" |  |
+| <a id="s-bd5a5d40f4"></a>`disposition_set` | yes | [ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md) |  |
+| <a id="s-ad4497c421"></a>`execution_envelope_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Execution Envelope Sha256" |  |
+| <a id="s-ace8b4689c"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Execution Id" |  |
+| <a id="s-9babeae319"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Execution Sha256" |  |
+| <a id="s-a259beccb3"></a>`format` | yes | type="string"; const="riverhog-collection-derivation/v1"; title="Format" |  |
+| <a id="s-666e892b51"></a>`input_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Input Set Sha256" |  |
+| <a id="s-a2f6926964"></a>`operation` | yes | [OperationIdentityDocument](schemas-operationidentitydocument.md) |  |
+| <a id="s-ada19b2ae3"></a>`recipe` | yes | [RecipeIdentityDocument](schemas-recipeidentitydocument.md) |  |
 
 ### Progression, limits, and lifecycle
 

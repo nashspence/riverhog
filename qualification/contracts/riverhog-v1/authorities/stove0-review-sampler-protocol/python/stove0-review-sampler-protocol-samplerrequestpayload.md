@@ -68,7 +68,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-6a8533bf55"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-65bdda7a1b"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-786f4bcbb1"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-786f4bcbb1"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
 | <a id="s-aa8394a1b4"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-4c86473442"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 

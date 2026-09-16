@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-9aafbb77a1"></a>`authority` | no | anyOf=(#/components/schemas/ExactSetAuthorityDocument) \| (type="null") |  |
-| <a id="s-7af5ab6592"></a>`count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-9d3a07ed65"></a>`state` | yes | type="string"; enum=["receiving","sealed"] |  |
+| <a id="s-9aafbb77a1"></a>`authority` | no | anyOf=[([ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)); (type="null")] |  |
+| <a id="s-7af5ab6592"></a>`count` | yes | type="integer"; minimum=0; title="Count" |  |
+| <a id="s-9d3a07ed65"></a>`state` | yes | type="string"; enum=["receiving","sealed"]; title="State" |  |
 
 ### Progression, limits, and lifecycle
 

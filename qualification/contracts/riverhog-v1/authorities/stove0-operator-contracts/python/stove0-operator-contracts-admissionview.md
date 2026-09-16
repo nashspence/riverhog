@@ -38,13 +38,13 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-39f4aa867f"></a>`attempt_count` | yes | type="integer"; minimum=0 |  |
 | <a id="s-ec2e41e1e4"></a>`created_at` | yes | type="string"; maxLength=40; minLength=1 |  |
-| <a id="s-cc2e78584a"></a>`failure` | no | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-cc2e78584a"></a>`failure` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; default=null |  |
 | <a id="s-24dc183dec"></a>`intent` | yes | [AdmissionIntent](#s-990313fa6e) |  |
-| <a id="s-771f563f31"></a>`next_attempt_at` | no | anyOf=(type="string"; maxLength=40; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-6fdb4daaf7"></a>`preview_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-771f563f31"></a>`next_attempt_at` | no | anyOf=[(type="string"; maxLength=40; minLength=1); (type="null")]; default=null |  |
+| <a id="s-6fdb4daaf7"></a>`preview_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-e916cc4872"></a>`state` | yes | type="string"; enum=["intent","previewed","work_bound"] |  |
 | <a id="s-918983d3cd"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
-| <a id="s-280f1abd95"></a>`work_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-280f1abd95"></a>`work_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 
 ##### Definitions
 
@@ -90,7 +90,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-bdeebe9cd5"></a>`archive_root_sha256` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-dbe44beb2b"></a>`collection_id` | yes | [CollectionId](#s-8c5a60017f) |  |
 | <a id="s-eb6b0bdebb"></a>`content_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-989289d089"></a>`description` | yes | anyOf=([CollectionDescription](#s-c7eddb0819)) \| (type="null") |  |
+| <a id="s-989289d089"></a>`description` | yes | anyOf=[([CollectionDescription](#s-c7eddb0819)); (type="null")] |  |
 | <a id="s-8e1c472a59"></a>`description_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-69796ee4eb"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
 | <a id="s-c6593baf9d"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |

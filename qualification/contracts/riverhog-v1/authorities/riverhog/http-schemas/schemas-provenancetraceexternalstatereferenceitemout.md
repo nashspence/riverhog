@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-82c2fe1e31"></a>`kind` | yes | type="string"; const="external_state_reference" |  |
-| <a id="s-ac9f21d08d"></a>`reference` | yes | #/components/schemas/ProvenanceExternalStateReferenceOut |  |
+| <a id="s-82c2fe1e31"></a>`kind` | yes | type="string"; const="external_state_reference"; title="Kind" |  |
+| <a id="s-ac9f21d08d"></a>`reference` | yes | [ProvenanceExternalStateReferenceOut](schemas-provenanceexternalstatereferenceout.md) |  |
 
 ## Maintained corroboration
 

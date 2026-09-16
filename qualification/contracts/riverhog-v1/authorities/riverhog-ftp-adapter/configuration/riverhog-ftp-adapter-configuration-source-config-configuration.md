@@ -25,17 +25,17 @@ One deployment-owned, content-opaque intake source.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-44782b2557"></a>`archive_store` | no | anyOf=(type="string"; maxLength=160; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-d8f63ea908"></a>`close_mode` | no | type="string"; enum=["stable","explicit-flush"]; default="stable" |  |
-| <a id="s-05492fae9c"></a>`description` | no | anyOf=([CollectionDescription](#s-fb60852aae)) \| (type="null"); default=null |  |
-| <a id="s-ae0af366ef"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$" |  |
-| <a id="s-7147ff2557"></a>`ingest_source` | yes | type="string"; maxLength=512; minLength=1 |  |
-| <a id="s-5e54358858"></a>`max_bytes` | no | type="integer"; minimum=1; default=107374182400 |  |
-| <a id="s-f3e227fccb"></a>`max_files` | no | type="integer"; minimum=1; default=1000 |  |
-| <a id="s-cf8393c1e2"></a>`provenance` | no | type="string"; enum=["capture","omit"]; default="capture" |  |
-| <a id="s-5be0fa673e"></a>`provenance_omission_reason` | no | anyOf=(type="string"; maxLength=1000) \| (type="null"); default=null |  |
-| <a id="s-4a38ed53f2"></a>`root` | yes | type="string"; format="path" |  |
-| <a id="s-eea19079fd"></a>`tags` | no | type="array"; default=[]; items=([CollectionTag](#s-de506e6f37)) |  |
+| <a id="s-44782b2557"></a>`archive_store` | no | anyOf=[(type="string"; maxLength=160; minLength=1); (type="null")]; default=null; title="Archive Store" |  |
+| <a id="s-d8f63ea908"></a>`close_mode` | no | type="string"; enum=["stable","explicit-flush"]; default="stable"; title="Close Mode" |  |
+| <a id="s-05492fae9c"></a>`description` | no | anyOf=[([CollectionDescription](#s-fb60852aae)); (type="null")]; default=null |  |
+| <a id="s-ae0af366ef"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-7147ff2557"></a>`ingest_source` | yes | type="string"; maxLength=512; minLength=1; title="Ingest Source" |  |
+| <a id="s-5e54358858"></a>`max_bytes` | no | type="integer"; minimum=1; default=107374182400; title="Max Bytes" |  |
+| <a id="s-f3e227fccb"></a>`max_files` | no | type="integer"; minimum=1; default=1000; title="Max Files" |  |
+| <a id="s-cf8393c1e2"></a>`provenance` | no | type="string"; enum=["capture","omit"]; default="capture"; title="Provenance" |  |
+| <a id="s-5be0fa673e"></a>`provenance_omission_reason` | no | anyOf=[(type="string"; maxLength=1000); (type="null")]; default=null; title="Provenance Omission Reason" |  |
+| <a id="s-4a38ed53f2"></a>`root` | yes | type="string"; format="path"; title="Root" |  |
+| <a id="s-eea19079fd"></a>`tags` | no | type="array"; default=[]; items=([CollectionTag](#s-de506e6f37)); title="Tags" |  |
 
 ### Definitions
 

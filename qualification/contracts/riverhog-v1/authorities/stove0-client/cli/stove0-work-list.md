@@ -24,12 +24,12 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-c57dac5cff"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
-| <a id="s-37ac272d38"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
-| <a id="s-db3eaea3f6"></a>`phase`<br>`--phase` | optional option; 1 value | text | not recorded |
-| <a id="s-32a1a20eda"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded |
-| <a id="s-62f62ee964"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"updated_at"` |
-| <a id="s-36f021e7bf"></a>`order`<br>`--order` | optional option; 1 value | text | `"desc"` |
+| <a id="s-c57dac5cff"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25`<br>Env: `null` |
+| <a id="s-37ac272d38"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-db3eaea3f6"></a>`phase`<br>`--phase` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-32a1a20eda"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-62f62ee964"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"updated_at"`<br>Env: `null` |
+| <a id="s-36f021e7bf"></a>`order`<br>`--order` | optional option; 1 value | text | `"desc"`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -48,14 +48,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-cfaad4eb3c"></a>`completed` | <a id="s-70bfb1a4f0"></a>`{"kind":"command-completed"}` | <a id="s-dc60a0c98e"></a>`0` | <a id="s-bccb712615"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP list_work response 200](../../stove0/http-operations/get-v1-work.md#s-ce11aed2b2) | <a id="s-7d8e38c2f4"></a>all: `empty` |
+| <a id="s-cfaad4eb3c"></a>`completed` | <a id="s-70bfb1a4f0"></a>`{"kind":"command-completed"}` | <a id="s-dc60a0c98e"></a>`0` | <a id="s-bccb712615"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP list_work response 200](../../stove0/http-operations/get-v1-work.md#s-ce11aed2b2) | <a id="s-7d8e38c2f4"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-721178caa2"></a>`usage` | <a id="s-c14f9c828a"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-75a4f42a5e"></a>`2` | <a id="s-4963102e52"></a>all: `empty` | <a id="s-7d17a8a87f"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-adddd1c52f"></a>`operational` | <a id="s-551f717ba1"></a>`{"kind":"application-error"}` | <a id="s-495c9eff99"></a>`1` | <a id="s-153c0aa6e4"></a>all: `empty` | <a id="s-8580ceb8a3"></a>all: `noncontractual-diagnostic` |
+| <a id="s-721178caa2"></a>`usage` | <a id="s-c14f9c828a"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-75a4f42a5e"></a>`2` | <a id="s-4963102e52"></a>all: `"empty"` | <a id="s-7d17a8a87f"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-adddd1c52f"></a>`operational` | <a id="s-551f717ba1"></a>`{"kind":"application-error"}` | <a id="s-495c9eff99"></a>`1` | <a id="s-153c0aa6e4"></a>all: `"empty"` | <a id="s-8580ceb8a3"></a>all: `"noncontractual-diagnostic"` |
 
 ### Progression, limits, and lifecycle
 

@@ -16,15 +16,15 @@ Dependency-light public contracts for external stove0 targets.
 <a id="s-b28b2b34b2"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-764e625f32"></a>`artifacts` | [{"coordinate": "dist/stove0_target_protocol-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_target_protocol-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-125473a001"></a>`channel` | github-release |
-| <a id="s-67d653caf2"></a>`description` | Dependency-light public contracts for external stove0 targets. |
-| <a id="s-7a5ee45887"></a>`license_baseline` | first-v1-publication |
-| <a id="s-5e60cfd849"></a>`license_expression` | Apache-2.0 |
-| <a id="s-bd2ec35ede"></a>`publication_identity` | {"coordinate": "stove0-target-protocol", "kind": "python-distribution"} |
-| <a id="s-bf7c3b499d"></a>`requires_python` | >=3.12 |
-| <a id="s-413d844e13"></a>`role` | reusable_library |
-| <a id="s-2a2b42bd50"></a>`source` | reference/stove0/packages/target-protocol/pyproject.toml |
+| <a id="s-764e625f32"></a>`artifacts` | `[{"coordinate":"dist/stove0_target_protocol-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_target_protocol-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-125473a001"></a>`channel` | `"github-release"` |
+| <a id="s-67d653caf2"></a>`description` | `"Dependency-light public contracts for external stove0 targets."` |
+| <a id="s-7a5ee45887"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-5e60cfd849"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-bd2ec35ede"></a>`publication_identity` | `{"coordinate":"stove0-target-protocol","kind":"python-distribution"}` |
+| <a id="s-bf7c3b499d"></a>`requires_python` | `">=3.12"` |
+| <a id="s-413d844e13"></a>`role` | `"reusable_library"` |
+| <a id="s-2a2b42bd50"></a>`source` | `"reference/stove0/packages/target-protocol/pyproject.toml"` |
 
 ## Existing ownership context
 

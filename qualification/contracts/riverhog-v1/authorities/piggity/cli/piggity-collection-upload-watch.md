@@ -24,8 +24,8 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-2d6558a87d"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded |
-| <a id="s-514e76b029"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-2d6558a87d"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded<br>Env: `null` |
+| <a id="s-514e76b029"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -44,15 +44,15 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-acd3c70be4"></a>`completed` | <a id="s-a525d3475d"></a>`{"kind":"command-completed"}` | <a id="s-8272705a42"></a>`0` | <a id="s-6d0344c8cd"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP get_collection_upload_session response 200](../../riverhog/http-operations/get-v1-collection-upload-sessions-collection-id.md#s-3478a57d08) | <a id="s-dea94d91e8"></a>all: `noncontractual-progress` |
+| <a id="s-acd3c70be4"></a>`completed` | <a id="s-a525d3475d"></a>`{"kind":"command-completed"}` | <a id="s-8272705a42"></a>`0` | <a id="s-6d0344c8cd"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP get_collection_upload_session response 200](../../riverhog/http-operations/get-v1-collection-upload-sessions-collection-id.md#s-3478a57d08) | <a id="s-dea94d91e8"></a>all: `"noncontractual-progress"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-ed4f6ab955"></a>`usage` | <a id="s-a6869ae2a2"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-cfd35862a8"></a>`2` | <a id="s-ce76b53ad7"></a>all: `empty` | <a id="s-d08182b49a"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-aa66567ab9"></a>`operational` | <a id="s-71e8b5506d"></a>`{"kind":"application-error"}` | <a id="s-600ca67dc8"></a>`1` | <a id="s-961fb3d8e1"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-f3cdf852d2"></a>human: `noncontractual-diagnostic-or-progress`; json: `noncontractual-progress` |
-| <a id="s-5de1ee9645"></a>`custody-timeout` | <a id="s-8fbb430c42"></a>`{"kind":"custody-deadline-expired","state":"not-finalized"}` | <a id="s-7e83c1f628"></a>`124` | <a id="s-44154f6b2e"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP get_collection_upload_session response 200](../../riverhog/http-operations/get-v1-collection-upload-sessions-collection-id.md#s-3478a57d08) | <a id="s-fbe773a64f"></a>all: `noncontractual-progress` |
+| <a id="s-ed4f6ab955"></a>`usage` | <a id="s-a6869ae2a2"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-cfd35862a8"></a>`2` | <a id="s-ce76b53ad7"></a>all: `"empty"` | <a id="s-d08182b49a"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-aa66567ab9"></a>`operational` | <a id="s-71e8b5506d"></a>`{"kind":"application-error"}` | <a id="s-600ca67dc8"></a>`1` | <a id="s-961fb3d8e1"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-f3cdf852d2"></a>human: `"noncontractual-diagnostic-or-progress"`; json: `"noncontractual-progress"` |
+| <a id="s-5de1ee9645"></a>`custody-timeout` | <a id="s-8fbb430c42"></a>`{"kind":"custody-deadline-expired","state":"not-finalized"}` | <a id="s-7e83c1f628"></a>`124` | <a id="s-44154f6b2e"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP get_collection_upload_session response 200](../../riverhog/http-operations/get-v1-collection-upload-sessions-collection-id.md#s-3478a57d08) | <a id="s-fbe773a64f"></a>all: `"noncontractual-progress"` |
 
 ### Progression, limits, and lifecycle
 

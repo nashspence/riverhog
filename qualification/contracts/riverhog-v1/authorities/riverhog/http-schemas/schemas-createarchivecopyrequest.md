@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-40f34e16aa"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-dc194966f1"></a>`destination_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-d8b0ca353c"></a>`event_context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null") |  |
-| <a id="s-b8c0920ade"></a>`source_store` | no | anyOf=(#/components/schemas/ArchiveStoreName) \| (type="null") |  |
+| <a id="s-40f34e16aa"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-dc194966f1"></a>`destination_store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
+| <a id="s-d8b0ca353c"></a>`event_context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; title="Event Context" |  |
+| <a id="s-b8c0920ade"></a>`source_store` | no | anyOf=[([ArchiveStoreName](schemas-archivestorename.md)); (type="null")] |  |
 
 ### Progression, limits, and lifecycle
 

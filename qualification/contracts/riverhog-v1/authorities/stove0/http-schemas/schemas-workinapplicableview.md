@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a3ff8d188d"></a>`code` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-3e3aa8cd68"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-a3ff8d188d"></a>`code` | yes | type="string"; maxLength=160; minLength=1; title="Code" |  |
+| <a id="s-3e3aa8cd68"></a>`message` | yes | type="string"; maxLength=1000; minLength=1; title="Message" |  |
 
 ### Progression, limits, and lifecycle
 

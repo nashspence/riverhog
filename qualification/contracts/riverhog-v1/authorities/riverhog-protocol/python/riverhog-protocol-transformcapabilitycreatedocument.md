@@ -36,7 +36,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7b3788c2b2"></a>`actions` | no | type="array"; items=(type="string"; enum=["read-inputs","write-output"]); minItems=1; oneOf=(const=["read-inputs"]) \| (const=["read-inputs","write-output"]) |  |
+| <a id="s-7b3788c2b2"></a>`actions` | no | type="array"; items=(type="string"; enum=["read-inputs","write-output"]); minItems=1; oneOf=[(const=["read-inputs"]); (const=["read-inputs","write-output"])] |  |
 | <a id="s-3677aee9dc"></a>`audience` | yes | type="string"; pattern="^[a-z0-9][a-z0-9._:/-]{0,299}$" |  |
 | <a id="s-517200eda4"></a>`fence` | yes | type="integer"; minimum=1 |  |
 | <a id="s-fbbcc79c6e"></a>`ttl_seconds` | no | type="integer"; minimum=30; maximum=86400; default=900 |  |

@@ -24,7 +24,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-22f144242f"></a>`lease_seconds` | yes | type="integer"; minimum=1 |  |
+| <a id="s-22f144242f"></a>`lease_seconds` | yes | type="integer"; minimum=1; title="Lease Seconds" |  |
 
 ## Governing policies
 

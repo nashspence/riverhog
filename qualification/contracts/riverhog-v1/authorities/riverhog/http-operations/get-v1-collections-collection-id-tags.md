@@ -14,19 +14,22 @@ List Collection Tags
 ## External contract
 
 <a id="s-ebc23e6a3b"></a>
-- <a id="s-8d52fce6b4"></a>`operationId`: list_collection_tags
-- <a id="s-a99fe14e37"></a>`summary`: List Collection Tags
-- <a id="s-df0b975dea"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-8d52fce6b4"></a>`operationId`: `"list_collection_tags"`
+- <a id="s-df0b975dea"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-a99fe14e37"></a>`summary`: `"List Collection Tags"`
+- <a id="s-ecf28a3735"></a>`tags`: `["collection-tags"]`
+- <a id="s-8223b65d86"></a>`x-riverhog-permission-requirements`: `[{"any_of":["catalog:read"]}]`
+- <a id="s-f87e600f0c"></a>`x-riverhog-read-collection`: `{"authority":"collection-tag-set","authority_parameter":"tag_set_identity","cursor_parameter":"page_token","kind":"exact-authority-page","limit_parameter":"page_size"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-61d6bf74c3"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-d879f8ea42"></a>`revision` | query | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-a651f24cea"></a>`tag_set_identity` | query | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
-| <a id="s-9d44d0e0b3"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-8ca4af851e"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
+| <a id="s-61d6bf74c3"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-d879f8ea42"></a>`revision` | query | yes | not declared | type="integer"; minimum=1; title="Revision" |
+| <a id="s-a651f24cea"></a>`tag_set_identity` | query | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Tag Set Identity" |
+| <a id="s-9d44d0e0b3"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-8ca4af851e"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
 
 ### Responses
 

@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a8d0df20f2"></a>`id` | yes | type="string"; maxLength=300; minLength=1 |  |
-| <a id="s-55e18d79c3"></a>`source` | yes | type="string"; maxLength=1000; minLength=1 |  |
-| <a id="s-abdf2f2efc"></a>`subject` | no | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null") |  |
-| <a id="s-a3f28fa3f0"></a>`type` | yes | type="string"; maxLength=300; minLength=1 |  |
+| <a id="s-a8d0df20f2"></a>`id` | yes | type="string"; maxLength=300; minLength=1; title="Id" |  |
+| <a id="s-55e18d79c3"></a>`source` | yes | type="string"; maxLength=1000; minLength=1; title="Source" |  |
+| <a id="s-abdf2f2efc"></a>`subject` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; title="Subject" |  |
+| <a id="s-a3f28fa3f0"></a>`type` | yes | type="string"; maxLength=300; minLength=1; title="Type" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6ebb92d5d4"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-7f1d0c3d3d"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
+| <a id="s-6ebb92d5d4"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-7f1d0c3d3d"></a>`path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
 
 ## Maintained corroboration
 

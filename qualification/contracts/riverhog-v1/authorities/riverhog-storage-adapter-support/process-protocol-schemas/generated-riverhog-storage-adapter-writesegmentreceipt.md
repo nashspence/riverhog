@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-88035ebc6e"></a>`number` | yes | type="integer"; minimum=1 |  |
-| <a id="s-0f6d9c2a15"></a>`segment_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
-| <a id="s-4186773e61"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-48aa910874"></a>`stored_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-88035ebc6e"></a>`number` | yes | type="integer"; minimum=1; title="Number" |  |
+| <a id="s-0f6d9c2a15"></a>`segment_token` | yes | type="string"; maxLength=4000; minLength=1; title="Segment Token" |  |
+| <a id="s-4186773e61"></a>`stored_bytes` | yes | type="integer"; minimum=1; title="Stored Bytes" |  |
+| <a id="s-48aa910874"></a>`stored_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null; title="Stored Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

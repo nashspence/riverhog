@@ -37,9 +37,9 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-4cb2f85567"></a>`completed_at` | yes | type="string"; maxLength=100; minLength=1 |  |
-| <a id="s-ca77fdd25d"></a>`entity_token` | no | anyOf=(type="string"; maxLength=4000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-ca77fdd25d"></a>`entity_token` | no | anyOf=[(type="string"; maxLength=4000; minLength=1); (type="null")]; default=null |  |
 | <a id="s-3d56fe7991"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-6172d99bd4"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-6172d99bd4"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null |  |
 | <a id="s-1e07875f37"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
 | <a id="s-aa2f38771f"></a>`verified_content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
 | <a id="s-0aea214e3f"></a>`verified_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} |  |

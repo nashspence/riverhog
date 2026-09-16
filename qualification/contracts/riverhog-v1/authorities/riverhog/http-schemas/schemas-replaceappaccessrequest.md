@@ -24,7 +24,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3698bbca24"></a>`access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
+| <a id="s-3698bbca24"></a>`access` | yes | [ApplicationAccessGrantSet](schemas-applicationaccessgrantset.md) |  |
 
 ## Maintained corroboration
 

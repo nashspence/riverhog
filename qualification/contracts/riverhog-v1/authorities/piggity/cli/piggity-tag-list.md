@@ -24,11 +24,11 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-3bfe1b3a58"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
-| <a id="s-16db27ce3f"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
-| <a id="s-0d4d67a908"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded |
-| <a id="s-a807f725a0"></a>`ids`<br>`--ids` | optional flag; 0 values | boolean | `false` |
-| <a id="s-d20bc5727e"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-3bfe1b3a58"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25`<br>Env: `null` |
+| <a id="s-16db27ce3f"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-0d4d67a908"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-a807f725a0"></a>`ids`<br>`--ids` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
+| <a id="s-d20bc5727e"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -47,14 +47,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-a05e463168"></a>`completed` | <a id="s-a2a5ec553a"></a>`{"kind":"command-completed"}` | <a id="s-496a774c9f"></a>`0` | <a id="s-b9d68cad55"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP list_tags response 200](../../riverhog/http-operations/get-v1-tags.md#s-3381dcf43b) | <a id="s-5a63271489"></a>all: `empty` |
+| <a id="s-a05e463168"></a>`completed` | <a id="s-a2a5ec553a"></a>`{"kind":"command-completed"}` | <a id="s-496a774c9f"></a>`0` | <a id="s-b9d68cad55"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP list_tags response 200](../../riverhog/http-operations/get-v1-tags.md#s-3381dcf43b) | <a id="s-5a63271489"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-a180cb17c2"></a>`usage` | <a id="s-b347e5accc"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-4a180f0e0f"></a>`2` | <a id="s-ea8d7d76aa"></a>all: `empty` | <a id="s-eb084bc36b"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-11ada88d84"></a>`operational` | <a id="s-0a4e3ede2c"></a>`{"kind":"application-error"}` | <a id="s-c3ee9587cf"></a>`1` | <a id="s-285838b122"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-a840dda0b6"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-a180cb17c2"></a>`usage` | <a id="s-b347e5accc"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-4a180f0e0f"></a>`2` | <a id="s-ea8d7d76aa"></a>all: `"empty"` | <a id="s-eb084bc36b"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-11ada88d84"></a>`operational` | <a id="s-0a4e3ede2c"></a>`{"kind":"application-error"}` | <a id="s-c3ee9587cf"></a>`1` | <a id="s-285838b122"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-a840dda0b6"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 

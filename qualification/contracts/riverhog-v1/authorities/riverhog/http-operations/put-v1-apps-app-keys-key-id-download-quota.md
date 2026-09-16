@@ -14,20 +14,26 @@ Set App Key Download Quota
 ## External contract
 
 <a id="s-34c4dd36e3"></a>
-- <a id="s-a0dc7f67bf"></a>`operationId`: set_app_key_download_quota
-- <a id="s-20e8c081e0"></a>`summary`: Set App Key Download Quota
-- <a id="s-fea3f2969e"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-a0dc7f67bf"></a>`operationId`: `"set_app_key_download_quota"`
+- <a id="s-fea3f2969e"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-20e8c081e0"></a>`summary`: `"Set App Key Download Quota"`
+- <a id="s-93b500eda0"></a>`tags`: `["download quotas"]`
+- <a id="s-978d1c6236"></a>`x-riverhog-permission-requirements`: `[{"any_of":["quotas:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-c3c6c00d1b"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
-| <a id="s-7f7c737ff2"></a>`key_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{16}$" |
+| <a id="s-c3c6c00d1b"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"; title="App" |
+| <a id="s-7f7c737ff2"></a>`key_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{16}$"; title="Key Id" |
 
 ### <a id="s-df8a168537"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/SetKeyDownloadQuotaRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [SetKeyDownloadQuotaRequest](../http-schemas/schemas-setkeydownloadquotarequest.md) |
 
 ### Responses
 

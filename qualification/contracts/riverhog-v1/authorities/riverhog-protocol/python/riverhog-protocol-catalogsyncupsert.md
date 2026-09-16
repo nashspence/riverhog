@@ -39,7 +39,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-2ccfa8abaa"></a>`archive_root_sha256` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-cdb7d0178e"></a>`collection_id` | yes | [CollectionId](#s-99e4ae8314) |  |
 | <a id="s-93685e44c6"></a>`content_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-cb158b751e"></a>`description` | yes | anyOf=([CollectionDescription](#s-95ff3511b7)) \| (type="null") |  |
+| <a id="s-cb158b751e"></a>`description` | yes | anyOf=[([CollectionDescription](#s-95ff3511b7)); (type="null")] |  |
 | <a id="s-2de72a865a"></a>`description_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-53fc15196d"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
 | <a id="s-054311f13c"></a>`operation` | no | type="string"; const="upsert"; default="upsert" |  |

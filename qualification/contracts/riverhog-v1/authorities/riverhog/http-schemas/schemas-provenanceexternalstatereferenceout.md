@@ -24,11 +24,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4ef91bcc8e"></a>`entry_id` | yes | #/components/schemas/ProvenanceEntryId |  |
-| <a id="s-889c79b7b3"></a>`entry_json_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-451589e101"></a>`from_journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
-| <a id="s-1913a68c52"></a>`state_id` | yes | #/components/schemas/ProvenanceStateId |  |
-| <a id="s-f5a4b84f5e"></a>`to_journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
+| <a id="s-4ef91bcc8e"></a>`entry_id` | yes | [ProvenanceEntryId](schemas-provenanceentryid.md) |  |
+| <a id="s-889c79b7b3"></a>`entry_json_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Entry Json Sha256" |  |
+| <a id="s-451589e101"></a>`from_journal_id` | yes | [ProvenanceJournalId](schemas-provenancejournalid.md) |  |
+| <a id="s-1913a68c52"></a>`state_id` | yes | [ProvenanceStateId](schemas-provenancestateid.md) |  |
+| <a id="s-f5a4b84f5e"></a>`to_journal_id` | yes | [ProvenanceJournalId](schemas-provenancejournalid.md) |  |
 
 ### Progression, limits, and lifecycle
 

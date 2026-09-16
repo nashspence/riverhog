@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-17baa9efed"></a>Parser name: `quota`
+
+| Field | Value |
+|---|---|
+| <a id="s-58f5311a72"></a>`parameters` | `[]` |
 - <a id="s-3d82dc85b5"></a>Subcommand selection: required.
 - <a id="s-b3b07c0353"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
 - <a id="s-e2e8c66e81"></a>Options after positional arguments at this parser: left as arguments.

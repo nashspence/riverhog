@@ -25,9 +25,9 @@ Closed reference to a separately retained selection document.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d3ec2665dd"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-77bdcdd02e"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-04c329f29f"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-d3ec2665dd"></a>`artifact_count` | yes | type="integer"; minimum=1; title="Artifact Count" |  |
+| <a id="s-77bdcdd02e"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Selection Sha256" |  |
+| <a id="s-04c329f29f"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
 
 ### Progression, limits, and lifecycle
 

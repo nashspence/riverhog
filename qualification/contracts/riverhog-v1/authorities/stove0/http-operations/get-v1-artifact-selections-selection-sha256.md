@@ -14,15 +14,17 @@ Get Artifact Selection
 ## External contract
 
 <a id="s-c4ee91313e"></a>
-- <a id="s-f26db81368"></a>`operationId`: get_artifact_selection
-- <a id="s-19efa1c505"></a>`summary`: Get Artifact Selection
+- <a id="s-f26db81368"></a>`operationId`: `"get_artifact_selection"`
+- <a id="s-19efa1c505"></a>`summary`: `"Get Artifact Selection"`
+- <a id="s-66945d17b3"></a>`tags`: `["artifact-selections"]`
+- <a id="s-2e1099aa34"></a>`x-riverhog-read-collection`: `{"authority":"artifact-selection","authority_parameter":"selection_sha256","cursor_parameter":"continuation","fixed_limit":256,"kind":"exact-authority-page"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-bef50296e9"></a>`selection_sha256` | path | yes | not declared | type="string" |
-| <a id="s-aa2e76ccfa"></a>`continuation` | query | no | not declared | anyOf=(type="string") \| (type="null") |
+| <a id="s-bef50296e9"></a>`selection_sha256` | path | yes | not declared | type="string"; title="Selection Sha256" |
+| <a id="s-aa2e76ccfa"></a>`continuation` | query | no | not declared | anyOf=[(type="string"); (type="null")]; title="Continuation" |
 
 ### Responses
 

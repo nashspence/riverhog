@@ -37,10 +37,10 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-4040051f30"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ebb211919a"></a>`execution_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-ebb211919a"></a>`execution_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-25792bb28a"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-8aa807b6bd"></a>`outcomes` | no | anyOf=([ExactSetAuthorityDocument](#s-6c83c9bf2b)) \| (type="null"); default=null |  |
-| <a id="s-5b8d5d0a4e"></a>`output_collection_id` | no | anyOf=([CollectionId](#s-c5d15daa23)) \| (type="null"); default=null |  |
+| <a id="s-8aa807b6bd"></a>`outcomes` | no | anyOf=[([ExactSetAuthorityDocument](#s-6c83c9bf2b)); (type="null")]; default=null |  |
+| <a id="s-5b8d5d0a4e"></a>`output_collection_id` | no | anyOf=[([CollectionId](#s-c5d15daa23)); (type="null")]; default=null |  |
 | <a id="s-5178cf253f"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### Exactly one must match (`oneOf`)

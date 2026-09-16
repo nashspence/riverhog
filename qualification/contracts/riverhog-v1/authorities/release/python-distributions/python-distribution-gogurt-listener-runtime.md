@@ -16,15 +16,15 @@ Portable durable listener runtime and native-platform port for Gogurt.
 <a id="s-e542fe29c9"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-e6233d3b53"></a>`artifacts` | [{"coordinate": "dist/gogurt_listener_runtime-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/gogurt_listener_runtime-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-3150381b0f"></a>`channel` | github-release |
-| <a id="s-fc32147bcb"></a>`description` | Portable durable listener runtime and native-platform port for Gogurt. |
-| <a id="s-c2b91c0691"></a>`license_baseline` | first-v1-publication |
-| <a id="s-feac3ceff4"></a>`license_expression` | Apache-2.0 |
-| <a id="s-2ff9d99d6f"></a>`publication_identity` | {"coordinate": "gogurt-listener-runtime", "kind": "python-distribution"} |
-| <a id="s-6cdafa600f"></a>`requires_python` | >=3.12 |
-| <a id="s-30723da06a"></a>`role` | reusable_library |
-| <a id="s-786d10abd4"></a>`source` | reference/gogurt/packages/listener-runtime/pyproject.toml |
+| <a id="s-e6233d3b53"></a>`artifacts` | `[{"coordinate":"dist/gogurt_listener_runtime-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/gogurt_listener_runtime-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-3150381b0f"></a>`channel` | `"github-release"` |
+| <a id="s-fc32147bcb"></a>`description` | `"Portable durable listener runtime and native-platform port for Gogurt."` |
+| <a id="s-c2b91c0691"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-feac3ceff4"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-2ff9d99d6f"></a>`publication_identity` | `{"coordinate":"gogurt-listener-runtime","kind":"python-distribution"}` |
+| <a id="s-6cdafa600f"></a>`requires_python` | `">=3.12"` |
+| <a id="s-30723da06a"></a>`role` | `"reusable_library"` |
+| <a id="s-786d10abd4"></a>`source` | `"reference/gogurt/packages/listener-runtime/pyproject.toml"` |
 
 ## Existing ownership context
 

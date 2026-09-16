@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-32e26780ea"></a>`archive_objects` | yes | type="integer" |  |
-| <a id="s-84ff4adb17"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-896537db7e"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-c2e32227eb"></a>`custody` | yes | discriminator={"mapping":{"complete":"#/components/schemas/CompleteCollectionUploadCustodyOut","pending":"#/components/schemas/PendingCollectionUploadCustodyOut"},"propertyName":"state"}; oneOf=(#/components/schemas/PendingCollectionUploadCustodyOut) \| (#/components/schemas/CompleteCollectionUploadCustodyOut) |  |
-| <a id="s-c5147f11e8"></a>`files` | yes | type="integer"; minimum=0 |  |
-| <a id="s-7c66179bc1"></a>`status` | yes | type="string"; enum=["discarded","already_absent"] |  |
+| <a id="s-32e26780ea"></a>`archive_objects` | yes | type="integer"; title="Archive Objects" |  |
+| <a id="s-84ff4adb17"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-896537db7e"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-c2e32227eb"></a>`custody` | yes | discriminator={"mapping":{"complete":"#/components/schemas/CompleteCollectionUploadCustodyOut","pending":"#/components/schemas/PendingCollectionUploadCustodyOut"},"propertyName":"state"}; oneOf=[([PendingCollectionUploadCustodyOut](schemas-pendingcollectionuploadcustodyout.md)); ([CompleteCollectionUploadCustodyOut](schemas-completecollectionuploadcustodyout.md))]; title="Custody" |  |
+| <a id="s-c5147f11e8"></a>`files` | yes | type="integer"; minimum=0; title="Files" |  |
+| <a id="s-7c66179bc1"></a>`status` | yes | type="string"; enum=["discarded","already_absent"]; title="Status" |  |
 
 ### Progression, limits, and lifecycle
 

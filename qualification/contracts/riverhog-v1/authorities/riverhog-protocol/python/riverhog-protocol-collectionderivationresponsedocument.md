@@ -89,7 +89,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-44ea3d7bac"></a>`artifact_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-84c99ba76c"></a>`claim` | yes | [ClaimFenceDocument](#s-1bcca920fa) |  |
-| <a id="s-41b0b36b93"></a>`controller_evidence` | yes | type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
+| <a id="s-41b0b36b93"></a>`controller_evidence` | yes | type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
 | <a id="s-f8ba23bd8b"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-bc7d7c4b8c"></a>`disposition_set` | yes | [ArtifactDispositionSetIdentityDocument](#s-e39f407cdc) |  |
 | <a id="s-cfa9919577"></a>`execution_envelope_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |

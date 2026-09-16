@@ -14,21 +14,24 @@ List Collection Provenance
 ## External contract
 
 <a id="s-7c653fa0ee"></a>
-- <a id="s-b727fc0e13"></a>`operationId`: list_collection_provenance
-- <a id="s-bb67c7d087"></a>`summary`: List Collection Provenance
-- <a id="s-126c7966f1"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-b727fc0e13"></a>`operationId`: `"list_collection_provenance"`
+- <a id="s-126c7966f1"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-bb67c7d087"></a>`summary`: `"List Collection Provenance"`
+- <a id="s-d07f0ace77"></a>`tags`: `["provenance"]`
+- <a id="s-7869f6f5e6"></a>`x-riverhog-permission-requirements`: `[{"any_of":["provenance:read"]}]`
+- <a id="s-0ba97fd6b7"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-4334a88c2f"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-6bd3c9f5e2"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-b30ca9f421"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
-| <a id="s-c72e496235"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
-| <a id="s-dfc511ab78"></a>`status` | query | no | not declared | anyOf=([ProvenanceStatus](../http-schemas/schemas-provenancestatus.md)) \| (type="null") |
-| <a id="s-f7af5892e7"></a>`sort` | query | no | `"path"` | type="string"; enum=["path","bytes","status"] |
-| <a id="s-3e97c26cbe"></a>`order` | query | no | `"asc"` | type="string"; enum=["asc","desc"] |
+| <a id="s-4334a88c2f"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-6bd3c9f5e2"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-b30ca9f421"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
+| <a id="s-c72e496235"></a>`q` | query | no | not declared | anyOf=[([BrowseQuery](../http-schemas/schemas-browsequery.md)); (type="null")]; title="Q" |
+| <a id="s-dfc511ab78"></a>`status` | query | no | not declared | anyOf=[([ProvenanceStatus](../http-schemas/schemas-provenancestatus.md)); (type="null")]; title="Status" |
+| <a id="s-f7af5892e7"></a>`sort` | query | no | `"path"` | type="string"; enum=["path","bytes","status"]; title="Sort" |
+| <a id="s-3e97c26cbe"></a>`order` | query | no | `"asc"` | type="string"; enum=["asc","desc"]; title="Order" |
 
 ### Responses
 

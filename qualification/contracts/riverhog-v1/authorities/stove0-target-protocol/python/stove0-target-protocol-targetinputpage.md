@@ -39,8 +39,8 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-7e84c58d54"></a>`artifacts` | yes | type="array"; items=([InputArtifact](#s-b712976709)); maxItems=256; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-target-input-page"} |  |
 | <a id="s-5b256c5ba8"></a>`authority` | yes | [TargetInputAuthority](#s-19d884a805) |  |
 | <a id="s-edb25598f6"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-538e7ce942"></a>`continuation` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
-| <a id="s-a0dbd706b2"></a>`next_continuation` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-538e7ce942"></a>`continuation` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
+| <a id="s-a0dbd706b2"></a>`next_continuation` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 
 ##### Definitions
 
@@ -97,7 +97,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-0149b5682c"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-ffdfc4b684"></a>`collection` | yes | [CollectionRootRef](#s-15713f5133) |  |
 | <a id="s-09470f6876"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-2578e1740a"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-2578e1740a"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
 | <a id="s-4c8843f4ff"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-fe12d9f0f2"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-18cc219485"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |

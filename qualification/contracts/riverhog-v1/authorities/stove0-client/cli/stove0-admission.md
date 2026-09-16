@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-696fd03480"></a>Parser name: `admission`
+
+| Field | Value |
+|---|---|
+| <a id="s-e49cd4fdbf"></a>`parameters` | `[]` |
 - <a id="s-d42a904cd7"></a>Subcommand selection: required.
 - <a id="s-e0c7bc7e83"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
 - <a id="s-ede70acab8"></a>Options after positional arguments at this parser: left as arguments.

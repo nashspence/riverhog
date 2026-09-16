@@ -16,8 +16,8 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-25d173d811"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-ab670e1ee4"></a>`coordinate` | SHA256SUMS.minisig |
-| <a id="s-aa13931188"></a>`format` | minisign-signature |
+| <a id="s-ab670e1ee4"></a>`coordinate` | `"SHA256SUMS.minisig"` |
+| <a id="s-aa13931188"></a>`format` | `"minisign-signature"` |
 
 ## Governing policies
 

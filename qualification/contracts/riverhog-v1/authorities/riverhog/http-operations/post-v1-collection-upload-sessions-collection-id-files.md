@@ -14,19 +14,26 @@ Register Collection Upload Session Files
 ## External contract
 
 <a id="s-3ea1e0b8ce"></a>
-- <a id="s-162a814f9d"></a>`operationId`: register_collection_upload_session_files
-- <a id="s-d9ced11da2"></a>`summary`: Register Collection Upload Session Files
-- <a id="s-da74f9f64f"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-162a814f9d"></a>`operationId`: `"register_collection_upload_session_files"`
+- <a id="s-da74f9f64f"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-d9ced11da2"></a>`summary`: `"Register Collection Upload Session Files"`
+- <a id="s-3672282fd3"></a>`tags`: `["collections"]`
+- <a id="s-6bc60c6cd1"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-81c15de2cb"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:create"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-5e613c2c93"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-5e613c2c93"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
 
 ### <a id="s-316062d2d9"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/RegisterCollectionUploadSessionFilesRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [RegisterCollectionUploadSessionFilesRequest](../http-schemas/schemas-registercollectionuploadsessionfilesrequest.md) |
 
 ### Responses
 

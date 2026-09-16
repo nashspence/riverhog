@@ -14,14 +14,15 @@ Step Work
 ## External contract
 
 <a id="s-916d6fd99c"></a>
-- <a id="s-1c5add23e0"></a>`operationId`: step_work
-- <a id="s-7dbcf20582"></a>`summary`: Step Work
+- <a id="s-1c5add23e0"></a>`operationId`: `"step_work"`
+- <a id="s-7dbcf20582"></a>`summary`: `"Step Work"`
+- <a id="s-0c6bd3ae5d"></a>`tags`: `["work"]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-e4d2d64ba2"></a>`work_id` | path | yes | not declared | type="string" |
+| <a id="s-e4d2d64ba2"></a>`work_id` | path | yes | not declared | type="string"; title="Work Id" |
 
 ### Responses
 

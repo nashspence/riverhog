@@ -39,7 +39,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-e06ab31a32"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-cd4d563f89"></a>`collection` | yes | [CollectionRootRef](#s-b6ff6c86fa) |  |
 | <a id="s-4fc67834f0"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-9f477443e6"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-9f477443e6"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
 | <a id="s-43d85c9c4e"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-92559f05c1"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-4c708fada6"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |

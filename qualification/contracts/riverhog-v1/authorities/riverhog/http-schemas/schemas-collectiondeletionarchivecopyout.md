@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3bfeff2016"></a>`objects` | yes | type="integer" |  |
-| <a id="s-096c6e325d"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-b0b6a85548"></a>`stored_bytes` | yes | type="integer" |  |
+| <a id="s-3bfeff2016"></a>`objects` | yes | type="integer"; title="Objects" |  |
+| <a id="s-096c6e325d"></a>`store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
+| <a id="s-b0b6a85548"></a>`stored_bytes` | yes | type="integer"; title="Stored Bytes" |  |
 
 ## Maintained corroboration
 

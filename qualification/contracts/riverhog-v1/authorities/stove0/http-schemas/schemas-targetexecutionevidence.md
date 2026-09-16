@@ -24,11 +24,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0702eb4e69"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-190d671a90"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-427d486dae"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a67d9da8a7"></a>`runtime` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-2e35457826"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-0702eb4e69"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Execution Sha256" |  |
+| <a id="s-190d671a90"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Operation Contract Sha256" |  |
+| <a id="s-427d486dae"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
+| <a id="s-a67d9da8a7"></a>`runtime` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Runtime" |  |
+| <a id="s-2e35457826"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

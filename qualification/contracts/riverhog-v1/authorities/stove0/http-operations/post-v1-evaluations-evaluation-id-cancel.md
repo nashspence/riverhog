@@ -14,14 +14,15 @@ Cancel Evaluation
 ## External contract
 
 <a id="s-8c50ecf718"></a>
-- <a id="s-fd9b2cc2f1"></a>`operationId`: cancel_evaluation
-- <a id="s-6dd46bc3f2"></a>`summary`: Cancel Evaluation
+- <a id="s-fd9b2cc2f1"></a>`operationId`: `"cancel_evaluation"`
+- <a id="s-6dd46bc3f2"></a>`summary`: `"Cancel Evaluation"`
+- <a id="s-35164221f7"></a>`tags`: `["evaluations"]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-5863030673"></a>`evaluation_id` | path | yes | not declared | type="string" |
+| <a id="s-5863030673"></a>`evaluation_id` | path | yes | not declared | type="string"; title="Evaluation Id" |
 
 ### Responses
 

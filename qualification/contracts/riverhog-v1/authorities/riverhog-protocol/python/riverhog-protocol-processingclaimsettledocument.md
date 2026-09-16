@@ -38,7 +38,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-dd4b96785f"></a>`derivation` | yes | [CollectionDerivationDocument](#s-2bd8d62893) |  |
 | <a id="s-011a82f456"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-84a0f0c6d4"></a>`outcome` | no | anyOf=([ProcessingOutcomeBindingDocument](#s-c7e96fccf8)) \| (type="null"); default=null |  |
+| <a id="s-84a0f0c6d4"></a>`outcome` | no | anyOf=[([ProcessingOutcomeBindingDocument](#s-c7e96fccf8)); (type="null")]; default=null |  |
 | <a id="s-67ff0b4dc2"></a>`output_collection_id` | yes | [CollectionId](#s-e37ce6215f) |  |
 
 ##### Definitions
@@ -91,7 +91,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-46c59448a7"></a>`artifact_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-1f59ed16bc"></a>`claim` | yes | [ClaimFenceDocument](#s-adf64e03c7) |  |
-| <a id="s-67d62ddd80"></a>`controller_evidence` | yes | type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
+| <a id="s-67d62ddd80"></a>`controller_evidence` | yes | type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
 | <a id="s-04e5367438"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-34f6825596"></a>`disposition_set` | yes | [ArtifactDispositionSetIdentityDocument](#s-bcbe294d68) |  |
 | <a id="s-54a4d89179"></a>`execution_envelope_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |

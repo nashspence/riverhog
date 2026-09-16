@@ -25,9 +25,9 @@ The exact path, length, and plaintext digest shared by file projections.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-61eaa756b8"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-a970aa6e53"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
-| <a id="s-7a011aa8fc"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-61eaa756b8"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-a970aa6e53"></a>`path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
+| <a id="s-7a011aa8fc"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

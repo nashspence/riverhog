@@ -14,20 +14,26 @@ Replace App Key Access
 ## External contract
 
 <a id="s-31f6b63f56"></a>
-- <a id="s-26371cc086"></a>`operationId`: replace_app_key_access
-- <a id="s-c63a708517"></a>`summary`: Replace App Key Access
-- <a id="s-ca3cc12e8a"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-26371cc086"></a>`operationId`: `"replace_app_key_access"`
+- <a id="s-ca3cc12e8a"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-c63a708517"></a>`summary`: `"Replace App Key Access"`
+- <a id="s-8380e8af74"></a>`tags`: `["apps"]`
+- <a id="s-c46d65fb7c"></a>`x-riverhog-permission-requirements`: `[{"any_of":["keys:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-66b22104b4"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
-| <a id="s-92485a317d"></a>`key_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{16}$" |
+| <a id="s-66b22104b4"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"; title="App" |
+| <a id="s-92485a317d"></a>`key_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{16}$"; title="Key Id" |
 
 ### <a id="s-8b2efdc2d2"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ReplaceAppAccessRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [ReplaceAppAccessRequest](../http-schemas/schemas-replaceappaccessrequest.md) |
 
 ### Responses
 

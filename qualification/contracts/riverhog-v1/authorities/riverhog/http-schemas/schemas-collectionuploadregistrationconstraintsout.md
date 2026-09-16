@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-50f00cd230"></a>`pack_member_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-7a8fa45dda"></a>`raw_part_plaintext_bytes` | yes | type="integer"; minimum=65536; multipleOf=65536 |  |
+| <a id="s-50f00cd230"></a>`pack_member_bytes` | yes | type="integer"; minimum=1; title="Pack Member Bytes" |  |
+| <a id="s-7a8fa45dda"></a>`raw_part_plaintext_bytes` | yes | type="integer"; minimum=65536; multipleOf=65536; title="Raw Part Plaintext Bytes" |  |
 
 ## Governing policies
 

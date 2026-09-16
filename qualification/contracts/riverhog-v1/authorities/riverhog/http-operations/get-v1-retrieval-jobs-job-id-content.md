@@ -14,20 +14,23 @@ Download Retrieval File
 ## External contract
 
 <a id="s-c5492954bd"></a>
-- <a id="s-5335e8d6ef"></a>`operationId`: download_retrieval_file
-- <a id="s-b38705bf02"></a>`summary`: Download Retrieval File
-- <a id="s-8748e199d3"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-5335e8d6ef"></a>`operationId`: `"download_retrieval_file"`
+- <a id="s-8748e199d3"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-b38705bf02"></a>`summary`: `"Download Retrieval File"`
+- <a id="s-f9ab1a72af"></a>`tags`: `["retrieval"]`
+- <a id="s-81af2ee937"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-15dad46f05"></a>`x-riverhog-permission-requirements`: `[{"any_of":["retrieval:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-4ac607f909"></a>`job_id` | path | yes | not declared | type="string" |
+| <a id="s-4ac607f909"></a>`job_id` | path | yes | not declared | type="string"; title="Job Id" |
 | <a id="s-0f44a5997d"></a>`collection_id` | query | yes | not declared | [CollectionIdParameter](../http-schemas/schemas-collectionidparameter.md) |
-| <a id="s-c2dded5d77"></a>`path` | query | yes | not declared | type="string" |
-| <a id="s-b26dd4f5ac"></a>`If-Match` | header | yes | not declared | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
-| <a id="s-2a974ee7d8"></a>`Range` | header | no | not declared | anyOf=(type="string") \| (type="null") |
-| <a id="s-a7a12d14ae"></a>`If-None-Match` | header | no | not declared | anyOf=(type="string") \| (type="null") |
+| <a id="s-c2dded5d77"></a>`path` | query | yes | not declared | type="string"; title="Path" |
+| <a id="s-b26dd4f5ac"></a>`If-Match` | header | yes | not declared | type="string"; pattern="^\"[0-9a-f]{64}\"$"; title="If-Match" |
+| <a id="s-2a974ee7d8"></a>`Range` | header | no | not declared | anyOf=[(type="string"); (type="null")]; title="Range" |
+| <a id="s-a7a12d14ae"></a>`If-None-Match` | header | no | not declared | anyOf=[(type="string"); (type="null")]; title="If-None-Match" |
 
 ### Responses
 

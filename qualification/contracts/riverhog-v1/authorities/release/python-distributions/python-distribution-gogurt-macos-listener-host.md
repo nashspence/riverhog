@@ -16,15 +16,15 @@ Optional nonnormative macOS launchd listener-host reference for Gogurt.
 <a id="s-e6c28f237a"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-e5c7287337"></a>`artifacts` | [{"coordinate": "dist/gogurt_macos_listener_host-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/gogurt_macos_listener_host-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-11eb6b40d0"></a>`channel` | github-release |
-| <a id="s-57438fbcf4"></a>`description` | Optional nonnormative macOS launchd listener-host reference for Gogurt. |
-| <a id="s-933251baa1"></a>`license_baseline` | first-v1-publication |
-| <a id="s-286cc8b885"></a>`license_expression` | Apache-2.0 |
-| <a id="s-7dc3642ceb"></a>`publication_identity` | {"coordinate": "gogurt-macos-listener-host", "kind": "python-distribution"} |
-| <a id="s-d999540960"></a>`requires_python` | >=3.12 |
-| <a id="s-7ec8e97577"></a>`role` | reference_component |
-| <a id="s-96901c782c"></a>`source` | reference/gogurt/listener-host/macos/pyproject.toml |
+| <a id="s-e5c7287337"></a>`artifacts` | `[{"coordinate":"dist/gogurt_macos_listener_host-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/gogurt_macos_listener_host-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-11eb6b40d0"></a>`channel` | `"github-release"` |
+| <a id="s-57438fbcf4"></a>`description` | `"Optional nonnormative macOS launchd listener-host reference for Gogurt."` |
+| <a id="s-933251baa1"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-286cc8b885"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-7dc3642ceb"></a>`publication_identity` | `{"coordinate":"gogurt-macos-listener-host","kind":"python-distribution"}` |
+| <a id="s-d999540960"></a>`requires_python` | `">=3.12"` |
+| <a id="s-7ec8e97577"></a>`role` | `"reference_component"` |
+| <a id="s-96901c782c"></a>`source` | `"reference/gogurt/listener-host/macos/pyproject.toml"` |
 
 ## Existing ownership context
 

@@ -24,13 +24,13 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-41841301f6"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
-| <a id="s-460a35c4c7"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
-| <a id="s-35b952a3b8"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"collection_id"` |
-| <a id="s-6c9551143d"></a>`order`<br>`--order` | optional option; 1 value | text | `"asc"` |
-| <a id="s-8e3801b0cd"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded |
-| <a id="s-a030650e72"></a>`ids`<br>`--ids` | optional flag; 0 values | boolean | `false` |
-| <a id="s-5c1d09f56e"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-41841301f6"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25`<br>Env: `null` |
+| <a id="s-460a35c4c7"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-35b952a3b8"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"collection_id"`<br>Env: `null` |
+| <a id="s-6c9551143d"></a>`order`<br>`--order` | optional option; 1 value | text | `"asc"`<br>Env: `null` |
+| <a id="s-8e3801b0cd"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-a030650e72"></a>`ids`<br>`--ids` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
+| <a id="s-5c1d09f56e"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -49,14 +49,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-b40ede78f3"></a>`completed` | <a id="s-a79553386e"></a>`{"kind":"command-completed"}` | <a id="s-e624bc94a7"></a>`0` | <a id="s-e8ebb0f401"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-local-collection-list/v1](#s-75ddbadf19) | <a id="s-a173379636"></a>all: `empty` |
+| <a id="s-b40ede78f3"></a>`completed` | <a id="s-a79553386e"></a>`{"kind":"command-completed"}` | <a id="s-e624bc94a7"></a>`0` | <a id="s-e8ebb0f401"></a>human: `"noncontractual-presentation-of-command-result"`; json: [piggity-local-collection-list/v1](#s-75ddbadf19) | <a id="s-a173379636"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-53a4388e21"></a>`usage` | <a id="s-52e88b1a8f"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-00c8e54d75"></a>`2` | <a id="s-be36d857ec"></a>all: `empty` | <a id="s-c937018d8c"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-d3e9f15cc0"></a>`operational` | <a id="s-4f43a96878"></a>`{"kind":"application-error"}` | <a id="s-60cec51350"></a>`1` | <a id="s-8a82f1b3f2"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-d1d2a276e7"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-53a4388e21"></a>`usage` | <a id="s-52e88b1a8f"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-00c8e54d75"></a>`2` | <a id="s-be36d857ec"></a>all: `"empty"` | <a id="s-c937018d8c"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-d3e9f15cc0"></a>`operational` | <a id="s-4f43a96878"></a>`{"kind":"application-error"}` | <a id="s-60cec51350"></a>`1` | <a id="s-8a82f1b3f2"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-d1d2a276e7"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Local structured outputs
 

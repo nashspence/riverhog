@@ -36,14 +36,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4dd43b05e3"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-c397d4f500"></a>`custody` | yes | type="string"; minLength=1 |  |
-| <a id="s-c5c5a0d551"></a>`device` | yes | type="integer"; minimum=0 |  |
-| <a id="s-cd3d8c2278"></a>`event_id` | yes | type="string"; minLength=1 |  |
-| <a id="s-1123dbdc3b"></a>`format` | yes | type="string"; const="riverhog-ftp-completion-record/v1" |  |
-| <a id="s-0ac116f9e2"></a>`inode` | yes | type="integer"; minimum=0 |  |
-| <a id="s-57ea26efac"></a>`path` | yes | type="string"; minLength=1 |  |
-| <a id="s-4e1045d512"></a>`source_id` | yes | type="string"; minLength=1 |  |
+| <a id="s-4dd43b05e3"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-c397d4f500"></a>`custody` | yes | type="string"; minLength=1; title="Custody" |  |
+| <a id="s-c5c5a0d551"></a>`device` | yes | type="integer"; minimum=0; title="Device" |  |
+| <a id="s-cd3d8c2278"></a>`event_id` | yes | type="string"; minLength=1; title="Event Id" |  |
+| <a id="s-1123dbdc3b"></a>`format` | yes | type="string"; const="riverhog-ftp-completion-record/v1"; title="Format" |  |
+| <a id="s-0ac116f9e2"></a>`inode` | yes | type="integer"; minimum=0; title="Inode" |  |
+| <a id="s-57ea26efac"></a>`path` | yes | type="string"; minLength=1; title="Path" |  |
+| <a id="s-4e1045d512"></a>`source_id` | yes | type="string"; minLength=1; title="Source Id" |  |
 
 ## Maintained corroboration
 

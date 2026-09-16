@@ -16,13 +16,13 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-bc8de15cff"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-395852106c"></a>`error_schema` | ErrorResponse |
-| <a id="s-4d97d84a6b"></a>`errors` | [{"code": "bad_request", "status": 400}, {"code": "unauthorized", "status": 401}, {"code": "job_not_found", "status": 404}, {"code": "target_failed", "status": 500}] |
-| <a id="s-aaadd92710"></a>`method` | GET |
-| <a id="s-73ee050335"></a>`path` | /v1/jobs/{job_id} |
-| <a id="s-dc07d67b9f"></a>`path_parameters` | [{"name": "job_id", "schema": {"pattern": "^[0-9a-f]{64}$", "type": "string"}}] |
-| <a id="s-eefa80c700"></a>`request` | {"kind": "none", "schema": null} |
-| <a id="s-5099fa7ca8"></a>`response` | {"headers": [], "kind": "json", "schema": "TargetJobStatus", "statuses": [200]} |
+| <a id="s-395852106c"></a>`error_schema` | `"ErrorResponse"` |
+| <a id="s-4d97d84a6b"></a>`errors` | `[{"code":"bad_request","status":400},{"code":"unauthorized","status":401},{"code":"job_not_found","status":404},{"code":"target_failed","status":500}]` |
+| <a id="s-aaadd92710"></a>`method` | `"GET"` |
+| <a id="s-73ee050335"></a>`path` | `"/v1/jobs/{job_id}"` |
+| <a id="s-dc07d67b9f"></a>`path_parameters` | `[{"name":"job_id","schema":{"pattern":"^[0-9a-f]{64}$","type":"string"}}]` |
+| <a id="s-eefa80c700"></a>`request` | `{"kind":"none","schema":null}` |
+| <a id="s-5099fa7ca8"></a>`response` | `{"headers":[],"kind":"json","schema":"TargetJobStatus","statuses":[200]}` |
 
 ## Maintained corroboration
 

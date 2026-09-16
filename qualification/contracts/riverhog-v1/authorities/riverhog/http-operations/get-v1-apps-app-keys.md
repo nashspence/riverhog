@@ -14,21 +14,24 @@ List App Keys
 ## External contract
 
 <a id="s-7a534771ed"></a>
-- <a id="s-88917ec324"></a>`operationId`: list_app_keys
-- <a id="s-420f2625eb"></a>`summary`: List App Keys
-- <a id="s-420e59903a"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-88917ec324"></a>`operationId`: `"list_app_keys"`
+- <a id="s-420e59903a"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-420f2625eb"></a>`summary`: `"List App Keys"`
+- <a id="s-a57687f38f"></a>`tags`: `["apps"]`
+- <a id="s-f4de56e372"></a>`x-riverhog-permission-requirements`: `[{"any_of":["keys:manage"]}]`
+- <a id="s-f8bbc5f4c8"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-394fc6e730"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
-| <a id="s-5bc25a2b4d"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-6f181ad857"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
+| <a id="s-394fc6e730"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"; title="App" |
+| <a id="s-5bc25a2b4d"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-6f181ad857"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
 | <a id="s-208920b7f9"></a>`sort` | query | no | `"created_at"` | [ApplicationKeySort](../http-schemas/schemas-applicationkeysort.md) |
 | <a id="s-a9bb431770"></a>`order` | query | no | `"desc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
-| <a id="s-6e3d7ce550"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
-| <a id="s-96ce1111b6"></a>`active` | query | no | not declared | anyOf=(type="boolean") \| (type="null") |
+| <a id="s-6e3d7ce550"></a>`q` | query | no | not declared | anyOf=[([BrowseQuery](../http-schemas/schemas-browsequery.md)); (type="null")]; title="Q" |
+| <a id="s-96ce1111b6"></a>`active` | query | no | not declared | anyOf=[(type="boolean"); (type="null")]; title="Active" |
 
 ### Responses
 

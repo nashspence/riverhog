@@ -24,7 +24,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1c32ef932b"></a>`samplers` | yes | type="array"; items=([SamplerConfig](#s-59188e1eee)); minItems=1 |  |
+| <a id="s-1c32ef932b"></a>`samplers` | yes | type="array"; items=([SamplerConfig](#s-59188e1eee)); minItems=1; title="Samplers" |  |
 
 ### Definitions
 
@@ -41,12 +41,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-682215731b"></a>`allow_insecure_http` | no | type="boolean"; default=false |  |
-| <a id="s-1cfe63b462"></a>`base_url` | yes | type="string"; maxLength=2048; minLength=1 |  |
-| <a id="s-377424141f"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-cd93604a6a"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$" |  |
-| <a id="s-5f406f7876"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-4ebab6c7fe"></a>`token_file` | yes | type="string"; format="path" |  |
+| <a id="s-682215731b"></a>`allow_insecure_http` | no | type="boolean"; default=false; title="Allow Insecure Http" |  |
+| <a id="s-1cfe63b462"></a>`base_url` | yes | type="string"; maxLength=2048; minLength=1; title="Base Url" |  |
+| <a id="s-377424141f"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Descriptor Sha256" |  |
+| <a id="s-cd93604a6a"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-5f406f7876"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Image Digest" |  |
+| <a id="s-4ebab6c7fe"></a>`token_file` | yes | type="string"; format="path"; title="Token File" |  |
 
 ### Progression, limits, and lifecycle
 

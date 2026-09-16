@@ -16,15 +16,15 @@ Optional nonnormative CloudEvents reference application for Riverhog.
 <a id="s-e3a22b60f2"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-b82f4b2ef0"></a>`artifacts` | [{"coordinate": "dist/mango_fish-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/mango_fish-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-b1ae085e1c"></a>`channel` | github-release |
-| <a id="s-53714ce8a6"></a>`description` | Optional nonnormative CloudEvents reference application for Riverhog. |
-| <a id="s-3ff9aed727"></a>`license_baseline` | first-v1-publication |
-| <a id="s-cc859238cb"></a>`license_expression` | Apache-2.0 |
-| <a id="s-bf939f4de2"></a>`publication_identity` | {"coordinate": "mango-fish", "kind": "python-distribution"} |
-| <a id="s-d09208ca8a"></a>`requires_python` | >=3.12 |
-| <a id="s-963c86a994"></a>`role` | reference_application |
-| <a id="s-f10f589664"></a>`source` | reference/riverhog/applications/mango-fish/pyproject.toml |
+| <a id="s-b82f4b2ef0"></a>`artifacts` | `[{"coordinate":"dist/mango_fish-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/mango_fish-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-b1ae085e1c"></a>`channel` | `"github-release"` |
+| <a id="s-53714ce8a6"></a>`description` | `"Optional nonnormative CloudEvents reference application for Riverhog."` |
+| <a id="s-3ff9aed727"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-cc859238cb"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-bf939f4de2"></a>`publication_identity` | `{"coordinate":"mango-fish","kind":"python-distribution"}` |
+| <a id="s-d09208ca8a"></a>`requires_python` | `">=3.12"` |
+| <a id="s-963c86a994"></a>`role` | `"reference_application"` |
+| <a id="s-f10f589664"></a>`source` | `"reference/riverhog/applications/mango-fish/pyproject.toml"` |
 
 ## Existing ownership context
 

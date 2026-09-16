@@ -14,20 +14,27 @@ Create Collection Upload Session Provenance Journal
 ## External contract
 
 <a id="s-c8bbbc9f93"></a>
-- <a id="s-c9f85428e6"></a>`operationId`: create_collection_upload_session_provenance_journal
-- <a id="s-2a53f008ef"></a>`summary`: Create Collection Upload Session Provenance Journal
-- <a id="s-19a2d9051f"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-c9f85428e6"></a>`operationId`: `"create_collection_upload_session_provenance_journal"`
+- <a id="s-19a2d9051f"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-2a53f008ef"></a>`summary`: `"Create Collection Upload Session Provenance Journal"`
+- <a id="s-0ff19bf06f"></a>`tags`: `["collections"]`
+- <a id="s-2d96cec1e9"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-859be99ab1"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:create"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-1a12902d96"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-3c645a263f"></a>`journal_id` | path | yes | not declared | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
+| <a id="s-1a12902d96"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-3c645a263f"></a>`journal_id` | path | yes | not declared | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"; title="Journal Id" |
 
 ### <a id="s-a967a26000"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CollectionUploadProvenanceJournalCreateDocument"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [CollectionUploadProvenanceJournalCreateDocument](../http-schemas/schemas-collectionuploadprovenancejournalcreatedocument.md) |
 
 ### Responses
 

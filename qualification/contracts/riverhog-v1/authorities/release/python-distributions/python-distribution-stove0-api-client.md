@@ -16,15 +16,15 @@ Official Python client for the stove0 v1 workflow API.
 <a id="s-0bb6612302"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-a89e3100a3"></a>`artifacts` | [{"coordinate": "dist/stove0_api_client-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_api_client-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-2d20f67164"></a>`channel` | github-release |
-| <a id="s-b9888c2b34"></a>`description` | Official Python client for the stove0 v1 workflow API. |
-| <a id="s-63a90b4cf7"></a>`license_baseline` | first-v1-publication |
-| <a id="s-06e8c84e58"></a>`license_expression` | Apache-2.0 |
-| <a id="s-18ed427769"></a>`publication_identity` | {"coordinate": "stove0-api-client", "kind": "python-distribution"} |
-| <a id="s-4e0677b005"></a>`requires_python` | >=3.12 |
-| <a id="s-46dca634a2"></a>`role` | reusable_library |
-| <a id="s-21998422fc"></a>`source` | reference/stove0/packages/api-client/pyproject.toml |
+| <a id="s-a89e3100a3"></a>`artifacts` | `[{"coordinate":"dist/stove0_api_client-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_api_client-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-2d20f67164"></a>`channel` | `"github-release"` |
+| <a id="s-b9888c2b34"></a>`description` | `"Official Python client for the stove0 v1 workflow API."` |
+| <a id="s-63a90b4cf7"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-06e8c84e58"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-18ed427769"></a>`publication_identity` | `{"coordinate":"stove0-api-client","kind":"python-distribution"}` |
+| <a id="s-4e0677b005"></a>`requires_python` | `">=3.12"` |
+| <a id="s-46dca634a2"></a>`role` | `"reusable_library"` |
+| <a id="s-21998422fc"></a>`source` | `"reference/stove0/packages/api-client/pyproject.toml"` |
 
 ## Existing ownership context
 

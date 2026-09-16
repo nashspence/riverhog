@@ -23,9 +23,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b2ae1a2f85"></a>`object_path` | no | anyOf=(type="string"; minLength=1) \| (type="null") |  |
-| <a id="s-094900fe7d"></a>`sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-f04bdd7143"></a>`state` | no | type="string"; const="pending"; default="pending" |  |
+| <a id="s-b2ae1a2f85"></a>`object_path` | no | anyOf=[(type="string"; minLength=1); (type="null")]; title="Object Path" |  |
+| <a id="s-094900fe7d"></a>`sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Sha256" |  |
+| <a id="s-f04bdd7143"></a>`state` | no | type="string"; const="pending"; default="pending"; title="State" |  |
 
 ### Progression, limits, and lifecycle
 

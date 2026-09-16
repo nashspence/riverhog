@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-701d54ed95"></a>`catalog_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-d36c79e332"></a>`recipes` | yes | type="array"; items=(#/components/schemas/RecipeView) |  |
+| <a id="s-701d54ed95"></a>`catalog_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Catalog Sha256" |  |
+| <a id="s-d36c79e332"></a>`recipes` | yes | type="array"; items=([RecipeView](schemas-recipeview.md)); title="Recipes" |  |
 
 ### Progression, limits, and lifecycle
 

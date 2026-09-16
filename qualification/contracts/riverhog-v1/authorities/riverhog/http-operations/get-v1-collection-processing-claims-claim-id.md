@@ -14,15 +14,18 @@ Get Processing Claim
 ## External contract
 
 <a id="s-2bc1733fc5"></a>
-- <a id="s-2981e1f0af"></a>`operationId`: get_processing_claim
-- <a id="s-527801a03a"></a>`summary`: Get Processing Claim
-- <a id="s-b937c1104a"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-2981e1f0af"></a>`operationId`: `"get_processing_claim"`
+- <a id="s-b937c1104a"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-527801a03a"></a>`summary`: `"Get Processing Claim"`
+- <a id="s-6103fe2c0d"></a>`tags`: `["collection-workflows"]`
+- <a id="s-5bb9093034"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-adbeda7ed8"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control","collection-transforms:execute"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-7d2524d322"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-7d2524d322"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
 
 ### Responses
 

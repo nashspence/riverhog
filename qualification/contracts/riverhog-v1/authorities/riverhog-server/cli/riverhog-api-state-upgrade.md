@@ -41,14 +41,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-3f2e340b76"></a>`completed` | <a id="s-b2e660b682"></a>`{"kind":"command-completed"}` | <a id="s-3ff90c06bc"></a>`0` | <a id="s-5a04c8a2ed"></a>human: `noncontractual-presentation-of-command-result`; json: [riverhog-api-state-status/v1](#s-d8e9bd16fc) | <a id="s-1ccdcdcccc"></a>all: `empty` |
+| <a id="s-3f2e340b76"></a>`completed` | <a id="s-b2e660b682"></a>`{"kind":"command-completed"}` | <a id="s-3ff90c06bc"></a>`0` | <a id="s-5a04c8a2ed"></a>human: `"noncontractual-presentation-of-command-result"`; json: [riverhog-api-state-status/v1](#s-d8e9bd16fc) | <a id="s-1ccdcdcccc"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-2fd85f8ed4"></a>`usage` | <a id="s-aab3d3b480"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-a6fb8f2b24"></a>`2` | <a id="s-0977bed548"></a>all: `empty` | <a id="s-ed2bdfdbb3"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-95b1279200"></a>`state-error` | <a id="s-31ac6e3d1c"></a>`{"kind":"application-error"}` | <a id="s-7d929084dd"></a>`1` | <a id="s-cc2085a2b0"></a>all: `empty` | <a id="s-9462eb0aaa"></a>all: `noncontractual-diagnostic` |
+| <a id="s-2fd85f8ed4"></a>`usage` | <a id="s-aab3d3b480"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-a6fb8f2b24"></a>`2` | <a id="s-0977bed548"></a>all: `"empty"` | <a id="s-ed2bdfdbb3"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-95b1279200"></a>`state-error` | <a id="s-31ac6e3d1c"></a>`{"kind":"application-error"}` | <a id="s-7d929084dd"></a>`1` | <a id="s-cc2085a2b0"></a>all: `"empty"` | <a id="s-9462eb0aaa"></a>all: `"noncontractual-diagnostic"` |
 
 ### Local structured outputs
 
@@ -67,10 +67,10 @@ Applies to: completed · stdout (json).
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-68b86b625f"></a>`condition` | yes | type="string"; enum=["empty","current","upgrade_required","unversioned","incompatible"] |  |
-| <a id="s-3a7c1edd7a"></a>`current_revision` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-3970899db2"></a>`head_revision` | yes | type="string" |  |
-| <a id="s-bd07704e29"></a>`name` | yes | type="string" |  |
+| <a id="s-68b86b625f"></a>`condition` | yes | type="string"; enum=["empty","current","upgrade_required","unversioned","incompatible"]; title="Condition" |  |
+| <a id="s-3a7c1edd7a"></a>`current_revision` | yes | anyOf=[(type="string"); (type="null")]; title="Current Revision" |  |
+| <a id="s-3970899db2"></a>`head_revision` | yes | type="string"; title="Head Revision" |  |
+| <a id="s-bd07704e29"></a>`name` | yes | type="string"; title="Name" |  |
 
 ### Progression, limits, and lifecycle
 

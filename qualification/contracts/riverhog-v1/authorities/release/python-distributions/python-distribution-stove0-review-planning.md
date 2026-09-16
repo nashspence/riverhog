@@ -16,15 +16,15 @@ Optional nonnormative planning bridge for maintained Stove0 review references.
 <a id="s-de29e5410b"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-30ac634e87"></a>`artifacts` | [{"coordinate": "dist/stove0_review_planning-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_review_planning-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-d351ec69fd"></a>`channel` | github-release |
-| <a id="s-cba7731cc5"></a>`description` | Optional nonnormative planning bridge for maintained Stove0 review references. |
-| <a id="s-ec9b009600"></a>`license_baseline` | first-v1-publication |
-| <a id="s-8b988459f4"></a>`license_expression` | Apache-2.0 |
-| <a id="s-dada31f521"></a>`publication_identity` | {"coordinate": "stove0-review-planning", "kind": "python-distribution"} |
-| <a id="s-b9d1c72f24"></a>`requires_python` | >=3.12 |
-| <a id="s-9f59f5c0b8"></a>`role` | reference_component |
-| <a id="s-71fba89045"></a>`source` | reference/stove0/targets/review/planning/pyproject.toml |
+| <a id="s-30ac634e87"></a>`artifacts` | `[{"coordinate":"dist/stove0_review_planning-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_review_planning-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-d351ec69fd"></a>`channel` | `"github-release"` |
+| <a id="s-cba7731cc5"></a>`description` | `"Optional nonnormative planning bridge for maintained Stove0 review references."` |
+| <a id="s-ec9b009600"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-8b988459f4"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-dada31f521"></a>`publication_identity` | `{"coordinate":"stove0-review-planning","kind":"python-distribution"}` |
+| <a id="s-b9d1c72f24"></a>`requires_python` | `">=3.12"` |
+| <a id="s-9f59f5c0b8"></a>`role` | `"reference_component"` |
+| <a id="s-71fba89045"></a>`source` | `"reference/stove0/targets/review/planning/pyproject.toml"` |
 
 ## Existing ownership context
 

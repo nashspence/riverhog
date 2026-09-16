@@ -16,15 +16,15 @@ Optional nonnormative rclone review-effect target reference for Stove0.
 <a id="s-8aa90656f1"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-cf29c5755e"></a>`artifacts` | [{"coordinate": "dist/stove0_review_rclone_effect_target-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_review_rclone_effect_target-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-8a9146ed4a"></a>`channel` | github-release |
-| <a id="s-9bb07dd164"></a>`description` | Optional nonnormative rclone review-effect target reference for Stove0. |
-| <a id="s-c52627562c"></a>`license_baseline` | first-v1-publication |
-| <a id="s-8b41642661"></a>`license_expression` | CAL-1.0 |
-| <a id="s-7b1d7fbf49"></a>`publication_identity` | {"coordinate": "stove0-review-rclone-effect-target", "kind": "python-distribution"} |
-| <a id="s-9fca961eac"></a>`requires_python` | >=3.12 |
-| <a id="s-eea589affd"></a>`role` | reference_component |
-| <a id="s-7a71b4ede4"></a>`source` | reference/stove0/targets/review/rclone-effect-target/pyproject.toml |
+| <a id="s-cf29c5755e"></a>`artifacts` | `[{"coordinate":"dist/stove0_review_rclone_effect_target-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_review_rclone_effect_target-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-8a9146ed4a"></a>`channel` | `"github-release"` |
+| <a id="s-9bb07dd164"></a>`description` | `"Optional nonnormative rclone review-effect target reference for Stove0."` |
+| <a id="s-c52627562c"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-8b41642661"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-7b1d7fbf49"></a>`publication_identity` | `{"coordinate":"stove0-review-rclone-effect-target","kind":"python-distribution"}` |
+| <a id="s-9fca961eac"></a>`requires_python` | `">=3.12"` |
+| <a id="s-eea589affd"></a>`role` | `"reference_component"` |
+| <a id="s-7a71b4ede4"></a>`source` | `"reference/stove0/targets/review/rclone-effect-target/pyproject.toml"` |
 
 ## Existing ownership context
 

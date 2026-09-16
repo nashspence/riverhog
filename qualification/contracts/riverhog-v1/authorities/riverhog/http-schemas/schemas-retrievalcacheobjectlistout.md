@@ -24,13 +24,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-30b2a98980"></a>`filters` | yes | #/components/schemas/RetrievalCacheObjectListFiltersOut |  |
-| <a id="s-1896763d33"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-80a1fca6a6"></a>`objects` | yes | type="array"; items=(#/components/schemas/RetrievalCacheObjectOut) |  |
-| <a id="s-8569d48df2"></a>`order` | yes | #/components/schemas/SortOrder |  |
-| <a id="s-b5cbb0e784"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-e9876fe3eb"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-6edb249881"></a>`sort` | yes | #/components/schemas/RetrievalCacheSort |  |
+| <a id="s-30b2a98980"></a>`filters` | yes | [RetrievalCacheObjectListFiltersOut](schemas-retrievalcacheobjectlistfiltersout.md) |  |
+| <a id="s-1896763d33"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-80a1fca6a6"></a>`objects` | yes | type="array"; items=([RetrievalCacheObjectOut](schemas-retrievalcacheobjectout.md)); title="Objects" |  |
+| <a id="s-8569d48df2"></a>`order` | yes | [SortOrder](schemas-sortorder.md) |  |
+| <a id="s-b5cbb0e784"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
+| <a id="s-e9876fe3eb"></a>`query` | yes | anyOf=[(type="string"); (type="null")]; title="Query" |  |
+| <a id="s-6edb249881"></a>`sort` | yes | [RetrievalCacheSort](schemas-retrievalcachesort.md) |  |
 
 ### Progression, limits, and lifecycle
 

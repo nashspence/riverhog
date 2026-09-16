@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b4c4f8d76c"></a>`authority` | no | anyOf=(#/components/schemas/ArtifactSetAuthorityDocument) \| (type="null") |  |
-| <a id="s-9eed34922f"></a>`count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-69a169072e"></a>`state` | yes | type="string"; enum=["receiving","sealed"] |  |
-| <a id="s-97ef4d673d"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-b4c4f8d76c"></a>`authority` | no | anyOf=[([ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md)); (type="null")] |  |
+| <a id="s-9eed34922f"></a>`count` | yes | type="integer"; minimum=0; title="Count" |  |
+| <a id="s-69a169072e"></a>`state` | yes | type="string"; enum=["receiving","sealed"]; title="State" |  |
+| <a id="s-97ef4d673d"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
 
 ### Progression, limits, and lifecycle
 

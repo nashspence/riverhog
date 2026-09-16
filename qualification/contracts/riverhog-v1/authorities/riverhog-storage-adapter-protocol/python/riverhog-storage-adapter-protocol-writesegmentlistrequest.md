@@ -39,7 +39,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-9de7fb3114"></a>`after_number` | no | type="integer"; minimum=0; default=0; x-riverhog-extent={"policy":"segmented_no_total_max","reason":"write-segment-history-bounded-traversal"} |  |
 | <a id="s-271af5454e"></a>`maximum_items` | no | type="integer"; minimum=1; maximum=128; default=128 |  |
 | <a id="s-3d7b574285"></a>`session` | yes | [WriteSession](#s-14ac5609c9) |  |
-| <a id="s-a54ca5cef3"></a>`traversal_token` | no | anyOf=(type="string"; maxLength=4000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-a54ca5cef3"></a>`traversal_token` | no | anyOf=[(type="string"; maxLength=4000; minLength=1); (type="null")]; default=null |  |
 
 ##### Definitions
 

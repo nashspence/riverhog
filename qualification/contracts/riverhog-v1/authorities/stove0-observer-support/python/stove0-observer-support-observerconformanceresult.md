@@ -78,7 +78,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-a11785c7cc"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-c604767bbe"></a>`collection` | yes | [CollectionRootRef](#s-fe9cd9564b) |  |
 | <a id="s-69609ace18"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-3bd1cb9986"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-3bd1cb9986"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
 | <a id="s-c68f44a017"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-3a9cdf8f7b"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-4e0ffefc82"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -183,12 +183,12 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-3d139a12a7"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-5225835bde)) |  |
-| <a id="s-c6a60cb19c"></a>`facts` | no | anyOf=(type="object"; additionalProperties=([JsonValue](#s-5225835bde))) \| (type="null"); default=null |  |
-| <a id="s-dffaadcda6"></a>`facts_schema` | no | anyOf=([JsonSchemaDocument](#s-fea7121035)) \| (type="null"); default=null |  |
-| <a id="s-28494ead5c"></a>`facts_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
-| <a id="s-2da2381ca5"></a>`failure` | no | anyOf=([ObservationFailure](#s-e4667b1362)) \| (type="null"); default=null |  |
+| <a id="s-c6a60cb19c"></a>`facts` | no | anyOf=[(type="object"; additionalProperties=([JsonValue](#s-5225835bde))); (type="null")]; default=null |  |
+| <a id="s-dffaadcda6"></a>`facts_schema` | no | anyOf=[([JsonSchemaDocument](#s-fea7121035)); (type="null")]; default=null |  |
+| <a id="s-28494ead5c"></a>`facts_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
+| <a id="s-2da2381ca5"></a>`failure` | no | anyOf=[([ObservationFailure](#s-e4667b1362)); (type="null")]; default=null |  |
 | <a id="s-c68c268b29"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1" |  |
-| <a id="s-2a74d31493"></a>`inapplicable` | no | anyOf=([ObservationInapplicable](#s-ed03bdd4d4)) \| (type="null"); default=null |  |
+| <a id="s-2a74d31493"></a>`inapplicable` | no | anyOf=[([ObservationInapplicable](#s-ed03bdd4d4)); (type="null")]; default=null |  |
 | <a id="s-02b1b20106"></a>`observer` | yes | [ObserverImplementation](#s-9addfdd17e) |  |
 | <a id="s-b0e4b15a73"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-4be4126f3d"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -223,16 +223,16 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-aa8bd00094"></a>`contract_id` | yes | type="string" |  |
 | <a id="s-d6af6f81cf"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-6fd9decde4"></a>`evidence` | no | anyOf=([ObserverContractConformanceEvidence](#s-e9d1642adb)) \| (type="null"); default=null |  |
+| <a id="s-6fd9decde4"></a>`evidence` | no | anyOf=[([ObserverContractConformanceEvidence](#s-e9d1642adb)); (type="null")]; default=null |  |
 | <a id="s-606bf765fd"></a>`execution` | yes | type="string"; enum=["not-exercised","exercised"] |  |
 | <a id="s-f3914efc81"></a>`facts_schema_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-0ab33e5189"></a>`facts_semantics_conformance_vectors_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-0ab33e5189"></a>`facts_semantics_conformance_vectors_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-05e9c398a1"></a>`facts_semantics_id` | yes | type="string" |  |
 | <a id="s-3584b7368d"></a>`facts_semantics_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-79dce4f59c"></a>`maximum_result_bytes` | yes | type="integer"; minimum=1 |  |
 | <a id="s-3dc2d2ca54"></a>`options_schema_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-cee660bca3"></a>`preferred_subject_batch_size` | yes | type="integer"; minimum=1 |  |
-| <a id="s-e9398e8346"></a>`semantic_acceptance` | no | anyOf=([ObserverSemanticAcceptance](#s-4af9735373)) \| (type="null"); default=null |  |
+| <a id="s-e9398e8346"></a>`semantic_acceptance` | no | anyOf=[([ObserverSemanticAcceptance](#s-4af9735373)); (type="null")]; default=null |  |
 
 ##### <a id="s-e9d1642adb"></a>definition `ObserverContractConformanceEvidence`
 
@@ -312,7 +312,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-0111f4828c"></a>`kind` | yes | type="string"; enum=["schema-only-revalidated","conformance-runner-attestation"] |  |
 | <a id="s-04c9ba9a69"></a>`profile_id` | yes | type="string" |  |
 | <a id="s-ad30e9a72d"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-63c6e7c369"></a>`vectors` | no | anyOf=([ObserverSemanticVectorEvidence](#s-e03614fd2e)) \| (type="null"); default=null |  |
+| <a id="s-63c6e7c369"></a>`vectors` | no | anyOf=[([ObserverSemanticVectorEvidence](#s-e03614fd2e)); (type="null")]; default=null |  |
 
 ##### <a id="s-e03614fd2e"></a>definition `ObserverSemanticVectorEvidence`
 
@@ -368,7 +368,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4cfd0a7dc4"></a>`conformance_vectors_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-4cfd0a7dc4"></a>`conformance_vectors_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-7a9e4a646d"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-866ed6246e"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-56beb51396"></a>`rules` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |

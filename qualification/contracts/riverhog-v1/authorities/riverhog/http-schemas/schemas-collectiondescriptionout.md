@@ -24,11 +24,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ff89eed8dd"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-fad18f5e39"></a>`description` | yes | anyOf=(#/components/schemas/CollectionDescription) \| (type="null") |  |
-| <a id="s-ed8b188dda"></a>`description_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-fb5f576279"></a>`description_publication` | yes | type="string"; enum=["not_required","current","reconciling"] |  |
-| <a id="s-cdcae3a251"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
+| <a id="s-ff89eed8dd"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-fad18f5e39"></a>`description` | yes | anyOf=[([CollectionDescription](schemas-collectiondescription.md)); (type="null")] |  |
+| <a id="s-ed8b188dda"></a>`description_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Description Identity" |  |
+| <a id="s-fb5f576279"></a>`description_publication` | yes | type="string"; enum=["not_required","current","reconciling"]; title="Description Publication" |  |
+| <a id="s-cdcae3a251"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991; title="Description Revision" |  |
 
 ### Progression, limits, and lifecycle
 

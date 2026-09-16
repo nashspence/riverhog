@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d96da381e5"></a>`last_verified_at` | yes | type="string" |  |
-| <a id="s-ed7d869eec"></a>`object_count` | yes | type="integer" |  |
-| <a id="s-42f787206b"></a>`remote_storage_bytes` | yes | type="integer" |  |
-| <a id="s-8fd0830440"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-d96da381e5"></a>`last_verified_at` | yes | type="string"; title="Last Verified At" |  |
+| <a id="s-ed7d869eec"></a>`object_count` | yes | type="integer"; title="Object Count" |  |
+| <a id="s-42f787206b"></a>`remote_storage_bytes` | yes | type="integer"; title="Remote Storage Bytes" |  |
+| <a id="s-8fd0830440"></a>`store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
 
 ## Maintained corroboration
 

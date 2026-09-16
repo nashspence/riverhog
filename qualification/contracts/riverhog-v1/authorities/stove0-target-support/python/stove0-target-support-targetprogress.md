@@ -38,8 +38,8 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-5bf7647948"></a>`completed` | yes | type="integer"; minimum=0 |  |
 | <a id="s-3d99a15ede"></a>`phase` | yes | type="string"; maxLength=120; minLength=1 |  |
-| <a id="s-b02d483182"></a>`total` | no | anyOf=(type="integer"; minimum=0) \| (type="null"); default=null |  |
-| <a id="s-3ff3b017cf"></a>`unit` | no | anyOf=(type="string"; maxLength=40; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-b02d483182"></a>`total` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; default=null |  |
+| <a id="s-3ff3b017cf"></a>`unit` | no | anyOf=[(type="string"; maxLength=40; minLength=1); (type="null")]; default=null |  |
 
 ## Maintained corroboration
 

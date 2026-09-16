@@ -14,24 +14,27 @@ List Retrieval Cache Objects
 ## External contract
 
 <a id="s-8d492ab675"></a>
-- <a id="s-b7fc6d3007"></a>`operationId`: list_retrieval_cache_objects
-- <a id="s-88b74e3e7d"></a>`summary`: List Retrieval Cache Objects
-- <a id="s-8df797da78"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-b7fc6d3007"></a>`operationId`: `"list_retrieval_cache_objects"`
+- <a id="s-8df797da78"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-88b74e3e7d"></a>`summary`: `"List Retrieval Cache Objects"`
+- <a id="s-76bac958c9"></a>`tags`: `["retrieval"]`
+- <a id="s-10eb812eaf"></a>`x-riverhog-permission-requirements`: `[{"any_of":["catalog:read"]}]`
+- <a id="s-e9d98f2732"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-e92cbb3fea"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-dd0f2add97"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
-| <a id="s-aded9a430c"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
-| <a id="s-c8add90ad7"></a>`collection_id` | query | no | not declared | anyOf=([CollectionIdParameter](../http-schemas/schemas-collectionidparameter.md)) \| (type="null") |
-| <a id="s-a9e9c9b389"></a>`source_store` | query | no | not declared | anyOf=([ArchiveStoreName](../http-schemas/schemas-archivestorename.md)) \| (type="null") |
-| <a id="s-1f2a183ae9"></a>`cache_store` | query | no | not declared | anyOf=([RetrievalCacheStoreName](../http-schemas/schemas-retrievalcachestorename.md)) \| (type="null") |
-| <a id="s-278a2451e8"></a>`state` | query | no | not declared | anyOf=([RetrievalCacheState](../http-schemas/schemas-retrievalcachestate.md)) \| (type="null") |
-| <a id="s-2cdb46627a"></a>`protection` | query | no | not declared | anyOf=([RetrievalCacheProtection](../http-schemas/schemas-retrievalcacheprotection.md)) \| (type="null") |
-| <a id="s-09dfc97256"></a>`expires_before` | query | no | not declared | anyOf=(type="string") \| (type="null") |
-| <a id="s-bcbff18e3a"></a>`expires_after` | query | no | not declared | anyOf=(type="string") \| (type="null") |
+| <a id="s-e92cbb3fea"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-dd0f2add97"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
+| <a id="s-aded9a430c"></a>`q` | query | no | not declared | anyOf=[([BrowseQuery](../http-schemas/schemas-browsequery.md)); (type="null")]; title="Q" |
+| <a id="s-c8add90ad7"></a>`collection_id` | query | no | not declared | anyOf=[([CollectionIdParameter](../http-schemas/schemas-collectionidparameter.md)); (type="null")]; title="Collection Id" |
+| <a id="s-a9e9c9b389"></a>`source_store` | query | no | not declared | anyOf=[([ArchiveStoreName](../http-schemas/schemas-archivestorename.md)); (type="null")]; title="Source Store" |
+| <a id="s-1f2a183ae9"></a>`cache_store` | query | no | not declared | anyOf=[([RetrievalCacheStoreName](../http-schemas/schemas-retrievalcachestorename.md)); (type="null")]; title="Cache Store" |
+| <a id="s-278a2451e8"></a>`state` | query | no | not declared | anyOf=[([RetrievalCacheState](../http-schemas/schemas-retrievalcachestate.md)); (type="null")]; title="State" |
+| <a id="s-2cdb46627a"></a>`protection` | query | no | not declared | anyOf=[([RetrievalCacheProtection](../http-schemas/schemas-retrievalcacheprotection.md)); (type="null")]; title="Protection" |
+| <a id="s-09dfc97256"></a>`expires_before` | query | no | not declared | anyOf=[(type="string"); (type="null")]; title="Expires Before" |
+| <a id="s-bcbff18e3a"></a>`expires_after` | query | no | not declared | anyOf=[(type="string"); (type="null")]; title="Expires After" |
 | <a id="s-3f24af8c90"></a>`sort` | query | no | `"cached_at"` | [RetrievalCacheSort](../http-schemas/schemas-retrievalcachesort.md) |
 | <a id="s-2e8818cb8a"></a>`order` | query | no | `"desc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
 

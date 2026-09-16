@@ -22,9 +22,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Alternative | Schema |
 |---|---|
-| <a id="s-c23c3acf2f"></a>1 | #/components/schemas/IncompleteArchiveCopyOut |
-| <a id="s-ce48c65989"></a>2 | #/components/schemas/UploadedArchiveCopyOut |
-| <a id="s-801c95d81d"></a>3 | #/components/schemas/FailedArchiveCopyOut |
+| <a id="s-c23c3acf2f"></a>1 | [IncompleteArchiveCopyOut](schemas-incompletearchivecopyout.md) |
+| <a id="s-ce48c65989"></a>2 | [UploadedArchiveCopyOut](schemas-uploadedarchivecopyout.md) |
+| <a id="s-801c95d81d"></a>3 | [FailedArchiveCopyOut](schemas-failedarchivecopyout.md) |
 
 ## Maintained corroboration
 

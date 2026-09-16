@@ -16,15 +16,15 @@ Optional nonnormative Linux systemd-user listener-host reference for Gogurt.
 <a id="s-83936a7804"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-5fd75f8ffd"></a>`artifacts` | [{"coordinate": "dist/gogurt_linux_listener_host-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/gogurt_linux_listener_host-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-b3cf83c6b2"></a>`channel` | github-release |
-| <a id="s-1c10b36f4a"></a>`description` | Optional nonnormative Linux systemd-user listener-host reference for Gogurt. |
-| <a id="s-9d63ac6fc0"></a>`license_baseline` | first-v1-publication |
-| <a id="s-c9ed10d8c5"></a>`license_expression` | Apache-2.0 |
-| <a id="s-86a58caafe"></a>`publication_identity` | {"coordinate": "gogurt-linux-listener-host", "kind": "python-distribution"} |
-| <a id="s-32ac65e075"></a>`requires_python` | >=3.12 |
-| <a id="s-87a0da3533"></a>`role` | reference_component |
-| <a id="s-f9fd72a63e"></a>`source` | reference/gogurt/listener-host/linux/pyproject.toml |
+| <a id="s-5fd75f8ffd"></a>`artifacts` | `[{"coordinate":"dist/gogurt_linux_listener_host-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/gogurt_linux_listener_host-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-b3cf83c6b2"></a>`channel` | `"github-release"` |
+| <a id="s-1c10b36f4a"></a>`description` | `"Optional nonnormative Linux systemd-user listener-host reference for Gogurt."` |
+| <a id="s-9d63ac6fc0"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-c9ed10d8c5"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-86a58caafe"></a>`publication_identity` | `{"coordinate":"gogurt-linux-listener-host","kind":"python-distribution"}` |
+| <a id="s-32ac65e075"></a>`requires_python` | `">=3.12"` |
+| <a id="s-87a0da3533"></a>`role` | `"reference_component"` |
+| <a id="s-f9fd72a63e"></a>`source` | `"reference/gogurt/listener-host/linux/pyproject.toml"` |
 
 ## Existing ownership context
 

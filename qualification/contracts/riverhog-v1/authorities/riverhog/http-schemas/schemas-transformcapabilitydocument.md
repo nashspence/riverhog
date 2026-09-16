@@ -24,17 +24,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6cf1b8ff58"></a>`actions` | yes | type="array"; items=(type="string"; enum=["read-inputs","write-output"]); minItems=1; oneOf=(const=["read-inputs"]) \| (const=["read-inputs","write-output"]) |  |
-| <a id="s-82d9c315a0"></a>`artifacts` | yes | #/components/schemas/ArtifactReceivingSetDocument |  |
-| <a id="s-23e4e467a7"></a>`audience` | yes | type="string"; pattern="^[a-z0-9][a-z0-9._:/-]{0,299}$" |  |
-| <a id="s-efc30a4fa5"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-d17899e432"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1 |  |
-| <a id="s-504b09c50c"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-46d5a9e506"></a>`format` | yes | type="string"; const="riverhog-transform-capability/v1" |  |
-| <a id="s-359c369b8d"></a>`id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-932409e908"></a>`principal_app` | yes | type="string"; maxLength=300; minLength=1 |  |
-| <a id="s-2f565ff4bc"></a>`state` | yes | type="string"; enum=["receiving","active"] |  |
-| <a id="s-d59acea44c"></a>`token` | yes | type="string"; pattern="^rhc_[A-Za-z0-9_-]+$" |  |
+| <a id="s-6cf1b8ff58"></a>`actions` | yes | type="array"; items=(type="string"; enum=["read-inputs","write-output"]); minItems=1; oneOf=[(const=["read-inputs"]); (const=["read-inputs","write-output"])]; title="Actions" |  |
+| <a id="s-82d9c315a0"></a>`artifacts` | yes | [ArtifactReceivingSetDocument](schemas-artifactreceivingsetdocument.md) |  |
+| <a id="s-23e4e467a7"></a>`audience` | yes | type="string"; pattern="^[a-z0-9][a-z0-9._:/-]{0,299}$"; title="Audience" |  |
+| <a id="s-efc30a4fa5"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |  |
+| <a id="s-d17899e432"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1; title="Expires At" |  |
+| <a id="s-504b09c50c"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-46d5a9e506"></a>`format` | yes | type="string"; const="riverhog-transform-capability/v1"; title="Format" |  |
+| <a id="s-359c369b8d"></a>`id` | yes | type="string"; maxLength=160; minLength=1; title="Id" |  |
+| <a id="s-932409e908"></a>`principal_app` | yes | type="string"; maxLength=300; minLength=1; title="Principal App" |  |
+| <a id="s-2f565ff4bc"></a>`state` | yes | type="string"; enum=["receiving","active"]; title="State" |  |
+| <a id="s-d59acea44c"></a>`token` | yes | type="string"; pattern="^rhc_[A-Za-z0-9_-]+$"; title="Token" |  |
 
 ### Progression, limits, and lifecycle
 

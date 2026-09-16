@@ -25,8 +25,8 @@ Fence-bound invocation authority excluded from semantic request identity.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-072f4b544c"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-d483a59ad8"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-072f4b544c"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1; title="Claim Id" |  |
+| <a id="s-d483a59ad8"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
 | <a id="s-5aa86a4371"></a>`request` | yes | [ObservationRequest](#s-47065fc11b) |  |
 | <a id="s-0109a56940"></a>`runtime` | yes | [ObserverRuntimeAuthority](#s-f89907f0ff) |  |
 
@@ -50,13 +50,13 @@ Fence-bound invocation authority excluded from semantic request identity.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2a086b4455"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-2a086b4455"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
 | <a id="s-711af1ff17"></a>`collection` | yes | [CollectionRootRef](#s-ad3843b90a) |  |
-| <a id="s-d7dca27ecc"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-23e67c27bf"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-19b80a5714"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-d8821ee9e6"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-bc561903c6"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d7dca27ecc"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$"; title="Id" |  |
+| <a id="s-23e67c27bf"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null; title="Media Type" |  |
+| <a id="s-19b80a5714"></a>`path` | yes | type="string"; maxLength=4096; minLength=1; title="Path" |  |
+| <a id="s-d8821ee9e6"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Role" |  |
+| <a id="s-bc561903c6"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### <a id="s-90dcdf64ae"></a>definition `CollectionId`
 
@@ -74,9 +74,9 @@ Fence-bound invocation authority excluded from semantic request identity.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7de457ad21"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-7de457ad21"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
 | <a id="s-890e5f35a9"></a>`collection_id` | yes | [CollectionId](#s-90dcdf64ae) |  |
-| <a id="s-13ae4d5efc"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-13ae4d5efc"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
 
 ### <a id="s-95de9a9e67"></a>definition `JsonValue`
 
@@ -93,18 +93,18 @@ Fence-bound invocation authority excluded from semantic request identity.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-00e4c43523"></a>`format` | no | type="string"; const="stove0-observation-request/v1"; default="stove0-observation-request/v1" |  |
-| <a id="s-938eb9b92c"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
-| <a id="s-3d4c562d71"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-01059693d6"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-df85f4c9be"></a>`observer_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1fc32fa596"></a>`observer_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
-| <a id="s-df3b33cb99"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-95de9a9e67)) |  |
-| <a id="s-25438bc744"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-6f9e59c19c"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
-| <a id="s-433a287632"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-6ecabdecfa)); minItems=1 |  |
-| <a id="s-a884a49972"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300 |  |
-| <a id="s-e81ed70f43"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-00e4c43523"></a>`format` | no | type="string"; const="stove0-observation-request/v1"; default="stove0-observation-request/v1"; title="Format" |  |
+| <a id="s-938eb9b92c"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576; title="Maximum Result Bytes" |  |
+| <a id="s-3d4c562d71"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Observer Contract Id" |  |
+| <a id="s-01059693d6"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Observer Contract Sha256" |  |
+| <a id="s-df85f4c9be"></a>`observer_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Observer Descriptor Sha256" |  |
+| <a id="s-1fc32fa596"></a>`observer_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$"; title="Observer Registration Id" |  |
+| <a id="s-df3b33cb99"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-95de9a9e67)); title="Options" |  |
+| <a id="s-25438bc744"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Id" |  |
+| <a id="s-6f9e59c19c"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only"; title="Retrieval Policy" |  |
+| <a id="s-433a287632"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-6ecabdecfa)); minItems=1; title="Subjects" |  |
+| <a id="s-a884a49972"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300; title="Timeout Seconds" |  |
+| <a id="s-e81ed70f43"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
 
 ### <a id="s-f89907f0ff"></a>definition `ObserverRuntimeAuthority`
 
@@ -118,11 +118,11 @@ Fence-bound invocation authority excluded from semantic request identity.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3208b3767d"></a>`allow_insecure_http` | no | type="boolean"; default=false |  |
-| <a id="s-a17c050adb"></a>`capability_token` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-aea2c68d3e"></a>`riverhog_base_url` | yes | type="string"; maxLength=2048; minLength=1 |  |
-| <a id="s-d285880be0"></a>`transport` | no | type="string"; const="riverhog-capability/v1"; default="riverhog-capability/v1" |  |
-| <a id="s-5a67beef1e"></a>`workspace_assurance` | yes | type="string"; enum=["encrypted","ephemeral"] |  |
+| <a id="s-3208b3767d"></a>`allow_insecure_http` | no | type="boolean"; default=false; title="Allow Insecure Http" |  |
+| <a id="s-a17c050adb"></a>`capability_token` | yes | type="string"; maxLength=4096; minLength=1; title="Capability Token" |  |
+| <a id="s-aea2c68d3e"></a>`riverhog_base_url` | yes | type="string"; maxLength=2048; minLength=1; title="Riverhog Base Url" |  |
+| <a id="s-d285880be0"></a>`transport` | no | type="string"; const="riverhog-capability/v1"; default="riverhog-capability/v1"; title="Transport" |  |
+| <a id="s-5a67beef1e"></a>`workspace_assurance` | yes | type="string"; enum=["encrypted","ephemeral"]; title="Workspace Assurance" |  |
 
 ### Progression, limits, and lifecycle
 

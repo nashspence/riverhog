@@ -16,15 +16,15 @@ Resumable age encryption used by the Riverhog protocol.
 <a id="s-f7b2c30387"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-a58da95517"></a>`artifacts` | [{"coordinate": "dist/riverhog_age-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_age-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-945c8f35d5"></a>`channel` | github-release |
-| <a id="s-c2f401a636"></a>`description` | Resumable age encryption used by the Riverhog protocol. |
-| <a id="s-531de12b58"></a>`license_baseline` | first-v1-publication |
-| <a id="s-77f7a99fc3"></a>`license_expression` | Apache-2.0 |
-| <a id="s-8e481a5ab0"></a>`publication_identity` | {"coordinate": "riverhog-age", "kind": "python-distribution"} |
-| <a id="s-7c6d7f6f04"></a>`requires_python` | >=3.12 |
-| <a id="s-cd5997ed2c"></a>`role` | reusable_library |
-| <a id="s-8a440f3e60"></a>`source` | packages/riverhog-age/pyproject.toml |
+| <a id="s-a58da95517"></a>`artifacts` | `[{"coordinate":"dist/riverhog_age-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/riverhog_age-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-945c8f35d5"></a>`channel` | `"github-release"` |
+| <a id="s-c2f401a636"></a>`description` | `"Resumable age encryption used by the Riverhog protocol."` |
+| <a id="s-531de12b58"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-77f7a99fc3"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-8e481a5ab0"></a>`publication_identity` | `{"coordinate":"riverhog-age","kind":"python-distribution"}` |
+| <a id="s-7c6d7f6f04"></a>`requires_python` | `">=3.12"` |
+| <a id="s-cd5997ed2c"></a>`role` | `"reusable_library"` |
+| <a id="s-8a440f3e60"></a>`source` | `"packages/riverhog-age/pyproject.toml"` |
 
 ## Existing ownership context
 

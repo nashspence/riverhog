@@ -25,12 +25,12 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-1f7d55f071"></a>`inputs` | yes | [TargetInputAuthority](#s-0bf40c6b84) |  |
-| <a id="s-c1ea16c2da"></a>`intent` | yes | type="object"; additionalProperties=([JsonValue](#s-b0637b7a98)) |  |
-| <a id="s-60c5a34834"></a>`observations` | no | type="array"; default=[]; items=([ObservationEvidence](#s-2dc2fc885a)) |  |
-| <a id="s-07a5946a90"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-142277f62c"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-6069a512bd"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1" |  |
-| <a id="s-342fd382c1"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-b0637b7a98)) |  |
+| <a id="s-c1ea16c2da"></a>`intent` | yes | type="object"; additionalProperties=([JsonValue](#s-b0637b7a98)); title="Intent" |  |
+| <a id="s-60c5a34834"></a>`observations` | no | type="array"; default=[]; items=([ObservationEvidence](#s-2dc2fc885a)); title="Observations" |  |
+| <a id="s-07a5946a90"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Operation Contract Sha256" |  |
+| <a id="s-142277f62c"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Operation Id" |  |
+| <a id="s-6069a512bd"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1"; title="Protocol" |  |
+| <a id="s-342fd382c1"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-b0637b7a98)); title="Target Options" |  |
 
 ### Definitions
 
@@ -61,9 +61,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0ae7101efd"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-d29b4f03dd"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-406e23a91d"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-0ae7101efd"></a>`artifact_count` | yes | type="integer"; minimum=1; title="Artifact Count" |  |
+| <a id="s-d29b4f03dd"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Selection Sha256" |  |
+| <a id="s-406e23a91d"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
 
 ### <a id="s-56a22d7fcb"></a>definition `ArtifactSubject`
 
@@ -76,13 +76,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2595b85632"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-2595b85632"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
 | <a id="s-32cb3a173b"></a>`collection` | yes | [CollectionRootRef](#s-fc381411d0) |  |
-| <a id="s-285f24a4e5"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-f68e650b14"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-60fd345f49"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-ea8bccc8ba"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-3e418c8478"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-285f24a4e5"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$"; title="Id" |  |
+| <a id="s-f68e650b14"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null; title="Media Type" |  |
+| <a id="s-60fd345f49"></a>`path` | yes | type="string"; maxLength=4096; minLength=1; title="Path" |  |
+| <a id="s-ea8bccc8ba"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Role" |  |
+| <a id="s-3e418c8478"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### <a id="s-a5154ea9fe"></a>definition `CollectionId`
 
@@ -100,9 +100,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-005cf9f0ca"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-005cf9f0ca"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
 | <a id="s-4ea1b1e4b8"></a>`collection_id` | yes | [CollectionId](#s-a5154ea9fe) |  |
-| <a id="s-e2c297efe4"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-e2c297efe4"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
 
 ### <a id="s-b3fc7ee294"></a>definition `JsonSchemaDocument`
 
@@ -115,11 +115,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-611bb06bdb"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
-| <a id="s-90b2e1efd2"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
-| <a id="s-982e6d8a58"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-7d1e778ca6"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-b0637b7a98)) |  |
-| <a id="s-2c426fe906"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-611bb06bdb"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema"; title="Dialect" |  |
+| <a id="s-90b2e1efd2"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only"; title="Format Policy" |  |
+| <a id="s-982e6d8a58"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-7d1e778ca6"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-b0637b7a98)); title="Schema" |  |
+| <a id="s-2c426fe906"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### <a id="s-b0637b7a98"></a>definition `JsonValue`
 
@@ -151,9 +151,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6c2f6441d7"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-fbdfc6b895"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
-| <a id="s-3611956b2a"></a>`retryable` | yes | type="boolean" |  |
+| <a id="s-6c2f6441d7"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Code" |  |
+| <a id="s-fbdfc6b895"></a>`message` | yes | type="string"; maxLength=1000; minLength=1; title="Message" |  |
+| <a id="s-3611956b2a"></a>`retryable` | yes | type="boolean"; title="Retryable" |  |
 
 ### <a id="s-03dc31d0d4"></a>definition `ObservationInapplicable`
 
@@ -166,8 +166,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3ef0315560"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-aabccd7962"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-3ef0315560"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Code" |  |
+| <a id="s-aabccd7962"></a>`message` | yes | type="string"; maxLength=1000; minLength=1; title="Message" |  |
 
 ### <a id="s-0774706ca1"></a>definition `ObservationRequest`
 
@@ -180,18 +180,18 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-618652f0f3"></a>`format` | no | type="string"; const="stove0-observation-request/v1"; default="stove0-observation-request/v1" |  |
-| <a id="s-514caa4e89"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
-| <a id="s-9627389317"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-ea22d51c77"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-920e080fcc"></a>`observer_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-45f7fd22f3"></a>`observer_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
-| <a id="s-d614e2f80d"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-b0637b7a98)) |  |
-| <a id="s-bdc2f7598b"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-cae634579e"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
-| <a id="s-7efcc21acf"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-56a22d7fcb)); minItems=1 |  |
-| <a id="s-e97f6388df"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300 |  |
-| <a id="s-c47504c389"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-618652f0f3"></a>`format` | no | type="string"; const="stove0-observation-request/v1"; default="stove0-observation-request/v1"; title="Format" |  |
+| <a id="s-514caa4e89"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576; title="Maximum Result Bytes" |  |
+| <a id="s-9627389317"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Observer Contract Id" |  |
+| <a id="s-ea22d51c77"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Observer Contract Sha256" |  |
+| <a id="s-920e080fcc"></a>`observer_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Observer Descriptor Sha256" |  |
+| <a id="s-45f7fd22f3"></a>`observer_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$"; title="Observer Registration Id" |  |
+| <a id="s-d614e2f80d"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-b0637b7a98)); title="Options" |  |
+| <a id="s-bdc2f7598b"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Id" |  |
+| <a id="s-cae634579e"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only"; title="Retrieval Policy" |  |
+| <a id="s-7efcc21acf"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-56a22d7fcb)); minItems=1; title="Subjects" |  |
+| <a id="s-e97f6388df"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300; title="Timeout Seconds" |  |
+| <a id="s-c47504c389"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
 
 ### <a id="s-62d1c54be3"></a>definition `ObservationResult`
 
@@ -204,20 +204,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8625d8f9e8"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-b0637b7a98)) |  |
-| <a id="s-51cddbb33e"></a>`facts` | no | anyOf=(type="object"; additionalProperties=([JsonValue](#s-b0637b7a98))) \| (type="null"); default=null |  |
-| <a id="s-828e39dc72"></a>`facts_schema` | no | anyOf=([JsonSchemaDocument](#s-b3fc7ee294)) \| (type="null"); default=null |  |
-| <a id="s-9eea10e91d"></a>`facts_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
-| <a id="s-5c6ef9b55d"></a>`failure` | no | anyOf=([ObservationFailure](#s-75fd5a78a3)) \| (type="null"); default=null |  |
-| <a id="s-a01fed9c53"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1" |  |
-| <a id="s-20383931d2"></a>`inapplicable` | no | anyOf=([ObservationInapplicable](#s-03dc31d0d4)) \| (type="null"); default=null |  |
+| <a id="s-8625d8f9e8"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-b0637b7a98)); title="Execution Evidence" |  |
+| <a id="s-51cddbb33e"></a>`facts` | no | anyOf=[(type="object"; additionalProperties=([JsonValue](#s-b0637b7a98))); (type="null")]; default=null; title="Facts" |  |
+| <a id="s-828e39dc72"></a>`facts_schema` | no | anyOf=[([JsonSchemaDocument](#s-b3fc7ee294)); (type="null")]; default=null |  |
+| <a id="s-9eea10e91d"></a>`facts_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null; title="Facts Sha256" |  |
+| <a id="s-5c6ef9b55d"></a>`failure` | no | anyOf=[([ObservationFailure](#s-75fd5a78a3)); (type="null")]; default=null |  |
+| <a id="s-a01fed9c53"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1"; title="Format" |  |
+| <a id="s-20383931d2"></a>`inapplicable` | no | anyOf=[([ObservationInapplicable](#s-03dc31d0d4)); (type="null")]; default=null |  |
 | <a id="s-f431e812ef"></a>`observer` | yes | [ObserverImplementation](#s-b3d0b4be58) |  |
-| <a id="s-1d27135646"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-4419214758"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-84137ea3e0"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-7e872e1e47"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-3da2417cd3"></a>`state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"] |  |
-| <a id="s-fb7d5c7312"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-56a22d7fcb)); minItems=1 |  |
+| <a id="s-1d27135646"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Observer Contract Id" |  |
+| <a id="s-4419214758"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Observer Contract Sha256" |  |
+| <a id="s-84137ea3e0"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Id" |  |
+| <a id="s-7e872e1e47"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Result Sha256" |  |
+| <a id="s-3da2417cd3"></a>`state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"]; title="State" |  |
+| <a id="s-fb7d5c7312"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-56a22d7fcb)); minItems=1; title="Subjects" |  |
 
 ### <a id="s-b3d0b4be58"></a>definition `ObserverImplementation`
 
@@ -230,11 +230,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d92b39cd23"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1c0f6c1d4f"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-01619d6c2a"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1"; default="stove0-content-observer/v1" |  |
-| <a id="s-7291e4c881"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
-| <a id="s-203ca69f7f"></a>`version` | yes | type="string"; maxLength=120; minLength=1 |  |
+| <a id="s-d92b39cd23"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Descriptor Sha256" |  |
+| <a id="s-1c0f6c1d4f"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-01619d6c2a"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1"; default="stove0-content-observer/v1"; title="Protocol" |  |
+| <a id="s-7291e4c881"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1; title="Source Revision" |  |
+| <a id="s-203ca69f7f"></a>`version` | yes | type="string"; maxLength=120; minLength=1; title="Version" |  |
 
 ### <a id="s-0bf40c6b84"></a>definition `TargetInputAuthority`
 
@@ -248,7 +248,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-eddf99919c"></a>`roles` | yes | type="array"; items=([TargetInputRoleCount](#s-a0d64f4573)); minItems=1 |  |
+| <a id="s-eddf99919c"></a>`roles` | yes | type="array"; items=([TargetInputRoleCount](#s-a0d64f4573)); minItems=1; title="Roles" |  |
 | <a id="s-b19333068c"></a>`selection` | yes | [ArtifactSelectionRef](#s-3c4967cccf) |  |
 
 ### <a id="s-a0d64f4573"></a>definition `TargetInputRoleCount`
@@ -262,8 +262,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b6c378a52c"></a>`count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-1bc7a898ba"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-b6c378a52c"></a>`count` | yes | type="integer"; minimum=1; title="Count" |  |
+| <a id="s-1bc7a898ba"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Role" |  |
 
 ### Progression, limits, and lifecycle
 

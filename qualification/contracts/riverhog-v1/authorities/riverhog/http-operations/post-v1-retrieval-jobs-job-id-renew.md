@@ -14,19 +14,26 @@ Renew Retrieval Job
 ## External contract
 
 <a id="s-6c2e444e5f"></a>
-- <a id="s-b669235070"></a>`operationId`: renew_retrieval_job
-- <a id="s-379eabb5c2"></a>`summary`: Renew Retrieval Job
-- <a id="s-78681d061d"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-b669235070"></a>`operationId`: `"renew_retrieval_job"`
+- <a id="s-78681d061d"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-379eabb5c2"></a>`summary`: `"Renew Retrieval Job"`
+- <a id="s-c6a9716480"></a>`tags`: `["retrieval"]`
+- <a id="s-79fb385f4d"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-6273fa74bc"></a>`x-riverhog-permission-requirements`: `[{"any_of":["retrieval:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-74e7089c43"></a>`job_id` | path | yes | not declared | type="string" |
+| <a id="s-74e7089c43"></a>`job_id` | path | yes | not declared | type="string"; title="Job Id" |
 
 ### <a id="s-2acb4c40f4"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/RenewRetrievalJobRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [RenewRetrievalJobRequest](../http-schemas/schemas-renewretrievaljobrequest.md) |
 
 ### Responses
 

@@ -16,15 +16,15 @@ Optional nonnormative FFprobe sampling-observer reference for Stove0.
 <a id="s-31397aa2c1"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-8187bb8eed"></a>`artifacts` | [{"coordinate": "dist/stove0_ffprobe_sampling_observer-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_ffprobe_sampling_observer-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-0c6913c2d1"></a>`channel` | github-release |
-| <a id="s-690ff01e16"></a>`description` | Optional nonnormative FFprobe sampling-observer reference for Stove0. |
-| <a id="s-5db5aaa0bd"></a>`license_baseline` | first-v1-publication |
-| <a id="s-a563234fca"></a>`license_expression` | CAL-1.0 |
-| <a id="s-1e859158ec"></a>`publication_identity` | {"coordinate": "stove0-ffprobe-sampling-observer", "kind": "python-distribution"} |
-| <a id="s-204b24b0b3"></a>`requires_python` | >=3.12 |
-| <a id="s-f98baf5fda"></a>`role` | reference_component |
-| <a id="s-9277253bc1"></a>`source` | reference/stove0/observers/ffprobe-sampling/pyproject.toml |
+| <a id="s-8187bb8eed"></a>`artifacts` | `[{"coordinate":"dist/stove0_ffprobe_sampling_observer-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_ffprobe_sampling_observer-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-0c6913c2d1"></a>`channel` | `"github-release"` |
+| <a id="s-690ff01e16"></a>`description` | `"Optional nonnormative FFprobe sampling-observer reference for Stove0."` |
+| <a id="s-5db5aaa0bd"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-a563234fca"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-1e859158ec"></a>`publication_identity` | `{"coordinate":"stove0-ffprobe-sampling-observer","kind":"python-distribution"}` |
+| <a id="s-204b24b0b3"></a>`requires_python` | `">=3.12"` |
+| <a id="s-f98baf5fda"></a>`role` | `"reference_component"` |
+| <a id="s-9277253bc1"></a>`source` | `"reference/stove0/observers/ffprobe-sampling/pyproject.toml"` |
 
 ## Existing ownership context
 

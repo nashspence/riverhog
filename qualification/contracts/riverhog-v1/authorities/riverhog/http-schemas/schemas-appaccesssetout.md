@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-090ca1903c"></a>`access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
-| <a id="s-0c227a46cf"></a>`app` | yes | #/components/schemas/ApplicationName |  |
-| <a id="s-b5f450fea3"></a>`key_id` | yes | #/components/schemas/ApplicationKeyId |  |
+| <a id="s-090ca1903c"></a>`access` | yes | [ApplicationAccessGrantSet](schemas-applicationaccessgrantset.md) |  |
+| <a id="s-0c227a46cf"></a>`app` | yes | [ApplicationName](schemas-applicationname.md) |  |
+| <a id="s-b5f450fea3"></a>`key_id` | yes | [ApplicationKeyId](schemas-applicationkeyid.md) |  |
 
 ## Maintained corroboration
 

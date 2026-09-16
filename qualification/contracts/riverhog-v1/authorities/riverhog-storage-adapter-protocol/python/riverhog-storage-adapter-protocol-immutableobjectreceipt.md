@@ -37,9 +37,9 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-9a7d565fdc"></a>`completed_at` | yes | type="string"; maxLength=100; minLength=1 |  |
-| <a id="s-96687cf2cf"></a>`entity_token` | no | anyOf=(type="string"; maxLength=4000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-96687cf2cf"></a>`entity_token` | no | anyOf=[(type="string"; maxLength=4000; minLength=1); (type="null")]; default=null |  |
 | <a id="s-2a9d11f646"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-edab58366b"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-edab58366b"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null |  |
 | <a id="s-bcb23637a5"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-a6191dde3e"></a>`stored_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-1f0efb195e"></a>`verified_content_type` | yes | type="string"; maxLength=255; minLength=1 |  |

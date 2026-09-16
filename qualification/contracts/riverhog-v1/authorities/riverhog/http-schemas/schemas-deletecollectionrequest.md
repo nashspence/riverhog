@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-238e9e80f8"></a>`challenge` | yes | type="string" |  |
-| <a id="s-cad18f2c6c"></a>`event_context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null") |  |
-| <a id="s-a4430dd637"></a>`retirement_claim_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
+| <a id="s-238e9e80f8"></a>`challenge` | yes | type="string"; title="Challenge" |  |
+| <a id="s-cad18f2c6c"></a>`event_context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; title="Event Context" |  |
+| <a id="s-a4430dd637"></a>`retirement_claim_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Retirement Claim Id" |  |
 
 ### Progression, limits, and lifecycle
 

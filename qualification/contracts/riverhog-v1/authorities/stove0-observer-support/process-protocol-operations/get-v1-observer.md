@@ -16,13 +16,13 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-24d0534b7b"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-9c307b2e97"></a>`error_schema` | ErrorResponse |
-| <a id="s-c571be7630"></a>`errors` | [{"code": "bad_request", "status": 400}, {"code": "unauthorized", "status": 401}, {"code": "observer_failed", "status": 500}] |
-| <a id="s-ec203ee211"></a>`method` | GET |
-| <a id="s-5b0c7365a1"></a>`path` | /v1/observer |
-| <a id="s-291b6b2d14"></a>`path_parameters` | [] |
-| <a id="s-c5a65efb59"></a>`request` | {"kind": "none", "schema": null} |
-| <a id="s-21d9f682cb"></a>`response` | {"headers": [], "kind": "json", "schema": "ObserverDescriptor", "statuses": [200]} |
+| <a id="s-9c307b2e97"></a>`error_schema` | `"ErrorResponse"` |
+| <a id="s-c571be7630"></a>`errors` | `[{"code":"bad_request","status":400},{"code":"unauthorized","status":401},{"code":"observer_failed","status":500}]` |
+| <a id="s-ec203ee211"></a>`method` | `"GET"` |
+| <a id="s-5b0c7365a1"></a>`path` | `"/v1/observer"` |
+| <a id="s-291b6b2d14"></a>`path_parameters` | `[]` |
+| <a id="s-c5a65efb59"></a>`request` | `{"kind":"none","schema":null}` |
+| <a id="s-21d9f682cb"></a>`response` | `{"headers":[],"kind":"json","schema":"ObserverDescriptor","statuses":[200]}` |
 
 ## Maintained corroboration
 

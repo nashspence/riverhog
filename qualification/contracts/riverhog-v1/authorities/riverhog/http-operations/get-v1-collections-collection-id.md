@@ -14,15 +14,17 @@ Get Collection
 ## External contract
 
 <a id="s-90ea1a2611"></a>
-- <a id="s-3945dfc1c9"></a>`operationId`: get_collection
-- <a id="s-55e86ebe25"></a>`summary`: Get Collection
-- <a id="s-bdcc37d19c"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-3945dfc1c9"></a>`operationId`: `"get_collection"`
+- <a id="s-bdcc37d19c"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-55e86ebe25"></a>`summary`: `"Get Collection"`
+- <a id="s-8ffd78ace0"></a>`tags`: `["collections"]`
+- <a id="s-2c623f8ea5"></a>`x-riverhog-permission-requirements`: `[{"any_of":["catalog:read"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-4f313b0704"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-4f313b0704"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
 
 ### Responses
 

@@ -36,7 +36,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-bbb6bdbc91"></a>`output` | no | anyOf=([OutputCollectionRef](#s-f5c2ca9269)) \| (type="null"); default=null |  |
+| <a id="s-bbb6bdbc91"></a>`output` | no | anyOf=[([OutputCollectionRef](#s-f5c2ca9269)); (type="null")]; default=null |  |
 | <a id="s-99c18a12e1"></a>`state` | yes | type="string"; enum=["pending","active","complete","inapplicable","failed","canceled"] |  |
 | <a id="s-f6ec53c14a"></a>`variant_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-e92ac32514"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |

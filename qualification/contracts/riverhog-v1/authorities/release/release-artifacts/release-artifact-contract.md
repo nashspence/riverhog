@@ -16,8 +16,8 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-f19a7e33ec"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-bd0b418748"></a>`coordinate` | riverhog-v1-contract.tar.gz |
-| <a id="s-a6d9956e57"></a>`format` | tar+gzip |
+| <a id="s-bd0b418748"></a>`coordinate` | `"riverhog-v1-contract.tar.gz"` |
+| <a id="s-a6d9956e57"></a>`format` | `"tar+gzip"` |
 
 ## Governing policies
 

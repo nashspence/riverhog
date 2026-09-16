@@ -24,14 +24,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-47daac55a0"></a>`attempts` | yes | type="integer"; minimum=0 |  |
-| <a id="s-6ca57b3926"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-b6bb0512f6"></a>`failure` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-c7a8ebe491"></a>`finished_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-f484534cb7"></a>`requested_at` | yes | type="string" |  |
-| <a id="s-de3dc86efe"></a>`result` | yes | anyOf=(#/components/schemas/CollectionProvenanceVerificationOut) \| (type="null") |  |
-| <a id="s-e54a5477bb"></a>`started_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-32e51516fe"></a>`state` | yes | type="string"; enum=["queued","running","canceling","succeeded","failed","canceled"] |  |
+| <a id="s-47daac55a0"></a>`attempts` | yes | type="integer"; minimum=0; title="Attempts" |  |
+| <a id="s-6ca57b3926"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-b6bb0512f6"></a>`failure` | yes | anyOf=[(type="string"); (type="null")]; title="Failure" |  |
+| <a id="s-c7a8ebe491"></a>`finished_at` | yes | anyOf=[(type="string"); (type="null")]; title="Finished At" |  |
+| <a id="s-f484534cb7"></a>`requested_at` | yes | type="string"; title="Requested At" |  |
+| <a id="s-de3dc86efe"></a>`result` | yes | anyOf=[([CollectionProvenanceVerificationOut](schemas-collectionprovenanceverificationout.md)); (type="null")] |  |
+| <a id="s-e54a5477bb"></a>`started_at` | yes | anyOf=[(type="string"); (type="null")]; title="Started At" |  |
+| <a id="s-32e51516fe"></a>`state` | yes | type="string"; enum=["queued","running","canceling","succeeded","failed","canceled"]; title="State" |  |
 
 ## Maintained corroboration
 

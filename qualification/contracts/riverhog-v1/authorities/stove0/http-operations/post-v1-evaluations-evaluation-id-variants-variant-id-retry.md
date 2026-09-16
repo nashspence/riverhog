@@ -14,15 +14,16 @@ Retry Evaluation Variant
 ## External contract
 
 <a id="s-26a95a8b37"></a>
-- <a id="s-e711229261"></a>`operationId`: retry_evaluation_variant
-- <a id="s-5b6ee480cb"></a>`summary`: Retry Evaluation Variant
+- <a id="s-e711229261"></a>`operationId`: `"retry_evaluation_variant"`
+- <a id="s-5b6ee480cb"></a>`summary`: `"Retry Evaluation Variant"`
+- <a id="s-182bed703f"></a>`tags`: `["evaluations"]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-acc7d22fee"></a>`evaluation_id` | path | yes | not declared | type="string" |
-| <a id="s-b1ce1f8680"></a>`variant_id` | path | yes | not declared | type="string" |
+| <a id="s-acc7d22fee"></a>`evaluation_id` | path | yes | not declared | type="string"; title="Evaluation Id" |
+| <a id="s-b1ce1f8680"></a>`variant_id` | path | yes | not declared | type="string"; title="Variant Id" |
 
 ### Responses
 

@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-54d2e006e6"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-198210a440"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-0c8bda9d95"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-af625f53a6"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-54d2e006e6"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
+| <a id="s-198210a440"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-0c8bda9d95"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
+| <a id="s-af625f53a6"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Derivation Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -14,19 +14,26 @@ Append Processing Claim Artifacts
 ## External contract
 
 <a id="s-218a5f4c9a"></a>
-- <a id="s-6142c858b0"></a>`operationId`: append_processing_claim_artifacts
-- <a id="s-04c5c03d49"></a>`summary`: Append Processing Claim Artifacts
-- <a id="s-e09f492d0f"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-6142c858b0"></a>`operationId`: `"append_processing_claim_artifacts"`
+- <a id="s-e09f492d0f"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-04c5c03d49"></a>`summary`: `"Append Processing Claim Artifacts"`
+- <a id="s-0077427033"></a>`tags`: `["collection-workflows"]`
+- <a id="s-76985cec03"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-7ad2ed3f39"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-fd484d6634"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-fd484d6634"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
 
 ### <a id="s-1922875fb7"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CollectionArtifactBatchDocument"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [CollectionArtifactBatchDocument](../http-schemas/schemas-collectionartifactbatchdocument.md) |
 
 ### Responses
 

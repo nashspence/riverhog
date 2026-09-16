@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4344c1608a"></a>`objects` | yes | type="array"; items=([ObjectLocator](#s-d7a7425eaa)); minItems=1 |  |
-| <a id="s-f6a789a1fb"></a>`readiness` | yes | discriminator={"mapping":{"expired":"[ReadExpired](#s-285138754e)","ready":"[ReadReady](#s-e03e1a2323)","requested":"[ReadRequested](#s-c23f02270e)"},"propertyName":"state"}; oneOf=([ReadRequested](#s-c23f02270e)) \| ([ReadReady](#s-e03e1a2323)) \| ([ReadExpired](#s-285138754e)) |  |
+| <a id="s-4344c1608a"></a>`objects` | yes | type="array"; items=([ObjectLocator](#s-d7a7425eaa)); minItems=1; title="Objects" |  |
+| <a id="s-f6a789a1fb"></a>`readiness` | yes | discriminator={"mapping":{"expired":"#/$defs/ReadExpired","ready":"#/$defs/ReadReady","requested":"#/$defs/ReadRequested"},"propertyName":"state"}; oneOf=[([ReadRequested](#s-c23f02270e)); ([ReadReady](#s-e03e1a2323)); ([ReadExpired](#s-285138754e))]; title="Readiness" |  |
 
 ### Definitions
 
@@ -45,8 +45,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c1fb151a13"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-10c072a33f"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-c1fb151a13"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
+| <a id="s-10c072a33f"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null; title="Revision" |  |
 
 ### <a id="s-285138754e"></a>definition `ReadExpired`
 
@@ -58,7 +58,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-36323568e0"></a>`state` | no | type="string"; const="expired"; default="expired" |  |
+| <a id="s-36323568e0"></a>`state` | no | type="string"; const="expired"; default="expired"; title="State" |  |
 
 ### <a id="s-e03e1a2323"></a>definition `ReadReady`
 
@@ -70,8 +70,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8f1c09c270"></a>`available_until` | no | anyOf=(type="string"; maxLength=100; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-6593f5851e"></a>`state` | no | type="string"; const="ready"; default="ready" |  |
+| <a id="s-8f1c09c270"></a>`available_until` | no | anyOf=[(type="string"; maxLength=100; minLength=1); (type="null")]; default=null; title="Available Until" |  |
+| <a id="s-6593f5851e"></a>`state` | no | type="string"; const="ready"; default="ready"; title="State" |  |
 
 ### <a id="s-c23f02270e"></a>definition `ReadRequested`
 
@@ -83,8 +83,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ed34680d49"></a>`estimated_ready_at` | no | anyOf=(type="string"; maxLength=100; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-a235938066"></a>`state` | no | type="string"; const="requested"; default="requested" |  |
+| <a id="s-ed34680d49"></a>`estimated_ready_at` | no | anyOf=[(type="string"; maxLength=100; minLength=1); (type="null")]; default=null; title="Estimated Ready At" |  |
+| <a id="s-a235938066"></a>`state` | no | type="string"; const="requested"; default="requested"; title="State" |  |
 
 ### Progression, limits, and lifecycle
 

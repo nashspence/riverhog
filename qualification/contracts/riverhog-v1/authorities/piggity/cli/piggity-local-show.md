@@ -24,8 +24,8 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-a248dfb131"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded |
-| <a id="s-23ed8f5775"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-a248dfb131"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded<br>Env: `null` |
+| <a id="s-23ed8f5775"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -44,14 +44,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-765f56719e"></a>`completed` | <a id="s-f6cf31a51d"></a>`{"kind":"command-completed"}` | <a id="s-a0e83a57d6"></a>`0` | <a id="s-3507067d4b"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-local-collection/v1](#s-a60947f659) | <a id="s-0e725e0b06"></a>all: `empty` |
+| <a id="s-765f56719e"></a>`completed` | <a id="s-f6cf31a51d"></a>`{"kind":"command-completed"}` | <a id="s-a0e83a57d6"></a>`0` | <a id="s-3507067d4b"></a>human: `"noncontractual-presentation-of-command-result"`; json: [piggity-local-collection/v1](#s-a60947f659) | <a id="s-0e725e0b06"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-c3a8194b69"></a>`usage` | <a id="s-88e4288517"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-637f8ad8dd"></a>`2` | <a id="s-3e2b337274"></a>all: `empty` | <a id="s-b90cc9abc4"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-704057c776"></a>`operational` | <a id="s-21214c04ca"></a>`{"kind":"application-error"}` | <a id="s-cb50b2d48a"></a>`1` | <a id="s-188d15e271"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-941dcf6548"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-c3a8194b69"></a>`usage` | <a id="s-88e4288517"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-637f8ad8dd"></a>`2` | <a id="s-3e2b337274"></a>all: `"empty"` | <a id="s-b90cc9abc4"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-704057c776"></a>`operational` | <a id="s-21214c04ca"></a>`{"kind":"application-error"}` | <a id="s-cb50b2d48a"></a>`1` | <a id="s-188d15e271"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-941dcf6548"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Local structured outputs
 

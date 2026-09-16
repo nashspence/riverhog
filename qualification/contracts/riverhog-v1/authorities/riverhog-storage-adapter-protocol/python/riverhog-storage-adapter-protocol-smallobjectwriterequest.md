@@ -37,7 +37,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-9465e41ab7"></a>`content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
-| <a id="s-64b62e7b27"></a>`expected_current_stored_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-64b62e7b27"></a>`expected_current_stored_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-79af9aeeff"></a>`mode` | yes | type="string"; enum=["create_only","replace_current"] |  |
 | <a id="s-a8eadba612"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-b9984bcb75"></a>`placement` | yes | type="string"; enum=["archive","immediate"] |  |

@@ -16,13 +16,13 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-7700320470"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-2a94458971"></a>`error_schema` | StorageAdapterError |
-| <a id="s-57e8c870a3"></a>`errors` | [{"code": "unauthorized", "status": 401}, {"code": "invalid_request", "status": 400}, {"code": "provider_unavailable", "status": 503}, {"code": "internal_failure", "status": 500}, {"code": "request_too_large", "status": 413}, {"code": "invalid_path", "status": 400}, {"code": "not_found", "status": 404}] |
-| <a id="s-fb68ee2d0a"></a>`method` | POST |
-| <a id="s-5ecbdd917a"></a>`path` | /v1/writes/abort |
-| <a id="s-b8ef0d7992"></a>`path_parameters` | [] |
-| <a id="s-254b2a4eb1"></a>`request` | {"kind": "json", "schema": "WriteSession"} |
-| <a id="s-4854afe05b"></a>`response` | {"headers": [], "kind": "none", "schema": null, "statuses": [204]} |
+| <a id="s-2a94458971"></a>`error_schema` | `"StorageAdapterError"` |
+| <a id="s-57e8c870a3"></a>`errors` | `[{"code":"unauthorized","status":401},{"code":"invalid_request","status":400},{"code":"provider_unavailable","status":503},{"code":"internal_failure","status":500},{"code":"request_too_large","status":413},{"code":"invalid_path","status":400},{"code":"not_found","status":404}]` |
+| <a id="s-fb68ee2d0a"></a>`method` | `"POST"` |
+| <a id="s-5ecbdd917a"></a>`path` | `"/v1/writes/abort"` |
+| <a id="s-b8ef0d7992"></a>`path_parameters` | `[]` |
+| <a id="s-254b2a4eb1"></a>`request` | `{"kind":"json","schema":"WriteSession"}` |
+| <a id="s-4854afe05b"></a>`response` | `{"headers":[],"kind":"none","schema":null,"statuses":[204]}` |
 
 ## Maintained corroboration
 

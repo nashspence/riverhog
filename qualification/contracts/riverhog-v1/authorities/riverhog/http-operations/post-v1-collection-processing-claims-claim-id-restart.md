@@ -14,19 +14,26 @@ Restart Processing Claim
 ## External contract
 
 <a id="s-cc3410ac37"></a>
-- <a id="s-11ee8fe72f"></a>`operationId`: restart_processing_claim
-- <a id="s-04796dd37f"></a>`summary`: Restart Processing Claim
-- <a id="s-01095cbd75"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-11ee8fe72f"></a>`operationId`: `"restart_processing_claim"`
+- <a id="s-01095cbd75"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-04796dd37f"></a>`summary`: `"Restart Processing Claim"`
+- <a id="s-a53b32e1ca"></a>`tags`: `["collection-workflows"]`
+- <a id="s-b85f27d55f"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-57569de90e"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-d06ebb8785"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-d06ebb8785"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
 
 ### <a id="s-7e11f874f2"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProcessingClaimRestartDocument"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [ProcessingClaimRestartDocument](../http-schemas/schemas-processingclaimrestartdocument.md) |
 
 ### Responses
 

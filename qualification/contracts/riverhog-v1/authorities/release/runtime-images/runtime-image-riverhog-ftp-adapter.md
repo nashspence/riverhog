@@ -16,17 +16,17 @@ Optional nonnormative Riverhog FTP ingress reference.
 <a id="s-c61679b7cd"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-7433ad3c19"></a>`build_target` | riverhog-ftp-adapter |
-| <a id="s-b5e0b20481"></a>`description` | Optional nonnormative Riverhog FTP ingress reference. |
-| <a id="s-2905fb3f67"></a>`distribution_roots` | ["riverhog-ftp-adapter", "riverhog-provenance-linux-observer"] |
-| <a id="s-1c6d8f7dd2"></a>`format` | oci-image |
-| <a id="s-443c6b6071"></a>`license_baseline` | first-v1-publication |
-| <a id="s-690d7b18b5"></a>`license_expression` | Apache-2.0 |
-| <a id="s-7a70bd1ec1"></a>`platforms` | ["linux/amd64"] |
-| <a id="s-e98db28937"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-ftp-adapter", "kind": "oci-repository"} |
-| <a id="s-205d0879b6"></a>`repository` | ghcr.io/nashspence/riverhog-ftp-adapter |
-| <a id="s-f309b94d3f"></a>`role` | reference |
-| <a id="s-2741f48ff4"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-ftp-adapter:{version}", "ghcr.io/nashspence/riverhog-ftp-adapter:sha-{source_sha}"] |
+| <a id="s-7433ad3c19"></a>`build_target` | `"riverhog-ftp-adapter"` |
+| <a id="s-b5e0b20481"></a>`description` | `"Optional nonnormative Riverhog FTP ingress reference."` |
+| <a id="s-2905fb3f67"></a>`distribution_roots` | `["riverhog-ftp-adapter","riverhog-provenance-linux-observer"]` |
+| <a id="s-1c6d8f7dd2"></a>`format` | `"oci-image"` |
+| <a id="s-443c6b6071"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-690d7b18b5"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-7a70bd1ec1"></a>`platforms` | `["linux/amd64"]` |
+| <a id="s-e98db28937"></a>`publication_identity` | `{"coordinate":"ghcr.io/nashspence/riverhog-ftp-adapter","kind":"oci-repository"}` |
+| <a id="s-205d0879b6"></a>`repository` | `"ghcr.io/nashspence/riverhog-ftp-adapter"` |
+| <a id="s-f309b94d3f"></a>`role` | `"reference"` |
+| <a id="s-2741f48ff4"></a>`tag_templates` | `["ghcr.io/nashspence/riverhog-ftp-adapter:{version}","ghcr.io/nashspence/riverhog-ftp-adapter:sha-{source_sha}"]` |
 
 ## Existing ownership context
 

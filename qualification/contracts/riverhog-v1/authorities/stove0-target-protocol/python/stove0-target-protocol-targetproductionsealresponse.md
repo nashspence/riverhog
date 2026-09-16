@@ -36,7 +36,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c7ad624559"></a>`production` | no | anyOf=([TargetProductionAuthority](#s-bff5bb50a6)) \| (type="null"); default=null |  |
+| <a id="s-c7ad624559"></a>`production` | no | anyOf=[([TargetProductionAuthority](#s-bff5bb50a6)); (type="null")]; default=null |  |
 | <a id="s-9ce295c9e8"></a>`state` | yes | type="string"; enum=["sealing","sealed"] |  |
 
 ##### Definitions

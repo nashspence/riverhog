@@ -16,15 +16,15 @@ Canonical content-opaque collection orchestration contracts for stove0.
 <a id="s-21ab1d34d4"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-a1b4ed2273"></a>`artifacts` | [{"coordinate": "dist/stove0_protocol-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_protocol-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-93af748a18"></a>`channel` | github-release |
-| <a id="s-a3cca36246"></a>`description` | Canonical content-opaque collection orchestration contracts for stove0. |
-| <a id="s-d24cd65ed6"></a>`license_baseline` | first-v1-publication |
-| <a id="s-364b5d7f5d"></a>`license_expression` | Apache-2.0 |
-| <a id="s-ee9ee04f1d"></a>`publication_identity` | {"coordinate": "stove0-protocol", "kind": "python-distribution"} |
-| <a id="s-f6af3c6655"></a>`requires_python` | >=3.12 |
-| <a id="s-7da1529b8a"></a>`role` | reusable_library |
-| <a id="s-69e1df2c1a"></a>`source` | reference/stove0/packages/protocol/pyproject.toml |
+| <a id="s-a1b4ed2273"></a>`artifacts` | `[{"coordinate":"dist/stove0_protocol-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_protocol-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-93af748a18"></a>`channel` | `"github-release"` |
+| <a id="s-a3cca36246"></a>`description` | `"Canonical content-opaque collection orchestration contracts for stove0."` |
+| <a id="s-d24cd65ed6"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-364b5d7f5d"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-ee9ee04f1d"></a>`publication_identity` | `{"coordinate":"stove0-protocol","kind":"python-distribution"}` |
+| <a id="s-f6af3c6655"></a>`requires_python` | `">=3.12"` |
+| <a id="s-7da1529b8a"></a>`role` | `"reusable_library"` |
+| <a id="s-69e1df2c1a"></a>`source` | `"reference/stove0/packages/protocol/pyproject.toml"` |
 
 ## Existing ownership context
 

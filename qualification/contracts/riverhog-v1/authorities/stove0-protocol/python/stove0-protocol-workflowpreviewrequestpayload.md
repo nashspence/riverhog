@@ -128,7 +128,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-11a1b597e0"></a>`artifact_selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-601b559c98"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-38e8b7b97d"></a>`producer_settlement_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-38e8b7b97d"></a>`producer_settlement_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-6ad02866b5"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-3955bd74a9"></a>definition `JsonValue`
@@ -160,8 +160,8 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-0e0be19669"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](#s-3955bd74a9)) |  |
-| <a id="s-ecbed8eb92"></a>`evaluation` | no | anyOf=([EvaluationBinding](#s-facf58e54f)) \| (type="null"); default=null |  |
-| <a id="s-d38c4595ea"></a>`fork_join` | no | anyOf=(discriminator={"mapping":{"branch":"[BranchWorkBinding](#s-f03ab203f3)","join":"[JoinWorkBinding](#s-9e064d5ec2)"},"propertyName":"kind"}; oneOf=([BranchWorkBinding](#s-f03ab203f3)) \| ([JoinWorkBinding](#s-9e064d5ec2))) \| (type="null"); default=null |  |
+| <a id="s-ecbed8eb92"></a>`evaluation` | no | anyOf=[([EvaluationBinding](#s-facf58e54f)); (type="null")]; default=null |  |
+| <a id="s-d38c4595ea"></a>`fork_join` | no | anyOf=[(discriminator={"mapping":{"branch":"#/$defs/BranchWorkBinding","join":"#/$defs/JoinWorkBinding"},"propertyName":"kind"}; oneOf=[([BranchWorkBinding](#s-f03ab203f3)); ([JoinWorkBinding](#s-9e064d5ec2))]); (type="null")]; default=null |  |
 | <a id="s-93caa4a8dc"></a>`format` | no | type="string"; const="stove0-work/v1"; default="stove0-work/v1" |  |
 | <a id="s-0b1da9846a"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](#s-4377f2795b)); minItems=1 |  |
 | <a id="s-4fed6170d8"></a>`recipe` | yes | [RecipeRef](#s-2b3d464bcf) |  |

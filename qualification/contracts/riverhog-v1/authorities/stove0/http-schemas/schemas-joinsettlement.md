@@ -25,15 +25,15 @@ Success-only, Riverhog-verified result of one resolved join plan.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-db3e6acc98"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-87f6901bd8"></a>`format` | no | type="string"; const="stove0-join-settlement/v1"; default="stove0-join-settlement/v1" |  |
-| <a id="s-2846d59ef9"></a>`join_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-96a7bf9913"></a>`output_collection` | yes | #/components/schemas/CollectionRootRef |  |
-| <a id="s-edfa0bba52"></a>`output_selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
-| <a id="s-c0b09ab379"></a>`producer_settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-022e518efa"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-79d60be560"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-74f0086482"></a>`workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-db3e6acc98"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Derivation Sha256" |  |
+| <a id="s-87f6901bd8"></a>`format` | no | type="string"; const="stove0-join-settlement/v1"; default="stove0-join-settlement/v1"; title="Format" |  |
+| <a id="s-2846d59ef9"></a>`join_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Join Plan Sha256" |  |
+| <a id="s-96a7bf9913"></a>`output_collection` | yes | [CollectionRootRef](schemas-collectionrootref.md) |  |
+| <a id="s-edfa0bba52"></a>`output_selection` | yes | [ArtifactSelectionRef](schemas-artifactselectionref.md) |  |
+| <a id="s-c0b09ab379"></a>`producer_settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Producer Settlement Sha256" |  |
+| <a id="s-022e518efa"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Settlement Sha256" |  |
+| <a id="s-79d60be560"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
+| <a id="s-74f0086482"></a>`workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Workflow Plan Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

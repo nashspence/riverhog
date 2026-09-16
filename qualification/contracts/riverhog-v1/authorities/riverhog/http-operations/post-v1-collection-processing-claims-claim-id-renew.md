@@ -14,19 +14,26 @@ Renew Processing Claim
 ## External contract
 
 <a id="s-d31deddf82"></a>
-- <a id="s-b183cbd7fc"></a>`operationId`: renew_processing_claim
-- <a id="s-c1337a9b23"></a>`summary`: Renew Processing Claim
-- <a id="s-ea7943f1c1"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-b183cbd7fc"></a>`operationId`: `"renew_processing_claim"`
+- <a id="s-ea7943f1c1"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-c1337a9b23"></a>`summary`: `"Renew Processing Claim"`
+- <a id="s-9c58bb1be5"></a>`tags`: `["collection-workflows"]`
+- <a id="s-d8bc2906f5"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-a144c3ea01"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control","collection-transforms:execute"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-84b65d13d3"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-84b65d13d3"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
 
 ### <a id="s-d10260b036"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProcessingClaimRenewDocument"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [ProcessingClaimRenewDocument](../http-schemas/schemas-processingclaimrenewdocument.md) |
 
 ### Responses
 

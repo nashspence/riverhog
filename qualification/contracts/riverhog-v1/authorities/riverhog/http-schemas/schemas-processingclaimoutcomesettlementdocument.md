@@ -26,9 +26,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-66e7037bf1"></a>`outcomes` | yes | #/components/schemas/ExactSetAuthorityDocument |  |
-| <a id="s-c9a1869ba6"></a>`retirement_grace_seconds` | yes | type="integer"; minimum=0 |  |
-| <a id="s-ca68cd4ae2"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"] |  |
+| <a id="s-66e7037bf1"></a>`outcomes` | yes | [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md) |  |
+| <a id="s-c9a1869ba6"></a>`retirement_grace_seconds` | yes | type="integer"; minimum=0; title="Retirement Grace Seconds" |  |
+| <a id="s-ca68cd4ae2"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"]; title="Retirement Policy" |  |
 
 ### <a id="s-7bb79833a6"></a>`if`
 

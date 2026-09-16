@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-36c2f17f34"></a>`format` | no | type="string"; const="stove0-evaluation-matrix/v1"; default="stove0-evaluation-matrix/v1" |  |
-| <a id="s-184e486a2e"></a>`matrix_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-4177bbefab"></a>`variants` | yes | type="array"; items=(#/components/schemas/EvaluationVariant); minItems=1 |  |
+| <a id="s-36c2f17f34"></a>`format` | no | type="string"; const="stove0-evaluation-matrix/v1"; default="stove0-evaluation-matrix/v1"; title="Format" |  |
+| <a id="s-184e486a2e"></a>`matrix_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Matrix Sha256" |  |
+| <a id="s-4177bbefab"></a>`variants` | yes | type="array"; items=([EvaluationVariant](schemas-evaluationvariant.md)); minItems=1; title="Variants" |  |
 
 ### Progression, limits, and lifecycle
 

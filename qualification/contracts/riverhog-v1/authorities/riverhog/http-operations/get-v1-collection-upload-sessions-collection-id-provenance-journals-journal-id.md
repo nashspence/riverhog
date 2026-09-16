@@ -14,16 +14,19 @@ Get Collection Upload Session Provenance Journal
 ## External contract
 
 <a id="s-345127ff50"></a>
-- <a id="s-e76fd54bf2"></a>`operationId`: get_collection_upload_session_provenance_journal
-- <a id="s-255445db14"></a>`summary`: Get Collection Upload Session Provenance Journal
-- <a id="s-c7c3d42df7"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-e76fd54bf2"></a>`operationId`: `"get_collection_upload_session_provenance_journal"`
+- <a id="s-c7c3d42df7"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-255445db14"></a>`summary`: `"Get Collection Upload Session Provenance Journal"`
+- <a id="s-45791d7be9"></a>`tags`: `["collections"]`
+- <a id="s-d0d15a173e"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-58897ff779"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:create"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-bfc2ce9b61"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-0336b573c6"></a>`journal_id` | path | yes | not declared | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
+| <a id="s-bfc2ce9b61"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-0336b573c6"></a>`journal_id` | path | yes | not declared | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"; title="Journal Id" |
 
 ### Responses
 

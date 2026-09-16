@@ -24,13 +24,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-227c4d3cb0"></a>`access` | yes | type="array"; items=(#/components/schemas/AppAccessListItemOut) |  |
-| <a id="s-3a7cadd946"></a>`filters` | yes | #/components/schemas/AppAccessListFiltersOut |  |
-| <a id="s-b1450b3d35"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-aa5e6807e0"></a>`order` | yes | #/components/schemas/SortOrder |  |
-| <a id="s-5dabba4ac6"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-d9fbae8b32"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-49383a1598"></a>`sort` | yes | #/components/schemas/ApplicationAccessSort |  |
+| <a id="s-227c4d3cb0"></a>`access` | yes | type="array"; items=([AppAccessListItemOut](schemas-appaccesslistitemout.md)); title="Access" |  |
+| <a id="s-3a7cadd946"></a>`filters` | yes | [AppAccessListFiltersOut](schemas-appaccesslistfiltersout.md) |  |
+| <a id="s-b1450b3d35"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-aa5e6807e0"></a>`order` | yes | [SortOrder](schemas-sortorder.md) |  |
+| <a id="s-5dabba4ac6"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
+| <a id="s-d9fbae8b32"></a>`query` | yes | anyOf=[(type="string"); (type="null")]; title="Query" |  |
+| <a id="s-49383a1598"></a>`sort` | yes | [ApplicationAccessSort](schemas-applicationaccesssort.md) |  |
 
 ### Progression, limits, and lifecycle
 

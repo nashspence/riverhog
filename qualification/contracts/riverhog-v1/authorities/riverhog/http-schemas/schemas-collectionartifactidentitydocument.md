@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e1311e93b0"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-4343b483d2"></a>`collection` | yes | #/components/schemas/CollectionRootIdentityDocument |  |
-| <a id="s-147f0e359d"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
-| <a id="s-bd06c21705"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-e1311e93b0"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-4343b483d2"></a>`collection` | yes | [CollectionRootIdentityDocument](schemas-collectionrootidentitydocument.md) |  |
+| <a id="s-147f0e359d"></a>`path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
+| <a id="s-bd06c21705"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -14,22 +14,25 @@ List Collections
 ## External contract
 
 <a id="s-c0edb146f5"></a>
-- <a id="s-46c0cf000f"></a>`operationId`: list_collections
-- <a id="s-f96134ae88"></a>`summary`: List Collections
-- <a id="s-cd13077717"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-46c0cf000f"></a>`operationId`: `"list_collections"`
+- <a id="s-cd13077717"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-f96134ae88"></a>`summary`: `"List Collections"`
+- <a id="s-246494bf89"></a>`tags`: `["collections"]`
+- <a id="s-3d317e5df0"></a>`x-riverhog-permission-requirements`: `[{"any_of":["catalog:read"]}]`
+- <a id="s-04c037e6f1"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token","response_items_field":"collections"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-2076d85ce1"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-9731e95241"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
-| <a id="s-2bab53adb8"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
+| <a id="s-2076d85ce1"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-9731e95241"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
+| <a id="s-2bab53adb8"></a>`q` | query | no | not declared | anyOf=[([BrowseQuery](../http-schemas/schemas-browsequery.md)); (type="null")]; title="Q" |
 | <a id="s-3495833d03"></a>`sort` | query | no | `"id"` | [CollectionSort](../http-schemas/schemas-collectionsort.md) |
 | <a id="s-fba33675a7"></a>`order` | query | no | `"asc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
-| <a id="s-a62ca229bb"></a>`encryption_format` | query | no | not declared | anyOf=(type="string") \| (type="null") |
-| <a id="s-6516891cb2"></a>`passphrase_id` | query | no | not declared | anyOf=(type="string") \| (type="null") |
-| <a id="s-c928d33a4d"></a>`tags` | query | no | not declared | anyOf=(type="array"; items=([CollectionTag](../http-schemas/schemas-collectiontag.md)); maxItems=100; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-tag-selector-batch"}) \| (type="null") |
+| <a id="s-a62ca229bb"></a>`encryption_format` | query | no | not declared | anyOf=[(type="string"); (type="null")]; title="Encryption Format" |
+| <a id="s-6516891cb2"></a>`passphrase_id` | query | no | not declared | anyOf=[(type="string"); (type="null")]; title="Passphrase Id" |
+| <a id="s-c928d33a4d"></a>`tags` | query | no | not declared | anyOf=[(type="array"; items=([CollectionTag](../http-schemas/schemas-collectiontag.md)); maxItems=100; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-tag-selector-batch"}); (type="null")]; title="Tags" |
 
 ### Responses
 

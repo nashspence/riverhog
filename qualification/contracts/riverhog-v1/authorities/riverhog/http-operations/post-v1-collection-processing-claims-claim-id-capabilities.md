@@ -14,19 +14,26 @@ Create Transform Capability
 ## External contract
 
 <a id="s-14e8cf6a72"></a>
-- <a id="s-7b539cd145"></a>`operationId`: create_transform_capability
-- <a id="s-33f526a015"></a>`summary`: Create Transform Capability
-- <a id="s-90b4519db2"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-7b539cd145"></a>`operationId`: `"create_transform_capability"`
+- <a id="s-90b4519db2"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-33f526a015"></a>`summary`: `"Create Transform Capability"`
+- <a id="s-c708c0b93d"></a>`tags`: `["collection-workflows"]`
+- <a id="s-1b4d56b8de"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-a5cde85b2f"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:execute"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-f5e6c98ff5"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-f5e6c98ff5"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
 
 ### <a id="s-00b1d345ce"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/TransformCapabilityCreateDocument"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [TransformCapabilityCreateDocument](../http-schemas/schemas-transformcapabilitycreatedocument.md) |
 
 ### Responses
 

@@ -14,19 +14,25 @@ Remove Collection Tag
 ## External contract
 
 <a id="s-6c0b51a8a2"></a>
-- <a id="s-4790c648e6"></a>`operationId`: remove_collection_tag
-- <a id="s-8c37cb6586"></a>`summary`: Remove Collection Tag
-- <a id="s-2e2950b25e"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-4790c648e6"></a>`operationId`: `"remove_collection_tag"`
+- <a id="s-2e2950b25e"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-8c37cb6586"></a>`summary`: `"Remove Collection Tag"`
+- <a id="s-87b9e7c19d"></a>`tags`: `["collection-tags"]`
+- <a id="s-0360883da6"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-tags:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-db3db1097e"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-db3db1097e"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
 
 ### <a id="s-3fdde7ccbe"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CollectionTagMutationRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [CollectionTagMutationRequest](../http-schemas/schemas-collectiontagmutationrequest.md) |
 
 ### Responses
 

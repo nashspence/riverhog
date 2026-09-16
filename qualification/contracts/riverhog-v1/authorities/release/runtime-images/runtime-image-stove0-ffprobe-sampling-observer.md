@@ -16,17 +16,17 @@ Optional nonnormative FFprobe sampling-observer reference for Stove0.
 <a id="s-75779d31c6"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-ef9f9661e5"></a>`build_target` | stove0-ffprobe-sampling-observer |
-| <a id="s-986e2cc516"></a>`description` | Optional nonnormative FFprobe sampling-observer reference for Stove0. |
-| <a id="s-d8eba62227"></a>`distribution_roots` | ["stove0-ffprobe-sampling-observer"] |
-| <a id="s-568cdf41aa"></a>`format` | oci-image |
-| <a id="s-1ae576c36b"></a>`license_baseline` | first-v1-publication |
-| <a id="s-708a727dc3"></a>`license_expression` | CAL-1.0 |
-| <a id="s-ef0ea0a137"></a>`platforms` | ["linux/amd64"] |
-| <a id="s-ed11ca8b91"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-stove0-ffprobe-sampling-observer", "kind": "oci-repository"} |
-| <a id="s-a2225ac56b"></a>`repository` | ghcr.io/nashspence/riverhog-stove0-ffprobe-sampling-observer |
-| <a id="s-29252224bb"></a>`role` | reference |
-| <a id="s-4788e659fb"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-stove0-ffprobe-sampling-observer:{version}", "ghcr.io/nashspence/riverhog-stove0-ffprobe-sampling-observer:sha-{source_sha}"] |
+| <a id="s-ef9f9661e5"></a>`build_target` | `"stove0-ffprobe-sampling-observer"` |
+| <a id="s-986e2cc516"></a>`description` | `"Optional nonnormative FFprobe sampling-observer reference for Stove0."` |
+| <a id="s-d8eba62227"></a>`distribution_roots` | `["stove0-ffprobe-sampling-observer"]` |
+| <a id="s-568cdf41aa"></a>`format` | `"oci-image"` |
+| <a id="s-1ae576c36b"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-708a727dc3"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-ef0ea0a137"></a>`platforms` | `["linux/amd64"]` |
+| <a id="s-ed11ca8b91"></a>`publication_identity` | `{"coordinate":"ghcr.io/nashspence/riverhog-stove0-ffprobe-sampling-observer","kind":"oci-repository"}` |
+| <a id="s-a2225ac56b"></a>`repository` | `"ghcr.io/nashspence/riverhog-stove0-ffprobe-sampling-observer"` |
+| <a id="s-29252224bb"></a>`role` | `"reference"` |
+| <a id="s-4788e659fb"></a>`tag_templates` | `["ghcr.io/nashspence/riverhog-stove0-ffprobe-sampling-observer:{version}","ghcr.io/nashspence/riverhog-stove0-ffprobe-sampling-observer:sha-{source_sha}"]` |
 
 ## Existing ownership context
 

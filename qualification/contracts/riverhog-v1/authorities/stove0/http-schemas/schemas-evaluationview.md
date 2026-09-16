@@ -25,13 +25,13 @@ Operator projection of a materialized evaluation, not its identity.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f420db1841"></a>`children` | yes | type="array"; items=(#/components/schemas/EvaluationChildView) |  |
-| <a id="s-89f936baba"></a>`definition` | yes | #/components/schemas/EvaluationDefinition |  |
-| <a id="s-004a345cd7"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-55a799b1af"></a>`format` | no | type="string"; const="stove0-evaluation-view/v1"; default="stove0-evaluation-view/v1" |  |
-| <a id="s-bc4fcb4992"></a>`phase` | yes | type="string"; enum=["planning","running","partially_complete","complete","failed","canceled"] |  |
-| <a id="s-ca1a0eb70f"></a>`reviews` | no | type="array"; default=[]; items=(#/components/schemas/EvaluationReviewView) |  |
-| <a id="s-f04cdee067"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-f420db1841"></a>`children` | yes | type="array"; items=([EvaluationChildView](schemas-evaluationchildview.md)); title="Children" |  |
+| <a id="s-89f936baba"></a>`definition` | yes | [EvaluationDefinition](schemas-evaluationdefinition.md) |  |
+| <a id="s-004a345cd7"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Evaluation Id" |  |
+| <a id="s-55a799b1af"></a>`format` | no | type="string"; const="stove0-evaluation-view/v1"; default="stove0-evaluation-view/v1"; title="Format" |  |
+| <a id="s-bc4fcb4992"></a>`phase` | yes | type="string"; enum=["planning","running","partially_complete","complete","failed","canceled"]; title="Phase" |  |
+| <a id="s-ca1a0eb70f"></a>`reviews` | no | type="array"; default=[]; items=([EvaluationReviewView](schemas-evaluationreviewview.md)); title="Reviews" |  |
+| <a id="s-f04cdee067"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
 
 ### Progression, limits, and lifecycle
 

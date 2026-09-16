@@ -25,14 +25,14 @@ Resolved ordinary join work over exact successful branch outputs.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a5ba769baf"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1330e552ba"></a>`declaration` | yes | #/components/schemas/JoinDeclaration |  |
-| <a id="s-66b0e81086"></a>`format` | no | type="string"; const="stove0-join-plan/v1"; default="stove0-join-plan/v1" |  |
-| <a id="s-d233798083"></a>`inputs` | yes | type="array"; items=(#/components/schemas/JoinInputPlan); minItems=2 |  |
-| <a id="s-280eacdfc4"></a>`join_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-157328a94c"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-bc2d25649d"></a>`work` | yes | #/components/schemas/WorkIdentity |  |
-| <a id="s-2552103e52"></a>`workflow_plan` | yes | #/components/schemas/WorkflowPlan |  |
+| <a id="s-a5ba769baf"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Branch Set Sha256" |  |
+| <a id="s-1330e552ba"></a>`declaration` | yes | [JoinDeclaration](schemas-joindeclaration.md) |  |
+| <a id="s-66b0e81086"></a>`format` | no | type="string"; const="stove0-join-plan/v1"; default="stove0-join-plan/v1"; title="Format" |  |
+| <a id="s-d233798083"></a>`inputs` | yes | type="array"; items=([JoinInputPlan](schemas-joininputplan.md)); minItems=2; title="Inputs" |  |
+| <a id="s-280eacdfc4"></a>`join_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Join Plan Sha256" |  |
+| <a id="s-157328a94c"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Parent Work Id" |  |
+| <a id="s-bc2d25649d"></a>`work` | yes | [WorkIdentity](schemas-workidentity.md) |  |
+| <a id="s-2552103e52"></a>`workflow_plan` | yes | [WorkflowPlan](schemas-workflowplan.md) |  |
 
 ### Progression, limits, and lifecycle
 

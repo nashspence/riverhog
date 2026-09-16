@@ -16,15 +16,15 @@ Optional nonnormative media-metadata contract reference for Stove0 observers.
 <a id="s-77fd9220ee"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-82660dc5c2"></a>`artifacts` | [{"coordinate": "dist/stove0_media_metadata_observer_contracts-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_media_metadata_observer_contracts-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-0271c0e593"></a>`channel` | github-release |
-| <a id="s-1ac349891e"></a>`description` | Optional nonnormative media-metadata contract reference for Stove0 observers. |
-| <a id="s-a4eaebb538"></a>`license_baseline` | first-v1-publication |
-| <a id="s-af8bb4a4c0"></a>`license_expression` | Apache-2.0 |
-| <a id="s-ca72f4d9a5"></a>`publication_identity` | {"coordinate": "stove0-media-metadata-observer-contracts", "kind": "python-distribution"} |
-| <a id="s-9cf4565a3f"></a>`requires_python` | >=3.12 |
-| <a id="s-555d457b4d"></a>`role` | reference_component |
-| <a id="s-cc4111ec82"></a>`source` | reference/stove0/observers/contracts/media-metadata/pyproject.toml |
+| <a id="s-82660dc5c2"></a>`artifacts` | `[{"coordinate":"dist/stove0_media_metadata_observer_contracts-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_media_metadata_observer_contracts-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-0271c0e593"></a>`channel` | `"github-release"` |
+| <a id="s-1ac349891e"></a>`description` | `"Optional nonnormative media-metadata contract reference for Stove0 observers."` |
+| <a id="s-a4eaebb538"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-af8bb4a4c0"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-ca72f4d9a5"></a>`publication_identity` | `{"coordinate":"stove0-media-metadata-observer-contracts","kind":"python-distribution"}` |
+| <a id="s-9cf4565a3f"></a>`requires_python` | `">=3.12"` |
+| <a id="s-555d457b4d"></a>`role` | `"reference_component"` |
+| <a id="s-cc4111ec82"></a>`source` | `"reference/stove0/observers/contracts/media-metadata/pyproject.toml"` |
 
 ## Existing ownership context
 

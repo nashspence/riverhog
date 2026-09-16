@@ -14,18 +14,22 @@ Get Portable Collection Inventory
 ## External contract
 
 <a id="s-cbec0de737"></a>
-- <a id="s-209130ba65"></a>`operationId`: get_portable_collection_inventory
-- <a id="s-b2ccb379bb"></a>`summary`: Get Portable Collection Inventory
-- <a id="s-dd5b3ff2f4"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-209130ba65"></a>`operationId`: `"get_portable_collection_inventory"`
+- <a id="s-dd5b3ff2f4"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-b2ccb379bb"></a>`summary`: `"Get Portable Collection Inventory"`
+- <a id="s-30a447b159"></a>`tags`: `["catalog"]`
+- <a id="s-67edfcc4e1"></a>`x-riverhog-interface`: `"standard-tool/protocol"`
+- <a id="s-4c09b60125"></a>`x-riverhog-permission-requirements`: `[{"any_of":["catalog:read"]}]`
+- <a id="s-4d58eb9f45"></a>`x-riverhog-read-collection`: `{"authority":"portable-collection-inventory","cursor_parameter":"cursor","kind":"exact-set-page","limit_parameter":"limit","validator_header":"If-Match"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-d4fa758cae"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-d8cb38ecac"></a>`cursor` | query | no | not declared | anyOf=(type="string"; maxLength=8192; minLength=1) \| (type="null") |
-| <a id="s-86388b9ad1"></a>`limit` | query | no | `100` | type="integer"; minimum=1; maximum=1000 |
-| <a id="s-7620688610"></a>`If-Match` | header | no | not declared | anyOf=(type="string"; pattern="^\"[0-9a-f]{64}\"$") \| (type="null") |
+| <a id="s-d4fa758cae"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-d8cb38ecac"></a>`cursor` | query | no | not declared | anyOf=[(type="string"; maxLength=8192; minLength=1); (type="null")]; title="Cursor" |
+| <a id="s-86388b9ad1"></a>`limit` | query | no | `100` | type="integer"; minimum=1; maximum=1000; title="Limit" |
+| <a id="s-7620688610"></a>`If-Match` | header | no | not declared | anyOf=[(type="string"; pattern="^\"[0-9a-f]{64}\"$"); (type="null")]; title="If-Match" |
 
 ### Responses
 

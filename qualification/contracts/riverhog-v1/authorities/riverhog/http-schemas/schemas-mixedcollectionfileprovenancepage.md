@@ -24,16 +24,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-062f950653"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-a8aaa69081"></a>`files` | yes | type="array"; items=(#/components/schemas/_FileProvenanceOut) |  |
-| <a id="s-e9387bae1e"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-3d7995e4f3"></a>`order` | yes | #/components/schemas/SortOrder |  |
-| <a id="s-4aa8fcb191"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-5407617a49"></a>`provenance_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-c6fe5e265a"></a>`provenance_mode` | yes | type="string"; const="mixed" |  |
-| <a id="s-a43bcf27e1"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-2832543499"></a>`sort` | yes | #/components/schemas/ProvenanceSort |  |
-| <a id="s-f944118fc7"></a>`status` | yes | anyOf=(#/components/schemas/ProvenanceStatus) \| (type="null") |  |
+| <a id="s-062f950653"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-a8aaa69081"></a>`files` | yes | type="array"; items=([_FileProvenanceOut](schemas-fileprovenanceout.md)); title="Files" |  |
+| <a id="s-e9387bae1e"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-3d7995e4f3"></a>`order` | yes | [SortOrder](schemas-sortorder.md) |  |
+| <a id="s-4aa8fcb191"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
+| <a id="s-5407617a49"></a>`provenance_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Provenance Identity" |  |
+| <a id="s-c6fe5e265a"></a>`provenance_mode` | yes | type="string"; const="mixed"; title="Provenance Mode" |  |
+| <a id="s-a43bcf27e1"></a>`query` | yes | anyOf=[(type="string"); (type="null")]; title="Query" |  |
+| <a id="s-2832543499"></a>`sort` | yes | [ProvenanceSort](schemas-provenancesort.md) |  |
+| <a id="s-f944118fc7"></a>`status` | yes | anyOf=[([ProvenanceStatus](schemas-provenancestatus.md)); (type="null")] |  |
 
 ### Progression, limits, and lifecycle
 

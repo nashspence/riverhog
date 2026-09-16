@@ -14,8 +14,9 @@ List Admission Policies
 ## External contract
 
 <a id="s-9cdc3681b1"></a>
-- <a id="s-d210f67bfc"></a>`operationId`: list_admission_policies
-- <a id="s-0487d2dfd0"></a>`summary`: List Admission Policies
+- <a id="s-d210f67bfc"></a>`operationId`: `"list_admission_policies"`
+- <a id="s-0487d2dfd0"></a>`summary`: `"List Admission Policies"`
+- <a id="s-b0341688c4"></a>`tags`: `["admissions"]`
 
 ### Responses
 

@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a54c7517ac"></a>`artifact_selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
-| <a id="s-fc60225524"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-abe5984f82"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1543aa4be8"></a>`output_collection` | yes | #/components/schemas/CollectionRootRef |  |
-| <a id="s-54a858b5bb"></a>`producer_settlement_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-c0b94e9d50"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a54c7517ac"></a>`artifact_selection` | yes | [ArtifactSelectionRef](schemas-artifactselectionref.md) |  |
+| <a id="s-fc60225524"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Branch Id" |  |
+| <a id="s-abe5984f82"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Derivation Sha256" |  |
+| <a id="s-1543aa4be8"></a>`output_collection` | yes | [CollectionRootRef](schemas-collectionrootref.md) |  |
+| <a id="s-54a858b5bb"></a>`producer_settlement_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Producer Settlement Sha256" |  |
+| <a id="s-c0b94e9d50"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Settlement Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

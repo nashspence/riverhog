@@ -30,7 +30,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-de6b8071ef"></a>`archive_generation` | yes | [sha256](#s-ddfc70e987) |  |
 | <a id="s-2b2ac22425"></a>`archive_tree_sha256` | yes | [sha256](#s-ddfc70e987) |  |
 | <a id="s-d994a7bad5"></a>`schema` | yes | const="collection-archive-volume/v1" |  |
-| <a id="s-80ca732528"></a>`volume` | yes | oneOf=([pack](#s-c6222c661b)) \| ([segment](#s-ebbbf2c546)) |  |
+| <a id="s-80ca732528"></a>`volume` | yes | oneOf=[([pack](#s-c6222c661b)); ([segment](#s-ebbbf2c546))] |  |
 
 ### Definitions
 

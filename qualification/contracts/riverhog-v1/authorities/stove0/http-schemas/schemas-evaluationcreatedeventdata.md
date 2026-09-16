@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-43677855e7"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-86a49fe56f"></a>`phase` | yes | type="string"; enum=["planning","running","partially_complete","complete","failed","canceled"] |  |
+| <a id="s-43677855e7"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Evaluation Id" |  |
+| <a id="s-86a49fe56f"></a>`phase` | yes | type="string"; enum=["planning","running","partially_complete","complete","failed","canceled"]; title="Phase" |  |
 
 ### Progression, limits, and lifecycle
 

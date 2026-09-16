@@ -14,15 +14,18 @@ Get Retrieval Job
 ## External contract
 
 <a id="s-71ccd446bb"></a>
-- <a id="s-9e1401aa96"></a>`operationId`: get_retrieval_job
-- <a id="s-60875a2877"></a>`summary`: Get Retrieval Job
-- <a id="s-fe0300e289"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-9e1401aa96"></a>`operationId`: `"get_retrieval_job"`
+- <a id="s-fe0300e289"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-60875a2877"></a>`summary`: `"Get Retrieval Job"`
+- <a id="s-037dcae4a6"></a>`tags`: `["retrieval"]`
+- <a id="s-141ea10b05"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-3305fbff0f"></a>`x-riverhog-permission-requirements`: `[{"any_of":["retrieval:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-194d1e8490"></a>`job_id` | path | yes | not declared | type="string" |
+| <a id="s-194d1e8490"></a>`job_id` | path | yes | not declared | type="string"; title="Job Id" |
 
 ### Responses
 

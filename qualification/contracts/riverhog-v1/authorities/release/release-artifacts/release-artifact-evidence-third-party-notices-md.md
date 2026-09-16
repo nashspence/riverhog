@@ -16,8 +16,8 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-d0998191f7"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-26be60bd23"></a>`coordinate` | THIRD_PARTY_NOTICES.md |
-| <a id="s-7be800d6a0"></a>`format` | markdown |
+| <a id="s-26be60bd23"></a>`coordinate` | `"THIRD_PARTY_NOTICES.md"` |
+| <a id="s-7be800d6a0"></a>`format` | `"markdown"` |
 
 ## Governing policies
 

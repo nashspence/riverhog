@@ -16,17 +16,17 @@ Optional nonnormative CloudEvents reference application for Riverhog.
 <a id="s-2ef14eb88e"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-1974608c7c"></a>`build_target` | mango-fish |
-| <a id="s-dd1674b6ff"></a>`description` | Optional nonnormative CloudEvents reference application for Riverhog. |
-| <a id="s-8f4dce0db3"></a>`distribution_roots` | ["mango-fish"] |
-| <a id="s-c131e3d0f1"></a>`format` | oci-image |
-| <a id="s-b9601b6fad"></a>`license_baseline` | first-v1-publication |
-| <a id="s-dee9ac5a1b"></a>`license_expression` | Apache-2.0 |
-| <a id="s-8ce94d6fbc"></a>`platforms` | ["linux/amd64"] |
-| <a id="s-992c81a6da"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-mango-fish", "kind": "oci-repository"} |
-| <a id="s-62b24a5072"></a>`repository` | ghcr.io/nashspence/riverhog-mango-fish |
-| <a id="s-0453acaaea"></a>`role` | reference |
-| <a id="s-0c5f1f0ff3"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-mango-fish:{version}", "ghcr.io/nashspence/riverhog-mango-fish:sha-{source_sha}"] |
+| <a id="s-1974608c7c"></a>`build_target` | `"mango-fish"` |
+| <a id="s-dd1674b6ff"></a>`description` | `"Optional nonnormative CloudEvents reference application for Riverhog."` |
+| <a id="s-8f4dce0db3"></a>`distribution_roots` | `["mango-fish"]` |
+| <a id="s-c131e3d0f1"></a>`format` | `"oci-image"` |
+| <a id="s-b9601b6fad"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-dee9ac5a1b"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-8ce94d6fbc"></a>`platforms` | `["linux/amd64"]` |
+| <a id="s-992c81a6da"></a>`publication_identity` | `{"coordinate":"ghcr.io/nashspence/riverhog-mango-fish","kind":"oci-repository"}` |
+| <a id="s-62b24a5072"></a>`repository` | `"ghcr.io/nashspence/riverhog-mango-fish"` |
+| <a id="s-0453acaaea"></a>`role` | `"reference"` |
+| <a id="s-0c5f1f0ff3"></a>`tag_templates` | `["ghcr.io/nashspence/riverhog-mango-fish:{version}","ghcr.io/nashspence/riverhog-mango-fish:sha-{source_sha}"]` |
 
 ## Existing ownership context
 

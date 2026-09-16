@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ea9a996c0a"></a>`format` | no | type="string"; const="stove0-target-settlement/v1"; default="stove0-target-settlement/v1" |  |
-| <a id="s-cde8f44573"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-55ad886411"></a>`output_bindings` | yes | #/components/schemas/TargetOutputBindingSetIdentity |  |
-| <a id="s-4b257ebb6b"></a>`output_collection` | yes | #/components/schemas/OutputCollectionRef |  |
-| <a id="s-525e441ceb"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-3bfcddaed7"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ea9a996c0a"></a>`format` | no | type="string"; const="stove0-target-settlement/v1"; default="stove0-target-settlement/v1"; title="Format" |  |
+| <a id="s-cde8f44573"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Job Id" |  |
+| <a id="s-55ad886411"></a>`output_bindings` | yes | [TargetOutputBindingSetIdentity](schemas-targetoutputbindingsetidentity.md) |  |
+| <a id="s-4b257ebb6b"></a>`output_collection` | yes | [OutputCollectionRef](schemas-outputcollectionref.md) |  |
+| <a id="s-525e441ceb"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Production Sha256" |  |
+| <a id="s-3bfcddaed7"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Settlement Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

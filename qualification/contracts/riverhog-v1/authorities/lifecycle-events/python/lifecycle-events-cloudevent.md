@@ -36,12 +36,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-bdab0ff150"></a>`data` | no | type="object"; additionalProperties=true |  |
+| <a id="s-bdab0ff150"></a>`data` | no | type="object"; additionalProperties=(any JSON value) |  |
 | <a id="s-ce18951641"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-fe5b598876"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-ffcf800cd2"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-6194936dee"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-722293f09c"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-722293f09c"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
 | <a id="s-687ecd37d4"></a>`time` | yes | type="string" |  |
 | <a id="s-45e923bd2e"></a>`type` | yes | type="string"; minLength=1 |  |
 

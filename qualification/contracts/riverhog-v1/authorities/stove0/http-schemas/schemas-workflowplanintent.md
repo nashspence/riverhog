@@ -25,15 +25,15 @@ Work-independent fields that deterministically materialize a workflow plan.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-fc12db4ac7"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
-| <a id="s-dec7652768"></a>`operation` | yes | #/components/schemas/OperationRef |  |
-| <a id="s-99bb65af48"></a>`output_policy` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-0bb17d7fff"></a>`requested_target_options` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-37b4b89175"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
-| <a id="s-e519a84612"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
-| <a id="s-70ece6e07d"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
-| <a id="s-299b5608b2"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-cabd6d9c4e"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
+| <a id="s-fc12db4ac7"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only"; title="Input Retrieval Policy" |  |
+| <a id="s-dec7652768"></a>`operation` | yes | [OperationRef](schemas-operationref.md) |  |
+| <a id="s-99bb65af48"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Output Policy" |  |
+| <a id="s-0bb17d7fff"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Requested Target Options" |  |
+| <a id="s-37b4b89175"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection"; title="Result Kind" |  |
+| <a id="s-e519a84612"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Retirement Grace Seconds" |  |
+| <a id="s-70ece6e07d"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Retirement Policy" |  |
+| <a id="s-299b5608b2"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
+| <a id="s-cabd6d9c4e"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$"; title="Target Registration Id" |  |
 
 ### Progression, limits, and lifecycle
 

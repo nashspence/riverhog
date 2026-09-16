@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-164d54cb28"></a>`added` | yes | type="integer"; minimum=0 |  |
-| <a id="s-24612dce7f"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-089a99c20e"></a>`tag_count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-164d54cb28"></a>`added` | yes | type="integer"; minimum=0; title="Added" |  |
+| <a id="s-24612dce7f"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-089a99c20e"></a>`tag_count` | yes | type="integer"; minimum=0; title="Tag Count" |  |
 
 ## Maintained corroboration
 

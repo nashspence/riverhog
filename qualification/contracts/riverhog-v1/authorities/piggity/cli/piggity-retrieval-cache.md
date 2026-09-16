@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-f89b5b9d97"></a>Parser name: `cache`
+
+| Field | Value |
+|---|---|
+| <a id="s-9cf8dd4434"></a>`parameters` | `[]` |
 - <a id="s-1d94b4a7f4"></a>Subcommand selection: required.
 - <a id="s-b124444c6b"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
 - <a id="s-e5cd81fcd5"></a>Options after positional arguments at this parser: left as arguments.

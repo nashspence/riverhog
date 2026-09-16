@@ -14,18 +14,21 @@ Stream Collection Provenance Journal
 ## External contract
 
 <a id="s-134aff881b"></a>
-- <a id="s-4c94154a95"></a>`operationId`: stream_collection_provenance_journal
-- <a id="s-c4c0625828"></a>`summary`: Stream Collection Provenance Journal
-- <a id="s-87943351ef"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-4c94154a95"></a>`operationId`: `"stream_collection_provenance_journal"`
+- <a id="s-87943351ef"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-c4c0625828"></a>`summary`: `"Stream Collection Provenance Journal"`
+- <a id="s-5a9d34678d"></a>`tags`: `["provenance"]`
+- <a id="s-4d895a8080"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-8fbbfff303"></a>`x-riverhog-permission-requirements`: `[{"any_of":["provenance:export"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-a4ef2bea49"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-c5835bbcc5"></a>`journal_id` | path | yes | not declared | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
-| <a id="s-4fba5c2893"></a>`Range` | header | no | not declared | anyOf=(type="string") \| (type="null") |
-| <a id="s-c8fe3179f9"></a>`If-Match` | header | no | not declared | anyOf=(type="string") \| (type="null") |
+| <a id="s-a4ef2bea49"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-c5835bbcc5"></a>`journal_id` | path | yes | not declared | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"; title="Journal Id" |
+| <a id="s-4fba5c2893"></a>`Range` | header | no | not declared | anyOf=[(type="string"); (type="null")]; title="Range" |
+| <a id="s-c8fe3179f9"></a>`If-Match` | header | no | not declared | anyOf=[(type="string"); (type="null")]; title="If-Match" |
 
 ### Responses
 

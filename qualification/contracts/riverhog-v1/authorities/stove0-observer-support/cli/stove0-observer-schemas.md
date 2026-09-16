@@ -42,14 +42,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-aec3abea41"></a>`emitted` | <a id="s-9db66ee58f"></a>`{"kind":"option-absent","parameter":"output"}` | <a id="s-942cd6dca7"></a>`0` | <a id="s-4d0cbf1ffb"></a>json: [generated:stove0-observer protocol](../process-protocol/generated-stove0-observer-protocol.md) | <a id="s-662f32dea5"></a>all: `empty` |
-| <a id="s-69f512bf20"></a>`written` | <a id="s-8ae887f5fe"></a>`{"kind":"option-present","parameter":"output"}` | <a id="s-0f78699ef3"></a>`0` | <a id="s-2880b7e871"></a>all: `empty` | <a id="s-dca9ab393e"></a>all: `empty` |
+| <a id="s-aec3abea41"></a>`emitted` | <a id="s-9db66ee58f"></a>`{"kind":"option-absent","parameter":"output"}` | <a id="s-942cd6dca7"></a>`0` | <a id="s-4d0cbf1ffb"></a>json: [generated:stove0-observer protocol](../process-protocol/generated-stove0-observer-protocol.md) | <a id="s-662f32dea5"></a>all: `"empty"` |
+| <a id="s-69f512bf20"></a>`written` | <a id="s-8ae887f5fe"></a>`{"kind":"option-present","parameter":"output"}` | <a id="s-0f78699ef3"></a>`0` | <a id="s-2880b7e871"></a>all: `"empty"` | <a id="s-dca9ab393e"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-880569c723"></a>`usage` | <a id="s-cdfa373dc4"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-c2966577a6"></a>`2` | <a id="s-b3b261f2b1"></a>all: `empty` | <a id="s-bba39052be"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-880569c723"></a>`usage` | <a id="s-cdfa373dc4"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-c2966577a6"></a>`2` | <a id="s-b3b261f2b1"></a>all: `"empty"` | <a id="s-bba39052be"></a>all: `"noncontractual-usage-diagnostic"` |
 
 ### Progression, limits, and lifecycle
 

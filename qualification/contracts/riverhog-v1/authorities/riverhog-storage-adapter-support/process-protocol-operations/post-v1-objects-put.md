@@ -16,13 +16,13 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-8a27ba4698"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-e5a1749671"></a>`error_schema` | StorageAdapterError |
-| <a id="s-b3246d7079"></a>`errors` | [{"code": "unauthorized", "status": 401}, {"code": "invalid_request", "status": 400}, {"code": "provider_unavailable", "status": 503}, {"code": "internal_failure", "status": 500}, {"code": "length_required", "status": 411}, {"code": "request_too_large", "status": 413}, {"code": "insufficient_storage", "status": 507}, {"code": "invalid_path", "status": 400}, {"code": "identity_conflict", "status": 409}, {"code": "integrity_failure", "status": 409}] |
-| <a id="s-3ee4447850"></a>`method` | POST |
-| <a id="s-0ccf5c36bc"></a>`path` | /v1/objects/put |
-| <a id="s-393c0e70a9"></a>`path_parameters` | [] |
-| <a id="s-c04dd2a955"></a>`request` | {"kind": "framed", "schema": "SmallObjectWriteRequest"} |
-| <a id="s-66607f7fc4"></a>`response` | {"headers": [], "kind": "json", "schema": "ImmutableObjectReceipt", "statuses": [200]} |
+| <a id="s-e5a1749671"></a>`error_schema` | `"StorageAdapterError"` |
+| <a id="s-b3246d7079"></a>`errors` | `[{"code":"unauthorized","status":401},{"code":"invalid_request","status":400},{"code":"provider_unavailable","status":503},{"code":"internal_failure","status":500},{"code":"length_required","status":411},{"code":"request_too_large","status":413},{"code":"insufficient_storage","status":507},{"code":"invalid_path","status":400},{"code":"identity_conflict","status":409},{"code":"integrity_failure","status":409}]` |
+| <a id="s-3ee4447850"></a>`method` | `"POST"` |
+| <a id="s-0ccf5c36bc"></a>`path` | `"/v1/objects/put"` |
+| <a id="s-393c0e70a9"></a>`path_parameters` | `[]` |
+| <a id="s-c04dd2a955"></a>`request` | `{"kind":"framed","schema":"SmallObjectWriteRequest"}` |
+| <a id="s-66607f7fc4"></a>`response` | `{"headers":[],"kind":"json","schema":"ImmutableObjectReceipt","statuses":[200]}` |
 
 ## Maintained corroboration
 

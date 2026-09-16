@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-357edf47b9"></a>`accepted_parts` | yes | type="integer"; minimum=0 |  |
-| <a id="s-d4a25895d4"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-87d83509ec"></a>`expected_parts` | yes | type="integer"; minimum=1 |  |
-| <a id="s-1e7da99a8e"></a>`path` | yes | type="string" |  |
+| <a id="s-357edf47b9"></a>`accepted_parts` | yes | type="integer"; minimum=0; title="Accepted Parts" |  |
+| <a id="s-d4a25895d4"></a>`complete` | yes | type="boolean"; title="Complete" |  |
+| <a id="s-87d83509ec"></a>`expected_parts` | yes | type="integer"; minimum=1; title="Expected Parts" |  |
+| <a id="s-1e7da99a8e"></a>`path` | yes | type="string"; title="Path" |  |
 
 ## Governing policies
 

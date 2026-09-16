@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ce0948c417"></a>`number` | yes | type="integer"; minimum=1 |  |
+| <a id="s-ce0948c417"></a>`number` | yes | type="integer"; minimum=1; title="Number" |  |
 | <a id="s-493606ef17"></a>`session` | yes | [WriteSession](#s-dcf667e799) |  |
-| <a id="s-2bda4ac939"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-2bda4ac939"></a>`stored_bytes` | yes | type="integer"; minimum=1; title="Stored Bytes" |  |
 
 ### Definitions
 
@@ -43,9 +43,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-79867a2dcf"></a>`expected_bytes` | yes | type="integer"; minimum=1 | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
-| <a id="s-6f6eec603c"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-743f3b5ac0"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1 | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
+| <a id="s-79867a2dcf"></a>`expected_bytes` | yes | type="integer"; minimum=1; title="Expected Bytes" | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
+| <a id="s-6f6eec603c"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
+| <a id="s-743f3b5ac0"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1; title="Write Token" | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
 
 ## Maintained corroboration
 

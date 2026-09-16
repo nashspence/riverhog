@@ -14,18 +14,22 @@ List Retrieval Plan Files
 ## External contract
 
 <a id="s-02b9ee2a20"></a>
-- <a id="s-f5a7d6ee6a"></a>`operationId`: list_retrieval_plan_files
-- <a id="s-864d6dee41"></a>`summary`: List Retrieval Plan Files
-- <a id="s-80e7646656"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-f5a7d6ee6a"></a>`operationId`: `"list_retrieval_plan_files"`
+- <a id="s-80e7646656"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-864d6dee41"></a>`summary`: `"List Retrieval Plan Files"`
+- <a id="s-118cc91dae"></a>`tags`: `["retrieval"]`
+- <a id="s-3bc1f9a70b"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-aa0171392e"></a>`x-riverhog-permission-requirements`: `[{"any_of":["retrieval:manage"]}]`
+- <a id="s-40a8127b2a"></a>`x-riverhog-read-collection`: `{"authority":"retrieval-plan-files","cursor_parameter":"start_ordinal","kind":"exact-authority-page","limit_parameter":"page_size"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-f9f5dd3ea1"></a>`plan_id` | path | yes | not declared | type="string" |
-| <a id="s-b7b9300a2d"></a>`start_ordinal` | query | no | `0` | type="integer"; minimum=0; maximum=10000 |
-| <a id="s-ee956f2b24"></a>`page_size` | query | no | `100` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-44a185df9a"></a>`If-Match` | header | yes | not declared | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
+| <a id="s-f9f5dd3ea1"></a>`plan_id` | path | yes | not declared | type="string"; title="Plan Id" |
+| <a id="s-b7b9300a2d"></a>`start_ordinal` | query | no | `0` | type="integer"; minimum=0; maximum=10000; title="Start Ordinal" |
+| <a id="s-ee956f2b24"></a>`page_size` | query | no | `100` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-44a185df9a"></a>`If-Match` | header | yes | not declared | type="string"; pattern="^\"[0-9a-f]{64}\"$"; title="If-Match" |
 
 ### Responses
 

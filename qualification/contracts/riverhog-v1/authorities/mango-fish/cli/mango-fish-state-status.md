@@ -41,14 +41,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-1c9d261761"></a>`completed` | <a id="s-e088b7b87a"></a>`{"kind":"state-schema-operation-completed"}` | <a id="s-3576ac6723"></a>`0` | <a id="s-a41133c2a5"></a>human: `noncontractual-presentation-of-command-result`; json: [state-schema-status/v1](#s-564fb3163a) | <a id="s-47792e58f1"></a>all: `empty` |
+| <a id="s-1c9d261761"></a>`completed` | <a id="s-e088b7b87a"></a>`{"kind":"state-schema-operation-completed"}` | <a id="s-3576ac6723"></a>`0` | <a id="s-a41133c2a5"></a>human: `"noncontractual-presentation-of-command-result"`; json: [state-schema-status/v1](#s-564fb3163a) | <a id="s-47792e58f1"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-83d4e893ff"></a>`usage` | <a id="s-bb8605b1ca"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-0ed756ac5e"></a>`2` | <a id="s-bde8a0e7e0"></a>all: `empty` | <a id="s-ce98abc8ed"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-261943abb1"></a>`state-schema` | <a id="s-6c44ee637d"></a>`{"kind":"state-schema-error"}` | <a id="s-ff1a92103f"></a>`1` | <a id="s-f09a63bb89"></a>all: `empty` | <a id="s-afd2ae98a4"></a>all: `noncontractual-diagnostic` |
+| <a id="s-83d4e893ff"></a>`usage` | <a id="s-bb8605b1ca"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-0ed756ac5e"></a>`2` | <a id="s-bde8a0e7e0"></a>all: `"empty"` | <a id="s-ce98abc8ed"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-261943abb1"></a>`state-schema` | <a id="s-6c44ee637d"></a>`{"kind":"state-schema-error"}` | <a id="s-ff1a92103f"></a>`1` | <a id="s-f09a63bb89"></a>all: `"empty"` | <a id="s-afd2ae98a4"></a>all: `"noncontractual-diagnostic"` |
 
 ### Local structured outputs
 

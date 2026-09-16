@@ -14,14 +14,15 @@ Rebaseline Admission Policy
 ## External contract
 
 <a id="s-97afae1f0a"></a>
-- <a id="s-2fb148ddb5"></a>`operationId`: rebaseline_admission_policy
-- <a id="s-daf751e989"></a>`summary`: Rebaseline Admission Policy
+- <a id="s-2fb148ddb5"></a>`operationId`: `"rebaseline_admission_policy"`
+- <a id="s-daf751e989"></a>`summary`: `"Rebaseline Admission Policy"`
+- <a id="s-8d61fa1e69"></a>`tags`: `["admissions"]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-b3113ce543"></a>`policy_id` | path | yes | not declared | type="string" |
+| <a id="s-b3113ce543"></a>`policy_id` | path | yes | not declared | type="string"; title="Policy Id" |
 
 ### Responses
 

@@ -355,13 +355,13 @@ def test_every_dossier_is_lossless_and_representative_contract_classes_are_seman
                 "optional option; 1 value",
                 "minimum=`1` (inclusive); maximum=`100` (inclusive)",
                 "outside range: reject",
-                "| `25` |",
+                "| `25`<br>Env: `null` |",
             ),
         ),
         (
             "piggity collection list",
             "json_mode",
-            ("optional flag; 0 values", "boolean", "| `false` |"),
+            ("optional flag; 0 values", "boolean", "| `false`<br>Env: `null` |"),
         ),
         (
             "piggity collection list",
@@ -859,3 +859,406 @@ def test_exact_json_is_collapsed_without_hiding_primary_contract_facts() -> None
             "\n\n<details>\n<summary>Expand exact machine-owned values</summary>\n"
         )
         assert "</details>" in exact
+
+
+def _http_primary(value: dict[str, Any], element: dict[str, Any]) -> str:
+    return "\n".join(
+        dossier_rendering._render_http(
+            value,
+            element["details"],
+            element["pointers"][0],
+            set(),
+            element=element,
+            elements_by_id={item["id"]: item for item in checked_atlas().root["elements"]},
+        )
+    )
+
+
+def test_every_http_permission_formula_and_parameter_description_is_primary() -> None:
+    checked = checked_atlas()
+    formulas = descriptions = 0
+    for element in checked.root["elements"]:
+        if element["interface"] != "http-operations" or element["details"].get("supplemental"):
+            continue
+        value = atlas.pointer_value(checked.root["projection"], element["pointers"][0])
+        primary = checked.files[element["dossier"]].decode().split("### Progression", 1)[0]
+        if "x-riverhog-permission-requirements" in value:
+            formula = value["x-riverhog-permission-requirements"]
+            assert (
+                "`x-riverhog-permission-requirements`: "
+                f"`{dossier_rendering._compact_json(formula)}`" in primary
+            )
+            changed = deepcopy(value)
+            changed["x-riverhog-permission-requirements"] = [{"any_of": ["mutation:permission"]}]
+            rendered = _http_primary(changed, element)
+            assert '"mutation:permission"' in rendered
+            assert rendered != _http_primary(value, element)
+            formulas += 1
+        for parameter in value.get("parameters", []):
+            if "description" in parameter:
+                row = next(
+                    line for line in primary.splitlines() if f"`{parameter['name']}` |" in line
+                )
+                assert parameter["description"] in row
+                descriptions += 1
+    assert formulas == 105
+    assert descriptions == 2
+
+
+def test_current_http_field_shapes_cannot_drop_value_changes() -> None:
+    """Inventory current HTTP input shapes independently of renderer handled-key sets.
+
+    One value per structural path and scalar type bounds the mutation suite. The
+    guard checks visible changed values, not self-reported renderer coverage.
+    """
+    samples: dict[
+        tuple[tuple[str, ...], type], tuple[dict[str, Any], dict[str, Any], list[Any]]
+    ] = {}
+
+    def visit(
+        value: Any,
+        path: list[Any],
+        shape: tuple[str, ...],
+        element: dict[str, Any],
+        root: dict[str, Any],
+    ) -> None:
+        if isinstance(value, dict) and value:
+            for key, child in value.items():
+                # Status, media type, property and header names are data, not renderer branches.
+                label = (
+                    "*"
+                    if path and path[-1] in {"responses", "content", "properties", "headers"}
+                    else key
+                )
+                visit(child, [*path, key], (*shape, label), element, root)
+        elif isinstance(value, list) and value:
+            for index, child in enumerate(value):
+                visit(child, [*path, index], (*shape, "*"), element, root)
+        else:
+            samples.setdefault((shape, type(value)), (element, root, path))
+
+    checked = checked_atlas()
+    for element in checked.root["elements"]:
+        if element["interface"] == "http-operations" and not element["details"].get("supplemental"):
+            value = atlas.pointer_value(checked.root["projection"], element["pointers"][0])
+            visit(value, [], (), element, value)
+    assert len(samples) > 30
+    for (_shape, _type), (element, value, path) in samples.items():
+        changed = deepcopy(value)
+        parent = changed
+        for key in path[:-1]:
+            parent = parent[key]
+        original = parent[path[-1]]
+        if path[-1] == "$ref":
+            parent[path[-1]] = "#/components/schemas/missing-for-fidelity-test"
+            with pytest.raises(atlas.ContractAtlasError, match="unresolved local schema reference"):
+                _http_primary(changed, element)
+            continue
+        mutation = not original if isinstance(original, bool) else "fidelity-mutation-885"
+        parent[path[-1]] = mutation
+        after = _http_primary(changed, element)
+        assert after != _http_primary(value, element), path
+        if not isinstance(original, bool):
+            assert mutation in after, path
+
+
+@pytest.mark.parametrize("extra", [False, None, 0, "", [], {}, {"all_of": [{"any_of": []}]}])
+def test_http_unknown_fields_survive_at_every_record_level(extra: object) -> None:
+    element, _ = _primary_contract("riverhog", "GET /v1/collections")
+    value = {
+        "parameters": [{"name": "x", "schema": {}, "future_parameter": extra}],
+        "requestBody": {
+            "future_body": extra,
+            "content": {"application/json": {"schema": {}, "future_request_media": extra}},
+        },
+        "responses": {
+            "200": {
+                "future_response": extra,
+                "content": {"application/json": {"schema": {}, "future_response_media": extra}},
+                "headers": {"X-Probe": {"schema": {}, "future_header": extra}},
+            }
+        },
+        "future_operation": extra,
+    }
+    primary = _http_primary(value, element)
+    for key in (
+        "future_parameter",
+        "future_body",
+        "future_request_media",
+        "future_response",
+        "future_response_media",
+        "future_header",
+        "future_operation",
+    ):
+        assert f"`{key}`: `{dossier_rendering._compact_json(extra)}`" in primary
+
+
+def test_schema_references_are_scoped_actionable_and_keep_use_site_constraints() -> None:
+    checked = checked_atlas()
+    element, primary = _primary_contract("riverhog", "schemas: ListCollectionsResponse")
+    fields = primary.split("### Fields", 1)[1].split("### Progression", 1)[0]
+    assert "[CollectionSummaryOut](schemas-collectionsummaryout.md)" in fields
+    assert "#/components/schemas/CollectionSummaryOut" not in fields
+    owners = {item["id"]: item for item in checked.root["elements"]}
+    foreign = next(
+        item
+        for item in owners.values()
+        if item["authority"] == "stove0" and item["interface"] == "http-schemas"
+    )
+    foreign = {
+        **foreign,
+        "pointers": [
+            "/external_contract/http_openapi/stove0/components/schemas/CollectionSummaryOut"
+        ],
+    }
+    owners[foreign["id"]] = foreign
+    schema = {
+        "$ref": "#/components/schemas/CollectionSummaryOut",
+        "minProperties": 1,
+        "future_rule": False,
+    }
+    output = "\n".join(
+        dossier_rendering._render_schema(
+            schema, element["pointers"][0], set(), element=element, elements_by_id=owners
+        )
+    )
+    assert "[CollectionSummaryOut](schemas-collectionsummaryout.md)" in output
+    assert "`minProperties`: `1`" in output and "`future_rule`: `false`" in output
+    local_owner = next(
+        item
+        for item in owners.values()
+        if item["authority"] == "riverhog" and item["title"] == "schemas: CollectionSummaryOut"
+    )
+    del owners[local_owner["id"]]
+    with pytest.raises(atlas.ContractAtlasError, match="unresolved local schema reference"):
+        dossier_rendering._render_schema(
+            schema, element["pointers"][0], set(), element=element, elements_by_id=owners
+        )
+
+
+def test_recursive_schema_links_do_not_rewrite_literal_reference_shaped_values() -> None:
+    schema = {
+        "$defs": {"A/B": {"type": "object", "properties": {"child": {"$ref": "#/$defs/A~1B"}}}},
+        "properties": {
+            "root": {"$ref": "#/$defs/A~1B", "default": {"$ref": "#/$defs/missing-literal"}}
+        },
+    }
+    primary = "\n".join(dossier_rendering._render_schema(schema, "/schema", set()))
+    link = f"[A/B](#{navigation._subject_anchor('/schema/$defs/A~1B')})"
+    assert primary.count(link) == 3  # definition inventory, root field, recursive child
+    assert 'default={"$ref":"#/$defs/missing-literal"}' in primary
+    schema["properties"]["root"]["$ref"] = "#/$defs/missing"
+    with pytest.raises(atlas.ContractAtlasError):
+        dossier_rendering._render_schema(schema, "/schema", set())
+
+
+def test_current_nullable_cli_authority_modifier_is_primary() -> None:
+    checked = checked_atlas()
+    found = []
+    for element in checked.root["elements"]:
+        if element["interface"] != "cli":
+            continue
+        for pointer in element["pointers"]:
+            if not pointer.endswith("/result_contract"):
+                continue
+            result = atlas.pointer_value(checked.root["projection"], pointer)
+            for outcome in result["success"] + result["failures"]:
+                for channel in ("stdout", "stderr"):
+                    for semantics in outcome[channel].values():
+                        if isinstance(semantics, dict) and "nullable" in semantics:
+                            found.append(semantics)
+                            primary = (
+                                checked.files[element["dossier"]]
+                                .decode()
+                                .split("### Exact owned JSON", 1)[0]
+                            )
+                            assert "`nullable`: `true`" in primary
+    assert len(found) == 1
+
+
+@pytest.mark.parametrize("extra", [False, None, 0, "", [], {}])
+def test_specialized_python_and_state_records_preserve_extra_fields(extra: object) -> None:
+    literal = dossier_rendering._compact_json(extra)
+    python_value = {
+        "future_python": extra,
+        "contract": {
+            "kind": "dataclass",
+            "future_contract": extra,
+            "fields": [{"name": "value", "type": "str", "default": "none", "future_field": extra}],
+        },
+    }
+    primary = "\n".join(dossier_rendering._render_python(python_value, "/python", set()))
+    for key in ("future_python", "future_contract", "future_field"):
+        assert f"`{key}`: `{literal}`" in primary
+    table = {
+        "name": "rows",
+        "future_table": extra,
+        "columns": [{"name": "value", "type": "TEXT", "nullable": False, "future_column": extra}],
+        "constraints": [
+            {"kind": "check", "definition": "CHECK (value != '')", "future_constraint": extra}
+        ],
+    }
+    primary = "\n".join(dossier_rendering._render_relational_table(table, "/table", set()))
+    assert f'"future_column":{literal}' in primary
+    for key in ("future_table", "future_constraint"):
+        assert f"`{key}`: `{literal}`" in primary
+    document = {"id": "config", "schema": {}, "future_document": extra}
+    primary = "\n".join(
+        dossier_rendering._render_durable_state(
+            ["/document"], [document], {"state_unit": "json-document"}, set()
+        )
+    )
+    assert f"`future_document`: `{literal}`" in primary
+
+
+def test_current_cli_record_shapes_keep_unknown_modifiers_at_use() -> None:
+    checked = checked_atlas()
+    elements = {item["id"]: item for item in checked.root["elements"]}
+    samples: dict[tuple[str, frozenset[str]], tuple[dict[str, Any], list[Any], list[Any]]] = {}
+
+    def visit(
+        value: Any, path: list[Any], context: str, element: dict[str, Any], values: list[Any]
+    ) -> None:
+        if isinstance(value, dict):
+            samples.setdefault((context, frozenset(value)), (element, values, path))
+            for key, child in value.items():
+                # Linked definitions are checked against their canonical target; schemas
+                # and literal values have dedicated mutation tests below.
+                if key not in {
+                    "schema",
+                    "definition",
+                    "document",
+                    "records",
+                    "trigger",
+                    "selected_by",
+                    "exit_status",
+                }:
+                    visit(child, [*path, key], key, element, values)
+        elif isinstance(value, list):
+            for index, child in enumerate(value):
+                visit(child, [*path, index], context, element, values)
+
+    for element in elements.values():
+        if element["interface"] != "cli":
+            continue
+        values = [atlas.pointer_value(checked.root["projection"], p) for p in element["pointers"]]
+        for index, (pointer, value) in enumerate(zip(element["pointers"], values, strict=True)):
+            visit(value, [index], pointer.rsplit("/", 1)[-1], element, values)
+    assert len(samples) > 20
+    for shape, (element, values, path) in samples.items():
+        changed = deepcopy(values)
+        record = changed
+        for key in path:
+            record = record[key]
+        record["future-fidelity-rule"] = "cli-fidelity-mutation-885"
+        try:
+            primary = "\n".join(
+                dossier_rendering._render_cli(
+                    element["pointers"],
+                    changed,
+                    set(),
+                    element=element,
+                    path=element["dossier"],
+                    projection=checked.root["projection"],
+                    elements_by_id=elements,
+                )
+            )
+        except atlas.ContractAtlasError as exc:
+            # Channel dictionaries are keyed by output mode. A new structured
+            # mode must resolve an authority, or fail rather than disappear.
+            assert shape[0] in {"stdout", "stderr"} and "no atlas resolver" in str(exc), shape
+        else:
+            assert "future-fidelity-rule" in primary and "cli-fidelity-mutation-885" in primary, (
+                shape
+            )
+
+
+@pytest.mark.parametrize("keyword", ["allOf", "anyOf", "oneOf", "prefixItems"])
+def test_schema_combinators_preserve_operator_order_and_empty_structures(keyword: str) -> None:
+    variants = [False, {"const": None}, {"const": 0}, {"const": []}, {"const": {}}, True]
+
+    def render(value: object) -> str:
+        return "\n".join(dossier_rendering._render_schema({keyword: value}, "/schema", set()))
+
+    primary = render(variants)
+    assert f"(`{keyword}`)" in primary
+    for fact in (
+        "no JSON value",
+        "const=null",
+        "const=0",
+        "const=[]",
+        "const={}",
+        "any JSON value",
+    ):
+        assert fact in primary
+    assert primary != render(list(reversed(variants)))
+    assert render([]) != "\n".join(dossier_rendering._render_schema({}, "/schema", set()))
+
+
+def test_current_schema_keyword_shapes_preserve_changed_literals() -> None:
+    checked = checked_atlas()
+    # Inventory actual schema nodes from standalone schemas and validated Python models.
+    samples: dict[tuple[str, type], tuple[dict[str, Any], str]] = {}
+
+    def visit(schema: Any) -> None:
+        if not isinstance(schema, dict):
+            return
+        for key, value in schema.items():
+            if key in {
+                "properties",
+                "$defs",
+                "definitions",
+                "patternProperties",
+                "dependentSchemas",
+            } and isinstance(value, dict):
+                for child in value.values():
+                    visit(child)
+            elif key in {"allOf", "anyOf", "oneOf", "prefixItems"} and isinstance(value, list):
+                for child in value:
+                    visit(child)
+            elif key in {
+                "items",
+                "additionalProperties",
+                "if",
+                "then",
+                "else",
+                "not",
+            } and isinstance(value, dict):
+                visit(value)
+            elif key != "$ref":
+                samples.setdefault((key, type(value)), (schema, key))
+
+    for element in checked.root["elements"]:
+        for pointer in element["pointers"]:
+            value = atlas.pointer_value(checked.root["projection"], pointer)
+            if element["interface"] in {"http-schemas", "schema", "process-protocol-schemas"}:
+                visit(value)
+            elif element["interface"] == "python":
+                visit(value["contract"].get("schema"))
+    assert len(samples) > 20
+    for shape, (_schema, key) in samples.items():
+        # Isolate the factual keyword to test both root and inline-field paths.
+        # Ref resolution and combinator structure have separate adversarial tests.
+        changed = {key: "schema-fidelity-mutation-885"}
+        for value in (changed, {"properties": {"probe": changed}}):
+            primary = "\n".join(dossier_rendering._render_schema(value, "/schema", set()))
+            assert "schema-fidelity-mutation-885" in primary, shape
+
+
+@pytest.mark.parametrize("value", [False, None, 0, "", [], {}, "False", "None", "0", "[]", "{}"])
+def test_literal_record_renderers_preserve_json_type_and_empty_values(value: object) -> None:
+    expected = f"`{dossier_rendering._compact_json(value)}`"
+    record = {"recorded_value": value}
+    for lines in (
+        dossier_rendering._render_generic(["/record"], [record], set()),
+        dossier_rendering._render_operation(record, "/record", set()),
+    ):
+        assert f"`recorded_value` | {expected} |" in "\n".join(lines)
+
+
+@pytest.mark.parametrize(
+    "keyword", ["properties", "$defs", "allOf", "anyOf", "oneOf", "prefixItems"]
+)
+def test_schema_specialization_rejects_unhandled_structural_types(keyword: str) -> None:
+    with pytest.raises(atlas.ContractAtlasError, match="invalid schema structure"):
+        dossier_rendering._render_schema({keyword: None}, "/schema", set())

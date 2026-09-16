@@ -25,8 +25,8 @@ Small exact input authority retained by Stove0 and traversed in bounded pages.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-bdcbb7a5df"></a>`roles` | yes | type="array"; items=(#/components/schemas/TargetInputRoleCount); minItems=1 |  |
-| <a id="s-2b06eb28e8"></a>`selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
+| <a id="s-bdcbb7a5df"></a>`roles` | yes | type="array"; items=([TargetInputRoleCount](schemas-targetinputrolecount.md)); minItems=1; title="Roles" |  |
+| <a id="s-2b06eb28e8"></a>`selection` | yes | [ArtifactSelectionRef](schemas-artifactselectionref.md) |  |
 
 ### Progression, limits, and lifecycle
 

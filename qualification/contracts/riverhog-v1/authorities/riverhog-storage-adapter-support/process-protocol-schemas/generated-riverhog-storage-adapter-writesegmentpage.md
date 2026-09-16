@@ -25,11 +25,11 @@ One bounded page under an adapter-owned immutable traversal view.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-05723f37a4"></a>`completion` | no | anyOf=([WriteCompletionAuthority](#s-21da49f925)) \| (type="null"); default=null |  |
-| <a id="s-2130080be0"></a>`next_after_number` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
-| <a id="s-33643dd5a1"></a>`segments` | no | type="array"; default=[]; items=([WriteSegmentReceipt](#s-49182d9498)); maxItems=128; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"exact-adapter-write-traversal","reason":"bounded-storage-write-segment-page"} |  |
+| <a id="s-05723f37a4"></a>`completion` | no | anyOf=[([WriteCompletionAuthority](#s-21da49f925)); (type="null")]; default=null |  |
+| <a id="s-2130080be0"></a>`next_after_number` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null; title="Next After Number" |  |
+| <a id="s-33643dd5a1"></a>`segments` | no | type="array"; default=[]; items=([WriteSegmentReceipt](#s-49182d9498)); maxItems=128; title="Segments"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"exact-adapter-write-traversal","reason":"bounded-storage-write-segment-page"} |  |
 | <a id="s-2b84ac917f"></a>`session` | yes | [WriteSession](#s-182505f3d5) |  |
-| <a id="s-401c234753"></a>`traversal_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
+| <a id="s-401c234753"></a>`traversal_token` | yes | type="string"; maxLength=4000; minLength=1; title="Traversal Token" |  |
 
 ### Definitions
 
@@ -49,9 +49,9 @@ One bounded page under an adapter-owned immutable traversal view.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-be34d2262f"></a>`authority_token` | yes | type="string"; maxLength=4000; minLength=1 | Bounded opaque adapter-issued authority for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged. |
-| <a id="s-10adf909eb"></a>`segment_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-347c213eaf"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-be34d2262f"></a>`authority_token` | yes | type="string"; maxLength=4000; minLength=1; title="Authority Token" | Bounded opaque adapter-issued authority for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged. |
+| <a id="s-10adf909eb"></a>`segment_count` | yes | type="integer"; minimum=0; title="Segment Count" |  |
+| <a id="s-347c213eaf"></a>`stored_bytes` | yes | type="integer"; minimum=0; title="Stored Bytes" |  |
 
 ### <a id="s-49182d9498"></a>definition `WriteSegmentReceipt`
 
@@ -64,10 +64,10 @@ One bounded page under an adapter-owned immutable traversal view.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4cd5e84a2c"></a>`number` | yes | type="integer"; minimum=1 |  |
-| <a id="s-61c3694c07"></a>`segment_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
-| <a id="s-888b147fe3"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-bf436c18ac"></a>`stored_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-4cd5e84a2c"></a>`number` | yes | type="integer"; minimum=1; title="Number" |  |
+| <a id="s-61c3694c07"></a>`segment_token` | yes | type="string"; maxLength=4000; minLength=1; title="Segment Token" |  |
+| <a id="s-888b147fe3"></a>`stored_bytes` | yes | type="integer"; minimum=1; title="Stored Bytes" |  |
+| <a id="s-bf436c18ac"></a>`stored_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null; title="Stored Sha256" |  |
 
 ### <a id="s-182505f3d5"></a>definition `WriteSession`
 
@@ -80,9 +80,9 @@ One bounded page under an adapter-owned immutable traversal view.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-191777666f"></a>`expected_bytes` | yes | type="integer"; minimum=1 | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
-| <a id="s-d8564aa07c"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-059cc0748b"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1 | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
+| <a id="s-191777666f"></a>`expected_bytes` | yes | type="integer"; minimum=1; title="Expected Bytes" | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
+| <a id="s-d8564aa07c"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
+| <a id="s-059cc0748b"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1; title="Write Token" | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
 
 ### Progression, limits, and lifecycle
 

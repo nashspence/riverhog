@@ -24,7 +24,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b2eadc07e6"></a>`plan` | yes | discriminator={"mapping":{"stove0-effect-target/v1":"[EffectPlan](#s-11bebc4dd2)","stove0-transform-target/v1":"[TransformPlan](#s-2398dee3b8)"},"propertyName":"protocol"}; oneOf=([TransformPlan](#s-2398dee3b8)) \| ([EffectPlan](#s-11bebc4dd2)) |  |
+| <a id="s-b2eadc07e6"></a>`plan` | yes | discriminator={"mapping":{"stove0-effect-target/v1":"#/$defs/EffectPlan","stove0-transform-target/v1":"#/$defs/TransformPlan"},"propertyName":"protocol"}; oneOf=[([TransformPlan](#s-2398dee3b8)); ([EffectPlan](#s-11bebc4dd2))]; title="Plan" |  |
 | <a id="s-e6c89ac6df"></a>`target` | yes | [TargetContract](#s-d29225bb03) |  |
 
 ### Definitions
@@ -51,9 +51,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-91c1a2048a"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-eed1f0328c"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a79f343304"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-91c1a2048a"></a>`artifact_count` | yes | type="integer"; minimum=1; title="Artifact Count" |  |
+| <a id="s-eed1f0328c"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Selection Sha256" |  |
+| <a id="s-a79f343304"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
 
 ### <a id="s-11bebc4dd2"></a>definition `EffectPlan`
 
@@ -67,15 +67,15 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-d368acee72"></a>`inputs` | yes | [TargetInputAuthority](#s-18093afb67) |  |
-| <a id="s-51c58b479a"></a>`intent` | yes | type="object"; additionalProperties=([JsonValue](#s-885012f602)) |  |
-| <a id="s-91627aa6cc"></a>`observation_result_sha256s` | no | type="array"; default=[]; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
-| <a id="s-55dacd3c6d"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-6eccc15ae3"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-b1431c0cfd"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a9b7569a60"></a>`protocol` | no | type="string"; const="stove0-effect-target/v1"; default="stove0-effect-target/v1" |  |
-| <a id="s-ae5cad52fa"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1728972dbd"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-253ffbfb8a"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-885012f602)) |  |
+| <a id="s-51c58b479a"></a>`intent` | yes | type="object"; additionalProperties=([JsonValue](#s-885012f602)); title="Intent" |  |
+| <a id="s-91627aa6cc"></a>`observation_result_sha256s` | no | type="array"; default=[]; items=(type="string"; pattern="^[0-9a-f]{64}$"); title="Observation Result Sha256S" |  |
+| <a id="s-55dacd3c6d"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Operation Contract Sha256" |  |
+| <a id="s-6eccc15ae3"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Operation Id" |  |
+| <a id="s-b1431c0cfd"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
+| <a id="s-a9b7569a60"></a>`protocol` | no | type="string"; const="stove0-effect-target/v1"; default="stove0-effect-target/v1"; title="Protocol" |  |
+| <a id="s-ae5cad52fa"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
+| <a id="s-1728972dbd"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Target Implementation Id" |  |
+| <a id="s-253ffbfb8a"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-885012f602)); title="Target Options" |  |
 
 ### <a id="s-60608cfe3b"></a>definition `JsonSchemaDocument`
 
@@ -88,11 +88,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a47fd4f465"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
-| <a id="s-0bab766f14"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
-| <a id="s-35110c04a2"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-3490292536"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-885012f602)) |  |
-| <a id="s-c282e43d95"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a47fd4f465"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema"; title="Dialect" |  |
+| <a id="s-0bab766f14"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only"; title="Format Policy" |  |
+| <a id="s-35110c04a2"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-3490292536"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-885012f602)); title="Schema" |  |
+| <a id="s-c282e43d95"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### <a id="s-885012f602"></a>definition `JsonValue`
 
@@ -109,14 +109,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-791145bbfa"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-23a84ce5f2"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a383521d81"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-004149fbb9"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1 |  |
-| <a id="s-58a80a3bdd"></a>`operations` | yes | type="array"; items=([TargetOperationSupport](#s-40a67f974a)); minItems=1 |  |
-| <a id="s-8a396d9a23"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1" |  |
-| <a id="s-37e5ac4a4b"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
-| <a id="s-4f552cbb16"></a>`transport` | no | type="string"; const="riverhog-capability/v1"; default="riverhog-capability/v1" |  |
+| <a id="s-791145bbfa"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Contract Sha256" |  |
+| <a id="s-23a84ce5f2"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Image Digest" |  |
+| <a id="s-a383521d81"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Implementation Id" |  |
+| <a id="s-004149fbb9"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1; title="Implementation Version" |  |
+| <a id="s-58a80a3bdd"></a>`operations` | yes | type="array"; items=([TargetOperationSupport](#s-40a67f974a)); minItems=1; title="Operations" |  |
+| <a id="s-8a396d9a23"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1"; title="Protocol" |  |
+| <a id="s-37e5ac4a4b"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1; title="Source Revision" |  |
+| <a id="s-4f552cbb16"></a>`transport` | no | type="string"; const="riverhog-capability/v1"; default="riverhog-capability/v1"; title="Transport" |  |
 
 ### <a id="s-18093afb67"></a>definition `TargetInputAuthority`
 
@@ -130,7 +130,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2796eeb1cd"></a>`roles` | yes | type="array"; items=([TargetInputRoleCount](#s-026358c5f8)); minItems=1 |  |
+| <a id="s-2796eeb1cd"></a>`roles` | yes | type="array"; items=([TargetInputRoleCount](#s-026358c5f8)); minItems=1; title="Roles" |  |
 | <a id="s-bd3262dcaf"></a>`selection` | yes | [ArtifactSelectionRef](#s-6e82db4fba) |  |
 
 ### <a id="s-026358c5f8"></a>definition `TargetInputRoleCount`
@@ -144,8 +144,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e212a71813"></a>`count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-60e41e7c5b"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-e212a71813"></a>`count` | yes | type="integer"; minimum=1; title="Count" |  |
+| <a id="s-60e41e7c5b"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Role" |  |
 
 ### <a id="s-40a67f974a"></a>definition `TargetOperationSupport`
 
@@ -158,10 +158,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-fb06e03c39"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-6735f2b9dc"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-fb06e03c39"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Operation Contract Sha256" |  |
+| <a id="s-6735f2b9dc"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Operation Id" |  |
 | <a id="s-e2bceafed9"></a>`options_schema` | yes | [JsonSchemaDocument](#s-60608cfe3b) |  |
-| <a id="s-1bfa3e093c"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
+| <a id="s-1bfa3e093c"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection"; title="Result Kind" |  |
 
 ### <a id="s-2398dee3b8"></a>definition `TransformPlan`
 
@@ -175,15 +175,15 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-0a787fb4eb"></a>`inputs` | yes | [TargetInputAuthority](#s-18093afb67) |  |
-| <a id="s-237cb127e7"></a>`intent` | yes | type="object"; additionalProperties=([JsonValue](#s-885012f602)) |  |
-| <a id="s-4bb56be6c8"></a>`observation_result_sha256s` | no | type="array"; default=[]; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
-| <a id="s-92eab5005b"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-2c38e1fa91"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-bf99e64d9a"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-509f9c011c"></a>`protocol` | no | type="string"; const="stove0-transform-target/v1"; default="stove0-transform-target/v1" |  |
-| <a id="s-128c56a7e7"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-0a2c2cc978"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-3595c033b4"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-885012f602)) |  |
+| <a id="s-237cb127e7"></a>`intent` | yes | type="object"; additionalProperties=([JsonValue](#s-885012f602)); title="Intent" |  |
+| <a id="s-4bb56be6c8"></a>`observation_result_sha256s` | no | type="array"; default=[]; items=(type="string"; pattern="^[0-9a-f]{64}$"); title="Observation Result Sha256S" |  |
+| <a id="s-92eab5005b"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Operation Contract Sha256" |  |
+| <a id="s-2c38e1fa91"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Operation Id" |  |
+| <a id="s-bf99e64d9a"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
+| <a id="s-509f9c011c"></a>`protocol` | no | type="string"; const="stove0-transform-target/v1"; default="stove0-transform-target/v1"; title="Protocol" |  |
+| <a id="s-128c56a7e7"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
+| <a id="s-0a2c2cc978"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Target Implementation Id" |  |
+| <a id="s-3595c033b4"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-885012f602)); title="Target Options" |  |
 
 ## Maintained corroboration
 

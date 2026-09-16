@@ -24,14 +24,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d57f9a95ca"></a>`archive_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-706f44817b"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-ea443b1f02"></a>`encryption_format` | yes | type="string" |  |
-| <a id="s-c35c83ee48"></a>`files` | yes | type="array"; items=(#/components/schemas/CollectionUploadFileOut) |  |
-| <a id="s-d8b867d200"></a>`ingest_source` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-a22c58005a"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
-| <a id="s-c9c25cce1c"></a>`state` | yes | type="string"; const="open" |  |
-| <a id="s-c488bbdba5"></a>`volumes` | yes | type="array"; items=(#/components/schemas/CollectionUploadVolumeSummaryDocument) |  |
+| <a id="s-d57f9a95ca"></a>`archive_store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
+| <a id="s-706f44817b"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-ea443b1f02"></a>`encryption_format` | yes | type="string"; title="Encryption Format" |  |
+| <a id="s-c35c83ee48"></a>`files` | yes | type="array"; items=([CollectionUploadFileOut](schemas-collectionuploadfileout.md)); title="Files" |  |
+| <a id="s-d8b867d200"></a>`ingest_source` | yes | anyOf=[(type="string"); (type="null")]; title="Ingest Source" |  |
+| <a id="s-a22c58005a"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$"; title="Passphrase Id" |  |
+| <a id="s-c9c25cce1c"></a>`state` | yes | type="string"; const="open"; title="State" |  |
+| <a id="s-c488bbdba5"></a>`volumes` | yes | type="array"; items=([CollectionUploadVolumeSummaryDocument](schemas-collectionuploadvolumesummarydocument.md)); title="Volumes" |  |
 
 ### Progression, limits, and lifecycle
 

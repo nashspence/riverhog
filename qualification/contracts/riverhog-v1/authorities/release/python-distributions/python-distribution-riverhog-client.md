@@ -16,15 +16,15 @@ Typed generic Riverhog client and capability-scoped collection-processing runtim
 <a id="s-ccd6b35591"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-f059b1d319"></a>`artifacts` | [{"coordinate": "dist/riverhog_client-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_client-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-0d444d3d41"></a>`channel` | github-release |
-| <a id="s-2f22635653"></a>`description` | Typed generic Riverhog client and capability-scoped collection-processing runtime. |
-| <a id="s-7b2c8a3e64"></a>`license_baseline` | first-v1-publication |
-| <a id="s-4d3aaf2875"></a>`license_expression` | Apache-2.0 |
-| <a id="s-2b65ac7822"></a>`publication_identity` | {"coordinate": "riverhog-client", "kind": "python-distribution"} |
-| <a id="s-ab052b72f0"></a>`requires_python` | >=3.12 |
-| <a id="s-a158229f6f"></a>`role` | reusable_library |
-| <a id="s-1bf047b001"></a>`source` | packages/riverhog-client/pyproject.toml |
+| <a id="s-f059b1d319"></a>`artifacts` | `[{"coordinate":"dist/riverhog_client-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/riverhog_client-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-0d444d3d41"></a>`channel` | `"github-release"` |
+| <a id="s-2f22635653"></a>`description` | `"Typed generic Riverhog client and capability-scoped collection-processing runtime."` |
+| <a id="s-7b2c8a3e64"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-4d3aaf2875"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-2b65ac7822"></a>`publication_identity` | `{"coordinate":"riverhog-client","kind":"python-distribution"}` |
+| <a id="s-ab052b72f0"></a>`requires_python` | `">=3.12"` |
+| <a id="s-a158229f6f"></a>`role` | `"reusable_library"` |
+| <a id="s-1bf047b001"></a>`source` | `"packages/riverhog-client/pyproject.toml"` |
 
 ## Existing ownership context
 

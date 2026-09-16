@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c2df294917"></a>`estimated_ready_at` | no | anyOf=(type="string"; maxLength=100; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-c2df294917"></a>`estimated_ready_at` | no | anyOf=[(type="string"; maxLength=100; minLength=1); (type="null")]; default=null |  |
 | <a id="s-f0a46163f4"></a>`state` | no | type="string"; const="requested"; default="requested" |  |
 
 ## Maintained corroboration

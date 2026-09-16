@@ -16,13 +16,13 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-f02f594197"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-ae4a1c5ca2"></a>`error_schema` | ErrorResponse |
-| <a id="s-0d3ef617f1"></a>`errors` | [{"code": "invalid_target_request", "status": 400}, {"code": "unauthorized", "status": 401}, {"code": "request_too_large", "status": 413}, {"code": "job_identity_mismatch", "status": 409}, {"code": "target_contract_mismatch", "status": 409}, {"code": "operation_contract_mismatch", "status": 409}, {"code": "job_request_mismatch", "status": 409}, {"code": "target_runtime_mismatch", "status": 409}, {"code": "unsupported_operation", "status": 400}, {"code": "target_failed", "status": 500}] |
-| <a id="s-10df3c4a05"></a>`method` | PUT |
-| <a id="s-81cff57a99"></a>`path` | /v1/jobs/{job_id} |
-| <a id="s-0e02dc2517"></a>`path_parameters` | [{"name": "job_id", "schema": {"pattern": "^[0-9a-f]{64}$", "type": "string"}}] |
-| <a id="s-90500a1085"></a>`request` | {"kind": "json", "schema": "TargetJobRequest"} |
-| <a id="s-567d883078"></a>`response` | {"headers": [], "kind": "json", "schema": "TargetJobStatus", "statuses": [200]} |
+| <a id="s-ae4a1c5ca2"></a>`error_schema` | `"ErrorResponse"` |
+| <a id="s-0d3ef617f1"></a>`errors` | `[{"code":"invalid_target_request","status":400},{"code":"unauthorized","status":401},{"code":"request_too_large","status":413},{"code":"job_identity_mismatch","status":409},{"code":"target_contract_mismatch","status":409},{"code":"operation_contract_mismatch","status":409},{"code":"job_request_mismatch","status":409},{"code":"target_runtime_mismatch","status":409},{"code":"unsupported_operation","status":400},{"code":"target_failed","status":500}]` |
+| <a id="s-10df3c4a05"></a>`method` | `"PUT"` |
+| <a id="s-81cff57a99"></a>`path` | `"/v1/jobs/{job_id}"` |
+| <a id="s-0e02dc2517"></a>`path_parameters` | `[{"name":"job_id","schema":{"pattern":"^[0-9a-f]{64}$","type":"string"}}]` |
+| <a id="s-90500a1085"></a>`request` | `{"kind":"json","schema":"TargetJobRequest"}` |
+| <a id="s-567d883078"></a>`response` | `{"headers":[],"kind":"json","schema":"TargetJobStatus","statuses":[200]}` |
 
 ## Maintained corroboration
 

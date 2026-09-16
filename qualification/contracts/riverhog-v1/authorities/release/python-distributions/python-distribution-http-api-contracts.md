@@ -16,15 +16,15 @@ Public typed HTTP error, health, client, and operation contracts.
 <a id="s-1bc8b5b6b0"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-4bb358cc93"></a>`artifacts` | [{"coordinate": "dist/http_api_contracts-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/http_api_contracts-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-117240a1f8"></a>`channel` | github-release |
-| <a id="s-a6b9167e15"></a>`description` | Public typed HTTP error, health, client, and operation contracts. |
-| <a id="s-cb5a5e33a2"></a>`license_baseline` | first-v1-publication |
-| <a id="s-41fc35ff3d"></a>`license_expression` | Apache-2.0 |
-| <a id="s-96f099fffe"></a>`publication_identity` | {"coordinate": "http-api-contracts", "kind": "python-distribution"} |
-| <a id="s-910a3c8817"></a>`requires_python` | >=3.12 |
-| <a id="s-9b58a30a1d"></a>`role` | reusable_library |
-| <a id="s-dbe6905ae8"></a>`source` | packages/http-api-contracts/pyproject.toml |
+| <a id="s-4bb358cc93"></a>`artifacts` | `[{"coordinate":"dist/http_api_contracts-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/http_api_contracts-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-117240a1f8"></a>`channel` | `"github-release"` |
+| <a id="s-a6b9167e15"></a>`description` | `"Public typed HTTP error, health, client, and operation contracts."` |
+| <a id="s-cb5a5e33a2"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-41fc35ff3d"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-96f099fffe"></a>`publication_identity` | `{"coordinate":"http-api-contracts","kind":"python-distribution"}` |
+| <a id="s-910a3c8817"></a>`requires_python` | `">=3.12"` |
+| <a id="s-9b58a30a1d"></a>`role` | `"reusable_library"` |
+| <a id="s-dbe6905ae8"></a>`source` | `"packages/http-api-contracts/pyproject.toml"` |
 
 ## Existing ownership context
 

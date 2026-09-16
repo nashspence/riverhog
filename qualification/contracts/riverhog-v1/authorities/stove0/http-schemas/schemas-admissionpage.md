@@ -24,14 +24,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d5f270254c"></a>`admissions` | yes | type="array"; items=(#/components/schemas/AdmissionView) |  |
-| <a id="s-3e881f6885"></a>`filters` | yes | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-9a36eb1fac"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-3123ed8fc8"></a>`order` | yes | type="string"; enum=["asc","desc"] |  |
-| <a id="s-d9ac4cae18"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-36fb196aae"></a>`policy_id` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-cbcb64b233"></a>`sort` | yes | type="string"; enum=["created_at","updated_at","state","admission_id"] |  |
-| <a id="s-f4c994c20c"></a>`state` | yes | anyOf=(type="string"; enum=["intent","previewed","work_bound"]) \| (type="null") |  |
+| <a id="s-d5f270254c"></a>`admissions` | yes | type="array"; items=([AdmissionView](schemas-admissionview.md)); title="Admissions" |  |
+| <a id="s-3e881f6885"></a>`filters` | yes | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Filters" |  |
+| <a id="s-9a36eb1fac"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-3123ed8fc8"></a>`order` | yes | type="string"; enum=["asc","desc"]; title="Order" |  |
+| <a id="s-d9ac4cae18"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
+| <a id="s-36fb196aae"></a>`policy_id` | yes | anyOf=[(type="string"); (type="null")]; title="Policy Id" |  |
+| <a id="s-cbcb64b233"></a>`sort` | yes | type="string"; enum=["created_at","updated_at","state","admission_id"]; title="Sort" |  |
+| <a id="s-f4c994c20c"></a>`state` | yes | anyOf=[(type="string"; enum=["intent","previewed","work_bound"]); (type="null")]; title="State" |  |
 
 ### Progression, limits, and lifecycle
 

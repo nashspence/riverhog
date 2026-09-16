@@ -25,11 +25,11 @@ One bounded continuation step through the exact target input authority.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-594372c38b"></a>`artifacts` | yes | type="array"; items=(#/components/schemas/InputArtifact); maxItems=256; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-target-input-page"} |  |
-| <a id="s-e670e38af3"></a>`authority` | yes | #/components/schemas/TargetInputAuthority |  |
-| <a id="s-999cc5b16e"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-e195a811d3"></a>`continuation` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-e35da8a356"></a>`next_continuation` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
+| <a id="s-594372c38b"></a>`artifacts` | yes | type="array"; items=([InputArtifact](schemas-inputartifact.md)); maxItems=256; title="Artifacts"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-target-input-page"} |  |
+| <a id="s-e670e38af3"></a>`authority` | yes | [TargetInputAuthority](schemas-targetinputauthority.md) |  |
+| <a id="s-999cc5b16e"></a>`complete` | yes | type="boolean"; title="Complete" |  |
+| <a id="s-e195a811d3"></a>`continuation` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Continuation" |  |
+| <a id="s-e35da8a356"></a>`next_continuation` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Next Continuation" |  |
 
 ### Progression, limits, and lifecycle
 

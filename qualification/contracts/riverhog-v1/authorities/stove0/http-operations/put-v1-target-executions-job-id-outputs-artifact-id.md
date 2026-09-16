@@ -14,19 +14,25 @@ Declare Target Execution Output
 ## External contract
 
 <a id="s-825ce221c4"></a>
-- <a id="s-bc53930cb6"></a>`operationId`: declare_target_execution_output
-- <a id="s-cd8891b235"></a>`summary`: Declare Target Execution Output
+- <a id="s-bc53930cb6"></a>`operationId`: `"declare_target_execution_output"`
+- <a id="s-cd8891b235"></a>`summary`: `"Declare Target Execution Output"`
+- <a id="s-df778199d4"></a>`tags`: `["target-executions"]`
+- <a id="s-fa4fe340e3"></a>`x-riverhog-interface`: `"client-only-primitive"`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-1dde977b0b"></a>`job_id` | path | yes | not declared | type="string" |
-| <a id="s-f4d1dab401"></a>`artifact_id` | path | yes | not declared | type="string" |
+| <a id="s-1dde977b0b"></a>`job_id` | path | yes | not declared | type="string"; title="Job Id" |
+| <a id="s-f4d1dab401"></a>`artifact_id` | path | yes | not declared | type="string"; title="Artifact Id" |
 
 ### <a id="s-a90f312415"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/OutputArtifact"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [OutputArtifact](../http-schemas/schemas-outputartifact.md) |
 
 ### Responses
 

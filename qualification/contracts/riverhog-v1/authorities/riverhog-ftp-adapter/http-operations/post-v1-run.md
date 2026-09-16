@@ -14,15 +14,16 @@ Run Pass
 ## External contract
 
 <a id="s-98a41252cc"></a>
-- <a id="s-b09291ebea"></a>`operationId`: run_ftp_adapter_pass
-- <a id="s-a1173de3e1"></a>`summary`: Run Pass
-- <a id="s-3f252e3855"></a>`security`: `[{"RiverhogFtpAdapterBearer": []}]`
+- <a id="s-b09291ebea"></a>`operationId`: `"run_ftp_adapter_pass"`
+- <a id="s-3f252e3855"></a>`security`: `[{"RiverhogFtpAdapterBearer":[]}]`
+- <a id="s-a1173de3e1"></a>`summary`: `"Run Pass"`
+- <a id="s-b91b0f4ab2"></a>`tags`: `["operations"]`
 
 ### Responses
 
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
-| <a id="s-52ad3c0e19"></a>`200` | Successful Response | application/json | type="object"; additionalProperties=true | not declared |
+| <a id="s-52ad3c0e19"></a>`200` | Successful Response | application/json | type="object"; additionalProperties=(any JSON value); title="Response Run Ftp Adapter Pass" | not declared |
 | <a id="s-5adeebb411"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
 | <a id="s-d23416f258"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
 | <a id="s-2d6c5f3aff"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |

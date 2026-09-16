@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-c3d3521eb1"></a>Parser name: `recipe`
+
+| Field | Value |
+|---|---|
+| <a id="s-bb1ef2c6a8"></a>`parameters` | `[]` |
 - <a id="s-e9eb4b4a2e"></a>Subcommand selection: required.
 - <a id="s-e72a418e16"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
 - <a id="s-05027f0112"></a>Options after positional arguments at this parser: left as arguments.

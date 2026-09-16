@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-23be569f91"></a>Parser name: `scheduler`
+
+| Field | Value |
+|---|---|
+| <a id="s-7b3c6ce5e4"></a>`parameters` | `[]` |
 - <a id="s-436b90fbc9"></a>Subcommand selection: required.
 - <a id="s-d178135f6c"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
 - <a id="s-5cc591e133"></a>Options after positional arguments at this parser: left as arguments.

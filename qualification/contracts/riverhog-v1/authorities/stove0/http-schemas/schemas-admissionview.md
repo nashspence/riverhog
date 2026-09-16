@@ -24,15 +24,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2876199d78"></a>`attempt_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-6df2d3fad6"></a>`created_at` | yes | type="string"; maxLength=40; minLength=1 |  |
-| <a id="s-c08d71353e"></a>`failure` | no | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null") |  |
-| <a id="s-22ad3d0ba1"></a>`intent` | yes | #/components/schemas/AdmissionIntent |  |
-| <a id="s-95bb151c01"></a>`next_attempt_at` | no | anyOf=(type="string"; maxLength=40; minLength=1) \| (type="null") |  |
-| <a id="s-c05701d9fd"></a>`preview_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-21f919bc64"></a>`state` | yes | type="string"; enum=["intent","previewed","work_bound"] |  |
-| <a id="s-500fd66991"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
-| <a id="s-93af888f26"></a>`work_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
+| <a id="s-2876199d78"></a>`attempt_count` | yes | type="integer"; minimum=0; title="Attempt Count" |  |
+| <a id="s-6df2d3fad6"></a>`created_at` | yes | type="string"; maxLength=40; minLength=1; title="Created At" |  |
+| <a id="s-c08d71353e"></a>`failure` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; title="Failure" |  |
+| <a id="s-22ad3d0ba1"></a>`intent` | yes | [AdmissionIntent](schemas-admissionintent.md) |  |
+| <a id="s-95bb151c01"></a>`next_attempt_at` | no | anyOf=[(type="string"; maxLength=40; minLength=1); (type="null")]; title="Next Attempt At" |  |
+| <a id="s-c05701d9fd"></a>`preview_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Preview Sha256" |  |
+| <a id="s-21f919bc64"></a>`state` | yes | type="string"; enum=["intent","previewed","work_bound"]; title="State" |  |
+| <a id="s-500fd66991"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1; title="Updated At" |  |
+| <a id="s-93af888f26"></a>`work_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Work Id" |  |
 
 ### Progression, limits, and lifecycle
 

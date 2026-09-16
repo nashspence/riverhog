@@ -14,18 +14,20 @@ Collection Contains Tag
 ## External contract
 
 <a id="s-b7b3da9ca4"></a>
-- <a id="s-f64404d5ae"></a>`operationId`: collection_contains_tag
-- <a id="s-c1758ccadd"></a>`summary`: Collection Contains Tag
-- <a id="s-2ba7d67bf8"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-f64404d5ae"></a>`operationId`: `"collection_contains_tag"`
+- <a id="s-2ba7d67bf8"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-c1758ccadd"></a>`summary`: `"Collection Contains Tag"`
+- <a id="s-b396a997b6"></a>`tags`: `["collection-tags"]`
+- <a id="s-63aa4ad0d4"></a>`x-riverhog-permission-requirements`: `[{"any_of":["catalog:read"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-234c3b9e4a"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-234c3b9e4a"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
 | <a id="s-a9d8b50545"></a>`tag` | query | yes | not declared | [CollectionTag](../http-schemas/schemas-collectiontag.md) |
-| <a id="s-d314b5a767"></a>`revision` | query | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-2807a21da2"></a>`tag_set_identity` | query | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-d314b5a767"></a>`revision` | query | yes | not declared | type="integer"; minimum=1; title="Revision" |
+| <a id="s-2807a21da2"></a>`tag_set_identity` | query | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Tag Set Identity" |
 
 ### Responses
 

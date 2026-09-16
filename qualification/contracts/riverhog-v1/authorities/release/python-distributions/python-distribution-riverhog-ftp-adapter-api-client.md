@@ -16,15 +16,15 @@ Optional nonnormative client for the Riverhog FTP ingress reference.
 <a id="s-9b6200f25e"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-ffe3255b10"></a>`artifacts` | [{"coordinate": "dist/riverhog_ftp_adapter_api_client-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_ftp_adapter_api_client-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-f28ef68e25"></a>`channel` | github-release |
-| <a id="s-075d805e40"></a>`description` | Optional nonnormative client for the Riverhog FTP ingress reference. |
-| <a id="s-d0acdf17f0"></a>`license_baseline` | first-v1-publication |
-| <a id="s-cafb1942b6"></a>`license_expression` | Apache-2.0 |
-| <a id="s-04f9fd8092"></a>`publication_identity` | {"coordinate": "riverhog-ftp-adapter-api-client", "kind": "python-distribution"} |
-| <a id="s-f1f2c566f2"></a>`requires_python` | >=3.12 |
-| <a id="s-2110d96cc1"></a>`role` | reference_component |
-| <a id="s-76d81eaf74"></a>`source` | reference/riverhog/ingress/ftp-api-client/pyproject.toml |
+| <a id="s-ffe3255b10"></a>`artifacts` | `[{"coordinate":"dist/riverhog_ftp_adapter_api_client-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/riverhog_ftp_adapter_api_client-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-f28ef68e25"></a>`channel` | `"github-release"` |
+| <a id="s-075d805e40"></a>`description` | `"Optional nonnormative client for the Riverhog FTP ingress reference."` |
+| <a id="s-d0acdf17f0"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-cafb1942b6"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-04f9fd8092"></a>`publication_identity` | `{"coordinate":"riverhog-ftp-adapter-api-client","kind":"python-distribution"}` |
+| <a id="s-f1f2c566f2"></a>`requires_python` | `">=3.12"` |
+| <a id="s-2110d96cc1"></a>`role` | `"reference_component"` |
+| <a id="s-76d81eaf74"></a>`source` | `"reference/riverhog/ingress/ftp-api-client/pyproject.toml"` |
 
 ## Existing ownership context
 

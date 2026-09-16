@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-35d0cc218c"></a>`current_state_id` | yes | #/components/schemas/ProvenanceStateId |  |
-| <a id="s-7ba525f46a"></a>`journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
-| <a id="s-b3e65c66e3"></a>`status` | yes | type="string"; const="captured" |  |
+| <a id="s-35d0cc218c"></a>`current_state_id` | yes | [ProvenanceStateId](schemas-provenancestateid.md) |  |
+| <a id="s-7ba525f46a"></a>`journal_id` | yes | [ProvenanceJournalId](schemas-provenancejournalid.md) |  |
+| <a id="s-b3e65c66e3"></a>`status` | yes | type="string"; const="captured"; title="Status" |  |
 
 ## Maintained corroboration
 

@@ -78,7 +78,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### <a id="s-e309e272d7"></a>definition `file` · `oneOf` alternative 2
 
-- <a id="s-e4a157927e"></a>`not`: anyOf=(required=["journal_id"]) \| (required=["current_state_id"])
+- <a id="s-e4a157927e"></a>`not`: anyOf=[(required=["journal_id"]); (required=["current_state_id"])]
 - <a id="s-007eca4651"></a>`required`: `["omission_reason"]`
 
 #### Fields

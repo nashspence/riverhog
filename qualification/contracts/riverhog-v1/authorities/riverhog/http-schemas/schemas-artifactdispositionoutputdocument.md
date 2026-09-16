@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-88ec4ab96c"></a>`input` | yes | #/components/schemas/ArtifactDispositionInputDocument |  |
-| <a id="s-26da0b1930"></a>`output_path` | yes | #/components/schemas/CanonicalRelPath |  |
+| <a id="s-88ec4ab96c"></a>`input` | yes | [ArtifactDispositionInputDocument](schemas-artifactdispositioninputdocument.md) |  |
+| <a id="s-26da0b1930"></a>`output_path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
 
 ## Maintained corroboration
 

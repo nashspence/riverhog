@@ -14,20 +14,26 @@ Remove App Key Access
 ## External contract
 
 <a id="s-93019e7f69"></a>
-- <a id="s-74fd40eab3"></a>`operationId`: remove_app_key_access
-- <a id="s-b4936a98ae"></a>`summary`: Remove App Key Access
-- <a id="s-27cf1bd9a0"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-74fd40eab3"></a>`operationId`: `"remove_app_key_access"`
+- <a id="s-27cf1bd9a0"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-b4936a98ae"></a>`summary`: `"Remove App Key Access"`
+- <a id="s-6d06bb9a15"></a>`tags`: `["apps"]`
+- <a id="s-4028f96b80"></a>`x-riverhog-permission-requirements`: `[{"any_of":["keys:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-e5f73035e2"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
-| <a id="s-5c6ecaca53"></a>`key_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{16}$" |
+| <a id="s-e5f73035e2"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"; title="App" |
+| <a id="s-5c6ecaca53"></a>`key_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{16}$"; title="Key Id" |
 
 ### <a id="s-12d608fc89"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/MutateAppAccessRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [MutateAppAccessRequest](../http-schemas/schemas-mutateappaccessrequest.md) |
 
 ### Responses
 

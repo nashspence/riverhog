@@ -24,11 +24,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ad0ebd2307"></a>`effective_intent` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-73fa49c400"></a>`inputs` | yes | type="array"; items=(#/components/schemas/CollectionRootRef); minItems=1 |  |
-| <a id="s-6883763dc1"></a>`preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1e56ede547"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-cc2aeb54a6"></a>`recipe_revision` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
+| <a id="s-ad0ebd2307"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Effective Intent" |  |
+| <a id="s-73fa49c400"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](schemas-collectionrootref.md)); minItems=1; title="Inputs" |  |
+| <a id="s-6883763dc1"></a>`preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Preview Sha256" |  |
+| <a id="s-1e56ede547"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1; title="Recipe Id" |  |
+| <a id="s-cc2aeb54a6"></a>`recipe_revision` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; title="Recipe Revision" |  |
 
 ### Progression, limits, and lifecycle
 

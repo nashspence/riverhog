@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-86205dda13"></a>Parser name: `local`
+
+| Field | Value |
+|---|---|
+| <a id="s-2fefbd3385"></a>`parameters` | `[]` |
 - <a id="s-eff45f2a6f"></a>Subcommand selection: required.
 - <a id="s-d40b135f44"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
 - <a id="s-2381711a7a"></a>Options after positional arguments at this parser: left as arguments.

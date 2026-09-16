@@ -25,10 +25,10 @@ Target-owned preflight evidence for one exact previewed branch.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6503d656f4"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-ca3e436442"></a>`target_plan` | yes | #/components/schemas/TargetPlanBinding |  |
-| <a id="s-7f97f4bd37"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-345304ff24"></a>`workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6503d656f4"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Branch Id" |  |
+| <a id="s-ca3e436442"></a>`target_plan` | yes | [TargetPlanBinding](schemas-targetplanbinding.md) |  |
+| <a id="s-7f97f4bd37"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
+| <a id="s-345304ff24"></a>`workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Workflow Plan Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

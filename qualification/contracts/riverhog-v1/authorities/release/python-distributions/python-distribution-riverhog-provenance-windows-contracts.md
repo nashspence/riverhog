@@ -16,15 +16,15 @@ Optional nonnormative Windows observation-contract reference for Riverhog proven
 <a id="s-ee830ecc22"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-5eaa626d71"></a>`artifacts` | [{"coordinate": "dist/riverhog_provenance_windows_contracts-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_provenance_windows_contracts-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-3ddbd0f699"></a>`channel` | github-release |
-| <a id="s-13f8325b0d"></a>`description` | Optional nonnormative Windows observation-contract reference for Riverhog provenance. |
-| <a id="s-5bef294fde"></a>`license_baseline` | first-v1-publication |
-| <a id="s-6b1e645586"></a>`license_expression` | Apache-2.0 |
-| <a id="s-0bf821b9c6"></a>`publication_identity` | {"coordinate": "riverhog-provenance-windows-contracts", "kind": "python-distribution"} |
-| <a id="s-05f81446c0"></a>`requires_python` | >=3.12 |
-| <a id="s-bd17ea25af"></a>`role` | reference_component |
-| <a id="s-109bded2bc"></a>`source` | reference/riverhog/provenance/contracts/windows/pyproject.toml |
+| <a id="s-5eaa626d71"></a>`artifacts` | `[{"coordinate":"dist/riverhog_provenance_windows_contracts-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/riverhog_provenance_windows_contracts-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-3ddbd0f699"></a>`channel` | `"github-release"` |
+| <a id="s-13f8325b0d"></a>`description` | `"Optional nonnormative Windows observation-contract reference for Riverhog provenance."` |
+| <a id="s-5bef294fde"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-6b1e645586"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-0bf821b9c6"></a>`publication_identity` | `{"coordinate":"riverhog-provenance-windows-contracts","kind":"python-distribution"}` |
+| <a id="s-05f81446c0"></a>`requires_python` | `">=3.12"` |
+| <a id="s-bd17ea25af"></a>`role` | `"reference_component"` |
+| <a id="s-109bded2bc"></a>`source` | `"reference/riverhog/provenance/contracts/windows/pyproject.toml"` |
 
 ## Existing ownership context
 

@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e310f8fc4d"></a>`dispositions` | yes | type="array"; items=(#/components/schemas/ArtifactDispositionDocument); maxItems=128; minItems=1; uniqueItems=true; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"sealed-disposition-authority","reason":"bounded-disposition-append"} |  |
-| <a id="s-ad03539f91"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-e310f8fc4d"></a>`dispositions` | yes | type="array"; items=([ArtifactDispositionDocument](schemas-artifactdispositiondocument.md)); maxItems=128; minItems=1; title="Dispositions"; uniqueItems=true; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"sealed-disposition-authority","reason":"bounded-disposition-append"} |  |
+| <a id="s-ad03539f91"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -14,17 +14,20 @@ List Tags
 ## External contract
 
 <a id="s-976d133056"></a>
-- <a id="s-a3931a140e"></a>`operationId`: list_tags
-- <a id="s-3bfac3a172"></a>`summary`: List Tags
-- <a id="s-ed24fad37e"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-a3931a140e"></a>`operationId`: `"list_tags"`
+- <a id="s-ed24fad37e"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-3bfac3a172"></a>`summary`: `"List Tags"`
+- <a id="s-76ff14457f"></a>`tags`: `["collection-tags"]`
+- <a id="s-a1d48032e9"></a>`x-riverhog-permission-requirements`: `[{"any_of":["catalog:read"]}]`
+- <a id="s-70e528a514"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-25294d569d"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-b1e178cad7"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
-| <a id="s-2269b25776"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
+| <a id="s-25294d569d"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-b1e178cad7"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
+| <a id="s-2269b25776"></a>`q` | query | no | not declared | anyOf=[([BrowseQuery](../http-schemas/schemas-browsequery.md)); (type="null")]; title="Q" |
 
 ### Responses
 

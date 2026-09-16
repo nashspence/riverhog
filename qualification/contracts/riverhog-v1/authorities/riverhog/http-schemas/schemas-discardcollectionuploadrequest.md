@@ -24,7 +24,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-60f0a9dd51"></a>`challenge` | yes | type="string"; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
+| <a id="s-60f0a9dd51"></a>`challenge` | yes | type="string"; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$"; title="Challenge" |  |
 
 ## Governing policies
 

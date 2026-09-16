@@ -16,15 +16,15 @@ Optional nonnormative independent recovery reference application for Riverhog ar
 <a id="s-4f2ec1b9f5"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-aae98b1c04"></a>`artifacts` | [{"coordinate": "dist/riverhog_recover-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_recover-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-cf1f08603c"></a>`channel` | github-release |
-| <a id="s-52c6490cac"></a>`description` | Optional nonnormative independent recovery reference application for Riverhog archives. |
-| <a id="s-827530076d"></a>`license_baseline` | first-v1-publication |
-| <a id="s-e554dc159c"></a>`license_expression` | Apache-2.0 |
-| <a id="s-bae245f510"></a>`publication_identity` | {"coordinate": "riverhog-recover", "kind": "python-distribution"} |
-| <a id="s-7e5bc2c17e"></a>`requires_python` | >=3.12 |
-| <a id="s-f11df5134b"></a>`role` | reference_application |
-| <a id="s-426e309e01"></a>`source` | reference/riverhog/recovery/pyproject.toml |
+| <a id="s-aae98b1c04"></a>`artifacts` | `[{"coordinate":"dist/riverhog_recover-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/riverhog_recover-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-cf1f08603c"></a>`channel` | `"github-release"` |
+| <a id="s-52c6490cac"></a>`description` | `"Optional nonnormative independent recovery reference application for Riverhog archives."` |
+| <a id="s-827530076d"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-e554dc159c"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-bae245f510"></a>`publication_identity` | `{"coordinate":"riverhog-recover","kind":"python-distribution"}` |
+| <a id="s-7e5bc2c17e"></a>`requires_python` | `">=3.12"` |
+| <a id="s-f11df5134b"></a>`role` | `"reference_application"` |
+| <a id="s-426e309e01"></a>`source` | `"reference/riverhog/recovery/pyproject.toml"` |
 
 ## Existing ownership context
 

@@ -25,9 +25,9 @@ Associate classified artifacts without assigning device meaning to Stove0.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-bcfb55c83b"></a>`associated_roles` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
-| <a id="s-9bb2b2a360"></a>`path_identity` | no | type="string"; const="same-parent-stem"; default="same-parent-stem" |  |
-| <a id="s-dbc2f02857"></a>`primary_role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-bcfb55c83b"></a>`associated_roles` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1; title="Associated Roles" |  |
+| <a id="s-9bb2b2a360"></a>`path_identity` | no | type="string"; const="same-parent-stem"; default="same-parent-stem"; title="Path Identity" |  |
+| <a id="s-dbc2f02857"></a>`primary_role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Primary Role" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -90,8 +90,8 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-e8bce37c75"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-d43a3b5f31"></a>`path` | yes | [CanonicalRelPath](#s-aedd4af0bf) |  |
-| <a id="s-ae7523361a"></a>`provenance` | no | anyOf=(discriminator={"mapping":{"captured":"[CapturedFileProvenanceBinding](#s-e2f87c22de)","omitted":"[OmittedFileProvenanceBinding](#s-fc35d7c3a7)"},"propertyName":"status"}; oneOf=([CapturedFileProvenanceBinding](#s-e2f87c22de)) \| ([OmittedFileProvenanceBinding](#s-fc35d7c3a7))) \| (type="null"); default=null |  |
-| <a id="s-ec34394539"></a>`raw_parts` | no | anyOf=([CollectionUploadRawPartsIn](#s-979ba8003b)) \| (type="null"); default=null |  |
+| <a id="s-ae7523361a"></a>`provenance` | no | anyOf=[(discriminator={"mapping":{"captured":"#/$defs/CapturedFileProvenanceBinding","omitted":"#/$defs/OmittedFileProvenanceBinding"},"propertyName":"status"}; oneOf=[([CapturedFileProvenanceBinding](#s-e2f87c22de)); ([OmittedFileProvenanceBinding](#s-fc35d7c3a7))]); (type="null")]; default=null |  |
+| <a id="s-ec34394539"></a>`raw_parts` | no | anyOf=[([CollectionUploadRawPartsIn](#s-979ba8003b)); (type="null")]; default=null |  |
 | <a id="s-7890182389"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-979ba8003b"></a>definition `CollectionUploadRawPartsIn`

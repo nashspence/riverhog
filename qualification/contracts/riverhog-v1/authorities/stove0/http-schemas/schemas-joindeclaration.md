@@ -25,12 +25,12 @@ One optional exact named-subset join declaration.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-eca86f5eae"></a>`effective_intent` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-31d9aefee4"></a>`format` | no | type="string"; const="stove0-join-declaration/v1"; default="stove0-join-declaration/v1" |  |
-| <a id="s-a8773a6c8d"></a>`join_declaration_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-23dfcec269"></a>`members` | yes | type="array"; items=(#/components/schemas/JoinMemberDeclaration); minItems=2 |  |
-| <a id="s-df2b4dd551"></a>`recipe` | yes | #/components/schemas/RecipeRef |  |
-| <a id="s-6e6a700a1a"></a>`workflow_intent` | yes | #/components/schemas/WorkflowPlanIntent |  |
+| <a id="s-eca86f5eae"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Effective Intent" |  |
+| <a id="s-31d9aefee4"></a>`format` | no | type="string"; const="stove0-join-declaration/v1"; default="stove0-join-declaration/v1"; title="Format" |  |
+| <a id="s-a8773a6c8d"></a>`join_declaration_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Join Declaration Sha256" |  |
+| <a id="s-23dfcec269"></a>`members` | yes | type="array"; items=([JoinMemberDeclaration](schemas-joinmemberdeclaration.md)); minItems=2; title="Members" |  |
+| <a id="s-df2b4dd551"></a>`recipe` | yes | [RecipeRef](schemas-reciperef.md) |  |
+| <a id="s-6e6a700a1a"></a>`workflow_intent` | yes | [WorkflowPlanIntent](schemas-workflowplanintent.md) |  |
 
 ### Progression, limits, and lifecycle
 

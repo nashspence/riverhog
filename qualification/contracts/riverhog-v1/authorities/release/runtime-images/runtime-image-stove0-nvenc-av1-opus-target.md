@@ -16,17 +16,17 @@ Optional nonnormative NVENC AV1 and Opus target reference for Stove0.
 <a id="s-ab958bb633"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-57bf4a92e1"></a>`build_target` | stove0-nvenc-av1-opus-target |
-| <a id="s-e6937f1ff9"></a>`description` | Optional nonnormative NVENC AV1 and Opus target reference for Stove0. |
-| <a id="s-68ae32ea1e"></a>`distribution_roots` | ["stove0-nvenc-av1-opus-target", "stove0-nvenc-av1-opus-review-sampler"] |
-| <a id="s-e90eb68c3e"></a>`format` | oci-image |
-| <a id="s-3d2de7c1d1"></a>`license_baseline` | first-v1-publication |
-| <a id="s-6aa0f5b854"></a>`license_expression` | CAL-1.0 |
-| <a id="s-5e869d6a92"></a>`platforms` | ["linux/amd64"] |
-| <a id="s-ce75a8bc26"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-stove0-nvenc-av1-opus-target", "kind": "oci-repository"} |
-| <a id="s-0c727c2e80"></a>`repository` | ghcr.io/nashspence/riverhog-stove0-nvenc-av1-opus-target |
-| <a id="s-ec04038413"></a>`role` | reference |
-| <a id="s-11b5f77caa"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-stove0-nvenc-av1-opus-target:{version}", "ghcr.io/nashspence/riverhog-stove0-nvenc-av1-opus-target:sha-{source_sha}"] |
+| <a id="s-57bf4a92e1"></a>`build_target` | `"stove0-nvenc-av1-opus-target"` |
+| <a id="s-e6937f1ff9"></a>`description` | `"Optional nonnormative NVENC AV1 and Opus target reference for Stove0."` |
+| <a id="s-68ae32ea1e"></a>`distribution_roots` | `["stove0-nvenc-av1-opus-target","stove0-nvenc-av1-opus-review-sampler"]` |
+| <a id="s-e90eb68c3e"></a>`format` | `"oci-image"` |
+| <a id="s-3d2de7c1d1"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-6aa0f5b854"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-5e869d6a92"></a>`platforms` | `["linux/amd64"]` |
+| <a id="s-ce75a8bc26"></a>`publication_identity` | `{"coordinate":"ghcr.io/nashspence/riverhog-stove0-nvenc-av1-opus-target","kind":"oci-repository"}` |
+| <a id="s-0c727c2e80"></a>`repository` | `"ghcr.io/nashspence/riverhog-stove0-nvenc-av1-opus-target"` |
+| <a id="s-ec04038413"></a>`role` | `"reference"` |
+| <a id="s-11b5f77caa"></a>`tag_templates` | `["ghcr.io/nashspence/riverhog-stove0-nvenc-av1-opus-target:{version}","ghcr.io/nashspence/riverhog-stove0-nvenc-av1-opus-target:sha-{source_sha}"]` |
 
 ## Existing ownership context
 

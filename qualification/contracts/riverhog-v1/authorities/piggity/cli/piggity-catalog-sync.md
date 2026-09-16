@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-8f6743b694"></a>Parser name: `catalog-sync`
+
+| Field | Value |
+|---|---|
+| <a id="s-d03d6b73f6"></a>`parameters` | `[]` |
 - <a id="s-04412bdea5"></a>Subcommand selection: required.
 - <a id="s-7092335cd0"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
 - <a id="s-13883be008"></a>Options after positional arguments at this parser: left as arguments.

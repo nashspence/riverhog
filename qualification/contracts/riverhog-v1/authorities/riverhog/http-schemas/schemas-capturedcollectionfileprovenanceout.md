@@ -24,11 +24,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ea61dcfe13"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-df5b3bbf20"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-0c6f6da560"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
-| <a id="s-f46b091673"></a>`provenance` | yes | #/components/schemas/CapturedFileProvenanceBinding |  |
-| <a id="s-2fea47887d"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ea61dcfe13"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-df5b3bbf20"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-0c6f6da560"></a>`path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
+| <a id="s-f46b091673"></a>`provenance` | yes | [CapturedFileProvenanceBinding](schemas-capturedfileprovenancebinding.md) |  |
+| <a id="s-2fea47887d"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

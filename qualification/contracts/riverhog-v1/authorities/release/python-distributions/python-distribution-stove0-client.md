@@ -16,15 +16,15 @@ Optional nonnormative command-line client for the Stove0 reference application.
 <a id="s-211d88e28a"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-d715afb344"></a>`artifacts` | [{"coordinate": "dist/stove0_client-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_client-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-d12b239d97"></a>`channel` | github-release |
-| <a id="s-d6f56f0fcd"></a>`description` | Optional nonnormative command-line client for the Stove0 reference application. |
-| <a id="s-785271ebbc"></a>`license_baseline` | first-v1-publication |
-| <a id="s-730e0fa40a"></a>`license_expression` | Apache-2.0 |
-| <a id="s-897981ecff"></a>`publication_identity` | {"coordinate": "stove0-client", "kind": "python-distribution"} |
-| <a id="s-61c47b3b27"></a>`requires_python` | >=3.12 |
-| <a id="s-c564c8dc04"></a>`role` | reference_application |
-| <a id="s-a99438e70e"></a>`source` | reference/stove0/application/client/pyproject.toml |
+| <a id="s-d715afb344"></a>`artifacts` | `[{"coordinate":"dist/stove0_client-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_client-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-d12b239d97"></a>`channel` | `"github-release"` |
+| <a id="s-d6f56f0fcd"></a>`description` | `"Optional nonnormative command-line client for the Stove0 reference application."` |
+| <a id="s-785271ebbc"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-730e0fa40a"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-897981ecff"></a>`publication_identity` | `{"coordinate":"stove0-client","kind":"python-distribution"}` |
+| <a id="s-61c47b3b27"></a>`requires_python` | `">=3.12"` |
+| <a id="s-c564c8dc04"></a>`role` | `"reference_application"` |
+| <a id="s-a99438e70e"></a>`source` | `"reference/stove0/application/client/pyproject.toml"` |
 
 ## Existing ownership context
 

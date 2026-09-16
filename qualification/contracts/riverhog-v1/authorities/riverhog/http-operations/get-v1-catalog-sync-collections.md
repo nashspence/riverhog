@@ -14,16 +14,19 @@ List Catalog Sync Collections
 ## External contract
 
 <a id="s-50e16389fb"></a>
-- <a id="s-6c00e5f279"></a>`operationId`: list_catalog_sync_collections
-- <a id="s-d40fdd6169"></a>`summary`: List Catalog Sync Collections
-- <a id="s-1190c6ed4c"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-6c00e5f279"></a>`operationId`: `"list_catalog_sync_collections"`
+- <a id="s-1190c6ed4c"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-d40fdd6169"></a>`summary`: `"List Catalog Sync Collections"`
+- <a id="s-fc4c0ddcb7"></a>`tags`: `["catalog synchronization"]`
+- <a id="s-6579ebd83b"></a>`x-riverhog-permission-requirements`: `[{"any_of":["catalog:read"]}]`
+- <a id="s-479876f4ab"></a>`x-riverhog-read-collection`: `{"authority":"catalog-sync-bootstrap","cursor_parameter":"cursor","kind":"exact-authority-page","limit_parameter":"limit"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-fc78ce4e09"></a>`cursor` | query | yes | not declared | type="string"; maxLength=4096; minLength=1 |
-| <a id="s-bb10c7dc50"></a>`limit` | query | no | `100` | type="integer"; minimum=1; maximum=100 |
+| <a id="s-fc78ce4e09"></a>`cursor` | query | yes | not declared | type="string"; maxLength=4096; minLength=1; title="Cursor" |
+| <a id="s-bb10c7dc50"></a>`limit` | query | no | `100` | type="integer"; minimum=1; maximum=100; title="Limit" |
 
 ### Responses
 

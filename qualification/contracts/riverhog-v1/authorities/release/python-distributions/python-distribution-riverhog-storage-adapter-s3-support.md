@@ -16,15 +16,15 @@ Optional nonnormative S3 support for Riverhog storage references.
 <a id="s-a8fcbee2ec"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-7337e031a5"></a>`artifacts` | [{"coordinate": "dist/riverhog_storage_adapter_s3_support-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_storage_adapter_s3_support-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-393df901d7"></a>`channel` | github-release |
-| <a id="s-f1ef4ba7d6"></a>`description` | Optional nonnormative S3 support for Riverhog storage references. |
-| <a id="s-4c4d48d853"></a>`license_baseline` | first-v1-publication |
-| <a id="s-3b45bb169b"></a>`license_expression` | Apache-2.0 |
-| <a id="s-e9e990ed16"></a>`publication_identity` | {"coordinate": "riverhog-storage-adapter-s3-support", "kind": "python-distribution"} |
-| <a id="s-3b38665c1d"></a>`requires_python` | >=3.12 |
-| <a id="s-aeb8841285"></a>`role` | reference_component |
-| <a id="s-ec61750d2b"></a>`source` | reference/riverhog/storage/s3-support/pyproject.toml |
+| <a id="s-7337e031a5"></a>`artifacts` | `[{"coordinate":"dist/riverhog_storage_adapter_s3_support-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/riverhog_storage_adapter_s3_support-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-393df901d7"></a>`channel` | `"github-release"` |
+| <a id="s-f1ef4ba7d6"></a>`description` | `"Optional nonnormative S3 support for Riverhog storage references."` |
+| <a id="s-4c4d48d853"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-3b45bb169b"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-e9e990ed16"></a>`publication_identity` | `{"coordinate":"riverhog-storage-adapter-s3-support","kind":"python-distribution"}` |
+| <a id="s-3b38665c1d"></a>`requires_python` | `">=3.12"` |
+| <a id="s-aeb8841285"></a>`role` | `"reference_component"` |
+| <a id="s-ec61750d2b"></a>`source` | `"reference/riverhog/storage/s3-support/pyproject.toml"` |
 
 ## Existing ownership context
 

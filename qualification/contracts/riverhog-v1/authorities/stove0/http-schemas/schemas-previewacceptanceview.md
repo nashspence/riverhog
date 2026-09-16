@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c6efe4c6c0"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-887084af69"></a>`preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-dd225aebd6"></a>`target_plans` | yes | type="array"; items=(#/components/schemas/PreviewTargetExpectationView) |  |
+| <a id="s-c6efe4c6c0"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Branch Set Sha256" |  |
+| <a id="s-887084af69"></a>`preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Preview Sha256" |  |
+| <a id="s-dd225aebd6"></a>`target_plans` | yes | type="array"; items=([PreviewTargetExpectationView](schemas-previewtargetexpectationview.md)); title="Target Plans" |  |
 
 ### Progression, limits, and lifecycle
 

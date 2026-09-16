@@ -41,8 +41,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f0c7f497d1"></a>`code` | yes | type="string"; enum=["unauthorized","invalid_request","not_found","method_not_allowed","length_required","request_too_large","insufficient_storage","identity_conflict","traversal_invalidated","invalid_path","invalid_range","read_not_ready","read_expired","integrity_failure","provider_unavailable","internal_failure"] |  |
-| <a id="s-396a1bf2d8"></a>`message` | yes | type="string"; maxLength=2000; minLength=1 |  |
+| <a id="s-f0c7f497d1"></a>`code` | yes | type="string"; enum=["unauthorized","invalid_request","not_found","method_not_allowed","length_required","request_too_large","insufficient_storage","identity_conflict","traversal_invalidated","invalid_path","invalid_range","read_not_ready","read_expired","integrity_failure","provider_unavailable","internal_failure"]; title="Code" |  |
+| <a id="s-396a1bf2d8"></a>`message` | yes | type="string"; maxLength=2000; minLength=1; title="Message" |  |
 
 ### Progression, limits, and lifecycle
 

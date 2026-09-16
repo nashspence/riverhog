@@ -24,13 +24,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4db973405e"></a>`copies` | yes | type="array"; items=(#/components/schemas/ArchiveCopyJobOut) |  |
-| <a id="s-5f552953c9"></a>`filters` | yes | #/components/schemas/ArchiveCopyJobListFiltersOut |  |
-| <a id="s-35da4724d8"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-55b6ab5d20"></a>`order` | yes | #/components/schemas/SortOrder |  |
-| <a id="s-f77467ada2"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-5571409571"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-2815c28bbe"></a>`sort` | yes | #/components/schemas/ArchiveCopySort |  |
+| <a id="s-4db973405e"></a>`copies` | yes | type="array"; items=([ArchiveCopyJobOut](schemas-archivecopyjobout.md)); title="Copies" |  |
+| <a id="s-5f552953c9"></a>`filters` | yes | [ArchiveCopyJobListFiltersOut](schemas-archivecopyjoblistfiltersout.md) |  |
+| <a id="s-35da4724d8"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-55b6ab5d20"></a>`order` | yes | [SortOrder](schemas-sortorder.md) |  |
+| <a id="s-f77467ada2"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
+| <a id="s-5571409571"></a>`query` | yes | anyOf=[(type="string"); (type="null")]; title="Query" |  |
+| <a id="s-2815c28bbe"></a>`sort` | yes | [ArchiveCopySort](schemas-archivecopysort.md) |  |
 
 ### Progression, limits, and lifecycle
 

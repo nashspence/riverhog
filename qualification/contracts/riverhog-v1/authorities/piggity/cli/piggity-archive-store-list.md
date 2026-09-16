@@ -24,13 +24,13 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-b9de33da66"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
-| <a id="s-5575423e77"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
-| <a id="s-6150ea1df2"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"store"` |
-| <a id="s-6a7c5d1180"></a>`order`<br>`--order` | optional option; 1 value | text | `"asc"` |
-| <a id="s-4549dd6275"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded |
-| <a id="s-b95b2cd74f"></a>`ids`<br>`--ids` | optional flag; 0 values | boolean | `false` |
-| <a id="s-9bb8fdfb88"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-b9de33da66"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25`<br>Env: `null` |
+| <a id="s-5575423e77"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-6150ea1df2"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"store"`<br>Env: `null` |
+| <a id="s-6a7c5d1180"></a>`order`<br>`--order` | optional option; 1 value | text | `"asc"`<br>Env: `null` |
+| <a id="s-4549dd6275"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-b95b2cd74f"></a>`ids`<br>`--ids` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
+| <a id="s-9bb8fdfb88"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -49,14 +49,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-30d2b5bb85"></a>`completed` | <a id="s-2a350c5f15"></a>`{"kind":"command-completed"}` | <a id="s-f0a3ed1041"></a>`0` | <a id="s-4776137c87"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP list_archive_stores response 200](../../riverhog/http-operations/get-v1-archive-stores.md#s-6ed52937e5) | <a id="s-5fc956b655"></a>all: `empty` |
+| <a id="s-30d2b5bb85"></a>`completed` | <a id="s-2a350c5f15"></a>`{"kind":"command-completed"}` | <a id="s-f0a3ed1041"></a>`0` | <a id="s-4776137c87"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP list_archive_stores response 200](../../riverhog/http-operations/get-v1-archive-stores.md#s-6ed52937e5) | <a id="s-5fc956b655"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-298128f72d"></a>`usage` | <a id="s-a7ca238d34"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-3d9bf2f5b4"></a>`2` | <a id="s-c3cbd6155e"></a>all: `empty` | <a id="s-773215aaff"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-45065a65ad"></a>`operational` | <a id="s-479cc1ab05"></a>`{"kind":"application-error"}` | <a id="s-45dbe2f1b8"></a>`1` | <a id="s-cfae2b078b"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-4a17a81857"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-298128f72d"></a>`usage` | <a id="s-a7ca238d34"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-3d9bf2f5b4"></a>`2` | <a id="s-c3cbd6155e"></a>all: `"empty"` | <a id="s-773215aaff"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-45065a65ad"></a>`operational` | <a id="s-479cc1ab05"></a>`{"kind":"application-error"}` | <a id="s-45dbe2f1b8"></a>`1` | <a id="s-cfae2b078b"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-4a17a81857"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 

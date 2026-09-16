@@ -16,17 +16,17 @@ Optional nonnormative review materialization target reference for Stove0.
 <a id="s-b324a3073f"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-3e86e50c59"></a>`build_target` | stove0-review-materialize-target |
-| <a id="s-d8a98ea2e9"></a>`description` | Optional nonnormative review materialization target reference for Stove0. |
-| <a id="s-d2b0aeac6c"></a>`distribution_roots` | ["stove0-review-materialize-target"] |
-| <a id="s-4bffbf8ede"></a>`format` | oci-image |
-| <a id="s-42d3ef7d72"></a>`license_baseline` | first-v1-publication |
-| <a id="s-3800157d58"></a>`license_expression` | CAL-1.0 |
-| <a id="s-db50faa7bd"></a>`platforms` | ["linux/amd64"] |
-| <a id="s-f9cac31d43"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-stove0-review-materialize-target", "kind": "oci-repository"} |
-| <a id="s-a595fd7a97"></a>`repository` | ghcr.io/nashspence/riverhog-stove0-review-materialize-target |
-| <a id="s-28bbf4cfa9"></a>`role` | reference |
-| <a id="s-81159459cd"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-stove0-review-materialize-target:{version}", "ghcr.io/nashspence/riverhog-stove0-review-materialize-target:sha-{source_sha}"] |
+| <a id="s-3e86e50c59"></a>`build_target` | `"stove0-review-materialize-target"` |
+| <a id="s-d8a98ea2e9"></a>`description` | `"Optional nonnormative review materialization target reference for Stove0."` |
+| <a id="s-d2b0aeac6c"></a>`distribution_roots` | `["stove0-review-materialize-target"]` |
+| <a id="s-4bffbf8ede"></a>`format` | `"oci-image"` |
+| <a id="s-42d3ef7d72"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-3800157d58"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-db50faa7bd"></a>`platforms` | `["linux/amd64"]` |
+| <a id="s-f9cac31d43"></a>`publication_identity` | `{"coordinate":"ghcr.io/nashspence/riverhog-stove0-review-materialize-target","kind":"oci-repository"}` |
+| <a id="s-a595fd7a97"></a>`repository` | `"ghcr.io/nashspence/riverhog-stove0-review-materialize-target"` |
+| <a id="s-28bbf4cfa9"></a>`role` | `"reference"` |
+| <a id="s-81159459cd"></a>`tag_templates` | `["ghcr.io/nashspence/riverhog-stove0-review-materialize-target:{version}","ghcr.io/nashspence/riverhog-stove0-review-materialize-target:sha-{source_sha}"]` |
 
 ## Existing ownership context
 

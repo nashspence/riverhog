@@ -24,15 +24,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-090c680ea6"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-cadd7e4202"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-fe03a35378"></a>`items` | yes | type="array"; items=(#/components/schemas/ProvenanceTraceItemOut) |  |
-| <a id="s-9eb0308058"></a>`journal` | no | type="null" |  |
-| <a id="s-17962107fc"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-adc43cc81f"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-4b217563fd"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
-| <a id="s-0e08484812"></a>`provenance` | yes | #/components/schemas/OmittedFileProvenanceBinding |  |
-| <a id="s-e7a319e633"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-090c680ea6"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-cadd7e4202"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-fe03a35378"></a>`items` | yes | type="array"; items=([ProvenanceTraceItemOut](schemas-provenancetraceitemout.md)); title="Items" |  |
+| <a id="s-9eb0308058"></a>`journal` | no | type="null"; title="Journal" |  |
+| <a id="s-17962107fc"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-adc43cc81f"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
+| <a id="s-4b217563fd"></a>`path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
+| <a id="s-0e08484812"></a>`provenance` | yes | [OmittedFileProvenanceBinding](schemas-omittedfileprovenancebinding.md) |  |
+| <a id="s-e7a319e633"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

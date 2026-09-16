@@ -14,18 +14,21 @@ List Archive Copy Jobs
 ## External contract
 
 <a id="s-4e91afc7ef"></a>
-- <a id="s-aeb3f93238"></a>`operationId`: list_archive_copy_jobs
-- <a id="s-07eff20bd1"></a>`summary`: List Archive Copy Jobs
-- <a id="s-59ff4f6835"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-aeb3f93238"></a>`operationId`: `"list_archive_copy_jobs"`
+- <a id="s-59ff4f6835"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-07eff20bd1"></a>`summary`: `"List Archive Copy Jobs"`
+- <a id="s-09337b69e6"></a>`tags`: `["archive"]`
+- <a id="s-ff59a718e9"></a>`x-riverhog-permission-requirements`: `[{"any_of":["archives:manage"]}]`
+- <a id="s-165566f423"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-6a836ad124"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-c618f326fe"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
-| <a id="s-3eb290e690"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
-| <a id="s-19bdc1af5a"></a>`state` | query | no | not declared | anyOf=([ArchiveCopyState](../http-schemas/schemas-archivecopystate.md)) \| (type="null") |
+| <a id="s-6a836ad124"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-c618f326fe"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
+| <a id="s-3eb290e690"></a>`q` | query | no | not declared | anyOf=[([BrowseQuery](../http-schemas/schemas-browsequery.md)); (type="null")]; title="Q" |
+| <a id="s-19bdc1af5a"></a>`state` | query | no | not declared | anyOf=[([ArchiveCopyState](../http-schemas/schemas-archivecopystate.md)); (type="null")]; title="State" |
 | <a id="s-266b97f0ac"></a>`sort` | query | no | `"requested_at"` | [ArchiveCopySort](../http-schemas/schemas-archivecopysort.md) |
 | <a id="s-ce30819930"></a>`order` | query | no | `"desc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
 

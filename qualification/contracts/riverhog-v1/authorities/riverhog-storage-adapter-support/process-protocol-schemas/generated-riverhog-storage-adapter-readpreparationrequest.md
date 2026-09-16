@@ -24,7 +24,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-60e69d3f7d"></a>`objects` | yes | type="array"; items=([ObjectLocator](#s-1d34366070)); minItems=1 |  |
+| <a id="s-60e69d3f7d"></a>`objects` | yes | type="array"; items=([ObjectLocator](#s-1d34366070)); minItems=1; title="Objects" |  |
 
 ### Definitions
 
@@ -41,8 +41,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f856f6fc3d"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-0ef58f764d"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-f856f6fc3d"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
+| <a id="s-0ef58f764d"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null; title="Revision" |  |
 
 ### Progression, limits, and lifecycle
 

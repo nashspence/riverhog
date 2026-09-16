@@ -24,13 +24,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3514768052"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-8863e8a714"></a>`disposition_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-b0f5f1d2f0"></a>`failure` | no | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null") |  |
-| <a id="s-f610e69944"></a>`identity` | no | anyOf=(#/components/schemas/ArtifactDispositionSetIdentityDocument) \| (type="null") |  |
-| <a id="s-e06604fb79"></a>`output_artifact_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-242852ab10"></a>`output_edge_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-a339b730cb"></a>`state` | yes | type="string"; enum=["receiving","sealing","sealed","failed"] |  |
+| <a id="s-3514768052"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |  |
+| <a id="s-8863e8a714"></a>`disposition_count` | yes | type="integer"; minimum=0; title="Disposition Count" |  |
+| <a id="s-b0f5f1d2f0"></a>`failure` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; title="Failure" |  |
+| <a id="s-f610e69944"></a>`identity` | no | anyOf=[([ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md)); (type="null")] |  |
+| <a id="s-e06604fb79"></a>`output_artifact_count` | yes | type="integer"; minimum=0; title="Output Artifact Count" |  |
+| <a id="s-242852ab10"></a>`output_edge_count` | yes | type="integer"; minimum=0; title="Output Edge Count" |  |
+| <a id="s-a339b730cb"></a>`state` | yes | type="string"; enum=["receiving","sealing","sealed","failed"]; title="State" |  |
 
 ### Progression, limits, and lifecycle
 

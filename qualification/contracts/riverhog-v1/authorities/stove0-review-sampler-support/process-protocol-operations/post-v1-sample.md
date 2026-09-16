@@ -16,13 +16,13 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-240a01383d"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-afa8ec69d0"></a>`error_schema` | ErrorResponse |
-| <a id="s-0e45809897"></a>`errors` | [{"code": "invalid_sampler_request", "status": 400}, {"code": "unauthorized", "status": 401}, {"code": "sampler_changed", "status": 409}, {"code": "request_too_large", "status": 413}, {"code": "sampler_failed", "status": 500}] |
-| <a id="s-ffd3e30187"></a>`method` | POST |
-| <a id="s-670f81c592"></a>`path` | /v1/sample |
-| <a id="s-e2919ff254"></a>`path_parameters` | [] |
-| <a id="s-244f2ace23"></a>`request` | {"kind": "json", "schema": "SamplerRequest"} |
-| <a id="s-20b1642177"></a>`response` | {"headers": [], "kind": "json", "schema": "SamplerResult", "statuses": [200]} |
+| <a id="s-afa8ec69d0"></a>`error_schema` | `"ErrorResponse"` |
+| <a id="s-0e45809897"></a>`errors` | `[{"code":"invalid_sampler_request","status":400},{"code":"unauthorized","status":401},{"code":"sampler_changed","status":409},{"code":"request_too_large","status":413},{"code":"sampler_failed","status":500}]` |
+| <a id="s-ffd3e30187"></a>`method` | `"POST"` |
+| <a id="s-670f81c592"></a>`path` | `"/v1/sample"` |
+| <a id="s-e2919ff254"></a>`path_parameters` | `[]` |
+| <a id="s-244f2ace23"></a>`request` | `{"kind":"json","schema":"SamplerRequest"}` |
+| <a id="s-20b1642177"></a>`response` | `{"headers":[],"kind":"json","schema":"SamplerResult","statuses":[200]}` |
 
 ## Maintained corroboration
 

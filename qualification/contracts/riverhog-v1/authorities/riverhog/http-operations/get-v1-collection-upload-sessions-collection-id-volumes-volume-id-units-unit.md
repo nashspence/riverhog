@@ -14,17 +14,20 @@ Get Collection Upload Session Unit
 ## External contract
 
 <a id="s-03e958c3fa"></a>
-- <a id="s-10a9ba1965"></a>`operationId`: get_collection_upload_session_unit
-- <a id="s-acf6897bf5"></a>`summary`: Get Collection Upload Session Unit
-- <a id="s-e78eee3373"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-10a9ba1965"></a>`operationId`: `"get_collection_upload_session_unit"`
+- <a id="s-e78eee3373"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-acf6897bf5"></a>`summary`: `"Get Collection Upload Session Unit"`
+- <a id="s-399f42c0b3"></a>`tags`: `["collections"]`
+- <a id="s-8c56b2a817"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-98d0340181"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:create"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-352d4ba0b7"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-849bd3e5fa"></a>`volume_id` | path | yes | not declared | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$" |
-| <a id="s-2dd410918c"></a>`unit` | path | yes | not declared | type="integer"; minimum=0 |
+| <a id="s-352d4ba0b7"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-849bd3e5fa"></a>`volume_id` | path | yes | not declared | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$"; title="Volume Id" |
+| <a id="s-2dd410918c"></a>`unit` | path | yes | not declared | type="integer"; minimum=0; title="Unit" |
 
 ### Responses
 

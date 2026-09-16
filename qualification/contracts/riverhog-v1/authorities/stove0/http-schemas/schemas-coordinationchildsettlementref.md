@@ -25,9 +25,9 @@ Exact direct-child success included in a coordination settlement.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d752442b7f"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-bcaee0be02"></a>`kind` | yes | type="string"; enum=["collection","external-effect","coordination"] |  |
-| <a id="s-2bf9c1c0c2"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d752442b7f"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Branch Id" |  |
+| <a id="s-bcaee0be02"></a>`kind` | yes | type="string"; enum=["collection","external-effect","coordination"]; title="Kind" |  |
+| <a id="s-2bf9c1c0c2"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Settlement Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

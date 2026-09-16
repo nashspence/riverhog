@@ -16,8 +16,8 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-ce80dd3a60"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-ed7dce09b3"></a>`coordinate` | release.intoto.jsonl |
-| <a id="s-100e2d799e"></a>`format` | in-toto-jsonl |
+| <a id="s-ed7dce09b3"></a>`coordinate` | `"release.intoto.jsonl"` |
+| <a id="s-100e2d799e"></a>`format` | `"in-toto-jsonl"` |
 
 ## Governing policies
 

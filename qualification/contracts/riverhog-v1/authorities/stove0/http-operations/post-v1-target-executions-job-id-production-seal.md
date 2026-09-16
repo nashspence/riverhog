@@ -14,14 +14,16 @@ Seal Target Execution Production
 ## External contract
 
 <a id="s-ce871e4a2a"></a>
-- <a id="s-c91703d4ab"></a>`operationId`: seal_target_execution_production
-- <a id="s-410182553f"></a>`summary`: Seal Target Execution Production
+- <a id="s-c91703d4ab"></a>`operationId`: `"seal_target_execution_production"`
+- <a id="s-410182553f"></a>`summary`: `"Seal Target Execution Production"`
+- <a id="s-4e00ff5703"></a>`tags`: `["target-executions"]`
+- <a id="s-694965ee80"></a>`x-riverhog-interface`: `"client-only-primitive"`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-a6d0f47dfc"></a>`job_id` | path | yes | not declared | type="string" |
+| <a id="s-a6d0f47dfc"></a>`job_id` | path | yes | not declared | type="string"; title="Job Id" |
 
 ### Responses
 

@@ -24,20 +24,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e68ebf9982"></a>`execution_evidence` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-e0e895304b"></a>`facts` | no | anyOf=(type="object"; additionalProperties=(#/components/schemas/JsonValue)) \| (type="null") |  |
-| <a id="s-1494511718"></a>`facts_schema` | no | anyOf=(#/components/schemas/JsonSchemaDocument) \| (type="null") |  |
-| <a id="s-95b10a81fc"></a>`facts_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-5791d4f0bf"></a>`failure` | no | anyOf=(#/components/schemas/ObservationFailure) \| (type="null") |  |
-| <a id="s-6bac73ead1"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1" |  |
-| <a id="s-8f9648eaee"></a>`inapplicable` | no | anyOf=(#/components/schemas/ObservationInapplicable) \| (type="null") |  |
-| <a id="s-68bd3b50f5"></a>`observer` | yes | #/components/schemas/ObserverImplementation |  |
-| <a id="s-a828b01615"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-c8e70d63d0"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-47e38dcff5"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-c8d52706f8"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a750e42386"></a>`state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"] |  |
-| <a id="s-1e906affbb"></a>`subjects` | yes | type="array"; items=(#/components/schemas/ArtifactSubject); minItems=1 |  |
+| <a id="s-e68ebf9982"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Execution Evidence" |  |
+| <a id="s-e0e895304b"></a>`facts` | no | anyOf=[(type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md))); (type="null")]; title="Facts" |  |
+| <a id="s-1494511718"></a>`facts_schema` | no | anyOf=[([JsonSchemaDocument](schemas-jsonschemadocument.md)); (type="null")] |  |
+| <a id="s-95b10a81fc"></a>`facts_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Facts Sha256" |  |
+| <a id="s-5791d4f0bf"></a>`failure` | no | anyOf=[([ObservationFailure](schemas-observationfailure.md)); (type="null")] |  |
+| <a id="s-6bac73ead1"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1"; title="Format" |  |
+| <a id="s-8f9648eaee"></a>`inapplicable` | no | anyOf=[([ObservationInapplicable](schemas-observationinapplicable.md)); (type="null")] |  |
+| <a id="s-68bd3b50f5"></a>`observer` | yes | [ObserverImplementation](schemas-observerimplementation.md) |  |
+| <a id="s-a828b01615"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Observer Contract Id" |  |
+| <a id="s-c8e70d63d0"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Observer Contract Sha256" |  |
+| <a id="s-47e38dcff5"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Id" |  |
+| <a id="s-c8d52706f8"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Result Sha256" |  |
+| <a id="s-a750e42386"></a>`state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"]; title="State" |  |
+| <a id="s-1e906affbb"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](schemas-artifactsubject.md)); minItems=1; title="Subjects" |  |
 
 ### Progression, limits, and lifecycle
 

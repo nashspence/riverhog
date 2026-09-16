@@ -16,15 +16,15 @@ Optional nonnormative Opus review-sampler reference for Stove0.
 <a id="s-e78cd11326"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-4573848aee"></a>`artifacts` | [{"coordinate": "dist/stove0_opus_review_sampler-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_opus_review_sampler-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-cd7da95505"></a>`channel` | github-release |
-| <a id="s-113256f19d"></a>`description` | Optional nonnormative Opus review-sampler reference for Stove0. |
-| <a id="s-a63b430aa0"></a>`license_baseline` | first-v1-publication |
-| <a id="s-c34f5ab75f"></a>`license_expression` | CAL-1.0 |
-| <a id="s-f5fe4459d8"></a>`publication_identity` | {"coordinate": "stove0-opus-review-sampler", "kind": "python-distribution"} |
-| <a id="s-8e5e3953d1"></a>`requires_python` | >=3.12 |
-| <a id="s-8bc6ec972d"></a>`role` | reference_component |
-| <a id="s-6ea5a278a4"></a>`source` | reference/stove0/targets/opus/review-sampler/pyproject.toml |
+| <a id="s-4573848aee"></a>`artifacts` | `[{"coordinate":"dist/stove0_opus_review_sampler-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_opus_review_sampler-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-cd7da95505"></a>`channel` | `"github-release"` |
+| <a id="s-113256f19d"></a>`description` | `"Optional nonnormative Opus review-sampler reference for Stove0."` |
+| <a id="s-a63b430aa0"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-c34f5ab75f"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-f5fe4459d8"></a>`publication_identity` | `{"coordinate":"stove0-opus-review-sampler","kind":"python-distribution"}` |
+| <a id="s-8e5e3953d1"></a>`requires_python` | `">=3.12"` |
+| <a id="s-8bc6ec972d"></a>`role` | `"reference_component"` |
+| <a id="s-6ea5a278a4"></a>`source` | `"reference/stove0/targets/opus/review-sampler/pyproject.toml"` |
 
 ## Existing ownership context
 

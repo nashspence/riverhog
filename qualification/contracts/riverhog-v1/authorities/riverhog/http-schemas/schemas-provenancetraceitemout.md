@@ -21,8 +21,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Alternative | Schema |
 |---|---|
-| <a id="s-83fad83917"></a>1 | #/components/schemas/ProvenanceTraceJournalItemOut |
-| <a id="s-bf79926edb"></a>2 | #/components/schemas/ProvenanceTraceExternalStateReferenceItemOut |
+| <a id="s-83fad83917"></a>1 | [ProvenanceTraceJournalItemOut](schemas-provenancetracejournalitemout.md) |
+| <a id="s-bf79926edb"></a>2 | [ProvenanceTraceExternalStateReferenceItemOut](schemas-provenancetraceexternalstatereferenceitemout.md) |
 
 ## Maintained corroboration
 

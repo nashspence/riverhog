@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-f2d308b44a"></a>Parser name: `upload`
+
+| Field | Value |
+|---|---|
+| <a id="s-eb75c88a34"></a>`parameters` | `[]` |
 - <a id="s-7373f65cfd"></a>Subcommand selection: required.
 - <a id="s-924d827d60"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
 - <a id="s-96daf1ce3b"></a>Options after positional arguments at this parser: left as arguments.

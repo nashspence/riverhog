@@ -16,8 +16,8 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-6829dfc84b"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-8271827bc7"></a>`coordinate` | release-manifest.json |
-| <a id="s-feab459d84"></a>`format` | json |
+| <a id="s-8271827bc7"></a>`coordinate` | `"release-manifest.json"` |
+| <a id="s-feab459d84"></a>`format` | `"json"` |
 
 ## Governing policies
 

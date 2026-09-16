@@ -37,8 +37,8 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-1f6c06e3b0"></a>`error` | yes | type="string"; maxLength=1000; minLength=1 |  |
-| <a id="s-c69f5696f6"></a>`event_id` | no | anyOf=(type="string") \| (type="null"); default=null |  |
-| <a id="s-fbe7f96916"></a>`work_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-c69f5696f6"></a>`event_id` | no | anyOf=[(type="string"); (type="null")]; default=null |  |
+| <a id="s-fbe7f96916"></a>`work_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 
 ## Maintained corroboration
 

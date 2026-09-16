@@ -16,15 +16,15 @@ Optional nonnormative Linux observation-contract reference for Riverhog provenan
 <a id="s-e6e8ca00ea"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-273ed36096"></a>`artifacts` | [{"coordinate": "dist/riverhog_provenance_linux_contracts-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_provenance_linux_contracts-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-35267e56e0"></a>`channel` | github-release |
-| <a id="s-05df902f1d"></a>`description` | Optional nonnormative Linux observation-contract reference for Riverhog provenance. |
-| <a id="s-30af996bb5"></a>`license_baseline` | first-v1-publication |
-| <a id="s-4f14c2df87"></a>`license_expression` | Apache-2.0 |
-| <a id="s-977afa49f3"></a>`publication_identity` | {"coordinate": "riverhog-provenance-linux-contracts", "kind": "python-distribution"} |
-| <a id="s-af67c3453f"></a>`requires_python` | >=3.12 |
-| <a id="s-46a9e7a319"></a>`role` | reference_component |
-| <a id="s-b3c12c60d7"></a>`source` | reference/riverhog/provenance/contracts/linux/pyproject.toml |
+| <a id="s-273ed36096"></a>`artifacts` | `[{"coordinate":"dist/riverhog_provenance_linux_contracts-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/riverhog_provenance_linux_contracts-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-35267e56e0"></a>`channel` | `"github-release"` |
+| <a id="s-05df902f1d"></a>`description` | `"Optional nonnormative Linux observation-contract reference for Riverhog provenance."` |
+| <a id="s-30af996bb5"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-4f14c2df87"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-977afa49f3"></a>`publication_identity` | `{"coordinate":"riverhog-provenance-linux-contracts","kind":"python-distribution"}` |
+| <a id="s-af67c3453f"></a>`requires_python` | `">=3.12"` |
+| <a id="s-46a9e7a319"></a>`role` | `"reference_component"` |
+| <a id="s-b3c12c60d7"></a>`source` | `"reference/riverhog/provenance/contracts/linux/pyproject.toml"` |
 
 ## Existing ownership context
 

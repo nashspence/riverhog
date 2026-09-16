@@ -16,15 +16,15 @@ Optional nonnormative content-opaque transformation reference application for Ri
 <a id="s-5514b94010"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-9651bdc910"></a>`artifacts` | [{"coordinate": "dist/stove0_server-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_server-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-e23276f413"></a>`channel` | github-release |
-| <a id="s-1ac4e1d764"></a>`description` | Optional nonnormative content-opaque transformation reference application for Riverhog. |
-| <a id="s-a9f0e170bc"></a>`license_baseline` | first-v1-publication |
-| <a id="s-02eae41d9d"></a>`license_expression` | CAL-1.0 |
-| <a id="s-06e7cf49b4"></a>`publication_identity` | {"coordinate": "stove0-server", "kind": "python-distribution"} |
-| <a id="s-c6b51d86a4"></a>`requires_python` | >=3.12 |
-| <a id="s-a8e05f575a"></a>`role` | reference_application |
-| <a id="s-79dee626a1"></a>`source` | reference/stove0/application/server/pyproject.toml |
+| <a id="s-9651bdc910"></a>`artifacts` | `[{"coordinate":"dist/stove0_server-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_server-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-e23276f413"></a>`channel` | `"github-release"` |
+| <a id="s-1ac4e1d764"></a>`description` | `"Optional nonnormative content-opaque transformation reference application for Riverhog."` |
+| <a id="s-a9f0e170bc"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-02eae41d9d"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-06e7cf49b4"></a>`publication_identity` | `{"coordinate":"stove0-server","kind":"python-distribution"}` |
+| <a id="s-c6b51d86a4"></a>`requires_python` | `">=3.12"` |
+| <a id="s-a8e05f575a"></a>`role` | `"reference_application"` |
+| <a id="s-79dee626a1"></a>`source` | `"reference/stove0/application/server/pyproject.toml"` |
 
 ## Existing ownership context
 

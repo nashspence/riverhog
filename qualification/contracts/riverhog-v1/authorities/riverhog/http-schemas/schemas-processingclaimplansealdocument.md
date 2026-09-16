@@ -26,13 +26,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-bbf8920793"></a>`controller_evidence` | yes | type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
-| <a id="s-2b58360cd0"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-d28fb67370"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-58a14c2ad6"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-36b7aad560"></a>`operation` | yes | #/components/schemas/OperationIdentityDocument |  |
-| <a id="s-e7d70e2eb2"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
-| <a id="s-d32887c144"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
+| <a id="s-bbf8920793"></a>`controller_evidence` | yes | type="object"; additionalProperties=(any JSON value); title="Controller Evidence"; x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
+| <a id="s-2b58360cd0"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Controller Evidence Sha256" |  |
+| <a id="s-d28fb67370"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Execution Id" |  |
+| <a id="s-58a14c2ad6"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-36b7aad560"></a>`operation` | yes | [OperationIdentityDocument](schemas-operationidentitydocument.md) |  |
+| <a id="s-e7d70e2eb2"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Retirement Grace Seconds" |  |
+| <a id="s-d32887c144"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Retirement Policy" |  |
 
 ### <a id="s-f21f1cdca7"></a>`if`
 

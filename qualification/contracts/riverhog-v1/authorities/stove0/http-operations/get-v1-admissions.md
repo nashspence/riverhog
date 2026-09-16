@@ -14,20 +14,22 @@ List Admissions
 ## External contract
 
 <a id="s-ab9c462f91"></a>
-- <a id="s-f761467f96"></a>`operationId`: list_admissions
-- <a id="s-b620518b5c"></a>`summary`: List Admissions
+- <a id="s-f761467f96"></a>`operationId`: `"list_admissions"`
+- <a id="s-b620518b5c"></a>`summary`: `"List Admissions"`
+- <a id="s-2d0cdf63fa"></a>`tags`: `["admissions"]`
+- <a id="s-bebc86c6f7"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-d095fb1711"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-711b784505"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
-| <a id="s-4ea4c42c77"></a>`policy_id` | query | no | not declared | anyOf=(type="string") \| (type="null") |
-| <a id="s-ab791a12e5"></a>`state` | query | no | not declared | anyOf=(type="string"; enum=["intent","previewed","work_bound"]) \| (type="null") |
-| <a id="s-56462f6151"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
-| <a id="s-9872800751"></a>`sort` | query | no | `"created_at"` | type="string"; enum=["created_at","updated_at","state","admission_id"] |
-| <a id="s-4b31ab23f9"></a>`order` | query | no | `"desc"` | type="string"; enum=["asc","desc"] |
+| <a id="s-d095fb1711"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-711b784505"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
+| <a id="s-4ea4c42c77"></a>`policy_id` | query | no | not declared | anyOf=[(type="string"); (type="null")]; title="Policy Id" |
+| <a id="s-ab791a12e5"></a>`state` | query | no | not declared | anyOf=[(type="string"; enum=["intent","previewed","work_bound"]); (type="null")]; title="State" |
+| <a id="s-56462f6151"></a>`q` | query | no | not declared | anyOf=[([BrowseQuery](../http-schemas/schemas-browsequery.md)); (type="null")]; title="Q" |
+| <a id="s-9872800751"></a>`sort` | query | no | `"created_at"` | type="string"; enum=["created_at","updated_at","state","admission_id"]; title="Sort" |
+| <a id="s-4b31ab23f9"></a>`order` | query | no | `"desc"` | type="string"; enum=["asc","desc"]; title="Order" |
 
 ### Responses
 

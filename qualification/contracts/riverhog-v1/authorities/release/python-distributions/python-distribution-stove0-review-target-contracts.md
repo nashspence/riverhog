@@ -16,15 +16,15 @@ Optional nonnormative review contract reference for Stove0 targets.
 <a id="s-b3e4d0c558"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-404ed6e0bb"></a>`artifacts` | [{"coordinate": "dist/stove0_review_target_contracts-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_review_target_contracts-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-c189a8c825"></a>`channel` | github-release |
-| <a id="s-86ba7ea602"></a>`description` | Optional nonnormative review contract reference for Stove0 targets. |
-| <a id="s-02ded21113"></a>`license_baseline` | first-v1-publication |
-| <a id="s-9554858586"></a>`license_expression` | Apache-2.0 |
-| <a id="s-c668934187"></a>`publication_identity` | {"coordinate": "stove0-review-target-contracts", "kind": "python-distribution"} |
-| <a id="s-07f47dc329"></a>`requires_python` | >=3.12 |
-| <a id="s-0074a2c5e0"></a>`role` | reference_component |
-| <a id="s-4aed6439aa"></a>`source` | reference/stove0/targets/review/contracts/pyproject.toml |
+| <a id="s-404ed6e0bb"></a>`artifacts` | `[{"coordinate":"dist/stove0_review_target_contracts-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_review_target_contracts-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-c189a8c825"></a>`channel` | `"github-release"` |
+| <a id="s-86ba7ea602"></a>`description` | `"Optional nonnormative review contract reference for Stove0 targets."` |
+| <a id="s-02ded21113"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-9554858586"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-c668934187"></a>`publication_identity` | `{"coordinate":"stove0-review-target-contracts","kind":"python-distribution"}` |
+| <a id="s-07f47dc329"></a>`requires_python` | `">=3.12"` |
+| <a id="s-0074a2c5e0"></a>`role` | `"reference_component"` |
+| <a id="s-4aed6439aa"></a>`source` | `"reference/stove0/targets/review/contracts/pyproject.toml"` |
 
 ## Existing ownership context
 

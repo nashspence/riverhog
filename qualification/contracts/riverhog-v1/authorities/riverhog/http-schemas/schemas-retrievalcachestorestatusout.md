@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e82fb50021"></a>`admission_budget_bytes` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
-| <a id="s-b2a26342fc"></a>`admission_enabled` | yes | type="boolean" |  |
-| <a id="s-000e1f094b"></a>`cache_store` | yes | #/components/schemas/RetrievalCacheStoreName |  |
-| <a id="s-603f6ec2e8"></a>`committed_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-6128c90608"></a>`priority` | yes | type="integer"; minimum=1 |  |
-| <a id="s-5f3c6ccf4d"></a>`reserved_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-e82fb50021"></a>`admission_budget_bytes` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; title="Admission Budget Bytes" |  |
+| <a id="s-b2a26342fc"></a>`admission_enabled` | yes | type="boolean"; title="Admission Enabled" |  |
+| <a id="s-000e1f094b"></a>`cache_store` | yes | [RetrievalCacheStoreName](schemas-retrievalcachestorename.md) |  |
+| <a id="s-603f6ec2e8"></a>`committed_bytes` | yes | type="integer"; minimum=0; title="Committed Bytes" |  |
+| <a id="s-6128c90608"></a>`priority` | yes | type="integer"; minimum=1; title="Priority" |  |
+| <a id="s-5f3c6ccf4d"></a>`reserved_bytes` | yes | type="integer"; minimum=0; title="Reserved Bytes" |  |
 
 ## Maintained corroboration
 

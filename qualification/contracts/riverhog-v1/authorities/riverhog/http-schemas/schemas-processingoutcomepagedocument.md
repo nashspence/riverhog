@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f0a04d1a20"></a>`authority` | yes | #/components/schemas/ExactSetAuthorityDocument |  |
-| <a id="s-6f8fcd737f"></a>`next_ordinal` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
-| <a id="s-7532886b30"></a>`outcomes` | yes | type="array"; items=(#/components/schemas/ProcessingOutcomeIdentityDocument); maxItems=128; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
-| <a id="s-4f1f6deba4"></a>`start_ordinal` | yes | type="integer"; minimum=0 |  |
+| <a id="s-f0a04d1a20"></a>`authority` | yes | [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md) |  |
+| <a id="s-6f8fcd737f"></a>`next_ordinal` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; title="Next Ordinal" |  |
+| <a id="s-7532886b30"></a>`outcomes` | yes | type="array"; items=([ProcessingOutcomeIdentityDocument](schemas-processingoutcomeidentitydocument.md)); maxItems=128; title="Outcomes"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
+| <a id="s-4f1f6deba4"></a>`start_ordinal` | yes | type="integer"; minimum=0; title="Start Ordinal" |  |
 
 ### Progression, limits, and lifecycle
 

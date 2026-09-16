@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-74bef0d03f"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-790268a317"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-b55f5e9ca6"></a>`journal` | no | type="null" |  |
-| <a id="s-2fd78d97cb"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
-| <a id="s-541bdc4527"></a>`provenance` | yes | #/components/schemas/OmittedFileProvenanceBinding |  |
-| <a id="s-12666fb0d1"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-74bef0d03f"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-790268a317"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-b55f5e9ca6"></a>`journal` | no | type="null"; title="Journal" |  |
+| <a id="s-2fd78d97cb"></a>`path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
+| <a id="s-541bdc4527"></a>`provenance` | yes | [OmittedFileProvenanceBinding](schemas-omittedfileprovenancebinding.md) |  |
+| <a id="s-12666fb0d1"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

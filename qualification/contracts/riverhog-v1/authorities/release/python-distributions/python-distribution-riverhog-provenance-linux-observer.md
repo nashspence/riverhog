@@ -16,15 +16,15 @@ Optional nonnormative Linux filesystem-observer reference for Riverhog provenanc
 <a id="s-e7d5bd199d"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-1008eaa767"></a>`artifacts` | [{"coordinate": "dist/riverhog_provenance_linux_observer-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_provenance_linux_observer-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-65eaa7ffc6"></a>`channel` | github-release |
-| <a id="s-04e1732c93"></a>`description` | Optional nonnormative Linux filesystem-observer reference for Riverhog provenance. |
-| <a id="s-34e9032db8"></a>`license_baseline` | first-v1-publication |
-| <a id="s-0d82110ad8"></a>`license_expression` | Apache-2.0 |
-| <a id="s-43fdd3af24"></a>`publication_identity` | {"coordinate": "riverhog-provenance-linux-observer", "kind": "python-distribution"} |
-| <a id="s-bdb62355be"></a>`requires_python` | >=3.12 |
-| <a id="s-fde1490df6"></a>`role` | reference_component |
-| <a id="s-7e8cc31437"></a>`source` | reference/riverhog/provenance/observers/linux/pyproject.toml |
+| <a id="s-1008eaa767"></a>`artifacts` | `[{"coordinate":"dist/riverhog_provenance_linux_observer-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/riverhog_provenance_linux_observer-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-65eaa7ffc6"></a>`channel` | `"github-release"` |
+| <a id="s-04e1732c93"></a>`description` | `"Optional nonnormative Linux filesystem-observer reference for Riverhog provenance."` |
+| <a id="s-34e9032db8"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-0d82110ad8"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-43fdd3af24"></a>`publication_identity` | `{"coordinate":"riverhog-provenance-linux-observer","kind":"python-distribution"}` |
+| <a id="s-bdb62355be"></a>`requires_python` | `">=3.12"` |
+| <a id="s-fde1490df6"></a>`role` | `"reference_component"` |
+| <a id="s-7e8cc31437"></a>`source` | `"reference/riverhog/provenance/observers/linux/pyproject.toml"` |
 
 ## Existing ownership context
 

@@ -14,19 +14,25 @@ Declare Target Execution Disposition
 ## External contract
 
 <a id="s-cd0c980798"></a>
-- <a id="s-dcc45a72b8"></a>`operationId`: declare_target_execution_disposition
-- <a id="s-b325b56157"></a>`summary`: Declare Target Execution Disposition
+- <a id="s-dcc45a72b8"></a>`operationId`: `"declare_target_execution_disposition"`
+- <a id="s-b325b56157"></a>`summary`: `"Declare Target Execution Disposition"`
+- <a id="s-059e616dd0"></a>`tags`: `["target-executions"]`
+- <a id="s-cf97ed3b5e"></a>`x-riverhog-interface`: `"client-only-primitive"`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-3770379334"></a>`job_id` | path | yes | not declared | type="string" |
-| <a id="s-738b7756eb"></a>`input_id` | path | yes | not declared | type="string" |
+| <a id="s-3770379334"></a>`job_id` | path | yes | not declared | type="string"; title="Job Id" |
+| <a id="s-738b7756eb"></a>`input_id` | path | yes | not declared | type="string"; title="Input Id" |
 
 ### <a id="s-4af8a05da7"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/InputDispositionDeclaration"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [InputDispositionDeclaration](../http-schemas/schemas-inputdispositiondeclaration.md) |
 
 ### Responses
 

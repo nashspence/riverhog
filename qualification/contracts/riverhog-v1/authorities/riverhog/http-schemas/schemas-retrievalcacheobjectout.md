@@ -24,19 +24,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-06cc3eb427"></a>`cache_store` | yes | #/components/schemas/RetrievalCacheStoreName |  |
-| <a id="s-3b10f667fb"></a>`cached_at` | yes | type="string" |  |
-| <a id="s-d3807612bf"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-627408e577"></a>`lease_categories` | yes | type="array"; items=(type="string"; enum=["new_archive","retrieval_job"]) |  |
-| <a id="s-5e4b6f164b"></a>`new_archive_expires_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-51bc3513f0"></a>`object_id` | yes | type="string" |  |
-| <a id="s-d92ae72187"></a>`protected_until` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-47dbf3c6e5"></a>`retrieval_job_leases` | yes | type="integer" |  |
-| <a id="s-ae87dd0d79"></a>`source_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-cbb7f490d3"></a>`state` | yes | #/components/schemas/RetrievalCacheState |  |
-| <a id="s-c95d53b4cf"></a>`stored_bytes` | yes | type="integer" |  |
-| <a id="s-a582abba72"></a>`stored_sha256` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-e2697d058e"></a>`verified_at` | yes | type="string" |  |
+| <a id="s-06cc3eb427"></a>`cache_store` | yes | [RetrievalCacheStoreName](schemas-retrievalcachestorename.md) |  |
+| <a id="s-3b10f667fb"></a>`cached_at` | yes | type="string"; title="Cached At" |  |
+| <a id="s-d3807612bf"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-627408e577"></a>`lease_categories` | yes | type="array"; items=(type="string"; enum=["new_archive","retrieval_job"]); title="Lease Categories" |  |
+| <a id="s-5e4b6f164b"></a>`new_archive_expires_at` | yes | anyOf=[(type="string"); (type="null")]; title="New Archive Expires At" |  |
+| <a id="s-51bc3513f0"></a>`object_id` | yes | type="string"; title="Object Id" |  |
+| <a id="s-d92ae72187"></a>`protected_until` | yes | anyOf=[(type="string"); (type="null")]; title="Protected Until" |  |
+| <a id="s-47dbf3c6e5"></a>`retrieval_job_leases` | yes | type="integer"; title="Retrieval Job Leases" |  |
+| <a id="s-ae87dd0d79"></a>`source_store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
+| <a id="s-cbb7f490d3"></a>`state` | yes | [RetrievalCacheState](schemas-retrievalcachestate.md) |  |
+| <a id="s-c95d53b4cf"></a>`stored_bytes` | yes | type="integer"; title="Stored Bytes" |  |
+| <a id="s-a582abba72"></a>`stored_sha256` | yes | anyOf=[(type="string"); (type="null")]; title="Stored Sha256" |  |
+| <a id="s-e2697d058e"></a>`verified_at` | yes | type="string"; title="Verified At" |  |
 
 ### Progression, limits, and lifecycle
 

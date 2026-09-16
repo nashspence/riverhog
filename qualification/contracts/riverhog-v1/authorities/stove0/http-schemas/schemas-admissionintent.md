@@ -24,17 +24,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-edd0a3adb5"></a>`admission_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-0bad523de4"></a>`collection` | yes | #/components/schemas/CatalogSyncDescriptor |  |
-| <a id="s-4b7ce35bca"></a>`effective_intent` | yes | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-ec404034ae"></a>`format` | no | type="string"; const="stove0-admission-intent/v1"; default="stove0-admission-intent/v1" |  |
-| <a id="s-33c67405d9"></a>`policy_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-f4f9002e65"></a>`policy_revision` | yes | type="integer"; minimum=1 |  |
-| <a id="s-75bb897925"></a>`policy_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-4ff09b93ec"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-b4e40a831d"></a>`recipe_revision` | yes | type="integer"; minimum=1 |  |
-| <a id="s-17ec6189a3"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-81dfbfb6bf"></a>`required_tags` | yes | type="array"; items=(#/components/schemas/CollectionTag) |  |
+| <a id="s-edd0a3adb5"></a>`admission_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Admission Id" |  |
+| <a id="s-0bad523de4"></a>`collection` | yes | [CatalogSyncDescriptor](schemas-catalogsyncdescriptor.md) |  |
+| <a id="s-4b7ce35bca"></a>`effective_intent` | yes | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Effective Intent" |  |
+| <a id="s-ec404034ae"></a>`format` | no | type="string"; const="stove0-admission-intent/v1"; default="stove0-admission-intent/v1"; title="Format" |  |
+| <a id="s-33c67405d9"></a>`policy_id` | yes | type="string"; maxLength=160; minLength=1; title="Policy Id" |  |
+| <a id="s-f4f9002e65"></a>`policy_revision` | yes | type="integer"; minimum=1; title="Policy Revision" |  |
+| <a id="s-75bb897925"></a>`policy_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Policy Sha256" |  |
+| <a id="s-4ff09b93ec"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1; title="Recipe Id" |  |
+| <a id="s-b4e40a831d"></a>`recipe_revision` | yes | type="integer"; minimum=1; title="Recipe Revision" |  |
+| <a id="s-17ec6189a3"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Recipe Sha256" |  |
+| <a id="s-81dfbfb6bf"></a>`required_tags` | yes | type="array"; items=([CollectionTag](schemas-collectiontag.md)); title="Required Tags" |  |
 
 ### Progression, limits, and lifecycle
 

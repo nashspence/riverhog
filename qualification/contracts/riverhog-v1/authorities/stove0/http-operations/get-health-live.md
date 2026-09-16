@@ -14,8 +14,9 @@ Health Live
 ## External contract
 
 <a id="s-fccde469e0"></a>
-- <a id="s-b9f96c021d"></a>`operationId`: health_live
-- <a id="s-56efa9f79c"></a>`summary`: Health Live
+- <a id="s-b9f96c021d"></a>`operationId`: `"health_live"`
+- <a id="s-56efa9f79c"></a>`summary`: `"Health Live"`
+- <a id="s-57b3313fcb"></a>`tags`: `["health"]`
 
 ### Responses
 

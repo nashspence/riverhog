@@ -24,17 +24,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f105baa7b8"></a>`allow_derived_inputs` | no | type="boolean"; default=false |  |
-| <a id="s-d591b26ad6"></a>`artifact_associations` | no | type="array"; default=[]; items=(#/components/schemas/ArtifactAssociation) |  |
-| <a id="s-57bdc94a63"></a>`event_input_closure` | no | type="string"; const="single-finalized-collection"; default="single-finalized-collection" |  |
-| <a id="s-f2fcf3466b"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-2211dbf2b8"></a>`join` | no | anyOf=(#/components/schemas/RecipeJoin) \| (type="null") |  |
-| <a id="s-095b4c1e00"></a>`observers` | no | type="array"; default=[]; items=(#/components/schemas/ObserverUse) |  |
-| <a id="s-ef8d6c456f"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
-| <a id="s-8ae96a9025"></a>`revision` | yes | type="integer"; minimum=1 |  |
-| <a id="s-823b3b9b9f"></a>`routes` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"#/components/schemas/RecipeCoordinationRoute","operation":"#/components/schemas/RecipeRoute"},"propertyName":"kind"}; oneOf=(#/components/schemas/RecipeRoute) \| (#/components/schemas/RecipeCoordinationRoute)); minItems=1 |  |
-| <a id="s-f280110403"></a>`source_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
-| <a id="s-28b7accac5"></a>`unmatched_artifact_disposition` | yes | type="string"; enum=["retain-in-source","reject-work"] |  |
+| <a id="s-f105baa7b8"></a>`allow_derived_inputs` | no | type="boolean"; default=false; title="Allow Derived Inputs" |  |
+| <a id="s-d591b26ad6"></a>`artifact_associations` | no | type="array"; default=[]; items=([ArtifactAssociation](schemas-artifactassociation.md)); title="Artifact Associations" |  |
+| <a id="s-57bdc94a63"></a>`event_input_closure` | no | type="string"; const="single-finalized-collection"; default="single-finalized-collection"; title="Event Input Closure" |  |
+| <a id="s-f2fcf3466b"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-2211dbf2b8"></a>`join` | no | anyOf=[([RecipeJoin](schemas-recipejoin.md)); (type="null")] |  |
+| <a id="s-095b4c1e00"></a>`observers` | no | type="array"; default=[]; items=([ObserverUse](schemas-observeruse.md)); title="Observers" |  |
+| <a id="s-ef8d6c456f"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Retirement Grace Seconds" |  |
+| <a id="s-8ae96a9025"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
+| <a id="s-823b3b9b9f"></a>`routes` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"#/components/schemas/RecipeCoordinationRoute","operation":"#/components/schemas/RecipeRoute"},"propertyName":"kind"}; oneOf=[([RecipeRoute](schemas-reciperoute.md)); ([RecipeCoordinationRoute](schemas-recipecoordinationroute.md))]); minItems=1; title="Routes" |  |
+| <a id="s-f280110403"></a>`source_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Source Retirement Policy" |  |
+| <a id="s-28b7accac5"></a>`unmatched_artifact_disposition` | yes | type="string"; enum=["retain-in-source","reject-work"]; title="Unmatched Artifact Disposition" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -24,14 +24,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-99cbec3f8b"></a>`data` | yes | #/components/schemas/BranchSetAdmittedEventData |  |
-| <a id="s-0c20775d0b"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
-| <a id="s-db8b0a166a"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-2731606c32"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
-| <a id="s-f66f2438fe"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-5021293ee9"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-a9160be71a"></a>`time` | yes | type="string" |  |
-| <a id="s-c424b8e8e3"></a>`type` | yes | type="string"; const="io.riverhog.stove0.branch-set.admitted" |  |
+| <a id="s-99cbec3f8b"></a>`data` | yes | [BranchSetAdmittedEventData](schemas-branchsetadmittedeventdata.md) |  |
+| <a id="s-0c20775d0b"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json"; title="Datacontenttype" |  |
+| <a id="s-db8b0a166a"></a>`id` | yes | type="string"; minLength=1; title="Id" |  |
+| <a id="s-2731606c32"></a>`source` | yes | type="string"; const="urn:riverhog:stove0"; title="Source" |  |
+| <a id="s-f66f2438fe"></a>`specversion` | no | type="string"; const="1.0"; default="1.0"; title="Specversion" |  |
+| <a id="s-5021293ee9"></a>`subject` | yes | type="string"; minLength=1; title="Subject" |  |
+| <a id="s-a9160be71a"></a>`time` | yes | type="string"; title="Time" |  |
+| <a id="s-c424b8e8e3"></a>`type` | yes | type="string"; const="io.riverhog.stove0.branch-set.admitted"; title="Type" |  |
 
 ## Maintained corroboration
 

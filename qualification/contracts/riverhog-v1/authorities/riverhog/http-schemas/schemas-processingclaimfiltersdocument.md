@@ -23,7 +23,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6a7a54d76b"></a>`state` | no | anyOf=(type="string"; enum=["active","settled","retiring","abandoned","released"]) \| (type="null") |  |
+| <a id="s-6a7a54d76b"></a>`state` | no | anyOf=[(type="string"; enum=["active","settled","retiring","abandoned","released"]); (type="null")]; title="State" |  |
 
 ## Governing policies
 

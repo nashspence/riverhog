@@ -25,11 +25,11 @@ One bounded, canonically ordered slice of an immutable inventory.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-fda883ea0a"></a>`authority` | yes | #/components/schemas/PortableCollectionInventoryAuthority |  |
-| <a id="s-88b00618b6"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-6b5d814482"></a>`files` | yes | type="array"; items=(#/components/schemas/ImmutableFileIdentityDocument); maxItems=1000; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-cursor","reason":"bounded-portable-inventory-page"} |  |
-| <a id="s-15a2db977b"></a>`format` | no | type="string"; const="riverhog-collection-inventory-page/v1"; default="riverhog-collection-inventory-page/v1" |  |
-| <a id="s-b6881aa3a4"></a>`next_cursor` | no | anyOf=(type="string"; maxLength=8192; minLength=1) \| (type="null") |  |
+| <a id="s-fda883ea0a"></a>`authority` | yes | [PortableCollectionInventoryAuthority](schemas-portablecollectioninventoryauthority.md) |  |
+| <a id="s-88b00618b6"></a>`complete` | yes | type="boolean"; title="Complete" |  |
+| <a id="s-6b5d814482"></a>`files` | yes | type="array"; items=([ImmutableFileIdentityDocument](schemas-immutablefileidentitydocument.md)); maxItems=1000; title="Files"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-cursor","reason":"bounded-portable-inventory-page"} |  |
+| <a id="s-15a2db977b"></a>`format` | no | type="string"; const="riverhog-collection-inventory-page/v1"; default="riverhog-collection-inventory-page/v1"; title="Format" |  |
+| <a id="s-b6881aa3a4"></a>`next_cursor` | no | anyOf=[(type="string"; maxLength=8192; minLength=1); (type="null")]; title="Next Cursor" |  |
 
 ### Progression, limits, and lifecycle
 

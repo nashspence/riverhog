@@ -14,17 +14,20 @@ List Collection Upload Session Files
 ## External contract
 
 <a id="s-3097f46aff"></a>
-- <a id="s-6178bd72d0"></a>`operationId`: list_collection_upload_session_files
-- <a id="s-64e459ace9"></a>`summary`: List Collection Upload Session Files
-- <a id="s-887e8e76e9"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-6178bd72d0"></a>`operationId`: `"list_collection_upload_session_files"`
+- <a id="s-887e8e76e9"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-64e459ace9"></a>`summary`: `"List Collection Upload Session Files"`
+- <a id="s-34fc556dc8"></a>`tags`: `["collections"]`
+- <a id="s-2cb90933d0"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:create","collections:delete"]}]`
+- <a id="s-e094af9e6c"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-65d8972471"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-8a07abd5bb"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-b7d4837a98"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
+| <a id="s-65d8972471"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-8a07abd5bb"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-b7d4837a98"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
 
 ### Responses
 

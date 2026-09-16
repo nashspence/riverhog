@@ -24,20 +24,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-606c664aea"></a>`attempt` | yes | type="integer"; minimum=1 |  |
-| <a id="s-b09da142f6"></a>`derivation` | no | anyOf=(type="object"; additionalProperties=true) \| (type="null") |  |
-| <a id="s-57ab7a6f5e"></a>`effect_receipt` | no | anyOf=(#/components/schemas/ExternalEffectReceipt) \| (type="null") |  |
-| <a id="s-c57da9e956"></a>`execution_evidence` | no | anyOf=(#/components/schemas/TargetExecutionEvidence) \| (type="null") |  |
-| <a id="s-f403678d57"></a>`failure` | no | anyOf=(#/components/schemas/TargetFailure) \| (type="null") |  |
-| <a id="s-c77d39f4fe"></a>`inapplicable` | no | anyOf=(#/components/schemas/TargetInapplicable) \| (type="null") |  |
-| <a id="s-ce6a90cdcf"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-34fa32b154"></a>`output_collection` | no | anyOf=(#/components/schemas/OutputCollectionRef) \| (type="null") |  |
-| <a id="s-4858da8e4d"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-b13de944b9"></a>`production` | no | anyOf=(#/components/schemas/TargetProductionAuthority) \| (type="null") |  |
-| <a id="s-a4fb3e445f"></a>`progress` | yes | #/components/schemas/TargetProgress |  |
-| <a id="s-9c0c396bbc"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1" |  |
-| <a id="s-8373216865"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-b4712e4aec"></a>`state` | yes | type="string"; enum=["queued","running","canceling","interrupted","inapplicable","succeeded","failed","canceled"] |  |
+| <a id="s-606c664aea"></a>`attempt` | yes | type="integer"; minimum=1; title="Attempt" |  |
+| <a id="s-b09da142f6"></a>`derivation` | no | anyOf=[(type="object"; additionalProperties=(any JSON value)); (type="null")]; title="Derivation" |  |
+| <a id="s-57ab7a6f5e"></a>`effect_receipt` | no | anyOf=[([ExternalEffectReceipt](schemas-externaleffectreceipt.md)); (type="null")] |  |
+| <a id="s-c57da9e956"></a>`execution_evidence` | no | anyOf=[([TargetExecutionEvidence](schemas-targetexecutionevidence.md)); (type="null")] |  |
+| <a id="s-f403678d57"></a>`failure` | no | anyOf=[([TargetFailure](schemas-targetfailure.md)); (type="null")] |  |
+| <a id="s-c77d39f4fe"></a>`inapplicable` | no | anyOf=[([TargetInapplicable](schemas-targetinapplicable.md)); (type="null")] |  |
+| <a id="s-ce6a90cdcf"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Job Id" |  |
+| <a id="s-34fa32b154"></a>`output_collection` | no | anyOf=[([OutputCollectionRef](schemas-outputcollectionref.md)); (type="null")] |  |
+| <a id="s-4858da8e4d"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
+| <a id="s-b13de944b9"></a>`production` | no | anyOf=[([TargetProductionAuthority](schemas-targetproductionauthority.md)); (type="null")] |  |
+| <a id="s-a4fb3e445f"></a>`progress` | yes | [TargetProgress](schemas-targetprogress.md) |  |
+| <a id="s-9c0c396bbc"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1"; title="Protocol" |  |
+| <a id="s-8373216865"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Sha256" |  |
+| <a id="s-b4712e4aec"></a>`state` | yes | type="string"; enum=["queued","running","canceling","interrupted","inapplicable","succeeded","failed","canceled"]; title="State" |  |
 
 ### All must match (`allOf`)
 

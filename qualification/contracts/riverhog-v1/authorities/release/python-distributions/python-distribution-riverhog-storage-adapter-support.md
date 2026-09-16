@@ -16,15 +16,15 @@ HTTP binding and conformance support for Riverhog storage adapters.
 <a id="s-ef8232e452"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-0071f98da8"></a>`artifacts` | [{"coordinate": "dist/riverhog_storage_adapter_support-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_storage_adapter_support-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-82d50ec7a0"></a>`channel` | github-release |
-| <a id="s-308ee021f4"></a>`description` | HTTP binding and conformance support for Riverhog storage adapters. |
-| <a id="s-ad86bba8de"></a>`license_baseline` | first-v1-publication |
-| <a id="s-b6f3c9aa64"></a>`license_expression` | Apache-2.0 |
-| <a id="s-25f054a1d0"></a>`publication_identity` | {"coordinate": "riverhog-storage-adapter-support", "kind": "python-distribution"} |
-| <a id="s-cd8c7cb430"></a>`requires_python` | >=3.12 |
-| <a id="s-1796668523"></a>`role` | reusable_library |
-| <a id="s-1a9dc4c79f"></a>`source` | packages/riverhog-storage-adapter-support/pyproject.toml |
+| <a id="s-0071f98da8"></a>`artifacts` | `[{"coordinate":"dist/riverhog_storage_adapter_support-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/riverhog_storage_adapter_support-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-82d50ec7a0"></a>`channel` | `"github-release"` |
+| <a id="s-308ee021f4"></a>`description` | `"HTTP binding and conformance support for Riverhog storage adapters."` |
+| <a id="s-ad86bba8de"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-b6f3c9aa64"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-25f054a1d0"></a>`publication_identity` | `{"coordinate":"riverhog-storage-adapter-support","kind":"python-distribution"}` |
+| <a id="s-cd8c7cb430"></a>`requires_python` | `">=3.12"` |
+| <a id="s-1796668523"></a>`role` | `"reusable_library"` |
+| <a id="s-1a9dc4c79f"></a>`source` | `"packages/riverhog-storage-adapter-support/pyproject.toml"` |
 
 ## Existing ownership context
 

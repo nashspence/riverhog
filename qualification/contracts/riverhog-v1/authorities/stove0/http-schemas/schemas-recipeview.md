@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1a57e1956e"></a>`definition` | yes | #/components/schemas/RecipeDefinition |  |
-| <a id="s-c5b9d49560"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1a57e1956e"></a>`definition` | yes | [RecipeDefinition](schemas-recipedefinition.md) |  |
+| <a id="s-c5b9d49560"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

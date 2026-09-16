@@ -16,15 +16,15 @@ Optional nonnormative media-archive contract reference for Stove0 targets.
 <a id="s-b5c4f9c43b"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-c582996ecb"></a>`artifacts` | [{"coordinate": "dist/stove0_media_archive_target_contracts-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_media_archive_target_contracts-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-ff1c0df78a"></a>`channel` | github-release |
-| <a id="s-9fe58984e4"></a>`description` | Optional nonnormative media-archive contract reference for Stove0 targets. |
-| <a id="s-78e94bdc8d"></a>`license_baseline` | first-v1-publication |
-| <a id="s-866c176cdd"></a>`license_expression` | Apache-2.0 |
-| <a id="s-ea6983c218"></a>`publication_identity` | {"coordinate": "stove0-media-archive-target-contracts", "kind": "python-distribution"} |
-| <a id="s-4cd9f7d6c9"></a>`requires_python` | >=3.12 |
-| <a id="s-422e4f33e5"></a>`role` | reference_component |
-| <a id="s-b7a495c1ab"></a>`source` | reference/stove0/targets/media-archive/contracts/pyproject.toml |
+| <a id="s-c582996ecb"></a>`artifacts` | `[{"coordinate":"dist/stove0_media_archive_target_contracts-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_media_archive_target_contracts-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-ff1c0df78a"></a>`channel` | `"github-release"` |
+| <a id="s-9fe58984e4"></a>`description` | `"Optional nonnormative media-archive contract reference for Stove0 targets."` |
+| <a id="s-78e94bdc8d"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-866c176cdd"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-ea6983c218"></a>`publication_identity` | `{"coordinate":"stove0-media-archive-target-contracts","kind":"python-distribution"}` |
+| <a id="s-4cd9f7d6c9"></a>`requires_python` | `">=3.12"` |
+| <a id="s-422e4f33e5"></a>`role` | `"reference_component"` |
+| <a id="s-b7a495c1ab"></a>`source` | `"reference/stove0/targets/media-archive/contracts/pyproject.toml"` |
 
 ## Existing ownership context
 

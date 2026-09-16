@@ -23,7 +23,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-cccc11a0a0"></a>`state` | no | anyOf=(#/components/schemas/ArchiveCopyState) \| (type="null") |  |
+| <a id="s-cccc11a0a0"></a>`state` | no | anyOf=[([ArchiveCopyState](schemas-archivecopystate.md)); (type="null")] |  |
 
 ## Maintained corroboration
 

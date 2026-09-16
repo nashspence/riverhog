@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8e545456d5"></a>`claims` | yes | type="array"; items=(#/components/schemas/ProcessingClaimDocument) |  |
-| <a id="s-ef1ff79919"></a>`filters` | yes | #/components/schemas/ProcessingClaimFiltersDocument |  |
-| <a id="s-7409e9be17"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-aad6de037e"></a>`order` | yes | #/components/schemas/SortOrder |  |
-| <a id="s-a12a255dad"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-239812ea90"></a>`sort` | yes | #/components/schemas/ProcessingClaimSort |  |
+| <a id="s-8e545456d5"></a>`claims` | yes | type="array"; items=([ProcessingClaimDocument](schemas-processingclaimdocument.md)); title="Claims" |  |
+| <a id="s-ef1ff79919"></a>`filters` | yes | [ProcessingClaimFiltersDocument](schemas-processingclaimfiltersdocument.md) |  |
+| <a id="s-7409e9be17"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-aad6de037e"></a>`order` | yes | [SortOrder](schemas-sortorder.md) |  |
+| <a id="s-a12a255dad"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
+| <a id="s-239812ea90"></a>`sort` | yes | [ProcessingClaimSort](schemas-processingclaimsort.md) |  |
 
 ### Progression, limits, and lifecycle
 

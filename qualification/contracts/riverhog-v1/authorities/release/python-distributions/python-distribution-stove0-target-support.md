@@ -16,15 +16,15 @@ Hardware-neutral target protocol, runtime, and conformance support for stove0.
 <a id="s-3510712c7d"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-2803e8fc81"></a>`artifacts` | [{"coordinate": "dist/stove0_target_support-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_target_support-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-173a1aade9"></a>`channel` | github-release |
-| <a id="s-da0d411de2"></a>`description` | Hardware-neutral target protocol, runtime, and conformance support for stove0. |
-| <a id="s-28e808853a"></a>`license_baseline` | first-v1-publication |
-| <a id="s-977a1b24ac"></a>`license_expression` | Apache-2.0 |
-| <a id="s-9e0ab37fce"></a>`publication_identity` | {"coordinate": "stove0-target-support", "kind": "python-distribution"} |
-| <a id="s-0af918987f"></a>`requires_python` | >=3.12 |
-| <a id="s-2c563a70b4"></a>`role` | reusable_library |
-| <a id="s-bee42faebb"></a>`source` | reference/stove0/packages/target-support/pyproject.toml |
+| <a id="s-2803e8fc81"></a>`artifacts` | `[{"coordinate":"dist/stove0_target_support-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_target_support-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-173a1aade9"></a>`channel` | `"github-release"` |
+| <a id="s-da0d411de2"></a>`description` | `"Hardware-neutral target protocol, runtime, and conformance support for stove0."` |
+| <a id="s-28e808853a"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-977a1b24ac"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-9e0ab37fce"></a>`publication_identity` | `{"coordinate":"stove0-target-support","kind":"python-distribution"}` |
+| <a id="s-0af918987f"></a>`requires_python` | `">=3.12"` |
+| <a id="s-2c563a70b4"></a>`role` | `"reusable_library"` |
+| <a id="s-bee42faebb"></a>`source` | `"reference/stove0/packages/target-support/pyproject.toml"` |
 
 ## Existing ownership context
 

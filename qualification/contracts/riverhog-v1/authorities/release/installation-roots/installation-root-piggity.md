@@ -16,11 +16,11 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-f813f65b94"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-3bcc2b2de7"></a>`artifact_format` | wheel |
-| <a id="s-1f4ca7f1b8"></a>`distribution` | piggity |
-| <a id="s-ea3b9b97e0"></a>`lock` | {"coordinate": "pylock.piggity.toml", "format": "pylock.toml"} |
-| <a id="s-1f3df7c62b"></a>`method` | uv-tool |
-| <a id="s-a9f704d28d"></a>`platforms` | ["linux-x64", "macos-arm64", "windows-x64"] |
+| <a id="s-3bcc2b2de7"></a>`artifact_format` | `"wheel"` |
+| <a id="s-1f4ca7f1b8"></a>`distribution` | `"piggity"` |
+| <a id="s-ea3b9b97e0"></a>`lock` | `{"coordinate":"pylock.piggity.toml","format":"pylock.toml"}` |
+| <a id="s-1f3df7c62b"></a>`method` | `"uv-tool"` |
+| <a id="s-a9f704d28d"></a>`platforms` | `["linux-x64","macos-arm64","windows-x64"]` |
 
 ## Existing ownership context
 

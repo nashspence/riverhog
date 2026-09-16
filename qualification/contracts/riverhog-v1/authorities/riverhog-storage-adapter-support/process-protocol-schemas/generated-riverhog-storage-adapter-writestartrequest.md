@@ -29,11 +29,11 @@ credentials used to realize that session remain adapter-private.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f983ec7947"></a>`content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
-| <a id="s-ba391b3964"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-59aac5a432"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-23f1edee7b"></a>`placement` | yes | type="string"; enum=["archive","immediate"] |  |
-| <a id="s-3f20a9ba4d"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
+| <a id="s-f983ec7947"></a>`content_type` | yes | type="string"; maxLength=255; minLength=1; title="Content Type" |  |
+| <a id="s-ba391b3964"></a>`expected_bytes` | yes | type="integer"; minimum=1; title="Expected Bytes" |  |
+| <a id="s-59aac5a432"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
+| <a id="s-23f1edee7b"></a>`placement` | yes | type="string"; enum=["archive","immediate"]; title="Placement" |  |
+| <a id="s-3f20a9ba4d"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; title="Required Identity Assertions"; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
 
 ### Progression, limits, and lifecycle
 

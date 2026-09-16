@@ -16,15 +16,15 @@ Optional nonnormative NVENC AV1 and Opus review-sampler reference for Stove0.
 <a id="s-8c0acc6ef0"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-a2aec6cc8c"></a>`artifacts` | [{"coordinate": "dist/stove0_nvenc_av1_opus_review_sampler-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_nvenc_av1_opus_review_sampler-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-71ce441847"></a>`channel` | github-release |
-| <a id="s-373137b7a2"></a>`description` | Optional nonnormative NVENC AV1 and Opus review-sampler reference for Stove0. |
-| <a id="s-ef3420f188"></a>`license_baseline` | first-v1-publication |
-| <a id="s-a6ef1627dd"></a>`license_expression` | CAL-1.0 |
-| <a id="s-3f8c30599a"></a>`publication_identity` | {"coordinate": "stove0-nvenc-av1-opus-review-sampler", "kind": "python-distribution"} |
-| <a id="s-3fb2173d5b"></a>`requires_python` | >=3.12 |
-| <a id="s-ef92a3aee9"></a>`role` | reference_component |
-| <a id="s-c8d541ffb0"></a>`source` | reference/stove0/targets/nvenc-av1-opus/review-sampler/pyproject.toml |
+| <a id="s-a2aec6cc8c"></a>`artifacts` | `[{"coordinate":"dist/stove0_nvenc_av1_opus_review_sampler-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_nvenc_av1_opus_review_sampler-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-71ce441847"></a>`channel` | `"github-release"` |
+| <a id="s-373137b7a2"></a>`description` | `"Optional nonnormative NVENC AV1 and Opus review-sampler reference for Stove0."` |
+| <a id="s-ef3420f188"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-a6ef1627dd"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-3f8c30599a"></a>`publication_identity` | `{"coordinate":"stove0-nvenc-av1-opus-review-sampler","kind":"python-distribution"}` |
+| <a id="s-3fb2173d5b"></a>`requires_python` | `">=3.12"` |
+| <a id="s-ef92a3aee9"></a>`role` | `"reference_component"` |
+| <a id="s-c8d541ffb0"></a>`source` | `"reference/stove0/targets/nvenc-av1-opus/review-sampler/pyproject.toml"` |
 
 ## Existing ownership context
 

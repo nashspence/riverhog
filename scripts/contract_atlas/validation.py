@@ -239,12 +239,18 @@ def validate_atlas(
             ],
             elements_by_id,
         )
-        for targets in (related_elements, referenced_elements):
+        for heading, targets in (
+            ("Related interface records", related_elements),
+            ("Referenced contract dossiers", referenced_elements),
+        ):
+            # At-use schema links may repeat a destination. The corroboration
+            # inventory still lists each target exactly once in its own section.
+            section = dossier_text.partition(f"### {heading}\n")[2].split("\n#", 1)[0]
             labels = _dossier_navigation_labels(item, targets)
             for target in targets:
                 link = _relative_link(str(item["dossier"]), str(target["dossier"]))
                 rendered = f"[{_md(labels[str(target['id'])])}]({link})"
-                if dossier_text.count(rendered) != 1:
+                if section.count(rendered) != 1:
                     raise ContractAtlasError(
                         f"dossier navigation is not exact: {item['id']} -> {target['id']}"
                     )

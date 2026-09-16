@@ -16,15 +16,15 @@ Portable deployment-owned Stove0 recipe catalog contracts and validation.
 <a id="s-14b2bf89f4"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-53bafee725"></a>`artifacts` | [{"coordinate": "dist/stove0_recipe_config-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_recipe_config-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-b1e45aa9f9"></a>`channel` | github-release |
-| <a id="s-5a742dbacc"></a>`description` | Portable deployment-owned Stove0 recipe catalog contracts and validation. |
-| <a id="s-a7767186ba"></a>`license_baseline` | first-v1-publication |
-| <a id="s-8600748317"></a>`license_expression` | Apache-2.0 |
-| <a id="s-0e29a60d96"></a>`publication_identity` | {"coordinate": "stove0-recipe-config", "kind": "python-distribution"} |
-| <a id="s-20b053f119"></a>`requires_python` | >=3.12 |
-| <a id="s-37ea58adfd"></a>`role` | reusable_library |
-| <a id="s-8ce4670477"></a>`source` | reference/stove0/packages/recipe-config/pyproject.toml |
+| <a id="s-53bafee725"></a>`artifacts` | `[{"coordinate":"dist/stove0_recipe_config-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_recipe_config-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-b1e45aa9f9"></a>`channel` | `"github-release"` |
+| <a id="s-5a742dbacc"></a>`description` | `"Portable deployment-owned Stove0 recipe catalog contracts and validation."` |
+| <a id="s-a7767186ba"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-8600748317"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-0e29a60d96"></a>`publication_identity` | `{"coordinate":"stove0-recipe-config","kind":"python-distribution"}` |
+| <a id="s-20b053f119"></a>`requires_python` | `">=3.12"` |
+| <a id="s-37ea58adfd"></a>`role` | `"reusable_library"` |
+| <a id="s-8ce4670477"></a>`source` | `"reference/stove0/packages/recipe-config/pyproject.toml"` |
 
 ## Existing ownership context
 

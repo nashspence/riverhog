@@ -25,12 +25,12 @@ Stable positive evidence returned after the complete check set passes.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ee5757dee3"></a>`checks` | yes | type="array"; items=(type="string") |  |
-| <a id="s-c25d196dae"></a>`coverage` | no | type="string"; const="complete"; default="complete" |  |
+| <a id="s-ee5757dee3"></a>`checks` | yes | type="array"; items=(type="string"); title="Checks" |  |
+| <a id="s-c25d196dae"></a>`coverage` | no | type="string"; const="complete"; default="complete"; title="Coverage" |  |
 | <a id="s-6eaad858d9"></a>`descriptor` | yes | [AdapterDescriptor](#s-941580622e) |  |
-| <a id="s-6166d1ce52"></a>`format` | no | type="string"; const="riverhog-storage-adapter-conformance-result/v1"; default="riverhog-storage-adapter-conformance-result/v1" |  |
-| <a id="s-7a5a35d6e2"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1"; default="riverhog-storage-adapter/v1" |  |
-| <a id="s-0d4e848375"></a>`status` | no | type="string"; const="conformant"; default="conformant" |  |
+| <a id="s-6166d1ce52"></a>`format` | no | type="string"; const="riverhog-storage-adapter-conformance-result/v1"; default="riverhog-storage-adapter-conformance-result/v1"; title="Format" |  |
+| <a id="s-7a5a35d6e2"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1"; default="riverhog-storage-adapter/v1"; title="Protocol" |  |
+| <a id="s-0d4e848375"></a>`status` | no | type="string"; const="conformant"; default="conformant"; title="Status" |  |
 
 ### Definitions
 
@@ -47,13 +47,13 @@ Stable positive evidence returned after the complete check set passes.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f1b79988eb"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-92ca0aae95"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1 |  |
-| <a id="s-48168b80c7"></a>`maximum_segment_bytes` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
-| <a id="s-60e6132e30"></a>`maximum_segment_count` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
-| <a id="s-65f932beae"></a>`minimum_nonfinal_segment_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-f2cd45f88a"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1"; default="riverhog-storage-adapter/v1" |  |
-| <a id="s-849366dd4b"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"] |  |
+| <a id="s-f1b79988eb"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Implementation Id" |  |
+| <a id="s-92ca0aae95"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1; title="Implementation Version" |  |
+| <a id="s-48168b80c7"></a>`maximum_segment_bytes` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null; title="Maximum Segment Bytes" |  |
+| <a id="s-60e6132e30"></a>`maximum_segment_count` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null; title="Maximum Segment Count" |  |
+| <a id="s-65f932beae"></a>`minimum_nonfinal_segment_bytes` | yes | type="integer"; minimum=1; title="Minimum Nonfinal Segment Bytes" |  |
+| <a id="s-f2cd45f88a"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1"; default="riverhog-storage-adapter/v1"; title="Protocol" |  |
+| <a id="s-849366dd4b"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"]; title="Read Mode" |  |
 
 ### Progression, limits, and lifecycle
 

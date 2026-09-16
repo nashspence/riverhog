@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-639a182acc"></a>Parser name: `policy`
+
+| Field | Value |
+|---|---|
+| <a id="s-2055652af6"></a>`parameters` | `[]` |
 - <a id="s-69ff9ec817"></a>Subcommand selection: required.
 - <a id="s-6e668bf23c"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
 - <a id="s-e128993e6e"></a>Options after positional arguments at this parser: left as arguments.

@@ -14,15 +14,18 @@ Advance Retrieval Plan
 ## External contract
 
 <a id="s-eee1d15d4d"></a>
-- <a id="s-3905b4ab13"></a>`operationId`: advance_retrieval_plan
-- <a id="s-81ae26728e"></a>`summary`: Advance Retrieval Plan
-- <a id="s-945eb7424f"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-3905b4ab13"></a>`operationId`: `"advance_retrieval_plan"`
+- <a id="s-945eb7424f"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-81ae26728e"></a>`summary`: `"Advance Retrieval Plan"`
+- <a id="s-bab491022f"></a>`tags`: `["retrieval"]`
+- <a id="s-61dfb8c869"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-e21bc924e9"></a>`x-riverhog-permission-requirements`: `[{"any_of":["retrieval:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-99944139c0"></a>`plan_id` | path | yes | not declared | type="string" |
+| <a id="s-99944139c0"></a>`plan_id` | path | yes | not declared | type="string"; title="Plan Id" |
 
 ### Responses
 

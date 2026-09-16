@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-77ea572032"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-7b7f1f216b"></a>`files` | yes | type="integer"; minimum=0 |  |
-| <a id="s-320c65c570"></a>`state` | yes | type="string"; const="pending" |  |
+| <a id="s-77ea572032"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-7b7f1f216b"></a>`files` | yes | type="integer"; minimum=0; title="Files" |  |
+| <a id="s-320c65c570"></a>`state` | yes | type="string"; const="pending"; title="State" |  |
 
 ### Progression, limits, and lifecycle
 

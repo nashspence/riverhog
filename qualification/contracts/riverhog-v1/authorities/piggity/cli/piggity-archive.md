@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-292da0e6c5"></a>Parser name: `archive`
+
+| Field | Value |
+|---|---|
+| <a id="s-54017c9500"></a>`parameters` | `[]` |
 - <a id="s-76d20fc6af"></a>Subcommand selection: required.
 - <a id="s-ee8fba0418"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
 - <a id="s-65ae986227"></a>Options after positional arguments at this parser: left as arguments.

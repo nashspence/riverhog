@@ -24,18 +24,18 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-09d8a2f675"></a>`branch_set_plan` | no | anyOf=(#/components/schemas/BranchSetPlan) \| (type="null") |  |
-| <a id="s-af86a5605a"></a>`branch_sets` | no | type="array"; default=[]; items=(#/components/schemas/BranchSetPlan) |  |
-| <a id="s-3803d68986"></a>`format` | no | type="string"; const="stove0-workflow-preview/v1"; default="stove0-workflow-preview/v1" |  |
-| <a id="s-55d0cba4ef"></a>`observations` | no | type="array"; default=[]; items=(#/components/schemas/ObservationEvidence) |  |
-| <a id="s-e4744c1f84"></a>`outcome` | no | anyOf=(#/components/schemas/PreviewOutcome) \| (type="null") |  |
-| <a id="s-715057aea7"></a>`preview_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-3c3b2303ab"></a>`preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-af19f564b7"></a>`selections` | no | type="array"; default=[]; items=(#/components/schemas/ArtifactSelection) |  |
-| <a id="s-842de9abc9"></a>`state` | yes | type="string"; enum=["ready","inapplicable","failed","canceled"] |  |
-| <a id="s-a984bdec16"></a>`target_plans` | no | type="array"; default=[]; items=(#/components/schemas/BranchTargetPreview) |  |
-| <a id="s-ed22ffece9"></a>`warnings` | no | type="array"; default=[]; items=(type="string") |  |
-| <a id="s-807a7c0d8b"></a>`work` | yes | #/components/schemas/WorkIdentity |  |
+| <a id="s-09d8a2f675"></a>`branch_set_plan` | no | anyOf=[([BranchSetPlan](schemas-branchsetplan.md)); (type="null")] |  |
+| <a id="s-af86a5605a"></a>`branch_sets` | no | type="array"; default=[]; items=([BranchSetPlan](schemas-branchsetplan.md)); title="Branch Sets" |  |
+| <a id="s-3803d68986"></a>`format` | no | type="string"; const="stove0-workflow-preview/v1"; default="stove0-workflow-preview/v1"; title="Format" |  |
+| <a id="s-55d0cba4ef"></a>`observations` | no | type="array"; default=[]; items=([ObservationEvidence](schemas-observationevidence.md)); title="Observations" |  |
+| <a id="s-e4744c1f84"></a>`outcome` | no | anyOf=[([PreviewOutcome](schemas-previewoutcome.md)); (type="null")] |  |
+| <a id="s-715057aea7"></a>`preview_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Preview Id" |  |
+| <a id="s-3c3b2303ab"></a>`preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Preview Sha256" |  |
+| <a id="s-af19f564b7"></a>`selections` | no | type="array"; default=[]; items=([ArtifactSelection](schemas-artifactselection.md)); title="Selections" |  |
+| <a id="s-842de9abc9"></a>`state` | yes | type="string"; enum=["ready","inapplicable","failed","canceled"]; title="State" |  |
+| <a id="s-a984bdec16"></a>`target_plans` | no | type="array"; default=[]; items=([BranchTargetPreview](schemas-branchtargetpreview.md)); title="Target Plans" |  |
+| <a id="s-ed22ffece9"></a>`warnings` | no | type="array"; default=[]; items=(type="string"); title="Warnings" |  |
+| <a id="s-807a7c0d8b"></a>`work` | yes | [WorkIdentity](schemas-workidentity.md) |  |
 
 ### Progression, limits, and lifecycle
 

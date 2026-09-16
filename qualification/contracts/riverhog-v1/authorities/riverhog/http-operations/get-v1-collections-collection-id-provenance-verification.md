@@ -14,15 +14,17 @@ Get Collection Provenance Verification
 ## External contract
 
 <a id="s-04bd0939af"></a>
-- <a id="s-21b70cfd23"></a>`operationId`: get_collection_provenance_verification
-- <a id="s-d23b62a638"></a>`summary`: Get Collection Provenance Verification
-- <a id="s-b0bf2060df"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-21b70cfd23"></a>`operationId`: `"get_collection_provenance_verification"`
+- <a id="s-b0bf2060df"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-d23b62a638"></a>`summary`: `"Get Collection Provenance Verification"`
+- <a id="s-84bc595533"></a>`tags`: `["provenance"]`
+- <a id="s-818f1b2a53"></a>`x-riverhog-permission-requirements`: `[{"any_of":["provenance:read"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-fe54297ab2"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-fe54297ab2"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
 
 ### Responses
 

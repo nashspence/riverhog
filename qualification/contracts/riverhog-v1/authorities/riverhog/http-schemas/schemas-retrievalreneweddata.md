@@ -24,16 +24,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-eef10976ed"></a>`actor` | yes | #/components/schemas/RiverhogActor |  |
-| <a id="s-d88474f77e"></a>`cause` | no | anyOf=(#/components/schemas/RiverhogEventCause) \| (type="null") |  |
-| <a id="s-90f7f8aae0"></a>`collection_created_at` | no | anyOf=(type="string"; maxLength=64; minLength=1) \| (type="null") |  |
-| <a id="s-9da2bb92c8"></a>`collection_id` | no | anyOf=(#/components/schemas/CollectionId) \| (type="null") |  |
-| <a id="s-01a13a72ff"></a>`collection_ids` | yes | type="array"; items=(#/components/schemas/CollectionId); minItems=1 |  |
-| <a id="s-c8e1ae29e8"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null") |  |
-| <a id="s-3a2666d397"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1 |  |
-| <a id="s-4041768253"></a>`initiator` | yes | #/components/schemas/RiverhogActor |  |
-| <a id="s-66afd30440"></a>`retrieval_id` | yes | type="string"; maxLength=300; minLength=1 |  |
-| <a id="s-21c6797931"></a>`state` | yes | type="string"; const="ready" |  |
+| <a id="s-eef10976ed"></a>`actor` | yes | [RiverhogActor](schemas-riverhogactor.md) |  |
+| <a id="s-d88474f77e"></a>`cause` | no | anyOf=[([RiverhogEventCause](schemas-riverhogeventcause.md)); (type="null")] |  |
+| <a id="s-90f7f8aae0"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; title="Collection Created At" |  |
+| <a id="s-9da2bb92c8"></a>`collection_id` | no | anyOf=[([CollectionId](schemas-collectionid.md)); (type="null")] |  |
+| <a id="s-01a13a72ff"></a>`collection_ids` | yes | type="array"; items=([CollectionId](schemas-collectionid.md)); minItems=1; title="Collection Ids" |  |
+| <a id="s-c8e1ae29e8"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; title="Context" |  |
+| <a id="s-3a2666d397"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1; title="Expires At" |  |
+| <a id="s-4041768253"></a>`initiator` | yes | [RiverhogActor](schemas-riverhogactor.md) |  |
+| <a id="s-66afd30440"></a>`retrieval_id` | yes | type="string"; maxLength=300; minLength=1; title="Retrieval Id" |  |
+| <a id="s-21c6797931"></a>`state` | yes | type="string"; const="ready"; title="State" |  |
 
 ### Progression, limits, and lifecycle
 

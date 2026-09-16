@@ -175,9 +175,9 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 | Rule | If schema matches | Then must match | Otherwise must match |
 |---|---|---|---|
 | <a id="s-a1095ba87e"></a>1 | properties={status: (const="exact")}; required=["status"] | required=["started_at","ended_at"] | no additional constraint |
-| <a id="s-32cd5f2dca"></a>2 | properties={status: (const="approximate")}; required=["status"] | anyOf=(required=["started_at"]) \| (required=["ended_at"]); required=["note"] | no additional constraint |
+| <a id="s-32cd5f2dca"></a>2 | properties={status: (const="approximate")}; required=["status"] | anyOf=[(required=["started_at"]); (required=["ended_at"])]; required=["note"] | no additional constraint |
 | <a id="s-0e1dedf71d"></a>3 | properties={status: (const="bounded")}; required=["status"] | required=["started_at","ended_at","note"] | no additional constraint |
-| <a id="s-b91a118f2a"></a>4 | properties={status: (const="unknown")}; required=["status"] | not=(anyOf=(required=["started_at"]) \| (required=["ended_at"])); required=["note"] | no additional constraint |
+| <a id="s-b91a118f2a"></a>4 | properties={status: (const="unknown")}; required=["status"] | not=(anyOf=[(required=["started_at"]); (required=["ended_at"])]); required=["note"] | no additional constraint |
 
 ### <a id="s-73d177dbf5"></a>definition `agent`
 
@@ -1175,8 +1175,8 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 | Rule | If schema matches | Then must match | Otherwise must match |
 |---|---|---|---|
 | <a id="s-6cfeb542b2"></a>1 | properties={role: (const="other")}; required=["role"] | required=["role_uri"] | no additional constraint |
-| <a id="s-23eceb927a"></a>2 | properties={operation: (const="bind")}; required=["operation"] | oneOf=(required=["established_by_capture_id"]) \| (required=["established_by_activity_id"]); required=["state","relative_payload_locator","basis"] | no additional constraint |
-| <a id="s-ae5bd0d0ef"></a>3 | properties={operation: (const="unbind")}; required=["operation"] | not=(anyOf=(required=["state"]) \| (required=["relative_payload_locator"]) \| (required=["established_by_capture_id"]) \| (required=["established_by_activity_id"]) \| (required=["basis"]) \| (required=["basis_uri"])); required=["replaces_binding_id"] | no additional constraint |
+| <a id="s-23eceb927a"></a>2 | properties={operation: (const="bind")}; required=["operation"] | oneOf=[(required=["established_by_capture_id"]); (required=["established_by_activity_id"])]; required=["state","relative_payload_locator","basis"] | no additional constraint |
+| <a id="s-ae5bd0d0ef"></a>3 | properties={operation: (const="unbind")}; required=["operation"] | not=(anyOf=[(required=["state"]); (required=["relative_payload_locator"]); (required=["established_by_capture_id"]); (required=["established_by_activity_id"]); (required=["basis"]); (required=["basis_uri"])]); required=["replaces_binding_id"] | no additional constraint |
 | <a id="s-a76a027790"></a>4 | properties={basis: (const="other")}; required=["basis"] | required=["basis_uri"] | no additional constraint |
 
 ### <a id="s-5d421881fe"></a>definition `personAgent`
@@ -1439,7 +1439,7 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 
 | Rule | If schema matches | Then must match | Otherwise must match |
 |---|---|---|---|
-| <a id="s-77203dbb83"></a>1 | properties={scope: (const="local")}; required=["scope"] | not=(anyOf=(required=["journal_id"]) \| (required=["entry_id"]) \| (required=["entry_json_sha256"]) \| (required=["sidecar_uri"])) | no additional constraint |
+| <a id="s-77203dbb83"></a>1 | properties={scope: (const="local")}; required=["scope"] | not=(anyOf=[(required=["journal_id"]); (required=["entry_id"]); (required=["entry_json_sha256"]); (required=["sidecar_uri"])]) | no additional constraint |
 | <a id="s-fc57b64bd7"></a>2 | properties={scope: (const="external")}; required=["scope"] | required=["journal_id"] | no additional constraint |
 
 ### <a id="s-ce6e164ba2"></a>definition `textValue`

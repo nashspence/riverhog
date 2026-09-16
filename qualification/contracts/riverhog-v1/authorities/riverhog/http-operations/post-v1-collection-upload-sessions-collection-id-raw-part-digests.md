@@ -14,19 +14,26 @@ Register Collection Upload Session Raw Part Digests
 ## External contract
 
 <a id="s-aee096c8ac"></a>
-- <a id="s-c5e60abce4"></a>`operationId`: register_collection_upload_session_raw_part_digests
-- <a id="s-93c8c73dd7"></a>`summary`: Register Collection Upload Session Raw Part Digests
-- <a id="s-2fbf3a3327"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-c5e60abce4"></a>`operationId`: `"register_collection_upload_session_raw_part_digests"`
+- <a id="s-2fbf3a3327"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-93c8c73dd7"></a>`summary`: `"Register Collection Upload Session Raw Part Digests"`
+- <a id="s-458f6d28e3"></a>`tags`: `["collections"]`
+- <a id="s-c80ecbccb0"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-dea69d6a0b"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:create"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-30fea773af"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-30fea773af"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
 
 ### <a id="s-a616ac0e21"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CollectionUploadRawDigestBatchDocument"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [CollectionUploadRawDigestBatchDocument](../http-schemas/schemas-collectionuploadrawdigestbatchdocument.md) |
 
 ### Responses
 

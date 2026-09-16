@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b89eb94ed2"></a>`omission_reason` | yes | type="string"; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
-| <a id="s-51b355044f"></a>`status` | yes | type="string"; const="omitted" |  |
+| <a id="s-b89eb94ed2"></a>`omission_reason` | yes | type="string"; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$"; title="Omission Reason" |  |
+| <a id="s-51b355044f"></a>`status` | yes | type="string"; const="omitted"; title="Status" |  |
 
 ## Governing policies
 

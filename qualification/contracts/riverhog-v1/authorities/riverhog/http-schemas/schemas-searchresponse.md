@@ -24,13 +24,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1e9fcde2d6"></a>`collection` | yes | anyOf=(#/components/schemas/CollectionId) \| (type="null") |  |
-| <a id="s-0d7c551f3a"></a>`files` | yes | type="array"; items=(#/components/schemas/SearchFileOut) |  |
-| <a id="s-a2e3054466"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-d0c8462799"></a>`order` | yes | #/components/schemas/SortOrder |  |
-| <a id="s-dd8aeabd12"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-a185b44ebe"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-29873fe494"></a>`sort` | yes | #/components/schemas/SearchSort |  |
+| <a id="s-1e9fcde2d6"></a>`collection` | yes | anyOf=[([CollectionId](schemas-collectionid.md)); (type="null")] |  |
+| <a id="s-0d7c551f3a"></a>`files` | yes | type="array"; items=([SearchFileOut](schemas-searchfileout.md)); title="Files" |  |
+| <a id="s-a2e3054466"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-d0c8462799"></a>`order` | yes | [SortOrder](schemas-sortorder.md) |  |
+| <a id="s-dd8aeabd12"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
+| <a id="s-a185b44ebe"></a>`query` | yes | anyOf=[(type="string"); (type="null")]; title="Query" |  |
+| <a id="s-29873fe494"></a>`sort` | yes | [SearchSort](schemas-searchsort.md) |  |
 
 ### Progression, limits, and lifecycle
 

@@ -24,13 +24,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ed083ea0aa"></a>`common_intent` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-1d84fffa86"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-d003b4a71c"></a>`format` | no | type="string"; const="stove0-evaluation-definition/v1"; default="stove0-evaluation-definition/v1" |  |
-| <a id="s-52ffc0be04"></a>`inputs` | yes | type="array"; items=(#/components/schemas/CollectionRootRef); minItems=1 |  |
-| <a id="s-bf750d4125"></a>`matrix` | yes | #/components/schemas/EvaluationMatrix |  |
-| <a id="s-ec1c535372"></a>`purpose` | no | type="string"; enum=["trial","evaluation"]; default="evaluation" |  |
-| <a id="s-a02c55f45d"></a>`recipe` | yes | #/components/schemas/RecipeRef |  |
+| <a id="s-ed083ea0aa"></a>`common_intent` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Common Intent" |  |
+| <a id="s-1d84fffa86"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Evaluation Id" |  |
+| <a id="s-d003b4a71c"></a>`format` | no | type="string"; const="stove0-evaluation-definition/v1"; default="stove0-evaluation-definition/v1"; title="Format" |  |
+| <a id="s-52ffc0be04"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](schemas-collectionrootref.md)); minItems=1; title="Inputs" |  |
+| <a id="s-bf750d4125"></a>`matrix` | yes | [EvaluationMatrix](schemas-evaluationmatrix.md) |  |
+| <a id="s-ec1c535372"></a>`purpose` | no | type="string"; enum=["trial","evaluation"]; default="evaluation"; title="Purpose" |  |
+| <a id="s-a02c55f45d"></a>`recipe` | yes | [RecipeRef](schemas-reciperef.md) |  |
 
 ### Progression, limits, and lifecycle
 

@@ -24,15 +24,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f2126e73e2"></a>`actor` | yes | #/components/schemas/RiverhogActor |  |
-| <a id="s-2fbf9df71d"></a>`cause` | no | anyOf=(#/components/schemas/RiverhogEventCause) \| (type="null") |  |
-| <a id="s-86e30e7741"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
-| <a id="s-7983e959be"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-8a992ada09"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null") |  |
-| <a id="s-1ddd08640f"></a>`destination_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-c01a9dff02"></a>`initiator` | yes | #/components/schemas/RiverhogActor |  |
-| <a id="s-df13341310"></a>`source_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-c028ccecec"></a>`state` | yes | type="string"; const="requested" |  |
+| <a id="s-f2126e73e2"></a>`actor` | yes | [RiverhogActor](schemas-riverhogactor.md) |  |
+| <a id="s-2fbf9df71d"></a>`cause` | no | anyOf=[([RiverhogEventCause](schemas-riverhogeventcause.md)); (type="null")] |  |
+| <a id="s-86e30e7741"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1; title="Collection Created At" |  |
+| <a id="s-7983e959be"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-8a992ada09"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; title="Context" |  |
+| <a id="s-1ddd08640f"></a>`destination_store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
+| <a id="s-c01a9dff02"></a>`initiator` | yes | [RiverhogActor](schemas-riverhogactor.md) |  |
+| <a id="s-df13341310"></a>`source_store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
+| <a id="s-c028ccecec"></a>`state` | yes | type="string"; const="requested"; title="State" |  |
 
 ### Progression, limits, and lifecycle
 

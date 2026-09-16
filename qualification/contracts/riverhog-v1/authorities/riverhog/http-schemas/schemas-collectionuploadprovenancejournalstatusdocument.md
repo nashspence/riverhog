@@ -24,16 +24,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-982c4304db"></a>`accepted_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-9cb379acc2"></a>`bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-a21edea4a5"></a>`current_bytes` | no | anyOf=(type="integer"; minimum=0) \| (type="null") |  |
-| <a id="s-ec0690f235"></a>`current_path` | no | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-b72a4150cb"></a>`current_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-60b9f44c31"></a>`current_state_id` | no | anyOf=(#/components/schemas/ProvenanceStateId) \| (type="null") |  |
-| <a id="s-aa10735815"></a>`failure` | no | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-d2d8bb6a2c"></a>`journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
-| <a id="s-f21af066db"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ee287dd4a9"></a>`state` | yes | type="string"; enum=["accepting","validating","sealed","failed"] |  |
+| <a id="s-982c4304db"></a>`accepted_bytes` | yes | type="integer"; minimum=0; title="Accepted Bytes" |  |
+| <a id="s-9cb379acc2"></a>`bytes` | yes | type="integer"; minimum=1; title="Bytes" |  |
+| <a id="s-a21edea4a5"></a>`current_bytes` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; title="Current Bytes" |  |
+| <a id="s-ec0690f235"></a>`current_path` | no | anyOf=[(type="string"); (type="null")]; title="Current Path" |  |
+| <a id="s-b72a4150cb"></a>`current_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Current Sha256" |  |
+| <a id="s-60b9f44c31"></a>`current_state_id` | no | anyOf=[([ProvenanceStateId](schemas-provenancestateid.md)); (type="null")] |  |
+| <a id="s-aa10735815"></a>`failure` | no | anyOf=[(type="string"); (type="null")]; title="Failure" |  |
+| <a id="s-d2d8bb6a2c"></a>`journal_id` | yes | [ProvenanceJournalId](schemas-provenancejournalid.md) |  |
+| <a id="s-f21af066db"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-ee287dd4a9"></a>`state` | yes | type="string"; enum=["accepting","validating","sealed","failed"]; title="State" |  |
 
 ### Progression, limits, and lifecycle
 

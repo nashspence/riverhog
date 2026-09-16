@@ -66,7 +66,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-995ef54dc2"></a>`encryption_format` | yes | type="string"; minLength=1 |  |
 | <a id="s-c05f51718d"></a>`format` | no | type="string"; const="riverhog-collection/v1"; default="riverhog-collection/v1" |  |
 | <a id="s-a8748b73bf"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
-| <a id="s-c6463915eb"></a>`provenance_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-c6463915eb"></a>`provenance_identity` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-f9273655ce"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"] |  |
 
 ## Governing policies

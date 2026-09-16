@@ -16,15 +16,15 @@ Narrow HTTP client for Stove0 content observers.
 <a id="s-f5aa704990"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-a65aed6d61"></a>`artifacts` | [{"coordinate": "dist/stove0_observer_client-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_observer_client-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-7e3e0e6263"></a>`channel` | github-release |
-| <a id="s-4602d16bd8"></a>`description` | Narrow HTTP client for Stove0 content observers. |
-| <a id="s-42eb62ca35"></a>`license_baseline` | first-v1-publication |
-| <a id="s-5d259f470d"></a>`license_expression` | Apache-2.0 |
-| <a id="s-5727b46bb5"></a>`publication_identity` | {"coordinate": "stove0-observer-client", "kind": "python-distribution"} |
-| <a id="s-a3936a4f2e"></a>`requires_python` | >=3.12 |
-| <a id="s-c28577a8a0"></a>`role` | reusable_library |
-| <a id="s-3f311fd308"></a>`source` | reference/stove0/packages/observer-client/pyproject.toml |
+| <a id="s-a65aed6d61"></a>`artifacts` | `[{"coordinate":"dist/stove0_observer_client-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_observer_client-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-7e3e0e6263"></a>`channel` | `"github-release"` |
+| <a id="s-4602d16bd8"></a>`description` | `"Narrow HTTP client for Stove0 content observers."` |
+| <a id="s-42eb62ca35"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-5d259f470d"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-5727b46bb5"></a>`publication_identity` | `{"coordinate":"stove0-observer-client","kind":"python-distribution"}` |
+| <a id="s-a3936a4f2e"></a>`requires_python` | `">=3.12"` |
+| <a id="s-c28577a8a0"></a>`role` | `"reusable_library"` |
+| <a id="s-3f311fd308"></a>`source` | `"reference/stove0/packages/observer-client/pyproject.toml"` |
 
 ## Existing ownership context
 

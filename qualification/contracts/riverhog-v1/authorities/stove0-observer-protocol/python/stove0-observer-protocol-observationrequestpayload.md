@@ -68,7 +68,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-e66b4219e0"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-89aff51a8f"></a>`collection` | yes | [CollectionRootRef](#s-f089104b8c) |  |
 | <a id="s-f36a716a97"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-d9bdb5b3a1"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-d9bdb5b3a1"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
 | <a id="s-e39fc3b897"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-e25fb6c472"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-ed8b3f0527"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |

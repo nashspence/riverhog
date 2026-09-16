@@ -14,16 +14,18 @@ Revoke App Key
 ## External contract
 
 <a id="s-34033d480c"></a>
-- <a id="s-e43d5ad244"></a>`operationId`: revoke_app_key
-- <a id="s-0167227e49"></a>`summary`: Revoke App Key
-- <a id="s-a81a4de2ec"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-e43d5ad244"></a>`operationId`: `"revoke_app_key"`
+- <a id="s-a81a4de2ec"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-0167227e49"></a>`summary`: `"Revoke App Key"`
+- <a id="s-c9130b784e"></a>`tags`: `["apps"]`
+- <a id="s-bfbb3e08e4"></a>`x-riverhog-permission-requirements`: `[{"any_of":["keys:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-8f6cfd79bd"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
-| <a id="s-aa96c7b448"></a>`key_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{16}$" |
+| <a id="s-8f6cfd79bd"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"; title="App" |
+| <a id="s-aa96c7b448"></a>`key_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{16}$"; title="Key Id" |
 
 ### Responses
 

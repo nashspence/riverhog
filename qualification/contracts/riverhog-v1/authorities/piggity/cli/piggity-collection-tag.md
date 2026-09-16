@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-fae28ab1c4"></a>Parser name: `tag`
+
+| Field | Value |
+|---|---|
+| <a id="s-c6067a7f38"></a>`parameters` | `[]` |
 - <a id="s-5eebede679"></a>Subcommand selection: required.
 - <a id="s-47eef769ca"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
 - <a id="s-b3a3d427c1"></a>Options after positional arguments at this parser: left as arguments.

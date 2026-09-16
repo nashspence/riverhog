@@ -14,15 +14,17 @@ Cancel Collection Upload Session
 ## External contract
 
 <a id="s-d979d51c47"></a>
-- <a id="s-c96da74e0b"></a>`operationId`: cancel_collection_upload_session
-- <a id="s-4c66c14b1e"></a>`summary`: Cancel Collection Upload Session
-- <a id="s-39ecf4d334"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-c96da74e0b"></a>`operationId`: `"cancel_collection_upload_session"`
+- <a id="s-39ecf4d334"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-4c66c14b1e"></a>`summary`: `"Cancel Collection Upload Session"`
+- <a id="s-84b8331fd4"></a>`tags`: `["collections"]`
+- <a id="s-e412304522"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:create"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-7e848668ae"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-7e848668ae"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
 
 ### Responses
 

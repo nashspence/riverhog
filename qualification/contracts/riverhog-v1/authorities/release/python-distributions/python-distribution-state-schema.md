@@ -16,15 +16,15 @@ Forward-only relational state schema and migration contracts.
 <a id="s-ff0cdfd4d6"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-e95d6d962d"></a>`artifacts` | [{"coordinate": "dist/state_schema-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/state_schema-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-98abc23196"></a>`channel` | github-release |
-| <a id="s-32e3fa588f"></a>`description` | Forward-only relational state schema and migration contracts. |
-| <a id="s-3bbb63e7ee"></a>`license_baseline` | first-v1-publication |
-| <a id="s-d41b2869c4"></a>`license_expression` | Apache-2.0 |
-| <a id="s-2011303347"></a>`publication_identity` | {"coordinate": "state-schema", "kind": "python-distribution"} |
-| <a id="s-3751fd2332"></a>`requires_python` | >=3.12 |
-| <a id="s-0e4d139f72"></a>`role` | internal_build_unit |
-| <a id="s-6594deda87"></a>`source` | packages/state-schema/pyproject.toml |
+| <a id="s-e95d6d962d"></a>`artifacts` | `[{"coordinate":"dist/state_schema-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/state_schema-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-98abc23196"></a>`channel` | `"github-release"` |
+| <a id="s-32e3fa588f"></a>`description` | `"Forward-only relational state schema and migration contracts."` |
+| <a id="s-3bbb63e7ee"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-d41b2869c4"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-2011303347"></a>`publication_identity` | `{"coordinate":"state-schema","kind":"python-distribution"}` |
+| <a id="s-3751fd2332"></a>`requires_python` | `">=3.12"` |
+| <a id="s-0e4d139f72"></a>`role` | `"internal_build_unit"` |
+| <a id="s-6594deda87"></a>`source` | `"packages/state-schema/pyproject.toml"` |
 
 ## Existing ownership context
 

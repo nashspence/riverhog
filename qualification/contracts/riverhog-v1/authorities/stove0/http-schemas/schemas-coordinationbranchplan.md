@@ -25,11 +25,11 @@ One named required branch-bound child coordinator.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-bba86c9b0f"></a>`artifact_selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
-| <a id="s-7754ad69f6"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-4260630469"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-329b8ba6f9"></a>`kind` | no | type="string"; const="coordination"; default="coordination" |  |
-| <a id="s-fcffcaa804"></a>`work` | yes | #/components/schemas/WorkIdentity |  |
+| <a id="s-bba86c9b0f"></a>`artifact_selection` | yes | [ArtifactSelectionRef](schemas-artifactselectionref.md) |  |
+| <a id="s-7754ad69f6"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Branch Id" |  |
+| <a id="s-4260630469"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Branch Set Sha256" |  |
+| <a id="s-329b8ba6f9"></a>`kind` | no | type="string"; const="coordination"; default="coordination"; title="Kind" |  |
+| <a id="s-fcffcaa804"></a>`work` | yes | [WorkIdentity](schemas-workidentity.md) |  |
 
 ### Progression, limits, and lifecycle
 

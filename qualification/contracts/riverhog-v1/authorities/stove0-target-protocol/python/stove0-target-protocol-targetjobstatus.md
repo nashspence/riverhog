@@ -37,15 +37,15 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-e863ddeeab"></a>`attempt` | yes | type="integer"; minimum=1 |  |
-| <a id="s-34af17894f"></a>`derivation` | no | anyOf=(type="object"; additionalProperties=true) \| (type="null"); default=null |  |
-| <a id="s-0004a645e9"></a>`effect_receipt` | no | anyOf=([ExternalEffectReceipt](#s-fa9e50683e)) \| (type="null"); default=null |  |
-| <a id="s-e170293c3a"></a>`execution_evidence` | no | anyOf=([TargetExecutionEvidence](#s-f1b5facb9e)) \| (type="null"); default=null |  |
-| <a id="s-c2358d4323"></a>`failure` | no | anyOf=([TargetFailure](#s-985a78c617)) \| (type="null"); default=null |  |
-| <a id="s-16b9c1ba29"></a>`inapplicable` | no | anyOf=([TargetInapplicable](#s-efacb42ecf)) \| (type="null"); default=null |  |
+| <a id="s-34af17894f"></a>`derivation` | no | anyOf=[(type="object"; additionalProperties=(any JSON value)); (type="null")]; default=null |  |
+| <a id="s-0004a645e9"></a>`effect_receipt` | no | anyOf=[([ExternalEffectReceipt](#s-fa9e50683e)); (type="null")]; default=null |  |
+| <a id="s-e170293c3a"></a>`execution_evidence` | no | anyOf=[([TargetExecutionEvidence](#s-f1b5facb9e)); (type="null")]; default=null |  |
+| <a id="s-c2358d4323"></a>`failure` | no | anyOf=[([TargetFailure](#s-985a78c617)); (type="null")]; default=null |  |
+| <a id="s-16b9c1ba29"></a>`inapplicable` | no | anyOf=[([TargetInapplicable](#s-efacb42ecf)); (type="null")]; default=null |  |
 | <a id="s-0fef5e9472"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-fdfddb84b6"></a>`output_collection` | no | anyOf=([OutputCollectionRef](#s-0fc4bfc6da)) \| (type="null"); default=null |  |
+| <a id="s-fdfddb84b6"></a>`output_collection` | no | anyOf=[([OutputCollectionRef](#s-0fc4bfc6da)); (type="null")]; default=null |  |
 | <a id="s-b330728783"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-bb2a827a04"></a>`production` | no | anyOf=([TargetProductionAuthority](#s-faf2b63b18)) \| (type="null"); default=null |  |
+| <a id="s-bb2a827a04"></a>`production` | no | anyOf=[([TargetProductionAuthority](#s-faf2b63b18)); (type="null")]; default=null |  |
 | <a id="s-768559147f"></a>`progress` | yes | [TargetProgress](#s-ddb01229e7) |  |
 | <a id="s-2cdfa080a8"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1" |  |
 | <a id="s-83e05f830d"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -234,8 +234,8 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-89e92610bc"></a>`completed` | yes | type="integer"; minimum=0 |  |
 | <a id="s-bd92e0621b"></a>`phase` | yes | type="string"; maxLength=120; minLength=1 |  |
-| <a id="s-54a5ceb1ec"></a>`total` | no | anyOf=(type="integer"; minimum=0) \| (type="null"); default=null |  |
-| <a id="s-98b8165ddd"></a>`unit` | no | anyOf=(type="string"; maxLength=40; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-54a5ceb1ec"></a>`total` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; default=null |  |
+| <a id="s-98b8165ddd"></a>`unit` | no | anyOf=[(type="string"; maxLength=40; minLength=1); (type="null")]; default=null |  |
 
 ## Maintained corroboration
 

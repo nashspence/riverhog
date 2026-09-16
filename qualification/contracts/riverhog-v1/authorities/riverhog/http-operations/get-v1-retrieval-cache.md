@@ -14,9 +14,11 @@ Retrieval Cache Status
 ## External contract
 
 <a id="s-37955c5a9e"></a>
-- <a id="s-90de4c1b66"></a>`operationId`: retrieval_cache_status
-- <a id="s-93796d4f84"></a>`summary`: Retrieval Cache Status
-- <a id="s-1f3148a04d"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-90de4c1b66"></a>`operationId`: `"retrieval_cache_status"`
+- <a id="s-1f3148a04d"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-93796d4f84"></a>`summary`: `"Retrieval Cache Status"`
+- <a id="s-f054447e4d"></a>`tags`: `["retrieval"]`
+- <a id="s-86aa97e088"></a>`x-riverhog-permission-requirements`: `[{"any_of":["catalog:read"]}]`
 
 ### Responses
 

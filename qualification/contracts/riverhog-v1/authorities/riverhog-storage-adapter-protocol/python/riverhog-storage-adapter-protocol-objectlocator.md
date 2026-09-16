@@ -37,7 +37,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-4623f87320"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-7ef7be1c5b"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-7ef7be1c5b"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null |  |
 
 ## Maintained corroboration
 

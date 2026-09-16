@@ -24,8 +24,8 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-39f1dc9eb2"></a>`ids`<br>`--ids` | optional flag; 0 values | boolean | `false` |
-| <a id="s-20a1505b65"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-39f1dc9eb2"></a>`ids`<br>`--ids` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
+| <a id="s-20a1505b65"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -44,14 +44,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-cf8f2c4504"></a>`completed` | <a id="s-50f315949d"></a>`{"kind":"command-completed"}` | <a id="s-cc1b9f9be2"></a>`0` | <a id="s-6425bca83c"></a>human: `noncontractual-presentation-of-command-result`; json: [gogurt-provider-list/v1](#s-6b2cf5a211) | <a id="s-536936b94e"></a>all: `empty` |
+| <a id="s-cf8f2c4504"></a>`completed` | <a id="s-50f315949d"></a>`{"kind":"command-completed"}` | <a id="s-cc1b9f9be2"></a>`0` | <a id="s-6425bca83c"></a>human: `"noncontractual-presentation-of-command-result"`; json: [gogurt-provider-list/v1](#s-6b2cf5a211) | <a id="s-536936b94e"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-32cb5a3c52"></a>`usage` | <a id="s-b6eae10f8d"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-8115df8409"></a>`2` | <a id="s-a944f4f084"></a>all: `empty` | <a id="s-bebd7a001c"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-ccfca921f6"></a>`operational` | <a id="s-72e98de6a5"></a>`{"kind":"application-error"}` | <a id="s-ec8d487fe3"></a>`1` | <a id="s-1c58824587"></a>human: `empty`; json: [gogurt-cli-error/v1](#s-981389e8d3) | <a id="s-71a4576897"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-32cb5a3c52"></a>`usage` | <a id="s-b6eae10f8d"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-8115df8409"></a>`2` | <a id="s-a944f4f084"></a>all: `"empty"` | <a id="s-bebd7a001c"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-ccfca921f6"></a>`operational` | <a id="s-72e98de6a5"></a>`{"kind":"application-error"}` | <a id="s-ec8d487fe3"></a>`1` | <a id="s-1c58824587"></a>human: `"empty"`; json: [gogurt-cli-error/v1](#s-981389e8d3) | <a id="s-71a4576897"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Local structured outputs
 

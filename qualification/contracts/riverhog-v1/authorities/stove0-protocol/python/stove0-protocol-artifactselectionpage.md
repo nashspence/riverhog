@@ -39,8 +39,8 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-4228ab83c9"></a>`artifacts` | yes | type="array"; items=([ArtifactSubject](#s-d3858e980e)); maxItems=256; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"selection-bound-start_ordinal","reason":"bounded-artifact-selection-page"} |  |
 | <a id="s-a807dd959e"></a>`authority` | yes | [ArtifactSelectionRef](#s-4d88ccaa17) |  |
 | <a id="s-2460fa0fde"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-c6f2138d13"></a>`continuation` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
-| <a id="s-5169754d6f"></a>`next_continuation` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-c6f2138d13"></a>`continuation` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
+| <a id="s-5169754d6f"></a>`next_continuation` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 
 ##### Definitions
 
@@ -76,7 +76,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-cf07035b61"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-cb5fd12368"></a>`collection` | yes | [CollectionRootRef](#s-283e8f0087) |  |
 | <a id="s-67eb1af4b9"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-e04aa59c68"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-e04aa59c68"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
 | <a id="s-50bd7a63bb"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-e03d3bf8d9"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-d0d0432f68"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |

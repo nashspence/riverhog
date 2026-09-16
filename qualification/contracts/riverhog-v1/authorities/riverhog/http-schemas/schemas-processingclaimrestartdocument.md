@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ba697e32c4"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-68ed410eac"></a>`lease_seconds` | no | type="integer"; minimum=30; maximum=86400; default=1800 |  |
+| <a id="s-ba697e32c4"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-68ed410eac"></a>`lease_seconds` | no | type="integer"; minimum=30; maximum=86400; default=1800; title="Lease Seconds" |  |
 
 ### Progression, limits, and lifecycle
 

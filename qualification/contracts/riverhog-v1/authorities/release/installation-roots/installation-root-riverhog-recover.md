@@ -16,11 +16,11 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-287e73a4a5"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-0e03f9d690"></a>`artifact_format` | wheel |
-| <a id="s-3d429a1d22"></a>`distribution` | riverhog-recover |
-| <a id="s-d0ccec6139"></a>`lock` | {"coordinate": "pylock.riverhog-recover.toml", "format": "pylock.toml"} |
-| <a id="s-e6bd4b37f6"></a>`method` | uv-tool |
-| <a id="s-ec5247a6c0"></a>`platforms` | ["linux-x64", "macos-arm64", "windows-x64"] |
+| <a id="s-0e03f9d690"></a>`artifact_format` | `"wheel"` |
+| <a id="s-3d429a1d22"></a>`distribution` | `"riverhog-recover"` |
+| <a id="s-d0ccec6139"></a>`lock` | `{"coordinate":"pylock.riverhog-recover.toml","format":"pylock.toml"}` |
+| <a id="s-e6bd4b37f6"></a>`method` | `"uv-tool"` |
+| <a id="s-ec5247a6c0"></a>`platforms` | `["linux-x64","macos-arm64","windows-x64"]` |
 
 ## Existing ownership context
 

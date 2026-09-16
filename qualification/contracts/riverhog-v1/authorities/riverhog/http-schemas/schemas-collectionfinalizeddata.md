@@ -24,15 +24,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-10253e13a4"></a>`actor` | yes | #/components/schemas/RiverhogActor |  |
-| <a id="s-943808cecb"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-0f4ed7f415"></a>`bytes_total` | yes | type="integer"; minimum=0 |  |
-| <a id="s-036a4cbcd9"></a>`cause` | no | anyOf=(#/components/schemas/RiverhogEventCause) \| (type="null") |  |
-| <a id="s-072c25f017"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
-| <a id="s-b9b9559b23"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-634b16fda5"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null") |  |
-| <a id="s-1b21fd8bfc"></a>`files_total` | yes | type="integer"; minimum=0 |  |
-| <a id="s-881387cb45"></a>`initiator` | yes | #/components/schemas/RiverhogActor |  |
+| <a id="s-10253e13a4"></a>`actor` | yes | [RiverhogActor](schemas-riverhogactor.md) |  |
+| <a id="s-943808cecb"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
+| <a id="s-0f4ed7f415"></a>`bytes_total` | yes | type="integer"; minimum=0; title="Bytes Total" |  |
+| <a id="s-036a4cbcd9"></a>`cause` | no | anyOf=[([RiverhogEventCause](schemas-riverhogeventcause.md)); (type="null")] |  |
+| <a id="s-072c25f017"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1; title="Collection Created At" |  |
+| <a id="s-b9b9559b23"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-634b16fda5"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; title="Context" |  |
+| <a id="s-1b21fd8bfc"></a>`files_total` | yes | type="integer"; minimum=0; title="Files Total" |  |
+| <a id="s-881387cb45"></a>`initiator` | yes | [RiverhogActor](schemas-riverhogactor.md) |  |
 
 ### Progression, limits, and lifecycle
 

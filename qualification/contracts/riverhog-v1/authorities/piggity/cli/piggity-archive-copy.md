@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-dd93faf20b"></a>Parser name: `copy`
+
+| Field | Value |
+|---|---|
+| <a id="s-4c8106e414"></a>`parameters` | `[]` |
 - <a id="s-6434b71ed3"></a>Subcommand selection: required.
 - <a id="s-0a0ac41801"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
 - <a id="s-1aada23613"></a>Options after positional arguments at this parser: left as arguments.

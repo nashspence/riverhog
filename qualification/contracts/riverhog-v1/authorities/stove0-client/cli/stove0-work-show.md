@@ -24,7 +24,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-b1c892ea3c"></a>`work_id`<br>`work_id` | required positional; 1 value | text | not recorded |
+| <a id="s-b1c892ea3c"></a>`work_id`<br>`work_id` | required positional; 1 value | text | not recorded<br>Env: `null` |
 
 ### Terminating controls
 
@@ -43,14 +43,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-629b6d149c"></a>`completed` | <a id="s-7279593f05"></a>`{"kind":"command-completed"}` | <a id="s-b5e6315ee6"></a>`0` | <a id="s-86be555bfb"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP get_work response 200](../../stove0/http-operations/get-v1-work-work-id.md#s-0ec142a631) | <a id="s-77c9561fc0"></a>all: `empty` |
+| <a id="s-629b6d149c"></a>`completed` | <a id="s-7279593f05"></a>`{"kind":"command-completed"}` | <a id="s-b5e6315ee6"></a>`0` | <a id="s-86be555bfb"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP get_work response 200](../../stove0/http-operations/get-v1-work-work-id.md#s-0ec142a631) | <a id="s-77c9561fc0"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-8a8621d16c"></a>`usage` | <a id="s-62cf5ad654"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-4221ec3012"></a>`2` | <a id="s-6ebeaf1e2e"></a>all: `empty` | <a id="s-1a8a62cf86"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-60cc34c12b"></a>`operational` | <a id="s-a7a812aa09"></a>`{"kind":"application-error"}` | <a id="s-d7a29dfafa"></a>`1` | <a id="s-4482655236"></a>all: `empty` | <a id="s-a6ce542e8b"></a>all: `noncontractual-diagnostic` |
+| <a id="s-8a8621d16c"></a>`usage` | <a id="s-62cf5ad654"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-4221ec3012"></a>`2` | <a id="s-6ebeaf1e2e"></a>all: `"empty"` | <a id="s-1a8a62cf86"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-60cc34c12b"></a>`operational` | <a id="s-a7a812aa09"></a>`{"kind":"application-error"}` | <a id="s-d7a29dfafa"></a>`1` | <a id="s-4482655236"></a>all: `"empty"` | <a id="s-a6ce542e8b"></a>all: `"noncontractual-diagnostic"` |
 
 ### Progression, limits, and lifecycle
 

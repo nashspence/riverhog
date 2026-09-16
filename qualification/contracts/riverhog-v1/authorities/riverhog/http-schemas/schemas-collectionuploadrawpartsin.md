@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-63f2f80203"></a>`ordered_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-f5f8f9f00b"></a>`part_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-ad73d85dc2"></a>`part_plaintext_bytes` | yes | type="integer"; minimum=65536 |  |
+| <a id="s-63f2f80203"></a>`ordered_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Ordered Sha256" |  |
+| <a id="s-f5f8f9f00b"></a>`part_count` | yes | type="integer"; minimum=1; title="Part Count" |  |
+| <a id="s-ad73d85dc2"></a>`part_plaintext_bytes` | yes | type="integer"; minimum=65536; title="Part Plaintext Bytes" |  |
 
 ### Progression, limits, and lifecycle
 

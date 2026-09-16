@@ -16,15 +16,15 @@ Dependency-light public contracts for external stove0 content observers.
 <a id="s-1fb2121fd2"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-0367d3bc37"></a>`artifacts` | [{"coordinate": "dist/stove0_observer_protocol-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_observer_protocol-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-0e6acfa8b5"></a>`channel` | github-release |
-| <a id="s-430672fc88"></a>`description` | Dependency-light public contracts for external stove0 content observers. |
-| <a id="s-6d8ed9dd81"></a>`license_baseline` | first-v1-publication |
-| <a id="s-95aa45aa31"></a>`license_expression` | Apache-2.0 |
-| <a id="s-51f0ae21fc"></a>`publication_identity` | {"coordinate": "stove0-observer-protocol", "kind": "python-distribution"} |
-| <a id="s-26e66e614c"></a>`requires_python` | >=3.12 |
-| <a id="s-3a08d0f376"></a>`role` | reusable_library |
-| <a id="s-a8185be19d"></a>`source` | reference/stove0/packages/observer-protocol/pyproject.toml |
+| <a id="s-0367d3bc37"></a>`artifacts` | `[{"coordinate":"dist/stove0_observer_protocol-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_observer_protocol-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-0e6acfa8b5"></a>`channel` | `"github-release"` |
+| <a id="s-430672fc88"></a>`description` | `"Dependency-light public contracts for external stove0 content observers."` |
+| <a id="s-6d8ed9dd81"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-95aa45aa31"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-51f0ae21fc"></a>`publication_identity` | `{"coordinate":"stove0-observer-protocol","kind":"python-distribution"}` |
+| <a id="s-26e66e614c"></a>`requires_python` | `">=3.12"` |
+| <a id="s-3a08d0f376"></a>`role` | `"reusable_library"` |
+| <a id="s-a8185be19d"></a>`source` | `"reference/stove0/packages/observer-protocol/pyproject.toml"` |
 
 ## Existing ownership context
 

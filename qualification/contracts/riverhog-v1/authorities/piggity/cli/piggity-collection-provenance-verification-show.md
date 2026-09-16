@@ -24,8 +24,8 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-157365010e"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded |
-| <a id="s-f117275074"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-157365010e"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded<br>Env: `null` |
+| <a id="s-f117275074"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -44,14 +44,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-8a590322bd"></a>`completed` | <a id="s-a17562f0ac"></a>`{"kind":"command-completed"}` | <a id="s-772cf26ed7"></a>`0` | <a id="s-3ef47693ca"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP get_collection_provenance_verification response 200](../../riverhog/http-operations/get-v1-collections-collection-id-provenance-verification.md#s-d1f90bc6b1) | <a id="s-dbcd8b3665"></a>all: `empty` |
+| <a id="s-8a590322bd"></a>`completed` | <a id="s-a17562f0ac"></a>`{"kind":"command-completed"}` | <a id="s-772cf26ed7"></a>`0` | <a id="s-3ef47693ca"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP get_collection_provenance_verification response 200](../../riverhog/http-operations/get-v1-collections-collection-id-provenance-verification.md#s-d1f90bc6b1) | <a id="s-dbcd8b3665"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-6ef6a5af4b"></a>`usage` | <a id="s-93601c9e09"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-77b1634441"></a>`2` | <a id="s-e110e9883d"></a>all: `empty` | <a id="s-c1d75671ba"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-af84fce3a6"></a>`operational` | <a id="s-e3d481b2b0"></a>`{"kind":"application-error"}` | <a id="s-012697735c"></a>`1` | <a id="s-8b04f57a99"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-45bb0945d5"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-6ef6a5af4b"></a>`usage` | <a id="s-93601c9e09"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-77b1634441"></a>`2` | <a id="s-e110e9883d"></a>all: `"empty"` | <a id="s-c1d75671ba"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-af84fce3a6"></a>`operational` | <a id="s-e3d481b2b0"></a>`{"kind":"application-error"}` | <a id="s-012697735c"></a>`1` | <a id="s-8b04f57a99"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-45bb0945d5"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 

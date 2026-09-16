@@ -25,12 +25,12 @@ Success-only receipt identity for one required external-effect branch.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-864c5c9db0"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-3316e047b7"></a>`effect_receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a8662c1dfd"></a>`format` | no | type="string"; const="stove0-branch-effect-settlement/v1"; default="stove0-branch-effect-settlement/v1" |  |
-| <a id="s-c9cc6c58a2"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-c1a292eac6"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-7b654d920a"></a>`workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-864c5c9db0"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Branch Id" |  |
+| <a id="s-3316e047b7"></a>`effect_receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Effect Receipt Sha256" |  |
+| <a id="s-a8662c1dfd"></a>`format` | no | type="string"; const="stove0-branch-effect-settlement/v1"; default="stove0-branch-effect-settlement/v1"; title="Format" |  |
+| <a id="s-c9cc6c58a2"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Settlement Sha256" |  |
+| <a id="s-c1a292eac6"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
+| <a id="s-7b654d920a"></a>`workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Workflow Plan Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

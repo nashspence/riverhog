@@ -24,13 +24,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d66284da83"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-ef263322d2"></a>`collection` | yes | #/components/schemas/CollectionRootRef |  |
-| <a id="s-c93b16de84"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-90d6f2e055"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null") |  |
-| <a id="s-05f2ba23fe"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-4b0dbbe13a"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-b37980beb8"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d66284da83"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-ef263322d2"></a>`collection` | yes | [CollectionRootRef](schemas-collectionrootref.md) |  |
+| <a id="s-c93b16de84"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$"; title="Id" |  |
+| <a id="s-90d6f2e055"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; title="Media Type" |  |
+| <a id="s-05f2ba23fe"></a>`path` | yes | type="string"; maxLength=4096; minLength=1; title="Path" |  |
+| <a id="s-4b0dbbe13a"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Role" |  |
+| <a id="s-b37980beb8"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

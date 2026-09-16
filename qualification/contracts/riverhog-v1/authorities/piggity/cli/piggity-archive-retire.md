@@ -24,11 +24,11 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-74ff7f0ecb"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded |
-| <a id="s-1cad34944b"></a>`store`<br>`--store` | required option; 1 value | text | not recorded |
-| <a id="s-6334a27c26"></a>`dry_run`<br>`--dry-run`, `--plan` | optional flag; 0 values | boolean | `false` |
-| <a id="s-bc3027a32b"></a>`confirm`<br>`--confirm` | optional option; 1 value | text | not recorded |
-| <a id="s-bb4c28ef4b"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-74ff7f0ecb"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded<br>Env: `null` |
+| <a id="s-1cad34944b"></a>`store`<br>`--store` | required option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-6334a27c26"></a>`dry_run`<br>`--dry-run`, `--plan` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
+| <a id="s-bc3027a32b"></a>`confirm`<br>`--confirm` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-bb4c28ef4b"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -47,17 +47,17 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-99895d5327"></a>`planned` | <a id="s-64a4de99c4"></a>`{"kind":"option-equals","parameter":"dry_run","value":true}` | <a id="s-679543bbd6"></a>`0` | <a id="s-755e242947"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP plan_archive_copy_retirement response 200](../../riverhog/http-operations/post-v1-archive-copies-retirement-plan.md#s-75066bfe2a) | <a id="s-2f630eeedf"></a>all: `empty` |
-| <a id="s-bd985cbae6"></a>`executed` | <a id="s-d18be48412"></a>`{"kind":"option-equals","parameter":"dry_run","value":false}` | <a id="s-226a0ac440"></a>`0` | <a id="s-a5acf1c320"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP retire_archive_copy response 200](../../riverhog/http-operations/post-v1-archive-copies-retire.md#s-727ed61cf8) | <a id="s-6df3b708e4"></a>all: `empty` |
+| <a id="s-99895d5327"></a>`planned` | <a id="s-64a4de99c4"></a>`{"kind":"option-equals","parameter":"dry_run","value":true}` | <a id="s-679543bbd6"></a>`0` | <a id="s-755e242947"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP plan_archive_copy_retirement response 200](../../riverhog/http-operations/post-v1-archive-copies-retirement-plan.md#s-75066bfe2a) | <a id="s-2f630eeedf"></a>all: `"empty"` |
+| <a id="s-bd985cbae6"></a>`executed` | <a id="s-d18be48412"></a>`{"kind":"option-equals","parameter":"dry_run","value":false}` | <a id="s-226a0ac440"></a>`0` | <a id="s-a5acf1c320"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP retire_archive_copy response 200](../../riverhog/http-operations/post-v1-archive-copies-retire.md#s-727ed61cf8) | <a id="s-6df3b708e4"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-8910a67b1f"></a>`usage` | <a id="s-2081e9c272"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-a159384c27"></a>`2` | <a id="s-71881e206f"></a>all: `empty` | <a id="s-e56b218030"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-8b235c6ce0"></a>`operational` | <a id="s-19506b04c0"></a>`{"kind":"application-error"}` | <a id="s-29c43e7cf1"></a>`1` | <a id="s-95921aba6c"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-a89dbe5a9b"></a>human: `noncontractual-diagnostic`; json: `empty` |
-| <a id="s-8a42e3889d"></a>`blocked` | <a id="s-da32c7e454"></a>`{"kind":"plan-reported-blockers"}` | <a id="s-c8010cb636"></a>`1` | <a id="s-d0711626b5"></a>human: `noncontractual-presentation-of-command-result` | <a id="s-47bee7eb9a"></a>human: `empty` |
-| <a id="s-f0b56a096d"></a>`confirmation-declined` | <a id="s-c156fe737f"></a>`{"kind":"interactive-confirmation-mismatch"}` | <a id="s-a10a6558d9"></a>`1` | <a id="s-bf862a00be"></a>human: `noncontractual-presentation-of-command-result` | <a id="s-df55cf1650"></a>human: `noncontractual-diagnostic` |
+| <a id="s-8910a67b1f"></a>`usage` | <a id="s-2081e9c272"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-a159384c27"></a>`2` | <a id="s-71881e206f"></a>all: `"empty"` | <a id="s-e56b218030"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-8b235c6ce0"></a>`operational` | <a id="s-19506b04c0"></a>`{"kind":"application-error"}` | <a id="s-29c43e7cf1"></a>`1` | <a id="s-95921aba6c"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-a89dbe5a9b"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
+| <a id="s-8a42e3889d"></a>`blocked` | <a id="s-da32c7e454"></a>`{"kind":"plan-reported-blockers"}` | <a id="s-c8010cb636"></a>`1` | <a id="s-d0711626b5"></a>human: `"noncontractual-presentation-of-command-result"` | <a id="s-47bee7eb9a"></a>human: `"empty"` |
+| <a id="s-f0b56a096d"></a>`confirmation-declined` | <a id="s-c156fe737f"></a>`{"kind":"interactive-confirmation-mismatch"}` | <a id="s-a10a6558d9"></a>`1` | <a id="s-bf862a00be"></a>human: `"noncontractual-presentation-of-command-result"` | <a id="s-df55cf1650"></a>human: `"noncontractual-diagnostic"` |
 
 ### Progression, limits, and lifecycle
 

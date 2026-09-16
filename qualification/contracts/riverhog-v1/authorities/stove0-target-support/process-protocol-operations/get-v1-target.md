@@ -16,13 +16,13 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-cc04ad06d2"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-b5386d0c54"></a>`error_schema` | ErrorResponse |
-| <a id="s-40838b110c"></a>`errors` | [{"code": "bad_request", "status": 400}, {"code": "unauthorized", "status": 401}, {"code": "target_failed", "status": 500}] |
-| <a id="s-1ac1a1cbe8"></a>`method` | GET |
-| <a id="s-6922f0212f"></a>`path` | /v1/target |
-| <a id="s-4c85079d5b"></a>`path_parameters` | [] |
-| <a id="s-fa876b719f"></a>`request` | {"kind": "none", "schema": null} |
-| <a id="s-1f6e33f930"></a>`response` | {"headers": [], "kind": "json", "schema": "TargetContract", "statuses": [200]} |
+| <a id="s-b5386d0c54"></a>`error_schema` | `"ErrorResponse"` |
+| <a id="s-40838b110c"></a>`errors` | `[{"code":"bad_request","status":400},{"code":"unauthorized","status":401},{"code":"target_failed","status":500}]` |
+| <a id="s-1ac1a1cbe8"></a>`method` | `"GET"` |
+| <a id="s-6922f0212f"></a>`path` | `"/v1/target"` |
+| <a id="s-4c85079d5b"></a>`path_parameters` | `[]` |
+| <a id="s-fa876b719f"></a>`request` | `{"kind":"none","schema":null}` |
+| <a id="s-1f6e33f930"></a>`response` | `{"headers":[],"kind":"json","schema":"TargetContract","statuses":[200]}` |
 
 ## Maintained corroboration
 

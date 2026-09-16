@@ -16,13 +16,13 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-828c5ba228"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-0c05b742ac"></a>`error_schema` | StorageAdapterError |
-| <a id="s-907059ef31"></a>`errors` | [{"code": "unauthorized", "status": 401}, {"code": "invalid_request", "status": 400}, {"code": "provider_unavailable", "status": 503}, {"code": "internal_failure", "status": 500}, {"code": "request_too_large", "status": 413}, {"code": "invalid_path", "status": 400}, {"code": "not_found", "status": 404}, {"code": "invalid_range", "status": 416}, {"code": "read_not_ready", "status": 409}, {"code": "read_expired", "status": 409}, {"code": "integrity_failure", "status": 409}] |
-| <a id="s-fe835396ef"></a>`method` | POST |
-| <a id="s-e0a7ad35a5"></a>`path` | /v1/objects/read |
-| <a id="s-07f05906e5"></a>`path_parameters` | [] |
-| <a id="s-31b93349ad"></a>`request` | {"kind": "json", "schema": "ObjectReadRequest"} |
-| <a id="s-651364b985"></a>`response` | {"headers": [{"description": "Exact framed response-body length in bytes.", "name": "Content-Length", "schema": {"type": "string"}}, {"description": "Adapter-observed complete object length in bytes.", "name": "X-Riverhog-Object-Bytes", "schema": {"type": "string"}}, {"description": "Opaque provider revision when one exists.", "name": "X-Riverhog-Object-Revision", "schema": {"type": "string"}}, {"description": "Exact returned range for a nonempty ranged read.", "name": "Content-Range", "schema": {"type": "string"}}], "kind": "framed", "schema": "ObjectReadReceipt", "statuses": [200, 206]} |
+| <a id="s-0c05b742ac"></a>`error_schema` | `"StorageAdapterError"` |
+| <a id="s-907059ef31"></a>`errors` | `[{"code":"unauthorized","status":401},{"code":"invalid_request","status":400},{"code":"provider_unavailable","status":503},{"code":"internal_failure","status":500},{"code":"request_too_large","status":413},{"code":"invalid_path","status":400},{"code":"not_found","status":404},{"code":"invalid_range","status":416},{"code":"read_not_ready","status":409},{"code":"read_expired","status":409},{"code":"integrity_failure","status":409}]` |
+| <a id="s-fe835396ef"></a>`method` | `"POST"` |
+| <a id="s-e0a7ad35a5"></a>`path` | `"/v1/objects/read"` |
+| <a id="s-07f05906e5"></a>`path_parameters` | `[]` |
+| <a id="s-31b93349ad"></a>`request` | `{"kind":"json","schema":"ObjectReadRequest"}` |
+| <a id="s-651364b985"></a>`response` | `{"headers":[{"description":"Exact framed response-body length in bytes.","name":"Content-Length","schema":{"type":"string"}},{"description":"Adapter-observed complete object length in bytes.","name":"X-Riverhog-Object-Bytes","schema":{"type":"string"}},{"description":"Opaque provider revision when one exists.","name":"X-Riverhog-Object-Revision","schema":{"type":"string"}},{"description":"Exact returned range for a nonempty ranged read.","name":"Content-Range","schema":{"type":"string"}}],"kind":"framed","schema":"ObjectReadReceipt","statuses":[200,206]}` |
 
 ## Maintained corroboration
 

@@ -25,10 +25,10 @@ One declarative JSON-pointer copy into an operation request.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0b1200ab83"></a>`destination` | yes | type="string"; enum=["intent","target-options"] |  |
-| <a id="s-dc538e63b4"></a>`destination_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
-| <a id="s-e5a6d9d1b9"></a>`source` | yes | type="string"; enum=["work-effective-intent","work-evaluation"] |  |
-| <a id="s-10cb05929b"></a>`source_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
+| <a id="s-0b1200ab83"></a>`destination` | yes | type="string"; enum=["intent","target-options"]; title="Destination" |  |
+| <a id="s-dc538e63b4"></a>`destination_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$"; title="Destination Pointer" |  |
+| <a id="s-e5a6d9d1b9"></a>`source` | yes | type="string"; enum=["work-effective-intent","work-evaluation"]; title="Source" |  |
+| <a id="s-10cb05929b"></a>`source_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$"; title="Source Pointer" |  |
 
 ## Governing policies
 

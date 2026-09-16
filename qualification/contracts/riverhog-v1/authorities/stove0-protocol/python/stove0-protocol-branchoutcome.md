@@ -37,11 +37,11 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-01bd34421c"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-98f8aff547"></a>`branch_set_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-98f8aff547"></a>`branch_set_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-5b4f066dc6"></a>`format` | no | type="string"; const="stove0-branch-outcome/v1"; default="stove0-branch-outcome/v1" |  |
 | <a id="s-9d9231ca67"></a>`state` | yes | type="string"; enum=["failed","inapplicable","interrupted","canceled"] |  |
 | <a id="s-f27ad0208a"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-cb21b5c0fb"></a>`workflow_plan_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-cb21b5c0fb"></a>`workflow_plan_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 
 ## Maintained corroboration
 

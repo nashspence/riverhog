@@ -14,15 +14,17 @@ Get Archive Store
 ## External contract
 
 <a id="s-54ed75001a"></a>
-- <a id="s-e0da451e48"></a>`operationId`: get_archive_store
-- <a id="s-cf1105a3ac"></a>`summary`: Get Archive Store
-- <a id="s-0ebb68c0e7"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-e0da451e48"></a>`operationId`: `"get_archive_store"`
+- <a id="s-0ebb68c0e7"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-cf1105a3ac"></a>`summary`: `"Get Archive Store"`
+- <a id="s-b48afcf192"></a>`tags`: `["archive"]`
+- <a id="s-54e9264cf4"></a>`x-riverhog-permission-requirements`: `[{"any_of":["archives:read"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-7b748f31c6"></a>`store` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| <a id="s-7b748f31c6"></a>`store` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"; title="Store" |
 
 ### Responses
 

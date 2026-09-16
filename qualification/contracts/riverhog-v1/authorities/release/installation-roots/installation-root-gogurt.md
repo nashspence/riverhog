@@ -16,11 +16,11 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-67174e8059"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-5c51ec7761"></a>`artifact_format` | wheel |
-| <a id="s-784e6a81ba"></a>`distribution` | gogurt |
-| <a id="s-ae2f52fdf2"></a>`lock` | {"coordinate": "pylock.gogurt.toml", "format": "pylock.toml"} |
-| <a id="s-09a403cfab"></a>`method` | uv-tool |
-| <a id="s-44c31dc790"></a>`platforms` | ["linux-x64", "macos-arm64", "windows-x64"] |
+| <a id="s-5c51ec7761"></a>`artifact_format` | `"wheel"` |
+| <a id="s-784e6a81ba"></a>`distribution` | `"gogurt"` |
+| <a id="s-ae2f52fdf2"></a>`lock` | `{"coordinate":"pylock.gogurt.toml","format":"pylock.toml"}` |
+| <a id="s-09a403cfab"></a>`method` | `"uv-tool"` |
+| <a id="s-44c31dc790"></a>`platforms` | `["linux-x64","macos-arm64","windows-x64"]` |
 
 ## Existing ownership context
 

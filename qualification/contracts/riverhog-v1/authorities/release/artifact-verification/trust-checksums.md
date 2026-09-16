@@ -16,8 +16,8 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-fcad4b8eb1"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-f6349a9ffc"></a>`coordinate` | SHA256SUMS |
-| <a id="s-e3e3d48f48"></a>`scheme` | SHA-256 |
+| <a id="s-f6349a9ffc"></a>`coordinate` | `"SHA256SUMS"` |
+| <a id="s-e3e3d48f48"></a>`scheme` | `"SHA-256"` |
 
 ## Governing policies
 

@@ -24,16 +24,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1edb4de319"></a>`archive_store` | no | anyOf=(#/components/schemas/ArchiveStoreName) \| (type="null") |  |
-| <a id="s-f6c4e0c61a"></a>`custody_mode` | no | type="string"; enum=["producer-retained","custody-transfer"]; default="producer-retained" |  |
-| <a id="s-1f95c5607e"></a>`description` | no | anyOf=(#/components/schemas/CollectionDescription) \| (type="null") |  |
-| <a id="s-8189380365"></a>`event_context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null") |  |
-| <a id="s-11b776ca6b"></a>`idempotency_key` | yes | type="string"; maxLength=200; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
-| <a id="s-aa7adb9466"></a>`ingest_source` | no | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-9c8b7f769b"></a>`initial_tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-8fbd974a3d"></a>`provenance_mode` | no | type="string"; enum=["captured","omitted"]; default="captured" |  |
-| <a id="s-cdc66d8038"></a>`provenance_omission_reason` | no | anyOf=(type="string"; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$") \| (type="null") |  |
-| <a id="s-d7947f281e"></a>`tags` | no | type="array"; items=(#/components/schemas/CollectionTag); maxItems=100; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"repeat-request","reason":"bounded-upload-staging-step; collection-tag-set-is-unbounded"} |  |
+| <a id="s-1edb4de319"></a>`archive_store` | no | anyOf=[([ArchiveStoreName](schemas-archivestorename.md)); (type="null")] |  |
+| <a id="s-f6c4e0c61a"></a>`custody_mode` | no | type="string"; enum=["producer-retained","custody-transfer"]; default="producer-retained"; title="Custody Mode" |  |
+| <a id="s-1f95c5607e"></a>`description` | no | anyOf=[([CollectionDescription](schemas-collectiondescription.md)); (type="null")] |  |
+| <a id="s-8189380365"></a>`event_context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; title="Event Context" |  |
+| <a id="s-11b776ca6b"></a>`idempotency_key` | yes | type="string"; maxLength=200; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$"; title="Idempotency Key" |  |
+| <a id="s-aa7adb9466"></a>`ingest_source` | no | anyOf=[(type="string"); (type="null")]; title="Ingest Source" |  |
+| <a id="s-9c8b7f769b"></a>`initial_tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Initial Tag Set Identity" |  |
+| <a id="s-8fbd974a3d"></a>`provenance_mode` | no | type="string"; enum=["captured","omitted"]; default="captured"; title="Provenance Mode" |  |
+| <a id="s-cdc66d8038"></a>`provenance_omission_reason` | no | anyOf=[(type="string"; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$"); (type="null")]; title="Provenance Omission Reason" |  |
+| <a id="s-d7947f281e"></a>`tags` | no | type="array"; items=([CollectionTag](schemas-collectiontag.md)); maxItems=100; title="Tags"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"repeat-request","reason":"bounded-upload-staging-step; collection-tag-set-is-unbounded"} |  |
 
 ### Exactly one must match (`oneOf`)
 

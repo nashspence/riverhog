@@ -14,12 +14,17 @@ Create Work
 ## External contract
 
 <a id="s-4d80280945"></a>
-- <a id="s-5d745b511d"></a>`operationId`: create_work
-- <a id="s-9876a6f951"></a>`summary`: Create Work
+- <a id="s-5d745b511d"></a>`operationId`: `"create_work"`
+- <a id="s-9876a6f951"></a>`summary`: `"Create Work"`
+- <a id="s-60c048ab54"></a>`tags`: `["work"]`
 
 ### <a id="s-d1afd5577b"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/WorkCreateIn"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [WorkCreateIn](../http-schemas/schemas-workcreatein.md) |
 
 ### Responses
 

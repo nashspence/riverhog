@@ -24,17 +24,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f94ca18605"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-c99eec83e0"></a>`completed_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-ee02c17aac"></a>`destination_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-17ef5e59ff"></a>`expires_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-79dd5dafe3"></a>`failure` | yes | anyOf=(type="string"; minLength=1) \| (type="null") |  |
-| <a id="s-c07f6332bc"></a>`initiated_by_app` | yes | anyOf=(#/components/schemas/ApplicationName) \| (type="null") |  |
-| <a id="s-0bcb097c2c"></a>`initiated_by_key_id` | yes | anyOf=(#/components/schemas/ApplicationKeyId) \| (type="null") |  |
-| <a id="s-88e645a59b"></a>`ready_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-69542ab9df"></a>`requested_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-7dd0ee0992"></a>`source_store` | yes | anyOf=(#/components/schemas/ArchiveStoreName) \| (type="null") |  |
-| <a id="s-9877b84351"></a>`state` | yes | #/components/schemas/ArchiveCopyState |  |
+| <a id="s-f94ca18605"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-c99eec83e0"></a>`completed_at` | yes | anyOf=[(type="string"); (type="null")]; title="Completed At" |  |
+| <a id="s-ee02c17aac"></a>`destination_store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
+| <a id="s-17ef5e59ff"></a>`expires_at` | yes | anyOf=[(type="string"); (type="null")]; title="Expires At" |  |
+| <a id="s-79dd5dafe3"></a>`failure` | yes | anyOf=[(type="string"; minLength=1); (type="null")]; title="Failure" |  |
+| <a id="s-c07f6332bc"></a>`initiated_by_app` | yes | anyOf=[([ApplicationName](schemas-applicationname.md)); (type="null")] |  |
+| <a id="s-0bcb097c2c"></a>`initiated_by_key_id` | yes | anyOf=[([ApplicationKeyId](schemas-applicationkeyid.md)); (type="null")] |  |
+| <a id="s-88e645a59b"></a>`ready_at` | yes | anyOf=[(type="string"); (type="null")]; title="Ready At" |  |
+| <a id="s-69542ab9df"></a>`requested_at` | yes | anyOf=[(type="string"); (type="null")]; title="Requested At" |  |
+| <a id="s-7dd0ee0992"></a>`source_store` | yes | anyOf=[([ArchiveStoreName](schemas-archivestorename.md)); (type="null")] |  |
+| <a id="s-9877b84351"></a>`state` | yes | [ArchiveCopyState](schemas-archivecopystate.md) |  |
 
 ### All must match (`allOf`)
 

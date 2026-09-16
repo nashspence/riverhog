@@ -14,14 +14,15 @@ Inspect Work Coordination
 ## External contract
 
 <a id="s-cca302990f"></a>
-- <a id="s-0e24b0e763"></a>`operationId`: inspect_work_coordination
-- <a id="s-157d82e63a"></a>`summary`: Inspect Work Coordination
+- <a id="s-0e24b0e763"></a>`operationId`: `"inspect_work_coordination"`
+- <a id="s-157d82e63a"></a>`summary`: `"Inspect Work Coordination"`
+- <a id="s-7dd4f4ec57"></a>`tags`: `["work"]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-d01c651ce3"></a>`work_id` | path | yes | not declared | type="string" |
+| <a id="s-d01c651ce3"></a>`work_id` | path | yes | not declared | type="string"; title="Work Id" |
 
 ### Responses
 

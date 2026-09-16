@@ -14,17 +14,19 @@ Get Retrieval Cache Object
 ## External contract
 
 <a id="s-9a8ec3392d"></a>
-- <a id="s-ef02a9d664"></a>`operationId`: get_retrieval_cache_object
-- <a id="s-3da411fdfb"></a>`summary`: Get Retrieval Cache Object
-- <a id="s-1a2535641b"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-ef02a9d664"></a>`operationId`: `"get_retrieval_cache_object"`
+- <a id="s-1a2535641b"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-3da411fdfb"></a>`summary`: `"Get Retrieval Cache Object"`
+- <a id="s-3b97f3ce95"></a>`tags`: `["retrieval"]`
+- <a id="s-1cfb9e29b0"></a>`x-riverhog-permission-requirements`: `[{"any_of":["catalog:read"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-3f640503ff"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-b5fc534559"></a>`source_store` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
-| <a id="s-847eae74a7"></a>`object_id` | path | yes | not declared | type="string" |
+| <a id="s-3f640503ff"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-b5fc534559"></a>`source_store` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"; title="Source Store" |
+| <a id="s-847eae74a7"></a>`object_id` | path | yes | not declared | type="string"; title="Object Id" |
 
 ### Responses
 

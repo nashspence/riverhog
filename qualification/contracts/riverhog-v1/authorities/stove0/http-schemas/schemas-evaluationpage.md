@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d5faabd944"></a>`evaluations` | yes | type="array"; items=(#/components/schemas/EvaluationView) |  |
-| <a id="s-de52137029"></a>`filters` | yes | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-cc896697a8"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-30a4e0c811"></a>`order` | yes | type="string"; enum=["asc","desc"] |  |
-| <a id="s-195de04014"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-3950ed2d14"></a>`sort` | yes | type="string"; enum=["updated_at","phase","evaluation_id"] |  |
+| <a id="s-d5faabd944"></a>`evaluations` | yes | type="array"; items=([EvaluationView](schemas-evaluationview.md)); title="Evaluations" |  |
+| <a id="s-de52137029"></a>`filters` | yes | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Filters" |  |
+| <a id="s-cc896697a8"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-30a4e0c811"></a>`order` | yes | type="string"; enum=["asc","desc"]; title="Order" |  |
+| <a id="s-195de04014"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
+| <a id="s-3950ed2d14"></a>`sort` | yes | type="string"; enum=["updated_at","phase","evaluation_id"]; title="Sort" |  |
 
 ### Progression, limits, and lifecycle
 

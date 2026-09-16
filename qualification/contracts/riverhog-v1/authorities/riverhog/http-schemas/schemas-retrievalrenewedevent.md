@@ -24,14 +24,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b2fd48f2e9"></a>`data` | yes | #/components/schemas/RetrievalRenewedData |  |
-| <a id="s-0177fe3a1e"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
-| <a id="s-debf7f64f3"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-1a2491dcf0"></a>`source` | yes | type="string"; minLength=1 |  |
-| <a id="s-a5eda468f4"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-55d9d8850d"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null") |  |
-| <a id="s-38d57bfa46"></a>`time` | yes | type="string" |  |
-| <a id="s-46bb4a9bf2"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.renewed" |  |
+| <a id="s-b2fd48f2e9"></a>`data` | yes | [RetrievalRenewedData](schemas-retrievalreneweddata.md) |  |
+| <a id="s-0177fe3a1e"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json"; title="Datacontenttype" |  |
+| <a id="s-debf7f64f3"></a>`id` | yes | type="string"; minLength=1; title="Id" |  |
+| <a id="s-1a2491dcf0"></a>`source` | yes | type="string"; minLength=1; title="Source" |  |
+| <a id="s-a5eda468f4"></a>`specversion` | no | type="string"; const="1.0"; default="1.0"; title="Specversion" |  |
+| <a id="s-55d9d8850d"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; title="Subject" |  |
+| <a id="s-38d57bfa46"></a>`time` | yes | type="string"; title="Time" |  |
+| <a id="s-46bb4a9bf2"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.renewed"; title="Type" |  |
 
 ## Maintained corroboration
 

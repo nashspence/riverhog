@@ -14,16 +14,19 @@ List Catalog Sync Changes
 ## External contract
 
 <a id="s-dae178486d"></a>
-- <a id="s-e3c4a62d1c"></a>`operationId`: list_catalog_sync_changes
-- <a id="s-a3916c60e2"></a>`summary`: List Catalog Sync Changes
-- <a id="s-039231e67a"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-e3c4a62d1c"></a>`operationId`: `"list_catalog_sync_changes"`
+- <a id="s-039231e67a"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-a3916c60e2"></a>`summary`: `"List Catalog Sync Changes"`
+- <a id="s-768a1ec713"></a>`tags`: `["catalog synchronization"]`
+- <a id="s-877d786b46"></a>`x-riverhog-permission-requirements`: `[{"any_of":["catalog:read"]}]`
+- <a id="s-602b3e231c"></a>`x-riverhog-read-collection`: `{"cursor_parameter":"cursor","kind":"cursor-feed","limit_parameter":"limit"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-3cd41b6792"></a>`cursor` | query | yes | not declared | type="string"; maxLength=4096; minLength=1 |
-| <a id="s-4c554ae937"></a>`limit` | query | no | `100` | type="integer"; minimum=1; maximum=100 |
+| <a id="s-3cd41b6792"></a>`cursor` | query | yes | not declared | type="string"; maxLength=4096; minLength=1; title="Cursor" |
+| <a id="s-4c554ae937"></a>`limit` | query | no | `100` | type="integer"; minimum=1; maximum=100; title="Limit" |
 
 ### Responses
 

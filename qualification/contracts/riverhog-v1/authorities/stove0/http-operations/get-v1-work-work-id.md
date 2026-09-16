@@ -14,14 +14,15 @@ Get Work
 ## External contract
 
 <a id="s-35e0e40dc5"></a>
-- <a id="s-3b037366e5"></a>`operationId`: get_work
-- <a id="s-cd004bbefc"></a>`summary`: Get Work
+- <a id="s-3b037366e5"></a>`operationId`: `"get_work"`
+- <a id="s-cd004bbefc"></a>`summary`: `"Get Work"`
+- <a id="s-cf0c795f4e"></a>`tags`: `["work"]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-77db0a335c"></a>`work_id` | path | yes | not declared | type="string" |
+| <a id="s-77db0a335c"></a>`work_id` | path | yes | not declared | type="string"; title="Work Id" |
 
 ### Responses
 

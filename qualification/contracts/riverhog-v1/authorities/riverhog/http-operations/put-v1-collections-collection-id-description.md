@@ -14,20 +14,26 @@ Replace Collection Description
 ## External contract
 
 <a id="s-af8c734346"></a>
-- <a id="s-a7f7417487"></a>`operationId`: replace_collection_description
-- <a id="s-88ac2f2821"></a>`summary`: Replace Collection Description
-- <a id="s-4d7049a72b"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-a7f7417487"></a>`operationId`: `"replace_collection_description"`
+- <a id="s-4d7049a72b"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-88ac2f2821"></a>`summary`: `"Replace Collection Description"`
+- <a id="s-5f8c7a6d5b"></a>`tags`: `["collections"]`
+- <a id="s-67dee08ca7"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-descriptions:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-f298dfd6d7"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-1894750874"></a>`If-Match` | header | yes | not declared | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
+| <a id="s-f298dfd6d7"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-1894750874"></a>`If-Match` | header | yes | not declared | type="string"; pattern="^\"[0-9a-f]{64}\"$"; title="If-Match" |
 
 ### <a id="s-805a79ced6"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ReplaceCollectionDescriptionRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [ReplaceCollectionDescriptionRequest](../http-schemas/schemas-replacecollectiondescriptionrequest.md) |
 
 ### Responses
 

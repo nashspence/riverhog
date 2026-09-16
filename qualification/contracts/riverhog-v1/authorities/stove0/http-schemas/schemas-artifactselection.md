@@ -25,11 +25,11 @@ One exact, content-addressed selection of immutable artifacts.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-5ca1a027a8"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-718513cbc7"></a>`artifacts` | yes | type="array"; items=(#/components/schemas/ArtifactSubject); minItems=1 |  |
-| <a id="s-bb0cdcf29c"></a>`format` | no | type="string"; const="stove0-artifact-selection/v1"; default="stove0-artifact-selection/v1" |  |
-| <a id="s-a95861fb35"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-c25a38133a"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-5ca1a027a8"></a>`artifact_count` | yes | type="integer"; minimum=1; title="Artifact Count" |  |
+| <a id="s-718513cbc7"></a>`artifacts` | yes | type="array"; items=([ArtifactSubject](schemas-artifactsubject.md)); minItems=1; title="Artifacts" |  |
+| <a id="s-bb0cdcf29c"></a>`format` | no | type="string"; const="stove0-artifact-selection/v1"; default="stove0-artifact-selection/v1"; title="Format" |  |
+| <a id="s-a95861fb35"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Selection Sha256" |  |
+| <a id="s-c25a38133a"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
 
 ### Progression, limits, and lifecycle
 

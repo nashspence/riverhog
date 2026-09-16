@@ -16,17 +16,17 @@ Optional nonnormative Linux filesystem storage reference for Riverhog.
 <a id="s-85a35d7977"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-e2299de9b7"></a>`build_target` | riverhog-storage-adapter-filesystem |
-| <a id="s-f1520cc27d"></a>`description` | Optional nonnormative Linux filesystem storage reference for Riverhog. |
-| <a id="s-f627f0712c"></a>`distribution_roots` | ["riverhog-storage-adapter-filesystem"] |
-| <a id="s-2f65603f9b"></a>`format` | oci-image |
-| <a id="s-25f68edfcc"></a>`license_baseline` | first-v1-publication |
-| <a id="s-5e372eaaf0"></a>`license_expression` | CAL-1.0 |
-| <a id="s-9eddfa0176"></a>`platforms` | ["linux/amd64"] |
-| <a id="s-c54937e253"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-storage-adapter-filesystem", "kind": "oci-repository"} |
-| <a id="s-150ca33870"></a>`repository` | ghcr.io/nashspence/riverhog-storage-adapter-filesystem |
-| <a id="s-0c7b9069ce"></a>`role` | reference |
-| <a id="s-6418eb9e41"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-storage-adapter-filesystem:{version}", "ghcr.io/nashspence/riverhog-storage-adapter-filesystem:sha-{source_sha}"] |
+| <a id="s-e2299de9b7"></a>`build_target` | `"riverhog-storage-adapter-filesystem"` |
+| <a id="s-f1520cc27d"></a>`description` | `"Optional nonnormative Linux filesystem storage reference for Riverhog."` |
+| <a id="s-f627f0712c"></a>`distribution_roots` | `["riverhog-storage-adapter-filesystem"]` |
+| <a id="s-2f65603f9b"></a>`format` | `"oci-image"` |
+| <a id="s-25f68edfcc"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-5e372eaaf0"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-9eddfa0176"></a>`platforms` | `["linux/amd64"]` |
+| <a id="s-c54937e253"></a>`publication_identity` | `{"coordinate":"ghcr.io/nashspence/riverhog-storage-adapter-filesystem","kind":"oci-repository"}` |
+| <a id="s-150ca33870"></a>`repository` | `"ghcr.io/nashspence/riverhog-storage-adapter-filesystem"` |
+| <a id="s-0c7b9069ce"></a>`role` | `"reference"` |
+| <a id="s-6418eb9e41"></a>`tag_templates` | `["ghcr.io/nashspence/riverhog-storage-adapter-filesystem:{version}","ghcr.io/nashspence/riverhog-storage-adapter-filesystem:sha-{source_sha}"]` |
 
 ## Existing ownership context
 

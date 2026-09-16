@@ -54,8 +54,8 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-af0171dba2"></a>`error` | yes | type="string"; maxLength=1000; minLength=1 |  |
-| <a id="s-52be12e3fe"></a>`event_id` | no | anyOf=(type="string") \| (type="null"); default=null |  |
-| <a id="s-895387f455"></a>`work_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-52be12e3fe"></a>`event_id` | no | anyOf=[(type="string"); (type="null")]; default=null |  |
+| <a id="s-895387f455"></a>`work_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 
 ## Governing policies
 

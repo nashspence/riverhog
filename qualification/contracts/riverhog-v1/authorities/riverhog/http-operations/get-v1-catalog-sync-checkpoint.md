@@ -14,9 +14,12 @@ Create Catalog Sync Checkpoint
 ## External contract
 
 <a id="s-817ac9989f"></a>
-- <a id="s-acd042aeac"></a>`operationId`: create_catalog_sync_checkpoint
-- <a id="s-78727b864e"></a>`summary`: Create Catalog Sync Checkpoint
-- <a id="s-2f98f2f949"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-acd042aeac"></a>`operationId`: `"create_catalog_sync_checkpoint"`
+- <a id="s-2f98f2f949"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-78727b864e"></a>`summary`: `"Create Catalog Sync Checkpoint"`
+- <a id="s-bc06248f6c"></a>`tags`: `["catalog synchronization"]`
+- <a id="s-ba9f1acc63"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-c792899163"></a>`x-riverhog-permission-requirements`: `[{"any_of":["catalog:read"]}]`
 
 ### Responses
 

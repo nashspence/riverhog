@@ -14,16 +14,18 @@ Get Collection File Provenance
 ## External contract
 
 <a id="s-a206995255"></a>
-- <a id="s-33fc368c81"></a>`operationId`: get_collection_file_provenance
-- <a id="s-df90f8ba28"></a>`summary`: Get Collection File Provenance
-- <a id="s-a7e603dbb4"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-33fc368c81"></a>`operationId`: `"get_collection_file_provenance"`
+- <a id="s-a7e603dbb4"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-df90f8ba28"></a>`summary`: `"Get Collection File Provenance"`
+- <a id="s-ccf3a6eb38"></a>`tags`: `["provenance"]`
+- <a id="s-eee1a3c815"></a>`x-riverhog-permission-requirements`: `[{"any_of":["provenance:read"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-163dce2876"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-24db11cead"></a>`path` | path | yes | not declared | type="string"; format="riverhog-canonical-relpath-v1"; allOf=(not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)")) \| (not=(pattern="^\\s\|\\s$")); maxLength=4096; minLength=1; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; x-unicode-normalization="NFC" |
+| <a id="s-163dce2876"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-24db11cead"></a>`path` | path | yes | not declared | type="string"; format="riverhog-canonical-relpath-v1"; allOf=[(not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)")); (not=(pattern="^\\s\|\\s$"))]; maxLength=4096; minLength=1; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; title="Path"; x-unicode-normalization="NFC" |
 
 ### Responses
 

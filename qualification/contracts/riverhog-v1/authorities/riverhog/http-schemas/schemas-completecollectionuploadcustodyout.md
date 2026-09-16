@@ -24,7 +24,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-070a0e2319"></a>`state` | yes | type="string"; const="complete" |  |
+| <a id="s-070a0e2319"></a>`state` | yes | type="string"; const="complete"; title="State" |  |
 
 ## Governing policies
 

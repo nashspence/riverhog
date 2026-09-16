@@ -23,8 +23,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-11e92b75d6"></a>`format` | no | type="string"; const="stove0-admissions/v1"; default="stove0-admissions/v1" |  |
-| <a id="s-be60a069b3"></a>`policies` | no | type="array"; default=[]; items=([AdmissionPolicy](#s-a16490ee43)); maxItems=100; x-riverhog-extent={"policy":"contract_max","reason":"bounded-deployment-admission-catalog"} |  |
+| <a id="s-11e92b75d6"></a>`format` | no | type="string"; const="stove0-admissions/v1"; default="stove0-admissions/v1"; title="Format" |  |
+| <a id="s-be60a069b3"></a>`policies` | no | type="array"; default=[]; items=([AdmissionPolicy](#s-a16490ee43)); maxItems=100; title="Policies"; x-riverhog-extent={"policy":"contract_max","reason":"bounded-deployment-admission-catalog"} |  |
 
 ### Definitions
 
@@ -44,15 +44,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-49c4892c8a"></a>`automatic_preview` | no | type="string"; const="accept-ready"; default="accept-ready" |  |
-| <a id="s-1d7d127388"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](#s-c9ee6fcc4b)) |  |
-| <a id="s-bc11e0be16"></a>`format` | no | type="string"; const="stove0-admission-policy/v1"; default="stove0-admission-policy/v1" |  |
-| <a id="s-6a40b04299"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-a9af99ca70"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-12de946063"></a>`recipe_revision` | yes | type="integer"; minimum=1 |  |
-| <a id="s-154969045e"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-33d838d1b6"></a>`required_tags` | yes | type="array"; items=([CollectionTag](#s-126d750bd7)); maxItems=100; minItems=1; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-classification-admission-predicate"} |  |
-| <a id="s-0849708c98"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-49c4892c8a"></a>`automatic_preview` | no | type="string"; const="accept-ready"; default="accept-ready"; title="Automatic Preview" |  |
+| <a id="s-1d7d127388"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](#s-c9ee6fcc4b)); title="Effective Intent" |  |
+| <a id="s-bc11e0be16"></a>`format` | no | type="string"; const="stove0-admission-policy/v1"; default="stove0-admission-policy/v1"; title="Format" |  |
+| <a id="s-6a40b04299"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-a9af99ca70"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1; title="Recipe Id" |  |
+| <a id="s-12de946063"></a>`recipe_revision` | yes | type="integer"; minimum=1; title="Recipe Revision" |  |
+| <a id="s-154969045e"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Recipe Sha256" |  |
+| <a id="s-33d838d1b6"></a>`required_tags` | yes | type="array"; items=([CollectionTag](#s-126d750bd7)); maxItems=100; minItems=1; title="Required Tags"; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-classification-admission-predicate"} |  |
+| <a id="s-0849708c98"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
 
 ### <a id="s-126d750bd7"></a>definition `CollectionTag`
 

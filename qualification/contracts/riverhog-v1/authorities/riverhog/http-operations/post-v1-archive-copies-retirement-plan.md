@@ -14,13 +14,19 @@ Plan Archive Copy Retirement
 ## External contract
 
 <a id="s-36e9f6b51c"></a>
-- <a id="s-3bfd8f184c"></a>`operationId`: plan_archive_copy_retirement
-- <a id="s-50499b084e"></a>`summary`: Plan Archive Copy Retirement
-- <a id="s-2b66881c40"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-3bfd8f184c"></a>`operationId`: `"plan_archive_copy_retirement"`
+- <a id="s-2b66881c40"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-50499b084e"></a>`summary`: `"Plan Archive Copy Retirement"`
+- <a id="s-c3a0451fea"></a>`tags`: `["archive"]`
+- <a id="s-2e56bb853a"></a>`x-riverhog-permission-requirements`: `[{"any_of":["archives:manage"]}]`
 
 ### <a id="s-1af9509e17"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ArchiveCopyRetirementRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [ArchiveCopyRetirementRequest](../http-schemas/schemas-archivecopyretirementrequest.md) |
 
 ### Responses
 

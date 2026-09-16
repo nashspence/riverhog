@@ -25,11 +25,11 @@ Stable parent/branch lineage for one ordinary child work identity.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7218be4aaa"></a>`artifact_selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-c8d54a9890"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-7c7260eac9"></a>`decision_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1924d622ee"></a>`kind` | no | type="string"; const="branch"; default="branch" |  |
-| <a id="s-7a56e70881"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-7218be4aaa"></a>`artifact_selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Artifact Selection Sha256" |  |
+| <a id="s-c8d54a9890"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Branch Id" |  |
+| <a id="s-7c7260eac9"></a>`decision_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Decision Sha256" |  |
+| <a id="s-1924d622ee"></a>`kind` | no | type="string"; const="branch"; default="branch"; title="Kind" |  |
+| <a id="s-7a56e70881"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Parent Work Id" |  |
 
 ### Progression, limits, and lifecycle
 

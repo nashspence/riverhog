@@ -24,16 +24,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0f6dcdca4d"></a>`accounted_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-594d83539c"></a>`app` | yes | #/components/schemas/ApplicationName |  |
-| <a id="s-bf55e128d8"></a>`id` | yes | type="string" |  |
-| <a id="s-78846b1bfc"></a>`key_id` | yes | #/components/schemas/ApplicationKeyId |  |
-| <a id="s-a6a9ffecad"></a>`key_status` | yes | type="string"; enum=["active","expired","revoked"] |  |
-| <a id="s-a5c3111220"></a>`month_started_at` | yes | type="string" |  |
-| <a id="s-b33af12726"></a>`monthly_bytes` | yes | anyOf=(#/components/schemas/MonthlyDownloadQuotaBytes) \| (type="null") |  |
-| <a id="s-06aaaaa45e"></a>`remaining_bytes` | yes | anyOf=(type="integer"; minimum=0) \| (type="null") |  |
-| <a id="s-60638ee712"></a>`reserved_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-76ad698142"></a>`resets_at` | yes | type="string" |  |
+| <a id="s-0f6dcdca4d"></a>`accounted_bytes` | yes | type="integer"; minimum=0; title="Accounted Bytes" |  |
+| <a id="s-594d83539c"></a>`app` | yes | [ApplicationName](schemas-applicationname.md) |  |
+| <a id="s-bf55e128d8"></a>`id` | yes | type="string"; title="Id" |  |
+| <a id="s-78846b1bfc"></a>`key_id` | yes | [ApplicationKeyId](schemas-applicationkeyid.md) |  |
+| <a id="s-a6a9ffecad"></a>`key_status` | yes | type="string"; enum=["active","expired","revoked"]; title="Key Status" |  |
+| <a id="s-a5c3111220"></a>`month_started_at` | yes | type="string"; title="Month Started At" |  |
+| <a id="s-b33af12726"></a>`monthly_bytes` | yes | anyOf=[([MonthlyDownloadQuotaBytes](schemas-monthlydownloadquotabytes.md)); (type="null")] |  |
+| <a id="s-06aaaaa45e"></a>`remaining_bytes` | yes | anyOf=[(type="integer"; minimum=0); (type="null")]; title="Remaining Bytes" |  |
+| <a id="s-60638ee712"></a>`reserved_bytes` | yes | type="integer"; minimum=0; title="Reserved Bytes" |  |
+| <a id="s-76ad698142"></a>`resets_at` | yes | type="string"; title="Resets At" |  |
 
 ## Maintained corroboration
 

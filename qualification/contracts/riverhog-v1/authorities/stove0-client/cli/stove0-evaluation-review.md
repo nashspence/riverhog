@@ -24,10 +24,10 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-5d4571c4fb"></a>`evaluation_id`<br>`evaluation_id` | required positional; 1 value | text | not recorded |
-| <a id="s-988f27c018"></a>`variant_id`<br>`variant_id` | required positional; 1 value | text | not recorded |
-| <a id="s-9c3cdf9820"></a>`rating`<br>`--rating` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`5` (inclusive); outside range: reject | not recorded |
-| <a id="s-7944ac36f5"></a>`note`<br>`--note` | optional option; 1 value | text | not recorded |
+| <a id="s-5d4571c4fb"></a>`evaluation_id`<br>`evaluation_id` | required positional; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-988f27c018"></a>`variant_id`<br>`variant_id` | required positional; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-9c3cdf9820"></a>`rating`<br>`--rating` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`5` (inclusive); outside range: reject | not recorded<br>Env: `null` |
+| <a id="s-7944ac36f5"></a>`note`<br>`--note` | optional option; 1 value | text | not recorded<br>Env: `null` |
 
 ### Terminating controls
 
@@ -46,14 +46,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-53a29984fb"></a>`completed` | <a id="s-eef49099d2"></a>`{"kind":"command-completed"}` | <a id="s-36afc45e35"></a>`0` | <a id="s-9f1ae67281"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP review_evaluation_variant response 200](../../stove0/http-operations/put-v1-evaluations-evaluation-id-variants-variant-id-review.md#s-efd76461f6) | <a id="s-04329a4ad8"></a>all: `empty` |
+| <a id="s-53a29984fb"></a>`completed` | <a id="s-eef49099d2"></a>`{"kind":"command-completed"}` | <a id="s-36afc45e35"></a>`0` | <a id="s-9f1ae67281"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP review_evaluation_variant response 200](../../stove0/http-operations/put-v1-evaluations-evaluation-id-variants-variant-id-review.md#s-efd76461f6) | <a id="s-04329a4ad8"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-42e1fbfaa0"></a>`usage` | <a id="s-72aca966d7"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-0e1e570e05"></a>`2` | <a id="s-e7c98e3419"></a>all: `empty` | <a id="s-b76f8da6e1"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-3a8c36178d"></a>`operational` | <a id="s-2a62627fc0"></a>`{"kind":"application-error"}` | <a id="s-c6e37e069c"></a>`1` | <a id="s-0bdf213c00"></a>all: `empty` | <a id="s-ebb2d3185a"></a>all: `noncontractual-diagnostic` |
+| <a id="s-42e1fbfaa0"></a>`usage` | <a id="s-72aca966d7"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-0e1e570e05"></a>`2` | <a id="s-e7c98e3419"></a>all: `"empty"` | <a id="s-b76f8da6e1"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-3a8c36178d"></a>`operational` | <a id="s-2a62627fc0"></a>`{"kind":"application-error"}` | <a id="s-c6e37e069c"></a>`1` | <a id="s-0bdf213c00"></a>all: `"empty"` | <a id="s-ebb2d3185a"></a>all: `"noncontractual-diagnostic"` |
 
 ### Progression, limits, and lifecycle
 

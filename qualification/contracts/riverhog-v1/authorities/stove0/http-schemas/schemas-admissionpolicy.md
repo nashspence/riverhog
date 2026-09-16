@@ -25,15 +25,15 @@ One bounded, exact all-of classification admission rule.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4825bdded5"></a>`automatic_preview` | no | type="string"; const="accept-ready"; default="accept-ready" |  |
-| <a id="s-fe0784373c"></a>`effective_intent` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-7ca1adfe1d"></a>`format` | no | type="string"; const="stove0-admission-policy/v1"; default="stove0-admission-policy/v1" |  |
-| <a id="s-f6d577c8df"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-fff97fd387"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-f81203e699"></a>`recipe_revision` | yes | type="integer"; minimum=1 |  |
-| <a id="s-59bbce29c6"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a53f69ac6c"></a>`required_tags` | yes | type="array"; items=(#/components/schemas/CollectionTag); maxItems=100; minItems=1; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-classification-admission-predicate"} |  |
-| <a id="s-558e3f83fb"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-4825bdded5"></a>`automatic_preview` | no | type="string"; const="accept-ready"; default="accept-ready"; title="Automatic Preview" |  |
+| <a id="s-fe0784373c"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Effective Intent" |  |
+| <a id="s-7ca1adfe1d"></a>`format` | no | type="string"; const="stove0-admission-policy/v1"; default="stove0-admission-policy/v1"; title="Format" |  |
+| <a id="s-f6d577c8df"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-fff97fd387"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1; title="Recipe Id" |  |
+| <a id="s-f81203e699"></a>`recipe_revision` | yes | type="integer"; minimum=1; title="Recipe Revision" |  |
+| <a id="s-59bbce29c6"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Recipe Sha256" |  |
+| <a id="s-a53f69ac6c"></a>`required_tags` | yes | type="array"; items=([CollectionTag](schemas-collectiontag.md)); maxItems=100; minItems=1; title="Required Tags"; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-classification-admission-predicate"} |  |
+| <a id="s-558e3f83fb"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
 
 ### Progression, limits, and lifecycle
 

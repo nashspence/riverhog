@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a9ccb39ced"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-c4cd924e40"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-25d39cd861"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-6c97d02861"></a>`tags` | yes | type="array"; items=(#/components/schemas/TagSummaryOut) |  |
+| <a id="s-a9ccb39ced"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-c4cd924e40"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
+| <a id="s-25d39cd861"></a>`query` | yes | anyOf=[(type="string"); (type="null")]; title="Query" |  |
+| <a id="s-6c97d02861"></a>`tags` | yes | type="array"; items=([TagSummaryOut](schemas-tagsummaryout.md)); title="Tags" |  |
 
 ### Progression, limits, and lifecycle
 

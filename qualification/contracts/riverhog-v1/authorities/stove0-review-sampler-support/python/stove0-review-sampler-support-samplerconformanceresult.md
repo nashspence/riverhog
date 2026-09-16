@@ -38,8 +38,8 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-1207eb1ddb"></a>`coverage` | yes | [SamplerConformanceCoverage](#s-2f33eeab5d) |  |
 | <a id="s-98efa3f750"></a>`format` | no | type="string"; const="stove0-review-sampler-conformance-result/v1"; default="stove0-review-sampler-conformance-result/v1" |  |
-| <a id="s-1fa60bf9ca"></a>`request` | no | anyOf=([SamplerRequest](#s-12ed1ee149)) \| (type="null"); default=null |  |
-| <a id="s-f2c339cbf1"></a>`sample` | no | anyOf=([SamplerResult](#s-03ceac90a8)) \| (type="null"); default=null |  |
+| <a id="s-1fa60bf9ca"></a>`request` | no | anyOf=[([SamplerRequest](#s-12ed1ee149)); (type="null")]; default=null |  |
+| <a id="s-f2c339cbf1"></a>`sample` | no | anyOf=[([SamplerResult](#s-03ceac90a8)); (type="null")]; default=null |  |
 | <a id="s-ae753ed1e9"></a>`sampler` | yes | [SamplerDescriptor](#s-e0181b32dd) |  |
 | <a id="s-a70194c823"></a>`sampling` | yes | type="string"; enum=["exercised","not-exercised"] |  |
 | <a id="s-cac2e9cfe1"></a>`status` | yes | type="string"; enum=["conformant","inspected"] |  |
@@ -152,7 +152,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-e492f16b98"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-8c969ba197"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-09bb56d275"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-09bb56d275"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
 | <a id="s-8395ec7c6f"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-494822cf2b"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
@@ -205,9 +205,9 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-0bbf2d4ef7"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-c6314db76b)) |  |
-| <a id="s-037bce996a"></a>`failure` | no | anyOf=([SamplerFailure](#s-370160b285)) \| (type="null"); default=null |  |
+| <a id="s-037bce996a"></a>`failure` | no | anyOf=[([SamplerFailure](#s-370160b285)); (type="null")]; default=null |  |
 | <a id="s-b6dbd38f3f"></a>`format` | no | type="string"; const="stove0-review-sampler-result/v1"; default="stove0-review-sampler-result/v1" |  |
-| <a id="s-3ce4af3d83"></a>`inapplicable` | no | anyOf=([SamplerInapplicable](#s-17ca998e9b)) \| (type="null"); default=null |  |
+| <a id="s-3ce4af3d83"></a>`inapplicable` | no | anyOf=[([SamplerInapplicable](#s-17ca998e9b)); (type="null")]; default=null |  |
 | <a id="s-e4343c91da"></a>`outputs` | no | type="array"; default=[]; items=([SamplerOutput](#s-ec9a5ec3e6)) |  |
 | <a id="s-a186c372a8"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-7b86ad48a6"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |

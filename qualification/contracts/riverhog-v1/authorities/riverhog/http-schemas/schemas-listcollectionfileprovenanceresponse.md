@@ -22,9 +22,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Alternative | Schema |
 |---|---|
-| <a id="s-aade95a74c"></a>1 | #/components/schemas/CapturedCollectionFileProvenancePage |
-| <a id="s-cf584773f9"></a>2 | #/components/schemas/MixedCollectionFileProvenancePage |
-| <a id="s-042f4445f6"></a>3 | #/components/schemas/OmittedCollectionFileProvenancePage |
+| <a id="s-aade95a74c"></a>1 | [CapturedCollectionFileProvenancePage](schemas-capturedcollectionfileprovenancepage.md) |
+| <a id="s-cf584773f9"></a>2 | [MixedCollectionFileProvenancePage](schemas-mixedcollectionfileprovenancepage.md) |
+| <a id="s-042f4445f6"></a>3 | [OmittedCollectionFileProvenancePage](schemas-omittedcollectionfileprovenancepage.md) |
 
 ## Maintained corroboration
 

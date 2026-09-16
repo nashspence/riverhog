@@ -24,18 +24,18 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-662b46ed5a"></a>`billing_note` | yes | type="string" |  |
-| <a id="s-3bb1c53f61"></a>`blockers` | yes | type="array"; items=(type="string") |  |
-| <a id="s-a8bf1cfd6c"></a>`challenge` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-b3e346a57e"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-22bb7f1875"></a>`expires_at` | yes | type="string" |  |
-| <a id="s-3b329cb5f9"></a>`retained_copies` | yes | type="array"; items=(#/components/schemas/ArchiveCopyRetirementRetainedOut) |  |
-| <a id="s-91c234b2f5"></a>`retired_retrieval_job_count` | yes | type="integer" |  |
-| <a id="s-bc86b383bf"></a>`status` | yes | type="string"; enum=["ready","blocked","retiring"] |  |
-| <a id="s-ccd5b75997"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-1bc1feaa61"></a>`target_copy` | yes | #/components/schemas/ArchiveCopyRetirementTargetOut |  |
-| <a id="s-0e9fe4a515"></a>`verification_note` | yes | type="string" |  |
-| <a id="s-3902eea4d7"></a>`warning` | yes | type="string" |  |
+| <a id="s-662b46ed5a"></a>`billing_note` | yes | type="string"; title="Billing Note" |  |
+| <a id="s-3bb1c53f61"></a>`blockers` | yes | type="array"; items=(type="string"); title="Blockers" |  |
+| <a id="s-a8bf1cfd6c"></a>`challenge` | yes | anyOf=[(type="string"); (type="null")]; title="Challenge" |  |
+| <a id="s-b3e346a57e"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-22bb7f1875"></a>`expires_at` | yes | type="string"; title="Expires At" |  |
+| <a id="s-3b329cb5f9"></a>`retained_copies` | yes | type="array"; items=([ArchiveCopyRetirementRetainedOut](schemas-archivecopyretirementretainedout.md)); title="Retained Copies" |  |
+| <a id="s-91c234b2f5"></a>`retired_retrieval_job_count` | yes | type="integer"; title="Retired Retrieval Job Count" |  |
+| <a id="s-bc86b383bf"></a>`status` | yes | type="string"; enum=["ready","blocked","retiring"]; title="Status" |  |
+| <a id="s-ccd5b75997"></a>`store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
+| <a id="s-1bc1feaa61"></a>`target_copy` | yes | [ArchiveCopyRetirementTargetOut](schemas-archivecopyretirementtargetout.md) |  |
+| <a id="s-0e9fe4a515"></a>`verification_note` | yes | type="string"; title="Verification Note" |  |
+| <a id="s-3902eea4d7"></a>`warning` | yes | type="string"; title="Warning" |  |
 
 ### Exactly one must match (`oneOf`)
 

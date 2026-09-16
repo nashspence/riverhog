@@ -25,24 +25,24 @@ Entirely derived view over a plan and ordinary child/join results.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-94c259f034"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-0b8012e8f1"></a>`branch_set_succeeded` | yes | type="boolean" |  |
-| <a id="s-28bd0e47e6"></a>`canceled_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
-| <a id="s-63dff433e7"></a>`coordination_complete_for_retirement` | yes | type="boolean" |  |
-| <a id="s-f616c02dd4"></a>`coordination_settlement` | yes | anyOf=(#/components/schemas/CoordinationSettlement) \| (type="null") |  |
-| <a id="s-7a8d5bbcfe"></a>`failed_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
-| <a id="s-5784e98faa"></a>`inapplicable_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
-| <a id="s-5e39f03291"></a>`interrupted_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
-| <a id="s-88cf89f944"></a>`join_ready` | yes | type="boolean" |  |
-| <a id="s-451ecf2f60"></a>`join_settlement` | yes | anyOf=(#/components/schemas/JoinSettlement) \| (type="null") |  |
-| <a id="s-61ce399152"></a>`join_state` | yes | type="string"; enum=["not-declared","waiting","ready","succeeded","failed","inapplicable","interrupted","canceled"] |  |
-| <a id="s-580c35fecd"></a>`resolved_join_plan` | yes | anyOf=(#/components/schemas/JoinPlan) \| (type="null") |  |
-| <a id="s-66b65c7b21"></a>`retirement_requested` | yes | type="boolean" |  |
-| <a id="s-532021a47d"></a>`succeeded_branches` | yes | type="array"; items=(#/components/schemas/BranchSettlement) |  |
-| <a id="s-454b7a1bee"></a>`succeeded_coordinations` | yes | type="array"; items=(#/components/schemas/CoordinationSettlement) |  |
-| <a id="s-e849acf146"></a>`succeeded_effects` | yes | type="array"; items=(#/components/schemas/BranchEffectSettlement) |  |
-| <a id="s-4cf1935a3b"></a>`unsettled_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
-| <a id="s-c9d8f273f5"></a>`unsettled_work_ids` | yes | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
+| <a id="s-94c259f034"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Branch Set Sha256" |  |
+| <a id="s-0b8012e8f1"></a>`branch_set_succeeded` | yes | type="boolean"; title="Branch Set Succeeded" |  |
+| <a id="s-28bd0e47e6"></a>`canceled_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); title="Canceled Branch Ids" |  |
+| <a id="s-63dff433e7"></a>`coordination_complete_for_retirement` | yes | type="boolean"; title="Coordination Complete For Retirement" |  |
+| <a id="s-f616c02dd4"></a>`coordination_settlement` | yes | anyOf=[([CoordinationSettlement](schemas-coordinationsettlement.md)); (type="null")] |  |
+| <a id="s-7a8d5bbcfe"></a>`failed_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); title="Failed Branch Ids" |  |
+| <a id="s-5784e98faa"></a>`inapplicable_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); title="Inapplicable Branch Ids" |  |
+| <a id="s-5e39f03291"></a>`interrupted_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); title="Interrupted Branch Ids" |  |
+| <a id="s-88cf89f944"></a>`join_ready` | yes | type="boolean"; title="Join Ready" |  |
+| <a id="s-451ecf2f60"></a>`join_settlement` | yes | anyOf=[([JoinSettlement](schemas-joinsettlement.md)); (type="null")] |  |
+| <a id="s-61ce399152"></a>`join_state` | yes | type="string"; enum=["not-declared","waiting","ready","succeeded","failed","inapplicable","interrupted","canceled"]; title="Join State" |  |
+| <a id="s-580c35fecd"></a>`resolved_join_plan` | yes | anyOf=[([JoinPlan](schemas-joinplan.md)); (type="null")] |  |
+| <a id="s-66b65c7b21"></a>`retirement_requested` | yes | type="boolean"; title="Retirement Requested" |  |
+| <a id="s-532021a47d"></a>`succeeded_branches` | yes | type="array"; items=([BranchSettlement](schemas-branchsettlement.md)); title="Succeeded Branches" |  |
+| <a id="s-454b7a1bee"></a>`succeeded_coordinations` | yes | type="array"; items=([CoordinationSettlement](schemas-coordinationsettlement.md)); title="Succeeded Coordinations" |  |
+| <a id="s-e849acf146"></a>`succeeded_effects` | yes | type="array"; items=([BranchEffectSettlement](schemas-brancheffectsettlement.md)); title="Succeeded Effects" |  |
+| <a id="s-4cf1935a3b"></a>`unsettled_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); title="Unsettled Branch Ids" |  |
+| <a id="s-c9d8f273f5"></a>`unsettled_work_ids` | yes | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$"); title="Unsettled Work Ids" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -25,14 +25,14 @@ Success-only exact completion of one root or branch-bound coordinator.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-00b0c65a2e"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-d20e730907"></a>`children` | yes | type="array"; items=(#/components/schemas/CoordinationChildSettlementRef) |  |
-| <a id="s-22e70e8b9b"></a>`collection_result` | no | anyOf=(#/components/schemas/CoordinationCollectionResult) \| (type="null") |  |
-| <a id="s-52f40f13e4"></a>`contains_external_effects` | yes | type="boolean" |  |
-| <a id="s-0e942bf28a"></a>`final_join_settlement_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-f3bd3005e5"></a>`format` | no | type="string"; const="stove0-coordination-settlement/v1"; default="stove0-coordination-settlement/v1" |  |
-| <a id="s-5432273c79"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ea2c242f18"></a>`work` | yes | #/components/schemas/WorkIdentity |  |
+| <a id="s-00b0c65a2e"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Branch Set Sha256" |  |
+| <a id="s-d20e730907"></a>`children` | yes | type="array"; items=([CoordinationChildSettlementRef](schemas-coordinationchildsettlementref.md)); title="Children" |  |
+| <a id="s-22e70e8b9b"></a>`collection_result` | no | anyOf=[([CoordinationCollectionResult](schemas-coordinationcollectionresult.md)); (type="null")] |  |
+| <a id="s-52f40f13e4"></a>`contains_external_effects` | yes | type="boolean"; title="Contains External Effects" |  |
+| <a id="s-0e942bf28a"></a>`final_join_settlement_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Final Join Settlement Sha256" |  |
+| <a id="s-f3bd3005e5"></a>`format` | no | type="string"; const="stove0-coordination-settlement/v1"; default="stove0-coordination-settlement/v1"; title="Format" |  |
+| <a id="s-5432273c79"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Settlement Sha256" |  |
+| <a id="s-ea2c242f18"></a>`work` | yes | [WorkIdentity](schemas-workidentity.md) |  |
 
 ### Progression, limits, and lifecycle
 

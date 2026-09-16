@@ -25,11 +25,11 @@ One bounded continuation step through an immutable artifact selection.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4fcf66d85f"></a>`artifacts` | yes | type="array"; items=(#/components/schemas/ArtifactSubject); maxItems=256; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"selection-bound-start_ordinal","reason":"bounded-artifact-selection-page"} |  |
-| <a id="s-bb912bc81c"></a>`authority` | yes | #/components/schemas/ArtifactSelectionRef |  |
-| <a id="s-53df9f7d4c"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-dbf38f6d33"></a>`continuation` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-b2798753b1"></a>`next_continuation` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
+| <a id="s-4fcf66d85f"></a>`artifacts` | yes | type="array"; items=([ArtifactSubject](schemas-artifactsubject.md)); maxItems=256; title="Artifacts"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"selection-bound-start_ordinal","reason":"bounded-artifact-selection-page"} |  |
+| <a id="s-bb912bc81c"></a>`authority` | yes | [ArtifactSelectionRef](schemas-artifactselectionref.md) |  |
+| <a id="s-53df9f7d4c"></a>`complete` | yes | type="boolean"; title="Complete" |  |
+| <a id="s-dbf38f6d33"></a>`continuation` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Continuation" |  |
+| <a id="s-b2798753b1"></a>`next_continuation` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Next Continuation" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b76d61e14c"></a>`production` | no | anyOf=(#/components/schemas/TargetProductionAuthority) \| (type="null") |  |
-| <a id="s-62b7d0e7eb"></a>`state` | yes | type="string"; enum=["sealing","sealed"] |  |
+| <a id="s-b76d61e14c"></a>`production` | no | anyOf=[([TargetProductionAuthority](schemas-targetproductionauthority.md)); (type="null")] |  |
+| <a id="s-62b7d0e7eb"></a>`state` | yes | type="string"; enum=["sealing","sealed"]; title="State" |  |
 
 ## Maintained corroboration
 

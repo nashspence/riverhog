@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-dae9ec8755"></a>Parser name: `stove0-review-planning`
+
+| Field | Value |
+|---|---|
+| <a id="s-0de208a21c"></a>`parameters` | `[]` |
 - <a id="s-86b1c7e7d9"></a>Unique long-option abbreviations: accepted.
 
 ### Terminating controls
@@ -33,13 +37,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-0e1a4ad46c"></a>`reported` | <a id="s-5464cc7104"></a>`{"kind":"contract-report-completed"}` | <a id="s-030349a6ea"></a>`0` | <a id="s-eeb2270368"></a>json: [stove0-review-contract-report/v1](#s-ae86968a87) | <a id="s-412d1eb2d2"></a>all: `empty` |
+| <a id="s-0e1a4ad46c"></a>`reported` | <a id="s-5464cc7104"></a>`{"kind":"contract-report-completed"}` | <a id="s-030349a6ea"></a>`0` | <a id="s-eeb2270368"></a>json: [stove0-review-contract-report/v1](#s-ae86968a87) | <a id="s-412d1eb2d2"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-5fb3bb619b"></a>`usage` | <a id="s-8e15c1c4d7"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-6549be7b49"></a>`2` | <a id="s-2e941bb0af"></a>all: `empty` | <a id="s-69d9fcf861"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-5fb3bb619b"></a>`usage` | <a id="s-8e15c1c4d7"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-6549be7b49"></a>`2` | <a id="s-2e941bb0af"></a>all: `"empty"` | <a id="s-69d9fcf861"></a>all: `"noncontractual-usage-diagnostic"` |
 
 ### Local structured outputs
 

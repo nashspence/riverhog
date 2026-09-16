@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-abc73db796"></a>`interval_seconds` | yes | type="number"; exclusiveMinimum=0 |  |
-| <a id="s-818b34c678"></a>`roles` | yes | type="array"; items=(type="string"; enum=["controller","worker","combined"]) |  |
-| <a id="s-d854a9bbee"></a>`running` | yes | type="boolean" |  |
+| <a id="s-abc73db796"></a>`interval_seconds` | yes | type="number"; exclusiveMinimum=0; title="Interval Seconds" |  |
+| <a id="s-818b34c678"></a>`roles` | yes | type="array"; items=(type="string"; enum=["controller","worker","combined"]); title="Roles" |  |
+| <a id="s-d854a9bbee"></a>`running` | yes | type="boolean"; title="Running" |  |
 
 ### Progression, limits, and lifecycle
 

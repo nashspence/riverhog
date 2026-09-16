@@ -14,19 +14,25 @@ Delete Collection
 ## External contract
 
 <a id="s-db3f91804b"></a>
-- <a id="s-ec99f69fb9"></a>`operationId`: delete_collection
-- <a id="s-04d2b1a616"></a>`summary`: Delete Collection
-- <a id="s-31daac0243"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-ec99f69fb9"></a>`operationId`: `"delete_collection"`
+- <a id="s-31daac0243"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-04d2b1a616"></a>`summary`: `"Delete Collection"`
+- <a id="s-49b388c86e"></a>`tags`: `["collections"]`
+- <a id="s-8fbb573378"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:delete"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-97e74929ce"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-97e74929ce"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
 
 ### <a id="s-205df74924"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/DeleteCollectionRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [DeleteCollectionRequest](../http-schemas/schemas-deletecollectionrequest.md) |
 
 ### Responses
 

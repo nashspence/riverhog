@@ -14,18 +14,21 @@ List Collection Upload Sessions
 ## External contract
 
 <a id="s-ba392907ec"></a>
-- <a id="s-42cb0f60af"></a>`operationId`: list_collection_upload_sessions
-- <a id="s-1b2bbe5162"></a>`summary`: List Collection Upload Sessions
-- <a id="s-86bef111fa"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-42cb0f60af"></a>`operationId`: `"list_collection_upload_sessions"`
+- <a id="s-86bef111fa"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-1b2bbe5162"></a>`summary`: `"List Collection Upload Sessions"`
+- <a id="s-49c29dacc8"></a>`tags`: `["collections"]`
+- <a id="s-d63882e0a1"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:create","collections:delete"]}]`
+- <a id="s-c7040b10cb"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-57bdf728e4"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-9c486b7893"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
-| <a id="s-50209d923e"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
-| <a id="s-737b6b222f"></a>`state` | query | no | not declared | anyOf=([CollectionUploadState](../http-schemas/schemas-collectionuploadstate.md)) \| (type="null") |
+| <a id="s-57bdf728e4"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-9c486b7893"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
+| <a id="s-50209d923e"></a>`q` | query | no | not declared | anyOf=[([BrowseQuery](../http-schemas/schemas-browsequery.md)); (type="null")]; title="Q" |
+| <a id="s-737b6b222f"></a>`state` | query | no | not declared | anyOf=[([CollectionUploadState](../http-schemas/schemas-collectionuploadstate.md)); (type="null")]; title="State" |
 | <a id="s-6766b6622b"></a>`sort` | query | no | `"created_at"` | [CollectionUploadSort](../http-schemas/schemas-collectionuploadsort.md) |
 | <a id="s-4eea721e20"></a>`order` | query | no | `"desc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
 

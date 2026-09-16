@@ -24,16 +24,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8ef21559a1"></a>`accounted_bytes` | yes | type="integer" |  |
-| <a id="s-e79165f0f2"></a>`allowance_bytes` | yes | type="integer" |  |
-| <a id="s-9ff4a596cd"></a>`effective_limit_bytes` | yes | type="integer" |  |
-| <a id="s-099dbcfcba"></a>`month_started_at` | yes | type="string" |  |
-| <a id="s-3c36967233"></a>`remaining_bytes` | yes | type="integer" |  |
-| <a id="s-2b5c28bc14"></a>`reserved_bytes` | yes | type="integer" |  |
-| <a id="s-138f1ddbcc"></a>`resets_at` | yes | type="string" |  |
-| <a id="s-3b2f6d1df2"></a>`safety_buffer_bytes` | yes | type="integer" |  |
-| <a id="s-38ef97275a"></a>`state` | yes | type="string"; enum=["open","closed"] |  |
-| <a id="s-51a26ac5cc"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-8ef21559a1"></a>`accounted_bytes` | yes | type="integer"; title="Accounted Bytes" |  |
+| <a id="s-e79165f0f2"></a>`allowance_bytes` | yes | type="integer"; title="Allowance Bytes" |  |
+| <a id="s-9ff4a596cd"></a>`effective_limit_bytes` | yes | type="integer"; title="Effective Limit Bytes" |  |
+| <a id="s-099dbcfcba"></a>`month_started_at` | yes | type="string"; title="Month Started At" |  |
+| <a id="s-3c36967233"></a>`remaining_bytes` | yes | type="integer"; title="Remaining Bytes" |  |
+| <a id="s-2b5c28bc14"></a>`reserved_bytes` | yes | type="integer"; title="Reserved Bytes" |  |
+| <a id="s-138f1ddbcc"></a>`resets_at` | yes | type="string"; title="Resets At" |  |
+| <a id="s-3b2f6d1df2"></a>`safety_buffer_bytes` | yes | type="integer"; title="Safety Buffer Bytes" |  |
+| <a id="s-38ef97275a"></a>`state` | yes | type="string"; enum=["open","closed"]; title="State" |  |
+| <a id="s-51a26ac5cc"></a>`store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
 
 ## Maintained corroboration
 

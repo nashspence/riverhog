@@ -40,7 +40,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-f5a81c0a53"></a>`complete` | yes | type="boolean" |  |
 | <a id="s-32163b904e"></a>`files` | yes | type="array"; items=([ImmutableFileIdentityDocument](#s-9185aadd43)); maxItems=1000; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-cursor","reason":"bounded-portable-inventory-page"} |  |
 | <a id="s-daf906b4ae"></a>`format` | no | type="string"; const="riverhog-collection-inventory-page/v1"; default="riverhog-collection-inventory-page/v1" |  |
-| <a id="s-a8c96c4171"></a>`next_cursor` | no | anyOf=(type="string"; maxLength=8192; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-a8c96c4171"></a>`next_cursor` | no | anyOf=[(type="string"; maxLength=8192; minLength=1); (type="null")]; default=null |  |
 
 ##### Definitions
 
@@ -100,7 +100,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-6e123bf42d"></a>`encryption_format` | yes | type="string"; minLength=1 |  |
 | <a id="s-1a6f7a11e9"></a>`format` | no | type="string"; const="riverhog-collection/v1"; default="riverhog-collection/v1" |  |
 | <a id="s-0c90b603d9"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
-| <a id="s-c1e75c8c23"></a>`provenance_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-c1e75c8c23"></a>`provenance_identity` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-1e87596e88"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"] |  |
 
 ##### <a id="s-58d933375e"></a>definition `PortableCollectionInventoryAuthority`

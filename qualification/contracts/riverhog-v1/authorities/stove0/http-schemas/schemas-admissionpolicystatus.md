@@ -24,14 +24,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7abab665da"></a>`authorization_view_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-90608235c3"></a>`baseline_mode` | yes | type="string"; enum=["observe","backfill"] |  |
-| <a id="s-9fbfaae5b4"></a>`phase` | yes | type="string"; enum=["new","baseline","following","reset_required"] |  |
-| <a id="s-320c09e9e8"></a>`policy` | yes | #/components/schemas/AdmissionPolicy |  |
-| <a id="s-bc8436892e"></a>`policy_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-8a42f28aef"></a>`source_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-81ea7bf804"></a>`through_revision` | yes | type="string"; pattern="^(?:0\|[1-9][0-9]*)$" |  |
-| <a id="s-ded9b01a7b"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
+| <a id="s-7abab665da"></a>`authorization_view_identity` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Authorization View Identity" |  |
+| <a id="s-90608235c3"></a>`baseline_mode` | yes | type="string"; enum=["observe","backfill"]; title="Baseline Mode" |  |
+| <a id="s-9fbfaae5b4"></a>`phase` | yes | type="string"; enum=["new","baseline","following","reset_required"]; title="Phase" |  |
+| <a id="s-320c09e9e8"></a>`policy` | yes | [AdmissionPolicy](schemas-admissionpolicy.md) |  |
+| <a id="s-bc8436892e"></a>`policy_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Policy Sha256" |  |
+| <a id="s-8a42f28aef"></a>`source_identity` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Source Identity" |  |
+| <a id="s-81ea7bf804"></a>`through_revision` | yes | type="string"; pattern="^(?:0\|[1-9][0-9]*)$"; title="Through Revision" |  |
+| <a id="s-ded9b01a7b"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1; title="Updated At" |  |
 
 ### Progression, limits, and lifecycle
 

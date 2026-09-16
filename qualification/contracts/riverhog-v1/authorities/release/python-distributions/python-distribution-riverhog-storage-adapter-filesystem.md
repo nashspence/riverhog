@@ -16,15 +16,15 @@ Optional nonnormative Linux filesystem storage reference for Riverhog.
 <a id="s-49bed7048f"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-674e1c2ec6"></a>`artifacts` | [{"coordinate": "dist/riverhog_storage_adapter_filesystem-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_storage_adapter_filesystem-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-7541e0b0bf"></a>`channel` | github-release |
-| <a id="s-7857d0f0de"></a>`description` | Optional nonnormative Linux filesystem storage reference for Riverhog. |
-| <a id="s-32251f00f0"></a>`license_baseline` | first-v1-publication |
-| <a id="s-be0bb0a335"></a>`license_expression` | CAL-1.0 |
-| <a id="s-170f32b532"></a>`publication_identity` | {"coordinate": "riverhog-storage-adapter-filesystem", "kind": "python-distribution"} |
-| <a id="s-2ec83a96f4"></a>`requires_python` | >=3.12 |
-| <a id="s-19268b4204"></a>`role` | reference_component |
-| <a id="s-5d32e64c3c"></a>`source` | reference/riverhog/storage/filesystem/pyproject.toml |
+| <a id="s-674e1c2ec6"></a>`artifacts` | `[{"coordinate":"dist/riverhog_storage_adapter_filesystem-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/riverhog_storage_adapter_filesystem-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-7541e0b0bf"></a>`channel` | `"github-release"` |
+| <a id="s-7857d0f0de"></a>`description` | `"Optional nonnormative Linux filesystem storage reference for Riverhog."` |
+| <a id="s-32251f00f0"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-be0bb0a335"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-170f32b532"></a>`publication_identity` | `{"coordinate":"riverhog-storage-adapter-filesystem","kind":"python-distribution"}` |
+| <a id="s-2ec83a96f4"></a>`requires_python` | `">=3.12"` |
+| <a id="s-19268b4204"></a>`role` | `"reference_component"` |
+| <a id="s-5d32e64c3c"></a>`source` | `"reference/riverhog/storage/filesystem/pyproject.toml"` |
 
 ## Existing ownership context
 

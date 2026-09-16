@@ -24,11 +24,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b980481048"></a>`cursor` | yes | type="string" |  |
-| <a id="s-d6d47a1ee9"></a>`failures` | yes | type="array"; items=(#/components/schemas/SchedulerFailure) |  |
-| <a id="s-09d7eabe63"></a>`next_cursor` | yes | type="string" |  |
-| <a id="s-66986d978d"></a>`progressed` | yes | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
-| <a id="s-257ee67e97"></a>`role` | yes | type="string"; enum=["controller","worker","combined"] |  |
+| <a id="s-b980481048"></a>`cursor` | yes | type="string"; title="Cursor" |  |
+| <a id="s-d6d47a1ee9"></a>`failures` | yes | type="array"; items=([SchedulerFailure](schemas-schedulerfailure.md)); title="Failures" |  |
+| <a id="s-09d7eabe63"></a>`next_cursor` | yes | type="string"; title="Next Cursor" |  |
+| <a id="s-66986d978d"></a>`progressed` | yes | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$"); title="Progressed" |  |
+| <a id="s-257ee67e97"></a>`role` | yes | type="string"; enum=["controller","worker","combined"]; title="Role" |  |
 
 ### Progression, limits, and lifecycle
 

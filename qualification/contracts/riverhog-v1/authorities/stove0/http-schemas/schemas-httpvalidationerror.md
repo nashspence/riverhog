@@ -22,7 +22,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-abba003882"></a>`detail` | no | type="array"; items=(#/components/schemas/ValidationError) |  |
+| <a id="s-abba003882"></a>`detail` | no | type="array"; items=([ValidationError](schemas-validationerror.md)); title="Detail" |  |
 
 ### Progression, limits, and lifecycle
 

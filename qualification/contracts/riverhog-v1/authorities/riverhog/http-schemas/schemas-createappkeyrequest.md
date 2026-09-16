@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c99d7d5a34"></a>`access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
-| <a id="s-cf3b3599cf"></a>`expires_in_seconds` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
+| <a id="s-c99d7d5a34"></a>`access` | yes | [ApplicationAccessGrantSet](schemas-applicationaccessgrantset.md) |  |
+| <a id="s-cf3b3599cf"></a>`expires_in_seconds` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; title="Expires In Seconds" |  |
 
 ## Maintained corroboration
 

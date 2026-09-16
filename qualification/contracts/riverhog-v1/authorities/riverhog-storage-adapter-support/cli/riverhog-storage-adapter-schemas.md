@@ -42,14 +42,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-c1a8bb97d5"></a>`emitted` | <a id="s-8bded2382d"></a>`{"kind":"option-absent","parameter":"output"}` | <a id="s-6198931a89"></a>`0` | <a id="s-4e5ccf02c2"></a>json: [generated:riverhog-storage-adapter protocol](../process-protocol/generated-riverhog-storage-adapter-protocol.md) | <a id="s-b3f13bd5e3"></a>all: `empty` |
-| <a id="s-3ce2798c93"></a>`written` | <a id="s-f819f64438"></a>`{"kind":"option-present","parameter":"output"}` | <a id="s-3920cf9c82"></a>`0` | <a id="s-3f62ca3ca0"></a>all: `empty` | <a id="s-edaca0f659"></a>all: `empty` |
+| <a id="s-c1a8bb97d5"></a>`emitted` | <a id="s-8bded2382d"></a>`{"kind":"option-absent","parameter":"output"}` | <a id="s-6198931a89"></a>`0` | <a id="s-4e5ccf02c2"></a>json: [generated:riverhog-storage-adapter protocol](../process-protocol/generated-riverhog-storage-adapter-protocol.md) | <a id="s-b3f13bd5e3"></a>all: `"empty"` |
+| <a id="s-3ce2798c93"></a>`written` | <a id="s-f819f64438"></a>`{"kind":"option-present","parameter":"output"}` | <a id="s-3920cf9c82"></a>`0` | <a id="s-3f62ca3ca0"></a>all: `"empty"` | <a id="s-edaca0f659"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-f6f6ad03e6"></a>`usage` | <a id="s-74d2d47cdd"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-90cc83a736"></a>`2` | <a id="s-26a045abe5"></a>all: `empty` | <a id="s-c4868a8c48"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-f6f6ad03e6"></a>`usage` | <a id="s-74d2d47cdd"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-90cc83a736"></a>`2` | <a id="s-26a045abe5"></a>all: `"empty"` | <a id="s-c4868a8c48"></a>all: `"noncontractual-usage-diagnostic"` |
 
 ### Progression, limits, and lifecycle
 

@@ -24,16 +24,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c8a4a01aa1"></a>`archive_root_sha256` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a2b1ded4cb"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-5f2c06192f"></a>`content_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-effc539626"></a>`description` | yes | anyOf=(#/components/schemas/CollectionDescription) \| (type="null") |  |
-| <a id="s-3d8c8564c3"></a>`description_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-37af96b838"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
-| <a id="s-fe82889f13"></a>`operation` | no | type="string"; const="upsert"; default="upsert" |  |
-| <a id="s-beb58546cc"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
-| <a id="s-de502899cb"></a>`tag_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
-| <a id="s-9974c886dd"></a>`tag_set_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c8a4a01aa1"></a>`archive_root_sha256` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
+| <a id="s-a2b1ded4cb"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-5f2c06192f"></a>`content_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
+| <a id="s-effc539626"></a>`description` | yes | anyOf=[([CollectionDescription](schemas-collectiondescription.md)); (type="null")] |  |
+| <a id="s-3d8c8564c3"></a>`description_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$"; title="Description Identity" |  |
+| <a id="s-37af96b838"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991; title="Description Revision" |  |
+| <a id="s-fe82889f13"></a>`operation` | no | type="string"; const="upsert"; default="upsert"; title="Operation" |  |
+| <a id="s-beb58546cc"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$"; title="Revision" |  |
+| <a id="s-de502899cb"></a>`tag_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991; title="Tag Revision" |  |
+| <a id="s-9974c886dd"></a>`tag_set_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$"; title="Tag Set Identity" |  |
 
 ### Progression, limits, and lifecycle
 

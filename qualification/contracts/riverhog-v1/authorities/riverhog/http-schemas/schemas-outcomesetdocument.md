@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8b98c68813"></a>`authority` | no | anyOf=(#/components/schemas/ExactSetAuthorityDocument) \| (type="null") |  |
-| <a id="s-c3431dbb24"></a>`count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-102c3f6916"></a>`failure` | no | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null") |  |
-| <a id="s-da0eeee06e"></a>`state` | yes | type="string"; enum=["receiving","sealing","sealed","failed"] |  |
+| <a id="s-8b98c68813"></a>`authority` | no | anyOf=[([ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)); (type="null")] |  |
+| <a id="s-c3431dbb24"></a>`count` | yes | type="integer"; minimum=0; title="Count" |  |
+| <a id="s-102c3f6916"></a>`failure` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; title="Failure" |  |
+| <a id="s-da0eeee06e"></a>`state` | yes | type="string"; enum=["receiving","sealing","sealed","failed"]; title="State" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f31c640f47"></a>`failures` | no | type="array"; default=[]; items=(#/components/schemas/SchedulerFailure) |  |
-| <a id="s-3175a4de76"></a>`progressed` | yes | type="array"; items=(type="string") |  |
+| <a id="s-f31c640f47"></a>`failures` | no | type="array"; default=[]; items=([SchedulerFailure](schemas-schedulerfailure.md)); title="Failures" |  |
+| <a id="s-3175a4de76"></a>`progressed` | yes | type="array"; items=(type="string"); title="Progressed" |  |
 
 ### Progression, limits, and lifecycle
 

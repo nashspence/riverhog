@@ -39,7 +39,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-2cad3114a7"></a>`archive_root_sha256` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-83b72884f7"></a>`collection_id` | yes | [CollectionId](#s-45d9f823fc) |  |
 | <a id="s-8c83d805d7"></a>`content_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-f896fc541c"></a>`description` | yes | anyOf=([CollectionDescription](#s-a0be6916ca)) \| (type="null") |  |
+| <a id="s-f896fc541c"></a>`description` | yes | anyOf=[([CollectionDescription](#s-a0be6916ca)); (type="null")] |  |
 | <a id="s-d0a0d83002"></a>`description_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-a75af70b7e"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
 | <a id="s-de58e57e97"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |

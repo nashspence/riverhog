@@ -24,15 +24,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4b8104d18d"></a>`archive_root` | yes | #/components/schemas/FailedArchiveRootPublicationOut |  |
-| <a id="s-3cff6a3fed"></a>`failure` | yes | type="string"; minLength=1 |  |
-| <a id="s-118170bffa"></a>`last_uploaded_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-ac6a19ded7"></a>`last_verified_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-652279a98a"></a>`object_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-1bcd53b509"></a>`state` | yes | type="string"; const="failed" |  |
-| <a id="s-6ba0d92e03"></a>`storage_prefix` | yes | anyOf=(type="string"; minLength=1) \| (type="null") |  |
-| <a id="s-d030c4944a"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-c582d68251"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-4b8104d18d"></a>`archive_root` | yes | [FailedArchiveRootPublicationOut](schemas-failedarchiverootpublicationout.md) |  |
+| <a id="s-3cff6a3fed"></a>`failure` | yes | type="string"; minLength=1; title="Failure" |  |
+| <a id="s-118170bffa"></a>`last_uploaded_at` | yes | anyOf=[(type="string"); (type="null")]; title="Last Uploaded At" |  |
+| <a id="s-ac6a19ded7"></a>`last_verified_at` | yes | anyOf=[(type="string"); (type="null")]; title="Last Verified At" |  |
+| <a id="s-652279a98a"></a>`object_count` | yes | type="integer"; minimum=0; title="Object Count" |  |
+| <a id="s-1bcd53b509"></a>`state` | yes | type="string"; const="failed"; title="State" |  |
+| <a id="s-6ba0d92e03"></a>`storage_prefix` | yes | anyOf=[(type="string"; minLength=1); (type="null")]; title="Storage Prefix" |  |
+| <a id="s-d030c4944a"></a>`store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
+| <a id="s-c582d68251"></a>`stored_bytes` | yes | type="integer"; minimum=0; title="Stored Bytes" |  |
 
 ## Maintained corroboration
 

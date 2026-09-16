@@ -82,11 +82,11 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-68c91641ed"></a>`creators` | no | type="array"; default=[]; items=(type="string") |  |
-| <a id="s-dda1ba525f"></a>`device_make` | no | anyOf=(type="string") \| (type="null"); default=null |  |
-| <a id="s-b4dcb42879"></a>`device_model` | no | anyOf=(type="string") \| (type="null"); default=null |  |
+| <a id="s-dda1ba525f"></a>`device_make` | no | anyOf=[(type="string"); (type="null")]; default=null |  |
+| <a id="s-b4dcb42879"></a>`device_model` | no | anyOf=[(type="string"); (type="null")]; default=null |  |
 | <a id="s-fe8cbe0bf4"></a>`field_preferences` | no | type="array"; default=[]; items=([MediaFieldPreference](#s-e222d648c9)) |  |
 | <a id="s-a0c73b3253"></a>`format` | no | type="string"; const="stove0-media-projection-policy/v1"; default="stove0-media-projection-policy/v1" |  |
-| <a id="s-ec7a4f028b"></a>`gps` | no | anyOf=([MediaGps](#s-08ab823d60)) \| (type="null"); default=null |  |
+| <a id="s-ec7a4f028b"></a>`gps` | no | anyOf=[([MediaGps](#s-08ab823d60)); (type="null")]; default=null |  |
 | <a id="s-7563bacfb4"></a>`tags` | no | type="array"; default=[]; items=(type="string") |  |
 
 ## Governing policies

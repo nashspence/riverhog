@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c299af7455"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-eaac47bfb4"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-c299af7455"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1; title="Claim Id" |  |
+| <a id="s-eaac47bfb4"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
 
 ### Progression, limits, and lifecycle
 

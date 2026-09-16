@@ -16,15 +16,15 @@ Canonical Riverhog provenance identity and reference contracts.
 <a id="s-76c59a895f"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-c7cd74174b"></a>`artifacts` | [{"coordinate": "dist/riverhog_provenance_contracts-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_provenance_contracts-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-fcc5421583"></a>`channel` | github-release |
-| <a id="s-66d5de22b4"></a>`description` | Canonical Riverhog provenance identity and reference contracts. |
-| <a id="s-fc6dd8edff"></a>`license_baseline` | first-v1-publication |
-| <a id="s-3eacb8331a"></a>`license_expression` | Apache-2.0 |
-| <a id="s-e13b41f982"></a>`publication_identity` | {"coordinate": "riverhog-provenance-contracts", "kind": "python-distribution"} |
-| <a id="s-086db510ba"></a>`requires_python` | >=3.12 |
-| <a id="s-a65cfab9bb"></a>`role` | reusable_library |
-| <a id="s-bbcb7bbd23"></a>`source` | packages/riverhog-provenance-contracts/pyproject.toml |
+| <a id="s-c7cd74174b"></a>`artifacts` | `[{"coordinate":"dist/riverhog_provenance_contracts-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/riverhog_provenance_contracts-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-fcc5421583"></a>`channel` | `"github-release"` |
+| <a id="s-66d5de22b4"></a>`description` | `"Canonical Riverhog provenance identity and reference contracts."` |
+| <a id="s-fc6dd8edff"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-3eacb8331a"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-e13b41f982"></a>`publication_identity` | `{"coordinate":"riverhog-provenance-contracts","kind":"python-distribution"}` |
+| <a id="s-086db510ba"></a>`requires_python` | `">=3.12"` |
+| <a id="s-a65cfab9bb"></a>`role` | `"reusable_library"` |
+| <a id="s-bbcb7bbd23"></a>`source` | `"packages/riverhog-provenance-contracts/pyproject.toml"` |
 
 ## Existing ownership context
 

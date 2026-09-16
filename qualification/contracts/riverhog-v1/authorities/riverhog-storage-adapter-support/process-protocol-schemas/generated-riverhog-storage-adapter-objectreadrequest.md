@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-debcf1b15e"></a>`expected_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-debcf1b15e"></a>`expected_bytes` | yes | type="integer"; minimum=0; title="Expected Bytes" |  |
 | <a id="s-6d80e36046"></a>`object` | yes | [ObjectLocator](#s-a35c176f55) |  |
-| <a id="s-57ba00ac3d"></a>`offset` | no | anyOf=(type="integer"; minimum=0) \| (type="null"); default=null |  |
-| <a id="s-56c4609936"></a>`size` | no | anyOf=(type="integer"; minimum=0) \| (type="null"); default=null |  |
+| <a id="s-57ba00ac3d"></a>`offset` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; default=null; title="Offset" |  |
+| <a id="s-56c4609936"></a>`size` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; default=null; title="Size" |  |
 
 ### Definitions
 
@@ -44,8 +44,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4dfbf936c2"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-ca9b9d8e31"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-4dfbf936c2"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
+| <a id="s-ca9b9d8e31"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null; title="Revision" |  |
 
 ## Maintained corroboration
 

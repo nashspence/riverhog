@@ -38,7 +38,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-5da92ff852"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-8249ce817d"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-3c43d0947e"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-3c43d0947e"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
 | <a id="s-bc4133d8af"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-a310cd7eba"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 

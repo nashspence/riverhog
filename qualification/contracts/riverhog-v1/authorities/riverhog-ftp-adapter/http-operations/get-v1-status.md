@@ -14,22 +14,24 @@ Status
 ## External contract
 
 <a id="s-aad3e3439b"></a>
-- <a id="s-830a485e4c"></a>`operationId`: get_ftp_adapter_status
-- <a id="s-e0703c191b"></a>`summary`: Status
-- <a id="s-9eb6d4f112"></a>`security`: `[{"RiverhogFtpAdapterBearer": []}]`
+- <a id="s-830a485e4c"></a>`operationId`: `"get_ftp_adapter_status"`
+- <a id="s-9eb6d4f112"></a>`security`: `[{"RiverhogFtpAdapterBearer":[]}]`
+- <a id="s-e0703c191b"></a>`summary`: `"Status"`
+- <a id="s-5085936ff0"></a>`tags`: `["service"]`
+- <a id="s-8d70f99f68"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-702a3a9511"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-9a0968104e"></a>`page_token` | query | no | not declared | anyOf=(type="string"; maxLength=120; minLength=1) \| (type="null") |
+| <a id="s-702a3a9511"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-9a0968104e"></a>`page_token` | query | no | not declared | anyOf=[(type="string"; maxLength=120; minLength=1); (type="null")]; title="Page Token" |
 
 ### Responses
 
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
-| <a id="s-de7ccd665a"></a>`200` | Successful Response | application/json | type="object"; additionalProperties=true | not declared |
+| <a id="s-de7ccd665a"></a>`200` | Successful Response | application/json | type="object"; additionalProperties=(any JSON value); title="Response Get Ftp Adapter Status" | not declared |
 | <a id="s-ce6b0b2450"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
 | <a id="s-ca2c31b304"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
 | <a id="s-fa00d2585f"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |

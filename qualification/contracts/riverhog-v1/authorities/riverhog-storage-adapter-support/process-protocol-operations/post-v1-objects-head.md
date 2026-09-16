@@ -16,13 +16,13 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-0428c641b5"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-f4181b24dc"></a>`error_schema` | StorageAdapterError |
-| <a id="s-5ff11d0d20"></a>`errors` | [{"code": "unauthorized", "status": 401}, {"code": "invalid_request", "status": 400}, {"code": "provider_unavailable", "status": 503}, {"code": "internal_failure", "status": 500}, {"code": "request_too_large", "status": 413}, {"code": "invalid_path", "status": 400}, {"code": "not_found", "status": 404}, {"code": "identity_conflict", "status": 409}, {"code": "integrity_failure", "status": 409}] |
-| <a id="s-dc6e2e4041"></a>`method` | POST |
-| <a id="s-0816d5c9b5"></a>`path` | /v1/objects/head |
-| <a id="s-722bc3063d"></a>`path_parameters` | [] |
-| <a id="s-4a7bc15a45"></a>`request` | {"kind": "json", "schema": "ObjectHeadRequest"} |
-| <a id="s-b1b033233f"></a>`response` | {"headers": [], "kind": "json", "schema": "ObjectMetadataReceipt", "statuses": [200]} |
+| <a id="s-f4181b24dc"></a>`error_schema` | `"StorageAdapterError"` |
+| <a id="s-5ff11d0d20"></a>`errors` | `[{"code":"unauthorized","status":401},{"code":"invalid_request","status":400},{"code":"provider_unavailable","status":503},{"code":"internal_failure","status":500},{"code":"request_too_large","status":413},{"code":"invalid_path","status":400},{"code":"not_found","status":404},{"code":"identity_conflict","status":409},{"code":"integrity_failure","status":409}]` |
+| <a id="s-dc6e2e4041"></a>`method` | `"POST"` |
+| <a id="s-0816d5c9b5"></a>`path` | `"/v1/objects/head"` |
+| <a id="s-722bc3063d"></a>`path_parameters` | `[]` |
+| <a id="s-4a7bc15a45"></a>`request` | `{"kind":"json","schema":"ObjectHeadRequest"}` |
+| <a id="s-b1b033233f"></a>`response` | `{"headers":[],"kind":"json","schema":"ObjectMetadataReceipt","statuses":[200]}` |
 
 ## Maintained corroboration
 

@@ -16,13 +16,13 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-d8e30bacd5"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-c865aaa678"></a>`error_schema` | ErrorResponse |
-| <a id="s-ad6fd2053f"></a>`errors` | [{"code": "invalid_target_request", "status": 400}, {"code": "unauthorized", "status": 401}, {"code": "request_too_large", "status": 413}, {"code": "target_protocol_mismatch", "status": 409}, {"code": "operation_contract_mismatch", "status": 409}, {"code": "unsupported_operation", "status": 400}, {"code": "target_failed", "status": 500}] |
-| <a id="s-2eb9158922"></a>`method` | POST |
-| <a id="s-53efa987ed"></a>`path` | /v1/preflight |
-| <a id="s-190bb132dc"></a>`path_parameters` | [] |
-| <a id="s-2ea0e5fe15"></a>`request` | {"kind": "json", "schema": "TargetPreflightRequest"} |
-| <a id="s-05bb75ce64"></a>`response` | {"headers": [], "kind": "json", "schema": "TargetPreflightResponse", "statuses": [200]} |
+| <a id="s-c865aaa678"></a>`error_schema` | `"ErrorResponse"` |
+| <a id="s-ad6fd2053f"></a>`errors` | `[{"code":"invalid_target_request","status":400},{"code":"unauthorized","status":401},{"code":"request_too_large","status":413},{"code":"target_protocol_mismatch","status":409},{"code":"operation_contract_mismatch","status":409},{"code":"unsupported_operation","status":400},{"code":"target_failed","status":500}]` |
+| <a id="s-2eb9158922"></a>`method` | `"POST"` |
+| <a id="s-53efa987ed"></a>`path` | `"/v1/preflight"` |
+| <a id="s-190bb132dc"></a>`path_parameters` | `[]` |
+| <a id="s-2ea0e5fe15"></a>`request` | `{"kind":"json","schema":"TargetPreflightRequest"}` |
+| <a id="s-05bb75ce64"></a>`response` | `{"headers":[],"kind":"json","schema":"TargetPreflightResponse","statuses":[200]}` |
 
 ## Maintained corroboration
 

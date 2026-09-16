@@ -14,19 +14,24 @@ Review Evaluation Variant
 ## External contract
 
 <a id="s-a59018dd23"></a>
-- <a id="s-0cdb6ecda9"></a>`operationId`: review_evaluation_variant
-- <a id="s-8cb5c2b984"></a>`summary`: Review Evaluation Variant
+- <a id="s-0cdb6ecda9"></a>`operationId`: `"review_evaluation_variant"`
+- <a id="s-8cb5c2b984"></a>`summary`: `"Review Evaluation Variant"`
+- <a id="s-392b9ac791"></a>`tags`: `["evaluations"]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-7d6d76bff4"></a>`evaluation_id` | path | yes | not declared | type="string" |
-| <a id="s-d5d468b277"></a>`variant_id` | path | yes | not declared | type="string" |
+| <a id="s-7d6d76bff4"></a>`evaluation_id` | path | yes | not declared | type="string"; title="Evaluation Id" |
+| <a id="s-d5d468b277"></a>`variant_id` | path | yes | not declared | type="string"; title="Variant Id" |
 
 ### <a id="s-f2b96df34f"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/EvaluationReviewIn"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [EvaluationReviewIn](../http-schemas/schemas-evaluationreviewin.md) |
 
 ### Responses
 

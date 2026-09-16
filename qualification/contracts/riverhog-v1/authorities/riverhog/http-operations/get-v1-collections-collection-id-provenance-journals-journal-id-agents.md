@@ -14,18 +14,21 @@ List Collection Provenance Journal Agents
 ## External contract
 
 <a id="s-678b6c5cf4"></a>
-- <a id="s-6ca44899fd"></a>`operationId`: list_collection_provenance_journal_agents
-- <a id="s-c21fbbe3c9"></a>`summary`: List Collection Provenance Journal Agents
-- <a id="s-59cb510b90"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-6ca44899fd"></a>`operationId`: `"list_collection_provenance_journal_agents"`
+- <a id="s-59cb510b90"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-c21fbbe3c9"></a>`summary`: `"List Collection Provenance Journal Agents"`
+- <a id="s-3b9d6d922f"></a>`tags`: `["provenance"]`
+- <a id="s-cc6167d326"></a>`x-riverhog-permission-requirements`: `[{"any_of":["provenance:read"]}]`
+- <a id="s-e8ae5a3f2d"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-58a48d8876"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-091bc6d703"></a>`journal_id` | path | yes | not declared | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
-| <a id="s-0442137d8e"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-b42306b28f"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
+| <a id="s-58a48d8876"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-091bc6d703"></a>`journal_id` | path | yes | not declared | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"; title="Journal Id" |
+| <a id="s-0442137d8e"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-b42306b28f"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
 
 ### Responses
 

@@ -36,7 +36,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-fa27ce7040"></a>`actions` | yes | type="array"; items=(type="string"; enum=["read-inputs","write-output"]); minItems=1; oneOf=(const=["read-inputs"]) \| (const=["read-inputs","write-output"]) |  |
+| <a id="s-fa27ce7040"></a>`actions` | yes | type="array"; items=(type="string"; enum=["read-inputs","write-output"]); minItems=1; oneOf=[(const=["read-inputs"]); (const=["read-inputs","write-output"])] |  |
 | <a id="s-9717f29e89"></a>`artifacts` | yes | [ArtifactReceivingSetDocument](#s-12e03bb1bc) |  |
 | <a id="s-0ea541ef21"></a>`audience` | yes | type="string"; pattern="^[a-z0-9][a-z0-9._:/-]{0,299}$" |  |
 | <a id="s-be290c9233"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -63,7 +63,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4e7fe48037"></a>`authority` | no | anyOf=([ArtifactSetAuthorityDocument](#s-6a2b19199e)) \| (type="null"); default=null |  |
+| <a id="s-4e7fe48037"></a>`authority` | no | anyOf=[([ArtifactSetAuthorityDocument](#s-6a2b19199e)); (type="null")]; default=null |  |
 | <a id="s-56adc08a7d"></a>`count` | yes | type="integer"; minimum=0 |  |
 | <a id="s-415ecd6ca4"></a>`state` | yes | type="string"; enum=["receiving","sealed"] |  |
 | <a id="s-a45e9e7b9d"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |

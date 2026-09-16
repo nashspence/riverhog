@@ -14,8 +14,9 @@ Health Live
 ## External contract
 
 <a id="s-e0652acfec"></a>
-- <a id="s-9b26680856"></a>`operationId`: ftp_adapter_health_live
-- <a id="s-b44daa8478"></a>`summary`: Health Live
+- <a id="s-9b26680856"></a>`operationId`: `"ftp_adapter_health_live"`
+- <a id="s-b44daa8478"></a>`summary`: `"Health Live"`
+- <a id="s-75ab4de2f8"></a>`tags`: `["health"]`
 
 ### Responses
 

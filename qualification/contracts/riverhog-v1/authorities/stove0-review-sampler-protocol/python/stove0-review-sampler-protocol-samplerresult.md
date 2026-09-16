@@ -37,9 +37,9 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-394f8f303a"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-6a3e7e56cf)) |  |
-| <a id="s-b97311fe39"></a>`failure` | no | anyOf=([SamplerFailure](#s-a17aaf3980)) \| (type="null"); default=null |  |
+| <a id="s-b97311fe39"></a>`failure` | no | anyOf=[([SamplerFailure](#s-a17aaf3980)); (type="null")]; default=null |  |
 | <a id="s-10227530d7"></a>`format` | no | type="string"; const="stove0-review-sampler-result/v1"; default="stove0-review-sampler-result/v1" |  |
-| <a id="s-1b23e0cc50"></a>`inapplicable` | no | anyOf=([SamplerInapplicable](#s-6e25d47d69)) \| (type="null"); default=null |  |
+| <a id="s-1b23e0cc50"></a>`inapplicable` | no | anyOf=[([SamplerInapplicable](#s-6e25d47d69)); (type="null")]; default=null |  |
 | <a id="s-6f7900bd15"></a>`outputs` | no | type="array"; default=[]; items=([SamplerOutput](#s-256a9177b4)) |  |
 | <a id="s-3edc1cd2b7"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-afc9400c13"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |

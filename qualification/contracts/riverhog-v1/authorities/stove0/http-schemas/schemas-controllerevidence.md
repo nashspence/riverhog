@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6248d0a5d5"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-f3bb084220"></a>`execution_envelope` | yes | #/components/schemas/ExecutionEnvelope |  |
-| <a id="s-3c35b188e7"></a>`format` | no | type="string"; const="stove0-controller-evidence/v1"; default="stove0-controller-evidence/v1" |  |
+| <a id="s-6248d0a5d5"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Controller Evidence Sha256" |  |
+| <a id="s-f3bb084220"></a>`execution_envelope` | yes | [ExecutionEnvelope](schemas-executionenvelope.md) |  |
+| <a id="s-3c35b188e7"></a>`format` | no | type="string"; const="stove0-controller-evidence/v1"; default="stove0-controller-evidence/v1"; title="Format" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -14,16 +14,19 @@ Acquire Collection Upload Session Work
 ## External contract
 
 <a id="s-c49fcc285b"></a>
-- <a id="s-c6a878ced1"></a>`operationId`: acquire_collection_upload_session_work
-- <a id="s-e31071e137"></a>`summary`: Acquire Collection Upload Session Work
-- <a id="s-5830733425"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-c6a878ced1"></a>`operationId`: `"acquire_collection_upload_session_work"`
+- <a id="s-5830733425"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-e31071e137"></a>`summary`: `"Acquire Collection Upload Session Work"`
+- <a id="s-3608812045"></a>`tags`: `["collections"]`
+- <a id="s-97c4cdb536"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-60ffdfa81f"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:create"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-4817272220"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-3ac16348cf"></a>`limit` | query | no | `16` | type="integer"; minimum=1; maximum=64 |
+| <a id="s-4817272220"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-3ac16348cf"></a>`limit` | query | no | `16` | type="integer"; minimum=1; maximum=64; title="Limit" |
 
 ### Responses
 

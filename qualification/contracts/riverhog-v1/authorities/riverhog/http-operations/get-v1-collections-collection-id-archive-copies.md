@@ -14,17 +14,20 @@ List Collection Archive Copies
 ## External contract
 
 <a id="s-1bb9a248a2"></a>
-- <a id="s-7d155223a1"></a>`operationId`: list_collection_archive_copies
-- <a id="s-c68349e316"></a>`summary`: List Collection Archive Copies
-- <a id="s-0950d4f285"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-7d155223a1"></a>`operationId`: `"list_collection_archive_copies"`
+- <a id="s-0950d4f285"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-c68349e316"></a>`summary`: `"List Collection Archive Copies"`
+- <a id="s-b281ff5a85"></a>`tags`: `["collections"]`
+- <a id="s-fd2c1b88e8"></a>`x-riverhog-permission-requirements`: `[{"any_of":["catalog:read"]}]`
+- <a id="s-d8c4f5a131"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-048e4c0841"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-ad146b6b78"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-8c902e89d2"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
+| <a id="s-048e4c0841"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-ad146b6b78"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-8c902e89d2"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
 
 ### Responses
 

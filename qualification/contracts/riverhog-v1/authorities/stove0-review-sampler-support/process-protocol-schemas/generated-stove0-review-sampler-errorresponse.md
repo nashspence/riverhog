@@ -41,9 +41,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ff1f25a08f"></a>`code` | yes | type="string"; minLength=1 |  |
-| <a id="s-0d9bec331e"></a>`details` | no | anyOf=(type="object"; additionalProperties=true) \| (type="null"); default=null |  |
-| <a id="s-27efa2f024"></a>`message` | yes | type="string"; minLength=1 |  |
+| <a id="s-ff1f25a08f"></a>`code` | yes | type="string"; minLength=1; title="Code" |  |
+| <a id="s-0d9bec331e"></a>`details` | no | anyOf=[(type="object"; additionalProperties=(any JSON value)); (type="null")]; default=null; title="Details" |  |
+| <a id="s-27efa2f024"></a>`message` | yes | type="string"; minLength=1; title="Message" |  |
 
 ### Progression, limits, and lifecycle
 

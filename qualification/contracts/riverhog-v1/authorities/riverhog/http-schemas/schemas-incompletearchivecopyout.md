@@ -24,15 +24,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-465b66cfb2"></a>`archive_root` | yes | anyOf=(#/components/schemas/PendingArchiveRootPublicationOut) \| (#/components/schemas/UploadedArchiveRootPublicationOut) |  |
-| <a id="s-461f9bfdc3"></a>`failure` | yes | type="null" |  |
-| <a id="s-91c7e1fec3"></a>`last_uploaded_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-21e4a90300"></a>`last_verified_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-c956ecabd4"></a>`object_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-126da85264"></a>`state` | yes | type="string"; enum=["pending","uploading","retrying"] |  |
-| <a id="s-2c41fde9f8"></a>`storage_prefix` | yes | anyOf=(type="string"; minLength=1) \| (type="null") |  |
-| <a id="s-624ee4c956"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-2e70f18438"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-465b66cfb2"></a>`archive_root` | yes | anyOf=[([PendingArchiveRootPublicationOut](schemas-pendingarchiverootpublicationout.md)); ([UploadedArchiveRootPublicationOut](schemas-uploadedarchiverootpublicationout.md))]; title="Archive Root" |  |
+| <a id="s-461f9bfdc3"></a>`failure` | yes | type="null"; title="Failure" |  |
+| <a id="s-91c7e1fec3"></a>`last_uploaded_at` | yes | anyOf=[(type="string"); (type="null")]; title="Last Uploaded At" |  |
+| <a id="s-21e4a90300"></a>`last_verified_at` | yes | anyOf=[(type="string"); (type="null")]; title="Last Verified At" |  |
+| <a id="s-c956ecabd4"></a>`object_count` | yes | type="integer"; minimum=0; title="Object Count" |  |
+| <a id="s-126da85264"></a>`state` | yes | type="string"; enum=["pending","uploading","retrying"]; title="State" |  |
+| <a id="s-2c41fde9f8"></a>`storage_prefix` | yes | anyOf=[(type="string"; minLength=1); (type="null")]; title="Storage Prefix" |  |
+| <a id="s-624ee4c956"></a>`store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
+| <a id="s-2e70f18438"></a>`stored_bytes` | yes | type="integer"; minimum=0; title="Stored Bytes" |  |
 
 ## Maintained corroboration
 

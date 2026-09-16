@@ -24,11 +24,11 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-19e68bdac3"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded |
-| <a id="s-ef0c4fcdc8"></a>`journal_id`<br>`journal_id` | required positional; 1 value | text | not recorded |
-| <a id="s-659d1f647f"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
-| <a id="s-d5a1fe8703"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
-| <a id="s-0080eec389"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-19e68bdac3"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded<br>Env: `null` |
+| <a id="s-ef0c4fcdc8"></a>`journal_id`<br>`journal_id` | required positional; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-659d1f647f"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25`<br>Env: `null` |
+| <a id="s-d5a1fe8703"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-0080eec389"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -47,14 +47,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-deca0ef10a"></a>`completed` | <a id="s-178e17ec73"></a>`{"kind":"command-completed"}` | <a id="s-6b3f2ec4a3"></a>`0` | <a id="s-56838a419f"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP list_collection_provenance_journal_agents response 200](../../riverhog/http-operations/get-v1-collections-collection-id-provenance-journals-journal-id-agents.md#s-6a06a8f5f7) | <a id="s-366b9450c4"></a>all: `empty` |
+| <a id="s-deca0ef10a"></a>`completed` | <a id="s-178e17ec73"></a>`{"kind":"command-completed"}` | <a id="s-6b3f2ec4a3"></a>`0` | <a id="s-56838a419f"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP list_collection_provenance_journal_agents response 200](../../riverhog/http-operations/get-v1-collections-collection-id-provenance-journals-journal-id-agents.md#s-6a06a8f5f7) | <a id="s-366b9450c4"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-49726318bb"></a>`usage` | <a id="s-ca6569ecaf"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-af5bdbdcac"></a>`2` | <a id="s-85a8ec126f"></a>all: `empty` | <a id="s-d96ed4e75d"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-f51dee5561"></a>`operational` | <a id="s-629bf4d25e"></a>`{"kind":"application-error"}` | <a id="s-0d297a895c"></a>`1` | <a id="s-2f6c02ccd2"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-e681a1a493"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-49726318bb"></a>`usage` | <a id="s-ca6569ecaf"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-af5bdbdcac"></a>`2` | <a id="s-85a8ec126f"></a>all: `"empty"` | <a id="s-d96ed4e75d"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-f51dee5561"></a>`operational` | <a id="s-629bf4d25e"></a>`{"kind":"application-error"}` | <a id="s-0d297a895c"></a>`1` | <a id="s-2f6c02ccd2"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-e681a1a493"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 

@@ -16,15 +16,15 @@ UTC timestamp and operator duration formats.
 <a id="s-5dfdfaae8f"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-4db1498251"></a>`artifacts` | [{"coordinate": "dist/time_formats-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/time_formats-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-a4ec0f4512"></a>`channel` | github-release |
-| <a id="s-367dc032fd"></a>`description` | UTC timestamp and operator duration formats. |
-| <a id="s-ad31416e60"></a>`license_baseline` | first-v1-publication |
-| <a id="s-c619177636"></a>`license_expression` | Apache-2.0 |
-| <a id="s-91fa562265"></a>`publication_identity` | {"coordinate": "time-formats", "kind": "python-distribution"} |
-| <a id="s-1ba15713c9"></a>`requires_python` | >=3.12 |
-| <a id="s-80ca4b9dcc"></a>`role` | internal_build_unit |
-| <a id="s-c68c08fafe"></a>`source` | packages/time-formats/pyproject.toml |
+| <a id="s-4db1498251"></a>`artifacts` | `[{"coordinate":"dist/time_formats-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/time_formats-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-a4ec0f4512"></a>`channel` | `"github-release"` |
+| <a id="s-367dc032fd"></a>`description` | `"UTC timestamp and operator duration formats."` |
+| <a id="s-ad31416e60"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-c619177636"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-91fa562265"></a>`publication_identity` | `{"coordinate":"time-formats","kind":"python-distribution"}` |
+| <a id="s-1ba15713c9"></a>`requires_python` | `">=3.12"` |
+| <a id="s-80ca4b9dcc"></a>`role` | `"internal_build_unit"` |
+| <a id="s-c68c08fafe"></a>`source` | `"packages/time-formats/pyproject.toml"` |
 
 ## Existing ownership context
 

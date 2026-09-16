@@ -44,13 +44,13 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-1327368945"></a>`conformant` | <a id="s-5e5db3361b"></a>`{"kind":"conformance-completed"}` | <a id="s-c66cfdc7f4"></a>`0` | <a id="s-87e367e201"></a>json: [generated:stove0-observer: ObserverConformanceResult](../process-protocol-schemas/generated-stove0-observer-observerconformanceresult.md) | <a id="s-529648d0d7"></a>all: `empty` |
+| <a id="s-1327368945"></a>`conformant` | <a id="s-5e5db3361b"></a>`{"kind":"conformance-completed"}` | <a id="s-c66cfdc7f4"></a>`0` | <a id="s-87e367e201"></a>json: [generated:stove0-observer: ObserverConformanceResult](../process-protocol-schemas/generated-stove0-observer-observerconformanceresult.md) | <a id="s-529648d0d7"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-b34855a653"></a>`usage` | <a id="s-fe2ac3466e"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-c5f5947482"></a>`2` | <a id="s-2442499427"></a>all: `empty` | <a id="s-95cc494653"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-b34855a653"></a>`usage` | <a id="s-fe2ac3466e"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-c5f5947482"></a>`2` | <a id="s-2442499427"></a>all: `"empty"` | <a id="s-95cc494653"></a>all: `"noncontractual-usage-diagnostic"` |
 
 ### Progression, limits, and lifecycle
 

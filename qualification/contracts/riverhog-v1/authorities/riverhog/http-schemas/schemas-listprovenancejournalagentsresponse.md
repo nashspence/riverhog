@@ -24,11 +24,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e9ed861c18"></a>`agents` | yes | type="array"; items=(#/components/schemas/ProvenanceJournalAgentOut) |  |
-| <a id="s-5355e5f6b0"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-1f61ad15dc"></a>`journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
-| <a id="s-cb4d194207"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-7b808efc53"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
+| <a id="s-e9ed861c18"></a>`agents` | yes | type="array"; items=([ProvenanceJournalAgentOut](schemas-provenancejournalagentout.md)); title="Agents" |  |
+| <a id="s-5355e5f6b0"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-1f61ad15dc"></a>`journal_id` | yes | [ProvenanceJournalId](schemas-provenancejournalid.md) |  |
+| <a id="s-cb4d194207"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-7b808efc53"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
 
 ### Progression, limits, and lifecycle
 

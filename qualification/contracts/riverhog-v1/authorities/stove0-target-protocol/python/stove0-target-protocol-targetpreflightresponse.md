@@ -36,7 +36,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-adc278d8ef"></a>`plan` | yes | discriminator={"mapping":{"stove0-effect-target/v1":"[EffectPlan](#s-76c6471c9f)","stove0-transform-target/v1":"[TransformPlan](#s-93aa9fa485)"},"propertyName":"protocol"}; oneOf=([TransformPlan](#s-93aa9fa485)) \| ([EffectPlan](#s-76c6471c9f)) |  |
+| <a id="s-adc278d8ef"></a>`plan` | yes | discriminator={"mapping":{"stove0-effect-target/v1":"#/$defs/EffectPlan","stove0-transform-target/v1":"#/$defs/TransformPlan"},"propertyName":"protocol"}; oneOf=[([TransformPlan](#s-93aa9fa485)); ([EffectPlan](#s-76c6471c9f))] |  |
 | <a id="s-3e49a2693d"></a>`target` | yes | [TargetContract](#s-c026a0a816) |  |
 
 ##### Definitions

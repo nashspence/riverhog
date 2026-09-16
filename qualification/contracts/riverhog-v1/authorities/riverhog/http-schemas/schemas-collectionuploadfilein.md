@@ -24,11 +24,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-489bd23c4b"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-f0fd54920a"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
-| <a id="s-8ebdaac874"></a>`provenance` | no | anyOf=(discriminator={"mapping":{"captured":"#/components/schemas/CapturedFileProvenanceBinding","omitted":"#/components/schemas/OmittedFileProvenanceBinding"},"propertyName":"status"}; oneOf=(#/components/schemas/CapturedFileProvenanceBinding) \| (#/components/schemas/OmittedFileProvenanceBinding)) \| (type="null") |  |
-| <a id="s-6d8d82cd49"></a>`raw_parts` | no | anyOf=(#/components/schemas/CollectionUploadRawPartsIn) \| (type="null") |  |
-| <a id="s-b6ef046198"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-489bd23c4b"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-f0fd54920a"></a>`path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
+| <a id="s-8ebdaac874"></a>`provenance` | no | anyOf=[(discriminator={"mapping":{"captured":"#/components/schemas/CapturedFileProvenanceBinding","omitted":"#/components/schemas/OmittedFileProvenanceBinding"},"propertyName":"status"}; oneOf=[([CapturedFileProvenanceBinding](schemas-capturedfileprovenancebinding.md)); ([OmittedFileProvenanceBinding](schemas-omittedfileprovenancebinding.md))]); (type="null")]; title="Provenance" |  |
+| <a id="s-6d8d82cd49"></a>`raw_parts` | no | anyOf=[([CollectionUploadRawPartsIn](schemas-collectionuploadrawpartsin.md)); (type="null")] |  |
+| <a id="s-b6ef046198"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

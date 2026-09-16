@@ -24,11 +24,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-133f2d0690"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-d6df7ab197"></a>`remote_storage_bytes` | yes | type="integer" |  |
-| <a id="s-f3361fbed4"></a>`status` | yes | type="string"; enum=["retired","already_absent"] |  |
-| <a id="s-03841b12de"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-f7c4101414"></a>`verified_store` | yes | anyOf=(#/components/schemas/ArchiveStoreName) \| (type="null") |  |
+| <a id="s-133f2d0690"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-d6df7ab197"></a>`remote_storage_bytes` | yes | type="integer"; title="Remote Storage Bytes" |  |
+| <a id="s-f3361fbed4"></a>`status` | yes | type="string"; enum=["retired","already_absent"]; title="Status" |  |
+| <a id="s-03841b12de"></a>`store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
+| <a id="s-f7c4101414"></a>`verified_store` | yes | anyOf=[([ArchiveStoreName](schemas-archivestorename.md)); (type="null")] |  |
 
 ## Maintained corroboration
 

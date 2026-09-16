@@ -16,17 +16,17 @@ Optional nonnormative AWS storage reference for Riverhog.
 <a id="s-d90ca4ab11"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-80cb157b52"></a>`build_target` | riverhog-storage-adapter-aws |
-| <a id="s-2be3a6ebff"></a>`description` | Optional nonnormative AWS storage reference for Riverhog. |
-| <a id="s-471d6d0a25"></a>`distribution_roots` | ["riverhog-storage-adapter-aws"] |
-| <a id="s-37c9a8f589"></a>`format` | oci-image |
-| <a id="s-1c54fc1207"></a>`license_baseline` | first-v1-publication |
-| <a id="s-2679404553"></a>`license_expression` | CAL-1.0 |
-| <a id="s-6c4435dc28"></a>`platforms` | ["linux/amd64"] |
-| <a id="s-739600f34c"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-storage-adapter-aws", "kind": "oci-repository"} |
-| <a id="s-2d2af6f16d"></a>`repository` | ghcr.io/nashspence/riverhog-storage-adapter-aws |
-| <a id="s-5558a4421f"></a>`role` | reference |
-| <a id="s-3342698ea1"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-storage-adapter-aws:{version}", "ghcr.io/nashspence/riverhog-storage-adapter-aws:sha-{source_sha}"] |
+| <a id="s-80cb157b52"></a>`build_target` | `"riverhog-storage-adapter-aws"` |
+| <a id="s-2be3a6ebff"></a>`description` | `"Optional nonnormative AWS storage reference for Riverhog."` |
+| <a id="s-471d6d0a25"></a>`distribution_roots` | `["riverhog-storage-adapter-aws"]` |
+| <a id="s-37c9a8f589"></a>`format` | `"oci-image"` |
+| <a id="s-1c54fc1207"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-2679404553"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-6c4435dc28"></a>`platforms` | `["linux/amd64"]` |
+| <a id="s-739600f34c"></a>`publication_identity` | `{"coordinate":"ghcr.io/nashspence/riverhog-storage-adapter-aws","kind":"oci-repository"}` |
+| <a id="s-2d2af6f16d"></a>`repository` | `"ghcr.io/nashspence/riverhog-storage-adapter-aws"` |
+| <a id="s-5558a4421f"></a>`role` | `"reference"` |
+| <a id="s-3342698ea1"></a>`tag_templates` | `["ghcr.io/nashspence/riverhog-storage-adapter-aws:{version}","ghcr.io/nashspence/riverhog-storage-adapter-aws:sha-{source_sha}"]` |
 
 ## Existing ownership context
 

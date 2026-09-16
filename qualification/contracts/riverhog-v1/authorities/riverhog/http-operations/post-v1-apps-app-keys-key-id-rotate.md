@@ -14,16 +14,18 @@ Rotate App Key
 ## External contract
 
 <a id="s-d90ab0fb69"></a>
-- <a id="s-26c926881d"></a>`operationId`: rotate_app_key
-- <a id="s-0ddea60dba"></a>`summary`: Rotate App Key
-- <a id="s-c7ea91120f"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-26c926881d"></a>`operationId`: `"rotate_app_key"`
+- <a id="s-c7ea91120f"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-0ddea60dba"></a>`summary`: `"Rotate App Key"`
+- <a id="s-38d55888cd"></a>`tags`: `["apps"]`
+- <a id="s-2510bd18fe"></a>`x-riverhog-permission-requirements`: `[{"any_of":["keys:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-d7ff11fddc"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
-| <a id="s-f2fc54faec"></a>`key_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{16}$" |
+| <a id="s-d7ff11fddc"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"; title="App" |
+| <a id="s-f2fc54faec"></a>`key_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{16}$"; title="Key Id" |
 
 ### Responses
 

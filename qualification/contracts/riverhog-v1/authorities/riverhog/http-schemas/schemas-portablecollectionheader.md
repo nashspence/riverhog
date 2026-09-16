@@ -25,13 +25,13 @@ Bounded immutable metadata that owns one portable file inventory.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-24956a7c4e"></a>`collection` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-08d76496f4"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-7980aa414c"></a>`encryption_format` | yes | type="string"; minLength=1 |  |
-| <a id="s-e67a06239f"></a>`format` | no | type="string"; const="riverhog-collection/v1"; default="riverhog-collection/v1" |  |
-| <a id="s-e61a66d8d0"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
-| <a id="s-9d38e0d114"></a>`provenance_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-f354b26fe8"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"] |  |
+| <a id="s-24956a7c4e"></a>`collection` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-08d76496f4"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
+| <a id="s-7980aa414c"></a>`encryption_format` | yes | type="string"; minLength=1; title="Encryption Format" |  |
+| <a id="s-e67a06239f"></a>`format` | no | type="string"; const="riverhog-collection/v1"; default="riverhog-collection/v1"; title="Format" |  |
+| <a id="s-e61a66d8d0"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$"; title="Passphrase Id" |  |
+| <a id="s-9d38e0d114"></a>`provenance_identity` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Provenance Identity" |  |
+| <a id="s-f354b26fe8"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"]; title="Provenance Mode" |  |
 
 ### Progression, limits, and lifecycle
 

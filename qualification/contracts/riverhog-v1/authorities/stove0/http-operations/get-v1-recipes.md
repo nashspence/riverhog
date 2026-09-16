@@ -14,8 +14,9 @@ List Recipes
 ## External contract
 
 <a id="s-e085eb717d"></a>
-- <a id="s-eff44f9288"></a>`operationId`: list_recipes
-- <a id="s-8568b0786d"></a>`summary`: List Recipes
+- <a id="s-eff44f9288"></a>`operationId`: `"list_recipes"`
+- <a id="s-8568b0786d"></a>`summary`: `"List Recipes"`
+- <a id="s-f2d51c16d3"></a>`tags`: `["recipes"]`
 
 ### Responses
 

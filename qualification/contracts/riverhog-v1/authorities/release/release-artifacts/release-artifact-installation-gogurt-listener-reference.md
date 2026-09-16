@@ -16,8 +16,8 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-43811c1404"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-9d9e49c3f7"></a>`coordinate` | gogurt-listener-v{version}.md |
-| <a id="s-f11f401ad5"></a>`format` | markdown |
+| <a id="s-9d9e49c3f7"></a>`coordinate` | `"gogurt-listener-v{version}.md"` |
+| <a id="s-f11f401ad5"></a>`format` | `"markdown"` |
 
 ## Governing policies
 

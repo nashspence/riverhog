@@ -14,22 +14,29 @@ Append Collection Upload Session Provenance Journal
 ## External contract
 
 <a id="s-841e59e9d9"></a>
-- <a id="s-980f5225e3"></a>`operationId`: append_collection_upload_session_provenance_journal
-- <a id="s-8e8e0f9473"></a>`summary`: Append Collection Upload Session Provenance Journal
-- <a id="s-ae48ec2ae7"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-980f5225e3"></a>`operationId`: `"append_collection_upload_session_provenance_journal"`
+- <a id="s-ae48ec2ae7"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-8e8e0f9473"></a>`summary`: `"Append Collection Upload Session Provenance Journal"`
+- <a id="s-f1b70ad30c"></a>`tags`: `["collections"]`
+- <a id="s-1008f99020"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-90fae61a33"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:create"]}]`
 
 ### Parameters
 
-| Name | In | Required | Default | Schema |
-|---|---|---:|---|---|
-| <a id="s-19150eead7"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-c08d475e33"></a>`journal_id` | path | yes | not declared | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
-| <a id="s-e9674a110d"></a>`Upload-Offset` | header | yes | not declared | type="integer"; minimum=0 |
-| <a id="s-c3c2815fa2"></a>`Content-Length` | header | yes | not declared | type="integer"; minimum=1; maximum=1048576 |
+| Name | In | Required | Default | Schema | Description |
+|---|---|---:|---|---|---|
+| <a id="s-19150eead7"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |  |
+| <a id="s-c08d475e33"></a>`journal_id` | path | yes | not declared | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"; title="Journal Id" |  |
+| <a id="s-e9674a110d"></a>`Upload-Offset` | header | yes | not declared | type="integer"; minimum=0; title="Upload-Offset" |  |
+| <a id="s-c3c2815fa2"></a>`Content-Length` | header | yes | not declared | type="integer"; minimum=1; maximum=1048576 | Exact bounded append length in bytes. |
 
 ### <a id="s-7a66b60cea"></a>Request body
 
-`{"content": {"application/json-seq": {"schema": {"format": "binary", "type": "string"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json-seq | type="string"; format="binary" |
 
 ### Responses
 

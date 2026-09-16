@@ -25,14 +25,14 @@ Exact safe-release evidence for one artifact in construction state.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a0567d04d6"></a>`archive_object_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-652d1bb86c"></a>`archive_object_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-5ff22aaac2"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-48eeb34d30"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-db6cbedc39"></a>`format` | no | type="string"; const="riverhog-artifact-custody-receipt/v1"; default="riverhog-artifact-custody-receipt/v1" |  |
-| <a id="s-478a27e2aa"></a>`path` | yes | type="string" |  |
-| <a id="s-0ee690ffb9"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-c54e529e15"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a0567d04d6"></a>`archive_object_count` | yes | type="integer"; minimum=1; title="Archive Object Count" |  |
+| <a id="s-652d1bb86c"></a>`archive_object_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Object Set Sha256" |  |
+| <a id="s-5ff22aaac2"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-48eeb34d30"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-db6cbedc39"></a>`format` | no | type="string"; const="riverhog-artifact-custody-receipt/v1"; default="riverhog-artifact-custody-receipt/v1"; title="Format" |  |
+| <a id="s-478a27e2aa"></a>`path` | yes | type="string"; title="Path" |  |
+| <a id="s-0ee690ffb9"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Receipt Sha256" |  |
+| <a id="s-c54e529e15"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

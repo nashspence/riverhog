@@ -36,15 +36,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a2f6e360bd"></a>`archive_store` | no | anyOf=(type="string"; maxLength=160; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-a2f6e360bd"></a>`archive_store` | no | anyOf=[(type="string"; maxLength=160; minLength=1); (type="null")]; default=null |  |
 | <a id="s-61be86a337"></a>`close_mode` | no | type="string"; enum=["stable","explicit-flush"]; default="stable" |  |
-| <a id="s-aa5b361399"></a>`description` | no | anyOf=([CollectionDescription](#s-f5f291f15b)) \| (type="null"); default=null |  |
+| <a id="s-aa5b361399"></a>`description` | no | anyOf=[([CollectionDescription](#s-f5f291f15b)); (type="null")]; default=null |  |
 | <a id="s-91145a9ec7"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$" |  |
 | <a id="s-4eac7856d0"></a>`ingest_source` | yes | type="string"; maxLength=512; minLength=1 |  |
 | <a id="s-20a31ed4e5"></a>`max_bytes` | no | type="integer"; minimum=1; default=107374182400 |  |
 | <a id="s-d1f237a26c"></a>`max_files` | no | type="integer"; minimum=1; default=1000 |  |
 | <a id="s-45fe0b309b"></a>`provenance` | no | type="string"; enum=["capture","omit"]; default="capture" |  |
-| <a id="s-61c3fd440f"></a>`provenance_omission_reason` | no | anyOf=(type="string"; maxLength=1000) \| (type="null"); default=null |  |
+| <a id="s-61c3fd440f"></a>`provenance_omission_reason` | no | anyOf=[(type="string"; maxLength=1000); (type="null")]; default=null |  |
 | <a id="s-23579dbc50"></a>`root` | yes | type="string"; format="path" |  |
 | <a id="s-75b01acf3e"></a>`tags` | no | type="array"; default=[]; items=([CollectionTag](#s-7aafaec44c)) |  |
 

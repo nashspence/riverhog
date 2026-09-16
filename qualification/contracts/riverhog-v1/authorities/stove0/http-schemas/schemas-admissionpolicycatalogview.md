@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4a131527fd"></a>`catalog_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-aa7ac7c468"></a>`policies` | yes | type="array"; items=(#/components/schemas/AdmissionPolicyStatus) |  |
+| <a id="s-4a131527fd"></a>`catalog_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Catalog Sha256" |  |
+| <a id="s-aa7ac7c468"></a>`policies` | yes | type="array"; items=([AdmissionPolicyStatus](schemas-admissionpolicystatus.md)); title="Policies" |  |
 
 ### Progression, limits, and lifecycle
 

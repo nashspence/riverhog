@@ -14,15 +14,16 @@ Get Recipe
 ## External contract
 
 <a id="s-2ed760441c"></a>
-- <a id="s-721e8eec1f"></a>`operationId`: get_recipe
-- <a id="s-0aba5a30b1"></a>`summary`: Get Recipe
+- <a id="s-721e8eec1f"></a>`operationId`: `"get_recipe"`
+- <a id="s-0aba5a30b1"></a>`summary`: `"Get Recipe"`
+- <a id="s-d6cb9cf2fc"></a>`tags`: `["recipes"]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-6eecb65b87"></a>`recipe_id` | path | yes | not declared | type="string" |
-| <a id="s-220fc4fec4"></a>`revision` | query | no | not declared | anyOf=(type="integer") \| (type="null") |
+| <a id="s-6eecb65b87"></a>`recipe_id` | path | yes | not declared | type="string"; title="Recipe Id" |
+| <a id="s-220fc4fec4"></a>`revision` | query | no | not declared | anyOf=[(type="integer"); (type="null")]; title="Revision" |
 
 ### Responses
 

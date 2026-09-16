@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-777f0fd330"></a>`filters` | yes | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-6eb60aca74"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-4db74e66e7"></a>`order` | yes | type="string"; enum=["asc","desc"] |  |
-| <a id="s-6d8c9840b3"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-80af7f878f"></a>`sort` | yes | type="string"; enum=["updated_at","phase","work_id"] |  |
-| <a id="s-076e711809"></a>`work` | yes | type="array"; items=(#/components/schemas/WorkView) |  |
+| <a id="s-777f0fd330"></a>`filters` | yes | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Filters" |  |
+| <a id="s-6eb60aca74"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-4db74e66e7"></a>`order` | yes | type="string"; enum=["asc","desc"]; title="Order" |  |
+| <a id="s-6d8c9840b3"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
+| <a id="s-80af7f878f"></a>`sort` | yes | type="string"; enum=["updated_at","phase","work_id"]; title="Sort" |  |
+| <a id="s-076e711809"></a>`work` | yes | type="array"; items=([WorkView](schemas-workview.md)); title="Work" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -14,19 +14,26 @@ Settle Processing Claim
 ## External contract
 
 <a id="s-2e3db25159"></a>
-- <a id="s-08037fa74d"></a>`operationId`: settle_processing_claim
-- <a id="s-6dd23404b0"></a>`summary`: Settle Processing Claim
-- <a id="s-055d0554ff"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-08037fa74d"></a>`operationId`: `"settle_processing_claim"`
+- <a id="s-055d0554ff"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-6dd23404b0"></a>`summary`: `"Settle Processing Claim"`
+- <a id="s-76f90acb61"></a>`tags`: `["collection-workflows"]`
+- <a id="s-e496727564"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-bda2663ff0"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-9fba1a36b6"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-9fba1a36b6"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
 
 ### <a id="s-d9ddacddd2"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProcessingClaimSettleDocument"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [ProcessingClaimSettleDocument](../http-schemas/schemas-processingclaimsettledocument.md) |
 
 ### Responses
 

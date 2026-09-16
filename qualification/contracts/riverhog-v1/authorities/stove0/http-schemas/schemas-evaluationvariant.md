@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6f8754aa9d"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-f77624eae7"></a>`parameters` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-6f8754aa9d"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-f77624eae7"></a>`parameters` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Parameters" |  |
 
 ### Progression, limits, and lifecycle
 

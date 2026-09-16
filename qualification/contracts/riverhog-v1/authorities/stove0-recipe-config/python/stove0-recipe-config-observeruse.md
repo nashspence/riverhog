@@ -60,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-e195b876dc"></a>`glob` | no | type="string"; default="*" |  |
-| <a id="s-39b0dd5d2f"></a>`media_type` | no | anyOf=(type="string") \| (type="null"); default=null |  |
+| <a id="s-39b0dd5d2f"></a>`media_type` | no | anyOf=[(type="string"); (type="null")]; default=null |  |
 | <a id="s-42ad2423d0"></a>`role` | no | type="string"; default="stove0.source/v1"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ##### <a id="s-43040b55c2"></a>definition `JsonValue`

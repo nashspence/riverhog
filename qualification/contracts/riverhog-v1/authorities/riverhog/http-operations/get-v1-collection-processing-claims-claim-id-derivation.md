@@ -14,15 +14,18 @@ Get Processing Claim Dispositions
 ## External contract
 
 <a id="s-015895d0ca"></a>
-- <a id="s-771794464e"></a>`operationId`: get_processing_claim_dispositions
-- <a id="s-5c87329d71"></a>`summary`: Get Processing Claim Dispositions
-- <a id="s-966bdb58a5"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-771794464e"></a>`operationId`: `"get_processing_claim_dispositions"`
+- <a id="s-966bdb58a5"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-5c87329d71"></a>`summary`: `"Get Processing Claim Dispositions"`
+- <a id="s-cd5567d745"></a>`tags`: `["collection-workflows"]`
+- <a id="s-a8b1033d60"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-51be37250a"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control","collection-transforms:execute"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-d150ab5a5c"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-d150ab5a5c"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
 
 ### Responses
 

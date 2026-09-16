@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d9819f2441"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-9769555320"></a>`order` | yes | #/components/schemas/SortOrder |  |
-| <a id="s-5ff41a14f1"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-3f9aa6ec70"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-a6a74ff330"></a>`sort` | yes | #/components/schemas/ArchiveStoreSort |  |
-| <a id="s-cfd4a736fc"></a>`stores` | yes | type="array"; items=(#/components/schemas/ArchiveStoreOut) |  |
+| <a id="s-d9819f2441"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-9769555320"></a>`order` | yes | [SortOrder](schemas-sortorder.md) |  |
+| <a id="s-5ff41a14f1"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
+| <a id="s-3f9aa6ec70"></a>`query` | yes | anyOf=[(type="string"); (type="null")]; title="Query" |  |
+| <a id="s-a6a74ff330"></a>`sort` | yes | [ArchiveStoreSort](schemas-archivestoresort.md) |  |
+| <a id="s-cfd4a736fc"></a>`stores` | yes | type="array"; items=([ArchiveStoreOut](schemas-archivestoreout.md)); title="Stores" |  |
 
 ### Progression, limits, and lifecycle
 

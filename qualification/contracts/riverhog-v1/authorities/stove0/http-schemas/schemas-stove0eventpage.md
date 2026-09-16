@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-339a218ffa"></a>`events` | yes | type="array"; items=(#/components/schemas/Stove0LifecycleEvent) |  |
-| <a id="s-560f97dd63"></a>`has_more` | yes | type="boolean" |  |
-| <a id="s-88570f3326"></a>`next_cursor` | yes | type="string" |  |
+| <a id="s-339a218ffa"></a>`events` | yes | type="array"; items=([Stove0LifecycleEvent](schemas-stove0lifecycleevent.md)); title="Events" |  |
+| <a id="s-560f97dd63"></a>`has_more` | yes | type="boolean"; title="Has More" |  |
+| <a id="s-88570f3326"></a>`next_cursor` | yes | type="string"; title="Next Cursor" |  |
 
 ### Progression, limits, and lifecycle
 

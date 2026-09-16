@@ -24,10 +24,10 @@ Small identity for one sealed claim-scoped relational disposition set.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8daa61628b"></a>`disposition_count` | yes | type="integer" |  |
-| <a id="s-c8688cdd70"></a>`output_artifact_count` | yes | type="integer" |  |
-| <a id="s-18bf6a6e76"></a>`output_edge_count` | yes | type="integer" |  |
-| <a id="s-9c8a61bcdb"></a>`sha256` | yes | type="string" |  |
+| <a id="s-8daa61628b"></a>`disposition_count` | yes | type="integer"; title="Disposition Count" |  |
+| <a id="s-c8688cdd70"></a>`output_artifact_count` | yes | type="integer"; title="Output Artifact Count" |  |
+| <a id="s-18bf6a6e76"></a>`output_edge_count` | yes | type="integer"; title="Output Edge Count" |  |
+| <a id="s-9c8a61bcdb"></a>`sha256` | yes | type="string"; title="Sha256" |  |
 
 ## Governing policies
 

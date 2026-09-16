@@ -38,7 +38,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-527bd6fca4"></a>`audio_bitrate_kbps` | no | type="integer"; minimum=16; maximum=512; default=128 |  |
 | <a id="s-579d91578b"></a>`codec` | no | type="string"; const="av1"; default="av1" |  |
 | <a id="s-afc309307b"></a>`container` | no | type="string"; const="mkv"; default="mkv" |  |
-| <a id="s-2f6ab42ea9"></a>`max_height` | no | anyOf=(type="integer"; minimum=144; maximum=8640) \| (type="null"); default=null |  |
+| <a id="s-2f6ab42ea9"></a>`max_height` | no | anyOf=[(type="integer"; minimum=144; maximum=8640); (type="null")]; default=null |  |
 | <a id="s-f4d052b61f"></a>`metadata_projection` | no | [MediaProjectionPolicy](#s-0fb0ae795e) |  |
 | <a id="s-2a49dccf2a"></a>`quality` | no | type="integer"; minimum=0; maximum=63; default=23 |  |
 | <a id="s-3eed4de269"></a>`salvage` | no | type="string"; enum=["off","safe-remux"]; default="safe-remux" |  |
@@ -85,11 +85,11 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-036c2544c0"></a>`creators` | no | type="array"; default=[]; items=(type="string") |  |
-| <a id="s-998a33cc95"></a>`device_make` | no | anyOf=(type="string") \| (type="null"); default=null |  |
-| <a id="s-a08c7d222b"></a>`device_model` | no | anyOf=(type="string") \| (type="null"); default=null |  |
+| <a id="s-998a33cc95"></a>`device_make` | no | anyOf=[(type="string"); (type="null")]; default=null |  |
+| <a id="s-a08c7d222b"></a>`device_model` | no | anyOf=[(type="string"); (type="null")]; default=null |  |
 | <a id="s-58fe3b9e26"></a>`field_preferences` | no | type="array"; default=[]; items=([MediaFieldPreference](#s-c28d2d6e04)) |  |
 | <a id="s-f39e326dd9"></a>`format` | no | type="string"; const="stove0-media-projection-policy/v1"; default="stove0-media-projection-policy/v1" |  |
-| <a id="s-03f14af20a"></a>`gps` | no | anyOf=([MediaGps](#s-09e1a4a6da)) \| (type="null"); default=null |  |
+| <a id="s-03f14af20a"></a>`gps` | no | anyOf=[([MediaGps](#s-09e1a4a6da)); (type="null")]; default=null |  |
 | <a id="s-0675c84e95"></a>`tags` | no | type="array"; default=[]; items=(type="string") |  |
 
 ## Governing policies

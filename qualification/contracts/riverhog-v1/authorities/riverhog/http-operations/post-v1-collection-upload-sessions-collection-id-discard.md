@@ -14,19 +14,25 @@ Discard Collection Upload
 ## External contract
 
 <a id="s-84b0d95f8b"></a>
-- <a id="s-28284d0938"></a>`operationId`: discard_collection_upload
-- <a id="s-4f64c70b02"></a>`summary`: Discard Collection Upload
-- <a id="s-ec1bc239b9"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-28284d0938"></a>`operationId`: `"discard_collection_upload"`
+- <a id="s-ec1bc239b9"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-4f64c70b02"></a>`summary`: `"Discard Collection Upload"`
+- <a id="s-66a97b20ed"></a>`tags`: `["collections"]`
+- <a id="s-f42ef399c0"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:delete"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-7049216977"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-7049216977"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
 
 ### <a id="s-59bf7d4e08"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/DiscardCollectionUploadRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [DiscardCollectionUploadRequest](../http-schemas/schemas-discardcollectionuploadrequest.md) |
 
 ### Responses
 

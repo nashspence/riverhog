@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-cedbc6789a"></a>`permission` | yes | #/components/schemas/ApplicationPermission |  |
-| <a id="s-55c7639541"></a>`resource` | no | $ref="#/components/schemas/ApplicationResource"; default="*" |  |
+| <a id="s-cedbc6789a"></a>`permission` | yes | [ApplicationPermission](schemas-applicationpermission.md) |  |
+| <a id="s-55c7639541"></a>`resource` | no | [ApplicationResource](schemas-applicationresource.md); default="*" |  |
 
 ### All must match (`allOf`)
 

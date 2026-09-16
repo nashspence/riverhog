@@ -16,15 +16,15 @@ Optional nonnormative Windows Task Scheduler listener-host reference for Gogurt.
 <a id="s-ebd5f16ac3"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-f433be29ee"></a>`artifacts` | [{"coordinate": "dist/gogurt_windows_listener_host-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/gogurt_windows_listener_host-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-e01726257a"></a>`channel` | github-release |
-| <a id="s-3403894e72"></a>`description` | Optional nonnormative Windows Task Scheduler listener-host reference for Gogurt. |
-| <a id="s-c1f74a1748"></a>`license_baseline` | first-v1-publication |
-| <a id="s-e1d21a023c"></a>`license_expression` | Apache-2.0 |
-| <a id="s-ffd4de11a2"></a>`publication_identity` | {"coordinate": "gogurt-windows-listener-host", "kind": "python-distribution"} |
-| <a id="s-be9156fe5b"></a>`requires_python` | >=3.12 |
-| <a id="s-e371ec117a"></a>`role` | reference_component |
-| <a id="s-1e001a5900"></a>`source` | reference/gogurt/listener-host/windows/pyproject.toml |
+| <a id="s-f433be29ee"></a>`artifacts` | `[{"coordinate":"dist/gogurt_windows_listener_host-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/gogurt_windows_listener_host-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-e01726257a"></a>`channel` | `"github-release"` |
+| <a id="s-3403894e72"></a>`description` | `"Optional nonnormative Windows Task Scheduler listener-host reference for Gogurt."` |
+| <a id="s-c1f74a1748"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-e1d21a023c"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-ffd4de11a2"></a>`publication_identity` | `{"coordinate":"gogurt-windows-listener-host","kind":"python-distribution"}` |
+| <a id="s-be9156fe5b"></a>`requires_python` | `">=3.12"` |
+| <a id="s-e371ec117a"></a>`role` | `"reference_component"` |
+| <a id="s-1e001a5900"></a>`source` | `"reference/gogurt/listener-host/windows/pyproject.toml"` |
 
 ## Existing ownership context
 

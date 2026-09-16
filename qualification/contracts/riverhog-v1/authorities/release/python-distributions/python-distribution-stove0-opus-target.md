@@ -16,15 +16,15 @@ Optional nonnormative Opus target reference for Stove0.
 <a id="s-918ebcdc79"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-ba92f7074a"></a>`artifacts` | [{"coordinate": "dist/stove0_opus_target-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_opus_target-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-37117d817d"></a>`channel` | github-release |
-| <a id="s-134300db62"></a>`description` | Optional nonnormative Opus target reference for Stove0. |
-| <a id="s-da63babcdb"></a>`license_baseline` | first-v1-publication |
-| <a id="s-175f1b91cb"></a>`license_expression` | CAL-1.0 |
-| <a id="s-e3ec53241d"></a>`publication_identity` | {"coordinate": "stove0-opus-target", "kind": "python-distribution"} |
-| <a id="s-1f2d72f1aa"></a>`requires_python` | >=3.12 |
-| <a id="s-6854ea60ff"></a>`role` | reference_component |
-| <a id="s-05fdc3293d"></a>`source` | reference/stove0/targets/opus/target/pyproject.toml |
+| <a id="s-ba92f7074a"></a>`artifacts` | `[{"coordinate":"dist/stove0_opus_target-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_opus_target-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-37117d817d"></a>`channel` | `"github-release"` |
+| <a id="s-134300db62"></a>`description` | `"Optional nonnormative Opus target reference for Stove0."` |
+| <a id="s-da63babcdb"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-175f1b91cb"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-e3ec53241d"></a>`publication_identity` | `{"coordinate":"stove0-opus-target","kind":"python-distribution"}` |
+| <a id="s-1f2d72f1aa"></a>`requires_python` | `">=3.12"` |
+| <a id="s-6854ea60ff"></a>`role` | `"reference_component"` |
+| <a id="s-05fdc3293d"></a>`source` | `"reference/stove0/targets/opus/target/pyproject.toml"` |
 
 ## Existing ownership context
 

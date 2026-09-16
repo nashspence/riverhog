@@ -14,14 +14,15 @@ Retry Work
 ## External contract
 
 <a id="s-f224f3a70b"></a>
-- <a id="s-fa5077f709"></a>`operationId`: retry_work
-- <a id="s-2e84d3ed9c"></a>`summary`: Retry Work
+- <a id="s-fa5077f709"></a>`operationId`: `"retry_work"`
+- <a id="s-2e84d3ed9c"></a>`summary`: `"Retry Work"`
+- <a id="s-ffb852bae7"></a>`tags`: `["work"]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-e937ad5d9f"></a>`work_id` | path | yes | not declared | type="string" |
+| <a id="s-e937ad5d9f"></a>`work_id` | path | yes | not declared | type="string"; title="Work Id" |
 
 ### Responses
 

@@ -16,13 +16,13 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-f0c398f5f6"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-62bd1349a5"></a>`error_schema` | ErrorResponse |
-| <a id="s-e5d2f7aede"></a>`errors` | [{"code": "invalid_observation_request", "status": 400}, {"code": "unauthorized", "status": 401}, {"code": "request_too_large", "status": 413}, {"code": "observer_failed", "status": 500}] |
-| <a id="s-d5ba2223c6"></a>`method` | POST |
-| <a id="s-7c53238d9d"></a>`path` | /v1/observe |
-| <a id="s-61601a5f52"></a>`path_parameters` | [] |
-| <a id="s-68965b973b"></a>`request` | {"kind": "json", "schema": "ObservationInvocation"} |
-| <a id="s-baf226665e"></a>`response` | {"headers": [], "kind": "json", "schema": "ObservationResult", "statuses": [200]} |
+| <a id="s-62bd1349a5"></a>`error_schema` | `"ErrorResponse"` |
+| <a id="s-e5d2f7aede"></a>`errors` | `[{"code":"invalid_observation_request","status":400},{"code":"unauthorized","status":401},{"code":"request_too_large","status":413},{"code":"observer_failed","status":500}]` |
+| <a id="s-d5ba2223c6"></a>`method` | `"POST"` |
+| <a id="s-7c53238d9d"></a>`path` | `"/v1/observe"` |
+| <a id="s-61601a5f52"></a>`path_parameters` | `[]` |
+| <a id="s-68965b973b"></a>`request` | `{"kind":"json","schema":"ObservationInvocation"}` |
+| <a id="s-baf226665e"></a>`response` | `{"headers":[],"kind":"json","schema":"ObservationResult","statuses":[200]}` |
 
 ## Maintained corroboration
 

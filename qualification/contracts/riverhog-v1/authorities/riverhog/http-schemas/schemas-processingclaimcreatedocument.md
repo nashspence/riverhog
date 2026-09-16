@@ -24,11 +24,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3601c46110"></a>`lease_seconds` | no | type="integer"; minimum=30; maximum=86400; default=1800 |  |
-| <a id="s-227587b793"></a>`purpose` | no | type="string"; default="collection-work/v1"; maxLength=160; minLength=1 |  |
-| <a id="s-fcd9a436ed"></a>`work_document` | yes | type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4194304; x-riverhog-extent={"policy":"contract_max","reason":"bounded-work-document-envelope"} |  |
-| <a id="s-8334d12b08"></a>`work_document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-935ed0da9d"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-3601c46110"></a>`lease_seconds` | no | type="integer"; minimum=30; maximum=86400; default=1800; title="Lease Seconds" |  |
+| <a id="s-227587b793"></a>`purpose` | no | type="string"; default="collection-work/v1"; maxLength=160; minLength=1; title="Purpose" |  |
+| <a id="s-fcd9a436ed"></a>`work_document` | yes | type="object"; additionalProperties=(any JSON value); title="Work Document"; x-riverhog-encoded-bytes-max=4194304; x-riverhog-extent={"policy":"contract_max","reason":"bounded-work-document-envelope"} |  |
+| <a id="s-8334d12b08"></a>`work_document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Document Sha256" |  |
+| <a id="s-935ed0da9d"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-049468e4f2"></a>`admitted_work_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-a2fd0e638a"></a>`branch_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-544a855917"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-232dc582e4"></a>`phase` | yes | type="string"; const="coordinating" |  |
-| <a id="s-825795c0a5"></a>`revision` | yes | type="integer"; minimum=2 |  |
-| <a id="s-cea2f2c1d2"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-049468e4f2"></a>`admitted_work_count` | yes | type="integer"; minimum=1; title="Admitted Work Count" |  |
+| <a id="s-a2fd0e638a"></a>`branch_count` | yes | type="integer"; minimum=1; title="Branch Count" |  |
+| <a id="s-544a855917"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Branch Set Sha256" |  |
+| <a id="s-232dc582e4"></a>`phase` | yes | type="string"; const="coordinating"; title="Phase" |  |
+| <a id="s-825795c0a5"></a>`revision` | yes | type="integer"; minimum=2; title="Revision" |  |
+| <a id="s-cea2f2c1d2"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
 
 ### Progression, limits, and lifecycle
 

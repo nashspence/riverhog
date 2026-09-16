@@ -24,13 +24,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-388af31281"></a>`contracts` | yes | type="array"; items=([ObserverContractSupport](#s-b516dd7564)); minItems=1 |  |
-| <a id="s-90ecbfd299"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-68b2d9dfe2"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-23bfd5c84f"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-74afc1ae64"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1 |  |
-| <a id="s-56caddf497"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1"; default="stove0-content-observer/v1" |  |
-| <a id="s-906b91f7a3"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
+| <a id="s-388af31281"></a>`contracts` | yes | type="array"; items=([ObserverContractSupport](#s-b516dd7564)); minItems=1; title="Contracts" |  |
+| <a id="s-90ecbfd299"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Descriptor Sha256" |  |
+| <a id="s-68b2d9dfe2"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Image Digest" |  |
+| <a id="s-23bfd5c84f"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Implementation Id" |  |
+| <a id="s-74afc1ae64"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1; title="Implementation Version" |  |
+| <a id="s-56caddf497"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1"; default="stove0-content-observer/v1"; title="Protocol" |  |
+| <a id="s-906b91f7a3"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1; title="Source Revision" |  |
 
 ### Definitions
 
@@ -50,11 +50,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-76f4a83fe1"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
-| <a id="s-92049f9f99"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
-| <a id="s-c07c71755b"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-6875f9e677"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-ebc19bb186)) |  |
-| <a id="s-2069fe1b43"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-76f4a83fe1"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema"; title="Dialect" |  |
+| <a id="s-92049f9f99"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only"; title="Format Policy" |  |
+| <a id="s-c07c71755b"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-6875f9e677"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-ebc19bb186)); title="Schema" |  |
+| <a id="s-2069fe1b43"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### <a id="s-ebc19bb186"></a>definition `JsonValue`
 
@@ -71,13 +71,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d6cc11d7fd"></a>`contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-32095f0bf9"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d6cc11d7fd"></a>`contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Contract Id" |  |
+| <a id="s-32095f0bf9"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Contract Sha256" |  |
 | <a id="s-32c625debc"></a>`facts_schema` | yes | [JsonSchemaDocument](#s-f86b13e4de) |  |
 | <a id="s-6001673b4a"></a>`facts_semantics` | yes | [SemanticValidationProfile](#s-39c220e195) |  |
-| <a id="s-9240d02359"></a>`maximum_result_bytes` | yes | type="integer"; minimum=1; maximum=67108864 |  |
+| <a id="s-9240d02359"></a>`maximum_result_bytes` | yes | type="integer"; minimum=1; maximum=67108864; title="Maximum Result Bytes" |  |
 | <a id="s-8bd48ae601"></a>`options_schema` | yes | [JsonSchemaDocument](#s-f86b13e4de) |  |
-| <a id="s-56b62e713f"></a>`preferred_subject_batch_size` | no | type="integer"; minimum=1; default=128 |  |
+| <a id="s-56b62e713f"></a>`preferred_subject_batch_size` | no | type="integer"; minimum=1; default=128; title="Preferred Subject Batch Size" |  |
 
 ### <a id="s-39c220e195"></a>definition `SemanticValidationProfile`
 
@@ -90,10 +90,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-9c9e56304a"></a>`conformance_vectors_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
-| <a id="s-6b99a16851"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-8f6364e24a"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-d46081cc2a"></a>`rules` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
+| <a id="s-9c9e56304a"></a>`conformance_vectors_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null; title="Conformance Vectors Sha256" |  |
+| <a id="s-6b99a16851"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-8f6364e24a"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Profile Sha256" |  |
+| <a id="s-d46081cc2a"></a>`rules` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1; title="Rules" |  |
 
 ### Progression, limits, and lifecycle
 

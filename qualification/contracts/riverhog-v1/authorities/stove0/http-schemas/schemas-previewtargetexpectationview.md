@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4da8083975"></a>`branch_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-cccc57ac09"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-bfcb19dacf"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-4da8083975"></a>`branch_id` | yes | type="string"; maxLength=160; minLength=1; title="Branch Id" |  |
+| <a id="s-cccc57ac09"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
+| <a id="s-bfcb19dacf"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
 
 ### Progression, limits, and lifecycle
 

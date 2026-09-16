@@ -25,10 +25,10 @@ One named required child work using the ordinary WorkflowPlan contract.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2cdbafca54"></a>`artifact_selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
-| <a id="s-160b934f9b"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-2a843b5db3"></a>`kind` | no | type="string"; const="leaf"; default="leaf" |  |
-| <a id="s-2dd1c57657"></a>`workflow_plan` | yes | #/components/schemas/WorkflowPlan |  |
+| <a id="s-2cdbafca54"></a>`artifact_selection` | yes | [ArtifactSelectionRef](schemas-artifactselectionref.md) |  |
+| <a id="s-160b934f9b"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Branch Id" |  |
+| <a id="s-2a843b5db3"></a>`kind` | no | type="string"; const="leaf"; default="leaf"; title="Kind" |  |
+| <a id="s-2dd1c57657"></a>`workflow_plan` | yes | [WorkflowPlan](schemas-workflowplan.md) |  |
 
 ## Maintained corroboration
 

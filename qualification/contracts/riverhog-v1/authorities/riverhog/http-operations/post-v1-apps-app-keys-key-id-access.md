@@ -14,20 +14,26 @@ Add App Key Access
 ## External contract
 
 <a id="s-4f11ed8802"></a>
-- <a id="s-d9bdbbb685"></a>`operationId`: add_app_key_access
-- <a id="s-8b65ebef16"></a>`summary`: Add App Key Access
-- <a id="s-9583721fc7"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-d9bdbbb685"></a>`operationId`: `"add_app_key_access"`
+- <a id="s-9583721fc7"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-8b65ebef16"></a>`summary`: `"Add App Key Access"`
+- <a id="s-8142d1f569"></a>`tags`: `["apps"]`
+- <a id="s-00f5a863e4"></a>`x-riverhog-permission-requirements`: `[{"any_of":["keys:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-63893cdb93"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
-| <a id="s-08375718d6"></a>`key_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{16}$" |
+| <a id="s-63893cdb93"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"; title="App" |
+| <a id="s-08375718d6"></a>`key_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{16}$"; title="Key Id" |
 
 ### <a id="s-e7ba4e90d6"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/MutateAppAccessRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [MutateAppAccessRequest](../http-schemas/schemas-mutateappaccessrequest.md) |
 
 ### Responses
 

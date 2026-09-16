@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-d9ba8ed0af"></a>Parser name: `mounted-volume`
+
+| Field | Value |
+|---|---|
+| <a id="s-d015201206"></a>`parameters` | `[]` |
 - <a id="s-ae0959ad8c"></a>Subcommand selection: required.
 - <a id="s-75b55a41ac"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
 - <a id="s-e95d9bf011"></a>Options after positional arguments at this parser: left as arguments.

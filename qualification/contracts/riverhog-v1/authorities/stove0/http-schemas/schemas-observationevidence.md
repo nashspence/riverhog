@@ -25,8 +25,8 @@ Complete routing evidence: immutable request plus accepted result.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2641593ab7"></a>`request` | yes | #/components/schemas/ObservationRequest |  |
-| <a id="s-189fcd75d8"></a>`result` | yes | #/components/schemas/ObservationResult |  |
+| <a id="s-2641593ab7"></a>`request` | yes | [ObservationRequest](schemas-observationrequest.md) |  |
+| <a id="s-189fcd75d8"></a>`result` | yes | [ObservationResult](schemas-observationresult.md) |  |
 
 ## Maintained corroboration
 

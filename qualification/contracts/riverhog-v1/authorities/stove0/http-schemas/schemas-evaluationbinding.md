@@ -25,10 +25,10 @@ Immutable membership of one work item in a trial/evaluation matrix.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-308184d938"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-865de73e81"></a>`matrix_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-610a9c9368"></a>`parameters` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-f164968bc6"></a>`variant_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-308184d938"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Evaluation Id" |  |
+| <a id="s-865de73e81"></a>`matrix_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Matrix Sha256" |  |
+| <a id="s-610a9c9368"></a>`parameters` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Parameters" |  |
+| <a id="s-f164968bc6"></a>`variant_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Variant Id" |  |
 
 ### Progression, limits, and lifecycle
 

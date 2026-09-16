@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e58849def3"></a>`batch_size` | no | type="integer"; minimum=1; maximum=100; default=100 |  |
-| <a id="s-4983396f84"></a>`poll_interval_seconds` | no | type="number"; default=5; exclusiveMinimum=0 |  |
-| <a id="s-65906d0517"></a>`request_timeout_seconds` | no | type="number"; default=10; exclusiveMinimum=0 |  |
-| <a id="s-bbb230564e"></a>`sources` | yes | type="array"; items=([SourceConfig](#s-ccfb15558e)); minItems=1 |  |
-| <a id="s-1bf9c39c6c"></a>`state_path` | yes | type="string"; format="path" |  |
-| <a id="s-4b9b4c32a2"></a>`version` | no | type="integer"; default=1 |  |
+| <a id="s-e58849def3"></a>`batch_size` | no | type="integer"; minimum=1; maximum=100; default=100; title="Batch Size" |  |
+| <a id="s-4983396f84"></a>`poll_interval_seconds` | no | type="number"; default=5; exclusiveMinimum=0; title="Poll Interval Seconds" |  |
+| <a id="s-65906d0517"></a>`request_timeout_seconds` | no | type="number"; default=10; exclusiveMinimum=0; title="Request Timeout Seconds" |  |
+| <a id="s-bbb230564e"></a>`sources` | yes | type="array"; items=([SourceConfig](#s-ccfb15558e)); minItems=1; title="Sources" |  |
+| <a id="s-1bf9c39c6c"></a>`state_path` | yes | type="string"; format="path"; title="State Path" |  |
+| <a id="s-4b9b4c32a2"></a>`version` | no | type="integer"; default=1; title="Version" |  |
 
 ### Definitions
 
@@ -46,10 +46,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-13ca8db29d"></a>`events_url` | yes | type="string"; minLength=1 |  |
-| <a id="s-7989249ee6"></a>`name` | yes | type="string"; minLength=1; pattern="^[A-Za-z0-9._-]+$" |  |
-| <a id="s-b2b73415c5"></a>`token_env` | yes | type="string"; minLength=1 |  |
-| <a id="s-64488d3345"></a>`webhook_url_env` | yes | type="string"; minLength=1 |  |
+| <a id="s-13ca8db29d"></a>`events_url` | yes | type="string"; minLength=1; title="Events Url" |  |
+| <a id="s-7989249ee6"></a>`name` | yes | type="string"; minLength=1; pattern="^[A-Za-z0-9._-]+$"; title="Name" |  |
+| <a id="s-b2b73415c5"></a>`token_env` | yes | type="string"; minLength=1; title="Token Env" |  |
+| <a id="s-64488d3345"></a>`webhook_url_env` | yes | type="string"; minLength=1; title="Webhook Url Env" |  |
 
 ### Progression, limits, and lifecycle
 

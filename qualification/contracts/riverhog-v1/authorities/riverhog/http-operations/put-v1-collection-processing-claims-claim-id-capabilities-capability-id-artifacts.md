@@ -14,20 +14,27 @@ Append Transform Capability Artifacts
 ## External contract
 
 <a id="s-7fa2a829fd"></a>
-- <a id="s-fef5d56060"></a>`operationId`: append_transform_capability_artifacts
-- <a id="s-3461877a59"></a>`summary`: Append Transform Capability Artifacts
-- <a id="s-3d32ce3f94"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-fef5d56060"></a>`operationId`: `"append_transform_capability_artifacts"`
+- <a id="s-3d32ce3f94"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-3461877a59"></a>`summary`: `"Append Transform Capability Artifacts"`
+- <a id="s-ce805546ae"></a>`tags`: `["collection-workflows"]`
+- <a id="s-ec4931d918"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-50689e5f28"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-add0ae484d"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
-| <a id="s-6e25de8d57"></a>`capability_id` | path | yes | not declared | type="string" |
+| <a id="s-add0ae484d"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
+| <a id="s-6e25de8d57"></a>`capability_id` | path | yes | not declared | type="string"; title="Capability Id" |
 
 ### <a id="s-ba75abb644"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CollectionArtifactBatchDocument"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [CollectionArtifactBatchDocument](../http-schemas/schemas-collectionartifactbatchdocument.md) |
 
 ### Responses
 

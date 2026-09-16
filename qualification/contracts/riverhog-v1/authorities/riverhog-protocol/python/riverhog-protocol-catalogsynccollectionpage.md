@@ -37,10 +37,10 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-de5dee8417"></a>`authorization_view_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-84ebedcdca"></a>`changes_cursor` | no | anyOf=(type="string"; maxLength=4096; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-84ebedcdca"></a>`changes_cursor` | no | anyOf=[(type="string"; maxLength=4096; minLength=1); (type="null")]; default=null |  |
 | <a id="s-b1b4fdf8cf"></a>`collections` | yes | type="array"; items=([CatalogSyncDescriptor](#s-8c25c1131c)); maxItems=100 |  |
 | <a id="s-91d2f7e6a2"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1"; default="riverhog-catalog-sync/v1" |  |
-| <a id="s-e4c6d56bef"></a>`next_cursor` | no | anyOf=(type="string"; maxLength=4096; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-e4c6d56bef"></a>`next_cursor` | no | anyOf=[(type="string"; maxLength=4096; minLength=1); (type="null")]; default=null |  |
 | <a id="s-84522265fb"></a>`source_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 
 ##### Definitions
@@ -62,7 +62,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-2a22a4e16b"></a>`archive_root_sha256` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-6418b0cd40"></a>`collection_id` | yes | [CollectionId](#s-a83fcd9192) |  |
 | <a id="s-7255ac678a"></a>`content_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-2b03d9b4fd"></a>`description` | yes | anyOf=([CollectionDescription](#s-9422def1b1)) \| (type="null") |  |
+| <a id="s-2b03d9b4fd"></a>`description` | yes | anyOf=[([CollectionDescription](#s-9422def1b1)); (type="null")] |  |
 | <a id="s-5e814898de"></a>`description_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-dd33ef622b"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
 | <a id="s-641ef1956d"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |

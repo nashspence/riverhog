@@ -24,17 +24,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8d03a26312"></a>`archive_objects` | yes | type="integer" |  |
-| <a id="s-71e5eff23e"></a>`blockers` | yes | type="array"; items=(type="string") |  |
-| <a id="s-54499c7b79"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-7d087eddae"></a>`challenge` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-bb62e75af0"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-ff4cd61355"></a>`custody` | yes | discriminator={"mapping":{"complete":"#/components/schemas/CompleteCollectionUploadCustodyOut","pending":"#/components/schemas/PendingCollectionUploadCustodyOut"},"propertyName":"state"}; oneOf=(#/components/schemas/PendingCollectionUploadCustodyOut) \| (#/components/schemas/CompleteCollectionUploadCustodyOut) |  |
-| <a id="s-4240669b0c"></a>`expires_at` | yes | type="string" |  |
-| <a id="s-c89b6e31a6"></a>`files` | yes | type="integer"; minimum=0 |  |
-| <a id="s-f06ccf51a0"></a>`state` | yes | type="string"; enum=["open","closing","uploading","finalizing","orphaned","discarding"] |  |
-| <a id="s-e9e793215e"></a>`status` | yes | type="string"; enum=["ready","blocked"] |  |
-| <a id="s-30f2c19b26"></a>`warning` | yes | type="string" |  |
+| <a id="s-8d03a26312"></a>`archive_objects` | yes | type="integer"; title="Archive Objects" |  |
+| <a id="s-71e5eff23e"></a>`blockers` | yes | type="array"; items=(type="string"); title="Blockers" |  |
+| <a id="s-54499c7b79"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-7d087eddae"></a>`challenge` | yes | anyOf=[(type="string"); (type="null")]; title="Challenge" |  |
+| <a id="s-bb62e75af0"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-ff4cd61355"></a>`custody` | yes | discriminator={"mapping":{"complete":"#/components/schemas/CompleteCollectionUploadCustodyOut","pending":"#/components/schemas/PendingCollectionUploadCustodyOut"},"propertyName":"state"}; oneOf=[([PendingCollectionUploadCustodyOut](schemas-pendingcollectionuploadcustodyout.md)); ([CompleteCollectionUploadCustodyOut](schemas-completecollectionuploadcustodyout.md))]; title="Custody" |  |
+| <a id="s-4240669b0c"></a>`expires_at` | yes | type="string"; title="Expires At" |  |
+| <a id="s-c89b6e31a6"></a>`files` | yes | type="integer"; minimum=0; title="Files" |  |
+| <a id="s-f06ccf51a0"></a>`state` | yes | type="string"; enum=["open","closing","uploading","finalizing","orphaned","discarding"]; title="State" |  |
+| <a id="s-e9e793215e"></a>`status` | yes | type="string"; enum=["ready","blocked"]; title="Status" |  |
+| <a id="s-30f2c19b26"></a>`warning` | yes | type="string"; title="Warning" |  |
 
 ### All must match (`allOf`)
 

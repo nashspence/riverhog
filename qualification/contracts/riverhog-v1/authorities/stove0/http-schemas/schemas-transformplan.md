@@ -24,16 +24,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-bbd1f6cd2e"></a>`inputs` | yes | #/components/schemas/TargetInputAuthority |  |
-| <a id="s-a758235a3e"></a>`intent` | yes | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-ec8e360ca1"></a>`observation_result_sha256s` | no | type="array"; default=[]; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
-| <a id="s-f1d0b2c715"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-856c116b98"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-c0cb979840"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-fd41b9e89f"></a>`protocol` | no | type="string"; const="stove0-transform-target/v1"; default="stove0-transform-target/v1" |  |
-| <a id="s-8c06f8c241"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-863feda82e"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-190f6a3902"></a>`target_options` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-bbd1f6cd2e"></a>`inputs` | yes | [TargetInputAuthority](schemas-targetinputauthority.md) |  |
+| <a id="s-a758235a3e"></a>`intent` | yes | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Intent" |  |
+| <a id="s-ec8e360ca1"></a>`observation_result_sha256s` | no | type="array"; default=[]; items=(type="string"; pattern="^[0-9a-f]{64}$"); title="Observation Result Sha256S" |  |
+| <a id="s-f1d0b2c715"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Operation Contract Sha256" |  |
+| <a id="s-856c116b98"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Operation Id" |  |
+| <a id="s-c0cb979840"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
+| <a id="s-fd41b9e89f"></a>`protocol` | no | type="string"; const="stove0-transform-target/v1"; default="stove0-transform-target/v1"; title="Protocol" |  |
+| <a id="s-8c06f8c241"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
+| <a id="s-863feda82e"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Target Implementation Id" |  |
+| <a id="s-190f6a3902"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Target Options" |  |
 
 ### Progression, limits, and lifecycle
 

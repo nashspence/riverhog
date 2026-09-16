@@ -25,8 +25,8 @@ Durable, non-secret identity of one accepted target job request.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-9dcf35deb6"></a>`declaration` | yes | #/components/schemas/TargetJobDeclaration |  |
-| <a id="s-e846f6a178"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-9dcf35deb6"></a>`declaration` | yes | [TargetJobDeclaration](schemas-targetjobdeclaration.md) |  |
+| <a id="s-e846f6a178"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

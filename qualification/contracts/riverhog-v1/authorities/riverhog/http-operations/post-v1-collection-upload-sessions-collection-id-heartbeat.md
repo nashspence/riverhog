@@ -14,15 +14,18 @@ Heartbeat Collection Upload Session
 ## External contract
 
 <a id="s-2de8c0a8da"></a>
-- <a id="s-e5d95a2e5c"></a>`operationId`: heartbeat_collection_upload_session
-- <a id="s-c55ad8231f"></a>`summary`: Heartbeat Collection Upload Session
-- <a id="s-1ca0f00f90"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-e5d95a2e5c"></a>`operationId`: `"heartbeat_collection_upload_session"`
+- <a id="s-1ca0f00f90"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-c55ad8231f"></a>`summary`: `"Heartbeat Collection Upload Session"`
+- <a id="s-ad61047e6f"></a>`tags`: `["collections"]`
+- <a id="s-ce1d5caefb"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-f6fed1145c"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:create"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-499841502b"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-499841502b"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
 
 ### Responses
 

@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-44e9b6604c"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-21b67b2b68"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-ba445df547"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-e903eeee44"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
-| <a id="s-8ce7664492"></a>`tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-fdac558d71"></a>`tags` | yes | type="array"; items=(#/components/schemas/CollectionTag) |  |
+| <a id="s-44e9b6604c"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-21b67b2b68"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-ba445df547"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
+| <a id="s-e903eeee44"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991; title="Revision" |  |
+| <a id="s-8ce7664492"></a>`tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Tag Set Identity" |  |
+| <a id="s-fdac558d71"></a>`tags` | yes | type="array"; items=([CollectionTag](schemas-collectiontag.md)); title="Tags" |  |
 
 ### Progression, limits, and lifecycle
 

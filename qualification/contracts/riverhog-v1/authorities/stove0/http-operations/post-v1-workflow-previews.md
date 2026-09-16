@@ -14,12 +14,17 @@ Preview Workflow
 ## External contract
 
 <a id="s-fc212e373e"></a>
-- <a id="s-187346c16a"></a>`operationId`: preview_workflow
-- <a id="s-4cfad3f8a3"></a>`summary`: Preview Workflow
+- <a id="s-187346c16a"></a>`operationId`: `"preview_workflow"`
+- <a id="s-4cfad3f8a3"></a>`summary`: `"Preview Workflow"`
+- <a id="s-7f5f15f97d"></a>`tags`: `["previews"]`
 
 ### <a id="s-a9a0924a6f"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/WorkflowPreviewIn"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [WorkflowPreviewIn](../http-schemas/schemas-workflowpreviewin.md) |
 
 ### Responses
 

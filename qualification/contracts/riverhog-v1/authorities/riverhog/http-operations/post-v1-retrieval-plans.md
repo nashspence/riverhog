@@ -14,13 +14,20 @@ Plan Retrieval
 ## External contract
 
 <a id="s-fbaa52409a"></a>
-- <a id="s-bc96ce70c6"></a>`operationId`: plan_retrieval
-- <a id="s-3310619a06"></a>`summary`: Plan Retrieval
-- <a id="s-391fc6e75d"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-bc96ce70c6"></a>`operationId`: `"plan_retrieval"`
+- <a id="s-391fc6e75d"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-3310619a06"></a>`summary`: `"Plan Retrieval"`
+- <a id="s-878d302094"></a>`tags`: `["retrieval"]`
+- <a id="s-0b96ed0d74"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-2e4d1b5536"></a>`x-riverhog-permission-requirements`: `[{"any_of":["retrieval:manage"]}]`
 
 ### <a id="s-65a14e3f06"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/RetrievalPlanRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [RetrievalPlanRequest](../http-schemas/schemas-retrievalplanrequest.md) |
 
 ### Responses
 

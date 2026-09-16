@@ -24,7 +24,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f0a343edfd"></a>`state` | yes | anyOf=(#/components/schemas/CollectionUploadState) \| (type="null") |  |
+| <a id="s-f0a343edfd"></a>`state` | yes | anyOf=[([CollectionUploadState](schemas-collectionuploadstate.md)); (type="null")] |  |
 
 ## Maintained corroboration
 

@@ -24,11 +24,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2eda695e01"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-57decd2dfa"></a>`custody_receipt` | no | anyOf=(#/components/schemas/CollectionUploadArtifactCustodyReceiptDocument) \| (type="null") |  |
-| <a id="s-e476e99a4f"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
-| <a id="s-954031ac14"></a>`provenance` | no | anyOf=(discriminator={"mapping":{"captured":"#/components/schemas/CapturedFileProvenanceBinding","omitted":"#/components/schemas/OmittedFileProvenanceBinding"},"propertyName":"status"}; oneOf=(#/components/schemas/CapturedFileProvenanceBinding) \| (#/components/schemas/OmittedFileProvenanceBinding)) \| (type="null") |  |
-| <a id="s-e71d2c6050"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2eda695e01"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-57decd2dfa"></a>`custody_receipt` | no | anyOf=[([CollectionUploadArtifactCustodyReceiptDocument](schemas-collectionuploadartifactcustodyreceiptdocument.md)); (type="null")] |  |
+| <a id="s-e476e99a4f"></a>`path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
+| <a id="s-954031ac14"></a>`provenance` | no | anyOf=[(discriminator={"mapping":{"captured":"#/components/schemas/CapturedFileProvenanceBinding","omitted":"#/components/schemas/OmittedFileProvenanceBinding"},"propertyName":"status"}; oneOf=[([CapturedFileProvenanceBinding](schemas-capturedfileprovenancebinding.md)); ([OmittedFileProvenanceBinding](schemas-omittedfileprovenancebinding.md))]); (type="null")]; title="Provenance" |  |
+| <a id="s-e71d2c6050"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

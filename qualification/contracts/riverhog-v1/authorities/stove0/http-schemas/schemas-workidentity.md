@@ -24,13 +24,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-94dc797a9d"></a>`effective_intent` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-1f8b8e35e0"></a>`evaluation` | no | anyOf=(#/components/schemas/EvaluationBinding) \| (type="null") |  |
-| <a id="s-627ac6d042"></a>`fork_join` | no | anyOf=(discriminator={"mapping":{"branch":"#/components/schemas/BranchWorkBinding","join":"#/components/schemas/JoinWorkBinding"},"propertyName":"kind"}; oneOf=(#/components/schemas/BranchWorkBinding) \| (#/components/schemas/JoinWorkBinding)) \| (type="null") |  |
-| <a id="s-3b7d02e296"></a>`format` | no | type="string"; const="stove0-work/v1"; default="stove0-work/v1" |  |
-| <a id="s-181af1fa7a"></a>`inputs` | yes | type="array"; items=(#/components/schemas/CollectionRootRef); minItems=1 |  |
-| <a id="s-adf4a103e4"></a>`recipe` | yes | #/components/schemas/RecipeRef |  |
-| <a id="s-81ce230f85"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-94dc797a9d"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Effective Intent" |  |
+| <a id="s-1f8b8e35e0"></a>`evaluation` | no | anyOf=[([EvaluationBinding](schemas-evaluationbinding.md)); (type="null")] |  |
+| <a id="s-627ac6d042"></a>`fork_join` | no | anyOf=[(discriminator={"mapping":{"branch":"#/components/schemas/BranchWorkBinding","join":"#/components/schemas/JoinWorkBinding"},"propertyName":"kind"}; oneOf=[([BranchWorkBinding](schemas-branchworkbinding.md)); ([JoinWorkBinding](schemas-joinworkbinding.md))]); (type="null")]; title="Fork Join" |  |
+| <a id="s-3b7d02e296"></a>`format` | no | type="string"; const="stove0-work/v1"; default="stove0-work/v1"; title="Format" |  |
+| <a id="s-181af1fa7a"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](schemas-collectionrootref.md)); minItems=1; title="Inputs" |  |
+| <a id="s-adf4a103e4"></a>`recipe` | yes | [RecipeRef](schemas-reciperef.md) |  |
+| <a id="s-81ce230f85"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
 
 ### Progression, limits, and lifecycle
 

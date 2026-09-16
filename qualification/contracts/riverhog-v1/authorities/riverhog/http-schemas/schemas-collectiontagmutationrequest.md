@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8fd34b59f5"></a>`expected_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
-| <a id="s-a799f22e27"></a>`expected_tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-6dd84f6a27"></a>`operation_id` | yes | type="string"; maxLength=256; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
-| <a id="s-39c36b2555"></a>`tag` | yes | #/components/schemas/CollectionTag |  |
+| <a id="s-8fd34b59f5"></a>`expected_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991; title="Expected Revision" |  |
+| <a id="s-a799f22e27"></a>`expected_tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Expected Tag Set Identity" |  |
+| <a id="s-6dd84f6a27"></a>`operation_id` | yes | type="string"; maxLength=256; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$"; title="Operation Id" |  |
+| <a id="s-39c36b2555"></a>`tag` | yes | [CollectionTag](schemas-collectiontag.md) |  |
 
 ### Progression, limits, and lifecycle
 

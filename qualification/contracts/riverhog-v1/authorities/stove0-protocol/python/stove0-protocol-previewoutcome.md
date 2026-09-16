@@ -38,7 +38,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-2946b55f45"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-a7784c6ecf"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
-| <a id="s-7a03ef4cce"></a>`retryable` | no | anyOf=(type="boolean") \| (type="null"); default=null |  |
+| <a id="s-7a03ef4cce"></a>`retryable` | no | anyOf=[(type="boolean"); (type="null")]; default=null |  |
 
 ## Governing policies
 

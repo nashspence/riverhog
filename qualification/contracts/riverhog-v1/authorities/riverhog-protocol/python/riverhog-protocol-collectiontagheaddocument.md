@@ -40,7 +40,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-6d8f707f07"></a>`format` | no | type="string"; const="riverhog-collection-tag-head/v1"; default="riverhog-collection-tag-head/v1" |  |
 | <a id="s-ce95c34a50"></a>`head_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-c714f6110c"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
-| <a id="s-1381339e01"></a>`root_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-1381339e01"></a>`root_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-1f359cc827"></a>`tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration

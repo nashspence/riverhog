@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6455426338"></a>`service` | yes | type="string"; minLength=1 |  |
-| <a id="s-218e6a6f32"></a>`status` | yes | type="string"; const="ok" |  |
+| <a id="s-6455426338"></a>`service` | yes | type="string"; minLength=1; title="Service" |  |
+| <a id="s-218e6a6f32"></a>`status` | yes | type="string"; const="ok"; title="Status" |  |
 
 ## Governing policies
 

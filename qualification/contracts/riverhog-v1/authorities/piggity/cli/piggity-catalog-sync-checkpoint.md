@@ -24,7 +24,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-dcf2b49b77"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-dcf2b49b77"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -43,14 +43,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-0b2d7883da"></a>`completed` | <a id="s-60ffb0e7e3"></a>`{"kind":"command-completed"}` | <a id="s-252be26c00"></a>`0` | <a id="s-ebe7483078"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP create_catalog_sync_checkpoint response 200](../../riverhog/http-operations/get-v1-catalog-sync-checkpoint.md#s-d00c372b8d) | <a id="s-47c63667db"></a>all: `empty` |
+| <a id="s-0b2d7883da"></a>`completed` | <a id="s-60ffb0e7e3"></a>`{"kind":"command-completed"}` | <a id="s-252be26c00"></a>`0` | <a id="s-ebe7483078"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP create_catalog_sync_checkpoint response 200](../../riverhog/http-operations/get-v1-catalog-sync-checkpoint.md#s-d00c372b8d) | <a id="s-47c63667db"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-7681051a14"></a>`usage` | <a id="s-8ecb9fdd88"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-21afa4537a"></a>`2` | <a id="s-13641a298c"></a>all: `empty` | <a id="s-e1af3e495e"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-a88d115143"></a>`operational` | <a id="s-ec61f0b457"></a>`{"kind":"application-error"}` | <a id="s-9d05105219"></a>`1` | <a id="s-82f0f7edf1"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-afe412afa3"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-7681051a14"></a>`usage` | <a id="s-8ecb9fdd88"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-21afa4537a"></a>`2` | <a id="s-13641a298c"></a>all: `"empty"` | <a id="s-e1af3e495e"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-a88d115143"></a>`operational` | <a id="s-ec61f0b457"></a>`{"kind":"application-error"}` | <a id="s-9d05105219"></a>`1` | <a id="s-82f0f7edf1"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-afe412afa3"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 

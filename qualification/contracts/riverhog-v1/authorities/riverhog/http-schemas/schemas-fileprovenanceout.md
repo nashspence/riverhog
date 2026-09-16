@@ -20,8 +20,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Alternative | Schema |
 |---|---|
-| <a id="s-3d92c532e7"></a>1 | #/components/schemas/CapturedCollectionFileProvenanceOut |
-| <a id="s-dd99c51581"></a>2 | #/components/schemas/OmittedCollectionFileProvenanceOut |
+| <a id="s-3d92c532e7"></a>1 | [CapturedCollectionFileProvenanceOut](schemas-capturedcollectionfileprovenanceout.md) |
+| <a id="s-dd99c51581"></a>2 | [OmittedCollectionFileProvenanceOut](schemas-omittedcollectionfileprovenanceout.md) |
 
 ## Maintained corroboration
 

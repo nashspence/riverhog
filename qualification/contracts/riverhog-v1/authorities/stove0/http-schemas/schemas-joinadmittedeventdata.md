@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2a11a283b4"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-0c6b187d5f"></a>`join_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-0380a5b474"></a>`join_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-eb49618452"></a>`phase` | yes | type="string"; const="coordinating" |  |
-| <a id="s-e3abe001ac"></a>`revision` | yes | type="integer"; minimum=2 |  |
-| <a id="s-b42337d8ba"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2a11a283b4"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Branch Set Sha256" |  |
+| <a id="s-0c6b187d5f"></a>`join_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Join Plan Sha256" |  |
+| <a id="s-0380a5b474"></a>`join_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Join Work Id" |  |
+| <a id="s-eb49618452"></a>`phase` | yes | type="string"; const="coordinating"; title="Phase" |  |
+| <a id="s-e3abe001ac"></a>`revision` | yes | type="integer"; minimum=2; title="Revision" |  |
+| <a id="s-b42337d8ba"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
 
 ### Progression, limits, and lifecycle
 

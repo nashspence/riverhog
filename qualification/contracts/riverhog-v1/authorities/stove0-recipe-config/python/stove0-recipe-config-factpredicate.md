@@ -36,7 +36,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-367d96c609"></a>`artifact_facts` | no | anyOf=([ArtifactFactBinding](#s-48aaf43fde)) \| (type="null"); default=null |  |
+| <a id="s-367d96c609"></a>`artifact_facts` | no | anyOf=[([ArtifactFactBinding](#s-48aaf43fde)); (type="null")]; default=null |  |
 | <a id="s-6e947f2410"></a>`artifact_roles` | no | type="array"; default=[]; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
 | <a id="s-ba4b9c8c2f"></a>`observation_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-2699482742"></a>`operator` | no | type="string"; enum=["equals","not-equals","contains","exists"]; default="equals" |  |

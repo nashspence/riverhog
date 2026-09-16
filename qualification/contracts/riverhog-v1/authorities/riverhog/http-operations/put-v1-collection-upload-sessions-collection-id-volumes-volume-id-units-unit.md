@@ -14,23 +14,30 @@ Put Collection Upload Session Unit
 ## External contract
 
 <a id="s-56fb5451d4"></a>
-- <a id="s-59edab6dfe"></a>`operationId`: put_collection_upload_session_unit
-- <a id="s-ebcc0b06a2"></a>`summary`: Put Collection Upload Session Unit
-- <a id="s-18fe034da0"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-59edab6dfe"></a>`operationId`: `"put_collection_upload_session_unit"`
+- <a id="s-18fe034da0"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-ebcc0b06a2"></a>`summary`: `"Put Collection Upload Session Unit"`
+- <a id="s-922b12e401"></a>`tags`: `["collections"]`
+- <a id="s-3d419f4700"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-dbf46d8cec"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:create"]}]`
 
 ### Parameters
 
-| Name | In | Required | Default | Schema |
-|---|---|---:|---|---|
-| <a id="s-b098192ee1"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-b77d4eaf73"></a>`volume_id` | path | yes | not declared | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$" |
-| <a id="s-606a5c1e12"></a>`unit` | path | yes | not declared | type="integer"; minimum=0 |
-| <a id="s-8408816c84"></a>`If-Match` | header | yes | not declared | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
-| <a id="s-4b9aa015e5"></a>`Content-Length` | header | yes | not declared | type="integer"; minimum=0 |
+| Name | In | Required | Default | Schema | Description |
+|---|---|---:|---|---|---|
+| <a id="s-b098192ee1"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |  |
+| <a id="s-b77d4eaf73"></a>`volume_id` | path | yes | not declared | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$"; title="Volume Id" |  |
+| <a id="s-606a5c1e12"></a>`unit` | path | yes | not declared | type="integer"; minimum=0; title="Unit" |  |
+| <a id="s-8408816c84"></a>`If-Match` | header | yes | not declared | type="string"; pattern="^\"[0-9a-f]{64}\"$"; title="If-Match" |  |
+| <a id="s-4b9aa015e5"></a>`Content-Length` | header | yes | not declared | type="integer"; minimum=0 | Exact request-body length in bytes. |
 
 ### <a id="s-2c66ce80f5"></a>Request body
 
-`{"content": {"application/octet-stream": {"schema": {"contentMediaType": "application/octet-stream", "format": "binary", "title": "Content", "type": "string"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/octet-stream | type="string"; format="binary"; contentMediaType="application/octet-stream"; title="Content" |
 
 ### Responses
 

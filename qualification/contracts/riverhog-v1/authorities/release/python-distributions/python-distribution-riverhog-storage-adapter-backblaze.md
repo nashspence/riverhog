@@ -16,15 +16,15 @@ Optional nonnormative Backblaze B2 storage reference for Riverhog.
 <a id="s-809e4c3631"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-b5198770fa"></a>`artifacts` | [{"coordinate": "dist/riverhog_storage_adapter_backblaze-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_storage_adapter_backblaze-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-26bf6a0634"></a>`channel` | github-release |
-| <a id="s-87b1e43633"></a>`description` | Optional nonnormative Backblaze B2 storage reference for Riverhog. |
-| <a id="s-ec014a4211"></a>`license_baseline` | first-v1-publication |
-| <a id="s-287b3d2a25"></a>`license_expression` | CAL-1.0 |
-| <a id="s-9518b60a51"></a>`publication_identity` | {"coordinate": "riverhog-storage-adapter-backblaze", "kind": "python-distribution"} |
-| <a id="s-6480cfdc45"></a>`requires_python` | >=3.12 |
-| <a id="s-348118ae00"></a>`role` | reference_component |
-| <a id="s-e85ec9e088"></a>`source` | reference/riverhog/storage/backblaze/pyproject.toml |
+| <a id="s-b5198770fa"></a>`artifacts` | `[{"coordinate":"dist/riverhog_storage_adapter_backblaze-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/riverhog_storage_adapter_backblaze-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-26bf6a0634"></a>`channel` | `"github-release"` |
+| <a id="s-87b1e43633"></a>`description` | `"Optional nonnormative Backblaze B2 storage reference for Riverhog."` |
+| <a id="s-ec014a4211"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-287b3d2a25"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-9518b60a51"></a>`publication_identity` | `{"coordinate":"riverhog-storage-adapter-backblaze","kind":"python-distribution"}` |
+| <a id="s-6480cfdc45"></a>`requires_python` | `">=3.12"` |
+| <a id="s-348118ae00"></a>`role` | `"reference_component"` |
+| <a id="s-e85ec9e088"></a>`source` | `"reference/riverhog/storage/backblaze/pyproject.toml"` |
 
 ## Existing ownership context
 

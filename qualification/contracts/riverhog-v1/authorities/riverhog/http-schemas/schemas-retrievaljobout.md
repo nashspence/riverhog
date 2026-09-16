@@ -24,21 +24,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4a26bd20ca"></a>`canceled_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-62ab89c460"></a>`completed_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-3969583590"></a>`created_at` | yes | type="string" |  |
-| <a id="s-3f1631fe3f"></a>`expires_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-47cbd02588"></a>`failure` | yes | anyOf=(type="string"; minLength=1) \| (type="null") |  |
-| <a id="s-ba2913517e"></a>`id` | yes | type="string" |  |
-| <a id="s-4309221e14"></a>`lease_seconds` | yes | type="integer" |  |
-| <a id="s-7d910b2388"></a>`plan_etag` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-b3a272f4b1"></a>`plan_id` | yes | type="string" |  |
-| <a id="s-73a1545b22"></a>`ready_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-e2e4bf916b"></a>`requested_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-a1460da5f4"></a>`requires_restore` | yes | type="boolean" |  |
-| <a id="s-a9bf8be7aa"></a>`restore_policy` | yes | type="string"; enum=["allow","never"] |  |
-| <a id="s-4e2d281293"></a>`restore_requested_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-89d57750d5"></a>`state` | yes | type="string"; enum=["requested","ready","completed","expired","failed","canceled"] |  |
+| <a id="s-4a26bd20ca"></a>`canceled_at` | yes | anyOf=[(type="string"); (type="null")]; title="Canceled At" |  |
+| <a id="s-62ab89c460"></a>`completed_at` | yes | anyOf=[(type="string"); (type="null")]; title="Completed At" |  |
+| <a id="s-3969583590"></a>`created_at` | yes | type="string"; title="Created At" |  |
+| <a id="s-3f1631fe3f"></a>`expires_at` | yes | anyOf=[(type="string"); (type="null")]; title="Expires At" |  |
+| <a id="s-47cbd02588"></a>`failure` | yes | anyOf=[(type="string"; minLength=1); (type="null")]; title="Failure" |  |
+| <a id="s-ba2913517e"></a>`id` | yes | type="string"; title="Id" |  |
+| <a id="s-4309221e14"></a>`lease_seconds` | yes | type="integer"; title="Lease Seconds" |  |
+| <a id="s-7d910b2388"></a>`plan_etag` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Etag" |  |
+| <a id="s-b3a272f4b1"></a>`plan_id` | yes | type="string"; title="Plan Id" |  |
+| <a id="s-73a1545b22"></a>`ready_at` | yes | anyOf=[(type="string"); (type="null")]; title="Ready At" |  |
+| <a id="s-e2e4bf916b"></a>`requested_at` | yes | anyOf=[(type="string"); (type="null")]; title="Requested At" |  |
+| <a id="s-a1460da5f4"></a>`requires_restore` | yes | type="boolean"; title="Requires Restore" |  |
+| <a id="s-a9bf8be7aa"></a>`restore_policy` | yes | type="string"; enum=["allow","never"]; title="Restore Policy" |  |
+| <a id="s-4e2d281293"></a>`restore_requested_at` | yes | anyOf=[(type="string"); (type="null")]; title="Restore Requested At" |  |
+| <a id="s-89d57750d5"></a>`state` | yes | type="string"; enum=["requested","ready","completed","expired","failed","canceled"]; title="State" |  |
 
 ### All must match (`allOf`)
 

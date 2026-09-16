@@ -24,11 +24,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-cb79bb77a7"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-71e9d43dba"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-64e1b4cfdb"></a>`file_ref` | yes | type="string" |  |
-| <a id="s-f85fe65020"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
-| <a id="s-19884818f4"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-cb79bb77a7"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-71e9d43dba"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-64e1b4cfdb"></a>`file_ref` | yes | type="string"; title="File Ref" |  |
+| <a id="s-f85fe65020"></a>`path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
+| <a id="s-19884818f4"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

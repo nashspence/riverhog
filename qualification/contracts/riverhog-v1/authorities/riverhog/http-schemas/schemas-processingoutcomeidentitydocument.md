@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d5ecccb026"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-407976f811"></a>`outcome_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-839f8b81bf"></a>`output_collection` | yes | #/components/schemas/CollectionRootIdentityDocument |  |
-| <a id="s-593ebdabb5"></a>`source_claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d5ecccb026"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Derivation Sha256" |  |
+| <a id="s-407976f811"></a>`outcome_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Outcome Id" |  |
+| <a id="s-839f8b81bf"></a>`output_collection` | yes | [CollectionRootIdentityDocument](schemas-collectionrootidentitydocument.md) |  |
+| <a id="s-593ebdabb5"></a>`source_claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Source Claim Id" |  |
 
 ### Progression, limits, and lifecycle
 

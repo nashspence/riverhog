@@ -14,14 +14,15 @@ Step Evaluation
 ## External contract
 
 <a id="s-8664b755eb"></a>
-- <a id="s-99d3b8b948"></a>`operationId`: step_evaluation
-- <a id="s-1421731706"></a>`summary`: Step Evaluation
+- <a id="s-99d3b8b948"></a>`operationId`: `"step_evaluation"`
+- <a id="s-1421731706"></a>`summary`: `"Step Evaluation"`
+- <a id="s-c90182a44a"></a>`tags`: `["evaluations"]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-bbfa65dac3"></a>`evaluation_id` | path | yes | not declared | type="string" |
+| <a id="s-bbfa65dac3"></a>`evaluation_id` | path | yes | not declared | type="string"; title="Evaluation Id" |
 
 ### Responses
 

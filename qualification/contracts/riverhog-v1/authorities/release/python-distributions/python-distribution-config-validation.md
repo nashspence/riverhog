@@ -16,15 +16,15 @@ Strict YAML and JSON Schema configuration validation.
 <a id="s-1eb7d40fac"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-1ef889f0ab"></a>`artifacts` | [{"coordinate": "dist/config_validation-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/config_validation-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-b7635a3241"></a>`channel` | github-release |
-| <a id="s-ddf484653b"></a>`description` | Strict YAML and JSON Schema configuration validation. |
-| <a id="s-328f8175a9"></a>`license_baseline` | first-v1-publication |
-| <a id="s-ae9090d303"></a>`license_expression` | Apache-2.0 |
-| <a id="s-f759eff5de"></a>`publication_identity` | {"coordinate": "config-validation", "kind": "python-distribution"} |
-| <a id="s-9980af7c67"></a>`requires_python` | >=3.12 |
-| <a id="s-d4cc64f222"></a>`role` | internal_build_unit |
-| <a id="s-257971f953"></a>`source` | packages/config-validation/pyproject.toml |
+| <a id="s-1ef889f0ab"></a>`artifacts` | `[{"coordinate":"dist/config_validation-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/config_validation-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-b7635a3241"></a>`channel` | `"github-release"` |
+| <a id="s-ddf484653b"></a>`description` | `"Strict YAML and JSON Schema configuration validation."` |
+| <a id="s-328f8175a9"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-ae9090d303"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-f759eff5de"></a>`publication_identity` | `{"coordinate":"config-validation","kind":"python-distribution"}` |
+| <a id="s-9980af7c67"></a>`requires_python` | `">=3.12"` |
+| <a id="s-d4cc64f222"></a>`role` | `"internal_build_unit"` |
+| <a id="s-257971f953"></a>`source` | `"packages/config-validation/pyproject.toml"` |
 
 ## Existing ownership context
 

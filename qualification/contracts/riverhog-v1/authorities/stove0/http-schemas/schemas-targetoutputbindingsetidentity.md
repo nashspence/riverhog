@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7172839d4f"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-048703c7e4"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-895f414e6b"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-7172839d4f"></a>`artifact_count` | yes | type="integer"; minimum=1; title="Artifact Count" |  |
+| <a id="s-048703c7e4"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-895f414e6b"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
 
 ### Progression, limits, and lifecycle
 

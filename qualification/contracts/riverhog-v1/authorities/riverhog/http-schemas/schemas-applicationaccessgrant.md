@@ -25,8 +25,8 @@ One canonical public application-access request or response grant.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c2cd54ec86"></a>`permission` | yes | #/components/schemas/ApplicationPermission |  |
-| <a id="s-ea597f207a"></a>`resource` | no | $ref="#/components/schemas/ApplicationResource"; default="*" |  |
+| <a id="s-c2cd54ec86"></a>`permission` | yes | [ApplicationPermission](schemas-applicationpermission.md) |  |
+| <a id="s-ea597f207a"></a>`resource` | no | [ApplicationResource](schemas-applicationresource.md); default="*" |  |
 
 ### All must match (`allOf`)
 

@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-14e21bbc93"></a>`bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-751cbd4013"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-14e21bbc93"></a>`bytes` | yes | type="integer"; minimum=1; title="Bytes" |  |
+| <a id="s-751cbd4013"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

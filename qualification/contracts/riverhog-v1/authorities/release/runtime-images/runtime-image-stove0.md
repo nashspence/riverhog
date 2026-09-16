@@ -16,17 +16,17 @@ Optional nonnormative transformation reference application for Riverhog.
 <a id="s-cf3fdaa31c"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-a66428c82b"></a>`build_target` | stove0 |
-| <a id="s-4539b9404a"></a>`description` | Optional nonnormative transformation reference application for Riverhog. |
-| <a id="s-b9fa096e27"></a>`distribution_roots` | ["stove0-server"] |
-| <a id="s-3387ab3766"></a>`format` | oci-image |
-| <a id="s-34f1c9327d"></a>`license_baseline` | first-v1-publication |
-| <a id="s-dd3feade3c"></a>`license_expression` | CAL-1.0 |
-| <a id="s-858594d9f9"></a>`platforms` | ["linux/amd64"] |
-| <a id="s-96c6cc98a8"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-stove0", "kind": "oci-repository"} |
-| <a id="s-27218090de"></a>`repository` | ghcr.io/nashspence/riverhog-stove0 |
-| <a id="s-309b0af8a3"></a>`role` | reference |
-| <a id="s-1ca6b0b8f3"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-stove0:{version}", "ghcr.io/nashspence/riverhog-stove0:sha-{source_sha}"] |
+| <a id="s-a66428c82b"></a>`build_target` | `"stove0"` |
+| <a id="s-4539b9404a"></a>`description` | `"Optional nonnormative transformation reference application for Riverhog."` |
+| <a id="s-b9fa096e27"></a>`distribution_roots` | `["stove0-server"]` |
+| <a id="s-3387ab3766"></a>`format` | `"oci-image"` |
+| <a id="s-34f1c9327d"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-dd3feade3c"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-858594d9f9"></a>`platforms` | `["linux/amd64"]` |
+| <a id="s-96c6cc98a8"></a>`publication_identity` | `{"coordinate":"ghcr.io/nashspence/riverhog-stove0","kind":"oci-repository"}` |
+| <a id="s-27218090de"></a>`repository` | `"ghcr.io/nashspence/riverhog-stove0"` |
+| <a id="s-309b0af8a3"></a>`role` | `"reference"` |
+| <a id="s-1ca6b0b8f3"></a>`tag_templates` | `["ghcr.io/nashspence/riverhog-stove0:{version}","ghcr.io/nashspence/riverhog-stove0:sha-{source_sha}"]` |
 
 ## Existing ownership context
 

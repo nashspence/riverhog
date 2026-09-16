@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e5c1cf746f"></a>`error` | yes | type="string"; maxLength=1000; minLength=1 |  |
-| <a id="s-4d3a6ac855"></a>`event_id` | no | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-6d2bcc8b25"></a>`work_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
+| <a id="s-e5c1cf746f"></a>`error` | yes | type="string"; maxLength=1000; minLength=1; title="Error" |  |
+| <a id="s-4d3a6ac855"></a>`event_id` | no | anyOf=[(type="string"); (type="null")]; title="Event Id" |  |
+| <a id="s-6d2bcc8b25"></a>`work_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Work Id" |  |
 
 ### Progression, limits, and lifecycle
 

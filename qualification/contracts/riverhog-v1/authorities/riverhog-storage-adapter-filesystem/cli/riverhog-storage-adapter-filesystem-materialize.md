@@ -47,14 +47,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-87aa6be67d"></a>`completed` | <a id="s-5214dd4180"></a>`{"kind":"materialization-completed"}` | <a id="s-f75383c0b8"></a>`0` | <a id="s-cf82974b80"></a>human: `noncontractual-presentation-of-command-result`; json: [riverhog-filesystem-materialization-result/v1](#s-2face05c8e) | <a id="s-be54da33ab"></a>all: `empty` |
+| <a id="s-87aa6be67d"></a>`completed` | <a id="s-5214dd4180"></a>`{"kind":"materialization-completed"}` | <a id="s-f75383c0b8"></a>`0` | <a id="s-cf82974b80"></a>human: `"noncontractual-presentation-of-command-result"`; json: [riverhog-filesystem-materialization-result/v1](#s-2face05c8e) | <a id="s-be54da33ab"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-ecfc6df42a"></a>`usage` | <a id="s-67b1b1f3d7"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-4317a5c11c"></a>`2` | <a id="s-86297cde3e"></a>all: `empty` | <a id="s-22fb428ae1"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-4ccc914638"></a>`materialization` | <a id="s-5dbfe7b0f2"></a>`{"kind":"materialization-error"}` | <a id="s-87a8cd7159"></a>`1` | <a id="s-382bb6f12c"></a>all: `empty` | <a id="s-57d17310a9"></a>all: `noncontractual-diagnostic` |
+| <a id="s-ecfc6df42a"></a>`usage` | <a id="s-67b1b1f3d7"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-4317a5c11c"></a>`2` | <a id="s-86297cde3e"></a>all: `"empty"` | <a id="s-22fb428ae1"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-4ccc914638"></a>`materialization` | <a id="s-5dbfe7b0f2"></a>`{"kind":"materialization-error"}` | <a id="s-87a8cd7159"></a>`1` | <a id="s-382bb6f12c"></a>all: `"empty"` | <a id="s-57d17310a9"></a>all: `"noncontractual-diagnostic"` |
 
 ### Local structured outputs
 

@@ -24,15 +24,15 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-f5559afeee"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded |
-| <a id="s-01c3138346"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
-| <a id="s-555db10fef"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
-| <a id="s-67a62d1793"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"path"` |
-| <a id="s-abb18d9ee3"></a>`order`<br>`--order` | optional option; 1 value | text | `"asc"` |
-| <a id="s-f5c1819bc3"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded |
-| <a id="s-c78d4198ac"></a>`status`<br>`--status` | optional option; 1 value | text | not recorded |
-| <a id="s-0a0adb418e"></a>`selectors`<br>`--selectors` | optional flag; 0 values | boolean | `false` |
-| <a id="s-22b246f5d2"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-f5559afeee"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded<br>Env: `null` |
+| <a id="s-01c3138346"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25`<br>Env: `null` |
+| <a id="s-555db10fef"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-67a62d1793"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"path"`<br>Env: `null` |
+| <a id="s-abb18d9ee3"></a>`order`<br>`--order` | optional option; 1 value | text | `"asc"`<br>Env: `null` |
+| <a id="s-f5c1819bc3"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-c78d4198ac"></a>`status`<br>`--status` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-0a0adb418e"></a>`selectors`<br>`--selectors` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
+| <a id="s-22b246f5d2"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -51,14 +51,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-c69ba19458"></a>`completed` | <a id="s-f87f47ba34"></a>`{"kind":"command-completed"}` | <a id="s-3ce2d746f0"></a>`0` | <a id="s-ba66612457"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP list_collection_provenance response 200](../../riverhog/http-operations/get-v1-collections-collection-id-provenance-files.md#s-2344bff45a) | <a id="s-df96f4943d"></a>all: `empty` |
+| <a id="s-c69ba19458"></a>`completed` | <a id="s-f87f47ba34"></a>`{"kind":"command-completed"}` | <a id="s-3ce2d746f0"></a>`0` | <a id="s-ba66612457"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP list_collection_provenance response 200](../../riverhog/http-operations/get-v1-collections-collection-id-provenance-files.md#s-2344bff45a) | <a id="s-df96f4943d"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-48892309c9"></a>`usage` | <a id="s-ea9684f720"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-cbeb2bc869"></a>`2` | <a id="s-fbbe599760"></a>all: `empty` | <a id="s-3451e52d4e"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-c4b5221b74"></a>`operational` | <a id="s-b52aee9f6c"></a>`{"kind":"application-error"}` | <a id="s-33833c23b7"></a>`1` | <a id="s-997817a140"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-da11d27d29"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-48892309c9"></a>`usage` | <a id="s-ea9684f720"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-cbeb2bc869"></a>`2` | <a id="s-fbbe599760"></a>all: `"empty"` | <a id="s-3451e52d4e"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-c4b5221b74"></a>`operational` | <a id="s-b52aee9f6c"></a>`{"kind":"application-error"}` | <a id="s-33833c23b7"></a>`1` | <a id="s-997817a140"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-da11d27d29"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 

@@ -14,19 +14,21 @@ List Work
 ## External contract
 
 <a id="s-e3469ba5ea"></a>
-- <a id="s-bcf1ddc968"></a>`operationId`: list_work
-- <a id="s-6a02feaa41"></a>`summary`: List Work
+- <a id="s-bcf1ddc968"></a>`operationId`: `"list_work"`
+- <a id="s-6a02feaa41"></a>`summary`: `"List Work"`
+- <a id="s-d7f1632eb4"></a>`tags`: `["work"]`
+- <a id="s-d62ca9ca8c"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-f757afb8e1"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-eb23c506e0"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
-| <a id="s-3c013fe019"></a>`phase` | query | no | not declared | anyOf=(type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"]) \| (type="null") |
-| <a id="s-5f521e9cb3"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
-| <a id="s-24e7c1f77e"></a>`sort` | query | no | `"updated_at"` | type="string"; enum=["updated_at","phase","work_id"] |
-| <a id="s-781a235d35"></a>`order` | query | no | `"desc"` | type="string"; enum=["asc","desc"] |
+| <a id="s-f757afb8e1"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-eb23c506e0"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
+| <a id="s-3c013fe019"></a>`phase` | query | no | not declared | anyOf=[(type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"]); (type="null")]; title="Phase" |
+| <a id="s-5f521e9cb3"></a>`q` | query | no | not declared | anyOf=[([BrowseQuery](../http-schemas/schemas-browsequery.md)); (type="null")]; title="Q" |
+| <a id="s-24e7c1f77e"></a>`sort` | query | no | `"updated_at"` | type="string"; enum=["updated_at","phase","work_id"]; title="Sort" |
+| <a id="s-781a235d35"></a>`order` | query | no | `"desc"` | type="string"; enum=["asc","desc"]; title="Order" |
 
 ### Responses
 

@@ -24,8 +24,8 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-3a8e06a180"></a>`selection_sha256`<br>`selection_sha256` | required positional; 1 value | text | not recorded |
-| <a id="s-5f3ed31399"></a>`continuation`<br>`--continuation` | optional option; 1 value | text | not recorded |
+| <a id="s-3a8e06a180"></a>`selection_sha256`<br>`selection_sha256` | required positional; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-5f3ed31399"></a>`continuation`<br>`--continuation` | optional option; 1 value | text | not recorded<br>Env: `null` |
 
 ### Terminating controls
 
@@ -44,14 +44,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-c6c631bec6"></a>`completed` | <a id="s-ea28642db4"></a>`{"kind":"command-completed"}` | <a id="s-7823741763"></a>`0` | <a id="s-efde2ec553"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP get_artifact_selection response 200](../../stove0/http-operations/get-v1-artifact-selections-selection-sha256.md#s-3453778107) | <a id="s-d1d06225ac"></a>all: `empty` |
+| <a id="s-c6c631bec6"></a>`completed` | <a id="s-ea28642db4"></a>`{"kind":"command-completed"}` | <a id="s-7823741763"></a>`0` | <a id="s-efde2ec553"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP get_artifact_selection response 200](../../stove0/http-operations/get-v1-artifact-selections-selection-sha256.md#s-3453778107) | <a id="s-d1d06225ac"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-fd43bf3579"></a>`usage` | <a id="s-17f7f65a97"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-c77811de56"></a>`2` | <a id="s-74e235e593"></a>all: `empty` | <a id="s-00f14ac540"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-2a69054a57"></a>`operational` | <a id="s-945853de8e"></a>`{"kind":"application-error"}` | <a id="s-6daeab7dea"></a>`1` | <a id="s-70784d34b1"></a>all: `empty` | <a id="s-f4d855a9a3"></a>all: `noncontractual-diagnostic` |
+| <a id="s-fd43bf3579"></a>`usage` | <a id="s-17f7f65a97"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-c77811de56"></a>`2` | <a id="s-74e235e593"></a>all: `"empty"` | <a id="s-00f14ac540"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-2a69054a57"></a>`operational` | <a id="s-945853de8e"></a>`{"kind":"application-error"}` | <a id="s-6daeab7dea"></a>`1` | <a id="s-70784d34b1"></a>all: `"empty"` | <a id="s-f4d855a9a3"></a>all: `"noncontractual-diagnostic"` |
 
 ### Progression, limits, and lifecycle
 

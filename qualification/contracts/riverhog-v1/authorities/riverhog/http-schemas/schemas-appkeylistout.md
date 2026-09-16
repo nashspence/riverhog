@@ -24,14 +24,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0abf40b30c"></a>`active` | yes | anyOf=(type="boolean") \| (type="null") |  |
-| <a id="s-7c7507b662"></a>`app` | yes | #/components/schemas/ApplicationName |  |
-| <a id="s-5f3fe1ebaf"></a>`keys` | yes | type="array"; items=(#/components/schemas/AppKeyOut) |  |
-| <a id="s-9101fa3350"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-98ec6db189"></a>`order` | yes | #/components/schemas/SortOrder |  |
-| <a id="s-7f4f8c329b"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-9a1536a391"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-d0d9fa0407"></a>`sort` | yes | #/components/schemas/ApplicationKeySort |  |
+| <a id="s-0abf40b30c"></a>`active` | yes | anyOf=[(type="boolean"); (type="null")]; title="Active" |  |
+| <a id="s-7c7507b662"></a>`app` | yes | [ApplicationName](schemas-applicationname.md) |  |
+| <a id="s-5f3fe1ebaf"></a>`keys` | yes | type="array"; items=([AppKeyOut](schemas-appkeyout.md)); title="Keys" |  |
+| <a id="s-9101fa3350"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-98ec6db189"></a>`order` | yes | [SortOrder](schemas-sortorder.md) |  |
+| <a id="s-7f4f8c329b"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
+| <a id="s-9a1536a391"></a>`query` | yes | anyOf=[(type="string"); (type="null")]; title="Query" |  |
+| <a id="s-d0d9fa0407"></a>`sort` | yes | [ApplicationKeySort](schemas-applicationkeysort.md) |  |
 
 ### Progression, limits, and lifecycle
 

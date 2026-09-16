@@ -24,16 +24,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2ed25b7e83"></a>`agent_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-f408563044"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-482f2e7361"></a>`current_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-6215516aa0"></a>`current_path` | yes | #/components/schemas/CanonicalRelPath |  |
-| <a id="s-2fed6651de"></a>`current_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-39da7b375a"></a>`current_state_id` | yes | #/components/schemas/ProvenanceStateId |  |
-| <a id="s-5f305a524f"></a>`entity_counts` | yes | type="object"; additionalProperties=(type="integer") |  |
-| <a id="s-904aca57ef"></a>`entries` | yes | type="integer"; minimum=1 |  |
-| <a id="s-0590071dee"></a>`journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
-| <a id="s-3f5ee56d63"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2ed25b7e83"></a>`agent_count` | yes | type="integer"; minimum=0; title="Agent Count" |  |
+| <a id="s-f408563044"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-482f2e7361"></a>`current_bytes` | yes | type="integer"; minimum=0; title="Current Bytes" |  |
+| <a id="s-6215516aa0"></a>`current_path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
+| <a id="s-2fed6651de"></a>`current_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Current Sha256" |  |
+| <a id="s-39da7b375a"></a>`current_state_id` | yes | [ProvenanceStateId](schemas-provenancestateid.md) |  |
+| <a id="s-5f305a524f"></a>`entity_counts` | yes | type="object"; additionalProperties=(type="integer"); title="Entity Counts" |  |
+| <a id="s-904aca57ef"></a>`entries` | yes | type="integer"; minimum=1; title="Entries" |  |
+| <a id="s-0590071dee"></a>`journal_id` | yes | [ProvenanceJournalId](schemas-provenancejournalid.md) |  |
+| <a id="s-3f5ee56d63"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

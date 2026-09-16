@@ -14,20 +14,26 @@ Declare Target Execution Source Edge
 ## External contract
 
 <a id="s-aab8a01cb0"></a>
-- <a id="s-b46c2b115c"></a>`operationId`: declare_target_execution_source_edge
-- <a id="s-3e190d97bb"></a>`summary`: Declare Target Execution Source Edge
+- <a id="s-b46c2b115c"></a>`operationId`: `"declare_target_execution_source_edge"`
+- <a id="s-3e190d97bb"></a>`summary`: `"Declare Target Execution Source Edge"`
+- <a id="s-e6314ae769"></a>`tags`: `["target-executions"]`
+- <a id="s-d012cc6016"></a>`x-riverhog-interface`: `"client-only-primitive"`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-50bb08bc34"></a>`job_id` | path | yes | not declared | type="string" |
-| <a id="s-2b509a1ef3"></a>`output_id` | path | yes | not declared | type="string" |
-| <a id="s-eb4dbcaa10"></a>`input_id` | path | yes | not declared | type="string" |
+| <a id="s-50bb08bc34"></a>`job_id` | path | yes | not declared | type="string"; title="Job Id" |
+| <a id="s-2b509a1ef3"></a>`output_id` | path | yes | not declared | type="string"; title="Output Id" |
+| <a id="s-eb4dbcaa10"></a>`input_id` | path | yes | not declared | type="string"; title="Input Id" |
 
 ### <a id="s-210a565500"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/OutputSourceEdge"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [OutputSourceEdge](../http-schemas/schemas-outputsourceedge.md) |
 
 ### Responses
 

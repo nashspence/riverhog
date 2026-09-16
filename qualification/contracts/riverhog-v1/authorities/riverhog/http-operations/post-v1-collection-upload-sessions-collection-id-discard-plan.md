@@ -14,15 +14,17 @@ Plan Collection Upload Discard
 ## External contract
 
 <a id="s-f9960d3305"></a>
-- <a id="s-267825dd11"></a>`operationId`: plan_collection_upload_discard
-- <a id="s-1db267fc9f"></a>`summary`: Plan Collection Upload Discard
-- <a id="s-bbbfb609cd"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-267825dd11"></a>`operationId`: `"plan_collection_upload_discard"`
+- <a id="s-bbbfb609cd"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-1db267fc9f"></a>`summary`: `"Plan Collection Upload Discard"`
+- <a id="s-86906c68c4"></a>`tags`: `["collections"]`
+- <a id="s-384dc1d7c4"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:delete"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-d31d70c952"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-d31d70c952"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
 
 ### Responses
 

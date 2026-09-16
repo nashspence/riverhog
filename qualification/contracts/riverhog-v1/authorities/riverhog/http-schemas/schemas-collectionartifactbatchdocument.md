@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1c0906aa0f"></a>`artifacts` | yes | type="array"; items=(#/components/schemas/CollectionArtifactIdentityDocument); maxItems=128; minItems=1; uniqueItems=true; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"start_ordinal","reason":"bounded-authority-append"} |  |
-| <a id="s-1c82d23b05"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-7ef1e1094b"></a>`start_ordinal` | yes | type="integer"; minimum=0 |  |
+| <a id="s-1c0906aa0f"></a>`artifacts` | yes | type="array"; items=([CollectionArtifactIdentityDocument](schemas-collectionartifactidentitydocument.md)); maxItems=128; minItems=1; title="Artifacts"; uniqueItems=true; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"start_ordinal","reason":"bounded-authority-append"} |  |
+| <a id="s-1c82d23b05"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-7ef1e1094b"></a>`start_ordinal` | yes | type="integer"; minimum=0; title="Start Ordinal" |  |
 
 ### Progression, limits, and lifecycle
 

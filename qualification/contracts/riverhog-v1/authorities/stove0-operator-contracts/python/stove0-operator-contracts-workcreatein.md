@@ -40,7 +40,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-4c95719f45"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](#s-efa4ba92d2)); minItems=1 |  |
 | <a id="s-eaf26ba496"></a>`preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-268a9b87b2"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-5e47a00c0f"></a>`recipe_revision` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
+| <a id="s-5e47a00c0f"></a>`recipe_revision` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null |  |
 
 ##### Definitions
 

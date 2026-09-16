@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f848c33494"></a>`failure` | no | anyOf=(#/components/schemas/ArtifactDispositionFailureDocument) \| (type="null") |  |
-| <a id="s-f7c6e570c3"></a>`input` | yes | #/components/schemas/ArtifactDispositionInputDocument |  |
-| <a id="s-f506733223"></a>`status` | yes | type="string"; enum=["transformed","preserved","omitted","rejected"] |  |
+| <a id="s-f848c33494"></a>`failure` | no | anyOf=[([ArtifactDispositionFailureDocument](schemas-artifactdispositionfailuredocument.md)); (type="null")] |  |
+| <a id="s-f7c6e570c3"></a>`input` | yes | [ArtifactDispositionInputDocument](schemas-artifactdispositioninputdocument.md) |  |
+| <a id="s-f506733223"></a>`status` | yes | type="string"; enum=["transformed","preserved","omitted","rejected"]; title="Status" |  |
 
 ### Exactly one must match (`oneOf`)
 

@@ -25,10 +25,10 @@ One exact source range supplied in a server-planned upload unit.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b2c2ef931a"></a>`artifact_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-f489bcd254"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-f5c3690a50"></a>`offset` | yes | type="integer"; minimum=0 |  |
-| <a id="s-a54808ad11"></a>`path` | yes | type="string" |  |
+| <a id="s-b2c2ef931a"></a>`artifact_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Artifact Sha256" |  |
+| <a id="s-f489bcd254"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-f5c3690a50"></a>`offset` | yes | type="integer"; minimum=0; title="Offset" |  |
+| <a id="s-a54808ad11"></a>`path` | yes | type="string"; title="Path" |  |
 
 ### Progression, limits, and lifecycle
 

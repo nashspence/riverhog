@@ -25,8 +25,8 @@ Small immutable identity for an exact canonically ordered logical set.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-edd753f1d8"></a>`count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-9afef3e97a"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-edd753f1d8"></a>`count` | yes | type="integer"; minimum=1; title="Count" |  |
+| <a id="s-9afef3e97a"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

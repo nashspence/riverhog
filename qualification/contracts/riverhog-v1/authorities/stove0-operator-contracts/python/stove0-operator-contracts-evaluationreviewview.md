@@ -36,8 +36,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f6d9d0031c"></a>`note` | no | anyOf=(type="string"; maxLength=4000; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$") \| (type="null"); default=null |  |
-| <a id="s-ed84e9cb19"></a>`rating` | no | anyOf=(type="integer"; minimum=1; maximum=5) \| (type="null"); default=null |  |
+| <a id="s-f6d9d0031c"></a>`note` | no | anyOf=[(type="string"; maxLength=4000; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$"); (type="null")]; default=null |  |
+| <a id="s-ed84e9cb19"></a>`rating` | no | anyOf=[(type="integer"; minimum=1; maximum=5); (type="null")]; default=null |  |
 | <a id="s-c41a0a10fd"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
 | <a id="s-6d39e7707e"></a>`updated_by` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-337d3906a1"></a>`variant_id` | yes | type="string"; maxLength=160; minLength=1 |  |

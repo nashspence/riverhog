@@ -16,17 +16,17 @@ Optional nonnormative rclone review-effect target reference for Stove0.
 <a id="s-40706db2a4"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-481632c28f"></a>`build_target` | stove0-review-rclone-effect-target |
-| <a id="s-91bbb20e16"></a>`description` | Optional nonnormative rclone review-effect target reference for Stove0. |
-| <a id="s-7c5361065b"></a>`distribution_roots` | ["stove0-review-rclone-effect-target"] |
-| <a id="s-cd35f7db3e"></a>`format` | oci-image |
-| <a id="s-568af04885"></a>`license_baseline` | first-v1-publication |
-| <a id="s-a0f1429833"></a>`license_expression` | CAL-1.0 |
-| <a id="s-c112e79293"></a>`platforms` | ["linux/amd64"] |
-| <a id="s-67797b286a"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-stove0-review-rclone-effect-target", "kind": "oci-repository"} |
-| <a id="s-02d8536797"></a>`repository` | ghcr.io/nashspence/riverhog-stove0-review-rclone-effect-target |
-| <a id="s-d1c90db606"></a>`role` | reference |
-| <a id="s-b9fd80844d"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-stove0-review-rclone-effect-target:{version}", "ghcr.io/nashspence/riverhog-stove0-review-rclone-effect-target:sha-{source_sha}"] |
+| <a id="s-481632c28f"></a>`build_target` | `"stove0-review-rclone-effect-target"` |
+| <a id="s-91bbb20e16"></a>`description` | `"Optional nonnormative rclone review-effect target reference for Stove0."` |
+| <a id="s-7c5361065b"></a>`distribution_roots` | `["stove0-review-rclone-effect-target"]` |
+| <a id="s-cd35f7db3e"></a>`format` | `"oci-image"` |
+| <a id="s-568af04885"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-a0f1429833"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-c112e79293"></a>`platforms` | `["linux/amd64"]` |
+| <a id="s-67797b286a"></a>`publication_identity` | `{"coordinate":"ghcr.io/nashspence/riverhog-stove0-review-rclone-effect-target","kind":"oci-repository"}` |
+| <a id="s-02d8536797"></a>`repository` | `"ghcr.io/nashspence/riverhog-stove0-review-rclone-effect-target"` |
+| <a id="s-d1c90db606"></a>`role` | `"reference"` |
+| <a id="s-b9fd80844d"></a>`tag_templates` | `["ghcr.io/nashspence/riverhog-stove0-review-rclone-effect-target:{version}","ghcr.io/nashspence/riverhog-stove0-review-rclone-effect-target:sha-{source_sha}"]` |
 
 ## Existing ownership context
 

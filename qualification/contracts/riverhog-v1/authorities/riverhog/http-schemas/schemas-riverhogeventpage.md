@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-fcfd3592d1"></a>`events` | yes | type="array"; items=(#/components/schemas/RiverhogLifecycleEvent) |  |
-| <a id="s-3508bd425f"></a>`has_more` | yes | type="boolean" |  |
-| <a id="s-c6adcba3bb"></a>`next_cursor` | yes | #/components/schemas/LifecycleEventCursor |  |
+| <a id="s-fcfd3592d1"></a>`events` | yes | type="array"; items=([RiverhogLifecycleEvent](schemas-riverhoglifecycleevent.md)); title="Events" |  |
+| <a id="s-3508bd425f"></a>`has_more` | yes | type="boolean"; title="Has More" |  |
+| <a id="s-c6adcba3bb"></a>`next_cursor` | yes | [LifecycleEventCursor](schemas-lifecycleeventcursor.md) |  |
 
 ### Progression, limits, and lifecycle
 

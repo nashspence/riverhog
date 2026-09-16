@@ -14,17 +14,21 @@ List Processing Claim Inputs
 ## External contract
 
 <a id="s-dac556a071"></a>
-- <a id="s-f39c7b747b"></a>`operationId`: list_processing_claim_inputs
-- <a id="s-2ac824c2f3"></a>`summary`: List Processing Claim Inputs
-- <a id="s-3e52af669d"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-f39c7b747b"></a>`operationId`: `"list_processing_claim_inputs"`
+- <a id="s-3e52af669d"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-2ac824c2f3"></a>`summary`: `"List Processing Claim Inputs"`
+- <a id="s-25780add0b"></a>`tags`: `["collection-workflows"]`
+- <a id="s-cf4eda9943"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-b34446e232"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control","collection-transforms:execute"]}]`
+- <a id="s-2b0c85ec3a"></a>`x-riverhog-read-collection`: `{"authority":"processing-claim-inputs","authority_parameter":"authority_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-96fa7aafb8"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
-| <a id="s-eb344fd2cb"></a>`authority_sha256` | query | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
-| <a id="s-fcfde1d0f3"></a>`start_ordinal` | query | no | `0` | type="integer"; minimum=0 |
+| <a id="s-96fa7aafb8"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
+| <a id="s-eb344fd2cb"></a>`authority_sha256` | query | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Authority Sha256" |
+| <a id="s-fcfde1d0f3"></a>`start_ordinal` | query | no | `0` | type="integer"; minimum=0; title="Start Ordinal" |
 
 ### Responses
 

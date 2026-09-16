@@ -14,14 +14,15 @@ Get Admission
 ## External contract
 
 <a id="s-1006ba465b"></a>
-- <a id="s-6d67122943"></a>`operationId`: get_admission
-- <a id="s-ec5d6eccd8"></a>`summary`: Get Admission
+- <a id="s-6d67122943"></a>`operationId`: `"get_admission"`
+- <a id="s-ec5d6eccd8"></a>`summary`: `"Get Admission"`
+- <a id="s-ac077a4087"></a>`tags`: `["admissions"]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-7c12b87afb"></a>`admission_id` | path | yes | not declared | type="string" |
+| <a id="s-7c12b87afb"></a>`admission_id` | path | yes | not declared | type="string"; title="Admission Id" |
 
 ### Responses
 

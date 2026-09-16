@@ -76,12 +76,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1247d80eca"></a>`authorization_view_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-1247d80eca"></a>`authorization_view_identity` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-924ff01e67"></a>`baseline_mode` | yes | type="string"; enum=["observe","backfill"] |  |
 | <a id="s-1769ebc9a5"></a>`phase` | yes | type="string"; enum=["new","baseline","following","reset_required"] |  |
 | <a id="s-da17baa0db"></a>`policy` | yes | [AdmissionPolicy](#s-13abd4b696) |  |
 | <a id="s-52d72fd271"></a>`policy_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ca0cc0b765"></a>`source_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-ca0cc0b765"></a>`source_identity` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-3656dff895"></a>`through_revision` | yes | type="string"; pattern="^(?:0\|[1-9][0-9]*)$" |  |
 | <a id="s-491d13cbc7"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
 

@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-cc3eed5ae7"></a>`authority` | yes | #/components/schemas/ExactSetAuthorityDocument |  |
-| <a id="s-596a3b3f32"></a>`inputs` | yes | type="array"; items=(#/components/schemas/CollectionRootIdentityDocument); maxItems=128; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
-| <a id="s-31aba2331a"></a>`next_ordinal` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
-| <a id="s-b3e9e02376"></a>`start_ordinal` | yes | type="integer"; minimum=0 |  |
+| <a id="s-cc3eed5ae7"></a>`authority` | yes | [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md) |  |
+| <a id="s-596a3b3f32"></a>`inputs` | yes | type="array"; items=([CollectionRootIdentityDocument](schemas-collectionrootidentitydocument.md)); maxItems=128; title="Inputs"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
+| <a id="s-31aba2331a"></a>`next_ordinal` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; title="Next Ordinal" |  |
+| <a id="s-b3e9e02376"></a>`start_ordinal` | yes | type="integer"; minimum=0; title="Start Ordinal" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3d49c0fa88"></a>`app` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-dc7ca6a622"></a>`key_id` | no | anyOf=(type="string"; maxLength=300; minLength=1) \| (type="null") |  |
+| <a id="s-3d49c0fa88"></a>`app` | yes | type="string"; maxLength=160; minLength=1; title="App" |  |
+| <a id="s-dc7ca6a622"></a>`key_id` | no | anyOf=[(type="string"; maxLength=300; minLength=1); (type="null")]; title="Key Id" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -24,20 +24,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-cbe3d7f342"></a>`attempt` | yes | type="integer"; minimum=1 |  |
-| <a id="s-cb4b465f39"></a>`derivation` | no | anyOf=(type="object"; additionalProperties=true) \| (type="null"); default=null |  |
-| <a id="s-8901e58307"></a>`effect_receipt` | no | anyOf=([ExternalEffectReceipt](#s-ae338d6e03)) \| (type="null"); default=null |  |
-| <a id="s-7d15c4fb5b"></a>`execution_evidence` | no | anyOf=([TargetExecutionEvidence](#s-0dc0b1b879)) \| (type="null"); default=null |  |
-| <a id="s-777ed1612d"></a>`failure` | no | anyOf=([TargetFailure](#s-9d3b78ba6a)) \| (type="null"); default=null |  |
-| <a id="s-7a41c916e6"></a>`inapplicable` | no | anyOf=([TargetInapplicable](#s-7d4399c5a5)) \| (type="null"); default=null |  |
-| <a id="s-4c5be04ffe"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-eb57f0600d"></a>`output_collection` | no | anyOf=([OutputCollectionRef](#s-62d53c6d33)) \| (type="null"); default=null |  |
-| <a id="s-5fef5c6f54"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-66f4c39c40"></a>`production` | no | anyOf=([TargetProductionAuthority](#s-3ba41cd42a)) \| (type="null"); default=null |  |
+| <a id="s-cbe3d7f342"></a>`attempt` | yes | type="integer"; minimum=1; title="Attempt" |  |
+| <a id="s-cb4b465f39"></a>`derivation` | no | anyOf=[(type="object"; additionalProperties=(any JSON value)); (type="null")]; default=null; title="Derivation" |  |
+| <a id="s-8901e58307"></a>`effect_receipt` | no | anyOf=[([ExternalEffectReceipt](#s-ae338d6e03)); (type="null")]; default=null |  |
+| <a id="s-7d15c4fb5b"></a>`execution_evidence` | no | anyOf=[([TargetExecutionEvidence](#s-0dc0b1b879)); (type="null")]; default=null |  |
+| <a id="s-777ed1612d"></a>`failure` | no | anyOf=[([TargetFailure](#s-9d3b78ba6a)); (type="null")]; default=null |  |
+| <a id="s-7a41c916e6"></a>`inapplicable` | no | anyOf=[([TargetInapplicable](#s-7d4399c5a5)); (type="null")]; default=null |  |
+| <a id="s-4c5be04ffe"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Job Id" |  |
+| <a id="s-eb57f0600d"></a>`output_collection` | no | anyOf=[([OutputCollectionRef](#s-62d53c6d33)); (type="null")]; default=null |  |
+| <a id="s-5fef5c6f54"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
+| <a id="s-66f4c39c40"></a>`production` | no | anyOf=[([TargetProductionAuthority](#s-3ba41cd42a)); (type="null")]; default=null |  |
 | <a id="s-2734d6a731"></a>`progress` | yes | [TargetProgress](#s-9bde36ac37) |  |
-| <a id="s-ebcda53e0e"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1" |  |
-| <a id="s-95fd4f6192"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-9586ac8d93"></a>`state` | yes | type="string"; enum=["queued","running","canceling","interrupted","inapplicable","succeeded","failed","canceled"] |  |
+| <a id="s-ebcda53e0e"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1"; title="Protocol" |  |
+| <a id="s-95fd4f6192"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Sha256" |  |
+| <a id="s-9586ac8d93"></a>`state` | yes | type="string"; enum=["queued","running","canceling","interrupted","inapplicable","succeeded","failed","canceled"]; title="State" |  |
 
 ### All must match (`allOf`)
 
@@ -71,10 +71,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a3edc3cf31"></a>`disposition_count` | yes | type="integer" |  |
-| <a id="s-7e1af5137b"></a>`output_artifact_count` | yes | type="integer" |  |
-| <a id="s-5682a483bb"></a>`output_edge_count` | yes | type="integer" |  |
-| <a id="s-ae39ff61ab"></a>`sha256` | yes | type="string" |  |
+| <a id="s-a3edc3cf31"></a>`disposition_count` | yes | type="integer"; title="Disposition Count" |  |
+| <a id="s-7e1af5137b"></a>`output_artifact_count` | yes | type="integer"; title="Output Artifact Count" |  |
+| <a id="s-5682a483bb"></a>`output_edge_count` | yes | type="integer"; title="Output Edge Count" |  |
+| <a id="s-ae39ff61ab"></a>`sha256` | yes | type="string"; title="Sha256" |  |
 
 ### <a id="s-007b5483e0"></a>definition `CollectionId`
 
@@ -92,15 +92,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-37d2c456e8"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-2908e9b74e"></a>`format` | no | type="string"; const="stove0-external-effect-receipt/v1"; default="stove0-external-effect-receipt/v1" |  |
-| <a id="s-6a32c1c6d7"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-85b2f65f7a"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-5077cabca5"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-47ac8bf81c"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-2bbcef36ed"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-4f24492115"></a>`result` | yes | type="object"; additionalProperties=([JsonValue](#s-5313b1967d)); x-riverhog-encoded-bytes-max=65536; x-riverhog-extent={"policy":"contract_max","reason":"bounded-external-effect-receipt"} |  |
-| <a id="s-76340251c3"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-37d2c456e8"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Execution Sha256" |  |
+| <a id="s-2908e9b74e"></a>`format` | no | type="string"; const="stove0-external-effect-receipt/v1"; default="stove0-external-effect-receipt/v1"; title="Format" |  |
+| <a id="s-6a32c1c6d7"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Job Id" |  |
+| <a id="s-85b2f65f7a"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Operation Contract Sha256" |  |
+| <a id="s-5077cabca5"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
+| <a id="s-47ac8bf81c"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Receipt Sha256" |  |
+| <a id="s-2bbcef36ed"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Sha256" |  |
+| <a id="s-4f24492115"></a>`result` | yes | type="object"; additionalProperties=([JsonValue](#s-5313b1967d)); title="Result"; x-riverhog-encoded-bytes-max=65536; x-riverhog-extent={"policy":"contract_max","reason":"bounded-external-effect-receipt"} |  |
+| <a id="s-76340251c3"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
 
 ### <a id="s-5313b1967d"></a>definition `JsonValue`
 
@@ -117,8 +117,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0847d25357"></a>`count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-543cf60440"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-0847d25357"></a>`count` | yes | type="integer"; minimum=1; title="Count" |  |
+| <a id="s-543cf60440"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Role" |  |
 
 ### <a id="s-c9db71eb0b"></a>definition `OutputArtifactSetIdentity`
 
@@ -132,10 +132,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-58f900558e"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-2ae1671f95"></a>`roles` | yes | type="array"; items=([OutputArtifactRoleCount](#s-ded4f3d1e2)); minItems=1 |  |
-| <a id="s-3e45bae18b"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-f58cd05714"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-58f900558e"></a>`artifact_count` | yes | type="integer"; minimum=1; title="Artifact Count" |  |
+| <a id="s-2ae1671f95"></a>`roles` | yes | type="array"; items=([OutputArtifactRoleCount](#s-ded4f3d1e2)); minItems=1; title="Roles" |  |
+| <a id="s-3e45bae18b"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-f58cd05714"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
 
 ### <a id="s-62d53c6d33"></a>definition `OutputCollectionRef`
 
@@ -148,10 +148,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ce2177192d"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ce2177192d"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
 | <a id="s-477301c533"></a>`collection_id` | yes | [CollectionId](#s-007b5483e0) |  |
-| <a id="s-15ed87b9a7"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-154d01b9a4"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-15ed87b9a7"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
+| <a id="s-154d01b9a4"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Derivation Sha256" |  |
 
 ### <a id="s-0dc0b1b879"></a>definition `TargetExecutionEvidence`
 
@@ -164,11 +164,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-84420c7392"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-953cbc2e62"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1bb5896a42"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-bb1174b3c8"></a>`runtime` | no | type="object"; additionalProperties=([JsonValue](#s-5313b1967d)) |  |
-| <a id="s-26e1d4ba9e"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-84420c7392"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Execution Sha256" |  |
+| <a id="s-953cbc2e62"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Operation Contract Sha256" |  |
+| <a id="s-1bb5896a42"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
+| <a id="s-bb1174b3c8"></a>`runtime` | no | type="object"; additionalProperties=([JsonValue](#s-5313b1967d)); title="Runtime" |  |
+| <a id="s-26e1d4ba9e"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
 
 ### <a id="s-9d3b78ba6a"></a>definition `TargetFailure`
 
@@ -181,9 +181,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7b11ebe8a7"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-05dec93702"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
-| <a id="s-4c159531e9"></a>`retryable` | yes | type="boolean" |  |
+| <a id="s-7b11ebe8a7"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Code" |  |
+| <a id="s-05dec93702"></a>`message` | yes | type="string"; maxLength=1000; minLength=1; title="Message" |  |
+| <a id="s-4c159531e9"></a>`retryable` | yes | type="boolean"; title="Retryable" |  |
 
 ### <a id="s-7d4399c5a5"></a>definition `TargetInapplicable`
 
@@ -196,8 +196,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-9ec2852781"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-e3d01b410d"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-9ec2852781"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Code" |  |
+| <a id="s-e3d01b410d"></a>`message` | yes | type="string"; maxLength=1000; minLength=1; title="Message" |  |
 
 ### <a id="s-3ba41cd42a"></a>definition `TargetProductionAuthority`
 
@@ -210,16 +210,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-09aa237d73"></a>`disposition_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-88040c02c3"></a>`disposition_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-49d054fce6"></a>`format` | no | type="string"; const="stove0-target-production/v1"; default="stove0-target-production/v1" |  |
-| <a id="s-634004f0ac"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-09aa237d73"></a>`disposition_count` | yes | type="integer"; minimum=1; title="Disposition Count" |  |
+| <a id="s-88040c02c3"></a>`disposition_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Disposition Sha256" |  |
+| <a id="s-49d054fce6"></a>`format` | no | type="string"; const="stove0-target-production/v1"; default="stove0-target-production/v1"; title="Format" |  |
+| <a id="s-634004f0ac"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Job Id" |  |
 | <a id="s-21271a7227"></a>`outputs` | yes | [OutputArtifactSetIdentity](#s-c9db71eb0b) |  |
-| <a id="s-5a92c9dba3"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-689eb43cd6"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-5a92c9dba3"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
+| <a id="s-689eb43cd6"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Production Sha256" |  |
 | <a id="s-0b9cc6f4b0"></a>`riverhog_disposition_set` | yes | [ArtifactDispositionSetIdentity](#s-f5ab2ecb24) |  |
-| <a id="s-285eeac920"></a>`source_edge_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-0008bc7ac6"></a>`source_edge_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-285eeac920"></a>`source_edge_count` | yes | type="integer"; minimum=1; title="Source Edge Count" |  |
+| <a id="s-0008bc7ac6"></a>`source_edge_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Source Edge Sha256" |  |
 
 ### <a id="s-9bde36ac37"></a>definition `TargetProgress`
 
@@ -232,10 +232,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0c74ac8a0b"></a>`completed` | yes | type="integer"; minimum=0 |  |
-| <a id="s-a214007c28"></a>`phase` | yes | type="string"; maxLength=120; minLength=1 |  |
-| <a id="s-ea84c520d2"></a>`total` | no | anyOf=(type="integer"; minimum=0) \| (type="null"); default=null |  |
-| <a id="s-85a67606b9"></a>`unit` | no | anyOf=(type="string"; maxLength=40; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-0c74ac8a0b"></a>`completed` | yes | type="integer"; minimum=0; title="Completed" |  |
+| <a id="s-a214007c28"></a>`phase` | yes | type="string"; maxLength=120; minLength=1; title="Phase" |  |
+| <a id="s-ea84c520d2"></a>`total` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; default=null; title="Total" |  |
+| <a id="s-85a67606b9"></a>`unit` | no | anyOf=[(type="string"; maxLength=40; minLength=1); (type="null")]; default=null; title="Unit" |  |
 
 ### Progression, limits, and lifecycle
 

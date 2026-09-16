@@ -37,7 +37,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-53d24d4f9b"></a>`code` | yes | type="string"; minLength=1 |  |
-| <a id="s-e465fc5cf6"></a>`details` | no | anyOf=(type="object"; additionalProperties=true) \| (type="null"); default=null |  |
+| <a id="s-e465fc5cf6"></a>`details` | no | anyOf=[(type="object"; additionalProperties=(any JSON value)); (type="null")]; default=null |  |
 | <a id="s-4da8dc85c7"></a>`message` | yes | type="string"; minLength=1 |  |
 
 ## Governing policies

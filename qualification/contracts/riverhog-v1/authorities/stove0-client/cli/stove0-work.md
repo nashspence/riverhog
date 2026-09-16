@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-535fc93ba7"></a>Parser name: `work`
+
+| Field | Value |
+|---|---|
+| <a id="s-7a1a9210f0"></a>`parameters` | `[]` |
 - <a id="s-1527a85edd"></a>Subcommand selection: required.
 - <a id="s-c0ec6efa39"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
 - <a id="s-fa3192d00d"></a>Options after positional arguments at this parser: left as arguments.

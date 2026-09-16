@@ -14,19 +14,26 @@ Seal Processing Claim Dispositions
 ## External contract
 
 <a id="s-0f13f91f45"></a>
-- <a id="s-a0a3eaae23"></a>`operationId`: seal_processing_claim_dispositions
-- <a id="s-ef8dc245fa"></a>`summary`: Seal Processing Claim Dispositions
-- <a id="s-6489155637"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-a0a3eaae23"></a>`operationId`: `"seal_processing_claim_dispositions"`
+- <a id="s-6489155637"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-ef8dc245fa"></a>`summary`: `"Seal Processing Claim Dispositions"`
+- <a id="s-52faf8b16a"></a>`tags`: `["collection-workflows"]`
+- <a id="s-6c6b5de09c"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-60a535b9e9"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control","collection-transforms:execute"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-0905f3c60f"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-0905f3c60f"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
 
 ### <a id="s-38a26e366e"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProcessingClaimFenceDocument"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [ProcessingClaimFenceDocument](../http-schemas/schemas-processingclaimfencedocument.md) |
 
 ### Responses
 

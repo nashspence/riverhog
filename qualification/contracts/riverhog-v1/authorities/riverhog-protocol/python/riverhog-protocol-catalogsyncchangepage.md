@@ -38,7 +38,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-0a4585062d"></a>`authorization_view_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-41c8947328"></a>`caught_up` | yes | type="boolean" |  |
-| <a id="s-c2575cc1c5"></a>`changes` | yes | type="array"; items=(discriminator={"mapping":{"delete":"[CatalogSyncDelete](#s-168dffbf4b)","upsert":"[CatalogSyncUpsert](#s-4015421cfa)"},"propertyName":"operation"}; oneOf=([CatalogSyncUpsert](#s-4015421cfa)) \| ([CatalogSyncDelete](#s-168dffbf4b))); maxItems=100 |  |
+| <a id="s-c2575cc1c5"></a>`changes` | yes | type="array"; items=(discriminator={"mapping":{"delete":"#/$defs/CatalogSyncDelete","upsert":"#/$defs/CatalogSyncUpsert"},"propertyName":"operation"}; oneOf=[([CatalogSyncUpsert](#s-4015421cfa)); ([CatalogSyncDelete](#s-168dffbf4b))]); maxItems=100 |  |
 | <a id="s-abca29af81"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1"; default="riverhog-catalog-sync/v1" |  |
 | <a id="s-708ac3cf38"></a>`next_cursor` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-d0e9a7990f"></a>`source_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
@@ -78,7 +78,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-538e027e62"></a>`archive_root_sha256` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-1b69b1a43a"></a>`collection_id` | yes | [CollectionId](#s-389380939c) |  |
 | <a id="s-f358322e30"></a>`content_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-77c3b2ee5e"></a>`description` | yes | anyOf=([CollectionDescription](#s-aafc0c1ae8)) \| (type="null") |  |
+| <a id="s-77c3b2ee5e"></a>`description` | yes | anyOf=[([CollectionDescription](#s-aafc0c1ae8)); (type="null")] |  |
 | <a id="s-9be1b15cf2"></a>`description_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-b13e8e62b6"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
 | <a id="s-01ffef1667"></a>`operation` | no | type="string"; const="upsert"; default="upsert" |  |

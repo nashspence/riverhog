@@ -16,15 +16,15 @@ Portable Gogurt marker, routing, action, and watch semantics.
 <a id="s-d12fd7d1d5"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-4ea058acac"></a>`artifacts` | [{"coordinate": "dist/gogurt_core-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/gogurt_core-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-c6752b84c5"></a>`channel` | github-release |
-| <a id="s-90f8392ab0"></a>`description` | Portable Gogurt marker, routing, action, and watch semantics. |
-| <a id="s-01fc8a4450"></a>`license_baseline` | first-v1-publication |
-| <a id="s-402e491a5b"></a>`license_expression` | Apache-2.0 |
-| <a id="s-7396d330e7"></a>`publication_identity` | {"coordinate": "gogurt-core", "kind": "python-distribution"} |
-| <a id="s-1a41c5d00c"></a>`requires_python` | >=3.12 |
-| <a id="s-01b66a1a3a"></a>`role` | reusable_library |
-| <a id="s-7f695858d5"></a>`source` | reference/gogurt/packages/core/pyproject.toml |
+| <a id="s-4ea058acac"></a>`artifacts` | `[{"coordinate":"dist/gogurt_core-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/gogurt_core-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-c6752b84c5"></a>`channel` | `"github-release"` |
+| <a id="s-90f8392ab0"></a>`description` | `"Portable Gogurt marker, routing, action, and watch semantics."` |
+| <a id="s-01fc8a4450"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-402e491a5b"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-7396d330e7"></a>`publication_identity` | `{"coordinate":"gogurt-core","kind":"python-distribution"}` |
+| <a id="s-1a41c5d00c"></a>`requires_python` | `">=3.12"` |
+| <a id="s-01b66a1a3a"></a>`role` | `"reusable_library"` |
+| <a id="s-7f695858d5"></a>`source` | `"reference/gogurt/packages/core/pyproject.toml"` |
 
 ## Existing ownership context
 

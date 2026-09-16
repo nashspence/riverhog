@@ -24,27 +24,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3b26ebd228"></a>`abandoned_at` | no | anyOf=(type="string"; maxLength=64; minLength=1) \| (type="null") |  |
-| <a id="s-ff86aa1856"></a>`abandonment_reason` | no | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null") |  |
-| <a id="s-8bfc846875"></a>`consumer` | yes | #/components/schemas/ProcessingClaimConsumerDocument |  |
-| <a id="s-9d922404c4"></a>`created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
-| <a id="s-672a29cfd8"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1 |  |
-| <a id="s-32f010eb31"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-4eff6e6056"></a>`format` | yes | type="string"; const="riverhog-processing-claim/v1" |  |
-| <a id="s-b60202a68b"></a>`id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-dd008f3e61"></a>`inputs` | yes | #/components/schemas/ReceivingSetDocument |  |
-| <a id="s-2a773e5157"></a>`outcome_settlement` | no | anyOf=(#/components/schemas/ProcessingClaimOutcomeSettlementDocument) \| (type="null") |  |
-| <a id="s-dd1d4f73c8"></a>`outcomes` | yes | #/components/schemas/OutcomeSetDocument |  |
-| <a id="s-637e612ce8"></a>`output_collection_id` | no | anyOf=(#/components/schemas/CollectionId) \| (type="null") |  |
-| <a id="s-9049da54de"></a>`plan` | no | anyOf=(#/components/schemas/ProcessingClaimPlanDocument) \| (type="null") |  |
-| <a id="s-38ac0d9a68"></a>`purpose` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-7f23a91312"></a>`released_at` | no | anyOf=(type="string"; maxLength=64; minLength=1) \| (type="null") |  |
-| <a id="s-ec795af7cb"></a>`settled_at` | no | anyOf=(type="string"; maxLength=64; minLength=1) \| (type="null") |  |
-| <a id="s-bb2fa0d286"></a>`state` | yes | type="string"; enum=["active","settled","retiring","abandoned","released"] |  |
-| <a id="s-1a8a5eaf65"></a>`updated_at` | yes | type="string"; maxLength=64; minLength=1 |  |
-| <a id="s-3097610fdd"></a>`work_document` | yes | type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4194304; x-riverhog-extent={"policy":"contract_max","reason":"bounded-work-document-envelope"} |  |
-| <a id="s-1c037e7801"></a>`work_document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-8fb6149ecc"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-3b26ebd228"></a>`abandoned_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; title="Abandoned At" |  |
+| <a id="s-ff86aa1856"></a>`abandonment_reason` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; title="Abandonment Reason" |  |
+| <a id="s-8bfc846875"></a>`consumer` | yes | [ProcessingClaimConsumerDocument](schemas-processingclaimconsumerdocument.md) |  |
+| <a id="s-9d922404c4"></a>`created_at` | yes | type="string"; maxLength=64; minLength=1; title="Created At" |  |
+| <a id="s-672a29cfd8"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1; title="Expires At" |  |
+| <a id="s-32f010eb31"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-4eff6e6056"></a>`format` | yes | type="string"; const="riverhog-processing-claim/v1"; title="Format" |  |
+| <a id="s-b60202a68b"></a>`id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Id" |  |
+| <a id="s-dd008f3e61"></a>`inputs` | yes | [ReceivingSetDocument](schemas-receivingsetdocument.md) |  |
+| <a id="s-2a773e5157"></a>`outcome_settlement` | no | anyOf=[([ProcessingClaimOutcomeSettlementDocument](schemas-processingclaimoutcomesettlementdocument.md)); (type="null")] |  |
+| <a id="s-dd1d4f73c8"></a>`outcomes` | yes | [OutcomeSetDocument](schemas-outcomesetdocument.md) |  |
+| <a id="s-637e612ce8"></a>`output_collection_id` | no | anyOf=[([CollectionId](schemas-collectionid.md)); (type="null")] |  |
+| <a id="s-9049da54de"></a>`plan` | no | anyOf=[([ProcessingClaimPlanDocument](schemas-processingclaimplandocument.md)); (type="null")] |  |
+| <a id="s-38ac0d9a68"></a>`purpose` | yes | type="string"; maxLength=160; minLength=1; title="Purpose" |  |
+| <a id="s-7f23a91312"></a>`released_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; title="Released At" |  |
+| <a id="s-ec795af7cb"></a>`settled_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; title="Settled At" |  |
+| <a id="s-bb2fa0d286"></a>`state` | yes | type="string"; enum=["active","settled","retiring","abandoned","released"]; title="State" |  |
+| <a id="s-1a8a5eaf65"></a>`updated_at` | yes | type="string"; maxLength=64; minLength=1; title="Updated At" |  |
+| <a id="s-3097610fdd"></a>`work_document` | yes | type="object"; additionalProperties=(any JSON value); title="Work Document"; x-riverhog-encoded-bytes-max=4194304; x-riverhog-extent={"policy":"contract_max","reason":"bounded-work-document-envelope"} |  |
+| <a id="s-1c037e7801"></a>`work_document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Document Sha256" |  |
+| <a id="s-8fb6149ecc"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
 
 ### All must match (`allOf`)
 

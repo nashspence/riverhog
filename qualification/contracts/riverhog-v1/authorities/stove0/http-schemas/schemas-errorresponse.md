@@ -24,7 +24,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d856bb2d07"></a>`error` | yes | #/components/schemas/ErrorBody |  |
+| <a id="s-d856bb2d07"></a>`error` | yes | [ErrorBody](schemas-errorbody.md) |  |
 
 ## Maintained corroboration
 

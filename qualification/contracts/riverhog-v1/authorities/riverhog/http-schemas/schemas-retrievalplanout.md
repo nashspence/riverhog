@@ -24,18 +24,18 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c266a5a498"></a>`created_at` | yes | type="string" |  |
-| <a id="s-e251cf3834"></a>`etag` | yes | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-68c3046468"></a>`expires_at` | yes | type="string" |  |
-| <a id="s-b41e85bc12"></a>`failure` | yes | anyOf=(type="string"; minLength=1) \| (type="null") |  |
-| <a id="s-ddf8e0203e"></a>`file_count` | yes | type="integer"; minimum=1; maximum=10000 |  |
-| <a id="s-ddadecec43"></a>`format` | yes | type="string"; const="riverhog-retrieval-plan/v1" |  |
-| <a id="s-715beca7a8"></a>`id` | yes | type="string" |  |
-| <a id="s-6e0e6318d1"></a>`lease_seconds` | yes | type="integer" |  |
-| <a id="s-d30d97cea2"></a>`ready_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-c945c34413"></a>`requires_restore` | yes | type="boolean" |  |
-| <a id="s-00bdb5cade"></a>`restore_policy` | yes | type="string"; enum=["allow","never"] |  |
-| <a id="s-9408ce9990"></a>`state` | yes | type="string"; enum=["planning","ready","consumed","expired","failed"] |  |
+| <a id="s-c266a5a498"></a>`created_at` | yes | type="string"; title="Created At" |  |
+| <a id="s-e251cf3834"></a>`etag` | yes | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Etag" |  |
+| <a id="s-68c3046468"></a>`expires_at` | yes | type="string"; title="Expires At" |  |
+| <a id="s-b41e85bc12"></a>`failure` | yes | anyOf=[(type="string"; minLength=1); (type="null")]; title="Failure" |  |
+| <a id="s-ddf8e0203e"></a>`file_count` | yes | type="integer"; minimum=1; maximum=10000; title="File Count" |  |
+| <a id="s-ddadecec43"></a>`format` | yes | type="string"; const="riverhog-retrieval-plan/v1"; title="Format" |  |
+| <a id="s-715beca7a8"></a>`id` | yes | type="string"; title="Id" |  |
+| <a id="s-6e0e6318d1"></a>`lease_seconds` | yes | type="integer"; title="Lease Seconds" |  |
+| <a id="s-d30d97cea2"></a>`ready_at` | yes | anyOf=[(type="string"); (type="null")]; title="Ready At" |  |
+| <a id="s-c945c34413"></a>`requires_restore` | yes | type="boolean"; title="Requires Restore" |  |
+| <a id="s-00bdb5cade"></a>`restore_policy` | yes | type="string"; enum=["allow","never"]; title="Restore Policy" |  |
+| <a id="s-9408ce9990"></a>`state` | yes | type="string"; enum=["planning","ready","consumed","expired","failed"]; title="State" |  |
 
 ### Progression, limits, and lifecycle
 

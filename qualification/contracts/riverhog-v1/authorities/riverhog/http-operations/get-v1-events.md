@@ -14,16 +14,19 @@ List Lifecycle Events
 ## External contract
 
 <a id="s-c816d52258"></a>
-- <a id="s-417de4f5c8"></a>`operationId`: list_lifecycle_events
-- <a id="s-39f46c6a53"></a>`summary`: List Lifecycle Events
-- <a id="s-7098fb8d49"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-417de4f5c8"></a>`operationId`: `"list_lifecycle_events"`
+- <a id="s-7098fb8d49"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-39f46c6a53"></a>`summary`: `"List Lifecycle Events"`
+- <a id="s-7a1ef6ac0f"></a>`tags`: `["events"]`
+- <a id="s-3f3ff8848f"></a>`x-riverhog-permission-requirements`: `[{"any_of":["events:read"]}]`
+- <a id="s-2aa886527d"></a>`x-riverhog-read-collection`: `{"cursor_parameter":"after","kind":"cursor-feed","limit_parameter":"limit"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-2def9a57e2"></a>`after` | query | no | not declared | anyOf=([LifecycleEventCursor](../http-schemas/schemas-lifecycleeventcursor.md)) \| (type="null") |
-| <a id="s-cb497e59ec"></a>`limit` | query | no | `100` | type="integer"; minimum=1; maximum=100 |
+| <a id="s-2def9a57e2"></a>`after` | query | no | not declared | anyOf=[([LifecycleEventCursor](../http-schemas/schemas-lifecycleeventcursor.md)); (type="null")]; title="After" |
+| <a id="s-cb497e59ec"></a>`limit` | query | no | `100` | type="integer"; minimum=1; maximum=100; title="Limit" |
 
 ### Responses
 

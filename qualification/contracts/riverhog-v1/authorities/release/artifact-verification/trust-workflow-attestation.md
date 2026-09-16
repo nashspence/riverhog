@@ -16,8 +16,8 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-0b0e5226de"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-2c88b08cb8"></a>`meaning` | Published GitHub artifacts also receive workflow identity attestations; they complement rather than replace the maintainer signature. |
-| <a id="s-ea605023cf"></a>`scheme` | github-oidc |
+| <a id="s-2c88b08cb8"></a>`meaning` | `"Published GitHub artifacts also receive workflow identity attestations; they complement rather than replace the maintainer signature."` |
+| <a id="s-ea605023cf"></a>`scheme` | `"github-oidc"` |
 
 ## Governing policies
 

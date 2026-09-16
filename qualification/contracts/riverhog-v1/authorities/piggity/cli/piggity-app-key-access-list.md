@@ -24,18 +24,18 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-e4cac1f313"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
-| <a id="s-436527511f"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
-| <a id="s-00dc20b2a8"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"permission"` |
-| <a id="s-3b6f7e122d"></a>`order`<br>`--order` | optional option; 1 value | text | `"asc"` |
-| <a id="s-ddde4f0863"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded |
-| <a id="s-7f5ff47bf4"></a>`app_name`<br>`--app` | optional option; 1 value | text | not recorded |
-| <a id="s-d964705cd3"></a>`key_id`<br>`--key` | optional option; 1 value | text | not recorded |
-| <a id="s-be1bfd632d"></a>`permission`<br>`--permission` | optional option; 1 value | text | not recorded |
-| <a id="s-6dd0249f43"></a>`resource`<br>`--resource` | optional option; 1 value | text | not recorded |
-| <a id="s-9c3b030f75"></a>`active`<br>`--active`, alternate: `--inactive` | optional flag; 0 values | boolean | not recorded |
-| <a id="s-1c359d1409"></a>`selectors`<br>`--selectors` | optional flag; 0 values | boolean | `false` |
-| <a id="s-cf3bddeb50"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-e4cac1f313"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25`<br>Env: `null` |
+| <a id="s-436527511f"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-00dc20b2a8"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"permission"`<br>Env: `null` |
+| <a id="s-3b6f7e122d"></a>`order`<br>`--order` | optional option; 1 value | text | `"asc"`<br>Env: `null` |
+| <a id="s-ddde4f0863"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-7f5ff47bf4"></a>`app_name`<br>`--app` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-d964705cd3"></a>`key_id`<br>`--key` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-be1bfd632d"></a>`permission`<br>`--permission` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-6dd0249f43"></a>`resource`<br>`--resource` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-9c3b030f75"></a>`active`<br>`--active`, alternate: `--inactive` | optional flag; 0 values | boolean | not recorded<br>Env: `null` |
+| <a id="s-1c359d1409"></a>`selectors`<br>`--selectors` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
+| <a id="s-cf3bddeb50"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -54,14 +54,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-4668683658"></a>`completed` | <a id="s-8e6a1cd86f"></a>`{"kind":"command-completed"}` | <a id="s-1d7b86b5b2"></a>`0` | <a id="s-01bcd19ab6"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP list_app_key_access response 200](../../riverhog/http-operations/get-v1-app-key-access.md#s-9a0e80f83f) | <a id="s-66ee1bd4e5"></a>all: `empty` |
+| <a id="s-4668683658"></a>`completed` | <a id="s-8e6a1cd86f"></a>`{"kind":"command-completed"}` | <a id="s-1d7b86b5b2"></a>`0` | <a id="s-01bcd19ab6"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP list_app_key_access response 200](../../riverhog/http-operations/get-v1-app-key-access.md#s-9a0e80f83f) | <a id="s-66ee1bd4e5"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-d41bb9c02a"></a>`usage` | <a id="s-b531f0cf2c"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-c0705f880f"></a>`2` | <a id="s-32ef45ca1d"></a>all: `empty` | <a id="s-93ce5ace3c"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-8e5b82c969"></a>`operational` | <a id="s-09355be16b"></a>`{"kind":"application-error"}` | <a id="s-b5461f64f1"></a>`1` | <a id="s-27dd243470"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-c6d003d12f"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-d41bb9c02a"></a>`usage` | <a id="s-b531f0cf2c"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-c0705f880f"></a>`2` | <a id="s-32ef45ca1d"></a>all: `"empty"` | <a id="s-93ce5ace3c"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-8e5b82c969"></a>`operational` | <a id="s-09355be16b"></a>`{"kind":"application-error"}` | <a id="s-b5461f64f1"></a>`1` | <a id="s-27dd243470"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-c6d003d12f"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 

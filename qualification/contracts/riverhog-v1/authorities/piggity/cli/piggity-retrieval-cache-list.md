@@ -24,20 +24,20 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-5d11091eaf"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
-| <a id="s-c45391d32a"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
-| <a id="s-cf3cdc43ca"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"cached_at"` |
-| <a id="s-b5f96c6215"></a>`order`<br>`--order` | optional option; 1 value | text | `"desc"` |
-| <a id="s-4b8d9c676b"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded |
-| <a id="s-4093bf7690"></a>`collection_id`<br>`--collection` | optional option; 1 value | integer range; minimum=`1` (inclusive); outside range: reject | not recorded |
-| <a id="s-4772990245"></a>`source_store`<br>`--source-store` | optional option; 1 value | text | not recorded |
-| <a id="s-ed59a27577"></a>`cache_store`<br>`--cache-store` | optional option; 1 value | text | not recorded |
-| <a id="s-b62947dae4"></a>`state`<br>`--state` | optional option; 1 value | text | not recorded |
-| <a id="s-e8ba8122c4"></a>`protection`<br>`--protection` | optional option; 1 value | text | not recorded |
-| <a id="s-a16c87a0c3"></a>`expires_before`<br>`--expires-before` | optional option; 1 value | text | not recorded |
-| <a id="s-108befd372"></a>`expires_after`<br>`--expires-after` | optional option; 1 value | text | not recorded |
-| <a id="s-4ccc692971"></a>`selectors`<br>`--selectors` | optional flag; 0 values | boolean | `false` |
-| <a id="s-3e4c09ba42"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-5d11091eaf"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25`<br>Env: `null` |
+| <a id="s-c45391d32a"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-cf3cdc43ca"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"cached_at"`<br>Env: `null` |
+| <a id="s-b5f96c6215"></a>`order`<br>`--order` | optional option; 1 value | text | `"desc"`<br>Env: `null` |
+| <a id="s-4b8d9c676b"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-4093bf7690"></a>`collection_id`<br>`--collection` | optional option; 1 value | integer range; minimum=`1` (inclusive); outside range: reject | not recorded<br>Env: `null` |
+| <a id="s-4772990245"></a>`source_store`<br>`--source-store` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-ed59a27577"></a>`cache_store`<br>`--cache-store` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-b62947dae4"></a>`state`<br>`--state` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-e8ba8122c4"></a>`protection`<br>`--protection` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-a16c87a0c3"></a>`expires_before`<br>`--expires-before` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-108befd372"></a>`expires_after`<br>`--expires-after` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-4ccc692971"></a>`selectors`<br>`--selectors` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
+| <a id="s-3e4c09ba42"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -56,14 +56,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-4d450e2673"></a>`completed` | <a id="s-342336639c"></a>`{"kind":"command-completed"}` | <a id="s-d7a0e6c1e2"></a>`0` | <a id="s-dfcd93e0b4"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP list_retrieval_cache_objects response 200](../../riverhog/http-operations/get-v1-retrieval-cache-objects.md#s-5f7e7e3a7a) | <a id="s-da8a898431"></a>all: `empty` |
+| <a id="s-4d450e2673"></a>`completed` | <a id="s-342336639c"></a>`{"kind":"command-completed"}` | <a id="s-d7a0e6c1e2"></a>`0` | <a id="s-dfcd93e0b4"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP list_retrieval_cache_objects response 200](../../riverhog/http-operations/get-v1-retrieval-cache-objects.md#s-5f7e7e3a7a) | <a id="s-da8a898431"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-0110a83f35"></a>`usage` | <a id="s-81ac3392ec"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-e49e283d15"></a>`2` | <a id="s-deda7c628a"></a>all: `empty` | <a id="s-2a29f1b471"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-a1d6144deb"></a>`operational` | <a id="s-30a291623e"></a>`{"kind":"application-error"}` | <a id="s-f31724d20f"></a>`1` | <a id="s-a3705b64a9"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-59137b7a09"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-0110a83f35"></a>`usage` | <a id="s-81ac3392ec"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-e49e283d15"></a>`2` | <a id="s-deda7c628a"></a>all: `"empty"` | <a id="s-2a29f1b471"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-a1d6144deb"></a>`operational` | <a id="s-30a291623e"></a>`{"kind":"application-error"}` | <a id="s-f31724d20f"></a>`1` | <a id="s-a3705b64a9"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-59137b7a09"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 

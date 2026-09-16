@@ -14,19 +14,26 @@ Settle Processing Claim Outcomes
 ## External contract
 
 <a id="s-f6478edea1"></a>
-- <a id="s-5cb0a47d1f"></a>`operationId`: settle_processing_claim_outcomes
-- <a id="s-1d27fa2530"></a>`summary`: Settle Processing Claim Outcomes
-- <a id="s-a37f9f014a"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-5cb0a47d1f"></a>`operationId`: `"settle_processing_claim_outcomes"`
+- <a id="s-a37f9f014a"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-1d27fa2530"></a>`summary`: `"Settle Processing Claim Outcomes"`
+- <a id="s-e690f366d5"></a>`tags`: `["collection-workflows"]`
+- <a id="s-e2a6a0860d"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-4e5d08b211"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-65c20501e5"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-65c20501e5"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
 
 ### <a id="s-a9dbcd3cbd"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProcessingClaimOutcomesSettleDocument"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [ProcessingClaimOutcomesSettleDocument](../http-schemas/schemas-processingclaimoutcomessettledocument.md) |
 
 ### Responses
 

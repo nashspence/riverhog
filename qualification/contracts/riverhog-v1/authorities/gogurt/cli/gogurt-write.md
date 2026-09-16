@@ -24,12 +24,12 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-e3296e8a22"></a>`route`<br>`route` | required positional; 1 value | text | not recorded |
-| <a id="s-08581ea9b7"></a>`mount_point`<br>`mount_point` | required positional; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
-| <a id="s-f0b9492d8e"></a>`config`<br>`--config` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
-| <a id="s-aba7dbf38e"></a>`force`<br>`--force` | optional flag; 0 values | boolean | `false` |
-| <a id="s-cef35a84fe"></a>`dry_run`<br>`--dry-run` | optional flag; 0 values | boolean | `false` |
-| <a id="s-d2fbb045b4"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-e3296e8a22"></a>`route`<br>`route` | required positional; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-08581ea9b7"></a>`mount_point`<br>`mount_point` | required positional; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded<br>Env: `null` |
+| <a id="s-f0b9492d8e"></a>`config`<br>`--config` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded<br>Env: `null` |
+| <a id="s-aba7dbf38e"></a>`force`<br>`--force` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
+| <a id="s-cef35a84fe"></a>`dry_run`<br>`--dry-run` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
+| <a id="s-d2fbb045b4"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 | <a id="s-5d3f067691"></a>`mounted_volume_provider`<br>`--mounted-volume-provider` | optional option; 1 value | text | not recorded<br>Env: `"GOGURT_MOUNTED_VOLUME_PROVIDER"` |
 
 ### Terminating controls
@@ -49,15 +49,15 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-c5cc1a53c6"></a>`marker-preview` | <a id="s-6c131d3c1d"></a>`{"kind":"option-equals","parameter":"dry_run","value":true}` | <a id="s-f85e137cbe"></a>`0` | <a id="s-2a98a7b465"></a>human: `noncontractual-presentation-of-command-result`; json: [gogurt-marker-write-plan/v1](#s-5ddcbe9a95) | <a id="s-d5c25e107a"></a>all: `empty` |
-| <a id="s-65376fa652"></a>`marker-published` | <a id="s-1ace6f4a30"></a>`{"kind":"option-equals","parameter":"dry_run","value":false}` | <a id="s-2bdaa45e78"></a>`0` | <a id="s-7ff22340dc"></a>human: `noncontractual-presentation-of-command-result`; json: [gogurt-marker-publication/v1](#s-9674fbdc27) | <a id="s-258261044f"></a>all: `empty` |
+| <a id="s-c5cc1a53c6"></a>`marker-preview` | <a id="s-6c131d3c1d"></a>`{"kind":"option-equals","parameter":"dry_run","value":true}` | <a id="s-f85e137cbe"></a>`0` | <a id="s-2a98a7b465"></a>human: `"noncontractual-presentation-of-command-result"`; json: [gogurt-marker-write-plan/v1](#s-5ddcbe9a95) | <a id="s-d5c25e107a"></a>all: `"empty"` |
+| <a id="s-65376fa652"></a>`marker-published` | <a id="s-1ace6f4a30"></a>`{"kind":"option-equals","parameter":"dry_run","value":false}` | <a id="s-2bdaa45e78"></a>`0` | <a id="s-7ff22340dc"></a>human: `"noncontractual-presentation-of-command-result"`; json: [gogurt-marker-publication/v1](#s-9674fbdc27) | <a id="s-258261044f"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-a116aaabaf"></a>`usage` | <a id="s-7f4e752285"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-eee78944c6"></a>`2` | <a id="s-759246dcbb"></a>all: `empty` | <a id="s-1ad8401f8f"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-d95fc38e29"></a>`operational` | <a id="s-36d3949039"></a>`{"kind":"application-error"}` | <a id="s-8821274e2c"></a>`1` | <a id="s-d2bc22b47c"></a>human: `empty`; json: [gogurt-cli-error/v1](#s-d298240ee3) | <a id="s-86733215f2"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-a116aaabaf"></a>`usage` | <a id="s-7f4e752285"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-eee78944c6"></a>`2` | <a id="s-759246dcbb"></a>all: `"empty"` | <a id="s-1ad8401f8f"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-d95fc38e29"></a>`operational` | <a id="s-36d3949039"></a>`{"kind":"application-error"}` | <a id="s-8821274e2c"></a>`1` | <a id="s-d2bc22b47c"></a>human: `"empty"`; json: [gogurt-cli-error/v1](#s-d298240ee3) | <a id="s-86733215f2"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Local structured outputs
 

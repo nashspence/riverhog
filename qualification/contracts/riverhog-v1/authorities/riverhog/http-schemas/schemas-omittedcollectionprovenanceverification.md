@@ -24,13 +24,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-9ee420a4ab"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-ba18f8efc0"></a>`entities` | yes | type="integer"; const=0 |  |
-| <a id="s-d339222a32"></a>`files` | yes | type="integer"; minimum=0 |  |
-| <a id="s-e4546557e0"></a>`journals` | yes | type="integer"; const=0 |  |
-| <a id="s-5721663ce0"></a>`provenance_identity` | yes | type="null" |  |
-| <a id="s-25a3b198b3"></a>`provenance_mode` | yes | type="string"; const="omitted" |  |
-| <a id="s-05c7f3fde3"></a>`valid` | yes | type="boolean"; const=true |  |
+| <a id="s-9ee420a4ab"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-ba18f8efc0"></a>`entities` | yes | type="integer"; const=0; title="Entities" |  |
+| <a id="s-d339222a32"></a>`files` | yes | type="integer"; minimum=0; title="Files" |  |
+| <a id="s-e4546557e0"></a>`journals` | yes | type="integer"; const=0; title="Journals" |  |
+| <a id="s-5721663ce0"></a>`provenance_identity` | yes | type="null"; title="Provenance Identity" |  |
+| <a id="s-25a3b198b3"></a>`provenance_mode` | yes | type="string"; const="omitted"; title="Provenance Mode" |  |
+| <a id="s-05c7f3fde3"></a>`valid` | yes | type="boolean"; const=true; title="Valid" |  |
 
 ### Progression, limits, and lifecycle
 

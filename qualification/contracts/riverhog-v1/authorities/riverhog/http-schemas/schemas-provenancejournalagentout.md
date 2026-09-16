@@ -24,7 +24,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c50d626f42"></a>`agent_id` | yes | type="string" |  |
+| <a id="s-c50d626f42"></a>`agent_id` | yes | type="string"; title="Agent Id" |  |
 
 ## Governing policies
 

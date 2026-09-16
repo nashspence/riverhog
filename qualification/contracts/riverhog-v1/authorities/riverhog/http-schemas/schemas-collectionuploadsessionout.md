@@ -24,42 +24,42 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-9b1773688a"></a>`archive_next_attempt_at` | yes | anyOf=(type="string"; pattern="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$") \| (type="null") |  |
-| <a id="s-b6f24c5453"></a>`archive_phase` | yes | type="string"; enum=["planning","uploading","finalization_queued","finalizing","retry_wait","completed","canceled","orphaned","discarding"] |  |
-| <a id="s-40cb395743"></a>`archive_phase_updated_at` | yes | type="string"; pattern="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$" |  |
-| <a id="s-4c2695d822"></a>`archive_root_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-c6e3f15926"></a>`archive_storage_prefix` | no | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-b0b2fc7a0d"></a>`archive_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-e70dac8ff9"></a>`archive_total_bytes` | no | anyOf=(type="integer") \| (type="null") |  |
-| <a id="s-08a6059292"></a>`archive_total_units` | no | anyOf=(type="integer") \| (type="null") |  |
-| <a id="s-5f8835c2ce"></a>`archive_uploaded_bytes` | no | anyOf=(type="integer") \| (type="null") |  |
-| <a id="s-e173f08920"></a>`archive_uploaded_units` | no | anyOf=(type="integer") \| (type="null") |  |
-| <a id="s-11002853d8"></a>`bytes_total` | yes | type="integer"; minimum=0 |  |
-| <a id="s-69ad9fc366"></a>`collection` | yes | anyOf=(#/components/schemas/CollectionSummaryOut) \| (type="null") |  |
-| <a id="s-fdc801eb0a"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-b9651ea42e"></a>`content_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-bece9bbffb"></a>`created_at` | yes | type="string" |  |
-| <a id="s-c267172c78"></a>`custody` | yes | discriminator={"mapping":{"complete":"#/components/schemas/CompleteCollectionUploadCustodyOut","pending":"#/components/schemas/PendingCollectionUploadCustodyOut"},"propertyName":"state"}; oneOf=(#/components/schemas/PendingCollectionUploadCustodyOut) \| (#/components/schemas/CompleteCollectionUploadCustodyOut) |  |
-| <a id="s-449911e290"></a>`custody_mode` | yes | type="string"; enum=["producer-retained","custody-transfer"] |  |
-| <a id="s-91c9b60eef"></a>`description` | yes | anyOf=(#/components/schemas/CollectionDescription) \| (type="null") |  |
-| <a id="s-0e3caca7dc"></a>`description_identity` | yes | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-406d74e184"></a>`description_publication` | yes | type="string"; enum=["pending","not_required","current"] |  |
-| <a id="s-17a2e2a4fd"></a>`description_revision` | yes | anyOf=(type="integer"; minimum=0; maximum=9007199254740991) \| (type="null") |  |
-| <a id="s-e561d8b174"></a>`encryption_format` | yes | type="string" |  |
-| <a id="s-10f5a3b3b8"></a>`files_total` | yes | type="integer"; minimum=0 |  |
-| <a id="s-54879215e4"></a>`ingest_source` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-2c574f18dd"></a>`latest_failure` | yes | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null") |  |
-| <a id="s-43ab285f83"></a>`orphaned_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-6dac1eb9bc"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
-| <a id="s-13b5f1d3eb"></a>`provenance_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-8447ff2de7"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"] |  |
-| <a id="s-ae9f4ae61b"></a>`registration_constraints` | yes | anyOf=(#/components/schemas/CollectionUploadRegistrationConstraintsOut) \| (type="null") |  |
-| <a id="s-ecc4798871"></a>`state` | yes | type="string"; enum=["open","closing","uploading","finalizing","finalized","canceled","orphaned","discarding"] |  |
-| <a id="s-0513821e14"></a>`tag_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-ad623850e5"></a>`tag_publication` | yes | type="string"; enum=["pending","current"] |  |
-| <a id="s-9b310b8936"></a>`tag_revision` | no | anyOf=(type="integer"; minimum=1; maximum=9007199254740991) \| (type="null") |  |
-| <a id="s-5e83624c1e"></a>`tag_set_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
-| <a id="s-ddf168beca"></a>`upload_state_expires_at` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-9b1773688a"></a>`archive_next_attempt_at` | yes | anyOf=[(type="string"; pattern="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$"); (type="null")]; title="Archive Next Attempt At" |  |
+| <a id="s-b6f24c5453"></a>`archive_phase` | yes | type="string"; enum=["planning","uploading","finalization_queued","finalizing","retry_wait","completed","canceled","orphaned","discarding"]; title="Archive Phase" |  |
+| <a id="s-40cb395743"></a>`archive_phase_updated_at` | yes | type="string"; pattern="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$"; title="Archive Phase Updated At" |  |
+| <a id="s-4c2695d822"></a>`archive_root_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Archive Root Sha256" |  |
+| <a id="s-c6e3f15926"></a>`archive_storage_prefix` | no | anyOf=[(type="string"); (type="null")]; title="Archive Storage Prefix" |  |
+| <a id="s-b0b2fc7a0d"></a>`archive_store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
+| <a id="s-e70dac8ff9"></a>`archive_total_bytes` | no | anyOf=[(type="integer"); (type="null")]; title="Archive Total Bytes" |  |
+| <a id="s-08a6059292"></a>`archive_total_units` | no | anyOf=[(type="integer"); (type="null")]; title="Archive Total Units" |  |
+| <a id="s-5f8835c2ce"></a>`archive_uploaded_bytes` | no | anyOf=[(type="integer"); (type="null")]; title="Archive Uploaded Bytes" |  |
+| <a id="s-e173f08920"></a>`archive_uploaded_units` | no | anyOf=[(type="integer"); (type="null")]; title="Archive Uploaded Units" |  |
+| <a id="s-11002853d8"></a>`bytes_total` | yes | type="integer"; minimum=0; title="Bytes Total" |  |
+| <a id="s-69ad9fc366"></a>`collection` | yes | anyOf=[([CollectionSummaryOut](schemas-collectionsummaryout.md)); (type="null")] |  |
+| <a id="s-fdc801eb0a"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-b9651ea42e"></a>`content_identity` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Content Identity" |  |
+| <a id="s-bece9bbffb"></a>`created_at` | yes | type="string"; title="Created At" |  |
+| <a id="s-c267172c78"></a>`custody` | yes | discriminator={"mapping":{"complete":"#/components/schemas/CompleteCollectionUploadCustodyOut","pending":"#/components/schemas/PendingCollectionUploadCustodyOut"},"propertyName":"state"}; oneOf=[([PendingCollectionUploadCustodyOut](schemas-pendingcollectionuploadcustodyout.md)); ([CompleteCollectionUploadCustodyOut](schemas-completecollectionuploadcustodyout.md))]; title="Custody" |  |
+| <a id="s-449911e290"></a>`custody_mode` | yes | type="string"; enum=["producer-retained","custody-transfer"]; title="Custody Mode" |  |
+| <a id="s-91c9b60eef"></a>`description` | yes | anyOf=[([CollectionDescription](schemas-collectiondescription.md)); (type="null")] |  |
+| <a id="s-0e3caca7dc"></a>`description_identity` | yes | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Description Identity" |  |
+| <a id="s-406d74e184"></a>`description_publication` | yes | type="string"; enum=["pending","not_required","current"]; title="Description Publication" |  |
+| <a id="s-17a2e2a4fd"></a>`description_revision` | yes | anyOf=[(type="integer"; minimum=0; maximum=9007199254740991); (type="null")]; title="Description Revision" |  |
+| <a id="s-e561d8b174"></a>`encryption_format` | yes | type="string"; title="Encryption Format" |  |
+| <a id="s-10f5a3b3b8"></a>`files_total` | yes | type="integer"; minimum=0; title="Files Total" |  |
+| <a id="s-54879215e4"></a>`ingest_source` | yes | anyOf=[(type="string"); (type="null")]; title="Ingest Source" |  |
+| <a id="s-2c574f18dd"></a>`latest_failure` | yes | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; title="Latest Failure" |  |
+| <a id="s-43ab285f83"></a>`orphaned_at` | yes | anyOf=[(type="string"); (type="null")]; title="Orphaned At" |  |
+| <a id="s-6dac1eb9bc"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$"; title="Passphrase Id" |  |
+| <a id="s-13b5f1d3eb"></a>`provenance_identity` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Provenance Identity" |  |
+| <a id="s-8447ff2de7"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"]; title="Provenance Mode" |  |
+| <a id="s-ae9f4ae61b"></a>`registration_constraints` | yes | anyOf=[([CollectionUploadRegistrationConstraintsOut](schemas-collectionuploadregistrationconstraintsout.md)); (type="null")] |  |
+| <a id="s-ecc4798871"></a>`state` | yes | type="string"; enum=["open","closing","uploading","finalizing","finalized","canceled","orphaned","discarding"]; title="State" |  |
+| <a id="s-0513821e14"></a>`tag_count` | yes | type="integer"; minimum=0; title="Tag Count" |  |
+| <a id="s-ad623850e5"></a>`tag_publication` | yes | type="string"; enum=["pending","current"]; title="Tag Publication" |  |
+| <a id="s-9b310b8936"></a>`tag_revision` | no | anyOf=[(type="integer"; minimum=1; maximum=9007199254740991); (type="null")]; title="Tag Revision" |  |
+| <a id="s-5e83624c1e"></a>`tag_set_identity` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Tag Set Identity" |  |
+| <a id="s-ddf168beca"></a>`upload_state_expires_at` | yes | anyOf=[(type="string"); (type="null")]; title="Upload State Expires At" |  |
 
 ### All must match (`allOf`)
 
@@ -67,7 +67,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|---|---|
 | <a id="s-ece32ec12b"></a>1 | properties={state: (const="finalized")} | properties={archive_root_sha256: (type="string"); collection: (type="object"); content_identity: (type="string"); registration_constraints: (type="null"); tag_publication: (const="current"); tag_revision: (type="integer"); tag_set_identity: (type="string")} | properties={archive_root_sha256: (type="null"); collection: (type="null"); content_identity: (type="null"); registration_constraints: (type="object")} |
 | <a id="s-052c2dfd86"></a>2 | properties={tag_publication: (const="current")} | properties={tag_revision: (type="integer"); tag_set_identity: (type="string")} | no additional constraint |
-| <a id="s-ea42661cb0"></a>3 | properties={state: (const="finalized")}; required=["state"] | oneOf=(properties={provenance_identity: (type="string"; pattern="^[0-9a-f]{64}$"); provenance_mode: (enum=["captured","mixed"])}; required=["provenance_mode","provenance_identity"]) \| (properties={provenance_identity: (type="null"); provenance_mode: (const="omitted")}; required=["provenance_mode","provenance_identity"]) | properties={provenance_identity: (type="null"); provenance_mode: (enum=["captured","omitted"])} |
+| <a id="s-ea42661cb0"></a>3 | properties={state: (const="finalized")}; required=["state"] | oneOf=[(properties={provenance_identity: (type="string"; pattern="^[0-9a-f]{64}$"); provenance_mode: (enum=["captured","mixed"])}; required=["provenance_mode","provenance_identity"]); (properties={provenance_identity: (type="null"); provenance_mode: (const="omitted")}; required=["provenance_mode","provenance_identity"])] | properties={provenance_identity: (type="null"); provenance_mode: (enum=["captured","omitted"])} |
 | <a id="s-b94c19da9b"></a>4 | properties={custody_mode: (const="producer-retained")}; required=["custody_mode"] | properties={orphaned_at: (type="null"); state: (enum=["open","uploading","finalizing","canceled","finalized"]); upload_state_expires_at: (type="null")} | no additional constraint |
 | <a id="s-6a9935e8f3"></a>5 | properties={state: (enum=["orphaned","discarding"])}; required=["state"] | properties={custody_mode: (const="custody-transfer"); orphaned_at: (type="string"); upload_state_expires_at: (type="null")} | no additional constraint |
 | <a id="s-ac067f3585"></a>6 | properties={custody_mode: (const="custody-transfer"); state: (enum=["open","closing"])}; required=["custody_mode","state"] | properties={orphaned_at: (type="null"); upload_state_expires_at: (type="string")} | no additional constraint |

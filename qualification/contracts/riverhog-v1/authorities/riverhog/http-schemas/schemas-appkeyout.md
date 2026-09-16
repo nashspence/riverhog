@@ -24,15 +24,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-de20ad219d"></a>`access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
-| <a id="s-f98913f6b5"></a>`app` | yes | #/components/schemas/ApplicationName |  |
-| <a id="s-a7a363cae1"></a>`created_at` | yes | type="string" |  |
-| <a id="s-f354ddeeb2"></a>`expires_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-f8ace5c134"></a>`id` | yes | #/components/schemas/ApplicationKeyId |  |
-| <a id="s-ff83a181db"></a>`last_used_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-3607996617"></a>`monthly_download_quota_bytes` | yes | anyOf=(#/components/schemas/MonthlyDownloadQuotaBytes) \| (type="null") |  |
-| <a id="s-7354f9aecf"></a>`revoked_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-d6933d5f36"></a>`status` | yes | type="string"; enum=["active","expired","revoked"] |  |
+| <a id="s-de20ad219d"></a>`access` | yes | [ApplicationAccessGrantSet](schemas-applicationaccessgrantset.md) |  |
+| <a id="s-f98913f6b5"></a>`app` | yes | [ApplicationName](schemas-applicationname.md) |  |
+| <a id="s-a7a363cae1"></a>`created_at` | yes | type="string"; title="Created At" |  |
+| <a id="s-f354ddeeb2"></a>`expires_at` | yes | anyOf=[(type="string"); (type="null")]; title="Expires At" |  |
+| <a id="s-f8ace5c134"></a>`id` | yes | [ApplicationKeyId](schemas-applicationkeyid.md) |  |
+| <a id="s-ff83a181db"></a>`last_used_at` | yes | anyOf=[(type="string"); (type="null")]; title="Last Used At" |  |
+| <a id="s-3607996617"></a>`monthly_download_quota_bytes` | yes | anyOf=[([MonthlyDownloadQuotaBytes](schemas-monthlydownloadquotabytes.md)); (type="null")] |  |
+| <a id="s-7354f9aecf"></a>`revoked_at` | yes | anyOf=[(type="string"); (type="null")]; title="Revoked At" |  |
+| <a id="s-d6933d5f36"></a>`status` | yes | type="string"; enum=["active","expired","revoked"]; title="Status" |  |
 
 ### All must match (`allOf`)
 

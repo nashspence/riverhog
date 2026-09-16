@@ -16,15 +16,15 @@ Optional nonnormative review materialization target reference for Stove0.
 <a id="s-ccf545d02a"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-b174ed6dd6"></a>`artifacts` | [{"coordinate": "dist/stove0_review_materialize_target-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_review_materialize_target-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-c1910f8584"></a>`channel` | github-release |
-| <a id="s-b49f3d3405"></a>`description` | Optional nonnormative review materialization target reference for Stove0. |
-| <a id="s-bf6a676419"></a>`license_baseline` | first-v1-publication |
-| <a id="s-aa634b5656"></a>`license_expression` | CAL-1.0 |
-| <a id="s-fb057e5cd5"></a>`publication_identity` | {"coordinate": "stove0-review-materialize-target", "kind": "python-distribution"} |
-| <a id="s-370468910f"></a>`requires_python` | >=3.12 |
-| <a id="s-33fd4f0f41"></a>`role` | reference_component |
-| <a id="s-0eb907755d"></a>`source` | reference/stove0/targets/review/materialize-target/pyproject.toml |
+| <a id="s-b174ed6dd6"></a>`artifacts` | `[{"coordinate":"dist/stove0_review_materialize_target-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_review_materialize_target-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-c1910f8584"></a>`channel` | `"github-release"` |
+| <a id="s-b49f3d3405"></a>`description` | `"Optional nonnormative review materialization target reference for Stove0."` |
+| <a id="s-bf6a676419"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-aa634b5656"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-fb057e5cd5"></a>`publication_identity` | `{"coordinate":"stove0-review-materialize-target","kind":"python-distribution"}` |
+| <a id="s-370468910f"></a>`requires_python` | `">=3.12"` |
+| <a id="s-33fd4f0f41"></a>`role` | `"reference_component"` |
+| <a id="s-0eb907755d"></a>`source` | `"reference/stove0/targets/review/materialize-target/pyproject.toml"` |
 
 ## Existing ownership context
 

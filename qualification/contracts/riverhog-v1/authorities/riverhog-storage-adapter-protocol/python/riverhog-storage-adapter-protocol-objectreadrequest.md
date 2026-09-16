@@ -38,8 +38,8 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-7d79767301"></a>`expected_bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-bee60b01d3"></a>`object` | yes | [ObjectLocator](#s-a7b8fb18e2) |  |
-| <a id="s-59bb88205a"></a>`offset` | no | anyOf=(type="integer"; minimum=0) \| (type="null"); default=null |  |
-| <a id="s-a6488f469a"></a>`size` | no | anyOf=(type="integer"; minimum=0) \| (type="null"); default=null |  |
+| <a id="s-59bb88205a"></a>`offset` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; default=null |  |
+| <a id="s-a6488f469a"></a>`size` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; default=null |  |
 
 ##### Definitions
 
@@ -56,7 +56,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-cd6d128d0c"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-747eb445af"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-747eb445af"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null |  |
 
 ## Maintained corroboration
 

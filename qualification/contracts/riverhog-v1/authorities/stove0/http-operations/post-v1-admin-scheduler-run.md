@@ -14,12 +14,17 @@ Run Scheduler Once
 ## External contract
 
 <a id="s-07f314ca3b"></a>
-- <a id="s-10624f0239"></a>`operationId`: run_scheduler
-- <a id="s-ae0ebf4d08"></a>`summary`: Run Scheduler Once
+- <a id="s-10624f0239"></a>`operationId`: `"run_scheduler"`
+- <a id="s-ae0ebf4d08"></a>`summary`: `"Run Scheduler Once"`
+- <a id="s-00e88f4dcf"></a>`tags`: `["scheduler"]`
 
 ### <a id="s-7f9f86f6c7"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/SchedulerRunIn"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [SchedulerRunIn](../http-schemas/schemas-schedulerrunin.md) |
 
 ### Responses
 

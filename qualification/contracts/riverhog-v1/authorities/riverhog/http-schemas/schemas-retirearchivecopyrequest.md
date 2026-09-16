@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-297a890b93"></a>`challenge` | yes | type="string" |  |
-| <a id="s-6f7ff50dd5"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-db0734895d"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-297a890b93"></a>`challenge` | yes | type="string"; title="Challenge" |  |
+| <a id="s-6f7ff50dd5"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-db0734895d"></a>`store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
 
 ## Maintained corroboration
 

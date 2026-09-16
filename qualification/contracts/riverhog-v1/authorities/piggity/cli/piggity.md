@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-14959e77d6"></a>Parser name: `piggity`
+
+| Field | Value |
+|---|---|
+| <a id="s-ff7d6186a0"></a>`parameters` | `[]` |
 - <a id="s-d42616f68d"></a>Subcommand selection: required.
 - <a id="s-6fa5980e03"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
 - <a id="s-7750bd7b2b"></a>Options after positional arguments at this parser: left as arguments.

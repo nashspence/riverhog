@@ -24,16 +24,16 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-95723ce082"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
-| <a id="s-7444300279"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
-| <a id="s-06860e4c41"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"id"` |
-| <a id="s-30f31aa241"></a>`order`<br>`--order` | optional option; 1 value | text | `"asc"` |
-| <a id="s-3ed58f0f21"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded |
-| <a id="s-2c75429912"></a>`encryption_format`<br>`--encryption-format` | optional option; 1 value | text | not recorded |
-| <a id="s-366a7487de"></a>`passphrase_id`<br>`--passphrase-id` | optional option; 1 value | text | not recorded |
-| <a id="s-951ed89fcc"></a>`tag`<br>`--tag` | optional option; 1 value; collects repeats; maximum 100 occurrences | text | not recorded |
-| <a id="s-593c3b8401"></a>`ids`<br>`--ids` | optional flag; 0 values | boolean | `false` |
-| <a id="s-18939bbec9"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-95723ce082"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25`<br>Env: `null` |
+| <a id="s-7444300279"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-06860e4c41"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"id"`<br>Env: `null` |
+| <a id="s-30f31aa241"></a>`order`<br>`--order` | optional option; 1 value | text | `"asc"`<br>Env: `null` |
+| <a id="s-3ed58f0f21"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-2c75429912"></a>`encryption_format`<br>`--encryption-format` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-366a7487de"></a>`passphrase_id`<br>`--passphrase-id` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-951ed89fcc"></a>`tag`<br>`--tag` | optional option; 1 value; collects repeats; maximum 100 occurrences | text | not recorded<br>Env: `null` |
+| <a id="s-593c3b8401"></a>`ids`<br>`--ids` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
+| <a id="s-18939bbec9"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 Repeated `tag` accepts at most **100** occurrences, through [GET /v1/collections · tags](../../riverhog/http-operations/get-v1-collections.md#s-c928d33a4d).
 
@@ -54,14 +54,14 @@ Repeated `tag` accepts at most **100** occurrences, through [GET /v1/collections
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-b476fbf87e"></a>`completed` | <a id="s-2e8745f698"></a>`{"kind":"command-completed"}` | <a id="s-2483b5cd92"></a>`0` | <a id="s-170c0fde72"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP list_collections response 200](../../riverhog/http-operations/get-v1-collections.md#s-64bfaf8f5a) | <a id="s-6b61c6be5c"></a>all: `empty` |
+| <a id="s-b476fbf87e"></a>`completed` | <a id="s-2e8745f698"></a>`{"kind":"command-completed"}` | <a id="s-2483b5cd92"></a>`0` | <a id="s-170c0fde72"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP list_collections response 200](../../riverhog/http-operations/get-v1-collections.md#s-64bfaf8f5a) | <a id="s-6b61c6be5c"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-e45fc7c7e4"></a>`usage` | <a id="s-dd260cd2d0"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-991743bec0"></a>`2` | <a id="s-09b689fc43"></a>all: `empty` | <a id="s-402798b7d6"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-9438b5284d"></a>`operational` | <a id="s-6adbc7b734"></a>`{"kind":"application-error"}` | <a id="s-88cba97faf"></a>`1` | <a id="s-9bde04fe20"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-1dc7ff0c31"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-e45fc7c7e4"></a>`usage` | <a id="s-dd260cd2d0"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-991743bec0"></a>`2` | <a id="s-09b689fc43"></a>all: `"empty"` | <a id="s-402798b7d6"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-9438b5284d"></a>`operational` | <a id="s-6adbc7b734"></a>`{"kind":"application-error"}` | <a id="s-88cba97faf"></a>`1` | <a id="s-9bde04fe20"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-1dc7ff0c31"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 

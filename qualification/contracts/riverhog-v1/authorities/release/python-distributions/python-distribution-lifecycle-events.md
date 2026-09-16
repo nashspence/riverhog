@@ -16,15 +16,15 @@ Durable CloudEvents lifecycle log and client primitives.
 <a id="s-5e364d3218"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-814d634c2e"></a>`artifacts` | [{"coordinate": "dist/lifecycle_events-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/lifecycle_events-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-a9416a0876"></a>`channel` | github-release |
-| <a id="s-7a81146c9a"></a>`description` | Durable CloudEvents lifecycle log and client primitives. |
-| <a id="s-9e68ace761"></a>`license_baseline` | first-v1-publication |
-| <a id="s-3d9209a103"></a>`license_expression` | Apache-2.0 |
-| <a id="s-ecea441dd3"></a>`publication_identity` | {"coordinate": "lifecycle-events", "kind": "python-distribution"} |
-| <a id="s-fac7b85cb0"></a>`requires_python` | >=3.12 |
-| <a id="s-c4f789cf6c"></a>`role` | reusable_library |
-| <a id="s-5ebcfff6c7"></a>`source` | packages/lifecycle-events/pyproject.toml |
+| <a id="s-814d634c2e"></a>`artifacts` | `[{"coordinate":"dist/lifecycle_events-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/lifecycle_events-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-a9416a0876"></a>`channel` | `"github-release"` |
+| <a id="s-7a81146c9a"></a>`description` | `"Durable CloudEvents lifecycle log and client primitives."` |
+| <a id="s-9e68ace761"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-3d9209a103"></a>`license_expression` | `"Apache-2.0"` |
+| <a id="s-ecea441dd3"></a>`publication_identity` | `{"coordinate":"lifecycle-events","kind":"python-distribution"}` |
+| <a id="s-fac7b85cb0"></a>`requires_python` | `">=3.12"` |
+| <a id="s-c4f789cf6c"></a>`role` | `"reusable_library"` |
+| <a id="s-5ebcfff6c7"></a>`source` | `"packages/lifecycle-events/pyproject.toml"` |
 
 ## Existing ownership context
 

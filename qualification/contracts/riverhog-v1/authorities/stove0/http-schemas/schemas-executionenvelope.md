@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-254db14200"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-7722433db7"></a>`execution_envelope_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-5debb009eb"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-7e6d8ecf9e"></a>`format` | no | type="string"; const="stove0-execution-envelope/v1"; default="stove0-execution-envelope/v1" |  |
-| <a id="s-b47a72301b"></a>`target_plan` | yes | #/components/schemas/TargetPlanBinding |  |
-| <a id="s-3d863bfbd7"></a>`workflow_plan` | yes | #/components/schemas/WorkflowPlan |  |
+| <a id="s-254db14200"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1; title="Claim Id" |  |
+| <a id="s-7722433db7"></a>`execution_envelope_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Execution Envelope Sha256" |  |
+| <a id="s-5debb009eb"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-7e6d8ecf9e"></a>`format` | no | type="string"; const="stove0-execution-envelope/v1"; default="stove0-execution-envelope/v1"; title="Format" |  |
+| <a id="s-b47a72301b"></a>`target_plan` | yes | [TargetPlanBinding](schemas-targetplanbinding.md) |  |
+| <a id="s-3d863bfbd7"></a>`workflow_plan` | yes | [WorkflowPlan](schemas-workflowplan.md) |  |
 
 ### Progression, limits, and lifecycle
 

@@ -86,7 +86,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6afce6a5c3"></a>`output` | no | anyOf=([OutputCollectionRef](#s-0a3cf8b181)) \| (type="null"); default=null |  |
+| <a id="s-6afce6a5c3"></a>`output` | no | anyOf=[([OutputCollectionRef](#s-0a3cf8b181)); (type="null")]; default=null |  |
 | <a id="s-a39327fa37"></a>`state` | yes | type="string"; enum=["pending","active","complete","inapplicable","failed","canceled"] |  |
 | <a id="s-dd4ac9f785"></a>`variant_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-10e9edb68c"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -133,8 +133,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c4f91233ea"></a>`note` | no | anyOf=(type="string"; maxLength=4000; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$") \| (type="null"); default=null |  |
-| <a id="s-0c831491e4"></a>`rating` | no | anyOf=(type="integer"; minimum=1; maximum=5) \| (type="null"); default=null |  |
+| <a id="s-c4f91233ea"></a>`note` | no | anyOf=[(type="string"; maxLength=4000; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$"); (type="null")]; default=null |  |
+| <a id="s-0c831491e4"></a>`rating` | no | anyOf=[(type="integer"; minimum=1; maximum=5); (type="null")]; default=null |  |
 | <a id="s-168a50aa40"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
 | <a id="s-678d2be791"></a>`updated_by` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-9510f7b1ce"></a>`variant_id` | yes | type="string"; maxLength=160; minLength=1 |  |

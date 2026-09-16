@@ -24,8 +24,8 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-aa38c45548"></a>`role`<br>`--role` | optional option; 1 value | text | `"combined"` |
-| <a id="s-b52681f913"></a>`work_limit`<br>`--work-limit` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
+| <a id="s-aa38c45548"></a>`role`<br>`--role` | optional option; 1 value | text | `"combined"`<br>Env: `null` |
+| <a id="s-b52681f913"></a>`work_limit`<br>`--work-limit` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -44,14 +44,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-3cd8e1e861"></a>`completed` | <a id="s-79e944ee58"></a>`{"kind":"command-completed"}` | <a id="s-5f7df994d2"></a>`0` | <a id="s-d30f65713f"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP run_scheduler response 200](../../stove0/http-operations/post-v1-admin-scheduler-run.md#s-2c882565d9) | <a id="s-f95d3230bd"></a>all: `empty` |
+| <a id="s-3cd8e1e861"></a>`completed` | <a id="s-79e944ee58"></a>`{"kind":"command-completed"}` | <a id="s-5f7df994d2"></a>`0` | <a id="s-d30f65713f"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP run_scheduler response 200](../../stove0/http-operations/post-v1-admin-scheduler-run.md#s-2c882565d9) | <a id="s-f95d3230bd"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-1781c86dda"></a>`usage` | <a id="s-ec6786247f"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-2ea2f7a35e"></a>`2` | <a id="s-778f47c230"></a>all: `empty` | <a id="s-06c843881f"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-0c1c73c97d"></a>`operational` | <a id="s-9ea62eed0c"></a>`{"kind":"application-error"}` | <a id="s-ef010bcd02"></a>`1` | <a id="s-2aae7aa000"></a>all: `empty` | <a id="s-792d0c4b3a"></a>all: `noncontractual-diagnostic` |
+| <a id="s-1781c86dda"></a>`usage` | <a id="s-ec6786247f"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-2ea2f7a35e"></a>`2` | <a id="s-778f47c230"></a>all: `"empty"` | <a id="s-06c843881f"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-0c1c73c97d"></a>`operational` | <a id="s-9ea62eed0c"></a>`{"kind":"application-error"}` | <a id="s-ef010bcd02"></a>`1` | <a id="s-2aae7aa000"></a>all: `"empty"` | <a id="s-792d0c4b3a"></a>all: `"noncontractual-diagnostic"` |
 
 ### Progression, limits, and lifecycle
 

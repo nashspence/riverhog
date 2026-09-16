@@ -16,11 +16,11 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-0bba6207bf"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-d482a4717c"></a>`artifact_format` | wheel |
-| <a id="s-3f04ad09d6"></a>`distribution` | stove0-client |
-| <a id="s-f9519ac1c8"></a>`lock` | {"coordinate": "pylock.stove0-client.toml", "format": "pylock.toml"} |
-| <a id="s-879a5e966e"></a>`method` | uv-tool |
-| <a id="s-498cf60982"></a>`platforms` | ["linux-x64", "macos-arm64", "windows-x64"] |
+| <a id="s-d482a4717c"></a>`artifact_format` | `"wheel"` |
+| <a id="s-3f04ad09d6"></a>`distribution` | `"stove0-client"` |
+| <a id="s-f9519ac1c8"></a>`lock` | `{"coordinate":"pylock.stove0-client.toml","format":"pylock.toml"}` |
+| <a id="s-879a5e966e"></a>`method` | `"uv-tool"` |
+| <a id="s-498cf60982"></a>`platforms` | `["linux-x64","macos-arm64","windows-x64"]` |
 
 ## Existing ownership context
 

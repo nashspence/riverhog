@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1b9abf9f70"></a>`disposition_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-35aa7633ae"></a>`output_artifact_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-82bf7da7d8"></a>`output_edge_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-56209a9460"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1b9abf9f70"></a>`disposition_count` | yes | type="integer"; minimum=1; title="Disposition Count" |  |
+| <a id="s-35aa7633ae"></a>`output_artifact_count` | yes | type="integer"; minimum=1; title="Output Artifact Count" |  |
+| <a id="s-82bf7da7d8"></a>`output_edge_count` | yes | type="integer"; minimum=1; title="Output Edge Count" |  |
+| <a id="s-56209a9460"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

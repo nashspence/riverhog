@@ -24,14 +24,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e5fe01cde7"></a>`data` | yes | #/components/schemas/WorkCreatedEventData |  |
-| <a id="s-aa0945a217"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
-| <a id="s-c328ad7c51"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-66e15f03ce"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
-| <a id="s-ebaa118e07"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-c5c0e7e820"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-7ecc2de9c2"></a>`time` | yes | type="string" |  |
-| <a id="s-0bf2ceef75"></a>`type` | yes | type="string"; const="io.riverhog.stove0.work.created" |  |
+| <a id="s-e5fe01cde7"></a>`data` | yes | [WorkCreatedEventData](schemas-workcreatedeventdata.md) |  |
+| <a id="s-aa0945a217"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json"; title="Datacontenttype" |  |
+| <a id="s-c328ad7c51"></a>`id` | yes | type="string"; minLength=1; title="Id" |  |
+| <a id="s-66e15f03ce"></a>`source` | yes | type="string"; const="urn:riverhog:stove0"; title="Source" |  |
+| <a id="s-ebaa118e07"></a>`specversion` | no | type="string"; const="1.0"; default="1.0"; title="Specversion" |  |
+| <a id="s-c5c0e7e820"></a>`subject` | yes | type="string"; minLength=1; title="Subject" |  |
+| <a id="s-7ecc2de9c2"></a>`time` | yes | type="string"; title="Time" |  |
+| <a id="s-0bf2ceef75"></a>`type` | yes | type="string"; const="io.riverhog.stove0.work.created"; title="Type" |  |
 
 ## Maintained corroboration
 

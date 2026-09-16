@@ -25,9 +25,9 @@ One bounded, immutable unit offered by an exact upload session.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-5c08c11565"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-bac5bfebcc"></a>`unit` | yes | #/components/schemas/CollectionUploadUnitWorkDocument |  |
-| <a id="s-f21e6e665e"></a>`volume` | yes | #/components/schemas/CollectionUploadVolumeSummaryDocument |  |
+| <a id="s-5c08c11565"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
+| <a id="s-bac5bfebcc"></a>`unit` | yes | [CollectionUploadUnitWorkDocument](schemas-collectionuploadunitworkdocument.md) |  |
+| <a id="s-f21e6e665e"></a>`volume` | yes | [CollectionUploadVolumeSummaryDocument](schemas-collectionuploadvolumesummarydocument.md) |  |
 
 ### Progression, limits, and lifecycle
 

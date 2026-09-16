@@ -24,16 +24,16 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-f8d43e8cc9"></a>`root`<br>`root` | required positional; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
-| <a id="s-41c9f19b64"></a>`idempotency_key`<br>`--idempotency-key` | optional option; 1 value | text | not recorded |
-| <a id="s-50c5683cc5"></a>`archive_store`<br>`--archive-store` | optional option; 1 value | text | not recorded |
-| <a id="s-d25200e1bc"></a>`description`<br>`--description` | optional option; 1 value | text | not recorded |
-| <a id="s-02c396bde4"></a>`tag`<br>`--tag` | optional option; 1 value; collects repeats; no declared occurrence maximum | text | not recorded |
-| <a id="s-d85e25fde3"></a>`provenance`<br>`--provenance` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
-| <a id="s-0348cfd40b"></a>`omit_provenance`<br>`--omit-provenance` | optional option; 1 value | text | not recorded |
+| <a id="s-f8d43e8cc9"></a>`root`<br>`root` | required positional; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded<br>Env: `null` |
+| <a id="s-41c9f19b64"></a>`idempotency_key`<br>`--idempotency-key` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-50c5683cc5"></a>`archive_store`<br>`--archive-store` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-d25200e1bc"></a>`description`<br>`--description` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-02c396bde4"></a>`tag`<br>`--tag` | optional option; 1 value; collects repeats; no declared occurrence maximum | text | not recorded<br>Env: `null` |
+| <a id="s-d85e25fde3"></a>`provenance`<br>`--provenance` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded<br>Env: `null` |
+| <a id="s-0348cfd40b"></a>`omit_provenance`<br>`--omit-provenance` | optional option; 1 value | text | not recorded<br>Env: `null` |
 | <a id="s-598a4f2a05"></a>`provenance_observer`<br>`--provenance-observer` | optional option; 1 value | text | not recorded<br>Env: `"PIGGITY_PROVENANCE_OBSERVER"` |
-| <a id="s-9bfdcc451f"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
-| <a id="s-0cf6176bfa"></a>`dry_run`<br>`--dry-run` | optional flag; 0 values | boolean | `false` |
+| <a id="s-9bfdcc451f"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
+| <a id="s-0cf6176bfa"></a>`dry_run`<br>`--dry-run` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -52,15 +52,15 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-d730df7a18"></a>`completed` | <a id="s-116a05c58c"></a>`{"kind":"command-completed"}` | <a id="s-8da7d6d337"></a>`0` | <a id="s-96b0ecc121"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP get_collection_upload_session response 200](../../riverhog/http-operations/get-v1-collection-upload-sessions-collection-id.md#s-3478a57d08) | <a id="s-cd10769912"></a>all: `noncontractual-progress` |
+| <a id="s-d730df7a18"></a>`completed` | <a id="s-116a05c58c"></a>`{"kind":"command-completed"}` | <a id="s-8da7d6d337"></a>`0` | <a id="s-96b0ecc121"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP get_collection_upload_session response 200](../../riverhog/http-operations/get-v1-collection-upload-sessions-collection-id.md#s-3478a57d08) | <a id="s-cd10769912"></a>all: `"noncontractual-progress"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-bf21d6c0bd"></a>`usage` | <a id="s-89b791cd8a"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-0b9cafeddc"></a>`2` | <a id="s-af0f020720"></a>all: `empty` | <a id="s-dc49d5195d"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-50758df80a"></a>`operational` | <a id="s-8c078b501e"></a>`{"kind":"application-error"}` | <a id="s-647a0f71e3"></a>`1` | <a id="s-6843025be0"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-a441211ad2"></a>human: `noncontractual-diagnostic-or-progress`; json: `noncontractual-progress` |
-| <a id="s-701a9ab0d7"></a>`custody-timeout` | <a id="s-537a092cd6"></a>`{"kind":"custody-deadline-expired","state":"not-finalized"}` | <a id="s-b595a7afb5"></a>`124` | <a id="s-79cbfef294"></a>all: `empty` | <a id="s-ef4c7379fd"></a>all: `noncontractual-progress` |
+| <a id="s-bf21d6c0bd"></a>`usage` | <a id="s-89b791cd8a"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-0b9cafeddc"></a>`2` | <a id="s-af0f020720"></a>all: `"empty"` | <a id="s-dc49d5195d"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-50758df80a"></a>`operational` | <a id="s-8c078b501e"></a>`{"kind":"application-error"}` | <a id="s-647a0f71e3"></a>`1` | <a id="s-6843025be0"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-a441211ad2"></a>human: `"noncontractual-diagnostic-or-progress"`; json: `"noncontractual-progress"` |
+| <a id="s-701a9ab0d7"></a>`custody-timeout` | <a id="s-537a092cd6"></a>`{"kind":"custody-deadline-expired","state":"not-finalized"}` | <a id="s-b595a7afb5"></a>`124` | <a id="s-79cbfef294"></a>all: `"empty"` | <a id="s-ef4c7379fd"></a>all: `"noncontractual-progress"` |
 
 ### Progression, limits, and lifecycle
 

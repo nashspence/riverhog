@@ -25,10 +25,10 @@ Small identity for target outputs already registered with Riverhog.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-5990b9f86c"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-e4d192a5f2"></a>`roles` | yes | type="array"; items=(#/components/schemas/OutputArtifactRoleCount); minItems=1 |  |
-| <a id="s-a86f446c9b"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-d7f31811ef"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-5990b9f86c"></a>`artifact_count` | yes | type="integer"; minimum=1; title="Artifact Count" |  |
+| <a id="s-e4d192a5f2"></a>`roles` | yes | type="array"; items=([OutputArtifactRoleCount](schemas-outputartifactrolecount.md)); minItems=1; title="Roles" |  |
+| <a id="s-a86f446c9b"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-d7f31811ef"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
 
 ### Progression, limits, and lifecycle
 

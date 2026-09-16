@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f4f4f554f1"></a>`output` | no | anyOf=(#/components/schemas/OutputCollectionRef) \| (type="null") |  |
-| <a id="s-baf274864a"></a>`state` | yes | type="string"; enum=["pending","active","complete","inapplicable","failed","canceled"] |  |
-| <a id="s-28b6d88982"></a>`variant_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-794161c858"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f4f4f554f1"></a>`output` | no | anyOf=[([OutputCollectionRef](schemas-outputcollectionref.md)); (type="null")] |  |
+| <a id="s-baf274864a"></a>`state` | yes | type="string"; enum=["pending","active","complete","inapplicable","failed","canceled"]; title="State" |  |
+| <a id="s-28b6d88982"></a>`variant_id` | yes | type="string"; maxLength=160; minLength=1; title="Variant Id" |  |
+| <a id="s-794161c858"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
 
 ### Progression, limits, and lifecycle
 

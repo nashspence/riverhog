@@ -25,10 +25,10 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-6c1d725696"></a>`completion` | yes | [WriteCompletionAuthority](#s-2aa29473ed) |  |
-| <a id="s-3dd31e3915"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-918194abd0"></a>`expected_content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
-| <a id="s-41c9c882c5"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
-| <a id="s-3fe7699e11"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
+| <a id="s-3dd31e3915"></a>`expected_bytes` | yes | type="integer"; minimum=1; title="Expected Bytes" |  |
+| <a id="s-918194abd0"></a>`expected_content_type` | yes | type="string"; maxLength=255; minLength=1; title="Expected Content Type" |  |
+| <a id="s-41c9c882c5"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"]; title="Expected Placement" |  |
+| <a id="s-3fe7699e11"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; title="Required Identity Assertions"; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
 | <a id="s-b80752731f"></a>`session` | yes | [WriteSession](#s-43526cbe13) |  |
 
 ### Definitions
@@ -48,9 +48,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-924d57268f"></a>`authority_token` | yes | type="string"; maxLength=4000; minLength=1 | Bounded opaque adapter-issued authority for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged. |
-| <a id="s-f2d5b6894e"></a>`segment_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-212652088c"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-924d57268f"></a>`authority_token` | yes | type="string"; maxLength=4000; minLength=1; title="Authority Token" | Bounded opaque adapter-issued authority for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged. |
+| <a id="s-f2d5b6894e"></a>`segment_count` | yes | type="integer"; minimum=0; title="Segment Count" |  |
+| <a id="s-212652088c"></a>`stored_bytes` | yes | type="integer"; minimum=0; title="Stored Bytes" |  |
 
 ### <a id="s-43526cbe13"></a>definition `WriteSession`
 
@@ -63,9 +63,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2975343229"></a>`expected_bytes` | yes | type="integer"; minimum=1 | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
-| <a id="s-ff6e987a77"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-751c151e29"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1 | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
+| <a id="s-2975343229"></a>`expected_bytes` | yes | type="integer"; minimum=1; title="Expected Bytes" | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
+| <a id="s-ff6e987a77"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
+| <a id="s-751c151e29"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1; title="Write Token" | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
 
 ### Progression, limits, and lifecycle
 

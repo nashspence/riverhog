@@ -24,14 +24,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2bd88bec1e"></a>`active` | yes | anyOf=(type="boolean") \| (type="null") |  |
-| <a id="s-61d180626b"></a>`app` | yes | anyOf=(#/components/schemas/ApplicationName) \| (type="null") |  |
-| <a id="s-185405e83d"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-fafda38a69"></a>`order` | yes | #/components/schemas/SortOrder |  |
-| <a id="s-ea9fc70dca"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-4cccd8c9cf"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-3326d2ce08"></a>`quotas` | yes | type="array"; items=(#/components/schemas/KeyDownloadQuotaOut) |  |
-| <a id="s-1460139393"></a>`sort` | yes | #/components/schemas/DownloadQuotaSort |  |
+| <a id="s-2bd88bec1e"></a>`active` | yes | anyOf=[(type="boolean"); (type="null")]; title="Active" |  |
+| <a id="s-61d180626b"></a>`app` | yes | anyOf=[([ApplicationName](schemas-applicationname.md)); (type="null")] |  |
+| <a id="s-185405e83d"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-fafda38a69"></a>`order` | yes | [SortOrder](schemas-sortorder.md) |  |
+| <a id="s-ea9fc70dca"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
+| <a id="s-4cccd8c9cf"></a>`query` | yes | anyOf=[(type="string"); (type="null")]; title="Query" |  |
+| <a id="s-3326d2ce08"></a>`quotas` | yes | type="array"; items=([KeyDownloadQuotaOut](schemas-keydownloadquotaout.md)); title="Quotas" |  |
+| <a id="s-1460139393"></a>`sort` | yes | [DownloadQuotaSort](schemas-downloadquotasort.md) |  |
 
 ### Progression, limits, and lifecycle
 

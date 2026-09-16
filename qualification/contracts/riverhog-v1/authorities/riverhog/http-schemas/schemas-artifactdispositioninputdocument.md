@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-cb51991907"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-24be47cb35"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-02bd19cfcd"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
+| <a id="s-cb51991907"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
+| <a id="s-24be47cb35"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-02bd19cfcd"></a>`path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
 
 ### Progression, limits, and lifecycle
 

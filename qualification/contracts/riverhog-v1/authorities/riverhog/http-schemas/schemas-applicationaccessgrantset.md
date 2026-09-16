@@ -17,7 +17,7 @@ A nonempty, duplicate-free public grant set with canonical wildcard use.
 
 - <a id="s-88edbaab8a"></a>`type`: `"array"`
 - <a id="s-03ba28cdba"></a>`description`: `"A nonempty, duplicate-free public grant set with canonical wildcard use."`
-- <a id="s-69bbcb0017"></a>`items`: #/components/schemas/ApplicationAccessGrant
+- <a id="s-69bbcb0017"></a>`items`: [ApplicationAccessGrant](schemas-applicationaccessgrant.md)
 - <a id="s-f9ff292365"></a>`minItems`: `1`
 - <a id="s-5859614d27"></a>`title`: `"ApplicationAccessGrantSet"`
 - <a id="s-5671036930"></a>`uniqueItems`: `true`

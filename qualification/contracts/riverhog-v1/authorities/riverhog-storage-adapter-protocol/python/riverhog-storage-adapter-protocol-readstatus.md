@@ -37,7 +37,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-0cf2e8a02f"></a>`objects` | yes | type="array"; items=([ObjectLocator](#s-f5cb8a00e4)); minItems=1 |  |
-| <a id="s-126151cd38"></a>`readiness` | yes | discriminator={"mapping":{"expired":"[ReadExpired](#s-89cf76aaa6)","ready":"[ReadReady](#s-eb22b97e33)","requested":"[ReadRequested](#s-8fc985c6ca)"},"propertyName":"state"}; oneOf=([ReadRequested](#s-8fc985c6ca)) \| ([ReadReady](#s-eb22b97e33)) \| ([ReadExpired](#s-89cf76aaa6)) |  |
+| <a id="s-126151cd38"></a>`readiness` | yes | discriminator={"mapping":{"expired":"#/$defs/ReadExpired","ready":"#/$defs/ReadReady","requested":"#/$defs/ReadRequested"},"propertyName":"state"}; oneOf=[([ReadRequested](#s-8fc985c6ca)); ([ReadReady](#s-eb22b97e33)); ([ReadExpired](#s-89cf76aaa6))] |  |
 
 ##### Definitions
 
@@ -57,7 +57,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-6e85852882"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-0d1aff8a0c"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-0d1aff8a0c"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null |  |
 
 ##### <a id="s-89cf76aaa6"></a>definition `ReadExpired`
 
@@ -79,7 +79,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-93905fe13a"></a>`available_until` | no | anyOf=(type="string"; maxLength=100; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-93905fe13a"></a>`available_until` | no | anyOf=[(type="string"; maxLength=100; minLength=1); (type="null")]; default=null |  |
 | <a id="s-f15fd3367c"></a>`state` | no | type="string"; const="ready"; default="ready" |  |
 
 ##### <a id="s-8fc985c6ca"></a>definition `ReadRequested`
@@ -91,7 +91,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-998c2d9989"></a>`estimated_ready_at` | no | anyOf=(type="string"; maxLength=100; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-998c2d9989"></a>`estimated_ready_at` | no | anyOf=[(type="string"; maxLength=100; minLength=1); (type="null")]; default=null |  |
 | <a id="s-ef4920cf1d"></a>`state` | no | type="string"; const="requested"; default="requested" |  |
 
 ## Maintained corroboration

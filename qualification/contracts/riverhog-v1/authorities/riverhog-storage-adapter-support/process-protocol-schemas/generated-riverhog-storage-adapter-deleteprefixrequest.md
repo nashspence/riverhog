@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-fd2bba5510"></a>`mode` | no | type="string"; const="all_versions"; default="all_versions" |  |
-| <a id="s-96398ee657"></a>`object_prefix` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-fd2bba5510"></a>`mode` | no | type="string"; const="all_versions"; default="all_versions"; title="Mode" |  |
+| <a id="s-96398ee657"></a>`object_prefix` | yes | type="string"; maxLength=4096; minLength=1; title="Object Prefix" |  |
 
 ### Progression, limits, and lifecycle
 

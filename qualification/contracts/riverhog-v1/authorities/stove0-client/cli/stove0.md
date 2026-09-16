@@ -25,10 +25,10 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-791a5ac62a"></a>`base_url`<br>`--base-url` | optional option; 1 value | text | not recorded |
-| <a id="s-ddcd5174d2"></a>`token`<br>`--token` | optional option; 1 value | text | not recorded |
-| <a id="s-7dc0e8294b"></a>`json_output`<br>`--json` | optional flag; 0 values | boolean | `false` |
-| <a id="s-f62c39ef75"></a>`allow_insecure_http`<br>`--allow-insecure-http`, alternate: `--no-allow-insecure-http` | optional flag; 0 values | boolean | not recorded |
+| <a id="s-791a5ac62a"></a>`base_url`<br>`--base-url` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-ddcd5174d2"></a>`token`<br>`--token` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-7dc0e8294b"></a>`json_output`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
+| <a id="s-f62c39ef75"></a>`allow_insecure_http`<br>`--allow-insecure-http`, alternate: `--no-allow-insecure-http` | optional flag; 0 values | boolean | not recorded<br>Env: `null` |
 
 ### Terminating controls
 

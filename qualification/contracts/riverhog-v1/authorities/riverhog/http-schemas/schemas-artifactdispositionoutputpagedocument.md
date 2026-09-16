@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-38a8152364"></a>`authority` | yes | #/components/schemas/ArtifactDispositionSetIdentityDocument |  |
-| <a id="s-ec50ac8374"></a>`next_ordinal` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
-| <a id="s-e1fedbe99d"></a>`outputs` | yes | type="array"; items=(#/components/schemas/ArtifactDispositionOutputDocument); maxItems=128; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
-| <a id="s-3b4b64fa8a"></a>`start_ordinal` | yes | type="integer"; minimum=0 |  |
+| <a id="s-38a8152364"></a>`authority` | yes | [ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md) |  |
+| <a id="s-ec50ac8374"></a>`next_ordinal` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; title="Next Ordinal" |  |
+| <a id="s-e1fedbe99d"></a>`outputs` | yes | type="array"; items=([ArtifactDispositionOutputDocument](schemas-artifactdispositionoutputdocument.md)); maxItems=128; title="Outputs"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
+| <a id="s-3b4b64fa8a"></a>`start_ordinal` | yes | type="integer"; minimum=0; title="Start Ordinal" |  |
 
 ### Progression, limits, and lifecycle
 

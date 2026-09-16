@@ -25,15 +25,15 @@ Success-only, Riverhog-verified result of one branch workflow plan.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d14fc4aaa1"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-b122415c3e"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-8cc42659eb"></a>`format` | no | type="string"; const="stove0-branch-settlement/v1"; default="stove0-branch-settlement/v1" |  |
-| <a id="s-9a2f0035d4"></a>`output_collection` | yes | #/components/schemas/CollectionRootRef |  |
-| <a id="s-3523e63710"></a>`output_selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
-| <a id="s-3aa87a4f91"></a>`producer_settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-786e03f388"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-047c17c06f"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-0e747befdd"></a>`workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d14fc4aaa1"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Branch Id" |  |
+| <a id="s-b122415c3e"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Derivation Sha256" |  |
+| <a id="s-8cc42659eb"></a>`format` | no | type="string"; const="stove0-branch-settlement/v1"; default="stove0-branch-settlement/v1"; title="Format" |  |
+| <a id="s-9a2f0035d4"></a>`output_collection` | yes | [CollectionRootRef](schemas-collectionrootref.md) |  |
+| <a id="s-3523e63710"></a>`output_selection` | yes | [ArtifactSelectionRef](schemas-artifactselectionref.md) |  |
+| <a id="s-3aa87a4f91"></a>`producer_settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Producer Settlement Sha256" |  |
+| <a id="s-786e03f388"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Settlement Sha256" |  |
+| <a id="s-047c17c06f"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
+| <a id="s-0e747befdd"></a>`workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Workflow Plan Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -14,19 +14,26 @@ Add Collection Upload Session Tags
 ## External contract
 
 <a id="s-72abdd6c29"></a>
-- <a id="s-8b54116eea"></a>`operationId`: add_collection_upload_session_tags
-- <a id="s-d69ae4f891"></a>`summary`: Add Collection Upload Session Tags
-- <a id="s-6d1a39c28c"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-8b54116eea"></a>`operationId`: `"add_collection_upload_session_tags"`
+- <a id="s-6d1a39c28c"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-d69ae4f891"></a>`summary`: `"Add Collection Upload Session Tags"`
+- <a id="s-d3b8337c5e"></a>`tags`: `["collections"]`
+- <a id="s-c0d01dd61f"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-146bfa2f8f"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:create"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-a931da540f"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-a931da540f"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
 
 ### <a id="s-a15e689314"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/AddCollectionUploadTagsRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [AddCollectionUploadTagsRequest](../http-schemas/schemas-addcollectionuploadtagsrequest.md) |
 
 ### Responses
 

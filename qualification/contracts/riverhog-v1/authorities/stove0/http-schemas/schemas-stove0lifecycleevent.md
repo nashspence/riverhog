@@ -21,12 +21,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Alternative | Schema |
 |---|---|
-| <a id="s-b90e21f48f"></a>1 | #/components/schemas/WorkCreatedEvent |
-| <a id="s-a2ac6b1637"></a>2 | #/components/schemas/WorkUpdatedEvent |
-| <a id="s-ec15054d3b"></a>3 | #/components/schemas/BranchSetAdmittedEvent |
-| <a id="s-b5e370a6b3"></a>4 | #/components/schemas/JoinAdmittedEvent |
-| <a id="s-849a8fd6cc"></a>5 | #/components/schemas/EvaluationCreatedEvent |
-| <a id="s-ebf6041aa7"></a>6 | #/components/schemas/EvaluationUpdatedEvent |
+| <a id="s-b90e21f48f"></a>1 | [WorkCreatedEvent](schemas-workcreatedevent.md) |
+| <a id="s-a2ac6b1637"></a>2 | [WorkUpdatedEvent](schemas-workupdatedevent.md) |
+| <a id="s-ec15054d3b"></a>3 | [BranchSetAdmittedEvent](schemas-branchsetadmittedevent.md) |
+| <a id="s-b5e370a6b3"></a>4 | [JoinAdmittedEvent](schemas-joinadmittedevent.md) |
+| <a id="s-849a8fd6cc"></a>5 | [EvaluationCreatedEvent](schemas-evaluationcreatedevent.md) |
+| <a id="s-ebf6041aa7"></a>6 | [EvaluationUpdatedEvent](schemas-evaluationupdatedevent.md) |
 
 ## Maintained corroboration
 

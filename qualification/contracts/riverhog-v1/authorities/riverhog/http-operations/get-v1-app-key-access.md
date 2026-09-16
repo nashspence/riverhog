@@ -14,24 +14,27 @@ List App Key Access
 ## External contract
 
 <a id="s-7fc99fa765"></a>
-- <a id="s-37b8bab0d6"></a>`operationId`: list_app_key_access
-- <a id="s-05dbfc097a"></a>`summary`: List App Key Access
-- <a id="s-9cbf0f9d52"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-37b8bab0d6"></a>`operationId`: `"list_app_key_access"`
+- <a id="s-9cbf0f9d52"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-05dbfc097a"></a>`summary`: `"List App Key Access"`
+- <a id="s-874a52c6c7"></a>`tags`: `["apps"]`
+- <a id="s-c17e2009d0"></a>`x-riverhog-permission-requirements`: `[{"any_of":["keys:manage"]}]`
+- <a id="s-0472782c55"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-34884d05d9"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-0c1b73e009"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
+| <a id="s-34884d05d9"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-0c1b73e009"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
 | <a id="s-9c2c7f379a"></a>`sort` | query | no | `"permission"` | [ApplicationAccessSort](../http-schemas/schemas-applicationaccesssort.md) |
 | <a id="s-bb3990152c"></a>`order` | query | no | `"asc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
-| <a id="s-a8d34e4650"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
-| <a id="s-8c4d8992cd"></a>`app` | query | no | not declared | anyOf=([ApplicationName](../http-schemas/schemas-applicationname.md)) \| (type="null") |
-| <a id="s-1db5767afc"></a>`key` | query | no | not declared | anyOf=([ApplicationKeyId](../http-schemas/schemas-applicationkeyid.md)) \| (type="null") |
-| <a id="s-a728d4ed13"></a>`permission` | query | no | not declared | anyOf=([ApplicationPermission](../http-schemas/schemas-applicationpermission.md)) \| (type="null") |
-| <a id="s-581adbcf51"></a>`resource` | query | no | not declared | anyOf=([ApplicationResource](../http-schemas/schemas-applicationresource.md)) \| (type="null") |
-| <a id="s-92d75808e9"></a>`active` | query | no | not declared | anyOf=(type="boolean") \| (type="null") |
+| <a id="s-a8d34e4650"></a>`q` | query | no | not declared | anyOf=[([BrowseQuery](../http-schemas/schemas-browsequery.md)); (type="null")]; title="Q" |
+| <a id="s-8c4d8992cd"></a>`app` | query | no | not declared | anyOf=[([ApplicationName](../http-schemas/schemas-applicationname.md)); (type="null")]; title="App" |
+| <a id="s-1db5767afc"></a>`key` | query | no | not declared | anyOf=[([ApplicationKeyId](../http-schemas/schemas-applicationkeyid.md)); (type="null")]; title="Key" |
+| <a id="s-a728d4ed13"></a>`permission` | query | no | not declared | anyOf=[([ApplicationPermission](../http-schemas/schemas-applicationpermission.md)); (type="null")]; title="Permission" |
+| <a id="s-581adbcf51"></a>`resource` | query | no | not declared | anyOf=[([ApplicationResource](../http-schemas/schemas-applicationresource.md)); (type="null")]; title="Resource" |
+| <a id="s-92d75808e9"></a>`active` | query | no | not declared | anyOf=[(type="boolean"); (type="null")]; title="Active" |
 
 ### Responses
 

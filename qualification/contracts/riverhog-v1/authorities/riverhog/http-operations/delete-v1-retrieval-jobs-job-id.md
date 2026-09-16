@@ -14,15 +14,18 @@ Cancel Retrieval Job
 ## External contract
 
 <a id="s-0896e23738"></a>
-- <a id="s-b9ca215d6c"></a>`operationId`: cancel_retrieval_job
-- <a id="s-0844e28a3f"></a>`summary`: Cancel Retrieval Job
-- <a id="s-1152f39421"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-b9ca215d6c"></a>`operationId`: `"cancel_retrieval_job"`
+- <a id="s-1152f39421"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-0844e28a3f"></a>`summary`: `"Cancel Retrieval Job"`
+- <a id="s-f591182c29"></a>`tags`: `["retrieval"]`
+- <a id="s-352b6e0752"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-45ba757def"></a>`x-riverhog-permission-requirements`: `[{"any_of":["retrieval:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-b087ed0d88"></a>`job_id` | path | yes | not declared | type="string" |
+| <a id="s-b087ed0d88"></a>`job_id` | path | yes | not declared | type="string"; title="Job Id" |
 
 ### Responses
 

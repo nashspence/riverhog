@@ -25,15 +25,15 @@ One exact subrecipe selected as a branch-bound coordinator.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d85117f452"></a>`artifact_rules` | no | type="array"; default=[{"glob":"*","role":"stove0.source/v1"}]; items=(#/components/schemas/ArtifactRule) |  |
-| <a id="s-700d57d1c0"></a>`associated_roles` | no | type="array"; default=[]; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
-| <a id="s-1e59584371"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-755ac34ea8"></a>`intent` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-028eb1ca79"></a>`kind` | no | type="string"; const="coordination"; default="coordination" |  |
-| <a id="s-0b22e4cc4a"></a>`primary_role` | no | anyOf=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") \| (type="null") |  |
-| <a id="s-2deb6d5c81"></a>`projections` | no | type="array"; default=[]; items=(#/components/schemas/OperationProjection) |  |
-| <a id="s-c91319df09"></a>`recipe` | yes | #/components/schemas/RecipeRef |  |
-| <a id="s-4c285d7366"></a>`when` | no | type="array"; default=[]; items=(#/components/schemas/FactPredicate) |  |
+| <a id="s-d85117f452"></a>`artifact_rules` | no | type="array"; default=[{"glob":"*","role":"stove0.source/v1"}]; items=([ArtifactRule](schemas-artifactrule.md)); title="Artifact Rules" |  |
+| <a id="s-700d57d1c0"></a>`associated_roles` | no | type="array"; default=[]; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); title="Associated Roles" |  |
+| <a id="s-1e59584371"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-755ac34ea8"></a>`intent` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Intent" |  |
+| <a id="s-028eb1ca79"></a>`kind` | no | type="string"; const="coordination"; default="coordination"; title="Kind" |  |
+| <a id="s-0b22e4cc4a"></a>`primary_role` | no | anyOf=[(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); (type="null")]; title="Primary Role" |  |
+| <a id="s-2deb6d5c81"></a>`projections` | no | type="array"; default=[]; items=([OperationProjection](schemas-operationprojection.md)); title="Projections" |  |
+| <a id="s-c91319df09"></a>`recipe` | yes | [RecipeRef](schemas-reciperef.md) |  |
+| <a id="s-4c285d7366"></a>`when` | no | type="array"; default=[]; items=([FactPredicate](schemas-factpredicate.md)); title="When" |  |
 
 ### Progression, limits, and lifecycle
 

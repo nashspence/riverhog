@@ -14,13 +14,19 @@ Create Or Resume Archive Copy
 ## External contract
 
 <a id="s-8df4a71950"></a>
-- <a id="s-fabf2aad91"></a>`operationId`: create_or_resume_archive_copy
-- <a id="s-ac95213ded"></a>`summary`: Create Or Resume Archive Copy
-- <a id="s-b14612bf43"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-fabf2aad91"></a>`operationId`: `"create_or_resume_archive_copy"`
+- <a id="s-b14612bf43"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-ac95213ded"></a>`summary`: `"Create Or Resume Archive Copy"`
+- <a id="s-81a792d037"></a>`tags`: `["archive"]`
+- <a id="s-7ab47d8c6a"></a>`x-riverhog-permission-requirements`: `[{"any_of":["archives:manage"]}]`
 
 ### <a id="s-556eabb798"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateArchiveCopyRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [CreateArchiveCopyRequest](../http-schemas/schemas-createarchivecopyrequest.md) |
 
 ### Responses
 

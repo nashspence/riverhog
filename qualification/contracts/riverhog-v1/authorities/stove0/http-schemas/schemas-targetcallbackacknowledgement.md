@@ -24,7 +24,7 @@ Idempotent acceptance of one execution-scoped declaration.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3be75837a3"></a>`accepted` | no | type="boolean"; const=true; default=true |  |
+| <a id="s-3be75837a3"></a>`accepted` | no | type="boolean"; const=true; default=true; title="Accepted" |  |
 
 ## Governing policies
 

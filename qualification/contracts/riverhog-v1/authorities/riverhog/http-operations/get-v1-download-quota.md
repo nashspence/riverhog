@@ -14,9 +14,11 @@ Get Download Quota
 ## External contract
 
 <a id="s-7294de1502"></a>
-- <a id="s-f1d1326051"></a>`operationId`: get_download_quota
-- <a id="s-2a4e51b181"></a>`summary`: Get Download Quota
-- <a id="s-890e8605be"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-f1d1326051"></a>`operationId`: `"get_download_quota"`
+- <a id="s-890e8605be"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-2a4e51b181"></a>`summary`: `"Get Download Quota"`
+- <a id="s-c2dadf6266"></a>`tags`: `["download quotas"]`
+- <a id="s-40a41af07b"></a>`x-riverhog-permission-requirements`: `[{"any_of":["retrieval:manage"]}]`
 
 ### Responses
 

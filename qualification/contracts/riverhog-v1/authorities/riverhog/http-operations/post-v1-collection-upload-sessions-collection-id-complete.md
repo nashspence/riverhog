@@ -14,15 +14,18 @@ Complete Collection Upload Session
 ## External contract
 
 <a id="s-bba87c22e2"></a>
-- <a id="s-20f89302aa"></a>`operationId`: complete_collection_upload_session
-- <a id="s-f5db6d24d9"></a>`summary`: Complete Collection Upload Session
-- <a id="s-236b09a3c4"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-20f89302aa"></a>`operationId`: `"complete_collection_upload_session"`
+- <a id="s-236b09a3c4"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-f5db6d24d9"></a>`summary`: `"Complete Collection Upload Session"`
+- <a id="s-c0c5b6542f"></a>`tags`: `["collections"]`
+- <a id="s-c035082539"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-35a0063ed5"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:create"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-8c053756f3"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-8c053756f3"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
 
 ### Responses
 

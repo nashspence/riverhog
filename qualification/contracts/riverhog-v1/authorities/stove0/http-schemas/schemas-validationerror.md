@@ -23,11 +23,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8ddceef6c7"></a>`ctx` | no | type="object" |  |
-| <a id="s-87967f6927"></a>`input` | no | any JSON value |  |
-| <a id="s-080abab506"></a>`loc` | yes | type="array"; items=(anyOf=(type="string") \| (type="integer")) |  |
-| <a id="s-b38aa6075e"></a>`msg` | yes | type="string" |  |
-| <a id="s-ba7a2c626e"></a>`type` | yes | type="string" |  |
+| <a id="s-8ddceef6c7"></a>`ctx` | no | type="object"; title="Context" |  |
+| <a id="s-87967f6927"></a>`input` | no | title="Input" |  |
+| <a id="s-080abab506"></a>`loc` | yes | type="array"; items=(anyOf=[(type="string"); (type="integer")]); title="Location" |  |
+| <a id="s-b38aa6075e"></a>`msg` | yes | type="string"; title="Message" |  |
+| <a id="s-ba7a2c626e"></a>`type` | yes | type="string"; title="Error Type" |  |
 
 ### Progression, limits, and lifecycle
 

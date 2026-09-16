@@ -36,31 +36,31 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ab960e0d3d"></a>`abandon_outcome` | no | anyOf=(type="string"; enum=["inapplicable","failed","canceled"]) \| (type="null"); default=null |  |
-| <a id="s-f958ec485a"></a>`branch_set_plan` | no | anyOf=([BranchSetPlan](#s-dd5e33c681)) \| (type="null"); default=null |  |
-| <a id="s-bd573492a7"></a>`claim` | no | anyOf=([WorkClaimView](#s-427778f2b9)) \| (type="null"); default=null |  |
-| <a id="s-b1e2a94d1f"></a>`controller_evidence` | no | anyOf=([ControllerEvidence](#s-8b01483f06)) \| (type="null"); default=null |  |
+| <a id="s-ab960e0d3d"></a>`abandon_outcome` | no | anyOf=[(type="string"; enum=["inapplicable","failed","canceled"]); (type="null")]; default=null |  |
+| <a id="s-f958ec485a"></a>`branch_set_plan` | no | anyOf=[([BranchSetPlan](#s-dd5e33c681)); (type="null")]; default=null |  |
+| <a id="s-bd573492a7"></a>`claim` | no | anyOf=[([WorkClaimView](#s-427778f2b9)); (type="null")]; default=null |  |
+| <a id="s-b1e2a94d1f"></a>`controller_evidence` | no | anyOf=[([ControllerEvidence](#s-8b01483f06)); (type="null")]; default=null |  |
 | <a id="s-38800f8969"></a>`coordination_cancel_requested` | no | type="boolean"; default=false |  |
-| <a id="s-24e82d8b48"></a>`coordination_settlement` | no | anyOf=([CoordinationSettlement](#s-1d102c88d4)) \| (type="null"); default=null |  |
-| <a id="s-0a25ef733a"></a>`expected_target_plan_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
-| <a id="s-755a0aa975"></a>`failure` | no | anyOf=([WorkFailureView](#s-3d393d60f5)) \| (type="null"); default=null |  |
+| <a id="s-24e82d8b48"></a>`coordination_settlement` | no | anyOf=[([CoordinationSettlement](#s-1d102c88d4)); (type="null")]; default=null |  |
+| <a id="s-0a25ef733a"></a>`expected_target_plan_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
+| <a id="s-755a0aa975"></a>`failure` | no | anyOf=[([WorkFailureView](#s-3d393d60f5)); (type="null")]; default=null |  |
 | <a id="s-6e80be1bc8"></a>`format` | no | type="string"; const="stove0-work-view/v1"; default="stove0-work-view/v1" |  |
-| <a id="s-1c1aa9aed3"></a>`inapplicable` | no | anyOf=([WorkInapplicableView](#s-b96615054f)) \| (type="null"); default=null |  |
-| <a id="s-9ecde628f8"></a>`join_plan` | no | anyOf=([JoinPlan](#s-580727b15b)) \| (type="null"); default=null |  |
+| <a id="s-1c1aa9aed3"></a>`inapplicable` | no | anyOf=[([WorkInapplicableView](#s-b96615054f)); (type="null")]; default=null |  |
+| <a id="s-9ecde628f8"></a>`join_plan` | no | anyOf=[([JoinPlan](#s-580727b15b)); (type="null")]; default=null |  |
 | <a id="s-2eac372f78"></a>`observation_requests` | no | type="array"; default=[]; items=([ObservationRequest](#s-9d08881319)) |  |
 | <a id="s-d1adc32ca5"></a>`observation_results` | no | type="array"; default=[]; items=([ObservationResult](#s-eaf3d12493)) |  |
-| <a id="s-496eb2f34b"></a>`output` | no | anyOf=([OutputCollectionRef](#s-875ef95b02)) \| (type="null"); default=null |  |
+| <a id="s-496eb2f34b"></a>`output` | no | anyOf=[([OutputCollectionRef](#s-875ef95b02)); (type="null")]; default=null |  |
 | <a id="s-0f3b7878ab"></a>`phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] |  |
-| <a id="s-c6e7d1e9da"></a>`preview_acceptance` | no | anyOf=([PreviewAcceptanceView](#s-3f37573c13)) \| (type="null"); default=null |  |
+| <a id="s-c6e7d1e9da"></a>`preview_acceptance` | no | anyOf=[([PreviewAcceptanceView](#s-3f37573c13)); (type="null")]; default=null |  |
 | <a id="s-d7b0180b01"></a>`retirement_remaining` | no | type="array"; default=[]; items=(type="integer") |  |
 | <a id="s-31c116f346"></a>`revision` | yes | type="integer"; minimum=1 |  |
-| <a id="s-dc1b03eaf2"></a>`target_plan` | no | anyOf=(discriminator={"mapping":{"stove0-effect-target/v1":"[EffectPlan](#s-014776d0e1)","stove0-transform-target/v1":"[TransformPlan](#s-e6d9103d68)"},"propertyName":"protocol"}; oneOf=([TransformPlan](#s-e6d9103d68)) \| ([EffectPlan](#s-014776d0e1))) \| (type="null"); default=null |  |
-| <a id="s-21ea49ddbd"></a>`target_request` | no | anyOf=([AcceptedTargetJob](#s-c2ad8615d4)) \| (type="null"); default=null |  |
-| <a id="s-06b370748a"></a>`target_settlement` | no | anyOf=([TargetSettlementAuthority](#s-0123d3e011)) \| (type="null"); default=null |  |
-| <a id="s-862849fdb3"></a>`target_status` | no | anyOf=([TargetJobStatus](#s-a1c5d06fa9)) \| (type="null"); default=null |  |
+| <a id="s-dc1b03eaf2"></a>`target_plan` | no | anyOf=[(discriminator={"mapping":{"stove0-effect-target/v1":"#/$defs/EffectPlan","stove0-transform-target/v1":"#/$defs/TransformPlan"},"propertyName":"protocol"}; oneOf=[([TransformPlan](#s-e6d9103d68)); ([EffectPlan](#s-014776d0e1))]); (type="null")]; default=null |  |
+| <a id="s-21ea49ddbd"></a>`target_request` | no | anyOf=[([AcceptedTargetJob](#s-c2ad8615d4)); (type="null")]; default=null |  |
+| <a id="s-06b370748a"></a>`target_settlement` | no | anyOf=[([TargetSettlementAuthority](#s-0123d3e011)); (type="null")]; default=null |  |
+| <a id="s-862849fdb3"></a>`target_status` | no | anyOf=[([TargetJobStatus](#s-a1c5d06fa9)); (type="null")]; default=null |  |
 | <a id="s-4e27e5925b"></a>`work` | yes | [WorkIdentity](#s-9c239c9b47) |  |
 | <a id="s-2f68bca083"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-3d3a1fc440"></a>`workflow_plan` | no | anyOf=([WorkflowPlan](#s-eb01ec776f)) \| (type="null"); default=null |  |
+| <a id="s-3d3a1fc440"></a>`workflow_plan` | no | anyOf=[([WorkflowPlan](#s-eb01ec776f)); (type="null")]; default=null |  |
 
 ##### Definitions
 
@@ -177,7 +177,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-df410c49e0"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-5810740434"></a>`collection` | yes | [CollectionRootRef](#s-0c67995e84) |  |
 | <a id="s-ed1468d170"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-f7cdebecdb"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-f7cdebecdb"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
 | <a id="s-01e4956500"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-57f6af84fc"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-62cdca60dc"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -208,11 +208,11 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-b3abee8a30"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-3fcbb52569"></a>`branches` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"[CoordinationBranchPlan](#s-1519e82c69)","leaf":"[BranchPlan](#s-1e5a1e87dc)"},"propertyName":"kind"}; oneOf=([BranchPlan](#s-1e5a1e87dc)) \| ([CoordinationBranchPlan](#s-1519e82c69))); minItems=1 |  |
+| <a id="s-3fcbb52569"></a>`branches` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"#/$defs/CoordinationBranchPlan","leaf":"#/$defs/BranchPlan"},"propertyName":"kind"}; oneOf=[([BranchPlan](#s-1e5a1e87dc)); ([CoordinationBranchPlan](#s-1519e82c69))]); minItems=1 |  |
 | <a id="s-8d0af96e65"></a>`decision_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-6e23d0088e"></a>`evidence_sha256s` | no | type="array"; default=[]; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
 | <a id="s-552d504f76"></a>`format` | no | type="string"; const="stove0-branch-set/v1"; default="stove0-branch-set/v1" |  |
-| <a id="s-4309f16143"></a>`join` | no | anyOf=([JoinDeclaration](#s-c1baf21d38)) \| (type="null"); default=null |  |
+| <a id="s-4309f16143"></a>`join` | no | anyOf=[([JoinDeclaration](#s-c1baf21d38)); (type="null")]; default=null |  |
 | <a id="s-a49334563f"></a>`parent_work` | yes | [WorkIdentity](#s-9c239c9b47) |  |
 | <a id="s-3d04d7ae2d"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
 | <a id="s-ae9c11e69f"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
@@ -324,9 +324,9 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-2f0e0f22ae"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-2799e7c723"></a>`children` | yes | type="array"; items=([CoordinationChildSettlementRef](#s-a2dcd47a50)) |  |
-| <a id="s-f71f6e03a5"></a>`collection_result` | no | anyOf=([CoordinationCollectionResult](#s-d545cb9313)) \| (type="null"); default=null |  |
+| <a id="s-f71f6e03a5"></a>`collection_result` | no | anyOf=[([CoordinationCollectionResult](#s-d545cb9313)); (type="null")]; default=null |  |
 | <a id="s-8f7fc5f516"></a>`contains_external_effects` | yes | type="boolean" |  |
-| <a id="s-3db394c721"></a>`final_join_settlement_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-3db394c721"></a>`final_join_settlement_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-e9968643db"></a>`format` | no | type="string"; const="stove0-coordination-settlement/v1"; default="stove0-coordination-settlement/v1" |  |
 | <a id="s-2d7acce4e1"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-2000c99227"></a>`work` | yes | [WorkIdentity](#s-9c239c9b47) |  |
@@ -435,7 +435,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-c9a84ef776"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-5598adb625"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-63f113903f"></a>`output_collection` | yes | [CollectionRootRef](#s-0c67995e84) |  |
-| <a id="s-1d25973c64"></a>`producer_settlement_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-1d25973c64"></a>`producer_settlement_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-f06b09199a"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-ffbd632b88"></a>definition `JoinMemberDeclaration`
@@ -497,7 +497,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-f20cde2028"></a>`artifact_selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-a3d17fe041"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-d6555874d0"></a>`producer_settlement_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-d6555874d0"></a>`producer_settlement_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-68f221a586"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-389e4021e8"></a>definition `JsonSchemaDocument`
@@ -594,12 +594,12 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-7d2a94798e"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
-| <a id="s-e96107f9f9"></a>`facts` | no | anyOf=(type="object"; additionalProperties=([JsonValue](#s-51b717ae82))) \| (type="null"); default=null |  |
-| <a id="s-cbabbe1be3"></a>`facts_schema` | no | anyOf=([JsonSchemaDocument](#s-389e4021e8)) \| (type="null"); default=null |  |
-| <a id="s-9056d86eaa"></a>`facts_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
-| <a id="s-c76cd705ed"></a>`failure` | no | anyOf=([ObservationFailure](#s-039e82c574)) \| (type="null"); default=null |  |
+| <a id="s-e96107f9f9"></a>`facts` | no | anyOf=[(type="object"; additionalProperties=([JsonValue](#s-51b717ae82))); (type="null")]; default=null |  |
+| <a id="s-cbabbe1be3"></a>`facts_schema` | no | anyOf=[([JsonSchemaDocument](#s-389e4021e8)); (type="null")]; default=null |  |
+| <a id="s-9056d86eaa"></a>`facts_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
+| <a id="s-c76cd705ed"></a>`failure` | no | anyOf=[([ObservationFailure](#s-039e82c574)); (type="null")]; default=null |  |
 | <a id="s-f6f806d8f8"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1" |  |
-| <a id="s-64e4251888"></a>`inapplicable` | no | anyOf=([ObservationInapplicable](#s-0b96b49cc7)) \| (type="null"); default=null |  |
+| <a id="s-64e4251888"></a>`inapplicable` | no | anyOf=[([ObservationInapplicable](#s-0b96b49cc7)); (type="null")]; default=null |  |
 | <a id="s-a3fc810993"></a>`observer` | yes | [ObserverImplementation](#s-4f624728c8) |  |
 | <a id="s-d4940bd8d8"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-75adc1fe55"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -805,7 +805,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-ebc598f038"></a>`controller_evidence` | yes | [ControllerEvidence](#s-8b01483f06) |  |
 | <a id="s-ae29e9b9b5"></a>`fence` | yes | type="integer"; minimum=1 |  |
 | <a id="s-e9141da4d3"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-431fa94f0b"></a>`plan` | yes | discriminator={"mapping":{"stove0-effect-target/v1":"[EffectPlan](#s-014776d0e1)","stove0-transform-target/v1":"[TransformPlan](#s-e6d9103d68)"},"propertyName":"protocol"}; oneOf=([TransformPlan](#s-e6d9103d68)) \| ([EffectPlan](#s-014776d0e1)) |  |
+| <a id="s-431fa94f0b"></a>`plan` | yes | discriminator={"mapping":{"stove0-effect-target/v1":"#/$defs/EffectPlan","stove0-transform-target/v1":"#/$defs/TransformPlan"},"propertyName":"protocol"}; oneOf=[([TransformPlan](#s-e6d9103d68)); ([EffectPlan](#s-014776d0e1))] |  |
 | <a id="s-19f9510e8c"></a>`workspace_assurance` | yes | type="string"; enum=["encrypted","ephemeral"] |  |
 
 ##### <a id="s-a1c5d06fa9"></a>definition `TargetJobStatus`
@@ -819,15 +819,15 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-8b4f6128e9"></a>`attempt` | yes | type="integer"; minimum=1 |  |
-| <a id="s-d396417626"></a>`derivation` | no | anyOf=(type="object"; additionalProperties=true) \| (type="null"); default=null |  |
-| <a id="s-60d89d4aa2"></a>`effect_receipt` | no | anyOf=([ExternalEffectReceipt](#s-233c85f6dd)) \| (type="null"); default=null |  |
-| <a id="s-1ea93e8c0c"></a>`execution_evidence` | no | anyOf=([TargetExecutionEvidence](#s-280bb22c73)) \| (type="null"); default=null |  |
-| <a id="s-2dea9d3137"></a>`failure` | no | anyOf=([TargetFailure](#s-43f40e974c)) \| (type="null"); default=null |  |
-| <a id="s-586946552e"></a>`inapplicable` | no | anyOf=([TargetInapplicable](#s-a6ab979dc2)) \| (type="null"); default=null |  |
+| <a id="s-d396417626"></a>`derivation` | no | anyOf=[(type="object"; additionalProperties=(any JSON value)); (type="null")]; default=null |  |
+| <a id="s-60d89d4aa2"></a>`effect_receipt` | no | anyOf=[([ExternalEffectReceipt](#s-233c85f6dd)); (type="null")]; default=null |  |
+| <a id="s-1ea93e8c0c"></a>`execution_evidence` | no | anyOf=[([TargetExecutionEvidence](#s-280bb22c73)); (type="null")]; default=null |  |
+| <a id="s-2dea9d3137"></a>`failure` | no | anyOf=[([TargetFailure](#s-43f40e974c)); (type="null")]; default=null |  |
+| <a id="s-586946552e"></a>`inapplicable` | no | anyOf=[([TargetInapplicable](#s-a6ab979dc2)); (type="null")]; default=null |  |
 | <a id="s-8b3ffd5479"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ae50c8248b"></a>`output_collection` | no | anyOf=([OutputCollectionRef](#s-875ef95b02)) \| (type="null"); default=null |  |
+| <a id="s-ae50c8248b"></a>`output_collection` | no | anyOf=[([OutputCollectionRef](#s-875ef95b02)); (type="null")]; default=null |  |
 | <a id="s-1578835364"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-c839cc27ca"></a>`production` | no | anyOf=([TargetProductionAuthority](#s-0793231fae)) \| (type="null"); default=null |  |
+| <a id="s-c839cc27ca"></a>`production` | no | anyOf=[([TargetProductionAuthority](#s-0793231fae)); (type="null")]; default=null |  |
 | <a id="s-9cd6e92b59"></a>`progress` | yes | [TargetProgress](#s-509bfc0c82) |  |
 | <a id="s-17eb23c5ee"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1" |  |
 | <a id="s-9ae6e4de6c"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -903,8 +903,8 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-7c450bcc99"></a>`completed` | yes | type="integer"; minimum=0 |  |
 | <a id="s-eb3b7f0c57"></a>`phase` | yes | type="string"; maxLength=120; minLength=1 |  |
-| <a id="s-4f60514794"></a>`total` | no | anyOf=(type="integer"; minimum=0) \| (type="null"); default=null |  |
-| <a id="s-d09b9ee956"></a>`unit` | no | anyOf=(type="string"; maxLength=40; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-4f60514794"></a>`total` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; default=null |  |
+| <a id="s-d09b9ee956"></a>`unit` | no | anyOf=[(type="string"; maxLength=40; minLength=1); (type="null")]; default=null |  |
 
 ##### <a id="s-0123d3e011"></a>definition `TargetSettlementAuthority`
 
@@ -982,8 +982,8 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-b3c8ff41cd"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
-| <a id="s-32c462d0f5"></a>`evaluation` | no | anyOf=([EvaluationBinding](#s-80d3264a22)) \| (type="null"); default=null |  |
-| <a id="s-071846b040"></a>`fork_join` | no | anyOf=(discriminator={"mapping":{"branch":"[BranchWorkBinding](#s-b2406b87c9)","join":"[JoinWorkBinding](#s-1382221b54)"},"propertyName":"kind"}; oneOf=([BranchWorkBinding](#s-b2406b87c9)) \| ([JoinWorkBinding](#s-1382221b54))) \| (type="null"); default=null |  |
+| <a id="s-32c462d0f5"></a>`evaluation` | no | anyOf=[([EvaluationBinding](#s-80d3264a22)); (type="null")]; default=null |  |
+| <a id="s-071846b040"></a>`fork_join` | no | anyOf=[(discriminator={"mapping":{"branch":"#/$defs/BranchWorkBinding","join":"#/$defs/JoinWorkBinding"},"propertyName":"kind"}; oneOf=[([BranchWorkBinding](#s-b2406b87c9)); ([JoinWorkBinding](#s-1382221b54))]); (type="null")]; default=null |  |
 | <a id="s-048ddd21eb"></a>`format` | no | type="string"; const="stove0-work/v1"; default="stove0-work/v1" |  |
 | <a id="s-7def94aa7c"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](#s-0c67995e84)); minItems=1 |  |
 | <a id="s-95d8658e71"></a>`recipe` | yes | [RecipeRef](#s-5f53bb63ed) |  |

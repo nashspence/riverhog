@@ -37,7 +37,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-95af627683"></a>`destination_store` | yes | [ArchiveStoreName](#s-49e2d5d755) |  |
-| <a id="s-3ebeef1a2b"></a>`source_store` | no | anyOf=([ArchiveStoreName](#s-49e2d5d755)) \| (type="null"); default=null |  |
+| <a id="s-3ebeef1a2b"></a>`source_store` | no | anyOf=[([ArchiveStoreName](#s-49e2d5d755)); (type="null")]; default=null |  |
 
 ##### Definitions
 

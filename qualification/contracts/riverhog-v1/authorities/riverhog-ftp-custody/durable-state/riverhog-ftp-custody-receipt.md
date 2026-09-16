@@ -19,6 +19,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Document schema
 
+- `kind`: `"json-document"`
 <a id="s-17735bcaf1"></a>
 
 - <a id="s-ff823cb7b9"></a>`type`: `"object"`
@@ -30,13 +31,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-9d7edc41a5"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a02010b383"></a>`claim_id` | yes | type="string"; minLength=1 |  |
-| <a id="s-26fb5dc079"></a>`collection_id` | yes | type="integer"; minimum=1 |  |
-| <a id="s-02b9d25461"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-fb0e5e377d"></a>`format` | yes | type="string"; const="riverhog-ftp-adapter-receipt/v1" |  |
-| <a id="s-085dd88286"></a>`riverhog_receipt` | yes | type="object"; additionalProperties=true |  |
-| <a id="s-a6edc25a15"></a>`source_event_id` | yes | type="string"; minLength=1 |  |
+| <a id="s-9d7edc41a5"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
+| <a id="s-a02010b383"></a>`claim_id` | yes | type="string"; minLength=1; title="Claim Id" |  |
+| <a id="s-26fb5dc079"></a>`collection_id` | yes | type="integer"; minimum=1; title="Collection Id" |  |
+| <a id="s-02b9d25461"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
+| <a id="s-fb0e5e377d"></a>`format` | yes | type="string"; const="riverhog-ftp-adapter-receipt/v1"; title="Format" |  |
+| <a id="s-085dd88286"></a>`riverhog_receipt` | yes | type="object"; additionalProperties=(any JSON value); title="Riverhog Receipt" |  |
+| <a id="s-a6edc25a15"></a>`source_event_id` | yes | type="string"; minLength=1; title="Source Event Id" |  |
 
 ## Maintained corroboration
 

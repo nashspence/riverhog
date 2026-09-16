@@ -16,9 +16,9 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-8b0a3afb0d"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-6cd01a4303"></a>`coordinate` | SHA256SUMS.minisig |
-| <a id="s-605c054266"></a>`public_key_distribution` | The public key is distributed in the v1 documentation and every GitHub release. |
-| <a id="s-3a07c8929a"></a>`scheme` | minisign |
+| <a id="s-6cd01a4303"></a>`coordinate` | `"SHA256SUMS.minisig"` |
+| <a id="s-605c054266"></a>`public_key_distribution` | `"The public key is distributed in the v1 documentation and every GitHub release."` |
+| <a id="s-3a07c8929a"></a>`scheme` | `"minisign"` |
 
 ## Governing policies
 

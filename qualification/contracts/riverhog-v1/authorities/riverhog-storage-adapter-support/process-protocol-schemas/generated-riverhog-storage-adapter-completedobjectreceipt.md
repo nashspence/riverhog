@@ -24,14 +24,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e321434eb8"></a>`completed_at` | yes | type="string"; maxLength=100; minLength=1 |  |
-| <a id="s-f9fbc589a8"></a>`entity_token` | no | anyOf=(type="string"; maxLength=4000; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-627e7fc470"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-a35df82ae3"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-4ade09495c"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-e975843e16"></a>`verified_content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
-| <a id="s-23cb851317"></a>`verified_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
-| <a id="s-786e57377f"></a>`verified_placement` | yes | type="string"; enum=["archive","immediate"] |  |
+| <a id="s-e321434eb8"></a>`completed_at` | yes | type="string"; maxLength=100; minLength=1; title="Completed At" |  |
+| <a id="s-f9fbc589a8"></a>`entity_token` | no | anyOf=[(type="string"; maxLength=4000; minLength=1); (type="null")]; default=null; title="Entity Token" |  |
+| <a id="s-627e7fc470"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
+| <a id="s-a35df82ae3"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null; title="Revision" |  |
+| <a id="s-4ade09495c"></a>`stored_bytes` | yes | type="integer"; minimum=1; title="Stored Bytes" |  |
+| <a id="s-e975843e16"></a>`verified_content_type` | yes | type="string"; maxLength=255; minLength=1; title="Verified Content Type" |  |
+| <a id="s-23cb851317"></a>`verified_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; title="Verified Identity Assertions"; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
+| <a id="s-786e57377f"></a>`verified_placement` | yes | type="string"; enum=["archive","immediate"]; title="Verified Placement" |  |
 
 ### Progression, limits, and lifecycle
 

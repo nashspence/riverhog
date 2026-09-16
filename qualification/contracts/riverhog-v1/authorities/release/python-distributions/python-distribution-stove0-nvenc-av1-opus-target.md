@@ -16,15 +16,15 @@ Optional nonnormative NVENC AV1 and Opus target reference for Stove0.
 <a id="s-53f145e23e"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-8ffaa10b18"></a>`artifacts` | [{"coordinate": "dist/stove0_nvenc_av1_opus_target-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_nvenc_av1_opus_target-{version}.tar.gz", "format": "sdist"}] |
-| <a id="s-a9871665f4"></a>`channel` | github-release |
-| <a id="s-dd614b41da"></a>`description` | Optional nonnormative NVENC AV1 and Opus target reference for Stove0. |
-| <a id="s-32933c4491"></a>`license_baseline` | first-v1-publication |
-| <a id="s-aed7f2e4f6"></a>`license_expression` | CAL-1.0 |
-| <a id="s-152e8bfc4a"></a>`publication_identity` | {"coordinate": "stove0-nvenc-av1-opus-target", "kind": "python-distribution"} |
-| <a id="s-8bb3a7af50"></a>`requires_python` | >=3.12 |
-| <a id="s-1f2fd4387d"></a>`role` | reference_component |
-| <a id="s-0a45edb9f8"></a>`source` | reference/stove0/targets/nvenc-av1-opus/target/pyproject.toml |
+| <a id="s-8ffaa10b18"></a>`artifacts` | `[{"coordinate":"dist/stove0_nvenc_av1_opus_target-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_nvenc_av1_opus_target-{version}.tar.gz","format":"sdist"}]` |
+| <a id="s-a9871665f4"></a>`channel` | `"github-release"` |
+| <a id="s-dd614b41da"></a>`description` | `"Optional nonnormative NVENC AV1 and Opus target reference for Stove0."` |
+| <a id="s-32933c4491"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-aed7f2e4f6"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-152e8bfc4a"></a>`publication_identity` | `{"coordinate":"stove0-nvenc-av1-opus-target","kind":"python-distribution"}` |
+| <a id="s-8bb3a7af50"></a>`requires_python` | `">=3.12"` |
+| <a id="s-1f2fd4387d"></a>`role` | `"reference_component"` |
+| <a id="s-0a45edb9f8"></a>`source` | `"reference/stove0/targets/nvenc-av1-opus/target/pyproject.toml"` |
 
 ## Existing ownership context
 

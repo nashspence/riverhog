@@ -36,8 +36,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4529d53325"></a>`admission` | no | anyOf=([AdmissionRun](#s-bba32c184c)) \| (type="null"); default=null |  |
-| <a id="s-d0ff3529cf"></a>`pruning` | yes | anyOf=([SchedulerPruning](#s-bc7006be46)) \| (type="null") |  |
+| <a id="s-4529d53325"></a>`admission` | no | anyOf=[([AdmissionRun](#s-bba32c184c)); (type="null")]; default=null |  |
+| <a id="s-d0ff3529cf"></a>`pruning` | yes | anyOf=[([SchedulerPruning](#s-bc7006be46)); (type="null")] |  |
 | <a id="s-557354c3af"></a>`work` | yes | [SchedulerWorkBatch](#s-85f50ba4ce) |  |
 
 ##### Definitions
@@ -71,8 +71,8 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-512d9ab40f"></a>`error` | yes | type="string"; maxLength=1000; minLength=1 |  |
-| <a id="s-13280c6b71"></a>`event_id` | no | anyOf=(type="string") \| (type="null"); default=null |  |
-| <a id="s-75e71774bf"></a>`work_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-13280c6b71"></a>`event_id` | no | anyOf=[(type="string"); (type="null")]; default=null |  |
+| <a id="s-75e71774bf"></a>`work_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 
 ##### <a id="s-bc7006be46"></a>definition `SchedulerPruning`
 

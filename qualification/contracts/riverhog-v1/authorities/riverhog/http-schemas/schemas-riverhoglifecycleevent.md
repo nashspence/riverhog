@@ -21,20 +21,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Alternative | Schema |
 |---|---|
-| <a id="s-e329a936f8"></a>1 | #/components/schemas/CollectionFinalizedEvent |
-| <a id="s-647809a727"></a>2 | #/components/schemas/CollectionDeletedEvent |
-| <a id="s-0373d6bc05"></a>3 | #/components/schemas/ArchiveCopyRequestedEvent |
-| <a id="s-a41fa3dd49"></a>4 | #/components/schemas/ArchiveCopyCompletedEvent |
-| <a id="s-7e38c2bdf8"></a>5 | #/components/schemas/ArchiveCopyIssueEvent |
-| <a id="s-b0544dd01d"></a>6 | #/components/schemas/ArchiveCopyCanceledEvent |
-| <a id="s-91af0a56a3"></a>7 | #/components/schemas/RetrievalRequestedEvent |
-| <a id="s-bd66337253"></a>8 | #/components/schemas/RetrievalReadyEvent |
-| <a id="s-c4ae8c3d56"></a>9 | #/components/schemas/RetrievalRenewedEvent |
-| <a id="s-20fd46f18e"></a>10 | #/components/schemas/RetrievalCompletedEvent |
-| <a id="s-bd3fce7c7a"></a>11 | #/components/schemas/RetrievalCanceledEvent |
-| <a id="s-aac32b2632"></a>12 | #/components/schemas/RetrievalExpiredEvent |
-| <a id="s-04a9b2de8a"></a>13 | #/components/schemas/RetrievalIssueEvent |
-| <a id="s-f63dc058cd"></a>14 | #/components/schemas/RetrievalFailedEvent |
+| <a id="s-e329a936f8"></a>1 | [CollectionFinalizedEvent](schemas-collectionfinalizedevent.md) |
+| <a id="s-647809a727"></a>2 | [CollectionDeletedEvent](schemas-collectiondeletedevent.md) |
+| <a id="s-0373d6bc05"></a>3 | [ArchiveCopyRequestedEvent](schemas-archivecopyrequestedevent.md) |
+| <a id="s-a41fa3dd49"></a>4 | [ArchiveCopyCompletedEvent](schemas-archivecopycompletedevent.md) |
+| <a id="s-7e38c2bdf8"></a>5 | [ArchiveCopyIssueEvent](schemas-archivecopyissueevent.md) |
+| <a id="s-b0544dd01d"></a>6 | [ArchiveCopyCanceledEvent](schemas-archivecopycanceledevent.md) |
+| <a id="s-91af0a56a3"></a>7 | [RetrievalRequestedEvent](schemas-retrievalrequestedevent.md) |
+| <a id="s-bd66337253"></a>8 | [RetrievalReadyEvent](schemas-retrievalreadyevent.md) |
+| <a id="s-c4ae8c3d56"></a>9 | [RetrievalRenewedEvent](schemas-retrievalrenewedevent.md) |
+| <a id="s-20fd46f18e"></a>10 | [RetrievalCompletedEvent](schemas-retrievalcompletedevent.md) |
+| <a id="s-bd3fce7c7a"></a>11 | [RetrievalCanceledEvent](schemas-retrievalcanceledevent.md) |
+| <a id="s-aac32b2632"></a>12 | [RetrievalExpiredEvent](schemas-retrievalexpiredevent.md) |
+| <a id="s-04a9b2de8a"></a>13 | [RetrievalIssueEvent](schemas-retrievalissueevent.md) |
+| <a id="s-f63dc058cd"></a>14 | [RetrievalFailedEvent](schemas-retrievalfailedevent.md) |
 
 ## Maintained corroboration
 

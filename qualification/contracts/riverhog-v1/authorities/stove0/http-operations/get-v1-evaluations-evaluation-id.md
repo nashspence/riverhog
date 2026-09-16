@@ -14,14 +14,15 @@ Get Evaluation
 ## External contract
 
 <a id="s-8eeae9a2dc"></a>
-- <a id="s-91c9653dd1"></a>`operationId`: get_evaluation
-- <a id="s-a5146e03f9"></a>`summary`: Get Evaluation
+- <a id="s-91c9653dd1"></a>`operationId`: `"get_evaluation"`
+- <a id="s-a5146e03f9"></a>`summary`: `"Get Evaluation"`
+- <a id="s-32b1d50ff3"></a>`tags`: `["evaluations"]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-51f484987a"></a>`evaluation_id` | path | yes | not declared | type="string" |
+| <a id="s-51f484987a"></a>`evaluation_id` | path | yes | not declared | type="string"; title="Evaluation Id" |
 
 ### Responses
 

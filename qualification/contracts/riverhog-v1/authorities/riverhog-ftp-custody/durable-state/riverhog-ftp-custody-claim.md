@@ -19,6 +19,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Document schema
 
+- `kind`: `"json-document"`
 <a id="s-53f07a05ce"></a>
 
 - <a id="s-bde77f1331"></a>`type`: `"object"`
@@ -30,13 +31,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-624e514537"></a>`claim_id` | yes | type="string"; minLength=1 |  |
-| <a id="s-350d0b880f"></a>`completion_event_ids` | no | anyOf=(type="array"; items=(type="string")) \| (type="null"); default=null |  |
-| <a id="s-5dd5626cf9"></a>`files` | yes | type="array"; items=([FtpClaimFileState](#s-16b4ff7d91)); minItems=1 |  |
-| <a id="s-59ff4956dc"></a>`format` | yes | type="string"; const="riverhog-ftp-adapter-claim/v1" |  |
-| <a id="s-200634d957"></a>`journals` | yes | type="object"; additionalProperties=(type="string") |  |
-| <a id="s-5783ef5049"></a>`source` | yes | type="string"; minLength=1 |  |
-| <a id="s-1600aec5fa"></a>`source_event_id` | yes | type="string"; minLength=1 |  |
+| <a id="s-624e514537"></a>`claim_id` | yes | type="string"; minLength=1; title="Claim Id" |  |
+| <a id="s-350d0b880f"></a>`completion_event_ids` | no | anyOf=[(type="array"; items=(type="string")); (type="null")]; default=null; title="Completion Event Ids" |  |
+| <a id="s-5dd5626cf9"></a>`files` | yes | type="array"; items=([FtpClaimFileState](#s-16b4ff7d91)); minItems=1; title="Files" |  |
+| <a id="s-59ff4956dc"></a>`format` | yes | type="string"; const="riverhog-ftp-adapter-claim/v1"; title="Format" |  |
+| <a id="s-200634d957"></a>`journals` | yes | type="object"; additionalProperties=(type="string"); title="Journals" |  |
+| <a id="s-5783ef5049"></a>`source` | yes | type="string"; minLength=1; title="Source" |  |
+| <a id="s-1600aec5fa"></a>`source_event_id` | yes | type="string"; minLength=1; title="Source Event Id" |  |
 
 #### Definitions
 
@@ -56,12 +57,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-59db85b53c"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-bf76fa2520"></a>`current_state_id` | yes | type="string"; minLength=1 |  |
-| <a id="s-6ded817cb6"></a>`journal_id` | yes | type="string"; minLength=1 |  |
-| <a id="s-bb7e9c745a"></a>`path` | yes | type="string"; minLength=1 |  |
-| <a id="s-c2f5a99cec"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ea8481fd72"></a>`status` | yes | type="string"; const="captured" |  |
+| <a id="s-59db85b53c"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-bf76fa2520"></a>`current_state_id` | yes | type="string"; minLength=1; title="Current State Id" |  |
+| <a id="s-6ded817cb6"></a>`journal_id` | yes | type="string"; minLength=1; title="Journal Id" |  |
+| <a id="s-bb7e9c745a"></a>`path` | yes | type="string"; minLength=1; title="Path" |  |
+| <a id="s-c2f5a99cec"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-ea8481fd72"></a>`status` | yes | type="string"; const="captured"; title="Status" |  |
 
 #### <a id="s-85d2e24360"></a>definition `CompletionRecordState`
 
@@ -74,14 +75,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ccabd96792"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-42b21cdc9a"></a>`custody` | yes | type="string"; minLength=1 |  |
-| <a id="s-5746c5531c"></a>`device` | yes | type="integer"; minimum=0 |  |
-| <a id="s-7f4867d982"></a>`event_id` | yes | type="string"; minLength=1 |  |
-| <a id="s-4a5d92e6d8"></a>`format` | yes | type="string"; const="riverhog-ftp-completion-record/v1" |  |
-| <a id="s-735567f53f"></a>`inode` | yes | type="integer"; minimum=0 |  |
-| <a id="s-cb825df170"></a>`path` | yes | type="string"; minLength=1 |  |
-| <a id="s-b7c3510f9d"></a>`source_id` | yes | type="string"; minLength=1 |  |
+| <a id="s-ccabd96792"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-42b21cdc9a"></a>`custody` | yes | type="string"; minLength=1; title="Custody" |  |
+| <a id="s-5746c5531c"></a>`device` | yes | type="integer"; minimum=0; title="Device" |  |
+| <a id="s-7f4867d982"></a>`event_id` | yes | type="string"; minLength=1; title="Event Id" |  |
+| <a id="s-4a5d92e6d8"></a>`format` | yes | type="string"; const="riverhog-ftp-completion-record/v1"; title="Format" |  |
+| <a id="s-735567f53f"></a>`inode` | yes | type="integer"; minimum=0; title="Inode" |  |
+| <a id="s-cb825df170"></a>`path` | yes | type="string"; minLength=1; title="Path" |  |
+| <a id="s-b7c3510f9d"></a>`source_id` | yes | type="string"; minLength=1; title="Source Id" |  |
 
 #### <a id="s-16b4ff7d91"></a>definition `FtpClaimFileState`
 
@@ -94,14 +95,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-090727027e"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-8f3c32b43c"></a>`completion_record` | no | anyOf=([CompletionRecordState](#s-85d2e24360)) \| (type="null"); default=null |  |
-| <a id="s-ad73184375"></a>`device` | yes | type="integer"; minimum=0 |  |
-| <a id="s-580e01dc1a"></a>`inode` | yes | type="integer"; minimum=0 |  |
-| <a id="s-0f75c99e66"></a>`original` | yes | type="string"; minLength=1 |  |
-| <a id="s-14b8d91149"></a>`path` | yes | type="string"; minLength=1 |  |
-| <a id="s-bc12e2032e"></a>`provenance` | yes | anyOf=([CapturedProvenanceState](#s-11aa5d2c36)) \| ([OmittedProvenanceState](#s-9bcafae0b1)) |  |
-| <a id="s-3c672fd99a"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-090727027e"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-8f3c32b43c"></a>`completion_record` | no | anyOf=[([CompletionRecordState](#s-85d2e24360)); (type="null")]; default=null |  |
+| <a id="s-ad73184375"></a>`device` | yes | type="integer"; minimum=0; title="Device" |  |
+| <a id="s-580e01dc1a"></a>`inode` | yes | type="integer"; minimum=0; title="Inode" |  |
+| <a id="s-0f75c99e66"></a>`original` | yes | type="string"; minLength=1; title="Original" |  |
+| <a id="s-14b8d91149"></a>`path` | yes | type="string"; minLength=1; title="Path" |  |
+| <a id="s-bc12e2032e"></a>`provenance` | yes | anyOf=[([CapturedProvenanceState](#s-11aa5d2c36)); ([OmittedProvenanceState](#s-9bcafae0b1))]; title="Provenance" |  |
+| <a id="s-3c672fd99a"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 #### <a id="s-9bcafae0b1"></a>definition `OmittedProvenanceState`
 
@@ -114,11 +115,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-804a17ecd7"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-2df37f2887"></a>`omission_reason` | yes | type="string"; minLength=1 |  |
-| <a id="s-b914d1d581"></a>`path` | yes | type="string"; minLength=1 |  |
-| <a id="s-5d7f77aedf"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-e0466263dd"></a>`status` | yes | type="string"; const="omitted" |  |
+| <a id="s-804a17ecd7"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-2df37f2887"></a>`omission_reason` | yes | type="string"; minLength=1; title="Omission Reason" |  |
+| <a id="s-b914d1d581"></a>`path` | yes | type="string"; minLength=1; title="Path" |  |
+| <a id="s-5d7f77aedf"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-e0466263dd"></a>`status` | yes | type="string"; const="omitted"; title="Status" |  |
 
 ## Maintained corroboration
 

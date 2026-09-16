@@ -25,10 +25,10 @@ Request one bounded page from an exact accepted-segment view.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f1d3323083"></a>`after_number` | no | type="integer"; minimum=0; default=0; x-riverhog-extent={"policy":"segmented_no_total_max","reason":"write-segment-history-bounded-traversal"} |  |
-| <a id="s-86d5f555d2"></a>`maximum_items` | no | type="integer"; minimum=1; maximum=128; default=128 |  |
+| <a id="s-f1d3323083"></a>`after_number` | no | type="integer"; minimum=0; default=0; title="After Number"; x-riverhog-extent={"policy":"segmented_no_total_max","reason":"write-segment-history-bounded-traversal"} |  |
+| <a id="s-86d5f555d2"></a>`maximum_items` | no | type="integer"; minimum=1; maximum=128; default=128; title="Maximum Items" |  |
 | <a id="s-9142d95f27"></a>`session` | yes | [WriteSession](#s-524b3d9072) |  |
-| <a id="s-6b5c1418bd"></a>`traversal_token` | no | anyOf=(type="string"; maxLength=4000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-6b5c1418bd"></a>`traversal_token` | no | anyOf=[(type="string"; maxLength=4000; minLength=1); (type="null")]; default=null; title="Traversal Token" |  |
 
 ### Definitions
 
@@ -45,9 +45,9 @@ Request one bounded page from an exact accepted-segment view.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ec7a1bfb7a"></a>`expected_bytes` | yes | type="integer"; minimum=1 | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
-| <a id="s-6859981f1c"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-ca2109b609"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1 | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
+| <a id="s-ec7a1bfb7a"></a>`expected_bytes` | yes | type="integer"; minimum=1; title="Expected Bytes" | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
+| <a id="s-6859981f1c"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
+| <a id="s-ca2109b609"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1; title="Write Token" | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
 
 ### Progression, limits, and lifecycle
 

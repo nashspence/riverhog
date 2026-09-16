@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c4517a89e2"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-677882908c"></a>`copies` | yes | type="array"; items=(#/components/schemas/ArchiveCopyOut) |  |
-| <a id="s-679b9d7139"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-aef023ab6e"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
+| <a id="s-c4517a89e2"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-677882908c"></a>`copies` | yes | type="array"; items=([ArchiveCopyOut](schemas-archivecopyout.md)); title="Copies" |  |
+| <a id="s-679b9d7139"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-aef023ab6e"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
 
 ### Progression, limits, and lifecycle
 

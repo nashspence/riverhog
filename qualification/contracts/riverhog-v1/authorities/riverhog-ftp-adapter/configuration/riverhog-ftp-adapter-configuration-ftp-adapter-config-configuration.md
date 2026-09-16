@@ -24,19 +24,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f911dd1f94"></a>`allow_insecure_http` | no | type="boolean"; default=false |  |
-| <a id="s-dbf5ea4ac5"></a>`api_token` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-7c7fe84c8b"></a>`claim_attempt_budget` | no | type="integer"; minimum=2; default=8 |  |
-| <a id="s-684f7aa9c4"></a>`completion_failure_attempt_budget` | no | type="integer"; minimum=1; default=8 |  |
-| <a id="s-c151434722"></a>`completion_failure_capacity` | no | type="integer"; minimum=1; default=128 |  |
-| <a id="s-6c890fc5d5"></a>`discovery_entry_budget` | no | type="integer"; minimum=1; default=4096 |  |
-| <a id="s-72ad5db1e6"></a>`host_id` | yes | type="string"; maxLength=255; minLength=1 |  |
-| <a id="s-7c5fa78bfc"></a>`pending_claim_capacity` | no | type="integer"; minimum=1; default=128 |  |
-| <a id="s-82aa3eb24d"></a>`poll_seconds` | no | type="number"; minimum=0.1; maximum=3600; default=5 |  |
-| <a id="s-2a409954ca"></a>`provenance_observer` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-22a68b6f37"></a>`riverhog_base_url` | yes | type="string"; maxLength=2048; minLength=1 |  |
-| <a id="s-132c5582fa"></a>`riverhog_token` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-c96e3a57ab"></a>`sources` | yes | type="array"; items=([SourceConfig](#s-b4cbe4146f)); minItems=1 |  |
+| <a id="s-f911dd1f94"></a>`allow_insecure_http` | no | type="boolean"; default=false; title="Allow Insecure Http" |  |
+| <a id="s-dbf5ea4ac5"></a>`api_token` | yes | type="string"; maxLength=4096; minLength=1; title="Api Token" |  |
+| <a id="s-7c7fe84c8b"></a>`claim_attempt_budget` | no | type="integer"; minimum=2; default=8; title="Claim Attempt Budget" |  |
+| <a id="s-684f7aa9c4"></a>`completion_failure_attempt_budget` | no | type="integer"; minimum=1; default=8; title="Completion Failure Attempt Budget" |  |
+| <a id="s-c151434722"></a>`completion_failure_capacity` | no | type="integer"; minimum=1; default=128; title="Completion Failure Capacity" |  |
+| <a id="s-6c890fc5d5"></a>`discovery_entry_budget` | no | type="integer"; minimum=1; default=4096; title="Discovery Entry Budget" |  |
+| <a id="s-72ad5db1e6"></a>`host_id` | yes | type="string"; maxLength=255; minLength=1; title="Host Id" |  |
+| <a id="s-7c5fa78bfc"></a>`pending_claim_capacity` | no | type="integer"; minimum=1; default=128; title="Pending Claim Capacity" |  |
+| <a id="s-82aa3eb24d"></a>`poll_seconds` | no | type="number"; minimum=0.1; maximum=3600; default=5; title="Poll Seconds" |  |
+| <a id="s-2a409954ca"></a>`provenance_observer` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null; title="Provenance Observer" |  |
+| <a id="s-22a68b6f37"></a>`riverhog_base_url` | yes | type="string"; maxLength=2048; minLength=1; title="Riverhog Base Url" |  |
+| <a id="s-132c5582fa"></a>`riverhog_token` | yes | type="string"; maxLength=4096; minLength=1; title="Riverhog Token" |  |
+| <a id="s-c96e3a57ab"></a>`sources` | yes | type="array"; items=([SourceConfig](#s-b4cbe4146f)); minItems=1; title="Sources" |  |
 
 ### Definitions
 
@@ -74,17 +74,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3246c539d9"></a>`archive_store` | no | anyOf=(type="string"; maxLength=160; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-9711d6753d"></a>`close_mode` | no | type="string"; enum=["stable","explicit-flush"]; default="stable" |  |
-| <a id="s-276db63837"></a>`description` | no | anyOf=([CollectionDescription](#s-de0b3f6676)) \| (type="null"); default=null |  |
-| <a id="s-8f393e4b41"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$" |  |
-| <a id="s-d364f97555"></a>`ingest_source` | yes | type="string"; maxLength=512; minLength=1 |  |
-| <a id="s-16b095e18a"></a>`max_bytes` | no | type="integer"; minimum=1; default=107374182400 |  |
-| <a id="s-487e91e300"></a>`max_files` | no | type="integer"; minimum=1; default=1000 |  |
-| <a id="s-78d458ca6a"></a>`provenance` | no | type="string"; enum=["capture","omit"]; default="capture" |  |
-| <a id="s-a05abaefd3"></a>`provenance_omission_reason` | no | anyOf=(type="string"; maxLength=1000) \| (type="null"); default=null |  |
-| <a id="s-042095c12f"></a>`root` | yes | type="string"; format="path" |  |
-| <a id="s-779c3d2f99"></a>`tags` | no | type="array"; default=[]; items=([CollectionTag](#s-031bfd2553)) |  |
+| <a id="s-3246c539d9"></a>`archive_store` | no | anyOf=[(type="string"; maxLength=160; minLength=1); (type="null")]; default=null; title="Archive Store" |  |
+| <a id="s-9711d6753d"></a>`close_mode` | no | type="string"; enum=["stable","explicit-flush"]; default="stable"; title="Close Mode" |  |
+| <a id="s-276db63837"></a>`description` | no | anyOf=[([CollectionDescription](#s-de0b3f6676)); (type="null")]; default=null |  |
+| <a id="s-8f393e4b41"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-d364f97555"></a>`ingest_source` | yes | type="string"; maxLength=512; minLength=1; title="Ingest Source" |  |
+| <a id="s-16b095e18a"></a>`max_bytes` | no | type="integer"; minimum=1; default=107374182400; title="Max Bytes" |  |
+| <a id="s-487e91e300"></a>`max_files` | no | type="integer"; minimum=1; default=1000; title="Max Files" |  |
+| <a id="s-78d458ca6a"></a>`provenance` | no | type="string"; enum=["capture","omit"]; default="capture"; title="Provenance" |  |
+| <a id="s-a05abaefd3"></a>`provenance_omission_reason` | no | anyOf=[(type="string"; maxLength=1000); (type="null")]; default=null; title="Provenance Omission Reason" |  |
+| <a id="s-042095c12f"></a>`root` | yes | type="string"; format="path"; title="Root" |  |
+| <a id="s-779c3d2f99"></a>`tags` | no | type="array"; default=[]; items=([CollectionTag](#s-031bfd2553)); title="Tags" |  |
 
 ### Progression, limits, and lifecycle
 

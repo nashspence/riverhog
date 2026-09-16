@@ -16,13 +16,13 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-2c73d5c0ad"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-22e77dac9e"></a>`error_schema` | StorageAdapterError |
-| <a id="s-f7afe900fd"></a>`errors` | [{"code": "unauthorized", "status": 401}, {"code": "invalid_request", "status": 400}, {"code": "provider_unavailable", "status": 503}, {"code": "internal_failure", "status": 500}] |
-| <a id="s-219d2e0bb6"></a>`method` | GET |
-| <a id="s-9fe9844dcd"></a>`path` | /v1/adapter |
-| <a id="s-601e24df4b"></a>`path_parameters` | [] |
-| <a id="s-e6b56028f0"></a>`request` | {"kind": "none", "schema": null} |
-| <a id="s-fa956d8635"></a>`response` | {"headers": [], "kind": "json", "schema": "AdapterDescriptor", "statuses": [200]} |
+| <a id="s-22e77dac9e"></a>`error_schema` | `"StorageAdapterError"` |
+| <a id="s-f7afe900fd"></a>`errors` | `[{"code":"unauthorized","status":401},{"code":"invalid_request","status":400},{"code":"provider_unavailable","status":503},{"code":"internal_failure","status":500}]` |
+| <a id="s-219d2e0bb6"></a>`method` | `"GET"` |
+| <a id="s-9fe9844dcd"></a>`path` | `"/v1/adapter"` |
+| <a id="s-601e24df4b"></a>`path_parameters` | `[]` |
+| <a id="s-e6b56028f0"></a>`request` | `{"kind":"none","schema":null}` |
+| <a id="s-fa956d8635"></a>`response` | `{"headers":[],"kind":"json","schema":"AdapterDescriptor","statuses":[200]}` |
 
 ## Maintained corroboration
 

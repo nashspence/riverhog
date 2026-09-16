@@ -25,10 +25,10 @@ Stable branch-set lineage for one ordinary join work identity.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4034723c28"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-0b3cd7bd11"></a>`kind` | no | type="string"; const="join"; default="join" |  |
-| <a id="s-469029f453"></a>`members` | yes | type="array"; items=(#/components/schemas/JoinWorkMemberBinding); minItems=2 |  |
-| <a id="s-fbd3cc4a8a"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-4034723c28"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Branch Set Sha256" |  |
+| <a id="s-0b3cd7bd11"></a>`kind` | no | type="string"; const="join"; default="join"; title="Kind" |  |
+| <a id="s-469029f453"></a>`members` | yes | type="array"; items=([JoinWorkMemberBinding](schemas-joinworkmemberbinding.md)); minItems=2; title="Members" |  |
+| <a id="s-fbd3cc4a8a"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Parent Work Id" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -25,10 +25,10 @@ The immutable authority shared by every bounded inventory page.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-92807b378e"></a>`file_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-b11180e3ba"></a>`file_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-871d5bb9ae"></a>`header` | yes | #/components/schemas/PortableCollectionHeader |  |
-| <a id="s-fb53d903c1"></a>`inventory_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-92807b378e"></a>`file_bytes` | yes | type="integer"; minimum=0; title="File Bytes" |  |
+| <a id="s-b11180e3ba"></a>`file_count` | yes | type="integer"; minimum=1; title="File Count" |  |
+| <a id="s-871d5bb9ae"></a>`header` | yes | [PortableCollectionHeader](schemas-portablecollectionheader.md) |  |
+| <a id="s-fb53d903c1"></a>`inventory_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Inventory Identity" |  |
 
 ### Progression, limits, and lifecycle
 

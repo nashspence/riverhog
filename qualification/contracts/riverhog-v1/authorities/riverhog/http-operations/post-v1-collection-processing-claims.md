@@ -14,13 +14,20 @@ Create Or Resume Processing Claim
 ## External contract
 
 <a id="s-1d216e45e1"></a>
-- <a id="s-0415bfc8bd"></a>`operationId`: create_or_resume_processing_claim
-- <a id="s-dbd084c980"></a>`summary`: Create Or Resume Processing Claim
-- <a id="s-6808f3b568"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-0415bfc8bd"></a>`operationId`: `"create_or_resume_processing_claim"`
+- <a id="s-6808f3b568"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-dbd084c980"></a>`summary`: `"Create Or Resume Processing Claim"`
+- <a id="s-0330d24284"></a>`tags`: `["collection-workflows"]`
+- <a id="s-2a553d7cd8"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-2c46ceaf5e"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
 
 ### <a id="s-9a28721f3d"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProcessingClaimCreateDocument"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [ProcessingClaimCreateDocument](../http-schemas/schemas-processingclaimcreatedocument.md) |
 
 ### Responses
 

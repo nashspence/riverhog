@@ -14,21 +14,22 @@ Flush
 ## External contract
 
 <a id="s-1a2048e455"></a>
-- <a id="s-e25ea0a4db"></a>`operationId`: flush_ftp_adapter_source
-- <a id="s-aef46c4863"></a>`summary`: Flush
-- <a id="s-facdf1d6a2"></a>`security`: `[{"RiverhogFtpAdapterBearer": []}]`
+- <a id="s-e25ea0a4db"></a>`operationId`: `"flush_ftp_adapter_source"`
+- <a id="s-facdf1d6a2"></a>`security`: `[{"RiverhogFtpAdapterBearer":[]}]`
+- <a id="s-aef46c4863"></a>`summary`: `"Flush"`
+- <a id="s-a408d1b109"></a>`tags`: `["operations"]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-208515f96a"></a>`source_id` | path | yes | not declared | type="string" |
+| <a id="s-208515f96a"></a>`source_id` | path | yes | not declared | type="string"; title="Source Id" |
 
 ### Responses
 
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
-| <a id="s-010c427b4f"></a>`200` | Successful Response | application/json | type="object"; additionalProperties=true | not declared |
+| <a id="s-010c427b4f"></a>`200` | Successful Response | application/json | type="object"; additionalProperties=(any JSON value); title="Response Flush Ftp Adapter Source" | not declared |
 | <a id="s-e2ac7e3c6a"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
 | <a id="s-86321cc684"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
 | <a id="s-ead99851f5"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |

@@ -24,14 +24,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-cabb20a9f5"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-c9445dc761"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
-| <a id="s-3f09da3f00"></a>`intent` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-ef3d4bd9a9"></a>`members` | yes | type="array"; items=(#/components/schemas/RecipeJoinMember); minItems=2 |  |
-| <a id="s-3a69110b26"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-ce2768e698"></a>`projections` | no | type="array"; default=[]; items=(#/components/schemas/OperationProjection) |  |
-| <a id="s-0b3cfd21e6"></a>`target_options` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-6ad86b13a3"></a>`target_registration_id` | yes | type="string" |  |
+| <a id="s-cabb20a9f5"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-c9445dc761"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only"; title="Input Retrieval Policy" |  |
+| <a id="s-3f09da3f00"></a>`intent` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Intent" |  |
+| <a id="s-ef3d4bd9a9"></a>`members` | yes | type="array"; items=([RecipeJoinMember](schemas-recipejoinmember.md)); minItems=2; title="Members" |  |
+| <a id="s-3a69110b26"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Operation Id" |  |
+| <a id="s-ce2768e698"></a>`projections` | no | type="array"; default=[]; items=([OperationProjection](schemas-operationprojection.md)); title="Projections" |  |
+| <a id="s-0b3cfd21e6"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Target Options" |  |
+| <a id="s-6ad86b13a3"></a>`target_registration_id` | yes | type="string"; title="Target Registration Id" |  |
 
 ### Progression, limits, and lifecycle
 

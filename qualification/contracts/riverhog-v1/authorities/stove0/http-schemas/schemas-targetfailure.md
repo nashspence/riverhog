@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e3df4461b3"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-48594b635e"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
-| <a id="s-2d87d112f3"></a>`retryable` | yes | type="boolean" |  |
+| <a id="s-e3df4461b3"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Code" |  |
+| <a id="s-48594b635e"></a>`message` | yes | type="string"; maxLength=1000; minLength=1; title="Message" |  |
+| <a id="s-2d87d112f3"></a>`retryable` | yes | type="boolean"; title="Retryable" |  |
 
 ### Progression, limits, and lifecycle
 

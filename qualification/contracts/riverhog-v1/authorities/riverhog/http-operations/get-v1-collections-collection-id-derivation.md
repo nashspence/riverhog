@@ -14,15 +14,18 @@ Get Collection Derivation
 ## External contract
 
 <a id="s-96918fe7c8"></a>
-- <a id="s-f9e671445a"></a>`operationId`: get_collection_derivation
-- <a id="s-a95f759f17"></a>`summary`: Get Collection Derivation
-- <a id="s-eafcad5159"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-f9e671445a"></a>`operationId`: `"get_collection_derivation"`
+- <a id="s-eafcad5159"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-a95f759f17"></a>`summary`: `"Get Collection Derivation"`
+- <a id="s-cdad7574a9"></a>`tags`: `["collection-workflows"]`
+- <a id="s-7bb9ec2be5"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-0fd48b995e"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-724fe221a4"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-724fe221a4"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
 
 ### Responses
 

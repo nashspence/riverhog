@@ -14,15 +14,18 @@ Get Target Execution Inputs
 ## External contract
 
 <a id="s-dd498ea95c"></a>
-- <a id="s-0754069f02"></a>`operationId`: get_target_execution_inputs
-- <a id="s-8899a415e1"></a>`summary`: Get Target Execution Inputs
+- <a id="s-0754069f02"></a>`operationId`: `"get_target_execution_inputs"`
+- <a id="s-8899a415e1"></a>`summary`: `"Get Target Execution Inputs"`
+- <a id="s-dba21f2f5d"></a>`tags`: `["target-executions"]`
+- <a id="s-a22e55d9dc"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-490fc10b20"></a>`x-riverhog-read-collection`: `{"authority":"target-input-authority","cursor_parameter":"continuation","fixed_limit":256,"kind":"exact-authority-page"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-71bac0a8b3"></a>`job_id` | path | yes | not declared | type="string" |
-| <a id="s-f3e43785ca"></a>`continuation` | query | no | not declared | anyOf=(type="string") \| (type="null") |
+| <a id="s-71bac0a8b3"></a>`job_id` | path | yes | not declared | type="string"; title="Job Id" |
+| <a id="s-f3e43785ca"></a>`continuation` | query | no | not declared | anyOf=[(type="string"); (type="null")]; title="Continuation" |
 
 ### Responses
 

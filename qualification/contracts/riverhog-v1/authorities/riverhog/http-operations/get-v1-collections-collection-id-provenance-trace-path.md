@@ -14,18 +14,21 @@ Trace Collection File Provenance
 ## External contract
 
 <a id="s-d6182d57cb"></a>
-- <a id="s-15ede435cb"></a>`operationId`: trace_collection_file_provenance
-- <a id="s-4e88d5beeb"></a>`summary`: Trace Collection File Provenance
-- <a id="s-d57e9c2f72"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-15ede435cb"></a>`operationId`: `"trace_collection_file_provenance"`
+- <a id="s-d57e9c2f72"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-4e88d5beeb"></a>`summary`: `"Trace Collection File Provenance"`
+- <a id="s-d853846165"></a>`tags`: `["provenance"]`
+- <a id="s-958210f65a"></a>`x-riverhog-permission-requirements`: `[{"any_of":["provenance:read"]}]`
+- <a id="s-fd400f03e7"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-a876758119"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-908b33e7a9"></a>`path` | path | yes | not declared | type="string"; format="riverhog-canonical-relpath-v1"; allOf=(not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)")) \| (not=(pattern="^\\s\|\\s$")); maxLength=4096; minLength=1; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; x-unicode-normalization="NFC" |
-| <a id="s-11242a91f3"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-23428b14d3"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
+| <a id="s-a876758119"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-908b33e7a9"></a>`path` | path | yes | not declared | type="string"; format="riverhog-canonical-relpath-v1"; allOf=[(not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)")); (not=(pattern="^\\s\|\\s$"))]; maxLength=4096; minLength=1; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; title="Path"; x-unicode-normalization="NFC" |
+| <a id="s-11242a91f3"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-23428b14d3"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
 
 ### Responses
 

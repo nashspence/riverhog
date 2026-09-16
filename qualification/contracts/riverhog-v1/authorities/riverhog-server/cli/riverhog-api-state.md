@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-e18feb5210"></a>Parser name: `state`
+
+| Field | Value |
+|---|---|
+| <a id="s-51c1c14b7c"></a>`parameters` | `[]` |
 - <a id="s-ab8542b010"></a>Subcommand selection: required.
 - <a id="s-49907388a9"></a>Unique long-option abbreviations: accepted.
 

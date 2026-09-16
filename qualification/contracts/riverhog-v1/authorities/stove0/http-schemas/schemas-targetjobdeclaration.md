@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6237b2a272"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-06c9d16d27"></a>`controller_evidence` | yes | #/components/schemas/ControllerEvidence |  |
-| <a id="s-8d3f7e4ac2"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-6d4cfafa98"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-4db92bdd23"></a>`plan` | yes | discriminator={"mapping":{"stove0-effect-target/v1":"#/components/schemas/EffectPlan","stove0-transform-target/v1":"#/components/schemas/TransformPlan"},"propertyName":"protocol"}; oneOf=(#/components/schemas/TransformPlan) \| (#/components/schemas/EffectPlan) |  |
-| <a id="s-c03dc9589f"></a>`workspace_assurance` | yes | type="string"; enum=["encrypted","ephemeral"] |  |
+| <a id="s-6237b2a272"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1; title="Claim Id" |  |
+| <a id="s-06c9d16d27"></a>`controller_evidence` | yes | [ControllerEvidence](schemas-controllerevidence.md) |  |
+| <a id="s-8d3f7e4ac2"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-6d4cfafa98"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Job Id" |  |
+| <a id="s-4db92bdd23"></a>`plan` | yes | discriminator={"mapping":{"stove0-effect-target/v1":"#/components/schemas/EffectPlan","stove0-transform-target/v1":"#/components/schemas/TransformPlan"},"propertyName":"protocol"}; oneOf=[([TransformPlan](schemas-transformplan.md)); ([EffectPlan](schemas-effectplan.md))]; title="Plan" |  |
+| <a id="s-c03dc9589f"></a>`workspace_assurance` | yes | type="string"; enum=["encrypted","ephemeral"]; title="Workspace Assurance" |  |
 
 ### Progression, limits, and lifecycle
 

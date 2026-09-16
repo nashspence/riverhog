@@ -36,8 +36,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ed124be02c"></a>`abandoned_at` | no | anyOf=(type="string"; maxLength=64; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-361ff7cea9"></a>`abandonment_reason` | no | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-ed124be02c"></a>`abandoned_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-361ff7cea9"></a>`abandonment_reason` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; default=null |  |
 | <a id="s-53711020c5"></a>`consumer` | yes | [ProcessingClaimConsumerDocument](#s-d6d970f005) |  |
 | <a id="s-fedd7a0acb"></a>`created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
 | <a id="s-273f7eec10"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1 |  |
@@ -45,16 +45,16 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-bebb4904f4"></a>`format` | yes | type="string"; const="riverhog-processing-claim/v1" |  |
 | <a id="s-90373974ca"></a>`id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-a50c2084a7"></a>`inputs` | yes | [ReceivingSetDocument](#s-9dd4ce27cb) |  |
-| <a id="s-dd6da4834d"></a>`outcome_settlement` | no | anyOf=([ProcessingClaimOutcomeSettlementDocument](#s-e2510804b4)) \| (type="null"); default=null |  |
+| <a id="s-dd6da4834d"></a>`outcome_settlement` | no | anyOf=[([ProcessingClaimOutcomeSettlementDocument](#s-e2510804b4)); (type="null")]; default=null |  |
 | <a id="s-6d065e28b7"></a>`outcomes` | yes | [OutcomeSetDocument](#s-f7d5d1ec59) |  |
-| <a id="s-4fd9d45af3"></a>`output_collection_id` | no | anyOf=([CollectionId](#s-896ee01c47)) \| (type="null"); default=null |  |
-| <a id="s-a4ffc938e5"></a>`plan` | no | anyOf=([ProcessingClaimPlanDocument](#s-c3d365e968)) \| (type="null"); default=null |  |
+| <a id="s-4fd9d45af3"></a>`output_collection_id` | no | anyOf=[([CollectionId](#s-896ee01c47)); (type="null")]; default=null |  |
+| <a id="s-a4ffc938e5"></a>`plan` | no | anyOf=[([ProcessingClaimPlanDocument](#s-c3d365e968)); (type="null")]; default=null |  |
 | <a id="s-c744090071"></a>`purpose` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-d1e10a80ab"></a>`released_at` | no | anyOf=(type="string"; maxLength=64; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-17bea566dd"></a>`settled_at` | no | anyOf=(type="string"; maxLength=64; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-d1e10a80ab"></a>`released_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-17bea566dd"></a>`settled_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
 | <a id="s-ef952ef113"></a>`state` | yes | type="string"; enum=["active","settled","retiring","abandoned","released"] |  |
 | <a id="s-34b72d57f0"></a>`updated_at` | yes | type="string"; maxLength=64; minLength=1 |  |
-| <a id="s-7b3a390533"></a>`work_document` | yes | type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4194304; x-riverhog-extent={"policy":"contract_max","reason":"bounded-work-document-envelope"} |  |
+| <a id="s-7b3a390533"></a>`work_document` | yes | type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4194304; x-riverhog-extent={"policy":"contract_max","reason":"bounded-work-document-envelope"} |  |
 | <a id="s-e58e8a592c"></a>`work_document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-9d8834edff"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
@@ -133,9 +133,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-9f2c57fac8"></a>`authority` | no | anyOf=([ExactSetAuthorityDocument](#s-52c5516811)) \| (type="null"); default=null |  |
+| <a id="s-9f2c57fac8"></a>`authority` | no | anyOf=[([ExactSetAuthorityDocument](#s-52c5516811)); (type="null")]; default=null |  |
 | <a id="s-6f579e73cf"></a>`count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-5d8d8f1e11"></a>`failure` | no | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-5d8d8f1e11"></a>`failure` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; default=null |  |
 | <a id="s-67d870ae70"></a>`state` | yes | type="string"; enum=["receiving","sealing","sealed","failed"] |  |
 
 ##### <a id="s-d6d970f005"></a>definition `ProcessingClaimConsumerDocument`
@@ -149,7 +149,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-2df569eeb1"></a>`app` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-3167ec076b"></a>`key_id` | no | anyOf=(type="string"; maxLength=300; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-3167ec076b"></a>`key_id` | no | anyOf=[(type="string"; maxLength=300; minLength=1); (type="null")]; default=null |  |
 
 ##### <a id="s-e2510804b4"></a>definition `ProcessingClaimOutcomeSettlementDocument`
 
@@ -180,7 +180,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-afef702ed4"></a>`artifacts` | yes | [ArtifactSetAuthorityDocument](#s-7c0e8d7455) |  |
-| <a id="s-03fff9d31b"></a>`controller_evidence` | yes | type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
+| <a id="s-03fff9d31b"></a>`controller_evidence` | yes | type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
 | <a id="s-887f7e5447"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-294035e4ba"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-058a20576f"></a>`inputs` | yes | [ExactSetAuthorityDocument](#s-52c5516811) |  |
@@ -199,7 +199,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-fee71b8ab3"></a>`authority` | no | anyOf=([ExactSetAuthorityDocument](#s-52c5516811)) \| (type="null"); default=null |  |
+| <a id="s-fee71b8ab3"></a>`authority` | no | anyOf=[([ExactSetAuthorityDocument](#s-52c5516811)); (type="null")]; default=null |  |
 | <a id="s-6d640da22c"></a>`count` | yes | type="integer"; minimum=0 |  |
 | <a id="s-5d1c7d8438"></a>`state` | yes | type="string"; enum=["receiving","sealed"] |  |
 

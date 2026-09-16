@@ -14,19 +14,26 @@ Begin Processing Claim Retirement
 ## External contract
 
 <a id="s-38eb20c898"></a>
-- <a id="s-1ee21b1db8"></a>`operationId`: begin_processing_claim_retirement
-- <a id="s-7c8b16b5b3"></a>`summary`: Begin Processing Claim Retirement
-- <a id="s-884b1fddd9"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-1ee21b1db8"></a>`operationId`: `"begin_processing_claim_retirement"`
+- <a id="s-884b1fddd9"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-7c8b16b5b3"></a>`summary`: `"Begin Processing Claim Retirement"`
+- <a id="s-aa07bf3f6d"></a>`tags`: `["collection-workflows"]`
+- <a id="s-924f8b1ce5"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-ea94e04955"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-ef4c169c5f"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-ef4c169c5f"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
 
 ### <a id="s-5d8bb4cff0"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProcessingClaimFenceDocument"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [ProcessingClaimFenceDocument](../http-schemas/schemas-processingclaimfencedocument.md) |
 
 ### Responses
 

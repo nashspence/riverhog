@@ -24,8 +24,8 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-816618807f"></a>`evaluation_id`<br>`evaluation_id` | required positional; 1 value | text | not recorded |
-| <a id="s-3230ba0c3f"></a>`variant_id`<br>`variant_id` | required positional; 1 value | text | not recorded |
+| <a id="s-816618807f"></a>`evaluation_id`<br>`evaluation_id` | required positional; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-3230ba0c3f"></a>`variant_id`<br>`variant_id` | required positional; 1 value | text | not recorded<br>Env: `null` |
 
 ### Terminating controls
 
@@ -44,14 +44,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-968795b8ec"></a>`completed` | <a id="s-fad555338f"></a>`{"kind":"command-completed"}` | <a id="s-b34cba7f9e"></a>`0` | <a id="s-7261933476"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP retry_evaluation_variant response 200](../../stove0/http-operations/post-v1-evaluations-evaluation-id-variants-variant-id-retry.md#s-2718e2f1ce) | <a id="s-281c980854"></a>all: `empty` |
+| <a id="s-968795b8ec"></a>`completed` | <a id="s-fad555338f"></a>`{"kind":"command-completed"}` | <a id="s-b34cba7f9e"></a>`0` | <a id="s-7261933476"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP retry_evaluation_variant response 200](../../stove0/http-operations/post-v1-evaluations-evaluation-id-variants-variant-id-retry.md#s-2718e2f1ce) | <a id="s-281c980854"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-0dbc05a9f1"></a>`usage` | <a id="s-d938168691"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-fb1d1b6cce"></a>`2` | <a id="s-12feacee12"></a>all: `empty` | <a id="s-2040d58b0d"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-8e17517c87"></a>`operational` | <a id="s-7537103272"></a>`{"kind":"application-error"}` | <a id="s-dac25acf40"></a>`1` | <a id="s-7daabbd8ae"></a>all: `empty` | <a id="s-5afb5f2882"></a>all: `noncontractual-diagnostic` |
+| <a id="s-0dbc05a9f1"></a>`usage` | <a id="s-d938168691"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-fb1d1b6cce"></a>`2` | <a id="s-12feacee12"></a>all: `"empty"` | <a id="s-2040d58b0d"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-8e17517c87"></a>`operational` | <a id="s-7537103272"></a>`{"kind":"application-error"}` | <a id="s-dac25acf40"></a>`1` | <a id="s-7daabbd8ae"></a>all: `"empty"` | <a id="s-5afb5f2882"></a>all: `"noncontractual-diagnostic"` |
 
 ### Progression, limits, and lifecycle
 

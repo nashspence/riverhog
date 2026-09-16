@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-92156c5164"></a>`files` | yes | type="array"; items=(#/components/schemas/RetrievalFileReferenceDocument); maxItems=10000; minItems=1; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"multiple-retrieval-jobs","reason":"bounded-retrieval-work-request"} |  |
-| <a id="s-1281abc044"></a>`idempotency_key` | yes | type="string"; maxLength=200; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
-| <a id="s-ca9836474f"></a>`lease_seconds` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
-| <a id="s-f33de244d2"></a>`restore_policy` | no | type="string"; enum=["allow","never"]; default="allow" |  |
+| <a id="s-92156c5164"></a>`files` | yes | type="array"; items=([RetrievalFileReferenceDocument](schemas-retrievalfilereferencedocument.md)); maxItems=10000; minItems=1; title="Files"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"multiple-retrieval-jobs","reason":"bounded-retrieval-work-request"} |  |
+| <a id="s-1281abc044"></a>`idempotency_key` | yes | type="string"; maxLength=200; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$"; title="Idempotency Key" |  |
+| <a id="s-ca9836474f"></a>`lease_seconds` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; title="Lease Seconds" |  |
+| <a id="s-f33de244d2"></a>`restore_policy` | no | type="string"; enum=["allow","never"]; default="allow"; title="Restore Policy" |  |
 
 ### Progression, limits, and lifecycle
 

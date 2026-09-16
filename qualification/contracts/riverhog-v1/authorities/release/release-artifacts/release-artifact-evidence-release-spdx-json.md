@@ -16,8 +16,8 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-b59fc3eeed"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-9c0658fdc4"></a>`coordinate` | release.spdx.json |
-| <a id="s-a61cee1160"></a>`format` | spdx-json |
+| <a id="s-9c0658fdc4"></a>`coordinate` | `"release.spdx.json"` |
+| <a id="s-a61cee1160"></a>`format` | `"spdx-json"` |
 
 ## Governing policies
 

@@ -24,15 +24,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1d875f0d26"></a>`collections` | yes | type="array"; items=(#/components/schemas/CollectionSummaryOut) |  |
-| <a id="s-a2ba0da479"></a>`encryption_format` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-a18815df9e"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-e0b450d7ec"></a>`order` | yes | #/components/schemas/SortOrder |  |
-| <a id="s-f6b9eb37e9"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-585f47498a"></a>`passphrase_id` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-316d14721e"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-15d2c2d924"></a>`sort` | yes | #/components/schemas/CollectionSort |  |
-| <a id="s-3ce334b3ba"></a>`tags` | yes | type="array"; items=(#/components/schemas/CollectionTag); maxItems=100; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-tag-selector-batch"} |  |
+| <a id="s-1d875f0d26"></a>`collections` | yes | type="array"; items=([CollectionSummaryOut](schemas-collectionsummaryout.md)); title="Collections" |  |
+| <a id="s-a2ba0da479"></a>`encryption_format` | yes | anyOf=[(type="string"); (type="null")]; title="Encryption Format" |  |
+| <a id="s-a18815df9e"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-e0b450d7ec"></a>`order` | yes | [SortOrder](schemas-sortorder.md) |  |
+| <a id="s-f6b9eb37e9"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
+| <a id="s-585f47498a"></a>`passphrase_id` | yes | anyOf=[(type="string"); (type="null")]; title="Passphrase Id" |  |
+| <a id="s-316d14721e"></a>`query` | yes | anyOf=[(type="string"); (type="null")]; title="Query" |  |
+| <a id="s-15d2c2d924"></a>`sort` | yes | [CollectionSort](schemas-collectionsort.md) |  |
+| <a id="s-3ce334b3ba"></a>`tags` | yes | type="array"; items=([CollectionTag](schemas-collectiontag.md)); maxItems=100; title="Tags"; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-tag-selector-batch"} |  |
 
 ### Progression, limits, and lifecycle
 

@@ -24,14 +24,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-5d6aaa430a"></a>`artifact_rules` | no | type="array"; default=[{"glob":"*","role":"stove0.source/v1"}]; items=(#/components/schemas/ArtifactRule) |  |
-| <a id="s-81278b328f"></a>`contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-cd6fb17a6b"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-82b6002609"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
-| <a id="s-1443df63c8"></a>`options` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
-| <a id="s-401f013502"></a>`registration_id` | yes | type="string" |  |
-| <a id="s-c8ef1bbb04"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
-| <a id="s-daf8962421"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300 |  |
+| <a id="s-5d6aaa430a"></a>`artifact_rules` | no | type="array"; default=[{"glob":"*","role":"stove0.source/v1"}]; items=([ArtifactRule](schemas-artifactrule.md)); title="Artifact Rules" |  |
+| <a id="s-81278b328f"></a>`contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Contract Id" |  |
+| <a id="s-cd6fb17a6b"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Contract Sha256" |  |
+| <a id="s-82b6002609"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576; title="Maximum Result Bytes" |  |
+| <a id="s-1443df63c8"></a>`options` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Options" |  |
+| <a id="s-401f013502"></a>`registration_id` | yes | type="string"; title="Registration Id" |  |
+| <a id="s-c8ef1bbb04"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only"; title="Retrieval Policy" |  |
+| <a id="s-daf8962421"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300; title="Timeout Seconds" |  |
 
 ### Progression, limits, and lifecycle
 

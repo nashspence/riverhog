@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-42061fffc2"></a>`admission` | no | anyOf=(#/components/schemas/AdmissionRun) \| (type="null") |  |
-| <a id="s-e949e7bfc6"></a>`pruning` | yes | anyOf=(#/components/schemas/SchedulerPruning) \| (type="null") |  |
-| <a id="s-3b50dd5ead"></a>`work` | yes | #/components/schemas/SchedulerWorkBatch |  |
+| <a id="s-42061fffc2"></a>`admission` | no | anyOf=[([AdmissionRun](schemas-admissionrun.md)); (type="null")] |  |
+| <a id="s-e949e7bfc6"></a>`pruning` | yes | anyOf=[([SchedulerPruning](schemas-schedulerpruning.md)); (type="null")] |  |
+| <a id="s-3b50dd5ead"></a>`work` | yes | [SchedulerWorkBatch](schemas-schedulerworkbatch.md) |  |
 
 ## Maintained corroboration
 

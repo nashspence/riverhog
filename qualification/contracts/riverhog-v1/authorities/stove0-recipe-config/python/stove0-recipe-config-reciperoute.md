@@ -43,7 +43,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-b24cb9f762"></a>`intent` | no | type="object"; additionalProperties=([JsonValue](#s-e7e622e77a)) |  |
 | <a id="s-b0d463cf4e"></a>`kind` | no | type="string"; const="operation"; default="operation" |  |
 | <a id="s-3fa53899cb"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-a2d391bdf9"></a>`primary_role` | no | anyOf=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") \| (type="null"); default=null |  |
+| <a id="s-a2d391bdf9"></a>`primary_role` | no | anyOf=[(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); (type="null")]; default=null |  |
 | <a id="s-6931619c42"></a>`projections` | no | type="array"; default=[]; items=([OperationProjection](#s-26ad3b2e40)) |  |
 | <a id="s-46b394adb1"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-e7e622e77a)) |  |
 | <a id="s-06d0a97041"></a>`target_registration_id` | yes | type="string" |  |
@@ -80,7 +80,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-fb84ab27b5"></a>`glob` | no | type="string"; default="*" |  |
-| <a id="s-6287bbaa96"></a>`media_type` | no | anyOf=(type="string") \| (type="null"); default=null |  |
+| <a id="s-6287bbaa96"></a>`media_type` | no | anyOf=[(type="string"); (type="null")]; default=null |  |
 | <a id="s-a2069a11e7"></a>`role` | no | type="string"; default="stove0.source/v1"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ##### <a id="s-6349fe3dd5"></a>definition `FactPredicate`
@@ -93,7 +93,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2ce526ddc7"></a>`artifact_facts` | no | anyOf=([ArtifactFactBinding](#s-1f22723179)) \| (type="null"); default=null |  |
+| <a id="s-2ce526ddc7"></a>`artifact_facts` | no | anyOf=[([ArtifactFactBinding](#s-1f22723179)); (type="null")]; default=null |  |
 | <a id="s-bcc7a158eb"></a>`artifact_roles` | no | type="array"; default=[]; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
 | <a id="s-501e61feb1"></a>`observation_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-b2e941b389"></a>`operator` | no | type="string"; enum=["equals","not-equals","contains","exists"]; default="equals" |  |

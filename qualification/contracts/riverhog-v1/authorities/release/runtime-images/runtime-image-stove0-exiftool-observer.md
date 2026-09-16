@@ -16,17 +16,17 @@ Optional nonnormative ExifTool observer reference for Stove0.
 <a id="s-393510d514"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-155ca48459"></a>`build_target` | stove0-exiftool-observer |
-| <a id="s-c15e6a8b1f"></a>`description` | Optional nonnormative ExifTool observer reference for Stove0. |
-| <a id="s-7f03ad7fc5"></a>`distribution_roots` | ["stove0-exiftool-observer"] |
-| <a id="s-0f99045a79"></a>`format` | oci-image |
-| <a id="s-b3ecc14f40"></a>`license_baseline` | first-v1-publication |
-| <a id="s-e83958b067"></a>`license_expression` | CAL-1.0 |
-| <a id="s-c5d3857e90"></a>`platforms` | ["linux/amd64"] |
-| <a id="s-0e09df7f8e"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-stove0-exiftool-observer", "kind": "oci-repository"} |
-| <a id="s-3e1e7448e3"></a>`repository` | ghcr.io/nashspence/riverhog-stove0-exiftool-observer |
-| <a id="s-54002ba5c8"></a>`role` | reference |
-| <a id="s-234f712d78"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-stove0-exiftool-observer:{version}", "ghcr.io/nashspence/riverhog-stove0-exiftool-observer:sha-{source_sha}"] |
+| <a id="s-155ca48459"></a>`build_target` | `"stove0-exiftool-observer"` |
+| <a id="s-c15e6a8b1f"></a>`description` | `"Optional nonnormative ExifTool observer reference for Stove0."` |
+| <a id="s-7f03ad7fc5"></a>`distribution_roots` | `["stove0-exiftool-observer"]` |
+| <a id="s-0f99045a79"></a>`format` | `"oci-image"` |
+| <a id="s-b3ecc14f40"></a>`license_baseline` | `"first-v1-publication"` |
+| <a id="s-e83958b067"></a>`license_expression` | `"CAL-1.0"` |
+| <a id="s-c5d3857e90"></a>`platforms` | `["linux/amd64"]` |
+| <a id="s-0e09df7f8e"></a>`publication_identity` | `{"coordinate":"ghcr.io/nashspence/riverhog-stove0-exiftool-observer","kind":"oci-repository"}` |
+| <a id="s-3e1e7448e3"></a>`repository` | `"ghcr.io/nashspence/riverhog-stove0-exiftool-observer"` |
+| <a id="s-54002ba5c8"></a>`role` | `"reference"` |
+| <a id="s-234f712d78"></a>`tag_templates` | `["ghcr.io/nashspence/riverhog-stove0-exiftool-observer:{version}","ghcr.io/nashspence/riverhog-stove0-exiftool-observer:sha-{source_sha}"]` |
 
 ## Existing ownership context
 

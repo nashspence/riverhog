@@ -24,13 +24,13 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-a7098f7a64"></a>`config`<br>`--config` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
-| <a id="s-e2444f543f"></a>`actions_dir`<br>`--actions-dir` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
-| <a id="s-93b1bdc7db"></a>`interval_seconds`<br>`--interval` | optional option; 1 value | float range; minimum=`0.1` (inclusive); maximum=`3600` (inclusive); outside range: reject | `2` |
-| <a id="s-22d9cfd874"></a>`autorun`<br>`--autorun` | optional flag; 0 values | boolean | `false` |
+| <a id="s-a7098f7a64"></a>`config`<br>`--config` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded<br>Env: `null` |
+| <a id="s-e2444f543f"></a>`actions_dir`<br>`--actions-dir` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded<br>Env: `null` |
+| <a id="s-93b1bdc7db"></a>`interval_seconds`<br>`--interval` | optional option; 1 value | float range; minimum=`0.1` (inclusive); maximum=`3600` (inclusive); outside range: reject | `2`<br>Env: `null` |
+| <a id="s-22d9cfd874"></a>`autorun`<br>`--autorun` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 | <a id="s-84c6a2811e"></a>`mounted_volume_provider`<br>`--mounted-volume-provider` | optional option; 1 value | text | not recorded<br>Env: `"GOGURT_MOUNTED_VOLUME_PROVIDER"` |
 | <a id="s-0f93a46b54"></a>`listener_host_provider`<br>`--listener-host-provider` | optional option; 1 value | text | not recorded<br>Env: `"GOGURT_LISTENER_HOST_PROVIDER"` |
-| <a id="s-e4798ae920"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
+| <a id="s-e4798ae920"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -49,14 +49,14 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-766debc0c6"></a>`completed` | <a id="s-924ff1ec78"></a>`{"kind":"command-completed"}` | <a id="s-b78a89ef1d"></a>`0` | <a id="s-81469e1a8d"></a>human: `noncontractual-presentation-of-command-result`; json: [gogurt-listener-status/v1](#s-bff2c96499) | <a id="s-38b581ec69"></a>all: `empty` |
+| <a id="s-766debc0c6"></a>`completed` | <a id="s-924ff1ec78"></a>`{"kind":"command-completed"}` | <a id="s-b78a89ef1d"></a>`0` | <a id="s-81469e1a8d"></a>human: `"noncontractual-presentation-of-command-result"`; json: [gogurt-listener-status/v1](#s-bff2c96499) | <a id="s-38b581ec69"></a>all: `"empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-7b2d01af13"></a>`usage` | <a id="s-fdb2015cfb"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-da5397f723"></a>`2` | <a id="s-bc93e447d5"></a>all: `empty` | <a id="s-dcd7042f84"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-7c484ca96c"></a>`operational` | <a id="s-6362e72f68"></a>`{"kind":"application-error"}` | <a id="s-b32ce984f1"></a>`1` | <a id="s-b355e6ba1c"></a>human: `empty`; json: [gogurt-cli-error/v1](#s-d8eca02356) | <a id="s-cf5f7725af"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-7b2d01af13"></a>`usage` | <a id="s-fdb2015cfb"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-da5397f723"></a>`2` | <a id="s-bc93e447d5"></a>all: `"empty"` | <a id="s-dcd7042f84"></a>all: `"noncontractual-usage-diagnostic"` |
+| <a id="s-7c484ca96c"></a>`operational` | <a id="s-6362e72f68"></a>`{"kind":"application-error"}` | <a id="s-b32ce984f1"></a>`1` | <a id="s-b355e6ba1c"></a>human: `"empty"`; json: [gogurt-cli-error/v1](#s-d8eca02356) | <a id="s-cf5f7725af"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Local structured outputs
 

@@ -16,13 +16,13 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-659220a2ef"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-3aa2a51319"></a>`error_schema` | ErrorResponse |
-| <a id="s-57144cd659"></a>`errors` | [{"code": "bad_request", "status": 400}, {"code": "unauthorized", "status": 401}, {"code": "sampler_failed", "status": 500}] |
-| <a id="s-e553aeb86e"></a>`method` | GET |
-| <a id="s-c4e84c5f96"></a>`path` | /v1/sampler |
-| <a id="s-5d39065943"></a>`path_parameters` | [] |
-| <a id="s-92e683f5f7"></a>`request` | {"kind": "none", "schema": null} |
-| <a id="s-323597a61b"></a>`response` | {"headers": [], "kind": "json", "schema": "SamplerDescriptor", "statuses": [200]} |
+| <a id="s-3aa2a51319"></a>`error_schema` | `"ErrorResponse"` |
+| <a id="s-57144cd659"></a>`errors` | `[{"code":"bad_request","status":400},{"code":"unauthorized","status":401},{"code":"sampler_failed","status":500}]` |
+| <a id="s-e553aeb86e"></a>`method` | `"GET"` |
+| <a id="s-c4e84c5f96"></a>`path` | `"/v1/sampler"` |
+| <a id="s-5d39065943"></a>`path_parameters` | `[]` |
+| <a id="s-92e683f5f7"></a>`request` | `{"kind":"none","schema":null}` |
+| <a id="s-323597a61b"></a>`response` | `{"headers":[],"kind":"json","schema":"SamplerDescriptor","statuses":[200]}` |
 
 ## Maintained corroboration
 

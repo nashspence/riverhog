@@ -14,19 +14,23 @@ List Processing Claims
 ## External contract
 
 <a id="s-c020b12657"></a>
-- <a id="s-7e81e1c32e"></a>`operationId`: list_processing_claims
-- <a id="s-e2fd121d73"></a>`summary`: List Processing Claims
-- <a id="s-b7154c2973"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-7e81e1c32e"></a>`operationId`: `"list_processing_claims"`
+- <a id="s-b7154c2973"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-e2fd121d73"></a>`summary`: `"List Processing Claims"`
+- <a id="s-deeea79264"></a>`tags`: `["collection-workflows"]`
+- <a id="s-28ff6af295"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-c64a114150"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
+- <a id="s-4f6c70446e"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-2321207667"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-37f200ec6c"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
-| <a id="s-96a5f47301"></a>`state` | query | no | not declared | anyOf=(type="string"; enum=["active","settled","retiring","abandoned","released"]) \| (type="null") |
-| <a id="s-6308dc537d"></a>`sort` | query | no | `"updated_at"` | type="string"; enum=["created_at","updated_at","expires_at","state","work_id","execution_id"] |
-| <a id="s-fa342e9615"></a>`order` | query | no | `"desc"` | type="string"; enum=["asc","desc"] |
+| <a id="s-2321207667"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-37f200ec6c"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
+| <a id="s-96a5f47301"></a>`state` | query | no | not declared | anyOf=[(type="string"; enum=["active","settled","retiring","abandoned","released"]); (type="null")]; title="State" |
+| <a id="s-6308dc537d"></a>`sort` | query | no | `"updated_at"` | type="string"; enum=["created_at","updated_at","expires_at","state","work_id","execution_id"]; title="Sort" |
+| <a id="s-fa342e9615"></a>`order` | query | no | `"desc"` | type="string"; enum=["asc","desc"]; title="Order" |
 
 ### Responses
 

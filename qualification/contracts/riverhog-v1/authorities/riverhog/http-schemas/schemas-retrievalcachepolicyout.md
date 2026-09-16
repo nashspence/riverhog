@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ae8a5ac6fa"></a>`new_archive_lease_seconds` | yes | type="integer" |  |
-| <a id="s-6835d4cfa2"></a>`pending_timeout_seconds` | yes | type="integer" |  |
-| <a id="s-8e1b64b618"></a>`restore_poll_interval_seconds` | yes | type="integer" |  |
-| <a id="s-33aaca2d4d"></a>`retrieval_default_lease_seconds` | yes | type="integer" |  |
-| <a id="s-3712d11b36"></a>`retrieval_max_lease_seconds` | yes | type="integer" |  |
-| <a id="s-1ca2f61629"></a>`sweep_interval_seconds` | yes | type="integer" |  |
+| <a id="s-ae8a5ac6fa"></a>`new_archive_lease_seconds` | yes | type="integer"; title="New Archive Lease Seconds" |  |
+| <a id="s-6835d4cfa2"></a>`pending_timeout_seconds` | yes | type="integer"; title="Pending Timeout Seconds" |  |
+| <a id="s-8e1b64b618"></a>`restore_poll_interval_seconds` | yes | type="integer"; title="Restore Poll Interval Seconds" |  |
+| <a id="s-33aaca2d4d"></a>`retrieval_default_lease_seconds` | yes | type="integer"; title="Retrieval Default Lease Seconds" |  |
+| <a id="s-3712d11b36"></a>`retrieval_max_lease_seconds` | yes | type="integer"; title="Retrieval Max Lease Seconds" |  |
+| <a id="s-1ca2f61629"></a>`sweep_interval_seconds` | yes | type="integer"; title="Sweep Interval Seconds" |  |
 
 ## Governing policies
 

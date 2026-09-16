@@ -24,11 +24,11 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-8087dcff61"></a>`mount_point`<br>`mount_point` | required positional; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
-| <a id="s-6f8a90a5e2"></a>`config`<br>`--config` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
-| <a id="s-dad97bb92b"></a>`actions_dir`<br>`--actions-dir` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
-| <a id="s-8cb427b8d5"></a>`autorun`<br>`--autorun` | optional flag; 0 values | boolean | `false` |
-| <a id="s-1e601a6dd2"></a>`dry_run`<br>`--dry-run` | optional flag; 0 values | boolean | `false` |
+| <a id="s-8087dcff61"></a>`mount_point`<br>`mount_point` | required positional; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded<br>Env: `null` |
+| <a id="s-6f8a90a5e2"></a>`config`<br>`--config` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded<br>Env: `null` |
+| <a id="s-dad97bb92b"></a>`actions_dir`<br>`--actions-dir` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded<br>Env: `null` |
+| <a id="s-8cb427b8d5"></a>`autorun`<br>`--autorun` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
+| <a id="s-1e601a6dd2"></a>`dry_run`<br>`--dry-run` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 | <a id="s-2c39914b8b"></a>`mounted_volume_provider`<br>`--mounted-volume-provider` | optional option; 1 value | text | not recorded<br>Env: `"GOGURT_MOUNTED_VOLUME_PROVIDER"` |
 
 ### Terminating controls
@@ -48,15 +48,15 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-df7255116d"></a>`completed-or-not-run` | <a id="s-171e12c5c1"></a>`{"kind":"action-returned-zero"}` | <a id="s-5accadf616"></a>`0` | <a id="s-4e18a34210"></a>human: `empty` | <a id="s-55d1e1187d"></a>human: `noncontractual-action-status-or-empty` |
+| <a id="s-df7255116d"></a>`completed-or-not-run` | <a id="s-171e12c5c1"></a>`{"kind":"action-returned-zero"}` | <a id="s-5accadf616"></a>`0` | <a id="s-4e18a34210"></a>human: `"empty"` | <a id="s-55d1e1187d"></a>human: `"noncontractual-action-status-or-empty"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-571ddc7f7f"></a>`usage` | <a id="s-2d7cf89db4"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-438cffd1ea"></a>`2` | <a id="s-464bf046d5"></a>human: `empty` | <a id="s-d0a103d44d"></a>human: `noncontractual-usage-diagnostic` |
-| <a id="s-9c5aba5f76"></a>`operational` | <a id="s-af9f4b40e8"></a>`{"kind":"application-error"}` | <a id="s-3ac370c105"></a>`1` | <a id="s-62c1cb47a5"></a>human: `empty` | <a id="s-19e1ff480b"></a>human: `noncontractual-diagnostic` |
-| <a id="s-e52e46f45e"></a>`action-exit` | <a id="s-01f724acdf"></a>`{"kind":"delegated-action-returned-nonzero"}` | <a id="s-3601b6f0ed"></a>`{"kind":"delegated","maximum":255,"minimum":1}` | <a id="s-a0c4ce7255"></a>human: `child-process-owned` | <a id="s-d08c31c5f8"></a>human: `child-process-owned-and-action-status` |
+| <a id="s-571ddc7f7f"></a>`usage` | <a id="s-2d7cf89db4"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-438cffd1ea"></a>`2` | <a id="s-464bf046d5"></a>human: `"empty"` | <a id="s-d0a103d44d"></a>human: `"noncontractual-usage-diagnostic"` |
+| <a id="s-9c5aba5f76"></a>`operational` | <a id="s-af9f4b40e8"></a>`{"kind":"application-error"}` | <a id="s-3ac370c105"></a>`1` | <a id="s-62c1cb47a5"></a>human: `"empty"` | <a id="s-19e1ff480b"></a>human: `"noncontractual-diagnostic"` |
+| <a id="s-e52e46f45e"></a>`action-exit` | <a id="s-01f724acdf"></a>`{"kind":"delegated-action-returned-nonzero"}` | <a id="s-3601b6f0ed"></a>`{"kind":"delegated","maximum":255,"minimum":1}` | <a id="s-a0c4ce7255"></a>human: `"child-process-owned"` | <a id="s-d08c31c5f8"></a>human: `"child-process-owned-and-action-status"` |
 
 ### Progression, limits, and lifecycle
 

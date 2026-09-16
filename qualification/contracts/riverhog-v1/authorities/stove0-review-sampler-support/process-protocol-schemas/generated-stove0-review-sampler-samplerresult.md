@@ -24,15 +24,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e4192cb294"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-4394584684)) |  |
-| <a id="s-8f6d9f0d95"></a>`failure` | no | anyOf=([SamplerFailure](#s-fc671c79af)) \| (type="null"); default=null |  |
-| <a id="s-bfd2e78f66"></a>`format` | no | type="string"; const="stove0-review-sampler-result/v1"; default="stove0-review-sampler-result/v1" |  |
-| <a id="s-69ddaf5c63"></a>`inapplicable` | no | anyOf=([SamplerInapplicable](#s-2a8e3a4769)) \| (type="null"); default=null |  |
-| <a id="s-d8dbe2a4a2"></a>`outputs` | no | type="array"; default=[]; items=([SamplerOutput](#s-55b2cc4f6b)) |  |
-| <a id="s-536576137a"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-598c04a1e2"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-eef522c17f"></a>`sampler_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-4e4d0cd28d"></a>`state` | yes | type="string"; enum=["succeeded","inapplicable","failed","canceled"] |  |
+| <a id="s-e4192cb294"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-4394584684)); title="Execution Evidence" |  |
+| <a id="s-8f6d9f0d95"></a>`failure` | no | anyOf=[([SamplerFailure](#s-fc671c79af)); (type="null")]; default=null |  |
+| <a id="s-bfd2e78f66"></a>`format` | no | type="string"; const="stove0-review-sampler-result/v1"; default="stove0-review-sampler-result/v1"; title="Format" |  |
+| <a id="s-69ddaf5c63"></a>`inapplicable` | no | anyOf=[([SamplerInapplicable](#s-2a8e3a4769)); (type="null")]; default=null |  |
+| <a id="s-d8dbe2a4a2"></a>`outputs` | no | type="array"; default=[]; items=([SamplerOutput](#s-55b2cc4f6b)); title="Outputs" |  |
+| <a id="s-536576137a"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Sha256" |  |
+| <a id="s-598c04a1e2"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Result Sha256" |  |
+| <a id="s-eef522c17f"></a>`sampler_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sampler Descriptor Sha256" |  |
+| <a id="s-4e4d0cd28d"></a>`state` | yes | type="string"; enum=["succeeded","inapplicable","failed","canceled"]; title="State" |  |
 
 ### Definitions
 
@@ -56,9 +56,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-99bdf3fbe0"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-60f7b02b04"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
-| <a id="s-1544ef6d15"></a>`retryable` | yes | type="boolean" |  |
+| <a id="s-99bdf3fbe0"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Code" |  |
+| <a id="s-60f7b02b04"></a>`message` | yes | type="string"; maxLength=1000; minLength=1; title="Message" |  |
+| <a id="s-1544ef6d15"></a>`retryable` | yes | type="boolean"; title="Retryable" |  |
 
 ### <a id="s-2a8e3a4769"></a>definition `SamplerInapplicable`
 
@@ -71,8 +71,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b6bd901bb7"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-d6a8aac343"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-b6bd901bb7"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Code" |  |
+| <a id="s-d6a8aac343"></a>`message` | yes | type="string"; maxLength=1000; minLength=1; title="Message" |  |
 
 ### <a id="s-55b2cc4f6b"></a>definition `SamplerOutput`
 
@@ -85,12 +85,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-428a1ed582"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-d843eec98e"></a>`derived_from` | yes | type="array"; items=(type="string"); minItems=1 |  |
-| <a id="s-d8c8503ae6"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-07d7974e71"></a>`media_type` | yes | type="string"; maxLength=255; minLength=1 |  |
-| <a id="s-f8e3536ede"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-3ecee0330f"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-428a1ed582"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-d843eec98e"></a>`derived_from` | yes | type="array"; items=(type="string"); minItems=1; title="Derived From" |  |
+| <a id="s-d8c8503ae6"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$"; title="Id" |  |
+| <a id="s-07d7974e71"></a>`media_type` | yes | type="string"; maxLength=255; minLength=1; title="Media Type" |  |
+| <a id="s-f8e3536ede"></a>`path` | yes | type="string"; maxLength=4096; minLength=1; title="Path" |  |
+| <a id="s-3ecee0330f"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

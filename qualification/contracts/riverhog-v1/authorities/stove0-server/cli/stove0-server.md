@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-031448ef76"></a>Parser name: `stove0-server`
+
+| Field | Value |
+|---|---|
+| <a id="s-ebf3a6dffb"></a>`parameters` | `[]` |
 - <a id="s-5d6b18e27a"></a>Subcommand selection: required.
 - <a id="s-76b2303574"></a>Unique long-option abbreviations: accepted.
 

@@ -84,7 +84,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-63e219e27e"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-9f3891ccd0"></a>`collection` | yes | [CollectionRootRef](#s-0435619c5e) |  |
 | <a id="s-f4ffa01a39"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-ac25df9aab"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-ac25df9aab"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
 | <a id="s-0d74b1bec6"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-00480f186a"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-235fadbd0d"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -166,7 +166,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-ba74a3cc27"></a>`artifact_selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-e41a49b45a"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-5061049d1c"></a>`producer_settlement_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-5061049d1c"></a>`producer_settlement_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-09de199bbb"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-268660e515"></a>definition `JsonSchemaDocument`
@@ -263,12 +263,12 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-3d244c3bb0"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-4fc3efab64)) |  |
-| <a id="s-6c205a3fd2"></a>`facts` | no | anyOf=(type="object"; additionalProperties=([JsonValue](#s-4fc3efab64))) \| (type="null"); default=null |  |
-| <a id="s-6f55240053"></a>`facts_schema` | no | anyOf=([JsonSchemaDocument](#s-268660e515)) \| (type="null"); default=null |  |
-| <a id="s-a5e905d55d"></a>`facts_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
-| <a id="s-8f38591e19"></a>`failure` | no | anyOf=([ObservationFailure](#s-1e3302875e)) \| (type="null"); default=null |  |
+| <a id="s-6c205a3fd2"></a>`facts` | no | anyOf=[(type="object"; additionalProperties=([JsonValue](#s-4fc3efab64))); (type="null")]; default=null |  |
+| <a id="s-6f55240053"></a>`facts_schema` | no | anyOf=[([JsonSchemaDocument](#s-268660e515)); (type="null")]; default=null |  |
+| <a id="s-a5e905d55d"></a>`facts_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
+| <a id="s-8f38591e19"></a>`failure` | no | anyOf=[([ObservationFailure](#s-1e3302875e)); (type="null")]; default=null |  |
 | <a id="s-680b7f3372"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1" |  |
-| <a id="s-b3d605770c"></a>`inapplicable` | no | anyOf=([ObservationInapplicable](#s-9336c38702)) \| (type="null"); default=null |  |
+| <a id="s-b3d605770c"></a>`inapplicable` | no | anyOf=[([ObservationInapplicable](#s-9336c38702)); (type="null")]; default=null |  |
 | <a id="s-f5bc499d84"></a>`observer` | yes | [ObserverImplementation](#s-982e1d84b8) |  |
 | <a id="s-3c2359c39b"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-a58cbb1158"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -331,8 +331,8 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-e4557f20fd"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](#s-4fc3efab64)) |  |
-| <a id="s-95f73ff9fc"></a>`evaluation` | no | anyOf=([EvaluationBinding](#s-d85a23e820)) \| (type="null"); default=null |  |
-| <a id="s-c6df4f3de7"></a>`fork_join` | no | anyOf=(discriminator={"mapping":{"branch":"[BranchWorkBinding](#s-a783a0b6d9)","join":"[JoinWorkBinding](#s-5d9b2b6117)"},"propertyName":"kind"}; oneOf=([BranchWorkBinding](#s-a783a0b6d9)) \| ([JoinWorkBinding](#s-5d9b2b6117))) \| (type="null"); default=null |  |
+| <a id="s-95f73ff9fc"></a>`evaluation` | no | anyOf=[([EvaluationBinding](#s-d85a23e820)); (type="null")]; default=null |  |
+| <a id="s-c6df4f3de7"></a>`fork_join` | no | anyOf=[(discriminator={"mapping":{"branch":"#/$defs/BranchWorkBinding","join":"#/$defs/JoinWorkBinding"},"propertyName":"kind"}; oneOf=[([BranchWorkBinding](#s-a783a0b6d9)); ([JoinWorkBinding](#s-5d9b2b6117))]); (type="null")]; default=null |  |
 | <a id="s-b1ebc97341"></a>`format` | no | type="string"; const="stove0-work/v1"; default="stove0-work/v1" |  |
 | <a id="s-6158bde4b6"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](#s-0435619c5e)); minItems=1 |  |
 | <a id="s-39606a0959"></a>`recipe` | yes | [RecipeRef](#s-42877ab73f) |  |

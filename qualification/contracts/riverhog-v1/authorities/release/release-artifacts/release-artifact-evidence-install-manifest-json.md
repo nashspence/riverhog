@@ -16,8 +16,8 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-6f006232ba"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-3cd683941c"></a>`coordinate` | install-manifest.json |
-| <a id="s-ffbb51bce3"></a>`format` | json |
+| <a id="s-3cd683941c"></a>`coordinate` | `"install-manifest.json"` |
+| <a id="s-ffbb51bce3"></a>`format` | `"json"` |
 
 ## Governing policies
 

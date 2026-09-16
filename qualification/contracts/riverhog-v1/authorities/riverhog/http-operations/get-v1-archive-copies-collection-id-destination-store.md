@@ -14,16 +14,18 @@ Get Archive Copy Job
 ## External contract
 
 <a id="s-de5ffe3a1e"></a>
-- <a id="s-7bbf4e456f"></a>`operationId`: get_archive_copy_job
-- <a id="s-346551dd72"></a>`summary`: Get Archive Copy Job
-- <a id="s-d37af7c443"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-7bbf4e456f"></a>`operationId`: `"get_archive_copy_job"`
+- <a id="s-d37af7c443"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-346551dd72"></a>`summary`: `"Get Archive Copy Job"`
+- <a id="s-c508fbb064"></a>`tags`: `["archive"]`
+- <a id="s-6637dc7f3e"></a>`x-riverhog-permission-requirements`: `[{"any_of":["archives:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-05756f1e25"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-ee083b4c14"></a>`destination_store` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| <a id="s-05756f1e25"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-ee083b4c14"></a>`destination_store` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"; title="Destination Store" |
 
 ### Responses
 

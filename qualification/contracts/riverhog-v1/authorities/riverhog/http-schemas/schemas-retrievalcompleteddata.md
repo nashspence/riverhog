@@ -24,15 +24,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-75c41a2961"></a>`actor` | yes | #/components/schemas/RiverhogActor |  |
-| <a id="s-1cdc5b55de"></a>`cause` | no | anyOf=(#/components/schemas/RiverhogEventCause) \| (type="null") |  |
-| <a id="s-a2fc38c4b7"></a>`collection_created_at` | no | anyOf=(type="string"; maxLength=64; minLength=1) \| (type="null") |  |
-| <a id="s-c1f47b1801"></a>`collection_id` | no | anyOf=(#/components/schemas/CollectionId) \| (type="null") |  |
-| <a id="s-68847b14ff"></a>`collection_ids` | yes | type="array"; items=(#/components/schemas/CollectionId); minItems=1 |  |
-| <a id="s-b7bbd451e9"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null") |  |
-| <a id="s-49e730c378"></a>`initiator` | yes | #/components/schemas/RiverhogActor |  |
-| <a id="s-faa54f4904"></a>`retrieval_id` | yes | type="string"; maxLength=300; minLength=1 |  |
-| <a id="s-fc7a4df698"></a>`state` | yes | type="string"; const="completed" |  |
+| <a id="s-75c41a2961"></a>`actor` | yes | [RiverhogActor](schemas-riverhogactor.md) |  |
+| <a id="s-1cdc5b55de"></a>`cause` | no | anyOf=[([RiverhogEventCause](schemas-riverhogeventcause.md)); (type="null")] |  |
+| <a id="s-a2fc38c4b7"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; title="Collection Created At" |  |
+| <a id="s-c1f47b1801"></a>`collection_id` | no | anyOf=[([CollectionId](schemas-collectionid.md)); (type="null")] |  |
+| <a id="s-68847b14ff"></a>`collection_ids` | yes | type="array"; items=([CollectionId](schemas-collectionid.md)); minItems=1; title="Collection Ids" |  |
+| <a id="s-b7bbd451e9"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; title="Context" |  |
+| <a id="s-49e730c378"></a>`initiator` | yes | [RiverhogActor](schemas-riverhogactor.md) |  |
+| <a id="s-faa54f4904"></a>`retrieval_id` | yes | type="string"; maxLength=300; minLength=1; title="Retrieval Id" |  |
+| <a id="s-fc7a4df698"></a>`state` | yes | type="string"; const="completed"; title="State" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -14,19 +14,25 @@ Create App Key
 ## External contract
 
 <a id="s-26f945d4a6"></a>
-- <a id="s-e51936213d"></a>`operationId`: create_app_key
-- <a id="s-26529c3c51"></a>`summary`: Create App Key
-- <a id="s-24642ac73a"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-e51936213d"></a>`operationId`: `"create_app_key"`
+- <a id="s-24642ac73a"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-26529c3c51"></a>`summary`: `"Create App Key"`
+- <a id="s-2e19dfcfc3"></a>`tags`: `["apps"]`
+- <a id="s-18b4b8418d"></a>`x-riverhog-permission-requirements`: `[{"any_of":["keys:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-78a97764ff"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| <a id="s-78a97764ff"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"; title="App" |
 
 ### <a id="s-a8bf91946a"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateAppKeyRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [CreateAppKeyRequest](../http-schemas/schemas-createappkeyrequest.md) |
 
 ### Responses
 

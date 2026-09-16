@@ -14,16 +14,18 @@ Plan Collection Deletion
 ## External contract
 
 <a id="s-ae55d77e81"></a>
-- <a id="s-cf27326a99"></a>`operationId`: plan_collection_deletion
-- <a id="s-260cd1d513"></a>`summary`: Plan Collection Deletion
-- <a id="s-bd856c5c0a"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-cf27326a99"></a>`operationId`: `"plan_collection_deletion"`
+- <a id="s-bd856c5c0a"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-260cd1d513"></a>`summary`: `"Plan Collection Deletion"`
+- <a id="s-84b3196f88"></a>`tags`: `["collections"]`
+- <a id="s-5cb75ec7a0"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:delete"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-a9b5a1b3dc"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-8f51f3021d"></a>`retirement_claim_id` | query | no | not declared | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |
+| <a id="s-a9b5a1b3dc"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-8f51f3021d"></a>`retirement_claim_id` | query | no | not declared | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Retirement Claim Id" |
 
 ### Responses
 

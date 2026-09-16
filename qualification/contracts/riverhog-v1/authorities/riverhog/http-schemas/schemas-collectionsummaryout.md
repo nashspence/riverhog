@@ -24,23 +24,23 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a912d584fe"></a>`archive_copy_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-da1c3dedb5"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-96e1750701"></a>`bytes` | yes | type="integer" |  |
-| <a id="s-4a2c71fa69"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-f767b31dab"></a>`created_at` | yes | type="string" |  |
-| <a id="s-4233142e27"></a>`description` | yes | anyOf=(#/components/schemas/CollectionDescription) \| (type="null") |  |
-| <a id="s-f7df86a094"></a>`description_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-453cf07a7d"></a>`description_publication` | yes | type="string"; enum=["not_required","current","reconciling"] |  |
-| <a id="s-f993f04535"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
-| <a id="s-9ef8c02bd0"></a>`encryption_format` | yes | type="string" |  |
-| <a id="s-7dac470243"></a>`files` | yes | type="integer" |  |
-| <a id="s-06047289c9"></a>`id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-0515826c3d"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
-| <a id="s-22d068ac76"></a>`remote_storage_bytes` | yes | type="integer" |  |
-| <a id="s-d0489daf39"></a>`tag_publication` | yes | type="string"; enum=["current","reconciling"] |  |
-| <a id="s-a4c8cd0f70"></a>`tag_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
-| <a id="s-15a8f883f7"></a>`tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a912d584fe"></a>`archive_copy_count` | yes | type="integer"; minimum=0; title="Archive Copy Count" |  |
+| <a id="s-da1c3dedb5"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
+| <a id="s-96e1750701"></a>`bytes` | yes | type="integer"; title="Bytes" |  |
+| <a id="s-4a2c71fa69"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
+| <a id="s-f767b31dab"></a>`created_at` | yes | type="string"; title="Created At" |  |
+| <a id="s-4233142e27"></a>`description` | yes | anyOf=[([CollectionDescription](schemas-collectiondescription.md)); (type="null")] |  |
+| <a id="s-f7df86a094"></a>`description_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Description Identity" |  |
+| <a id="s-453cf07a7d"></a>`description_publication` | yes | type="string"; enum=["not_required","current","reconciling"]; title="Description Publication" |  |
+| <a id="s-f993f04535"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991; title="Description Revision" |  |
+| <a id="s-9ef8c02bd0"></a>`encryption_format` | yes | type="string"; title="Encryption Format" |  |
+| <a id="s-7dac470243"></a>`files` | yes | type="integer"; title="Files" |  |
+| <a id="s-06047289c9"></a>`id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-0515826c3d"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$"; title="Passphrase Id" |  |
+| <a id="s-22d068ac76"></a>`remote_storage_bytes` | yes | type="integer"; title="Remote Storage Bytes" |  |
+| <a id="s-d0489daf39"></a>`tag_publication` | yes | type="string"; enum=["current","reconciling"]; title="Tag Publication" |  |
+| <a id="s-a4c8cd0f70"></a>`tag_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991; title="Tag Revision" |  |
+| <a id="s-15a8f883f7"></a>`tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Tag Set Identity" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-809ff09438"></a>`authorization_view_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1d9219fe71"></a>`changes_cursor` | no | anyOf=(type="string"; maxLength=4096; minLength=1) \| (type="null") |  |
-| <a id="s-4cd0865d3f"></a>`collections` | yes | type="array"; items=(#/components/schemas/CatalogSyncDescriptor); maxItems=100 |  |
-| <a id="s-43a0a9899d"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1"; default="riverhog-catalog-sync/v1" |  |
-| <a id="s-908ace0fa8"></a>`next_cursor` | no | anyOf=(type="string"; maxLength=4096; minLength=1) \| (type="null") |  |
-| <a id="s-c897f48ff8"></a>`source_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-809ff09438"></a>`authorization_view_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$"; title="Authorization View Identity" |  |
+| <a id="s-1d9219fe71"></a>`changes_cursor` | no | anyOf=[(type="string"; maxLength=4096; minLength=1); (type="null")]; title="Changes Cursor" |  |
+| <a id="s-4cd0865d3f"></a>`collections` | yes | type="array"; items=([CatalogSyncDescriptor](schemas-catalogsyncdescriptor.md)); maxItems=100; title="Collections" |  |
+| <a id="s-43a0a9899d"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1"; default="riverhog-catalog-sync/v1"; title="Format" |  |
+| <a id="s-908ace0fa8"></a>`next_cursor` | no | anyOf=[(type="string"; maxLength=4096; minLength=1); (type="null")]; title="Next Cursor" |  |
+| <a id="s-c897f48ff8"></a>`source_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$"; title="Source Identity" |  |
 
 ### Progression, limits, and lifecycle
 

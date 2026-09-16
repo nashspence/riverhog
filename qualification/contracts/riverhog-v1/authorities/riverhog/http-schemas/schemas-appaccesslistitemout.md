@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b38b195323"></a>`app` | yes | #/components/schemas/ApplicationName |  |
-| <a id="s-4f422c3d19"></a>`created_at` | yes | type="string" |  |
-| <a id="s-3323fdf105"></a>`key_id` | yes | #/components/schemas/ApplicationKeyId |  |
-| <a id="s-3fb98e8404"></a>`key_status` | yes | type="string"; enum=["active","expired","revoked"] |  |
-| <a id="s-f4a4193314"></a>`permission` | yes | #/components/schemas/ApplicationPermission |  |
-| <a id="s-a40b921ce5"></a>`resource` | no | $ref="#/components/schemas/ApplicationResource"; default="*" |  |
+| <a id="s-b38b195323"></a>`app` | yes | [ApplicationName](schemas-applicationname.md) |  |
+| <a id="s-4f422c3d19"></a>`created_at` | yes | type="string"; title="Created At" |  |
+| <a id="s-3323fdf105"></a>`key_id` | yes | [ApplicationKeyId](schemas-applicationkeyid.md) |  |
+| <a id="s-3fb98e8404"></a>`key_status` | yes | type="string"; enum=["active","expired","revoked"]; title="Key Status" |  |
+| <a id="s-f4a4193314"></a>`permission` | yes | [ApplicationPermission](schemas-applicationpermission.md) |  |
+| <a id="s-a40b921ce5"></a>`resource` | no | [ApplicationResource](schemas-applicationresource.md); default="*" |  |
 
 ### All must match (`allOf`)
 

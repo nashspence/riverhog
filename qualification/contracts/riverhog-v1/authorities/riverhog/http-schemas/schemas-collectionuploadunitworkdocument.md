@@ -25,11 +25,11 @@ One exact unit and its durable upload checkpoint state.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-5bbbdc396e"></a>`payload_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-16c47a39dd"></a>`plaintext_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-1922dd6481"></a>`sources` | yes | type="array"; items=(#/components/schemas/CollectionUploadUnitSourceDocument); maxItems=1000; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"collection-volume-sequence","reason":"bounded-upload-unit-source-map"} |  |
-| <a id="s-c2d6a23375"></a>`state` | yes | type="string"; enum=["pending","committed"] |  |
-| <a id="s-df608cbe0c"></a>`unit` | yes | type="integer"; minimum=0 |  |
+| <a id="s-5bbbdc396e"></a>`payload_bytes` | yes | type="integer"; minimum=0; title="Payload Bytes" |  |
+| <a id="s-16c47a39dd"></a>`plaintext_bytes` | yes | type="integer"; minimum=0; title="Plaintext Bytes" |  |
+| <a id="s-1922dd6481"></a>`sources` | yes | type="array"; items=([CollectionUploadUnitSourceDocument](schemas-collectionuploadunitsourcedocument.md)); maxItems=1000; title="Sources"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"collection-volume-sequence","reason":"bounded-upload-unit-source-map"} |  |
+| <a id="s-c2d6a23375"></a>`state` | yes | type="string"; enum=["pending","committed"]; title="State" |  |
+| <a id="s-df608cbe0c"></a>`unit` | yes | type="integer"; minimum=0; title="Unit" |  |
 
 ### Progression, limits, and lifecycle
 

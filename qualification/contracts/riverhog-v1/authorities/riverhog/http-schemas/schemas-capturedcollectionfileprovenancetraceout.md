@@ -24,15 +24,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a5863a315d"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-ce32f13faa"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-6736d431c3"></a>`items` | yes | type="array"; items=(#/components/schemas/ProvenanceTraceItemOut) |  |
-| <a id="s-4a71d3cab5"></a>`journal` | yes | #/components/schemas/ProvenanceJournalOut |  |
-| <a id="s-988e1d208f"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
-| <a id="s-7e35635550"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-2b50f8202f"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
-| <a id="s-77b4c1146c"></a>`provenance` | yes | #/components/schemas/CapturedFileProvenanceBinding |  |
-| <a id="s-f8a55e0617"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a5863a315d"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-ce32f13faa"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-6736d431c3"></a>`items` | yes | type="array"; items=([ProvenanceTraceItemOut](schemas-provenancetraceitemout.md)); title="Items" |  |
+| <a id="s-4a71d3cab5"></a>`journal` | yes | [ProvenanceJournalOut](schemas-provenancejournalout.md) |  |
+| <a id="s-988e1d208f"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
+| <a id="s-7e35635550"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
+| <a id="s-2b50f8202f"></a>`path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
+| <a id="s-77b4c1146c"></a>`provenance` | yes | [CapturedFileProvenanceBinding](schemas-capturedfileprovenancebinding.md) |  |
+| <a id="s-f8a55e0617"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

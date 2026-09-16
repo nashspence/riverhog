@@ -24,11 +24,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-38bb68239d"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-02b7fe1b76"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-2b5bab20c8"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
-| <a id="s-a5ea03a2ad"></a>`requires_restore` | yes | type="boolean" |  |
-| <a id="s-fc277b5d87"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-38bb68239d"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-02b7fe1b76"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-2b5bab20c8"></a>`path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
+| <a id="s-a5ea03a2ad"></a>`requires_restore` | yes | type="boolean"; title="Requires Restore" |  |
+| <a id="s-fc277b5d87"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

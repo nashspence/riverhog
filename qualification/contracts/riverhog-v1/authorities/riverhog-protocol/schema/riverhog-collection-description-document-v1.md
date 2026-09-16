@@ -27,7 +27,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-884eb7f63f"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-908415d773"></a>`description` | yes | oneOf=(type="string"; maxLength=32768; minLength=1; x-riverhog-encoded-bytes-max=32768; x-riverhog-extent={"policy":"contract_max","reason":"bounded-human-authored-catalog-description"}; x-unicode-normalization="NFC") \| (type="null") |  |
+| <a id="s-908415d773"></a>`description` | yes | oneOf=[(type="string"; maxLength=32768; minLength=1; x-riverhog-encoded-bytes-max=32768; x-riverhog-extent={"policy":"contract_max","reason":"bounded-human-authored-catalog-description"}; x-unicode-normalization="NFC"); (type="null")] |  |
 | <a id="s-2ab1f766a7"></a>`description_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-49e4a4e153"></a>`format` | yes | const="riverhog-collection-description/v1" |  |
 | <a id="s-db04814e8f"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991; x-riverhog-extent={"policy":"fixed","reason":"exact-json-safe-monotonic-description-revision"} |  |

@@ -26,15 +26,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a2e1e51a8f"></a>`artifacts` | yes | #/components/schemas/ArtifactSetAuthorityDocument |  |
-| <a id="s-c31b744472"></a>`controller_evidence` | yes | type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
-| <a id="s-827ae4b73c"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-68f89f7550"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-6449700174"></a>`inputs` | yes | #/components/schemas/ExactSetAuthorityDocument |  |
-| <a id="s-b014f9416d"></a>`operation` | yes | #/components/schemas/OperationIdentityDocument |  |
-| <a id="s-6904c65b63"></a>`retirement_grace_seconds` | yes | type="integer"; minimum=0 |  |
-| <a id="s-d49cde6da8"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"] |  |
-| <a id="s-0c58a348ae"></a>`sealed_at` | yes | type="string"; maxLength=64; minLength=1 |  |
+| <a id="s-a2e1e51a8f"></a>`artifacts` | yes | [ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md) |  |
+| <a id="s-c31b744472"></a>`controller_evidence` | yes | type="object"; additionalProperties=(any JSON value); title="Controller Evidence"; x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
+| <a id="s-827ae4b73c"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Controller Evidence Sha256" |  |
+| <a id="s-68f89f7550"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Execution Id" |  |
+| <a id="s-6449700174"></a>`inputs` | yes | [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md) |  |
+| <a id="s-b014f9416d"></a>`operation` | yes | [OperationIdentityDocument](schemas-operationidentitydocument.md) |  |
+| <a id="s-6904c65b63"></a>`retirement_grace_seconds` | yes | type="integer"; minimum=0; title="Retirement Grace Seconds" |  |
+| <a id="s-d49cde6da8"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"]; title="Retirement Policy" |  |
+| <a id="s-0c58a348ae"></a>`sealed_at` | yes | type="string"; maxLength=64; minLength=1; title="Sealed At" |  |
 
 ### <a id="s-1114014bd6"></a>`if`
 

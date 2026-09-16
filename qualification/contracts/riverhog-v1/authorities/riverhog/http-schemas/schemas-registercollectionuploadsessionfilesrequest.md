@@ -24,7 +24,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2885a9acd1"></a>`files` | yes | type="array"; items=(#/components/schemas/CollectionUploadFileIn); maxItems=100; minItems=1; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"repeated-artifact-registration","reason":"bounded-upload-registration"} |  |
+| <a id="s-2885a9acd1"></a>`files` | yes | type="array"; items=([CollectionUploadFileIn](schemas-collectionuploadfilein.md)); maxItems=100; minItems=1; title="Files"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"repeated-artifact-registration","reason":"bounded-upload-registration"} |  |
 
 ### Progression, limits, and lifecycle
 

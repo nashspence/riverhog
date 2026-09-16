@@ -45,7 +45,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-5d31aa1e1a"></a>`host_id` | yes | type="string"; maxLength=255; minLength=1 |  |
 | <a id="s-91b6947ad7"></a>`pending_claim_capacity` | no | type="integer"; minimum=1; default=128 |  |
 | <a id="s-a7a28d229f"></a>`poll_seconds` | no | type="number"; minimum=0.1; maximum=3600; default=5 |  |
-| <a id="s-2623c96319"></a>`provenance_observer` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-2623c96319"></a>`provenance_observer` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
 | <a id="s-594fdb3083"></a>`riverhog_base_url` | yes | type="string"; maxLength=2048; minLength=1 |  |
 | <a id="s-18194d3168"></a>`riverhog_token` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-da574a41bd"></a>`sources` | yes | type="array"; items=([SourceConfig](#s-6f4e2328f8)); minItems=1 |  |
@@ -84,15 +84,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-39a6df08fd"></a>`archive_store` | no | anyOf=(type="string"; maxLength=160; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-39a6df08fd"></a>`archive_store` | no | anyOf=[(type="string"; maxLength=160; minLength=1); (type="null")]; default=null |  |
 | <a id="s-fa1c0bb167"></a>`close_mode` | no | type="string"; enum=["stable","explicit-flush"]; default="stable" |  |
-| <a id="s-57e116d3a3"></a>`description` | no | anyOf=([CollectionDescription](#s-a303d12867)) \| (type="null"); default=null |  |
+| <a id="s-57e116d3a3"></a>`description` | no | anyOf=[([CollectionDescription](#s-a303d12867)); (type="null")]; default=null |  |
 | <a id="s-d7cd2ad6b4"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$" |  |
 | <a id="s-fc7fd41ff3"></a>`ingest_source` | yes | type="string"; maxLength=512; minLength=1 |  |
 | <a id="s-7c89c77ec7"></a>`max_bytes` | no | type="integer"; minimum=1; default=107374182400 |  |
 | <a id="s-83c5fde40a"></a>`max_files` | no | type="integer"; minimum=1; default=1000 |  |
 | <a id="s-7bb9d9e6ee"></a>`provenance` | no | type="string"; enum=["capture","omit"]; default="capture" |  |
-| <a id="s-dd349f1180"></a>`provenance_omission_reason` | no | anyOf=(type="string"; maxLength=1000) \| (type="null"); default=null |  |
+| <a id="s-dd349f1180"></a>`provenance_omission_reason` | no | anyOf=[(type="string"; maxLength=1000); (type="null")]; default=null |  |
 | <a id="s-dd2e0ae6f4"></a>`root` | yes | type="string"; format="path" |  |
 | <a id="s-ebb34feebc"></a>`tags` | no | type="array"; default=[]; items=([CollectionTag](#s-6ffee2fa7d)) |  |
 

@@ -24,7 +24,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-399bce7731"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-399bce7731"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
 
 ## Governing policies
 

@@ -24,9 +24,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6aeb171cd6"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-55e28adc48"></a>`derivation` | yes | #/components/schemas/CollectionDerivationDocument |  |
-| <a id="s-fae979dcc8"></a>`document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6aeb171cd6"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-55e28adc48"></a>`derivation` | yes | [CollectionDerivationDocument](schemas-collectionderivationdocument.md) |  |
+| <a id="s-fae979dcc8"></a>`document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Document Sha256" |  |
 
 ### Progression, limits, and lifecycle
 

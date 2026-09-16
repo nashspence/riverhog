@@ -14,14 +14,15 @@ Cancel Work
 ## External contract
 
 <a id="s-9fddf026dd"></a>
-- <a id="s-99c239dfce"></a>`operationId`: cancel_work
-- <a id="s-1d4623f18c"></a>`summary`: Cancel Work
+- <a id="s-99c239dfce"></a>`operationId`: `"cancel_work"`
+- <a id="s-1d4623f18c"></a>`summary`: `"Cancel Work"`
+- <a id="s-0d116f2770"></a>`tags`: `["work"]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-e0d0a92d48"></a>`work_id` | path | yes | not declared | type="string" |
+| <a id="s-e0d0a92d48"></a>`work_id` | path | yes | not declared | type="string"; title="Work Id" |
 
 ### Responses
 

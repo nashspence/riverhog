@@ -14,15 +14,18 @@ Acknowledge Retrieval Job
 ## External contract
 
 <a id="s-822071ea62"></a>
-- <a id="s-7b910fd0b0"></a>`operationId`: acknowledge_retrieval_job
-- <a id="s-4281b9e81b"></a>`summary`: Acknowledge Retrieval Job
-- <a id="s-c5b18d23b9"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-7b910fd0b0"></a>`operationId`: `"acknowledge_retrieval_job"`
+- <a id="s-c5b18d23b9"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-4281b9e81b"></a>`summary`: `"Acknowledge Retrieval Job"`
+- <a id="s-082dc8e4f2"></a>`tags`: `["retrieval"]`
+- <a id="s-b563585573"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-8b4db762c9"></a>`x-riverhog-permission-requirements`: `[{"any_of":["retrieval:manage"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-51818aa473"></a>`job_id` | path | yes | not declared | type="string" |
+| <a id="s-51818aa473"></a>`job_id` | path | yes | not declared | type="string"; title="Job Id" |
 
 ### Responses
 

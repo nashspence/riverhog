@@ -14,19 +14,26 @@ Release Processing Claim
 ## External contract
 
 <a id="s-58094d8094"></a>
-- <a id="s-4fe04baf0d"></a>`operationId`: release_processing_claim
-- <a id="s-391c260948"></a>`summary`: Release Processing Claim
-- <a id="s-e4f879cef5"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-4fe04baf0d"></a>`operationId`: `"release_processing_claim"`
+- <a id="s-e4f879cef5"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-391c260948"></a>`summary`: `"Release Processing Claim"`
+- <a id="s-2002e43ba7"></a>`tags`: `["collection-workflows"]`
+- <a id="s-3bef4ac96b"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-f9d337f3ff"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-e485cf3718"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-e485cf3718"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
 
 ### <a id="s-540677c9bc"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProcessingClaimFenceDocument"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [ProcessingClaimFenceDocument](../http-schemas/schemas-processingclaimfencedocument.md) |
 
 ### Responses
 

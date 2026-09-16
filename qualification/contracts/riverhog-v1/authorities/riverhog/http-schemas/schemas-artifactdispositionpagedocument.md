@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0a4be28e4a"></a>`authority` | yes | #/components/schemas/ArtifactDispositionSetIdentityDocument |  |
-| <a id="s-300c0e231e"></a>`dispositions` | yes | type="array"; items=(#/components/schemas/ArtifactDispositionDocument); maxItems=128; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
-| <a id="s-964eecf671"></a>`next_ordinal` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
-| <a id="s-986071d04a"></a>`start_ordinal` | yes | type="integer"; minimum=0 |  |
+| <a id="s-0a4be28e4a"></a>`authority` | yes | [ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md) |  |
+| <a id="s-300c0e231e"></a>`dispositions` | yes | type="array"; items=([ArtifactDispositionDocument](schemas-artifactdispositiondocument.md)); maxItems=128; title="Dispositions"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
+| <a id="s-964eecf671"></a>`next_ordinal` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; title="Next Ordinal" |  |
+| <a id="s-986071d04a"></a>`start_ordinal` | yes | type="integer"; minimum=0; title="Start Ordinal" |  |
 
 ### Progression, limits, and lifecycle
 

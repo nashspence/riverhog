@@ -24,16 +24,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-586f65365e"></a>`access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
-| <a id="s-48bcb68302"></a>`app` | yes | #/components/schemas/ApplicationName |  |
-| <a id="s-7b641a4bb0"></a>`created_at` | yes | type="string" |  |
-| <a id="s-d9ca89d4ca"></a>`expires_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-5ccd64df56"></a>`id` | yes | #/components/schemas/ApplicationKeyId |  |
-| <a id="s-9dbd92c3f8"></a>`last_used_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-54bec0ed94"></a>`monthly_download_quota_bytes` | yes | anyOf=(#/components/schemas/MonthlyDownloadQuotaBytes) \| (type="null") |  |
-| <a id="s-e253c7e9c1"></a>`revoked_at` | yes | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-41bdd094b2"></a>`status` | yes | type="string"; enum=["active","expired","revoked"] |  |
-| <a id="s-7def1d8177"></a>`token` | yes | type="string" |  |
+| <a id="s-586f65365e"></a>`access` | yes | [ApplicationAccessGrantSet](schemas-applicationaccessgrantset.md) |  |
+| <a id="s-48bcb68302"></a>`app` | yes | [ApplicationName](schemas-applicationname.md) |  |
+| <a id="s-7b641a4bb0"></a>`created_at` | yes | type="string"; title="Created At" |  |
+| <a id="s-d9ca89d4ca"></a>`expires_at` | yes | anyOf=[(type="string"); (type="null")]; title="Expires At" |  |
+| <a id="s-5ccd64df56"></a>`id` | yes | [ApplicationKeyId](schemas-applicationkeyid.md) |  |
+| <a id="s-9dbd92c3f8"></a>`last_used_at` | yes | anyOf=[(type="string"); (type="null")]; title="Last Used At" |  |
+| <a id="s-54bec0ed94"></a>`monthly_download_quota_bytes` | yes | anyOf=[([MonthlyDownloadQuotaBytes](schemas-monthlydownloadquotabytes.md)); (type="null")] |  |
+| <a id="s-e253c7e9c1"></a>`revoked_at` | yes | anyOf=[(type="string"); (type="null")]; title="Revoked At" |  |
+| <a id="s-41bdd094b2"></a>`status` | yes | type="string"; enum=["active","expired","revoked"]; title="Status" |  |
+| <a id="s-7def1d8177"></a>`token` | yes | type="string"; title="Token" |  |
 
 ### All must match (`allOf`)
 

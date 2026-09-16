@@ -23,8 +23,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-010d640160"></a>`role` | no | type="string"; enum=["controller","worker","combined"]; default="combined" |  |
-| <a id="s-083bb6e401"></a>`work_limit` | no | type="integer"; minimum=1; maximum=100; default=25 |  |
+| <a id="s-010d640160"></a>`role` | no | type="string"; enum=["controller","worker","combined"]; default="combined"; title="Role" |  |
+| <a id="s-083bb6e401"></a>`work_limit` | no | type="integer"; minimum=1; maximum=100; default=25; title="Work Limit" |  |
 
 ### Progression, limits, and lifecycle
 

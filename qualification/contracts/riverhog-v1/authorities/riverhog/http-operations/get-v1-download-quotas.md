@@ -14,21 +14,24 @@ List Download Quotas
 ## External contract
 
 <a id="s-64ebb1eab6"></a>
-- <a id="s-db2b3b65b9"></a>`operationId`: list_download_quotas
-- <a id="s-887bd4832d"></a>`summary`: List Download Quotas
-- <a id="s-b2ea6e5552"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-db2b3b65b9"></a>`operationId`: `"list_download_quotas"`
+- <a id="s-b2ea6e5552"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-887bd4832d"></a>`summary`: `"List Download Quotas"`
+- <a id="s-19634048c7"></a>`tags`: `["download quotas"]`
+- <a id="s-3a2e618fb8"></a>`x-riverhog-permission-requirements`: `[{"any_of":["quotas:manage"]}]`
+- <a id="s-f6029fc0ac"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-bf5a76fe35"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-5b0ea802cc"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
+| <a id="s-bf5a76fe35"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-5b0ea802cc"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
 | <a id="s-1e0b21dfc5"></a>`sort` | query | no | `"app"` | [DownloadQuotaSort](../http-schemas/schemas-downloadquotasort.md) |
 | <a id="s-b28e08ffe9"></a>`order` | query | no | `"asc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
-| <a id="s-b29b8e0ba2"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
-| <a id="s-06c5d460e7"></a>`app` | query | no | not declared | anyOf=([ApplicationName](../http-schemas/schemas-applicationname.md)) \| (type="null") |
-| <a id="s-7a2a85af8b"></a>`active` | query | no | not declared | anyOf=(type="boolean") \| (type="null") |
+| <a id="s-b29b8e0ba2"></a>`q` | query | no | not declared | anyOf=[([BrowseQuery](../http-schemas/schemas-browsequery.md)); (type="null")]; title="Q" |
+| <a id="s-06c5d460e7"></a>`app` | query | no | not declared | anyOf=[([ApplicationName](../http-schemas/schemas-applicationname.md)); (type="null")]; title="App" |
+| <a id="s-7a2a85af8b"></a>`active` | query | no | not declared | anyOf=[(type="boolean"); (type="null")]; title="Active" |
 
 ### Responses
 

@@ -24,9 +24,9 @@ Classify one path; first matching rule wins.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6f5087153a"></a>`glob` | no | type="string"; default="*" |  |
-| <a id="s-14f9256789"></a>`media_type` | no | anyOf=(type="string") \| (type="null") |  |
-| <a id="s-041330fca4"></a>`role` | no | type="string"; default="stove0.source/v1"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-6f5087153a"></a>`glob` | no | type="string"; default="*"; title="Glob" |  |
+| <a id="s-14f9256789"></a>`media_type` | no | anyOf=[(type="string"); (type="null")]; title="Media Type" |  |
+| <a id="s-041330fca4"></a>`role` | no | type="string"; default="stove0.source/v1"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Role" |  |
 
 ## Governing policies
 

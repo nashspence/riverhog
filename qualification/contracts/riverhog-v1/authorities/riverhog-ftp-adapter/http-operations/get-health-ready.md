@@ -14,8 +14,9 @@ Health Ready
 ## External contract
 
 <a id="s-46355a8b99"></a>
-- <a id="s-07449a20f6"></a>`operationId`: ftp_adapter_health_ready
-- <a id="s-d03f68c701"></a>`summary`: Health Ready
+- <a id="s-07449a20f6"></a>`operationId`: `"ftp_adapter_health_ready"`
+- <a id="s-d03f68c701"></a>`summary`: `"Health Ready"`
+- <a id="s-f7aa15eb25"></a>`tags`: `["health"]`
 
 ### Responses
 

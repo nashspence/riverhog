@@ -14,13 +14,20 @@ Create Or Resume Collection Upload Session
 ## External contract
 
 <a id="s-179e7e60d9"></a>
-- <a id="s-fff99c5076"></a>`operationId`: create_or_resume_collection_upload_session
-- <a id="s-ad6863fb60"></a>`summary`: Create Or Resume Collection Upload Session
-- <a id="s-3c88b322fa"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-fff99c5076"></a>`operationId`: `"create_or_resume_collection_upload_session"`
+- <a id="s-3c88b322fa"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-ad6863fb60"></a>`summary`: `"Create Or Resume Collection Upload Session"`
+- <a id="s-a8ffceff6c"></a>`tags`: `["collections"]`
+- <a id="s-c19a5bba0d"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-4cda327f5a"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collections:create"]}]`
 
 ### <a id="s-c462782213"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateOrResumeCollectionUploadSessionRequest"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [CreateOrResumeCollectionUploadSessionRequest](../http-schemas/schemas-createorresumecollectionuploadsessionrequest.md) |
 
 ### Responses
 

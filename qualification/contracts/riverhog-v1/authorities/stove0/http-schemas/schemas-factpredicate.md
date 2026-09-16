@@ -24,12 +24,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-faaa06076f"></a>`artifact_facts` | no | anyOf=(#/components/schemas/ArtifactFactBinding) \| (type="null") |  |
-| <a id="s-31625c701a"></a>`artifact_roles` | no | type="array"; default=[]; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
-| <a id="s-0220713d42"></a>`observation_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-6bd68de14c"></a>`operator` | no | type="string"; enum=["equals","not-equals","contains","exists"]; default="equals" |  |
-| <a id="s-8a0d6e7ba5"></a>`pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
-| <a id="s-72f5b5f698"></a>`value` | no | #/components/schemas/JsonValue |  |
+| <a id="s-faaa06076f"></a>`artifact_facts` | no | anyOf=[([ArtifactFactBinding](schemas-artifactfactbinding.md)); (type="null")] |  |
+| <a id="s-31625c701a"></a>`artifact_roles` | no | type="array"; default=[]; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); title="Artifact Roles" |  |
+| <a id="s-0220713d42"></a>`observation_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Observation Contract Id" |  |
+| <a id="s-6bd68de14c"></a>`operator` | no | type="string"; enum=["equals","not-equals","contains","exists"]; default="equals"; title="Operator" |  |
+| <a id="s-8a0d6e7ba5"></a>`pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$"; title="Pointer" |  |
+| <a id="s-72f5b5f698"></a>`value` | no | [JsonValue](schemas-jsonvalue.md) |  |
 
 ### Progression, limits, and lifecycle
 

@@ -14,8 +14,9 @@ Health Ready
 ## External contract
 
 <a id="s-a8832ab54d"></a>
-- <a id="s-682e5bd658"></a>`operationId`: health_ready
-- <a id="s-3371742564"></a>`summary`: Health Ready
+- <a id="s-682e5bd658"></a>`operationId`: `"health_ready"`
+- <a id="s-3371742564"></a>`summary`: `"Health Ready"`
+- <a id="s-d43ea97a05"></a>`tags`: `["health"]`
 
 ### Responses
 

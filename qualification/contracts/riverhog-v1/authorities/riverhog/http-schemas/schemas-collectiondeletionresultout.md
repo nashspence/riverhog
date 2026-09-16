@@ -24,11 +24,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3b542ea2db"></a>`bytes` | yes | type="integer" |  |
-| <a id="s-e8df16b2b3"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-348721ef1f"></a>`files` | yes | type="integer" |  |
-| <a id="s-f27c30182f"></a>`remote_storage_bytes` | yes | type="integer" |  |
-| <a id="s-534c1b5c15"></a>`status` | yes | type="string"; enum=["deleting","deleted","already_absent"] |  |
+| <a id="s-3b542ea2db"></a>`bytes` | yes | type="integer"; title="Bytes" |  |
+| <a id="s-e8df16b2b3"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-348721ef1f"></a>`files` | yes | type="integer"; title="Files" |  |
+| <a id="s-f27c30182f"></a>`remote_storage_bytes` | yes | type="integer"; title="Remote Storage Bytes" |  |
+| <a id="s-534c1b5c15"></a>`status` | yes | type="string"; enum=["deleting","deleted","already_absent"]; title="Status" |  |
 
 ### Progression, limits, and lifecycle
 

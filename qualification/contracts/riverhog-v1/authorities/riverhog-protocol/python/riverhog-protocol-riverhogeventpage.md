@@ -88,10 +88,10 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-3280379529"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-c2af0612fd"></a>`cause` | no | anyOf=([RiverhogEventCause](#s-56c61376dd)) \| (type="null"); default=null |  |
+| <a id="s-c2af0612fd"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
 | <a id="s-74b7080db4"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
 | <a id="s-2b4c483c5f"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
-| <a id="s-33dba6f1eb"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null"); default=null |  |
+| <a id="s-33dba6f1eb"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-8a05bfc451"></a>`destination_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
 | <a id="s-ab6c72e50a"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-c2ba3d485e"></a>`source_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
@@ -112,7 +112,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-ada951b04e"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-94ea7ef0e6"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-926bf3f7eb"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-2d17c4ef70"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-2d17c4ef70"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
 | <a id="s-748f1d05de"></a>`time` | yes | type="string" |  |
 | <a id="s-cbc17223c2"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy.canceled" |  |
 
@@ -127,10 +127,10 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-a872366ecc"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-ef402a6fa0"></a>`cause` | no | anyOf=([RiverhogEventCause](#s-56c61376dd)) \| (type="null"); default=null |  |
+| <a id="s-ef402a6fa0"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
 | <a id="s-9f5059796a"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
 | <a id="s-6df5b22451"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
-| <a id="s-3aff650bb7"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null"); default=null |  |
+| <a id="s-3aff650bb7"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-7d87335252"></a>`destination_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
 | <a id="s-a5b8f6d486"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-7ad943949b"></a>`source_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
@@ -151,7 +151,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-178a884b88"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-5a8210c932"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-10cbede6bc"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-c31f959106"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-c31f959106"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
 | <a id="s-582f595eb9"></a>`time` | yes | type="string" |  |
 | <a id="s-4c91be5661"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy.completed" |  |
 
@@ -166,10 +166,10 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-75d33b6b4f"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-1dc61ccb83"></a>`cause` | no | anyOf=([RiverhogEventCause](#s-56c61376dd)) \| (type="null"); default=null |  |
+| <a id="s-1dc61ccb83"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
 | <a id="s-36c67f2162"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
 | <a id="s-f25dfe0509"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
-| <a id="s-fc0492df67"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null"); default=null |  |
+| <a id="s-fc0492df67"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-349c37611e"></a>`destination_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
 | <a id="s-71f2908355"></a>`error` | yes | type="string"; maxLength=16384; minLength=1 |  |
 | <a id="s-74ad67bbb0"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
@@ -191,7 +191,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-bb4a44340f"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-4478a9fc56"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-c27b43251e"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-8565661348"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-8565661348"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
 | <a id="s-e1369bddc7"></a>`time` | yes | type="string" |  |
 | <a id="s-3c39fa7f36"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy.issue" |  |
 
@@ -206,10 +206,10 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-5772cb13fd"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-91a65e5bab"></a>`cause` | no | anyOf=([RiverhogEventCause](#s-56c61376dd)) \| (type="null"); default=null |  |
+| <a id="s-91a65e5bab"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
 | <a id="s-afdf08164c"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
 | <a id="s-d330244f3f"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
-| <a id="s-8b24f1341b"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null"); default=null |  |
+| <a id="s-8b24f1341b"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-049e8e50fc"></a>`destination_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
 | <a id="s-336dc29ada"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-328963d607"></a>`source_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
@@ -230,7 +230,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-ab6d13184e"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-bd21e93da4"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-138ec9b34d"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-f6dd659f16"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-f6dd659f16"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
 | <a id="s-bdcec90dcd"></a>`time` | yes | type="string" |  |
 | <a id="s-0767fb8dcc"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy.requested" |  |
 
@@ -251,10 +251,10 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-57da1f3b82"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-522d26df29"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-49218e5e3e"></a>`cause` | no | anyOf=([RiverhogEventCause](#s-56c61376dd)) \| (type="null"); default=null |  |
+| <a id="s-49218e5e3e"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
 | <a id="s-8dae7de57b"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
 | <a id="s-ac2d1c2565"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
-| <a id="s-30c4f9b5e9"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null"); default=null |  |
+| <a id="s-30c4f9b5e9"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-5bc7b30fe2"></a>`files` | yes | type="integer"; minimum=0 |  |
 | <a id="s-65bb659349"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-c1bfb9d0ef"></a>`remote_storage_bytes` | yes | type="integer"; minimum=0 |  |
@@ -274,7 +274,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-1246c40f7b"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-28c4eb0e96"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-2e6704ebc4"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-29f8fe627a"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-29f8fe627a"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
 | <a id="s-153e92bfb8"></a>`time` | yes | type="string" |  |
 | <a id="s-84a576dc14"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.collection.deleted" |  |
 
@@ -291,10 +291,10 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-74a74b1c5b"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-a4ae429085"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-ae2c7918f4"></a>`bytes_total` | yes | type="integer"; minimum=0 |  |
-| <a id="s-1760e551a2"></a>`cause` | no | anyOf=([RiverhogEventCause](#s-56c61376dd)) \| (type="null"); default=null |  |
+| <a id="s-1760e551a2"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
 | <a id="s-36de94ee67"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
 | <a id="s-8c1457cfa0"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
-| <a id="s-6c21ec8a3d"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null"); default=null |  |
+| <a id="s-6c21ec8a3d"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-65413559df"></a>`files_total` | yes | type="integer"; minimum=0 |  |
 | <a id="s-c3ea18e378"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 
@@ -313,7 +313,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-51d7b31342"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-c335c5ae5e"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-25fea6a4fd"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-ef095a513a"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-ef095a513a"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
 | <a id="s-a93c31cd89"></a>`time` | yes | type="string" |  |
 | <a id="s-c170710dc4"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.collection.finalized" |  |
 
@@ -340,13 +340,13 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-9caf87ec0f"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-587fc9338b"></a>`cause` | no | anyOf=([RiverhogEventCause](#s-56c61376dd)) \| (type="null"); default=null |  |
-| <a id="s-17ba014898"></a>`collection_created_at` | no | anyOf=(type="string"; maxLength=64; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-6ad3117fab"></a>`collection_id` | no | anyOf=([CollectionId](#s-3b7d7e3c2c)) \| (type="null"); default=null |  |
+| <a id="s-587fc9338b"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
+| <a id="s-17ba014898"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-6ad3117fab"></a>`collection_id` | no | anyOf=[([CollectionId](#s-3b7d7e3c2c)); (type="null")]; default=null |  |
 | <a id="s-086bd0ec77"></a>`collection_ids` | yes | type="array"; items=([CollectionId](#s-3b7d7e3c2c)); minItems=1 |  |
-| <a id="s-d4094959ac"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null"); default=null |  |
+| <a id="s-d4094959ac"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-7af0933b09"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-b67d8635ea"></a>`reason` | no | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-b67d8635ea"></a>`reason` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; default=null |  |
 | <a id="s-23350bec21"></a>`retrieval_id` | yes | type="string"; maxLength=300; minLength=1 |  |
 | <a id="s-2390813b85"></a>`state` | yes | type="string"; const="canceled" |  |
 
@@ -365,7 +365,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-6e0c6be23f"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-4395aacfb6"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-976b2d5f99"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-9173f5b0df"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-9173f5b0df"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
 | <a id="s-2c47db07d1"></a>`time` | yes | type="string" |  |
 | <a id="s-2835564e78"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.canceled" |  |
 
@@ -380,11 +380,11 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-d633b25199"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-1703f42ba6"></a>`cause` | no | anyOf=([RiverhogEventCause](#s-56c61376dd)) \| (type="null"); default=null |  |
-| <a id="s-483430fb94"></a>`collection_created_at` | no | anyOf=(type="string"; maxLength=64; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-4be8917304"></a>`collection_id` | no | anyOf=([CollectionId](#s-3b7d7e3c2c)) \| (type="null"); default=null |  |
+| <a id="s-1703f42ba6"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
+| <a id="s-483430fb94"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-4be8917304"></a>`collection_id` | no | anyOf=[([CollectionId](#s-3b7d7e3c2c)); (type="null")]; default=null |  |
 | <a id="s-bb1b254e9e"></a>`collection_ids` | yes | type="array"; items=([CollectionId](#s-3b7d7e3c2c)); minItems=1 |  |
-| <a id="s-dfcb1fcb34"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null"); default=null |  |
+| <a id="s-dfcb1fcb34"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-0b7290ed8e"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-034055a483"></a>`retrieval_id` | yes | type="string"; maxLength=300; minLength=1 |  |
 | <a id="s-8e4aa554ab"></a>`state` | yes | type="string"; const="completed" |  |
@@ -404,7 +404,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-1e88b7ff6e"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-9f53fa1852"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-f781b54b02"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-101aec1767"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-101aec1767"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
 | <a id="s-f300bdc263"></a>`time` | yes | type="string" |  |
 | <a id="s-880eb05bbe"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.completed" |  |
 
@@ -419,11 +419,11 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-ed336aa0ab"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-77dbc0be59"></a>`cause` | no | anyOf=([RiverhogEventCause](#s-56c61376dd)) \| (type="null"); default=null |  |
-| <a id="s-208b5a2bcc"></a>`collection_created_at` | no | anyOf=(type="string"; maxLength=64; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-4fe2097994"></a>`collection_id` | no | anyOf=([CollectionId](#s-3b7d7e3c2c)) \| (type="null"); default=null |  |
+| <a id="s-77dbc0be59"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
+| <a id="s-208b5a2bcc"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-4fe2097994"></a>`collection_id` | no | anyOf=[([CollectionId](#s-3b7d7e3c2c)); (type="null")]; default=null |  |
 | <a id="s-015acc72f6"></a>`collection_ids` | yes | type="array"; items=([CollectionId](#s-3b7d7e3c2c)); minItems=1 |  |
-| <a id="s-16112840b3"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null"); default=null |  |
+| <a id="s-16112840b3"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-a6011e4483"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-425de01a61"></a>`retrieval_id` | yes | type="string"; maxLength=300; minLength=1 |  |
 | <a id="s-e6ff329283"></a>`state` | yes | type="string"; const="expired" |  |
@@ -443,7 +443,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-469120a2d7"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-ae8b415b82"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-bfb0bf6f88"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-356d4325e2"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-356d4325e2"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
 | <a id="s-859791f24c"></a>`time` | yes | type="string" |  |
 | <a id="s-c9e0511c11"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.expired" |  |
 
@@ -458,11 +458,11 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-9e0fcb7c1f"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-dae4492859"></a>`cause` | no | anyOf=([RiverhogEventCause](#s-56c61376dd)) \| (type="null"); default=null |  |
-| <a id="s-68c0974906"></a>`collection_created_at` | no | anyOf=(type="string"; maxLength=64; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-3698954897"></a>`collection_id` | no | anyOf=([CollectionId](#s-3b7d7e3c2c)) \| (type="null"); default=null |  |
+| <a id="s-dae4492859"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
+| <a id="s-68c0974906"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-3698954897"></a>`collection_id` | no | anyOf=[([CollectionId](#s-3b7d7e3c2c)); (type="null")]; default=null |  |
 | <a id="s-349277b22f"></a>`collection_ids` | yes | type="array"; items=([CollectionId](#s-3b7d7e3c2c)); minItems=1 |  |
-| <a id="s-7e901ba46c"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null"); default=null |  |
+| <a id="s-7e901ba46c"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-058a5b7e74"></a>`error` | yes | type="string"; maxLength=16384; minLength=1 |  |
 | <a id="s-62b1da16d4"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-4ddab02cda"></a>`retrieval_id` | yes | type="string"; maxLength=300; minLength=1 |  |
@@ -483,7 +483,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-bb02cf5b5c"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-a19b2058b9"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-b4479f5de0"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-c91911f642"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-c91911f642"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
 | <a id="s-09898f0b1b"></a>`time` | yes | type="string" |  |
 | <a id="s-7069924984"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.failed" |  |
 
@@ -498,11 +498,11 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-9c895201e2"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-bb9dc193c6"></a>`cause` | no | anyOf=([RiverhogEventCause](#s-56c61376dd)) \| (type="null"); default=null |  |
-| <a id="s-fadaa0dc64"></a>`collection_created_at` | no | anyOf=(type="string"; maxLength=64; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-6a4aeb6735"></a>`collection_id` | no | anyOf=([CollectionId](#s-3b7d7e3c2c)) \| (type="null"); default=null |  |
+| <a id="s-bb9dc193c6"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
+| <a id="s-fadaa0dc64"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-6a4aeb6735"></a>`collection_id` | no | anyOf=[([CollectionId](#s-3b7d7e3c2c)); (type="null")]; default=null |  |
 | <a id="s-395f72ee9d"></a>`collection_ids` | yes | type="array"; items=([CollectionId](#s-3b7d7e3c2c)); minItems=1 |  |
-| <a id="s-90c00dfff4"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null"); default=null |  |
+| <a id="s-90c00dfff4"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-41b89421be"></a>`error` | yes | type="string"; maxLength=16384; minLength=1 |  |
 | <a id="s-ed8c877e0b"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-4e754880bb"></a>`retrieval_id` | yes | type="string"; maxLength=300; minLength=1 |  |
@@ -523,7 +523,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-4009580dfc"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-c37fb27fa6"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-6533ffd54c"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-29dccbde08"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-29dccbde08"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
 | <a id="s-75a6f5c746"></a>`time` | yes | type="string" |  |
 | <a id="s-8467f20f19"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.issue" |  |
 
@@ -538,11 +538,11 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-a42a913481"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-68759b58f8"></a>`cause` | no | anyOf=([RiverhogEventCause](#s-56c61376dd)) \| (type="null"); default=null |  |
-| <a id="s-31ea966e9e"></a>`collection_created_at` | no | anyOf=(type="string"; maxLength=64; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-d268e8c028"></a>`collection_id` | no | anyOf=([CollectionId](#s-3b7d7e3c2c)) \| (type="null"); default=null |  |
+| <a id="s-68759b58f8"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
+| <a id="s-31ea966e9e"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-d268e8c028"></a>`collection_id` | no | anyOf=[([CollectionId](#s-3b7d7e3c2c)); (type="null")]; default=null |  |
 | <a id="s-ddd3bb8bc2"></a>`collection_ids` | yes | type="array"; items=([CollectionId](#s-3b7d7e3c2c)); minItems=1 |  |
-| <a id="s-ed8038fbe3"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null"); default=null |  |
+| <a id="s-ed8038fbe3"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-3aa854894c"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1 |  |
 | <a id="s-63d865e6bb"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-d42e5eca9a"></a>`retrieval_id` | yes | type="string"; maxLength=300; minLength=1 |  |
@@ -563,7 +563,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-69b39dcc7b"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-5b06ca20d8"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-75c83e093e"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-e373935a4e"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-e373935a4e"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
 | <a id="s-23798381bb"></a>`time` | yes | type="string" |  |
 | <a id="s-c3c2577807"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.ready" |  |
 
@@ -578,11 +578,11 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-cf63af7b77"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-3890179752"></a>`cause` | no | anyOf=([RiverhogEventCause](#s-56c61376dd)) \| (type="null"); default=null |  |
-| <a id="s-c0cc9568d5"></a>`collection_created_at` | no | anyOf=(type="string"; maxLength=64; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-17488d8589"></a>`collection_id` | no | anyOf=([CollectionId](#s-3b7d7e3c2c)) \| (type="null"); default=null |  |
+| <a id="s-3890179752"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
+| <a id="s-c0cc9568d5"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-17488d8589"></a>`collection_id` | no | anyOf=[([CollectionId](#s-3b7d7e3c2c)); (type="null")]; default=null |  |
 | <a id="s-1115efd158"></a>`collection_ids` | yes | type="array"; items=([CollectionId](#s-3b7d7e3c2c)); minItems=1 |  |
-| <a id="s-90f064dc62"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null"); default=null |  |
+| <a id="s-90f064dc62"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-3b00b3651c"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1 |  |
 | <a id="s-ee8bf80162"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-b6de652492"></a>`retrieval_id` | yes | type="string"; maxLength=300; minLength=1 |  |
@@ -603,7 +603,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-dd138eafd1"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-1f0472058a"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-904e68dbed"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-3c44160f20"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-3c44160f20"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
 | <a id="s-8d9ea4f6b7"></a>`time` | yes | type="string" |  |
 | <a id="s-6a4f1e6158"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.renewed" |  |
 
@@ -618,11 +618,11 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-3a82345d45"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-72adccc6c8"></a>`cause` | no | anyOf=([RiverhogEventCause](#s-56c61376dd)) \| (type="null"); default=null |  |
-| <a id="s-e32c279383"></a>`collection_created_at` | no | anyOf=(type="string"; maxLength=64; minLength=1) \| (type="null"); default=null |  |
-| <a id="s-94c50d4b6f"></a>`collection_id` | no | anyOf=([CollectionId](#s-3b7d7e3c2c)) \| (type="null"); default=null |  |
+| <a id="s-72adccc6c8"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
+| <a id="s-e32c279383"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-94c50d4b6f"></a>`collection_id` | no | anyOf=[([CollectionId](#s-3b7d7e3c2c)); (type="null")]; default=null |  |
 | <a id="s-ef5fe00caf"></a>`collection_ids` | yes | type="array"; items=([CollectionId](#s-3b7d7e3c2c)); minItems=1 |  |
-| <a id="s-39eaf089f3"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null"); default=null |  |
+| <a id="s-39eaf089f3"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-87cabb3b1a"></a>`files` | yes | type="integer"; minimum=1 |  |
 | <a id="s-972078372d"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-838367382a"></a>`objects` | yes | type="integer"; minimum=1 |  |
@@ -645,7 +645,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-381822e8b4"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-ff969da433"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-dad540dd63"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-1e9333c620"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-1e9333c620"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
 | <a id="s-b7bf2cedf2"></a>`time` | yes | type="string" |  |
 | <a id="s-52578520a5"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.requested" |  |
 
@@ -660,7 +660,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-c35d213589"></a>`app` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-87ad259a07"></a>`key_id` | no | anyOf=(type="string"; maxLength=300; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-87ad259a07"></a>`key_id` | no | anyOf=[(type="string"; maxLength=300; minLength=1); (type="null")]; default=null |  |
 
 ##### <a id="s-56c61376dd"></a>definition `RiverhogEventCause`
 
@@ -674,7 +674,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-f9d5f40e41"></a>`id` | yes | type="string"; maxLength=300; minLength=1 |  |
 | <a id="s-c7579843a7"></a>`source` | yes | type="string"; maxLength=1000; minLength=1 |  |
-| <a id="s-659df81f50"></a>`subject` | no | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-659df81f50"></a>`subject` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; default=null |  |
 | <a id="s-e5cf71aa47"></a>`type` | yes | type="string"; maxLength=300; minLength=1 |  |
 
 ##### <a id="s-41ab5ca15a"></a>definition `RiverhogLifecycleEvent`

@@ -38,11 +38,11 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-c05f142da4"></a>`accepted_bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-e0c87204a2"></a>`bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-ddef0dd98c"></a>`current_bytes` | no | anyOf=(type="integer"; minimum=0) \| (type="null"); default=null |  |
-| <a id="s-c34cd2178b"></a>`current_path` | no | anyOf=(type="string") \| (type="null"); default=null |  |
-| <a id="s-7f2707a86d"></a>`current_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
-| <a id="s-232feea01f"></a>`current_state_id` | no | anyOf=([ProvenanceStateId](#s-0e1edefe0b)) \| (type="null"); default=null |  |
-| <a id="s-7e7ede4480"></a>`failure` | no | anyOf=(type="string") \| (type="null"); default=null |  |
+| <a id="s-ddef0dd98c"></a>`current_bytes` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; default=null |  |
+| <a id="s-c34cd2178b"></a>`current_path` | no | anyOf=[(type="string"); (type="null")]; default=null |  |
+| <a id="s-7f2707a86d"></a>`current_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
+| <a id="s-232feea01f"></a>`current_state_id` | no | anyOf=[([ProvenanceStateId](#s-0e1edefe0b)); (type="null")]; default=null |  |
+| <a id="s-7e7ede4480"></a>`failure` | no | anyOf=[(type="string"); (type="null")]; default=null |  |
 | <a id="s-f7ea842030"></a>`journal_id` | yes | [ProvenanceJournalId](#s-941b870066) |  |
 | <a id="s-8e2556666a"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-5b08c1e75b"></a>`state` | yes | type="string"; enum=["accepting","validating","sealed","failed"] |  |

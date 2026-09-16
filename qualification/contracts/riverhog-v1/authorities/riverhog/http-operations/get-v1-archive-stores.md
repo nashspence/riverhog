@@ -14,17 +14,20 @@ List Archive Stores
 ## External contract
 
 <a id="s-ee96c9ecf6"></a>
-- <a id="s-299a86fdae"></a>`operationId`: list_archive_stores
-- <a id="s-d99659cbc1"></a>`summary`: List Archive Stores
-- <a id="s-81828021c4"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-299a86fdae"></a>`operationId`: `"list_archive_stores"`
+- <a id="s-81828021c4"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-d99659cbc1"></a>`summary`: `"List Archive Stores"`
+- <a id="s-e5bff1252b"></a>`tags`: `["archive"]`
+- <a id="s-42840eb3f8"></a>`x-riverhog-permission-requirements`: `[{"any_of":["archives:read"]}]`
+- <a id="s-6276beace9"></a>`x-riverhog-read-collection`: `{"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-d658ce8d36"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-3e606657b2"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
-| <a id="s-9a1b243da7"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
+| <a id="s-d658ce8d36"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
+| <a id="s-3e606657b2"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
+| <a id="s-9a1b243da7"></a>`q` | query | no | not declared | anyOf=[([BrowseQuery](../http-schemas/schemas-browsequery.md)); (type="null")]; title="Q" |
 | <a id="s-eeee1e8f4f"></a>`sort` | query | no | `"store"` | [ArchiveStoreSort](../http-schemas/schemas-archivestoresort.md) |
 | <a id="s-b046437824"></a>`order` | query | no | `"asc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
 

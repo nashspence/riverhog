@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-395fe3aacf"></a>Parser name: `riverhog-api`
+
+| Field | Value |
+|---|---|
+| <a id="s-c12be24b0c"></a>`parameters` | `[]` |
 - <a id="s-bcf8f06216"></a>Subcommand selection: optional.
 - <a id="s-410963d8dd"></a>Unique long-option abbreviations: accepted.
 
@@ -35,13 +39,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-5a2b4ef233"></a>`stopped` | <a id="s-f2d5760826"></a>`{"kind":"service-runtime-returned"}` | <a id="s-8ec9193e1b"></a>`0` | <a id="s-e5c55a833f"></a>all: `no-command-result` | <a id="s-6cd3750fa6"></a>all: `noncontractual-runtime-log` |
+| <a id="s-5a2b4ef233"></a>`stopped` | <a id="s-f2d5760826"></a>`{"kind":"service-runtime-returned"}` | <a id="s-8ec9193e1b"></a>`0` | <a id="s-e5c55a833f"></a>all: `"no-command-result"` | <a id="s-6cd3750fa6"></a>all: `"noncontractual-runtime-log"` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-342da844c2"></a>`usage` | <a id="s-6882d8f443"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-b6589d271d"></a>`2` | <a id="s-300cd69836"></a>all: `empty` | <a id="s-2cdf87c1e2"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-342da844c2"></a>`usage` | <a id="s-6882d8f443"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-b6589d271d"></a>`2` | <a id="s-300cd69836"></a>all: `"empty"` | <a id="s-2cdf87c1e2"></a>all: `"noncontractual-usage-diagnostic"` |
 
 ## Governing policies
 

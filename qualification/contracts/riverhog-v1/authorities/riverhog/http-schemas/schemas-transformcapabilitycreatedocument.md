@@ -24,10 +24,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-97683ba1b7"></a>`actions` | no | type="array"; items=(type="string"; enum=["read-inputs","write-output"]); minItems=1; oneOf=(const=["read-inputs"]) \| (const=["read-inputs","write-output"]) |  |
-| <a id="s-bdff65438d"></a>`audience` | yes | type="string"; pattern="^[a-z0-9][a-z0-9._:/-]{0,299}$" |  |
-| <a id="s-6b1157a1fa"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-706e86c697"></a>`ttl_seconds` | no | type="integer"; minimum=30; maximum=86400; default=900 |  |
+| <a id="s-97683ba1b7"></a>`actions` | no | type="array"; items=(type="string"; enum=["read-inputs","write-output"]); minItems=1; oneOf=[(const=["read-inputs"]); (const=["read-inputs","write-output"])]; title="Actions" |  |
+| <a id="s-bdff65438d"></a>`audience` | yes | type="string"; pattern="^[a-z0-9][a-z0-9._:/-]{0,299}$"; title="Audience" |  |
+| <a id="s-6b1157a1fa"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-706e86c697"></a>`ttl_seconds` | no | type="integer"; minimum=30; maximum=86400; default=900; title="Ttl Seconds" |  |
 
 ### Progression, limits, and lifecycle
 

@@ -38,7 +38,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-d0005e583b"></a>`evaluations` | yes | type="array"; items=([EvaluationView](#s-765d4e2236)) |  |
 | <a id="s-58d16f21a2"></a>`filters` | yes | type="object"; additionalProperties=([JsonValue](#s-1bd1daefdd)) |  |
-| <a id="s-d6a39d0a16"></a>`next_page_token` | yes | anyOf=([BrowsePageToken](#s-7fa86e37fe)) \| (type="null") |  |
+| <a id="s-d6a39d0a16"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](#s-7fa86e37fe)); (type="null")] |  |
 | <a id="s-ca42b52286"></a>`order` | yes | type="string"; enum=["asc","desc"] |  |
 | <a id="s-1d79a07443"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
 | <a id="s-e74a79d0cb"></a>`sort` | yes | type="string"; enum=["updated_at","phase","evaluation_id"] |  |
@@ -93,7 +93,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e7831c309d"></a>`output` | no | anyOf=([OutputCollectionRef](#s-2262efd035)) \| (type="null"); default=null |  |
+| <a id="s-e7831c309d"></a>`output` | no | anyOf=[([OutputCollectionRef](#s-2262efd035)); (type="null")]; default=null |  |
 | <a id="s-65f0830ec5"></a>`state` | yes | type="string"; enum=["pending","active","complete","inapplicable","failed","canceled"] |  |
 | <a id="s-48b2edf10f"></a>`variant_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-ebfda9d490"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -140,8 +140,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-46d76fda46"></a>`note` | no | anyOf=(type="string"; maxLength=4000; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$") \| (type="null"); default=null |  |
-| <a id="s-084eb566ef"></a>`rating` | no | anyOf=(type="integer"; minimum=1; maximum=5) \| (type="null"); default=null |  |
+| <a id="s-46d76fda46"></a>`note` | no | anyOf=[(type="string"; maxLength=4000; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$"); (type="null")]; default=null |  |
+| <a id="s-084eb566ef"></a>`rating` | no | anyOf=[(type="integer"; minimum=1; maximum=5); (type="null")]; default=null |  |
 | <a id="s-2f51e798d4"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
 | <a id="s-e8ce269d74"></a>`updated_by` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-b933fef00a"></a>`variant_id` | yes | type="string"; maxLength=160; minLength=1 |  |

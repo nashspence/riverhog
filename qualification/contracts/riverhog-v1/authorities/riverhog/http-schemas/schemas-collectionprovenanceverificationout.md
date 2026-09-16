@@ -22,8 +22,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Alternative | Schema |
 |---|---|
-| <a id="s-d00336862d"></a>1 | #/components/schemas/CapturedCollectionProvenanceVerification |
-| <a id="s-1415e7914a"></a>2 | #/components/schemas/OmittedCollectionProvenanceVerification |
+| <a id="s-d00336862d"></a>1 | [CapturedCollectionProvenanceVerification](schemas-capturedcollectionprovenanceverification.md) |
+| <a id="s-1415e7914a"></a>2 | [OmittedCollectionProvenanceVerification](schemas-omittedcollectionprovenanceverification.md) |
 
 ## Maintained corroboration
 

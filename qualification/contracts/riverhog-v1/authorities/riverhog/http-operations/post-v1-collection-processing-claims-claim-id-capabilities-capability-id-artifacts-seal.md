@@ -14,20 +14,27 @@ Seal Transform Capability Artifacts
 ## External contract
 
 <a id="s-96e6657254"></a>
-- <a id="s-7d42e7a5fe"></a>`operationId`: seal_transform_capability_artifacts
-- <a id="s-495f2933da"></a>`summary`: Seal Transform Capability Artifacts
-- <a id="s-5e482a2c54"></a>`security`: `[{"HTTPBearer": []}]`
+- <a id="s-7d42e7a5fe"></a>`operationId`: `"seal_transform_capability_artifacts"`
+- <a id="s-5e482a2c54"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-495f2933da"></a>`summary`: `"Seal Transform Capability Artifacts"`
+- <a id="s-b57eaa6f41"></a>`tags`: `["collection-workflows"]`
+- <a id="s-9e6762cc73"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-ca6c3ed8bd"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-a77e4086ba"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
-| <a id="s-5564f94db3"></a>`capability_id` | path | yes | not declared | type="string" |
+| <a id="s-a77e4086ba"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
+| <a id="s-5564f94db3"></a>`capability_id` | path | yes | not declared | type="string"; title="Capability Id" |
 
 ### <a id="s-740e76aa18"></a>Request body
 
-`{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProcessingClaimFenceDocument"}}}, "required": true}`
+- `required`: `true`
+
+| Media type | Schema |
+|---|---|
+| application/json | [ProcessingClaimFenceDocument](../http-schemas/schemas-processingclaimfencedocument.md) |
 
 ### Responses
 

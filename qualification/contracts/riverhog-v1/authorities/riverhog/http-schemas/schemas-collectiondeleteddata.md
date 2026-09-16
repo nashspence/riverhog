@@ -24,15 +24,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-dd99a0f898"></a>`actor` | yes | #/components/schemas/RiverhogActor |  |
-| <a id="s-142256f795"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-046f88c602"></a>`cause` | no | anyOf=(#/components/schemas/RiverhogEventCause) \| (type="null") |  |
-| <a id="s-084be70f09"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
-| <a id="s-08ff8d0fb0"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-b8a7a262c5"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null") |  |
-| <a id="s-52097fbda1"></a>`files` | yes | type="integer"; minimum=0 |  |
-| <a id="s-825db9f37b"></a>`initiator` | yes | #/components/schemas/RiverhogActor |  |
-| <a id="s-50362833b1"></a>`remote_storage_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-dd99a0f898"></a>`actor` | yes | [RiverhogActor](schemas-riverhogactor.md) |  |
+| <a id="s-142256f795"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-046f88c602"></a>`cause` | no | anyOf=[([RiverhogEventCause](schemas-riverhogeventcause.md)); (type="null")] |  |
+| <a id="s-084be70f09"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1; title="Collection Created At" |  |
+| <a id="s-08ff8d0fb0"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-b8a7a262c5"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; title="Context" |  |
+| <a id="s-52097fbda1"></a>`files` | yes | type="integer"; minimum=0; title="Files" |  |
+| <a id="s-825db9f37b"></a>`initiator` | yes | [RiverhogActor](schemas-riverhogactor.md) |  |
+| <a id="s-50362833b1"></a>`remote_storage_bytes` | yes | type="integer"; minimum=0; title="Remote Storage Bytes" |  |
 
 ### Progression, limits, and lifecycle
 

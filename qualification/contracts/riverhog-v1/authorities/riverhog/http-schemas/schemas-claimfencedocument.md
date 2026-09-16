@@ -24,8 +24,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7e549c1341"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-eec0098c23"></a>`id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-7e549c1341"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-eec0098c23"></a>`id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Id" |  |
 
 ### Progression, limits, and lifecycle
 

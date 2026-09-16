@@ -25,15 +25,15 @@ One immutable set of required branches and one optional exact join.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-fb4dbc4b31"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-dfc8667881"></a>`branches` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"#/components/schemas/CoordinationBranchPlan","leaf":"#/components/schemas/BranchPlan"},"propertyName":"kind"}; oneOf=(#/components/schemas/BranchPlan) \| (#/components/schemas/CoordinationBranchPlan)); minItems=1 |  |
-| <a id="s-32fa6f6e6c"></a>`decision_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-80f9b8d777"></a>`evidence_sha256s` | no | type="array"; default=[]; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
-| <a id="s-3b5284256e"></a>`format` | no | type="string"; const="stove0-branch-set/v1"; default="stove0-branch-set/v1" |  |
-| <a id="s-debaf9ead5"></a>`join` | no | anyOf=(#/components/schemas/JoinDeclaration) \| (type="null") |  |
-| <a id="s-254366e7ed"></a>`parent_work` | yes | #/components/schemas/WorkIdentity |  |
-| <a id="s-347ef767d1"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
-| <a id="s-6ba67858d5"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
+| <a id="s-fb4dbc4b31"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Branch Set Sha256" |  |
+| <a id="s-dfc8667881"></a>`branches` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"#/components/schemas/CoordinationBranchPlan","leaf":"#/components/schemas/BranchPlan"},"propertyName":"kind"}; oneOf=[([BranchPlan](schemas-branchplan.md)); ([CoordinationBranchPlan](schemas-coordinationbranchplan.md))]); minItems=1; title="Branches" |  |
+| <a id="s-32fa6f6e6c"></a>`decision_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Decision Sha256" |  |
+| <a id="s-80f9b8d777"></a>`evidence_sha256s` | no | type="array"; default=[]; items=(type="string"; pattern="^[0-9a-f]{64}$"); title="Evidence Sha256S" |  |
+| <a id="s-3b5284256e"></a>`format` | no | type="string"; const="stove0-branch-set/v1"; default="stove0-branch-set/v1"; title="Format" |  |
+| <a id="s-debaf9ead5"></a>`join` | no | anyOf=[([JoinDeclaration](schemas-joindeclaration.md)); (type="null")] |  |
+| <a id="s-254366e7ed"></a>`parent_work` | yes | [WorkIdentity](schemas-workidentity.md) |  |
+| <a id="s-347ef767d1"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Retirement Grace Seconds" |  |
+| <a id="s-6ba67858d5"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Retirement Policy" |  |
 
 ### Progression, limits, and lifecycle
 

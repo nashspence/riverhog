@@ -25,11 +25,11 @@ A bounded acquisition step over currently actionable upload units.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0f1e40b93b"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-86f4d750af"></a>`committed_payload_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-9c4aca2092"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-b5d3083403"></a>`planning_complete` | yes | type="boolean" |  |
-| <a id="s-4617d6f48d"></a>`work` | yes | type="array"; items=(#/components/schemas/CollectionUploadUnitAssignmentDocument); maxItems=64; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"repeated-acquisition-until-complete","reason":"bounded-actionable-work-acquisition"} |  |
+| <a id="s-0f1e40b93b"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-86f4d750af"></a>`committed_payload_bytes` | yes | type="integer"; minimum=0; title="Committed Payload Bytes" |  |
+| <a id="s-9c4aca2092"></a>`complete` | yes | type="boolean"; title="Complete" |  |
+| <a id="s-b5d3083403"></a>`planning_complete` | yes | type="boolean"; title="Planning Complete" |  |
+| <a id="s-4617d6f48d"></a>`work` | yes | type="array"; items=([CollectionUploadUnitAssignmentDocument](schemas-collectionuploadunitassignmentdocument.md)); maxItems=64; title="Work"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"repeated-acquisition-until-complete","reason":"bounded-actionable-work-acquisition"} |  |
 
 ### Progression, limits, and lifecycle
 
