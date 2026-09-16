@@ -62,9 +62,9 @@ def test_atlas_rollups_and_dossiers_are_exact_and_descriptive() -> None:
         item["sha256"] for item in documents if item["kind"] == "root-index"
     )
     # Presentation-quality witness, deliberately outside machine-closure validation.
-    assert max(len(payload) for payload in checked.files.values()) <= (
-        atlas.AUDIT_DOCUMENT_TARGET_BYTES
-    )
+    assert max(
+        len(payload.split(b"### Exact owned JSON", 1)[0]) for payload in checked.files.values()
+    ) <= (atlas.AUDIT_PRIMARY_CONTENT_TARGET_BYTES)
     assert all(b"### Exact owned JSON" in checked.files[item["dossier"]] for item in elements)
 
 
@@ -88,8 +88,8 @@ def test_durable_state_and_python_structures_are_exact_human_audit_units() -> No
         if item["authority"] == "riverhog-catalog" and item["title"].endswith(": collections")
     )
     collections_page = checked.files[collections["dossier"]].decode()
-    assert "### Columns" in collections_page
-    assert "### Table constraints" in collections_page
+    assert "#### Columns" in collections_page
+    assert "#### Table constraints" in collections_page
     assert "`description_search`" in collections_page
     assert "`ck_collections_archive_root_sha256`" in collections_page
 
@@ -112,7 +112,7 @@ def test_durable_state_and_python_structures_are_exact_human_audit_units() -> No
     )
     pydantic_page = checked.files[pydantic_element["dossier"]].decode()
     assert "#### Validated model schema" in pydantic_page
-    assert "### Fields" in pydantic_page
+    assert "##### Fields" in pydantic_page
 
     sources_page = checked.files["riverhog-v1/evidence/sources.md"].decode()
     assert "tests/fixtures/state/v1_0001/riverhog.postgresql.sql" in sources_page
@@ -618,3 +618,244 @@ def test_atlas_rejects_broken_fragments_and_duplicate_explicit_anchors() -> None
             "index.md",
             {"index.md": b'<a id="subject"></a>\n<a id="subject"></a>\n'},
         )
+
+
+def _primary_contract(authority: str, title: str) -> tuple[dict[str, Any], str]:
+    checked = checked_atlas()
+    element = next(
+        item
+        for item in checked.root["elements"]
+        if item["authority"] == authority and item["title"] == title
+    )
+    page = checked.files[element["dossier"]].decode()
+    return element, page.split("## Governing policies", 1)[0].split(
+        "## Maintained corroboration", 1
+    )[0]
+
+
+@pytest.mark.parametrize(
+    ("authority", "title", "facts"),
+    [
+        ("riverhog", "schemas: ArchiveStoreName", ('`pattern`: `"^[a-z0-9]+(?:-[a-z0-9]+)*$"`',)),
+        (
+            "riverhog",
+            "schemas: CreateOrResumeCollectionUploadSessionOut",
+            (
+                "`additionalProperties`: `false`",
+                "All must match (`allOf`)",
+                "If schema matches | Then must match | Otherwise must match",
+                'properties={state: (const="finalized")}',
+                'properties={archive_root_sha256: (type="string")',
+                '"propertyName":"state"',
+            ),
+        ),
+        (
+            "stove0-recipe-config",
+            "stove0-recipe-config:configuration:recipe-catalog configuration",
+            (
+                "definition `RecipeDefinition`",
+                '`allow_derived_inputs` | no | type="boolean"; default=false',
+                '`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0',
+                '`revision` | yes | type="integer"; minimum=1',
+                "`additionalProperties`: `false`",
+                '"propertyName":"kind"',
+                "definition `JsonValue`",
+                "Accepts: any JSON value.",
+            ),
+        ),
+        (
+            "stove0-target-support",
+            "generated:stove0-target: TargetConformanceResult",
+            (
+                "definition `AcceptedTargetJob`",
+                "`additionalProperties`: `false`",
+                '`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"',
+                "definition `JsonValue`",
+                "Accepts: any JSON value.",
+            ),
+        ),
+        ("stove0", "schemas: JsonValue", ("Accepts: any JSON value.",)),
+        (
+            "riverhog-ftp-adapter",
+            "securitySchemes: RiverhogFtpAdapterBearer",
+            ('`scheme` | `"bearer"`', '`type` | `"http"`'),
+        ),
+        (
+            "riverhog-storage-adapter-support",
+            "generated:riverhog-storage-adapter protocol",
+            (
+                '`compatibility · provider_ontology` | `"private"`',
+                '`compatibility · unknown_fields` | `"reject"`',
+            ),
+        ),
+        (
+            "riverhog-server",
+            "RIVERHOG_ARCHIVE_STORE_{store}_{setting}",
+            ('`parameters · store · normalization` | `"uppercase-dashes-to-underscores"`',),
+        ),
+        (
+            "riverhog-ftp-custody",
+            "riverhog-ftp-custody: operational-database",
+            (
+                "### Table: `claims`",
+                "### Table: `adapter_state`",
+                "### Table: `completion_events`",
+                "### Table: `completion_failures`",
+                "`key` | `TEXT` | yes",
+                "`event_id` | `TEXT` | yes",
+                "`claim_id` | `TEXT` | no",
+                '"checks":["(claim_bytes >= 0)"]',
+            ),
+        ),
+        (
+            "riverhog-ftp-custody",
+            "riverhog-ftp-custody: completion-log",
+            (
+                "### Record schema",
+                '`event_id` | yes | type="string"; minLength=1',
+                "`additionalProperties`: `false`",
+            ),
+        ),
+        (
+            "gogurt",
+            "gogurt list",
+            (
+                "### Local structured outputs",
+                "`gogurt-cli-error/v1`",
+                '`code` | yes | enum=["config_error","listener_error"]',
+                '`message` | yes | type="string"',
+            ),
+        ),
+        (
+            "riverhog-recover",
+            "riverhog-recover",
+            (
+                "### Local structured outputs",
+                '`framing` | `"newline-delimited-json"`',
+                '`sequence · start` | `"authority"`',
+                '`sequence · repeated` | `"tag"`',
+                '`sequence · end` | `"complete"`',
+                "##### Record `authority`",
+                "##### Record `complete`",
+                '`tag_count` | yes | type="integer"; minimum=0',
+            ),
+        ),
+        (
+            "stove0-review-planning",
+            "stove0-review-planning",
+            (
+                "### Local structured outputs",
+                '`status` | `"conformant"`',
+                "`observer_contract · maximum_result_bytes` | `262144`",
+                "`operation_contract · source_retirement_permitted` | `false`",
+            ),
+        ),
+    ],
+)
+def test_primary_dossiers_expose_declared_semantics(
+    authority: str, title: str, facts: tuple[str, ...]
+) -> None:
+    _element, primary = _primary_contract(authority, title)
+    assert all(fact in primary for fact in facts), [fact for fact in facts if fact not in primary]
+    assert "additional keys=" not in primary
+    assert "```json" not in primary
+
+
+def test_http_response_headers_are_readable_with_their_status_and_constraints() -> None:
+    checked = checked_atlas()
+    element = next(
+        item
+        for item in checked.root["elements"]
+        if item["interface"] == "http-operations"
+        and item["details"].get("path")
+        == "/v1/collections/{collection_id}/provenance/journals/{journal_id}"
+    )
+    primary = checked.files[element["dossier"]].decode().split("### Exact owned JSON", 1)[0]
+    headers = primary.split("#### Response headers", 1)[1].split("### Progression", 1)[0]
+    for status, name in (
+        ("200", "Accept-Ranges"),
+        ("200", "Content-Length"),
+        ("200", "ETag"),
+        ("206", "Accept-Ranges"),
+        ("206", "Content-Length"),
+        ("206", "Content-Range"),
+        ("206", "ETag"),
+    ):
+        row = next(
+            line
+            for line in headers.splitlines()
+            if f"| `{status}` |" in line and f"`{name}` |" in line
+        )
+        assert "| yes |" in row
+        if status == "200" and name == "Accept-Ranges":
+            assert 'const="bytes"' in row
+        if status == "200" and name == "Content-Length":
+            assert "minimum=0" in row
+        if status == "200" and name == "ETag":
+            assert "pattern=" in row and "[0-9a-f]{64}" in row
+
+
+def test_nested_definition_links_resolve_to_primary_constraints() -> None:
+    element, primary = _primary_contract(
+        "stove0-recipe-config", "stove0-recipe-config:configuration:recipe-catalog configuration"
+    )
+    definition = f"{element['pointers'][0]}/$defs/RecipeDefinition"
+    anchor = navigation._subject_anchor(definition)
+    assert f"[RecipeDefinition](#{anchor})" in primary
+    section = primary.split(f'id="{anchor}"', 1)[1].split("\n### ", 1)[0]
+    assert '`allow_derived_inputs` | no | type="boolean"; default=false' in section
+    assert '`revision` | yes | type="integer"; minimum=1' in section
+
+
+def test_large_integer_bounds_are_numeric_in_primary_content_and_exact_in_fallback() -> None:
+    checked = checked_atlas()
+    element, primary = _primary_contract(
+        "riverhog-provenance", "Riverhog provenance v1 journal entry"
+    )
+    pointer = f"{element['pointers'][0]}/properties/sequence/maximum"
+    assert pointer in checked.root["projection_unsafe_integer_paths"]
+    encoded = atlas.pointer_value(checked.root["projection"], pointer)
+    assert encoded == "9223372036854775807"
+    assert atlas.pointer_value(atlas.reassemble_projection(checked), pointer) == 9223372036854775807
+    row = next(line for line in primary.splitlines() if "</a>`sequence`" in line)
+    assert "maximum=9223372036854775807" in row
+    assert 'maximum="9223372036854775807"' not in row
+    fallback = checked.files[element["dossier"]].decode().split("### Exact owned JSON", 1)[1]
+    assert '"maximum": "9223372036854775807"' in fallback
+    assert "projection_unsafe_integer_paths" in fallback
+
+
+@pytest.mark.parametrize("default", [False, 0, "", [], {}, None])
+def test_schema_defaults_are_literal_values_including_empty_objects(default: object) -> None:
+    primary = "\n".join(
+        dossier_rendering._render_schema(
+            {"type": "object", "properties": {"value": {"default": default}}}, "/schema", set()
+        )
+    )
+    row = next(line for line in primary.splitlines() if "</a>`value`" in line)
+    assert f"default={dossier_rendering._compact_json(default)}" in row
+    assert "any JSON value" not in row
+
+
+@pytest.mark.parametrize(
+    ("schema", "meaning"),
+    [({}, "any JSON value"), (True, "any JSON value"), (False, "no JSON value")],
+)
+def test_unrestricted_and_boolean_schemas_have_accurate_meanings(
+    schema: object, meaning: str
+) -> None:
+    assert f"Accepts: {meaning}." in "\n".join(
+        dossier_rendering._render_schema(schema, "/schema", set())
+    )
+
+
+def test_exact_json_is_collapsed_without_hiding_primary_contract_facts() -> None:
+    checked = checked_atlas()
+    for element in checked.root["elements"]:
+        page = checked.files[element["dossier"]].decode()
+        primary, exact = page.split("### Exact owned JSON", 1)
+        assert "<details>" not in primary.split("## Evidence", 1)[0]
+        assert exact.startswith(
+            "\n\n<details>\n<summary>Expand exact machine-owned values</summary>\n"
+        )
+        assert "</details>" in exact

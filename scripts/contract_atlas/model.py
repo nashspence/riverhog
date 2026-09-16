@@ -20,8 +20,8 @@ TRACE_IDENTITY_SCHEMA = "riverhog-v1-source-proof-trace/v1"
 REPRESENTATION_IDENTITY_SCHEMA = "riverhog-v1-human-atlas-representation/v1"
 DETECTOR_CLOSURE_SCHEMA = "riverhog-contract-detector-closure/v1"
 ATLAS_DIRECTORY = "riverhog-v1"
-# Human-review ergonomics target only; this is not a v1 contract extent or validity rule.
-AUDIT_DOCUMENT_TARGET_BYTES = 128 * 1024
+# Reading-size target before the collapsed exact-JSON fallback, not a v1 contract extent.
+AUDIT_PRIMARY_CONTENT_TARGET_BYTES = 128 * 1024
 RELATIONSHIP_SCHEMA = "riverhog-contract-human-relationships/v1"
 CONTRACT_MAP_SCHEMA = "riverhog-contract-human-map/v1"
 
@@ -336,7 +336,7 @@ _INTERFACE_DESCRIPTORS = (
         17,
         ("make unit", "make compose-smoke"),
         "configuration",
-        "generic",
+        "schema",
     ),
     InterfaceDescriptor(
         "configuration-environment",
@@ -381,7 +381,7 @@ _INTERFACE_DESCRIPTORS = (
         9,
         ("make operation-qualification", "make compose-smoke"),
         "http-schema",
-        "generic",
+        "schema",
     ),
     InterfaceDescriptor(
         "http-service-declaration",
@@ -437,7 +437,7 @@ _INTERFACE_DESCRIPTORS = (
         14,
         ("make dist-smoke", "make build"),
         "process-schema",
-        "generic",
+        "schema",
     ),
     InterfaceDescriptor(
         "publication-locations",
@@ -491,7 +491,7 @@ _INTERFACE_DESCRIPTORS = (
         16,
         ("make dist-smoke", "make build"),
         "atomic",
-        "generic",
+        "schema",
     ),
     InterfaceDescriptor(
         "versioning-tags",

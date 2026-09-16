@@ -9,6 +9,9 @@ from typing import cast
 
 from .discovery import _source_index
 from .model import (
+    _SCHEMA_MAPPING_KEYWORDS,
+    _SCHEMA_SEQUENCE_KEYWORDS,
+    _SCHEMA_VALUE_KEYWORDS,
     ATLAS_DIRECTORY,
     INTERFACE_REGISTRY,
     ContractAtlasError,
@@ -278,7 +281,7 @@ def _cli_channel_summary(
             + _cli_authority_reference(
                 semantics,
                 element=element,
-                pointer=pointer,
+                pointer=f"{pointer}/{_escape_pointer(str(mode))}",
                 path=path,
                 projection=projection,
                 elements_by_id=elements_by_id,
@@ -287,136 +290,200 @@ def _cli_channel_summary(
     return "; ".join(parts)
 
 
+def _schema_items(value: Mapping[str, object]) -> Iterable[tuple[str, object]]:
+    keys = dict.fromkeys(("$ref", "type", "format", "const", "enum", "minimum", "maximum", *value))
+    return ((key, value[key]) for key in keys if key in value)
+
+
 def _shape_summary(value: object) -> str:
-    if isinstance(value, Mapping):
-        if set(value) == {"$ref"}:
-            return str(value["$ref"])
-        parts: list[str] = []
-        for key in (
-            "$ref",
-            "type",
-            "format",
-            "const",
-            "enum",
-            "minimum",
-            "maximum",
-            "minLength",
-            "maxLength",
-            "minItems",
-            "maxItems",
-            "pattern",
-        ):
-            if key in value:
-                rendered_value = json.dumps(
-                    value[key], ensure_ascii=False, sort_keys=True, separators=(",", ":")
-                )
-                parts.append(f"{key}={rendered_value}")
-        properties = value.get("properties")
-        if isinstance(properties, Mapping):
-            parts.append("fields=" + ", ".join(f"`{name}`" for name in properties))
-        if "items" in value:
-            parts.append(f"items=({_shape_summary(value['items'])})")
-        alternatives = [key for key in ("oneOf", "anyOf", "allOf") if key in value]
-        for key in alternatives:
-            variants = cast(Sequence[object], value[key])
-            parts.append(f"{key}=" + " | ".join(_shape_summary(item) for item in variants))
-        unrendered = sorted(
-            set(value)
-            - {
-                "$ref",
-                "type",
-                "format",
-                "const",
-                "enum",
-                "minimum",
-                "maximum",
-                "minLength",
-                "maxLength",
-                "minItems",
-                "maxItems",
-                "pattern",
-                "properties",
-                "items",
-                "oneOf",
-                "anyOf",
-                "allOf",
-                "description",
-                "title",
-                "default",
-            }
+    """Describe an actual schema, keeping literal defaults separate from subschemas."""
+
+    if value is True or value == {}:
+        return "any JSON value"
+    if value is False:
+        return "no JSON value"
+    if not isinstance(value, Mapping):
+        raise ContractAtlasError("schema summary received a non-schema value")
+    if set(value) == {"$ref"}:
+        return str(value["$ref"])
+    parts: list[str] = []
+    for key, item in _schema_items(value):
+        if key in {"title", "description"}:
+            continue
+        if key in _SCHEMA_MAPPING_KEYWORDS and isinstance(item, Mapping):
+            rendered = "; ".join(
+                f"{name}: ({_shape_summary(child)})" for name, child in item.items()
+            )
+            parts.append(f"{key}={{{rendered}}}")
+        elif key in _SCHEMA_SEQUENCE_KEYWORDS and isinstance(item, list):
+            parts.append(f"{key}=" + " | ".join(f"({_shape_summary(child)})" for child in item))
+        elif key in _SCHEMA_VALUE_KEYWORDS and isinstance(item, Mapping):
+            parts.append(f"{key}=({_shape_summary(item)})")
+        else:
+            parts.append(f"{key}={_compact_json(item)}")
+    return "; ".join(parts) or "any JSON value"
+
+
+def _schema_needs_detail(value: object) -> bool:
+    if not isinstance(value, Mapping):
+        return False
+    return bool(set(value) & {"properties", "$defs", "if", "allOf", "prefixItems"}) or any(
+        _schema_needs_detail(child)
+        for key, item in value.items()
+        for child in (
+            item
+            if key in _SCHEMA_SEQUENCE_KEYWORDS and isinstance(item, list)
+            else [item]
+            if key in _SCHEMA_VALUE_KEYWORDS
+            else []
         )
-        if unrendered:
-            parts.append("additional keys=" + ", ".join(f"`{key}`" for key in unrendered))
-        return "; ".join(parts) or "empty object"
-    if isinstance(value, list):
-        if all(not isinstance(item, (Mapping, list)) for item in value):
-            return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
-        return "items=" + " | ".join(_shape_summary(item) for item in value)
-    return json.dumps(value, ensure_ascii=False)
+    )
 
 
 def _render_schema(
-    value: Mapping[str, object], base_pointer: str, placed_subjects: set[str]
+    value: object,
+    base_pointer: str,
+    placed_subjects: set[str],
+    *,
+    heading_level: int = 3,
 ) -> list[str]:
+    """Render fields and nested schemas in linked sections within their owning dossier."""
+
+    pending: list[tuple[object, str, str]] = [(value, base_pointer, "")]
     lines: list[str] = []
-    for key in (
-        "$id",
-        "title",
-        "description",
-        "type",
-        "format",
-        "protocol",
-        "protocols",
-        "bundle_sha256",
-    ):
-        if key in value:
-            pointer = f"{base_pointer}/{_escape_pointer(key)}"
-            rendered = (
-                json.dumps(value[key], ensure_ascii=False)
-                if isinstance(value[key], (list, Mapping))
-                else str(value[key])
+    definitions = value.get("$defs", {}) if isinstance(value, Mapping) else {}
+
+    def shape(schema: object) -> str:
+        rendered = _md(_shape_summary(schema))
+        if isinstance(definitions, Mapping):
+            for name in sorted(definitions, key=len, reverse=True):
+                reference = f"#/$defs/{_escape_pointer(str(name))}"
+                target = f"{base_pointer}/$defs/{_escape_pointer(str(name))}"
+                link = f"[{_md(name)}](#{_subject_anchor(target)})"
+                rendered = rendered.replace(f'$ref="{_md(reference)}"', link)
+                rendered = rendered.replace(_md(reference), link)
+        return rendered
+
+    def describe(schema: object, pointer: str, label: str) -> str:
+        if _schema_needs_detail(schema):
+            pending.append((schema, pointer, label))
+            return f"[See {_md(label)}](#{_subject_anchor(pointer)})"
+        return shape(schema)
+
+    for schema, pointer, context in pending:
+        level = heading_level + bool(context)
+        if context:
+            lines.extend(
+                [
+                    "",
+                    f"{'#' * heading_level} {_subject_marker(pointer, placed_subjects)}{context}",
+                    "",
+                ]
             )
-            lines.append(f"- {_subject_marker(pointer, placed_subjects)}`{key}`: {_md(rendered)}")
-    required = set(cast(Sequence[str], value.get("required", ())))
-    properties = value.get("properties")
-    if isinstance(properties, Mapping):
-        lines.extend(
-            [
-                "",
-                "### Fields",
-                "",
-                "| Field | Required | Shape | Description |",
-                "|---|---:|---|---|",
-            ]
-        )
-        for name, field in properties.items():
-            field_map = cast(Mapping[str, object], field) if isinstance(field, Mapping) else {}
-            pointer = f"{base_pointer}/properties/{_escape_pointer(str(name))}"
-            lines.append(
-                f"| {_subject_marker(pointer, placed_subjects)}`{_md(name)}` | "
-                f"{'yes' if name in required else 'no'} | "
-                f"{_md(_shape_summary(field))} | {_md(field_map.get('description', ''))} |"
+        else:
+            lines.extend([_subject_marker(pointer, placed_subjects), ""])
+        if isinstance(schema, bool) or schema == {}:
+            lines.append(f"- Accepts: {shape(schema)}.")
+            continue
+        if not isinstance(schema, Mapping):
+            raise ContractAtlasError(f"schema renderer received a non-schema: {pointer}")
+
+        def label(text: str, context: str = context) -> str:
+            return f"{context} · {text}" if context else text
+
+        structured = {"properties", "$defs", "allOf", "anyOf", "oneOf", "prefixItems"}
+        for key, item in _schema_items(schema):
+            if key in structured:
+                continue
+            child_pointer = f"{pointer}/{_escape_pointer(str(key))}"
+            if key in _SCHEMA_VALUE_KEYWORDS and isinstance(item, Mapping):
+                rendered = describe(item, child_pointer, label(f"`{key}`"))
+            else:
+                rendered = f"`{_md(_compact_json(item))}`"
+            marker = (
+                ""
+                if _schema_needs_detail(item) and key in _SCHEMA_VALUE_KEYWORDS
+                else (_subject_marker(child_pointer, placed_subjects))
             )
-    schemas = value.get("schemas")
-    if isinstance(schemas, Mapping):
-        lines.extend(["", "### Schemas", "", "| Schema | Shape |", "|---|---|"])
-        for name, schema in schemas.items():
-            pointer = f"{base_pointer}/schemas/{_escape_pointer(str(name))}"
-            lines.append(
-                f"| {_subject_marker(pointer, placed_subjects)}`{_md(name)}` | "
-                f"{_md(_shape_summary(schema))} |"
+            lines.append(f"- {marker}`{key}`: {rendered}")
+
+        properties = schema.get("properties")
+        if isinstance(properties, Mapping):
+            required = cast(Sequence[str], schema.get("required", ()))
+            lines.extend(
+                [
+                    "",
+                    f"{'#' * level} Fields",
+                    "",
+                    "| Field | Required | Shape | Description |",
+                    "|---|---:|---|---|",
+                ]
             )
-    definitions = value.get("$defs")
-    if isinstance(definitions, Mapping):
-        lines.extend(["", "### Definitions", "", "| Definition | Shape |", "|---|---|"])
-        for name, schema in definitions.items():
-            pointer = f"{base_pointer}/$defs/{_escape_pointer(str(name))}"
-            lines.append(
-                f"| {_subject_marker(pointer, placed_subjects)}`{_md(name)}` | "
-                f"{_md(_shape_summary(schema))} |"
+            for name, field in properties.items():
+                field_pointer = f"{pointer}/properties/{_escape_pointer(str(name))}"
+                field_map = field if isinstance(field, Mapping) else {}
+                description = describe(field, field_pointer, label(f"field `{name}`"))
+                marker = (
+                    ""
+                    if _schema_needs_detail(field)
+                    else _subject_marker(field_pointer, placed_subjects)
+                )
+                lines.append(
+                    f"| {marker}`{_md(name)}` | {'yes' if name in required else 'no'} | "
+                    f"{description} | {_md(field_map.get('description', ''))} |"
+                )
+
+        for key, meaning in (
+            ("allOf", "All must match"),
+            ("anyOf", "At least one must match"),
+            ("oneOf", "Exactly one must match"),
+            ("prefixItems", "Positional item schemas, in order"),
+        ):
+            variants = schema.get(key)
+            if not isinstance(variants, list):
+                continue
+            lines.extend(["", f"{'#' * level} {meaning} (`{key}`)", ""])
+            conditional = key == "allOf" and all(
+                isinstance(item, Mapping) and "if" in item and set(item) <= {"if", "then", "else"}
+                for item in variants
             )
-    if lines:
-        lines.insert(0, _subject_marker(base_pointer, placed_subjects))
+            if conditional:
+                lines.extend(
+                    [
+                        "| Rule | If schema matches | Then must match | Otherwise must match |",
+                        "|---|---|---|---|",
+                    ]
+                )
+            else:
+                lines.extend(["| Alternative | Schema |", "|---|---|"])
+            for index, item in enumerate(variants):
+                child_pointer = f"{pointer}/{key}/{index}"
+                if conditional:
+                    clauses = cast(Mapping[str, object], item)
+                    rendered = " | ".join(
+                        shape(clauses[clause]) if clause in clauses else "no additional constraint"
+                        for clause in ("if", "then", "else")
+                    )
+                    marker = _subject_marker(child_pointer, placed_subjects)
+                else:
+                    rendered = describe(
+                        item, child_pointer, label(f"`{key}` alternative {index + 1}")
+                    )
+                    marker = (
+                        ""
+                        if _schema_needs_detail(item)
+                        else _subject_marker(child_pointer, placed_subjects)
+                    )
+                lines.append(f"| {marker}{index + 1} | {rendered} |")
+
+        nested = schema.get("$defs")
+        if isinstance(nested, Mapping):
+            lines.extend(["", f"{'#' * level} Definitions", ""])
+            for name, child in nested.items():
+                child_pointer = f"{pointer}/$defs/{_escape_pointer(str(name))}"
+                child_label = label(f"definition `{name}`")
+                pending.append((child, child_pointer, child_label))
+                lines.append(f"- [{_md(name)}](#{_subject_anchor(child_pointer)})")
     return lines
 
 
@@ -468,8 +535,57 @@ def _render_python(
                 cast(Mapping[str, object], schema),
                 f"{contract_pointer}/schema",
                 placed_subjects,
+                heading_level=5,
             )
         )
+    return lines
+
+
+def _render_relational_table(
+    value: Mapping[str, object], pointer: str, placed_subjects: set[str]
+) -> list[str]:
+    lines = [_subject_marker(pointer, placed_subjects), ""]
+    lines.extend(
+        [
+            f"### Table: `{_md(value['name'])}`",
+            "",
+            "#### Columns",
+            "",
+            "| Column | Type | Nullable | Default | Other constraints |",
+            "|---|---|---:|---|---|",
+        ]
+    )
+    for index, column in enumerate(cast(Sequence[Mapping[str, object]], value["columns"])):
+        column_pointer = f"{pointer}/columns/{index}"
+        other = {
+            key: item
+            for key, item in column.items()
+            if key not in {"name", "type", "nullable", "default", "definition"}
+        }
+        lines.append(
+            f"| {_subject_marker(column_pointer, placed_subjects)}`{_md(column['name'])}` | "
+            f"`{_md(column['type'])}` | {'yes' if column['nullable'] else 'no'} | "
+            f"`{_md(column.get('default', '—'))}` | "
+            f"{_md(_compact_json(other)) if other else '—'} |"
+        )
+    constraints = cast(Sequence[Mapping[str, object]], value.get("constraints", ()))
+    if constraints:
+        lines.extend(
+            [
+                "",
+                "#### Table constraints",
+                "",
+                "| Kind | Name | Exact definition |",
+                "|---|---|---|",
+            ]
+        )
+        for index, constraint in enumerate(constraints):
+            constraint_pointer = f"{pointer}/constraints/{index}"
+            lines.append(
+                f"| {_subject_marker(constraint_pointer, placed_subjects)}"
+                f"`{_md(constraint['kind'])}` | "
+                f"`{_md(constraint.get('name', '—'))}` | `{_md(constraint['definition'])}` |"
+            )
     return lines
 
 
@@ -497,50 +613,9 @@ def _render_durable_state(
         raise ContractAtlasError(f"durable-state unit is not exact: {details['state_owner']}")
     pointer = pointers[0]
     value = cast(Mapping[str, object], values[0])
-    lines = [_subject_marker(pointer, placed_subjects)]
     if unit == "relational-table":
-        lines.extend(
-            [
-                f"- Table: `{_md(value['name'])}`",
-                "",
-                "### Columns",
-                "",
-                "| Column | Type | Nullable | Default | Other constraints |",
-                "|---|---|---:|---|---|",
-            ]
-        )
-        for index, column in enumerate(cast(Sequence[Mapping[str, object]], value["columns"])):
-            column_pointer = f"{pointer}/columns/{index}"
-            other = {
-                key: item
-                for key, item in column.items()
-                if key not in {"name", "type", "nullable", "default", "definition"}
-            }
-            lines.append(
-                f"| {_subject_marker(column_pointer, placed_subjects)}`{_md(column['name'])}` | "
-                f"`{_md(column['type'])}` | {'yes' if column['nullable'] else 'no'} | "
-                f"`{_md(column.get('default', '—'))}` | "
-                f"{_md(_compact_json(other)) if other else '—'} |"
-            )
-        constraints = cast(Sequence[Mapping[str, object]], value.get("constraints", ()))
-        if constraints:
-            lines.extend(
-                [
-                    "",
-                    "### Table constraints",
-                    "",
-                    "| Kind | Name | Exact definition |",
-                    "|---|---|---|",
-                ]
-            )
-            for index, constraint in enumerate(constraints):
-                constraint_pointer = f"{pointer}/constraints/{index}"
-                lines.append(
-                    f"| {_subject_marker(constraint_pointer, placed_subjects)}"
-                    f"`{_md(constraint['kind'])}` | "
-                    f"`{_md(constraint.get('name', '—'))}` | `{_md(constraint['definition'])}` |"
-                )
-        return lines
+        return _render_relational_table(value, pointer, placed_subjects)
+    lines = [_subject_marker(pointer, placed_subjects), ""]
     if unit == "unique-index":
         return [
             *lines,
@@ -553,8 +628,24 @@ def _render_durable_state(
         schema = value.get("schema")
         if not isinstance(schema, Mapping):
             raise ContractAtlasError("durable JSON document has no exact schema")
+        lines.extend(_render_schema(schema, f"{pointer}/schema", placed_subjects, heading_level=4))
+        return lines
+    if unit == "relational-schema":
+        metadata = {key: item for key, item in value.items() if key != "tables"}
+        lines.extend(_render_generic([pointer], [metadata], placed_subjects))
+        for index, table in enumerate(cast(Sequence[Mapping[str, object]], value["tables"])):
+            lines.extend(
+                ["", *_render_relational_table(table, f"{pointer}/tables/{index}", placed_subjects)]
+            )
+        return lines
+    if unit == "append-only-json-sequence":
+        metadata = {key: item for key, item in value.items() if key != "record_schema"}
+        lines.extend(_render_generic([pointer], [metadata], placed_subjects))
+        lines.extend(["", "### Record schema", ""])
         lines.extend(
-            _render_schema(cast(Mapping[str, object], schema), f"{pointer}/schema", placed_subjects)
+            _render_schema(
+                value["record_schema"], f"{pointer}/record_schema", placed_subjects, heading_level=4
+            )
         )
         return lines
     # Composite units and deliberately simple component-owned structures are
@@ -616,11 +707,16 @@ def _render_http(
                 if isinstance(schema, Mapping) and "default" in schema
                 else "not declared"
             )
+            parameter_shape = (
+                {key: item for key, item in schema.items() if key != "default"}
+                if isinstance(schema, Mapping)
+                else schema
+            )
             lines.append(
                 f"| {_subject_marker(pointer, placed_subjects)}`{_md(item.get('name', ''))}` | "
                 f"{_md(item.get('in', ''))} | "
                 f"{'yes' if item.get('required') else 'no'} | "
-                f"{default} | {shape(schema)} |"
+                f"{default} | {shape(parameter_shape)} |"
             )
     if "requestBody" in value:
         pointer = f"{base_pointer}/requestBody"
@@ -657,6 +753,41 @@ def _render_http(
                     f"{_md(response_map.get('description', ''))} | {_md(media_type)} | "
                     f"{shape(media['schema']) if 'schema' in media else 'not declared'} | "
                     f"{codes or 'not declared'} |"
+                )
+        headers = [
+            (str(status), str(name), header)
+            for status, response in responses.items()
+            for name, header in cast(
+                Mapping[str, Mapping[str, object]],
+                cast(Mapping[str, object], response).get("headers", {}),
+            ).items()
+        ]
+        if headers:
+            lines.extend(
+                [
+                    "",
+                    "#### Response headers",
+                    "",
+                    "| Status | Header | Required | Schema | Description |",
+                    "|---|---|---|---|---|",
+                ]
+            )
+            for status, name, header in headers:
+                pointer = (
+                    f"{base_pointer}/responses/{_escape_pointer(status)}"
+                    f"/headers/{_escape_pointer(name)}"
+                )
+                required = (
+                    ("yes" if header["required"] else "no")
+                    if "required" in header
+                    else "not declared"
+                )
+                lines.append(
+                    f"| `{_md(status)}` | {_subject_marker(pointer, placed_subjects)}"
+                    f"`{_md(name)}` | "
+                    f"{required} | "
+                    f"{shape(header['schema']) if 'schema' in header else 'not declared'} | "
+                    f"{_md(header.get('description', ''))} |"
                 )
     del details
     return lines
@@ -753,6 +884,7 @@ def _render_cli(
     command_rules: dict[str, tuple[str, object]] = {}
     exclusive_groups: Sequence[Mapping[str, object]] = ()
     exclusive_groups_pointer = ""
+    local_outputs: list[tuple[str, str, Mapping[str, object]]] = []
     for pointer, value in zip(pointers, values, strict=True):
         if isinstance(value, str):
             name = value
@@ -1004,6 +1136,57 @@ def _render_cli(
                     f"{_subject_marker(stdout_pointer, placed_subjects)}{stdout} | "
                     f"{_subject_marker(stderr_pointer, placed_subjects)}{stderr} |"
                 )
+                for channel in ("stdout", "stderr"):
+                    for mode, semantics in cast(Mapping[str, object], outcome[channel]).items():
+                        if isinstance(semantics, Mapping) and str(
+                            semantics.get("kind", "")
+                        ).startswith("cli-local-"):
+                            local_outputs.append(
+                                (
+                                    f"{outcome_pointer}/{channel}/{_escape_pointer(str(mode))}",
+                                    f"{outcome['id']} · {channel} ({mode})",
+                                    semantics,
+                                )
+                            )
+    if local_outputs:
+        lines.extend(["", "### Local structured outputs", ""])
+        for pointer, label, semantics in local_outputs:
+            lines.extend(
+                [
+                    "",
+                    f"#### {_subject_marker(pointer, placed_subjects)}"
+                    f"`{_md(semantics['identity'])}`",
+                    "",
+                    f"Applies to: {_md(label)}.",
+                    "",
+                ]
+            )
+            kind = semantics["kind"]
+            if kind == "cli-local-json-schema":
+                lines.extend(
+                    _render_schema(
+                        semantics["schema"], f"{pointer}/schema", placed_subjects, heading_level=5
+                    )
+                )
+            elif kind == "cli-local-exact-json":
+                lines.extend(
+                    _render_generic(
+                        [f"{pointer}/document"], [semantics["document"]], placed_subjects
+                    )
+                )
+            elif kind == "cli-local-json-sequence":
+                metadata = {key: item for key, item in semantics.items() if key != "records"}
+                lines.extend(_render_generic([pointer], [metadata], placed_subjects))
+                for name, record_schema in cast(Mapping[str, object], semantics["records"]).items():
+                    lines.extend(["", f"##### Record `{_md(name)}`", ""])
+                    lines.extend(
+                        _render_schema(
+                            record_schema,
+                            f"{pointer}/records/{_escape_pointer(str(name))}",
+                            placed_subjects,
+                            heading_level=6,
+                        )
+                    )
     return lines
 
 
@@ -1032,42 +1215,37 @@ def _render_operation(
 def _render_generic(
     pointers: Sequence[str], values: Sequence[object], placed_subjects: set[str]
 ) -> list[str]:
-    if len(values) == 1 and isinstance(values[0], Mapping):
-        value = cast(Mapping[str, object], values[0])
-        schema_lines = _render_schema(value, pointers[0], placed_subjects)
-        if schema_lines:
-            return schema_lines
-    large_value = values[0] if len(values) == 1 else list(values)
-    if isinstance(large_value, Mapping):
-        base_pointer = pointers[0]
-        lines = [
-            _subject_marker(base_pointer, placed_subjects),
-            "| Field | Shape |",
-            "|---|---|",
-        ]
-        for key, item in large_value.items():
-            pointer = f"{base_pointer}/{_escape_pointer(str(key))}"
-            lines.append(
-                f"| {_subject_marker(pointer, placed_subjects)}`{_md(key)}` | "
-                f"{_md(_shape_summary(item))} |"
-            )
-        return lines
-    if len(values) > 1:
-        lines = [
-            "| Subject | Shape |",
-            "|---|---|",
-        ]
-        for pointer, subject_value in zip(pointers, values, strict=True):
-            label = _pointer_parts(pointer)[-1]
+    """Render ordinary contract records without interpreting their keys as schema keywords."""
+
+    lines = ["", "| Field | Value |", "|---|---|"]
+
+    def append(value: object, pointer: str, label: str) -> None:
+        if isinstance(value, Mapping) and value:
+            for key, child in value.items():
+                append(
+                    child,
+                    f"{pointer}/{_escape_pointer(str(key))}",
+                    f"{label} · {key}" if label else str(key),
+                )
+        elif isinstance(value, list) and any(isinstance(item, (Mapping, list)) for item in value):
+            for index, child in enumerate(value):
+                append(child, f"{pointer}/{index}", f"{label} · item {index + 1}")
+        else:
             lines.append(
                 f"| {_subject_marker(pointer, placed_subjects)}`{_md(label)}` | "
-                f"{_md(_shape_summary(subject_value))} |"
+                f"`{_md(_compact_json(value))}` |"
             )
-        return lines
-    return [
-        _subject_marker(pointers[0], placed_subjects),
-        f"- Shape: {_shape_summary(large_value)}",
-    ]
+
+    for pointer, value in zip(pointers, values, strict=True):
+        if isinstance(value, Mapping):
+            lines.insert(0, _subject_marker(pointer, placed_subjects))
+        label = (
+            ""
+            if len(values) == 1 and isinstance(value, Mapping) and value
+            else (_pointer_parts(pointer)[-1])
+        )
+        append(value, pointer, label)
+    return lines
 
 
 def _pretty_json(value: object) -> str:
@@ -1076,14 +1254,28 @@ def _pretty_json(value: object) -> str:
     return json.dumps(value, indent=2, ensure_ascii=False, sort_keys=True).replace("](", "]\\u0028")
 
 
-def _exact_contract_lines(pointers: Sequence[str], values: Sequence[object]) -> list[str]:
+def _exact_contract_lines(
+    pointers: Sequence[str], values: Sequence[object], *, encoded_integers: bool
+) -> list[str]:
     lines = [
         "### Exact owned JSON",
+        "",
+        "<details>",
+        "<summary>Expand exact machine-owned values</summary>",
         "",
         "The following JSON is the complete value owned at each machine-authority pointer. "
         "No contractual fields are summarized away.",
         "",
     ]
+    if encoded_integers:
+        lines.extend(
+            [
+                "Large integers appear as decimal strings in this machine representation. "
+                "The machine artifact's `projection_unsafe_integer_paths` identifies them; "
+                "primary content displays the recovered numeric values.",
+                "",
+            ]
+        )
     for pointer, value in zip(pointers, values, strict=True):
         if len(pointers) > 1:
             lines.extend([f"### `{pointer}`", ""])
@@ -1097,6 +1289,7 @@ def _exact_contract_lines(pointers: Sequence[str], values: Sequence[object]) -> 
                 "",
             ]
         )
+    lines.extend(["</details>", ""])
     return lines
 
 
@@ -1299,6 +1492,8 @@ def _render_dossier(
     projection: Mapping[str, object],
     trace: Mapping[str, object],
     elements_by_id: Mapping[str, Mapping[str, object]],
+    *,
+    primary_projection: Mapping[str, object],
 ) -> bytes:
     path = str(element["dossier"])
     authority_path = (
@@ -1311,6 +1506,8 @@ def _render_dossier(
     policy_path = f"{ATLAS_DIRECTORY}/policies/index.md"
     source_evidence_path = f"{ATLAS_DIRECTORY}/evidence/sources.md"
     pointers = cast(Sequence[str], element["pointers"])
+    exact_values = [pointer_value(projection, pointer) for pointer in pointers]
+    projection = primary_projection
     values = [pointer_value(projection, pointer) for pointer in pointers]
     placed_subjects: set[str] = set()
     source_index = _source_index(trace)
@@ -1378,6 +1575,8 @@ def _render_dossier(
         )
     elif renderer == "durable-state":
         lines.extend(_render_durable_state(pointers, values, details, placed_subjects))
+    elif renderer == "schema" and len(values) == 1:
+        lines.extend(_render_schema(values[0], pointers[0], placed_subjects))
     elif (
         renderer in {"http-operation", "operation"}
         and len(values) == 1
@@ -1670,7 +1869,7 @@ def _render_dossier(
             "",
             *(f"- `{pointer}`" for pointer in pointers),
             "",
-            *_exact_contract_lines(pointers, values),
+            *_exact_contract_lines(pointers, exact_values, encoded_integers=exact_values != values),
         ]
     )
     return ("\n".join(lines).rstrip() + "\n").encode()
