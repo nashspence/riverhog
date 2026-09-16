@@ -401,9 +401,6 @@ def validate_atlas(
     protected_candidates = {
         str(item["candidate_id"]) for item in dispositions if item["disposition"] == "protected"
     }
-    excluded_candidates = {
-        str(item["candidate_id"]) for item in dispositions if item["disposition"] == "excluded"
-    }
     candidate_ids = [str(item["id"]) for item in candidates]
     detection_ids = [str(item["id"]) for item in detections]
     resolved_detection_ids = [str(item["detection_id"]) for item in resolutions]
@@ -413,12 +410,9 @@ def validate_atlas(
         len(candidate_elements) != len(set(candidate_elements))
         or set(candidate_elements) != set(ids)
         or protected_candidates != {f"candidate:{identity}" for identity in ids}
-        or excluded_candidates
-        != {
-            str(item["candidate_id"])
-            for item in cast(Sequence[Mapping[str, object]], discovery["exclusions"])
-        }
-        or set(candidate_ids) != protected_candidates | excluded_candidates
+        or set(candidate_ids) != protected_candidates
+        or len(dispositions) != len(candidate_ids)
+        or any(item["disposition"] != "protected" for item in dispositions)
         or len(detection_ids) != len(set(detection_ids))
         or len(resolved_detection_ids) != len(set(resolved_detection_ids))
         or set(detection_ids) != set(resolved_detection_ids)
@@ -522,7 +516,6 @@ def validate_atlas(
     }
     if projected_configuration_documents != discovered_configuration_documents:
         raise ContractAtlasError("configuration-document registry differs from external contract")
-    exclusions = cast(Sequence[Mapping[str, object]], discovery["exclusions"])
     policies = cast(Mapping[str, object], root["policies"])
     declared_policy_ids = {
         str(policy["id"])
@@ -531,14 +524,14 @@ def validate_atlas(
     }
     used_policy_ids = {
         policy for item in elements for policy in cast(Sequence[str], item["policy_ids"])
-    } | {str(item["policy_id"]) for item in exclusions}
+    }
     if not used_policy_ids <= declared_policy_ids:
         raise ContractAtlasError("contract element policy references are unresolved")
     policy_page = atlas.files[f"{ATLAS_DIRECTORY}/policies/index.md"].decode()
     for policy_id in declared_policy_ids:
         if policy_page.count(f'id="{_policy_anchor(policy_id)}"') != 1:
             raise ContractAtlasError(f"policy definition has no stable subject: {policy_id}")
-    for item in [*elements, *exclusions]:
+    for item in elements:
         if not set(cast(Sequence[str], item["source_authority_ids"])) <= set(source_index):
             raise ContractAtlasError(
                 f"contract element source references are unresolved: {item['id']}"
@@ -598,29 +591,6 @@ def validate_atlas(
         elif f"`{name}` | `{identity}` |" not in identity_page:
             raise ContractAtlasError(f"identity evidence omits independent identity: {name}")
 
-    exclusion_page = atlas.files[f"{ATLAS_DIRECTORY}/evidence/exclusions.md"].decode()
-    for item in exclusions:
-        policy_record = next(
-            candidate_policy
-            for values in policies.values()
-            for candidate_policy in cast(Sequence[Mapping[str, object]], values)
-            if candidate_policy["id"] == item["policy_id"]
-        )
-        required_exclusion_values = [
-            item["id"],
-            item["kind"],
-            item["installed_target"],
-            item["boundary_pointer"],
-            item["detector"],
-            item["policy_id"],
-            policy_record["meaning"],
-            *cast(Sequence[str], item["source_authority_ids"]),
-        ]
-        if any(_md(value) not in exclusion_page for value in required_exclusion_values):
-            raise ContractAtlasError(f"human exclusion inventory is incomplete: {item['id']}")
-        if exclusion_page.count(f'id="{_anchor_id("exclusion", str(item["id"]))}"') != 1:
-            raise ContractAtlasError(f"human exclusion has no stable subject: {item['id']}")
-
     source_evidence_page = atlas.files[f"{ATLAS_DIRECTORY}/evidence/sources.md"].decode()
     for route in cast(
         Mapping[str, object], cast(Mapping[str, object], root["counts"])["by_qualification_route"]
@@ -643,7 +613,6 @@ def validate_atlas(
 
     observed_counts = _counts(
         elements,
-        exclusions,
     )
     checked_counts = cast(Mapping[str, object], root["counts"])
     for count_key, value in observed_counts.items():
@@ -990,18 +959,15 @@ def validate_atlas(
     for path, descriptor in descriptors.items():
         kind = descriptor["kind"]
         if kind == "root-index":
-            expected_counts: Mapping[str, object] = _counts(elements, exclusions)
+            expected_counts: Mapping[str, object] = _counts(elements)
         elif kind == "policy-index":
             expected_counts = {
                 "policies": sum(len(cast(Sequence[object], value)) for value in policies.values())
             }
-        elif kind == "exclusion-index":
-            expected_counts = {"excluded_candidates": len(exclusions)}
         elif kind == "evidence-index":
             expected_counts = {
                 "contract_elements": checked_counts["contract_elements"],
                 "extent_decisions": checked_counts["extent_decisions"],
-                "excluded_candidates": len(exclusions),
                 "source_authorities": len(source_index),
             }
         elif kind == "evidence-authority-inventory":

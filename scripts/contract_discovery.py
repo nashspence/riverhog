@@ -693,29 +693,29 @@ def load_exceptions(path: Path) -> dict[str, list[dict[str, str]]]:
     """Load the narrow audit overlay without allowing it to define candidates."""
 
     document = tomllib.loads(path.read_text(encoding="utf-8"))
-    if set(document) != {"schema", "resolution", "exclusion"}:
+    if set(document) != {"schema", "resolution"}:
         raise DiscoveryError("contract-freeze exception overlay has unexpected fields")
     if document["schema"] != EXCEPTION_SCHEMA:
         raise DiscoveryError("contract-freeze exception overlay has another schema")
-    result: dict[str, list[dict[str, str]]] = {"resolution": [], "exclusion": []}
-    for kind, required in (
-        ("resolution", {"detection_id", "source_authority_id", "reason"}),
-        ("exclusion", {"candidate_id", "policy_id", "reason"}),
-    ):
-        values = document[kind]
-        if not isinstance(values, list):
-            raise DiscoveryError(f"contract-freeze {kind} exceptions must be a list")
-        for index, item in enumerate(values):
-            if not isinstance(item, dict) or set(item) != required:
-                raise DiscoveryError(f"contract-freeze {kind} exception {index} is incomplete")
-            normalized = {str(key): str(value) for key, value in item.items()}
-            if any(not value.strip() for value in normalized.values()):
-                raise DiscoveryError(f"contract-freeze {kind} exception {index} is blank")
-            result[kind].append(normalized)
-    for kind, key in (("resolution", "detection_id"), ("exclusion", "candidate_id")):
-        identities = [item[key] for item in result[kind]]
-        if len(identities) != len(set(identities)):
-            raise DiscoveryError(f"contract-freeze {kind} exceptions repeat an identity")
+    values = document["resolution"]
+    if not isinstance(values, list):
+        raise DiscoveryError("contract-freeze resolution exceptions must be a list")
+    result: dict[str, list[dict[str, str]]] = {"resolution": []}
+    for index, item in enumerate(values):
+        if not isinstance(item, dict) or set(item) != {
+            "detection_id",
+            "source_authority_id",
+            "reason",
+        }:
+            raise DiscoveryError(f"contract-freeze resolution exception {index} is incomplete")
+        normalized = {str(key): str(value) for key, value in item.items()}
+        if any(not value.strip() for value in normalized.values()):
+            raise DiscoveryError(f"contract-freeze resolution exception {index} is blank")
+        result["resolution"].append(normalized)
+    identities = [item["detection_id"] for item in result["resolution"]]
+    if len(identities) != len(set(identities)):
+        raise DiscoveryError("contract-freeze resolution exceptions repeat an identity")
+
     return result
 
 

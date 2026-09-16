@@ -90,7 +90,6 @@ def _anchor_id(kind: str, identity: str) -> str:
     """Return a deterministic presentation-only anchor for an exact identity."""
 
     prefixes = {
-        "exclusion": "x",
         "extent": "e",
         "identity": "i",
         "policy": "p",

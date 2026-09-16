@@ -190,7 +190,7 @@ def _semantic_identity(
         "schema": CONTRACT_IDENTITY_SCHEMA,
         "series": projection["series"],
         "external_contract": projection["external_contract"],
-        "policies": {key: value for key, value in policies.items() if key != "exclusion"},
+        "policies": policies,
         "unsafe_integer_paths": [
             path for path in unsafe_integer_paths if path.startswith("/external_contract/")
         ],
@@ -512,7 +512,6 @@ INTERFACE_ORDER = {key: value.order for key, value in INTERFACE_REGISTRY.items()
 QUALIFICATION_ROUTES = {
     key: value.qualification_routes for key, value in INTERFACE_REGISTRY.items()
 }
-QUALIFICATION_ROUTES["excluded"] = ("make dist-smoke", "make build")
 
 
 def reassemble_projection(atlas: ContractAtlas) -> dict[str, object]:

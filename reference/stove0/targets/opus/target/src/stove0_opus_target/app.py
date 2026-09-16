@@ -139,8 +139,48 @@ def _secret(prefix: str) -> str:
     return value.strip()
 
 
-def _parser(service: str, prefix: str) -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog=service)
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "stove0-opus-target-cli-result",
+    "default_profile": "runtime",
+    "profiles": {
+        "runtime": {
+            "id": "stove0-opus-target-cli-runtime/v1",
+            "structured_output": "none",
+            "human_json_relationship": "not-applicable",
+            "success": [
+                {
+                    "id": "stopped",
+                    "exit_status": 0,
+                    "stdout": {"all": "no-command-result"},
+                    "stderr": {"all": "noncontractual-runtime-log"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                }
+            ],
+        }
+    },
+    "command_profiles": {},
+    "command_overrides": {},
+    "executable_groups": [],
+    "outcome_selectors": {
+        "stopped": {"kind": "service-runtime-returned"},
+        "usage": {"kind": "parser-rejected-invocation"},
+    },
+    "output_authorities": {},
+    "version_distribution": "stove0-opus-target",
+}
+
+
+def _parser() -> argparse.ArgumentParser:
+    prefix = "STOVE0_OPUS_TARGET"
+    parser = argparse.ArgumentParser(prog=TARGET_SERVICE)
     parser.add_argument(
         "--version", action="version", version=importlib.metadata.version(TARGET_SERVICE)
     )
@@ -151,7 +191,7 @@ def _parser(service: str, prefix: str) -> argparse.ArgumentParser:
 
 def target_main(argv: Sequence[str] | None = None) -> int:
     prefix = "STOVE0_OPUS_TARGET"
-    args = _parser(TARGET_SERVICE, prefix).parse_args(argv)
+    args = _parser().parse_args(argv)
     target = OpusTargetService(
         state_root=Path(os.getenv(f"{prefix}_STATE_ROOT", "/var/lib/stove0-opus-target")),
         workspace_root=Path(os.getenv(f"{prefix}_WORKSPACE", "/run/stove0-opus-target")),

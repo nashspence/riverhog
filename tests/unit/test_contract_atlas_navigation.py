@@ -53,12 +53,11 @@ def test_repository_source_links_do_not_depend_on_checkout_path(
     ) == {document}
 
 
-def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None:
+def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None:
     checked = checked_atlas()
     root = checked.root
     root_page = checked.files[root["atlas"]["root"]].decode()
     evidence_page = checked.files["riverhog-v1/evidence/index.md"].decode()
-    exclusions_page = checked.files["riverhog-v1/evidence/exclusions.md"].decode()
     relationships_page = checked.files["riverhog-v1/evidence/relationships.md"].decode()
     authority_inventory = checked.files["riverhog-v1/evidence/authorities.md"].decode()
     configuration_inventory = checked.files["riverhog-v1/evidence/configuration.md"].decode()
@@ -84,12 +83,10 @@ def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None
     assert "### [Cross-cutting v1 authorities]" in root_page
     assert "Guided contract map" not in root_page
     assert "SHA-256" not in root_page
-    exclusions = root["discovery"]["exclusions"]
-    assert len(exclusions) == root["counts"]["excluded_candidates"]
-    assert all(
-        exclusions_page.count(f'id="{atlas._anchor_id("exclusion", str(item["id"]))}"') == 1
-        for item in exclusions
-    )
+    assert {item["candidate_id"] for item in root["discovery"]["dispositions"]} == {
+        item["id"] for item in root["discovery"]["candidates"]
+    }
+    assert {item["disposition"] for item in root["discovery"]["dispositions"]} == {"protected"}
     assert "# Relationship-edge inventory" in relationships_page
     assert "not a second navigation hierarchy" in relationships_page
     assert "intentionally an alphabetical reconciliation inventory" in authority_inventory
@@ -272,22 +269,34 @@ def test_cli_dossiers_expose_exact_result_and_failure_contracts() -> None:
     cli_elements = [item for item in checked.root["elements"] if item["interface"] == "cli"]
     executable = [item for item in cli_elements if item.get("details", {}).get("executable")]
 
-    assert len(executable) == 132
-    assert len({item["details"]["result_identity"] for item in executable}) == 132
+    assert len(executable) == 152
+    assert len({item["details"]["result_identity"] for item in executable}) == len(executable)
     assert {
         tuple(item["details"]["command_path"])
         for item in executable
         if len(item["details"]["command_path"]) == 1
     } == {
         ("mango-fish",),
+        ("riverhog-api",),
         ("riverhog-ftp-adapter",),
         ("riverhog-recover",),
+        ("riverhog-storage-adapter-aws",),
+        ("riverhog-storage-adapter-backblaze",),
         ("riverhog-storage-adapter-conformance",),
+        ("riverhog-storage-adapter-filesystem",),
         ("riverhog-storage-adapter-filesystem-materialize",),
         ("riverhog-storage-adapter-schemas",),
+        ("stove0-exiftool-observer",),
+        ("stove0-ffprobe-sampling-observer",),
+        ("stove0-nvenc-av1-opus-review-sampler",),
+        ("stove0-nvenc-av1-opus-target",),
         ("stove0-observer-conformance",),
         ("stove0-observer-schemas",),
+        ("stove0-opus-review-sampler",),
+        ("stove0-opus-target",),
+        ("stove0-review-materialize-target",),
         ("stove0-review-planning",),
+        ("stove0-review-rclone-effect-target",),
         ("stove0-review-sampler-conformance",),
         ("stove0-review-sampler-schemas",),
         ("stove0-target-conformance",),
@@ -554,7 +563,6 @@ def test_navigation_is_representation_only(
         checked.root["projection"],
         checked.root["trace"],
         checked.root["identities"],
-        checked.root["discovery"]["exclusions"],
         checked.root["discovery"],
         component_descriptions,
     )

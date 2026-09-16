@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import copy
 import hashlib
 import importlib.util
@@ -12,6 +13,9 @@ from typing import Any, cast
 
 import pytest
 from jsonschema import Draft202012Validator
+from typer._click.core import Context
+from typer._click.exceptions import UsageError
+from typer.core import TyperArgument, TyperCommand, TyperOption
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts/contract_freeze.py"
@@ -109,8 +113,10 @@ def test_extent_projection_is_exhaustive_source_linked_and_self_identifying() ->
         policy = decision["policy"]
         if policy in {"fixed", "contract_max"}:
             source_field = decision.get("source_constraint", {}).get("field")
-            if source_field == "nargs":
-                assert source["nargs"] == decision["maximum"]
+            if decision["unit"] == "values-per-occurrence":
+                # Raw parser fields are not themselves the consumed-value count.
+                # The parser probes below check that interpretation independently.
+                assert source_field in source
             elif source_field == "type.maximum":
                 assert source["type"]["maximum"] == decision["maximum"]
             elif decision["dimension"] == "cardinality":
@@ -239,6 +245,158 @@ def test_cli_occurrence_bound_tracks_its_source_and_rejects_missing_authority() 
         module._cli_decisions(external)
 
 
+@pytest.mark.parametrize(
+    "framework,options,positional,minimum,maximum,valid,expected,invalid,repeatable",
+    [
+        ("typer", {"is_flag": True}, False, 0, 0, ["--value"], True, ["--value", "x"], False),
+        ("typer", {}, False, 1, 1, ["--value", "a"], "a", ["--value"], False),
+        (
+            "typer",
+            {"nargs": 2},
+            False,
+            2,
+            2,
+            ["--value", "a", "b"],
+            ("a", "b"),
+            ["--value", "a"],
+            False,
+        ),
+        (
+            "typer",
+            {"nargs": -1, "required": True},
+            True,
+            1,
+            None,
+            ["a", "b"],
+            ("a", "b"),
+            [],
+            False,
+        ),
+        ("typer", {"nargs": -1}, True, 0, None, [], (), None, False),
+        (
+            "typer",
+            {"multiple": True},
+            False,
+            1,
+            1,
+            ["--value", "a", "--value", "b"],
+            ("a", "b"),
+            ["--value"],
+            True,
+        ),
+        ("typer", {"count": True}, False, 0, 0, ["--value", "--value"], 2, ["--value", "x"], True),
+        (
+            "argparse",
+            {"action": "store_true"},
+            False,
+            0,
+            0,
+            ["--value"],
+            True,
+            ["--value", "x"],
+            False,
+        ),
+        ("argparse", {}, False, 1, 1, ["--value", "a"], "a", ["--value"], False),
+        ("argparse", {"nargs": "?"}, True, 0, 1, [], None, ["a", "b"], False),
+        ("argparse", {"nargs": "?"}, True, 0, 1, ["a"], "a", ["a", "b"], False),
+        ("argparse", {"nargs": "+"}, True, 1, None, ["a", "b"], ["a", "b"], [], False),
+        ("argparse", {"nargs": "*"}, True, 0, None, [], [], None, False),
+        (
+            "argparse",
+            {"action": "append"},
+            False,
+            1,
+            1,
+            ["--value", "a", "--value", "b"],
+            ["a", "b"],
+            ["--value"],
+            True,
+        ),
+    ],
+)
+def test_cli_extents_agree_with_actual_parser_consumption(
+    framework: str,
+    options: dict[str, Any],
+    positional: bool,
+    minimum: int,
+    maximum: int | None,
+    valid: list[str],
+    expected: object,
+    invalid: list[str] | None,
+    repeatable: bool,
+) -> None:
+    module = load_script()
+    if framework == "typer":
+        parameter = (TyperArgument if positional else TyperOption)(
+            param_decls=["value" if positional else "--value"], **options
+        )
+        command = TyperCommand("probe", params=[parameter], add_help_option=False)
+        projected = module._click_parameter(parameter)
+
+        def parse(argv: list[str]) -> object:
+            context = Context(command)
+            command.parse_args(context, argv.copy())
+            return context.params["value"]
+
+        rejected = UsageError
+    else:
+        parser = argparse.ArgumentParser(add_help=False)
+        action = parser.add_argument("value" if positional else "--value", **options)
+        projected = module._argparse_action(action)
+
+        def parse(argv: list[str]) -> object:
+            return parser.parse_args(argv).value
+
+        rejected = SystemExit
+    decisions = module.extent_contract._cli_decisions(
+        {"cli": {"probe": {"parameters": [projected]}}}
+    )
+    arity = next(item for item in decisions if item["unit"] == "values-per-occurrence")
+    assert (arity["minimum"], arity["maximum"]) == (minimum, maximum)
+    assert parse(valid) == expected
+    if invalid is not None:
+        with pytest.raises(rejected):
+            parse(invalid)
+    if maximum is None:
+        assert arity["policy"] == "operational_policy"
+        assert len(cast(Any, parse(["a"] * 50))) == 50
+    occurrences = [item for item in decisions if item["unit"] == "occurrences"]
+    assert bool(occurrences) == repeatable
+    if repeatable:
+        assert occurrences[0]["maximum"] is None
+        args = ["--value"] if options.get("count") else ["--value", "a"]
+        result = parse(args * 50)
+        assert (result if options.get("count") else len(cast(Any, result))) == 50
+
+
+def test_every_discovered_cli_parameter_has_one_arity_decision() -> None:
+    projection = _checked_projection()
+    decisions = projection["external_contract"]["extents"]["decisions"]
+    arities = [item for item in decisions if item["unit"] == "values-per-occurrence"]
+    parameters: set[str] = set()
+
+    def visit(command: dict[str, Any], pointer: str) -> None:
+        parameters.update(f"{pointer}/parameters/{i}" for i in range(len(command["parameters"])))
+        for name, child in command.get("commands", {}).items():
+            visit(child, f"{pointer}/commands/{name}")
+
+    for name, command in projection["external_contract"]["cli"].items():
+        visit(command, f"/external_contract/cli/{name}")
+    assert len(arities) == len(parameters)
+    assert {item["source_pointer"] for item in arities} == parameters
+
+
+@pytest.mark.parametrize("change", [{"kind": "CustomAction"}, {"nargs": "..."}])
+def test_cli_extent_discovery_rejects_uninterpreted_parser_forms(change: dict[str, object]) -> None:
+    module = load_script()
+    parameter = module._argparse_action(argparse.ArgumentParser().add_argument("value"))
+    parameter.update(change)
+    with pytest.raises(
+        module.extent_contract.ExtentContractError, match="unsupported CLI parameter"
+    ):
+        module.extent_contract._cli_decisions({"cli": {"probe": {"parameters": [parameter]}}})
+
+
 def test_schema_bounds_accept_the_boundary_and_reject_the_next_value() -> None:
     projection = _checked_projection()
     decisions = projection["external_contract"]["extents"]["decisions"]
@@ -249,7 +407,7 @@ def test_schema_bounds_accept_the_boundary_and_reject_the_next_value() -> None:
             continue
         _resolve_pointer(projection, decision["source_pointer"])
         source_field = decision.get("source_constraint", {}).get("field")
-        if source_field in {"nargs", "type.maximum"}:
+        if decision["unit"] == "values-per-occurrence" or source_field == "type.maximum":
             continue
         maximum = decision["maximum"]
         minimum = decision.get("minimum")
@@ -365,6 +523,7 @@ def test_bounded_carriers_do_not_become_domain_cardinality_maxima() -> None:
         "bounded-object-identity-assertion-envelope",
         "state-conditioned-empty-set",
         "wildcard-access-grant-is-exclusive",
+        "optional-command-argument-arity",
     }
 
 

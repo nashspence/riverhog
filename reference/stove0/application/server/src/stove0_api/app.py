@@ -31,11 +31,11 @@ from http_api_contracts import (
     operation_interface,
 )
 from http_api_contracts.browse import BrowseTokenCodec, BrowseTokenError
-from pydantic import ValidationError
+from pydantic import TypeAdapter, ValidationError
 from riverhog_client import ApiClient
 from sqlalchemy import text
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from state_schema import StateSchemaError
+from state_schema import StateSchemaError, StateStatus
 from stove0_core import (
     ClassificationAdmissionService,
     ConcurrentEvaluationUpdate,
@@ -1056,6 +1056,85 @@ def _install_stop_handlers(stop: threading.Event) -> None:
 
     signal.signal(signal.SIGINT, request_stop)
     signal.signal(signal.SIGTERM, request_stop)
+
+
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "stove0-server-cli-result",
+    "default_profile": "runtime",
+    "profiles": {
+        "runtime": {
+            "id": "stove0-server-cli-runtime/v1",
+            "structured_output": "none",
+            "human_json_relationship": "not-applicable",
+            "success": [
+                {
+                    "id": "stopped",
+                    "exit_status": 0,
+                    "stdout": {"all": "no-command-result"},
+                    "stderr": {"all": "noncontractual-runtime-log"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                }
+            ],
+        },
+        "state": {
+            "id": "stove0-server-cli-state/v1",
+            "structured_output": "optional-json",
+            "human_json_relationship": "same-semantic-result",
+            "success": [
+                {
+                    "id": "completed",
+                    "exit_status": 0,
+                    "stdout": {
+                        "human": "noncontractual-presentation-of-command-result",
+                        "json": {
+                            "kind": "cli-local-json-schema",
+                            "identity": "stove0-server-state-status/v1",
+                            "schema": TypeAdapter(StateStatus).json_schema(),
+                        },
+                    },
+                    "stderr": {"all": "empty"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                },
+                {
+                    "id": "state-error",
+                    "exit_status": 1,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-diagnostic"},
+                },
+            ],
+        },
+    },
+    "command_profiles": {
+        "state status": "state",
+        "state upgrade": "state",
+        "state verify": "state",
+    },
+    "command_overrides": {},
+    "executable_groups": [],
+    "outcome_selectors": {
+        "stopped": {"kind": "service-runtime-returned"},
+        "usage": {"kind": "parser-rejected-invocation"},
+        "completed": {"kind": "command-completed"},
+        "state-error": {"kind": "application-error"},
+    },
+    "output_authorities": {},
+    "version_distribution": "stove0-server",
+}
 
 
 def _parser() -> argparse.ArgumentParser:

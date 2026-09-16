@@ -22,12 +22,13 @@ from http_api_contracts import (
     error_payload,
     status_for_error_code,
 )
+from pydantic import TypeAdapter
 from riverhog_core.catalog_db import catalog_state_schema
 from riverhog_core.runtime_config import load_runtime_config
 from riverhog_protocol import RIVERHOG_HTTP_ERROR_AUTHORITY
 from riverhog_protocol.errors import RiverhogError, ServiceUnavailable
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from state_schema import StateSchemaError
+from state_schema import StateSchemaError, StateStatus
 
 from riverhog_api.auth import apply_openapi_permission_contract
 from riverhog_api.deps import ServiceContainer, default_container, get_container
@@ -443,6 +444,85 @@ def create_app(
     )
     app.openapi_schema = apply_openapi_permission_contract(schema, app.routes)
     return app
+
+
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "riverhog-api-cli-result",
+    "default_profile": "runtime",
+    "profiles": {
+        "runtime": {
+            "id": "riverhog-api-cli-runtime/v1",
+            "structured_output": "none",
+            "human_json_relationship": "not-applicable",
+            "success": [
+                {
+                    "id": "stopped",
+                    "exit_status": 0,
+                    "stdout": {"all": "no-command-result"},
+                    "stderr": {"all": "noncontractual-runtime-log"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                }
+            ],
+        },
+        "state": {
+            "id": "riverhog-api-cli-state/v1",
+            "structured_output": "optional-json",
+            "human_json_relationship": "same-semantic-result",
+            "success": [
+                {
+                    "id": "completed",
+                    "exit_status": 0,
+                    "stdout": {
+                        "human": "noncontractual-presentation-of-command-result",
+                        "json": {
+                            "kind": "cli-local-json-schema",
+                            "identity": "riverhog-api-state-status/v1",
+                            "schema": TypeAdapter(StateStatus).json_schema(),
+                        },
+                    },
+                    "stderr": {"all": "empty"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                },
+                {
+                    "id": "state-error",
+                    "exit_status": 1,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-diagnostic"},
+                },
+            ],
+        },
+    },
+    "command_profiles": {
+        "state status": "state",
+        "state upgrade": "state",
+        "state verify": "state",
+    },
+    "command_overrides": {},
+    "executable_groups": ["$root"],
+    "outcome_selectors": {
+        "stopped": {"kind": "service-runtime-returned"},
+        "usage": {"kind": "parser-rejected-invocation"},
+        "completed": {"kind": "command-completed"},
+        "state-error": {"kind": "application-error"},
+    },
+    "output_authorities": {},
+    "version_distribution": "riverhog-server",
+}
 
 
 def _parser() -> argparse.ArgumentParser:

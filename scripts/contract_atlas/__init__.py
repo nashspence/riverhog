@@ -13,8 +13,6 @@ from .discovery import (
     _attach_extent_decisions,
     _counts,
     _detector_meta_closure,
-    _excluded_launchers,
-    _excluded_python_packages,
     _external_elements,
     _link_operation_qualification,
     _policy_registry,
@@ -134,12 +132,8 @@ def build_atlas(
         raise ContractAtlasError("semantic contract element identities are not unique")
     _assign_dossiers(elements)
     elements.sort(key=lambda item: str(item["id"]))
-    exclusions = [
-        *_excluded_launchers(normalized_trace),
-        *_excluded_python_packages(normalized_trace),
-    ]
     source_index = _source_index(normalized_trace)
-    for item in [*elements, *exclusions]:
+    for item in elements:
         missing = set(cast(Sequence[str], item["source_authority_ids"])) - set(source_index)
         if missing:
             raise ContractAtlasError(f"contract element has unresolved sources: {sorted(missing)}")
@@ -151,7 +145,7 @@ def build_atlas(
     }
     used_policy_ids = {
         policy for item in elements for policy in cast(Sequence[str], item["policy_ids"])
-    } | {str(item["policy_id"]) for item in exclusions}
+    }
     if not used_policy_ids <= declared_policy_ids:
         undeclared = sorted(used_policy_ids - declared_policy_ids)
         raise ContractAtlasError(f"contract elements use undeclared policies: {undeclared}")
@@ -163,14 +157,6 @@ def build_atlas(
             "pointers": item["pointers"],
         }
         for item in elements
-    ] + [
-        {
-            "id": f"detection:{item['candidate_id']}",
-            "detector": item["detector"],
-            "source_authority_ids": item["source_authority_ids"],
-            "source": item["boundary_pointer"],
-        }
-        for item in exclusions
     ]
     resolutions = [
         {
@@ -181,13 +167,6 @@ def build_atlas(
             "element_id": item["id"],
         }
         for item in elements
-    ] + [
-        {
-            "detection_id": f"detection:{item['candidate_id']}",
-            "candidate_id": item["candidate_id"],
-            "kind": item["kind"],
-        }
-        for item in exclusions
     ]
     candidates = [
         {
@@ -197,13 +176,6 @@ def build_atlas(
             "source_authority_ids": item["source_authority_ids"],
         }
         for item in elements
-    ] + [
-        {
-            "id": item["candidate_id"],
-            "detector": item["detector"],
-            "source_authority_ids": item["source_authority_ids"],
-        }
-        for item in exclusions
     ]
     dispositions = [
         {
@@ -212,13 +184,6 @@ def build_atlas(
             "policy_ids": item["policy_ids"],
         }
         for item in elements
-    ] + [
-        {
-            "candidate_id": item["candidate_id"],
-            "disposition": "excluded",
-            "policy_ids": [item["policy_id"]],
-        }
-        for item in exclusions
     ]
     meta_closure = _detector_meta_closure(normalized_projection, normalized_trace)
     projection_coverage = _projection_coverage(
@@ -235,7 +200,6 @@ def build_atlas(
         "resolutions": resolutions,
         "candidates": candidates,
         "dispositions": dispositions,
-        "exclusions": exclusions,
         "projection_coverage": projection_coverage,
         "anomalies": {
             "missing": cast(int, projection_coverage["missing"])
@@ -288,7 +252,6 @@ def build_atlas(
         normalized_projection,
         normalized_trace,
         identities,
-        exclusions,
         discovery,
         component_descriptions,
     )
@@ -304,7 +267,7 @@ def build_atlas(
         "relationships": relationship,
     }
     identities["atlas_representation_sha256"] = canonical_sha256(representation_identity)
-    counts = _counts(elements, exclusions)
+    counts = _counts(elements)
     counts["source_authorities"] = len(source_index)
     counts["atlas_documents"] = len(documents)
     root: dict[str, object] = {

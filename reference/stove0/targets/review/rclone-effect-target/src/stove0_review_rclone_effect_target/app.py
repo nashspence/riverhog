@@ -81,12 +81,55 @@ def create_app(*, token: str, target: ReviewRcloneEffectTargetService) -> FastAP
     )
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+_CLI_RESULT_CONTRACT = {
+    "schema": "riverhog-cli-result-contract/v1",
+    "identity_prefix": "stove0-review-rclone-effect-target-cli-result",
+    "default_profile": "runtime",
+    "profiles": {
+        "runtime": {
+            "id": "stove0-review-rclone-effect-target-cli-runtime/v1",
+            "structured_output": "none",
+            "human_json_relationship": "not-applicable",
+            "success": [
+                {
+                    "id": "stopped",
+                    "exit_status": 0,
+                    "stdout": {"all": "no-command-result"},
+                    "stderr": {"all": "noncontractual-runtime-log"},
+                }
+            ],
+            "failures": [
+                {
+                    "id": "usage",
+                    "exit_status": 2,
+                    "stdout": {"all": "empty"},
+                    "stderr": {"all": "noncontractual-usage-diagnostic"},
+                }
+            ],
+        }
+    },
+    "command_profiles": {},
+    "command_overrides": {},
+    "executable_groups": [],
+    "outcome_selectors": {
+        "stopped": {"kind": "service-runtime-returned"},
+        "usage": {"kind": "parser-rejected-invocation"},
+    },
+    "output_authorities": {},
+    "version_distribution": "stove0-review-rclone-effect-target",
+}
+
+
+def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog=SERVICE)
     parser.add_argument("--version", action="version", version=importlib.metadata.version(SERVICE))
     parser.add_argument("--host", default=os.getenv(f"{PREFIX}_HOST", "127.0.0.1"))
     parser.add_argument("--port", type=int, default=int(os.getenv(f"{PREFIX}_PORT", "8080")))
-    args = parser.parse_args(argv)
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    args = _parser().parse_args(argv)
     version = importlib.metadata.version(SERVICE)
     target = ReviewRcloneEffectTargetService(
         state_root=Path(

@@ -829,6 +829,37 @@ def _openapi_decisions(openapi_by_application: Mapping[str, Any]) -> list[dict[s
     return decisions
 
 
+def _cli_value_arity(parameter: Mapping[str, Any]) -> tuple[int, int | None, str]:
+    """Interpret parser metadata as supplied values, not stored Python values."""
+
+    kind = parameter.get("kind")
+    if kind not in {
+        "TyperOption",
+        "TyperArgument",
+        "_StoreAction",
+        "_StoreTrueAction",
+        "_AppendAction",
+    }:
+        raise ExtentContractError(f"unsupported CLI parameter kind: {kind}")
+    if parameter.get("is_flag") is True:
+        return 0, 0, "is_flag"
+    if parameter.get("count") is True:
+        return 0, 0, "count"
+    nargs = parameter.get("nargs")
+    if nargs is None and "dest" in parameter:
+        return 1, 1, "nargs"
+    if isinstance(nargs, int) and not isinstance(nargs, bool):
+        if nargs >= 0:
+            return nargs, nargs, "nargs"
+        if nargs == -1 and kind == "TyperArgument":
+            return int(bool(parameter.get("required"))), None, "nargs"
+    if nargs == "?":
+        return 0, 1, "nargs"
+    if nargs in ("+", "*"):
+        return int(nargs == "+"), None, "nargs"
+    raise ExtentContractError(f"unsupported CLI parameter arity: {kind}: {nargs!r}")
+
+
 def _cli_decisions(external_contract: Mapping[str, Any]) -> list[dict[str, object]]:
     decisions: list[dict[str, object]] = []
 
@@ -852,36 +883,40 @@ def _cli_decisions(external_contract: Mapping[str, Any]) -> list[dict[str, objec
                 str(index),
             )
             identity = f"cli:{application}:{command_identity}:parameter:{name}"
-            nargs = parameter.get("nargs")
-            if isinstance(nargs, int) and not isinstance(nargs, bool) and nargs >= 0:
-                decisions.append(
-                    {
-                        "id": f"{identity}:values-per-occurrence",
-                        "owner": application,
-                        "source_pointer": source_pointer,
-                        "dimension": "cardinality",
-                        "unit": "values-per-occurrence",
-                        "policy": "fixed",
-                        "rule": "schema-bound/v1",
-                        "reason": "fixed-command-argument-arity",
-                        "minimum": nargs,
-                        "maximum": nargs,
-                        "source_constraint": {"field": "nargs"},
-                    }
+            arity_minimum, arity_maximum, arity_field = _cli_value_arity(parameter)
+            if arity_maximum is not None:
+                arity = _bound_decision(
+                    identity=f"{identity}:values-per-occurrence",
+                    owner=application,
+                    source_pointer=source_pointer,
+                    dimension="cardinality",
+                    unit="values-per-occurrence",
+                    minimum=arity_minimum,
+                    maximum=arity_maximum,
+                    reason=(
+                        "fixed-command-argument-arity"
+                        if arity_minimum == arity_maximum
+                        else "optional-command-argument-arity"
+                    ),
                 )
-            elif isinstance(nargs, str) and nargs in {"+", "*"}:
-                decisions.append(
-                    _open_extent_decision(
-                        identity=f"{identity}:values-per-occurrence",
-                        owner=application,
-                        source_pointer=source_pointer,
-                        dimension="cardinality",
-                        unit="values-per-occurrence",
-                        extension_owned=False,
-                        configuration_document=False,
-                    )
+            else:
+                arity = _open_extent_decision(
+                    identity=f"{identity}:values-per-occurrence",
+                    owner=application,
+                    source_pointer=source_pointer,
+                    dimension="cardinality",
+                    unit="values-per-occurrence",
+                    extension_owned=False,
+                    configuration_document=False,
                 )
-            if parameter.get("multiple") is True or parameter.get("count") is True:
+                arity["minimum"] = arity_minimum
+            arity["source_constraint"] = {"field": arity_field}
+            decisions.append(arity)
+            if (
+                parameter.get("multiple") is True
+                or parameter.get("count") is True
+                or parameter.get("kind") == "_AppendAction"
+            ):
                 authority_pointer = parameter.get("occurrences_authority")
                 occurrence_decision: dict[str, object] | None
                 if authority_pointer is None:
@@ -894,6 +929,15 @@ def _cli_decisions(external_contract: Mapping[str, Any]) -> list[dict[str, objec
                         extension_owned=False,
                         configuration_document=False,
                     )
+                    occurrence_decision["source_constraint"] = {
+                        "field": (
+                            "kind"
+                            if parameter.get("kind") == "_AppendAction"
+                            else "count"
+                            if parameter.get("count")
+                            else "multiple"
+                        )
+                    }
                 else:
                     if not isinstance(authority_pointer, str) or not authority_pointer.startswith(
                         "/external_contract/http_openapi/"
