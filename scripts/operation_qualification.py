@@ -64,6 +64,13 @@ HTTP_METHODS = frozenset({"delete", "get", "patch", "post", "put"})
 SUPPORTED_ROUTE_METHODS = HTTP_METHODS | {"head"}
 SOURCE_SHA_PATTERN = "0123456789abcdef"
 CONTRACT_FREEZE = Path(__file__).resolve().parents[1] / "qualification/contracts/riverhog-v1.json"
+EVENT_RESTART_TEST = "tests/unit/test_event_cursor_restart.py"
+EVENT_RESTART_ASSERTIONS = (
+    "Two unread pre-restart events retain their full content, identity, and order.",
+    "One-event pages advance the saved cursor and report the remaining page correctly.",
+    "An event emitted after restart is reachable without replaying prior events.",
+    "Empty terminal pages preserve the cursor and report no further events.",
+)
 
 
 class _RiverhogContractApi:
@@ -961,10 +968,92 @@ def _load_operation_timings(
     return {
         "schema": TIMING_SCHEMA,
         "source_sha": source_sha,
+        "event_cursor_restarts": payload.get("event_cursor_restarts", []),
         "operations": sorted(
             validated,
             key=lambda item: (str(item["application"]), str(item["operation_id"])),
         ),
+    }
+
+
+def _event_cursor_restart_claim(
+    observations: object,
+    *,
+    matrix: Sequence[Operation],
+    source_sha: str,
+) -> dict[str, object]:
+    # Discover event pages from response models and cursor-feed metadata. Other
+    # change feeds and private consumer checkpoints have different obligations.
+    operations = {(item.application, item.operation_id): item for item in matrix}
+    feeds: dict[tuple[str, str], Operation] = {}
+    for surface in application_surfaces():
+        for (
+            operation_id,
+            _method,
+            _path,
+            _interface,
+            _authority,
+            model,
+            collection,
+        ) in _openapi_operations(surface.app):
+            if not isinstance(model, type) or not issubclass(model, BaseModel):
+                continue
+            if not {"events", "next_cursor", "has_more"} <= model.model_fields.keys():
+                continue
+            if collection is None or collection.get("kind") != "cursor-feed":
+                raise QualificationError(
+                    f"event page lacks cursor-feed classification: {operation_id}"
+                )
+            identity = (surface.name, operation_id)
+            feeds[identity] = operations[identity]
+
+    if not isinstance(observations, list):
+        raise QualificationError("event-cursor restart witnesses are invalid")
+    witnessed: dict[tuple[str, str], str] = {}
+    for row in observations:
+        if not isinstance(row, dict) or set(row) != {"application", "operation_id", "test_nodeid"}:
+            raise QualificationError("event-cursor restart witness is invalid")
+        identity = (str(row.get("application")), str(row.get("operation_id")))
+        nodeid = (
+            f"{EVENT_RESTART_TEST}::test_event_cursor_continues_across_process_restart"
+            f"[{identity[0]}]"
+        )
+        if identity not in feeds or identity in witnessed or row.get("test_nodeid") != nodeid:
+            raise QualificationError(
+                f"event-cursor restart witness identity is invalid: {identity}"
+            )
+        witnessed[identity] = nodeid
+
+    return {
+        "status": "not_established",
+        "reason": "Local SQLite/ASGI fixture assertions do not establish built-service "
+        "restart qualification.",
+        "local_api_process_restart": {
+            "status": "passed" if feeds and witnessed.keys() == feeds.keys() else "not_established",
+            "scope": "Fresh Python processes recreate API compositions over persisted SQLite. "
+            "Official clients use real ASGI routes; owner services seed the event fixtures.",
+            "limitations": "Does not qualify deployed images, PostgreSQL, crash recovery, "
+            "event-producing mutation lifecycles, or consumer checkpoint persistence.",
+            "assertions": list(EVENT_RESTART_ASSERTIONS),
+            "fixture_source": f"https://github.com/nashspence/riverhog/blob/{source_sha}/"
+            "tests/harness/event_cursor_restart.py",
+            "operations": [
+                {
+                    "application": item.application,
+                    "operation_id": item.operation_id,
+                    "method": item.method,
+                    "path": item.path,
+                    "status": "passed" if identity in witnessed else "not_established",
+                    "test_nodeid": witnessed.get(identity),
+                    "assertion_source": (
+                        f"https://github.com/nashspence/riverhog/blob/{source_sha}/{EVENT_RESTART_TEST}"
+                        if identity in witnessed
+                        else None
+                    ),
+                }
+                for identity, item in sorted(feeds.items())
+            ],
+        },
     }
 
 
@@ -974,6 +1063,11 @@ def evidence(*, source_sha: str, timings: Path) -> dict[str, object]:
         timings,
         source_sha=_source_sha(source_sha),
         matrix=matrix,
+    )
+    restart_claim = _event_cursor_restart_claim(
+        local_timings.pop("event_cursor_restarts"),
+        matrix=matrix,
+        source_sha=source_sha,
     )
     return {
         "schema": SCHEMA,
@@ -989,7 +1083,10 @@ def evidence(*, source_sha: str, timings: Path) -> dict[str, object]:
                 "status": "not_established",
                 "reason": "Successful HTTP responses and timings do not establish "
                 "complete lifecycle behavior.",
-                "operations_with_successful_responses": sum(
+                "operations_with_successful_responses": len(
+                    cast(list[object], local_timings["operations"])
+                ),
+                "locally_required_operations": sum(
                     item.provider_evidence is None for item in matrix
                 ),
             },
@@ -1004,11 +1101,7 @@ def evidence(*, source_sha: str, timings: Path) -> dict[str, object]:
                 "reason": "Operation timings do not measure state-access bounds.",
                 "applications": ["riverhog", "riverhog-ftp-adapter", "stove0"],
             },
-            "event_cursor_restart_resume": {
-                "status": "not_established",
-                "reason": "Operation timings do not identify restart/resume assertions.",
-                "applications": ["riverhog", "riverhog-ftp-adapter", "stove0"],
-            },
+            "event_cursor_restart_resume": restart_claim,
             "provider_backed_lifecycles": {
                 "status": "linked",
                 "operations": sum(item.provider_evidence is not None for item in matrix),
@@ -1035,6 +1128,63 @@ def evidence(*, source_sha: str, timings: Path) -> dict[str, object]:
     }
 
 
+def evidence_markdown(payload: dict[str, Any]) -> str:
+    claims = payload["qualification"]
+    local = claims["event_cursor_restart_resume"]["local_api_process_restart"]
+    lifecycle = claims["positive_local_lifecycles"]
+    lines = [
+        "# Operation qualification",
+        "",
+        f"Source: [{payload['source_sha']}](https://github.com/nashspence/riverhog/commit/{payload['source_sha']})",
+        "",
+        "Observed successful API responses: "
+        f"**{lifecycle['operations_with_successful_responses']} operations**. "
+        f"Locally required scope: **{lifecycle['locally_required_operations']} operations**. "
+        "These counts do not establish lifecycle behavior or provider qualification.",
+        "",
+        "## Release claims",
+        "",
+        "| Claim | Status | Scope or gap |",
+        "| --- | --- | --- |",
+    ]
+    for name, claim in claims.items():
+        if name in {"extent_contract", "provider_backed_lifecycles"}:
+            continue
+        lines.append(
+            f"| {name.replace('_', ' ')} | **{claim['status'].replace('_', ' ')}** "
+            f"| {claim['reason']} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Local event-cursor process restart",
+            "",
+            f"**{local['status'].replace('_', ' ')}** — {local['scope']}",
+            "",
+            local["limitations"],
+            "",
+            f"[Fixture construction]({local['fixture_source']})",
+            "",
+            "| Event feed | Result | Executed assertions |",
+            "| --- | --- | --- |",
+        ]
+    )
+    for operation in local["operations"]:
+        witness = (
+            f"[Restart assertions ({operation['application']})]({operation['assertion_source']})"
+            if operation["test_nodeid"]
+            else "Required witness did not pass in this run."
+        )
+        lines.append(
+            f"| {operation['application']} `{operation['method']} {operation['path']}` "
+            f"(`{operation['operation_id']}`) | **{operation['status'].replace('_', ' ')}** "
+            f"| {witness} |"
+        )
+    lines.extend(["", "Assertions required for each passed row:", ""])
+    lines.extend(f"- {assertion}" for assertion in local["assertions"])
+    return "\n".join(lines) + "\n"
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -1045,7 +1195,12 @@ def _parser() -> argparse.ArgumentParser:
     )
     evidence_parser.add_argument("--source-sha", required=True)
     evidence_parser.add_argument("--timings", required=True, type=Path)
-    evidence_parser.add_argument("--output", required=True, type=Path)
+    evidence_parser.add_argument(
+        "--output",
+        required=True,
+        type=Path,
+        help="JSON evidence path; a Markdown audit is written to the same path plus .md.",
+    )
     return parser
 
 
@@ -1059,6 +1214,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         output = args.output.resolve()
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+        output.with_name(output.name + ".md").write_text(evidence_markdown(payload))
         summary = payload["summary"]
         if not isinstance(summary, dict):
             raise QualificationError("operation evidence summary is invalid")

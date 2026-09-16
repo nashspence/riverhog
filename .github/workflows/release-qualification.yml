@@ -292,6 +292,7 @@ jobs:
         run: >-
           make unit
           TESTS="tests/unit/test_operation_lifecycle_api.py::test_riverhog_official_client_positive_disposable_lifecycle
+          tests/unit/test_event_cursor_restart.py
           reference/stove0/application/tests/test_stove0_api_parity.py::test_stove0_official_client_positive_disposable_lifecycle
           reference/stove0/application/tests/test_stove0_api_parity.py::test_target_callback_surface_has_one_current_target_client_and_real_api_witness
           reference/riverhog/ingress/ftp/tests/test_ftp_adapter_api_parity.py::test_official_client_positive_disposable_lifecycle
@@ -307,10 +308,10 @@ jobs:
           reference/riverhog/ingress/ftp/tests/test_ftp_adapter_api_parity.py::test_operator_cli_has_human_and_json_views_for_each_management_operation"
           args="-p tests.operation_observer"
       - name: Verify and record the complete operation matrix
-        run: >-
-          make operation-qualification
-          args="evidence --source-sha $SOURCE_SHA --timings $OPERATIONS_TIMINGS
-          --output $OPERATIONS_SUMMARY"
+        run: |
+          make operation-qualification \
+            args="evidence --source-sha $SOURCE_SHA --timings $OPERATIONS_TIMINGS --output $OPERATIONS_SUMMARY"
+          cat "$OPERATIONS_SUMMARY.md" >> "$GITHUB_STEP_SUMMARY"
       - name: Verify exact-SHA operation evidence
         run: |
           jq --exit-status \
@@ -460,9 +461,12 @@ jobs:
             | select(.extent_contract_sha256 | test("^[0-9a-f]{64}$"))
             ' > "$QUALIFICATION_DIR/qualification.json"
       - name: Upload SHA-bound summaries
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: release-qualification-${{ needs.resolve.outputs.sha }}
-          path: ${{ runner.temp }}/release-qualification/*.json
+          path: |
+            ${{ runner.temp }}/release-qualification/*.json
+            ${{ runner.temp }}/release-qualification/*.md
           if-no-files-found: error
           retention-days: 30
