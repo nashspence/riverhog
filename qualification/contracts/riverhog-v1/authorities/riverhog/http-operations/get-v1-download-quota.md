@@ -20,21 +20,22 @@ Get Download Quota
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-0b2951931e"></a>`200` | Successful Response |
-| <a id="s-a87d3d6ab1"></a>`400` | Bad Request |
-| <a id="s-91509b582b"></a>`401` | Unauthorized |
-| <a id="s-24c09fefc6"></a>`403` | Forbidden |
-| <a id="s-6bff31593a"></a>`404` | Not Found |
-| <a id="s-dc3bea563b"></a>`429` | Too Many Requests |
-| <a id="s-1965cf404b"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-0b2951931e"></a>`200` | Successful Response | application/json | [KeyDownloadQuotaOut](../http-schemas/schemas-keydownloadquotaout.md) | not declared |
+| <a id="s-a87d3d6ab1"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-91509b582b"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-24c09fefc6"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-6bff31593a"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-dc3bea563b"></a>`429` | Too Many Requests | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `download_allowance_exceeded` |
+| <a id="s-1965cf404b"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [piggity app key quota show](../../piggity/cli/piggity-app-key-quota-show.md)
+- [riverhog_client.ApiClient.get_download_quota](../../riverhog-client/python/riverhog-client-apiclient-get-download-quota.md)
 
 ### Referenced contract dossiers
 
@@ -55,21 +56,47 @@ Get Download Quota
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/quotas.py::get_download_quota](../../../../../../riverhog/src/riverhog_api/routers/quotas.py#L29)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "app key quota show",
+      "source": {
+        "line": 1355,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "app_key_quota_show_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "app key quota show"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.get_download_quota",
+      "source": {
+        "line": 2348,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.get_download_quota"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "get_download_quota",
   "path": "/v1/download-quota",
@@ -78,6 +105,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

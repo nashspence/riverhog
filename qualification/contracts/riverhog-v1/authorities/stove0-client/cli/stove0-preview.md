@@ -67,6 +67,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Related interface records
 
 - [POST /v1/workflow-previews](../../stove0/http-operations/post-v1-workflow-previews.md)
+- [stove0_api_client.Stove0ApiClient.preview_workflow](../../stove0-api-client/python/stove0-api-client-stove0apiclient-preview-workflow.md)
 
 ## Governing policies
 
@@ -84,6 +85,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [cli:stove0](../../../evidence/sources.md#src-6203ae7d88) — `reference/stove0/application/client/src/stove0_cli/main.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/stove0/application/client/src/stove0_cli/main.py::preview](../../../../../../reference/stove0/application/client/src/stove0_cli/main.py#L370)
 
 ### Machine authority
 

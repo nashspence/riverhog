@@ -19,11 +19,11 @@ Health Ready
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-6016c9a433"></a>`200` | Successful Response |
-| <a id="s-1572490a0c"></a>`500` | Internal Server Error |
-| <a id="s-506d45caeb"></a>`503` | Service Unavailable |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-6016c9a433"></a>`200` | Successful Response | application/json | [HealthResponse](../http-schemas/schemas-healthresponse.md) | not declared |
+| <a id="s-1572490a0c"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
+| <a id="s-506d45caeb"></a>`503` | Service Unavailable | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `service_unavailable` |
 
 ## Maintained corroboration
 
@@ -46,19 +46,25 @@ Health Ready
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/app.py::create_app.<locals>.health_ready](../../../../../../riverhog/src/riverhog_api/app.py#L415)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "standard-tool/protocol",
+  "cli_bindings": [],
   "cli_commands": [],
   "client": null,
+  "client_bindings": [],
   "method": "GET",
   "operation_id": "health_ready",
   "path": "/health/ready",
@@ -67,6 +73,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

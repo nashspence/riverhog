@@ -541,7 +541,7 @@ Each group lists its unestablished obligations. Test-symbol existence and owner/
 | <a id="e-5707b3a2d3-8577e11c6a"></a>`riverhog-provenance-volume-progression/v1` | 1 | 3 | bounded step, forward progress, multiple segments, no silent truncation, restart |
 | <a id="e-5707b3a2d3-dbc4c688e1"></a>`riverhog-raw-digest-progression/v1` | 1 | 2 | bounded step, forward progress, multiple segments, no silent truncation, restart |
 | <a id="e-5707b3a2d3-bff92ce2bd"></a>`riverhog-retrieval-work-progression/v1` | 1 | 2 | bounded step, forward progress, multiple segments, no silent truncation, restart |
-| <a id="e-5707b3a2d3-1536c4a29a"></a>`riverhog-read-collection-progression/v1` | 54 | 9 | bounded step, forward progress, multiple segments, no silent truncation, restart |
+| [riverhog-read-collection-progression/v1](#e-5707b3a2d3-1536c4a29a) | 54 | 9 | bounded step, forward progress, multiple segments, no silent truncation, restart |
 | <a id="e-5707b3a2d3-34931f753b"></a>`stove0-read-collection-progression/v1` | 12 | 3 | bounded step, forward progress, multiple segments, no silent truncation, restart |
 | <a id="e-5707b3a2d3-98357b3ef7"></a>`riverhog-ftp-adapter-status-progression/v1` | 1 | 17 | bounded step, forward progress, multiple segments, no silent truncation, restart |
 | <a id="e-5707b3a2d3-ca266cc9fb"></a>`riverhog-upload-registration-progression/v1` | 1 | 2 | bounded step, forward progress, multiple segments, no silent truncation, restart |
@@ -550,20 +550,22 @@ Each group lists its unestablished obligations. Test-symbol existence and owner/
 
 ### Reviewed test scopes
 
-- `tests/unit/test_public_interface_parity.py::test_public_read_collection_selectors_are_bounded_and_frozen`: Structural OpenAPI checks for bounded read selectors; no traversal is executed.
+#### <a id="e-5707b3a2d3-1536c4a29a"></a>riverhog-read-collection-progression/v1
 
-- `tests/unit/test_collection_reads.py::test_collection_list_query_count_is_independent_of_page_rows`: Collection-list service query count and archive-object loading on one page; does not test traversal or restart.
+- [tests/unit/test_public_interface_parity.py::test_public_read_collection_selectors_are_bounded_and_frozen](../../../../tests/unit/test_public_interface_parity.py#L732): Structural OpenAPI checks for bounded read selectors; no traversal is executed.
 
-- `tests/unit/test_collection_reads.py::test_collection_encryption_filters_preserve_catalog_authorization`: Collection-list service encryption filters and catalog authorization on one page.
+- [tests/unit/test_collection_reads.py::test_collection_list_query_count_is_independent_of_page_rows](../../../../tests/unit/test_collection_reads.py#L88): Collection-list service query count and archive-object loading on one page; does not test traversal or restart.
 
-- `packages/http-api-contracts/tests/test_browse_tokens.py::test_browse_token_round_trips_opaque_binary_position_across_restart`: Shared token codec reconstructs a position after codec recreation with the same signing configuration; does not prove route wiring or database traversal.
+- [tests/unit/test_collection_reads.py::test_collection_encryption_filters_preserve_catalog_authorization](../../../../tests/unit/test_collection_reads.py#L130): Collection-list service encryption filters and catalog authorization on one page.
 
-- `packages/http-api-contracts/tests/test_browse_tokens.py::test_browse_token_fails_closed_outside_its_request_binding`: Shared token codec rejects changed operation, principal, and selectors; does not prove each route supplies those bindings correctly.
+- [packages/http-api-contracts/tests/test_browse_tokens.py::test_browse_token_round_trips_opaque_binary_position_across_restart](../../../../packages/http-api-contracts/tests/test_browse_tokens.py#L23): Shared token codec reconstructs a position after codec recreation with the same signing configuration; does not prove route wiring or database traversal.
 
-- `tests/unit/test_operation_lifecycle_api.py::test_riverhog_official_client_positive_disposable_lifecycle`: Real API and official client lifecycle includes a one-page collection list; its restart assertion concerns events, not collection-list continuation.
+- [packages/http-api-contracts/tests/test_browse_tokens.py::test_browse_token_fails_closed_outside_its_request_binding](../../../../packages/http-api-contracts/tests/test_browse_tokens.py#L52): Shared token codec rejects changed operation, principal, and selectors; does not prove each route supplies those bindings correctly.
 
-- `tests/unit/test_cli_json_output.py::test_collection_list_json_emits_the_api_response_without_a_second_model`: Collection-list CLI accepts a current-schema fixture in both output modes, preserves the entire JSON response, and displays its description and encryption in human output; uses a fake client and does not establish general output parity.
+- [tests/unit/test_operation_lifecycle_api.py::test_riverhog_official_client_positive_disposable_lifecycle](../../../../tests/unit/test_operation_lifecycle_api.py#L228): Real API and official client lifecycle includes a one-page collection list; its restart assertion concerns events, not collection-list continuation.
 
-- `tests/unit/test_catalog_sync.py::test_catalog_sync_crosses_many_pages_and_repairs_fixed_frontier_changes`: Catalog-sync fixed-frontier traversal and repair; ordinary mutable collection browsing has different semantics and gains no snapshot-completeness claim.
+- [tests/unit/test_cli_json_output.py::test_collection_list_json_emits_the_api_response_without_a_second_model](../../../../tests/unit/test_cli_json_output.py#L13): Collection-list CLI accepts a current-schema fixture in both output modes, preserves the entire JSON response, and displays its description and encryption in human output; uses a fake client and does not establish general output parity.
 
-- `tests/integration/test_lifecycle_event_concurrency.py::test_event_reads_and_concurrent_context_reapers_do_only_bounded_work`: Lifecycle-event reads and concurrent context reaping; not collection browsing.
+- [tests/unit/test_catalog_sync.py::test_catalog_sync_crosses_many_pages_and_repairs_fixed_frontier_changes](../../../../tests/unit/test_catalog_sync.py#L234): Catalog-sync fixed-frontier traversal and repair; ordinary mutable collection browsing has different semantics and gains no snapshot-completeness claim.
+
+- [tests/integration/test_lifecycle_event_concurrency.py::test_event_reads_and_concurrent_context_reapers_do_only_bounded_work](../../../../tests/integration/test_lifecycle_event_concurrency.py#L74): Lifecycle-event reads and concurrent context reaping; not collection browsing.

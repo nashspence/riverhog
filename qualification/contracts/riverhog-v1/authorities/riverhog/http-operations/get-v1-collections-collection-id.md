@@ -20,20 +20,20 @@ Get Collection
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-4f313b0704"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-4f313b0704"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-0efbe086d7"></a>`200` | Successful Response |
-| <a id="s-e028a9e6b6"></a>`400` | Bad Request |
-| <a id="s-7f0ab83c2e"></a>`401` | Unauthorized |
-| <a id="s-1ad2ac4b6a"></a>`403` | Forbidden |
-| <a id="s-94c0ae4fd7"></a>`404` | Not Found |
-| <a id="s-cdeaeae335"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-0efbe086d7"></a>`200` | Successful Response | application/json | [CollectionSummaryOut](../http-schemas/schemas-collectionsummaryout.md) | not declared |
+| <a id="s-e028a9e6b6"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-7f0ab83c2e"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-1ad2ac4b6a"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-94c0ae4fd7"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-cdeaeae335"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
@@ -48,6 +48,7 @@ Get Collection
 - [piggity local add](../../piggity/cli/piggity-local-add.md)
 - [piggity local repair](../../piggity/cli/piggity-local-repair.md)
 - [piggity local sync](../../piggity/cli/piggity-local-sync.md)
+- [riverhog_client.ApiClient.get_collection](../../riverhog-client/python/riverhog-client-apiclient-get-collection.md)
 
 ### Referenced contract dossiers
 
@@ -68,17 +69,104 @@ Get Collection
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/collections.py::get_collection](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L622)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "collection show",
+      "source": {
+        "line": 2525,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "show_cmd"
+      }
+    },
+    {
+      "command": "collection describe",
+      "source": {
+        "line": 2536,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "collection_describe_cmd"
+      }
+    },
+    {
+      "command": "collection tag list",
+      "source": {
+        "line": 998,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "collection_tag_list_cmd"
+      }
+    },
+    {
+      "command": "collection tag contains",
+      "source": {
+        "line": 1030,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "collection_tag_contains_cmd"
+      }
+    },
+    {
+      "command": "collection tag add",
+      "source": {
+        "line": 1057,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "collection_tag_add_cmd"
+      }
+    },
+    {
+      "command": "collection tag remove",
+      "source": {
+        "line": 1086,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "collection_tag_remove_cmd"
+      }
+    },
+    {
+      "command": "local add",
+      "source": {
+        "line": 902,
+        "module": "piggity.local",
+        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "symbol": "add_collection"
+      }
+    },
+    {
+      "command": "local sync",
+      "source": {
+        "line": 1101,
+        "module": "piggity.local",
+        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "symbol": "sync"
+      }
+    },
+    {
+      "command": "local repair",
+      "source": {
+        "line": 1122,
+        "module": "piggity.local",
+        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "symbol": "repair"
+      }
+    }
+  ],
   "cli_commands": [
     "collection describe",
     "collection show",
@@ -91,6 +179,17 @@ This generated record links maintained client, CLI, response-authority, and prov
     "local sync"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.get_collection",
+      "source": {
+        "line": 1572,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.get_collection"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "get_collection",
   "path": "/v1/collections/{collection_id}",
@@ -99,6 +198,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

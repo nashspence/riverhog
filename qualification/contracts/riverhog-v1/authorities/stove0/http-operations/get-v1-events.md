@@ -19,20 +19,20 @@ List Events
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-31c522de73"></a>`after` | query | no | anyOf=type="string" \| type="null" |
-| <a id="s-f727189551"></a>`limit` | query | no | type="integer"; minimum=1; maximum=100 |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-31c522de73"></a>`after` | query | no | not declared | anyOf=type="string" \| type="null" |
+| <a id="s-f727189551"></a>`limit` | query | no | `100` | type="integer"; minimum=1; maximum=100 |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-793e76f5b2"></a>`200` | Successful Response |
-| <a id="s-a0acc31893"></a>`400` | Bad Request |
-| <a id="s-42e7dd3e99"></a>`401` | Unauthorized |
-| <a id="s-91acc22835"></a>`403` | Forbidden |
-| <a id="s-cf40e533f0"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-793e76f5b2"></a>`200` | Successful Response | application/json | [Stove0EventPage](../http-schemas/schemas-stove0eventpage.md) | not declared |
+| <a id="s-a0acc31893"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-42e7dd3e99"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-91acc22835"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-cf40e533f0"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -63,6 +63,7 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Related interface records
 
 - [stove0 event list](../../stove0-client/cli/stove0-event-list.md)
+- [stove0_api_client.Stove0ApiClient.list_events](../../stove0-api-client/python/stove0-api-client-stove0apiclient-list-events.md)
 
 ### Referenced contract dossiers
 
@@ -85,21 +86,47 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:stove0](../../../evidence/sources.md#src-52e6e32124)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/stove0/application/server/src/stove0_api/app.py::create_app.<locals>.list_events](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L533)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "stove0",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "event list",
+      "source": {
+        "line": 475,
+        "module": "stove0_cli.main",
+        "path": "reference/stove0/application/client/src/stove0_cli/main.py",
+        "symbol": "list_events"
+      }
+    }
+  ],
   "cli_commands": [
     "event list"
   ],
   "client": "Stove0ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "stove0_api_client.Stove0ApiClient.list_events",
+      "source": {
+        "line": 141,
+        "module": "stove0_api_client.client",
+        "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py",
+        "symbol": "Stove0ApiClient.list_events"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "list_events",
   "path": "/v1/events",
@@ -112,6 +139,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "operator-projection"
 }
 ```
+
+</details>
 
 ### Machine authority
 

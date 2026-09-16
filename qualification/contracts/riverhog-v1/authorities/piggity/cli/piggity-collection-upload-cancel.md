@@ -64,6 +64,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Related interface records
 
 - [POST /v1/collection-upload-sessions/{collection_id}/cancel](../../riverhog/http-operations/post-v1-collection-upload-sessions-collection-id-cancel.md)
+- [riverhog_client.ApiClient.cancel_collection_upload_session](../../riverhog-client/python/riverhog-client-apiclient-cancel-collection-upload-session.md)
 
 ## Governing policies
 
@@ -81,6 +82,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [cli:piggity](../../../evidence/sources.md#src-094022231f) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::upload_cancel_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L2393)
 
 ### Machine authority
 

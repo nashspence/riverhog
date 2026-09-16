@@ -19,16 +19,17 @@ Health Live
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-f426d91d27"></a>`200` | Successful Response |
-| <a id="s-76649245bd"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-f426d91d27"></a>`200` | Successful Response | application/json | [HealthResponse](../http-schemas/schemas-healthresponse.md) | not declared |
+| <a id="s-76649245bd"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [stove0 health](../../stove0-client/cli/stove0-health.md)
+- [stove0_api_client.Stove0ApiClient.health_live](../../stove0-api-client/python/stove0-api-client-stove0apiclient-health-live.md)
 
 ### Referenced contract dossiers
 
@@ -49,21 +50,47 @@ Health Live
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:stove0](../../../evidence/sources.md#src-52e6e32124)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/stove0/application/server/src/stove0_api/app.py::create_app.<locals>.health_live](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L506)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "stove0",
   "classification": "standard-tool/protocol",
+  "cli_bindings": [
+    {
+      "command": "health",
+      "source": {
+        "line": 163,
+        "module": "stove0_cli.main",
+        "path": "reference/stove0/application/client/src/stove0_cli/main.py",
+        "symbol": "health"
+      }
+    }
+  ],
   "cli_commands": [
     "health"
   ],
   "client": "Stove0ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "stove0_api_client.Stove0ApiClient.health_live",
+      "source": {
+        "line": 131,
+        "module": "stove0_api_client.client",
+        "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py",
+        "symbol": "Stove0ApiClient.health_live"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "health_live",
   "path": "/health/live",
@@ -72,6 +99,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

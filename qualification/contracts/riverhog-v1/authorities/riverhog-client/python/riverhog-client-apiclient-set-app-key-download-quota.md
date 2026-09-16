@@ -29,6 +29,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [piggity app key quota set](../../piggity/cli/piggity-app-key-quota-set.md)
+- [PUT /v1/apps/{app}/keys/{key_id}/download-quota](../../riverhog/http-operations/put-v1-apps-app-keys-key-id-download-quota.md)
 - [ApiClient](riverhog-client-apiclient.md)
 
 ## Governing policies
@@ -46,6 +48,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 - [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
+- **Client method:** [packages/riverhog-client/src/riverhog_client/client.py::ApiClient.set_app_key_download_quota](../../../../../../packages/riverhog-client/src/riverhog_client/client.py#L2351)
 
 ### Machine authority
 

@@ -20,9 +20,9 @@ Add Collection Upload Session Tags
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-a931da540f"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-a931da540f"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
 
 ### <a id="s-a15e689314"></a>Request body
 
@@ -30,19 +30,20 @@ Add Collection Upload Session Tags
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-8f2986ef41"></a>`200` | Successful Response |
-| <a id="s-e7b1d00231"></a>`400` | Bad Request |
-| <a id="s-d64597e3ab"></a>`401` | Unauthorized |
-| <a id="s-e9de0a8c68"></a>`403` | Forbidden |
-| <a id="s-477bc9677c"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-8f2986ef41"></a>`200` | Successful Response | application/json | [CollectionUploadTagsOut](../http-schemas/schemas-collectionuploadtagsout.md) | not declared |
+| <a id="s-e7b1d00231"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-d64597e3ab"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-e9de0a8c68"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-477bc9677c"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [piggity collection upload start](../../piggity/cli/piggity-collection-upload-start.md)
+- [riverhog_client.ApiClient.add_collection_upload_session_tags](../../riverhog-client/python/riverhog-client-apiclient-add-collection-upload-session-tags.md)
 
 ### Referenced contract dossiers
 
@@ -64,21 +65,47 @@ Add Collection Upload Session Tags
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/collections.py::add_collection_upload_session_tags](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L270)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "client-only-primitive",
+  "cli_bindings": [
+    {
+      "command": "collection upload start",
+      "source": {
+        "line": 2170,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "upload_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "collection upload start"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.add_collection_upload_session_tags",
+      "source": {
+        "line": 1153,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.add_collection_upload_session_tags"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "add_collection_upload_session_tags",
   "path": "/v1/collection-upload-sessions/{collection_id}/tags",
@@ -87,6 +114,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

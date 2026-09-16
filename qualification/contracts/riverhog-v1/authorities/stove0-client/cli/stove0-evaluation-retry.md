@@ -64,6 +64,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Related interface records
 
 - [POST /v1/evaluations/{evaluation_id}/variants/{variant_id}/retry](../../stove0/http-operations/post-v1-evaluations-evaluation-id-variants-variant-id-retry.md)
+- [stove0_api_client.Stove0ApiClient.retry_evaluation_variant](../../stove0-api-client/python/stove0-api-client-stove0apiclient-retry-evaluation-variant.md)
 
 ## Governing policies
 
@@ -81,6 +82,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [cli:stove0](../../../evidence/sources.md#src-6203ae7d88) — `reference/stove0/application/client/src/stove0_cli/main.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/stove0/application/client/src/stove0_cli/main.py::retry_evaluation](../../../../../../reference/stove0/application/client/src/stove0_cli/main.py#L445)
 
 ### Machine authority
 

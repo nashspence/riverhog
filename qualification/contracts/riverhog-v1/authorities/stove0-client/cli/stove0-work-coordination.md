@@ -62,6 +62,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Related interface records
 
 - [GET /v1/work/{work_id}/coordination](../../stove0/http-operations/get-v1-work-work-id-coordination.md)
+- [stove0_api_client.Stove0ApiClient.inspect_work_coordination](../../stove0-api-client/python/stove0-api-client-stove0apiclient-inspect-work-coordination.md)
 
 ## Governing policies
 
@@ -79,6 +80,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [cli:stove0](../../../evidence/sources.md#src-6203ae7d88) — `reference/stove0/application/client/src/stove0_cli/main.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/stove0/application/client/src/stove0_cli/main.py::inspect_work_coordination](../../../../../../reference/stove0/application/client/src/stove0_cli/main.py#L326)
 
 ### Machine authority
 

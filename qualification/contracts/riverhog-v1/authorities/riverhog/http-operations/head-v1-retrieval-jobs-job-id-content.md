@@ -44,12 +44,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "standard-tool/protocol",
+  "cli_bindings": [],
   "cli_commands": [],
   "client": null,
+  "client_bindings": [],
   "method": "HEAD",
   "operation_id": "head_retrieval_file",
   "path": "/v1/retrieval-jobs/{job_id}/content",
@@ -58,6 +63,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "stream-or-empty"
 }
 ```
+
+</details>
 
 ### Machine authority
 

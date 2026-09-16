@@ -19,24 +19,24 @@ List Evaluations
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-625d3cc50a"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| <a id="s-88b28d2b89"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
-| <a id="s-7af6efcb9f"></a>`phase` | query | no | anyOf=type="string"; enum=["planning","running","partially_complete","complete","failed","canceled"] \| type="null" |
-| <a id="s-976d157f93"></a>`q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
-| <a id="s-6e6ff27ba8"></a>`sort` | query | no | type="string"; enum=["updated_at","phase","evaluation_id"] |
-| <a id="s-97dc8ae11c"></a>`order` | query | no | type="string"; enum=["asc","desc"] |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-625d3cc50a"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
+| <a id="s-88b28d2b89"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
+| <a id="s-7af6efcb9f"></a>`phase` | query | no | not declared | anyOf=type="string"; enum=["planning","running","partially_complete","complete","failed","canceled"] \| type="null" |
+| <a id="s-976d157f93"></a>`q` | query | no | not declared | anyOf=[BrowseQuery](../http-schemas/schemas-browsequery.md) \| type="null" |
+| <a id="s-6e6ff27ba8"></a>`sort` | query | no | `"updated_at"` | type="string"; enum=["updated_at","phase","evaluation_id"] |
+| <a id="s-97dc8ae11c"></a>`order` | query | no | `"desc"` | type="string"; enum=["asc","desc"] |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-d617aa74c2"></a>`200` | Successful Response |
-| <a id="s-3fa3da42ff"></a>`400` | Bad Request |
-| <a id="s-e116b0c38f"></a>`401` | Unauthorized |
-| <a id="s-9e3282a8c5"></a>`403` | Forbidden |
-| <a id="s-7cf9e38e00"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-d617aa74c2"></a>`200` | Successful Response | application/json | [EvaluationPage](../http-schemas/schemas-evaluationpage.md) | not declared |
+| <a id="s-3fa3da42ff"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-e116b0c38f"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-9e3282a8c5"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-7cf9e38e00"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -67,6 +67,7 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Related interface records
 
 - [stove0 evaluation list](../../stove0-client/cli/stove0-evaluation-list.md)
+- [stove0_api_client.Stove0ApiClient.list_evaluations](../../stove0-api-client/python/stove0-api-client-stove0apiclient-list-evaluations.md)
 
 ### Referenced contract dossiers
 
@@ -91,21 +92,47 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:stove0](../../../evidence/sources.md#src-52e6e32124)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/stove0/application/server/src/stove0_api/app.py::create_app.<locals>.list_evaluations](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L825)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "stove0",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "evaluation list",
+      "source": {
+        "line": 393,
+        "module": "stove0_cli.main",
+        "path": "reference/stove0/application/client/src/stove0_cli/main.py",
+        "symbol": "list_evaluations"
+      }
+    }
+  ],
   "cli_commands": [
     "evaluation list"
   ],
   "client": "Stove0ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "stove0_api_client.Stove0ApiClient.list_evaluations",
+      "source": {
+        "line": 347,
+        "module": "stove0_api_client.client",
+        "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py",
+        "symbol": "Stove0ApiClient.list_evaluations"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "list_evaluations",
   "path": "/v1/evaluations",
@@ -121,6 +148,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "operator-projection"
 }
 ```
+
+</details>
 
 ### Machine authority
 

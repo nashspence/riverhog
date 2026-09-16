@@ -63,6 +63,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [GET /health/live](../../stove0/http-operations/get-health-live.md)
 - [GET /health/ready](../../stove0/http-operations/get-health-ready.md)
+- [stove0_api_client.Stove0ApiClient.health_live](../../stove0-api-client/python/stove0-api-client-stove0apiclient-health-live.md)
+- [stove0_api_client.Stove0ApiClient.health_ready](../../stove0-api-client/python/stove0-api-client-stove0apiclient-health-ready.md)
 
 ## Governing policies
 
@@ -80,6 +82,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [cli:stove0](../../../evidence/sources.md#src-6203ae7d88) — `reference/stove0/application/client/src/stove0_cli/main.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/stove0/application/client/src/stove0_cli/main.py::health](../../../../../../reference/stove0/application/client/src/stove0_cli/main.py#L163)
 
 ### Machine authority
 

@@ -100,9 +100,11 @@ def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None
     assert len(mapped) == len(set(mapped))
     assert set(mapped) == exact
     assert authority_inventory.count("| [") >= len(exact)
-    assert atlas._reachable_atlas_documents(root["atlas"]["root"], checked.files) == set(
-        checked.files
-    )
+    assert atlas._reachable_atlas_documents(
+        root["atlas"]["root"],
+        checked.files,
+        repository_sources=atlas_navigation._repository_source_targets(root["trace"]),
+    ) == set(checked.files)
     assert not any(path.startswith("riverhog-v1/relationships/") for path in checked.files)
 
     release_elements = [item for item in root["elements"] if item["authority"] == "release"]

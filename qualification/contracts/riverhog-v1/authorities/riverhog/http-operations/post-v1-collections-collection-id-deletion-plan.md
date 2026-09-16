@@ -20,22 +20,22 @@ Plan Collection Deletion
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-a9b5a1b3dc"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-8f51f3021d"></a>`retirement_claim_id` | query | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-a9b5a1b3dc"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-8f51f3021d"></a>`retirement_claim_id` | query | no | not declared | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-c1c9816298"></a>`200` | Successful Response |
-| <a id="s-040b0acf60"></a>`400` | Bad Request |
-| <a id="s-7549c95d68"></a>`401` | Unauthorized |
-| <a id="s-4c443cfcc3"></a>`403` | Forbidden |
-| <a id="s-14a76630f8"></a>`404` | Not Found |
-| <a id="s-4c92eda0a1"></a>`409` | Conflict |
-| <a id="s-f8a0d9d6a9"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-c1c9816298"></a>`200` | Successful Response | application/json | [CollectionDeletionPlanOut](../http-schemas/schemas-collectiondeletionplanout.md) | not declared |
+| <a id="s-040b0acf60"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-7549c95d68"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-4c443cfcc3"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-14a76630f8"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-4c92eda0a1"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict`, `invalid_state` |
+| <a id="s-f8a0d9d6a9"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -52,6 +52,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 ### Related interface records
 
 - [piggity collection delete](../../piggity/cli/piggity-collection-delete.md)
+- [riverhog_client.ApiClient.plan_collection_deletion](../../riverhog-client/python/riverhog-client-apiclient-plan-collection-deletion.md)
 
 ### Referenced contract dossiers
 
@@ -73,21 +74,47 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/collections.py::plan_collection_deletion](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L656)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "collection delete",
+      "source": {
+        "line": 2911,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "collection_delete_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "collection delete"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.plan_collection_deletion",
+      "source": {
+        "line": 1956,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.plan_collection_deletion"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "plan_collection_deletion",
   "path": "/v1/collections/{collection_id}/deletion-plan",
@@ -96,6 +123,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

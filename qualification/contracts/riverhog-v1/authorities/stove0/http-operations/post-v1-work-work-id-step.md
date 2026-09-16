@@ -19,27 +19,28 @@ Step Work
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-e4d2d64ba2"></a>`work_id` | path | yes | type="string" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-e4d2d64ba2"></a>`work_id` | path | yes | not declared | type="string" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-feaab7b4c6"></a>`200` | Successful Response |
-| <a id="s-dba7bca4f9"></a>`400` | Bad Request |
-| <a id="s-dfe4909773"></a>`401` | Unauthorized |
-| <a id="s-568f6fab11"></a>`403` | Forbidden |
-| <a id="s-9559591607"></a>`404` | Not Found |
-| <a id="s-ea13fec2bd"></a>`409` | Conflict |
-| <a id="s-00b91c8691"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-feaab7b4c6"></a>`200` | Successful Response | application/json | [WorkView](../http-schemas/schemas-workview.md) | not declared |
+| <a id="s-dba7bca4f9"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-dfe4909773"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-568f6fab11"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-9559591607"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-ea13fec2bd"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict` |
+| <a id="s-00b91c8691"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [stove0 work step](../../stove0-client/cli/stove0-work-step.md)
+- [stove0_api_client.Stove0ApiClient.step_work](../../stove0-api-client/python/stove0-api-client-stove0apiclient-step-work.md)
 
 ### Referenced contract dossiers
 
@@ -60,21 +61,47 @@ Step Work
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:stove0](../../../evidence/sources.md#src-52e6e32124)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/stove0/application/server/src/stove0_api/app.py::create_app.<locals>.step_work](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L785)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "stove0",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "work step",
+      "source": {
+        "line": 349,
+        "module": "stove0_cli.main",
+        "path": "reference/stove0/application/client/src/stove0_cli/main.py",
+        "symbol": "step_work"
+      }
+    }
+  ],
   "cli_commands": [
     "work step"
   ],
   "client": "Stove0ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "stove0_api_client.Stove0ApiClient.step_work",
+      "source": {
+        "line": 309,
+        "module": "stove0_api_client.client",
+        "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py",
+        "symbol": "Stove0ApiClient.step_work"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "step_work",
   "path": "/v1/work/{work_id}/step",
@@ -83,6 +110,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "operator-projection"
 }
 ```
+
+</details>
 
 ### Machine authority
 

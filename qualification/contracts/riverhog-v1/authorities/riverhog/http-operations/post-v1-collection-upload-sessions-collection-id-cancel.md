@@ -20,27 +20,28 @@ Cancel Collection Upload Session
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-7e848668ae"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-7e848668ae"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-07217e5ae6"></a>`200` | Successful Response |
-| <a id="s-bd137e9fdb"></a>`400` | Bad Request |
-| <a id="s-7062823652"></a>`401` | Unauthorized |
-| <a id="s-693a46ea32"></a>`403` | Forbidden |
-| <a id="s-dc8c9571c8"></a>`404` | Not Found |
-| <a id="s-0ada2e551b"></a>`409` | Conflict |
-| <a id="s-381b334312"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-07217e5ae6"></a>`200` | Successful Response | application/json | [CollectionUploadSessionOut](../http-schemas/schemas-collectionuploadsessionout.md) | not declared |
+| <a id="s-bd137e9fdb"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-7062823652"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-693a46ea32"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-dc8c9571c8"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-0ada2e551b"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict` |
+| <a id="s-381b334312"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [piggity collection upload cancel](../../piggity/cli/piggity-collection-upload-cancel.md)
+- [riverhog_client.ApiClient.cancel_collection_upload_session](../../riverhog-client/python/riverhog-client-apiclient-cancel-collection-upload-session.md)
 
 ### Referenced contract dossiers
 
@@ -61,21 +62,47 @@ Cancel Collection Upload Session
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/collections.py::cancel_collection_upload_session](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L468)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "collection upload cancel",
+      "source": {
+        "line": 2393,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "upload_cancel_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "collection upload cancel"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.cancel_collection_upload_session",
+      "source": {
+        "line": 1440,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.cancel_collection_upload_session"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "cancel_collection_upload_session",
   "path": "/v1/collection-upload-sessions/{collection_id}/cancel",
@@ -84,6 +111,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

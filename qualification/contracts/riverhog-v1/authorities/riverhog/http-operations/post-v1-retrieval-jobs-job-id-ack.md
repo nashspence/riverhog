@@ -20,21 +20,21 @@ Acknowledge Retrieval Job
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-51818aa473"></a>`job_id` | path | yes | type="string" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-51818aa473"></a>`job_id` | path | yes | not declared | type="string" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-e784886d8b"></a>`200` | Successful Response |
-| <a id="s-81b48c0e0a"></a>`400` | Bad Request |
-| <a id="s-467ba4a933"></a>`401` | Unauthorized |
-| <a id="s-e65600e2d2"></a>`403` | Forbidden |
-| <a id="s-5cfd96c51f"></a>`404` | Not Found |
-| <a id="s-e64eff21ca"></a>`409` | Conflict |
-| <a id="s-4331820c5c"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-e784886d8b"></a>`200` | Successful Response | application/json | [RetrievalJobOut](../http-schemas/schemas-retrievaljobout.md) | not declared |
+| <a id="s-81b48c0e0a"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-467ba4a933"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-e65600e2d2"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-5cfd96c51f"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-e64eff21ca"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `invalid_state` |
+| <a id="s-4331820c5c"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
@@ -42,6 +42,7 @@ Acknowledge Retrieval Job
 
 - [piggity local repair](../../piggity/cli/piggity-local-repair.md)
 - [piggity local sync](../../piggity/cli/piggity-local-sync.md)
+- [riverhog_client.ApiClient.acknowledge_retrieval_job](../../riverhog-client/python/riverhog-client-apiclient-acknowledge-retrieval-job.md)
 
 ### Referenced contract dossiers
 
@@ -62,22 +63,57 @@ Acknowledge Retrieval Job
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/retrieval.py::acknowledge_retrieval_job](../../../../../../riverhog/src/riverhog_api/routers/retrieval.py#L322)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "client-only-primitive",
+  "cli_bindings": [
+    {
+      "command": "local sync",
+      "source": {
+        "line": 1101,
+        "module": "piggity.local",
+        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "symbol": "sync"
+      }
+    },
+    {
+      "command": "local repair",
+      "source": {
+        "line": 1122,
+        "module": "piggity.local",
+        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "symbol": "repair"
+      }
+    }
+  ],
   "cli_commands": [
     "local repair",
     "local sync"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.acknowledge_retrieval_job",
+      "source": {
+        "line": 885,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.acknowledge_retrieval_job"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "acknowledge_retrieval_job",
   "path": "/v1/retrieval-jobs/{job_id}/ack",
@@ -86,6 +122,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

@@ -20,26 +20,27 @@ Get Archive Store
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-7b748f31c6"></a>`store` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-7b748f31c6"></a>`store` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-0c14d5abd4"></a>`200` | Successful Response |
-| <a id="s-d77497a05a"></a>`400` | Bad Request |
-| <a id="s-40f929e655"></a>`401` | Unauthorized |
-| <a id="s-ca9e03ec21"></a>`403` | Forbidden |
-| <a id="s-848bef10e0"></a>`404` | Not Found |
-| <a id="s-d42d32e2d5"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-0c14d5abd4"></a>`200` | Successful Response | application/json | [ArchiveStoreOut](../http-schemas/schemas-archivestoreout.md) | not declared |
+| <a id="s-d77497a05a"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-40f929e655"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-ca9e03ec21"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-848bef10e0"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-d42d32e2d5"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [piggity archive store show](../../piggity/cli/piggity-archive-store-show.md)
+- [riverhog_client.ApiClient.get_archive_store](../../riverhog-client/python/riverhog-client-apiclient-get-archive-store.md)
 
 ### Referenced contract dossiers
 
@@ -60,21 +61,47 @@ Get Archive Store
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/archive.py::get_archive_store](../../../../../../riverhog/src/riverhog_api/routers/archive.py#L221)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "archive store show",
+      "source": {
+        "line": 2900,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "archive_store_show_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "archive store show"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.get_archive_store",
+      "source": {
+        "line": 2052,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.get_archive_store"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "get_archive_store",
   "path": "/v1/archive/stores/{store}",
@@ -83,6 +110,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

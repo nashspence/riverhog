@@ -29,6 +29,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [piggity catalog-sync changes](../../piggity/cli/piggity-catalog-sync-changes.md)
+- [GET /v1/catalog-sync/changes](../../riverhog/http-operations/get-v1-catalog-sync-changes.md)
 - [ApiClient](riverhog-client-apiclient.md)
 
 ## Governing policies
@@ -46,6 +48,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 - [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
+- **Client method:** [packages/riverhog-client/src/riverhog_client/client.py::ApiClient.list_catalog_sync_changes](../../../../../../packages/riverhog-client/src/riverhog_client/client.py#L754)
 
 ### Machine authority
 

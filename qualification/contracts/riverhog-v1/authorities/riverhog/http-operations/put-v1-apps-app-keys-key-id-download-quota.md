@@ -20,10 +20,10 @@ Set App Key Download Quota
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-c3c6c00d1b"></a>`app` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
-| <a id="s-7f7c737ff2"></a>`key_id` | path | yes | type="string"; pattern="^[0-9a-f]{16}$" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-c3c6c00d1b"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| <a id="s-7f7c737ff2"></a>`key_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{16}$" |
 
 ### <a id="s-df8a168537"></a>Request body
 
@@ -31,15 +31,15 @@ Set App Key Download Quota
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-2e6c8a295b"></a>`200` | Successful Response |
-| <a id="s-e19e890d43"></a>`400` | Bad Request |
-| <a id="s-b3b6ade9e9"></a>`401` | Unauthorized |
-| <a id="s-6226a3dc6c"></a>`403` | Forbidden |
-| <a id="s-67a33d9aeb"></a>`404` | Not Found |
-| <a id="s-7c6e363655"></a>`429` | Too Many Requests |
-| <a id="s-e62b803c6b"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-2e6c8a295b"></a>`200` | Successful Response | application/json | [KeyDownloadQuotaOut](../http-schemas/schemas-keydownloadquotaout.md) | not declared |
+| <a id="s-e19e890d43"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-b3b6ade9e9"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-6226a3dc6c"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-67a33d9aeb"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-7c6e363655"></a>`429` | Too Many Requests | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `download_allowance_exceeded` |
+| <a id="s-e62b803c6b"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -56,6 +56,7 @@ Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-publ
 ### Related interface records
 
 - [piggity app key quota set](../../piggity/cli/piggity-app-key-quota-set.md)
+- [riverhog_client.ApiClient.set_app_key_download_quota](../../riverhog-client/python/riverhog-client-apiclient-set-app-key-download-quota.md)
 
 ### Referenced contract dossiers
 
@@ -78,21 +79,47 @@ Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-publ
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/quotas.py::set_app_key_download_quota](../../../../../../riverhog/src/riverhog_api/routers/quotas.py#L84)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "app key quota set",
+      "source": {
+        "line": 1365,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "app_key_quota_set_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "app key quota set"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.set_app_key_download_quota",
+      "source": {
+        "line": 2351,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.set_app_key_download_quota"
+      }
+    }
+  ],
   "method": "PUT",
   "operation_id": "set_app_key_download_quota",
   "path": "/v1/apps/{app}/keys/{key_id}/download-quota",
@@ -101,6 +128,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

@@ -19,24 +19,24 @@ List Work
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-f757afb8e1"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| <a id="s-eb23c506e0"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
-| <a id="s-3c013fe019"></a>`phase` | query | no | anyOf=type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] \| type="null" |
-| <a id="s-5f521e9cb3"></a>`q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
-| <a id="s-24e7c1f77e"></a>`sort` | query | no | type="string"; enum=["updated_at","phase","work_id"] |
-| <a id="s-781a235d35"></a>`order` | query | no | type="string"; enum=["asc","desc"] |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-f757afb8e1"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
+| <a id="s-eb23c506e0"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
+| <a id="s-3c013fe019"></a>`phase` | query | no | not declared | anyOf=type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] \| type="null" |
+| <a id="s-5f521e9cb3"></a>`q` | query | no | not declared | anyOf=[BrowseQuery](../http-schemas/schemas-browsequery.md) \| type="null" |
+| <a id="s-24e7c1f77e"></a>`sort` | query | no | `"updated_at"` | type="string"; enum=["updated_at","phase","work_id"] |
+| <a id="s-781a235d35"></a>`order` | query | no | `"desc"` | type="string"; enum=["asc","desc"] |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-ce11aed2b2"></a>`200` | Successful Response |
-| <a id="s-f866888f93"></a>`400` | Bad Request |
-| <a id="s-b20246c2a8"></a>`401` | Unauthorized |
-| <a id="s-2d228313df"></a>`403` | Forbidden |
-| <a id="s-cd90dda77d"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-ce11aed2b2"></a>`200` | Successful Response | application/json | [WorkPage](../http-schemas/schemas-workpage.md) | not declared |
+| <a id="s-f866888f93"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-b20246c2a8"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-2d228313df"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-cd90dda77d"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -67,6 +67,7 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Related interface records
 
 - [stove0 work list](../../stove0-client/cli/stove0-work-list.md)
+- [stove0_api_client.Stove0ApiClient.list_work](../../stove0-api-client/python/stove0-api-client-stove0apiclient-list-work.md)
 
 ### Referenced contract dossiers
 
@@ -91,21 +92,47 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:stove0](../../../evidence/sources.md#src-52e6e32124)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/stove0/application/server/src/stove0_api/app.py::create_app.<locals>.list_work](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L659)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "stove0",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "work list",
+      "source": {
+        "line": 267,
+        "module": "stove0_cli.main",
+        "path": "reference/stove0/application/client/src/stove0_cli/main.py",
+        "symbol": "list_work"
+      }
+    }
+  ],
   "cli_commands": [
     "work list"
   ],
   "client": "Stove0ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "stove0_api_client.Stove0ApiClient.list_work",
+      "source": {
+        "line": 219,
+        "module": "stove0_api_client.client",
+        "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py",
+        "symbol": "Stove0ApiClient.list_work"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "list_work",
   "path": "/v1/work",
@@ -121,6 +148,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "operator-projection"
 }
 ```
+
+</details>
 
 ### Machine authority
 

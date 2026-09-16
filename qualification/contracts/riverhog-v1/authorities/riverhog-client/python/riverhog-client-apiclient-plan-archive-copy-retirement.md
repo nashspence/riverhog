@@ -29,6 +29,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [piggity archive retire](../../piggity/cli/piggity-archive-retire.md)
+- [POST /v1/archive/copies/retirement-plan](../../riverhog/http-operations/post-v1-archive-copies-retirement-plan.md)
 - [ApiClient](riverhog-client-apiclient.md)
 
 ## Governing policies
@@ -46,6 +48,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 - [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
+- **Client method:** [packages/riverhog-client/src/riverhog_client/client.py::ApiClient.plan_archive_copy_retirement](../../../../../../packages/riverhog-client/src/riverhog_client/client.py#L2487)
 
 ### Machine authority
 

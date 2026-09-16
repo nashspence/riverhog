@@ -20,9 +20,9 @@ Seal Processing Claim Inputs
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-3a45e4c1f6"></a>`claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-3a45e4c1f6"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
 
 ### <a id="s-aeea5c9b93"></a>Request body
 
@@ -30,13 +30,13 @@ Seal Processing Claim Inputs
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-f765ce6d37"></a>`200` | Successful Response |
-| <a id="s-20cbe87d39"></a>`400` | Bad Request |
-| <a id="s-dbbbd9143e"></a>`401` | Unauthorized |
-| <a id="s-667d1da24f"></a>`403` | Forbidden |
-| <a id="s-cfdf254c03"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-f765ce6d37"></a>`200` | Successful Response | application/json | [ReceivingSetDocument](../http-schemas/schemas-receivingsetdocument.md) | not declared |
+| <a id="s-20cbe87d39"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-dbbbd9143e"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-667d1da24f"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-cfdf254c03"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -71,19 +71,37 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/workflows.py::seal_processing_claim_inputs](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L115)
+
+**Accounting gap:** [riverhog_client.ApiClient.seal_processing_claim_inputs](../../../../../../packages/riverhog-client/src/riverhog_client/workflows.py#L182) is callable through the maintained client but has no Python contract dossier in the current freeze.
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "client-only-primitive",
+  "cli_bindings": [],
   "cli_commands": [],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.seal_processing_claim_inputs",
+      "source": {
+        "line": 182,
+        "module": "riverhog_client.workflows",
+        "path": "packages/riverhog-client/src/riverhog_client/workflows.py",
+        "symbol": "CollectionWorkflowMethods.seal_processing_claim_inputs"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "seal_processing_claim_inputs",
   "path": "/v1/collection-processing-claims/{claim_id}/inputs/seal",
@@ -92,6 +110,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "canonical-document"
 }
 ```
+
+</details>
 
 ### Machine authority
 

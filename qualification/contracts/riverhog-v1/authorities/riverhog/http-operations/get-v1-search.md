@@ -20,24 +20,24 @@ Search
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-fa52230b61"></a>`q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
-| <a id="s-0897c641b3"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| <a id="s-ff9d1780de"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
-| <a id="s-a72f8fa8f6"></a>`sort` | query | no | $ref="#/components/schemas/SearchSort" |
-| <a id="s-4fd93c17d0"></a>`order` | query | no | $ref="#/components/schemas/SortOrder" |
-| <a id="s-fc2236a28f"></a>`collection` | query | no | anyOf=#/components/schemas/CollectionIdParameter \| type="null" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-fa52230b61"></a>`q` | query | no | not declared | anyOf=[BrowseQuery](../http-schemas/schemas-browsequery.md) \| type="null" |
+| <a id="s-0897c641b3"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
+| <a id="s-ff9d1780de"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
+| <a id="s-a72f8fa8f6"></a>`sort` | query | no | `"file_ref"` | [SearchSort](../http-schemas/schemas-searchsort.md) |
+| <a id="s-4fd93c17d0"></a>`order` | query | no | `"asc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
+| <a id="s-fc2236a28f"></a>`collection` | query | no | not declared | anyOf=[CollectionIdParameter](../http-schemas/schemas-collectionidparameter.md) \| type="null" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-776e2cba8a"></a>`200` | Successful Response |
-| <a id="s-592a32831f"></a>`400` | Bad Request |
-| <a id="s-ae02137c84"></a>`401` | Unauthorized |
-| <a id="s-f8b436515b"></a>`403` | Forbidden |
-| <a id="s-85566fe71f"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-776e2cba8a"></a>`200` | Successful Response | application/json | [SearchResponse](../http-schemas/schemas-searchresponse.md) | not declared |
+| <a id="s-592a32831f"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-ae02137c84"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-f8b436515b"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-85566fe71f"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -68,6 +68,7 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Related interface records
 
 - [piggity find](../../piggity/cli/piggity-find.md)
+- [riverhog_client.ApiClient.search](../../riverhog-client/python/riverhog-client-apiclient-search.md)
 
 ### Referenced contract dossiers
 
@@ -95,21 +96,47 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/search.py::search](../../../../../../riverhog/src/riverhog_api/routers/search.py#L23)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "find",
+      "source": {
+        "line": 2478,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "find_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "find"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.search",
+      "source": {
+        "line": 1545,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.search"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "search",
   "path": "/v1/search",
@@ -125,6 +152,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

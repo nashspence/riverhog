@@ -20,24 +20,24 @@ List Apps
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-fca1366943"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| <a id="s-fcd2e9d893"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
-| <a id="s-9558df2387"></a>`sort` | query | no | $ref="#/components/schemas/ApplicationSort" |
-| <a id="s-8dcd585087"></a>`order` | query | no | $ref="#/components/schemas/SortOrder" |
-| <a id="s-899794f1ca"></a>`q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
-| <a id="s-d8225d7f7b"></a>`active` | query | no | anyOf=type="boolean" \| type="null" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-fca1366943"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
+| <a id="s-fcd2e9d893"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
+| <a id="s-9558df2387"></a>`sort` | query | no | `"name"` | [ApplicationSort](../http-schemas/schemas-applicationsort.md) |
+| <a id="s-8dcd585087"></a>`order` | query | no | `"asc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
+| <a id="s-899794f1ca"></a>`q` | query | no | not declared | anyOf=[BrowseQuery](../http-schemas/schemas-browsequery.md) \| type="null" |
+| <a id="s-d8225d7f7b"></a>`active` | query | no | not declared | anyOf=type="boolean" \| type="null" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-9d615de310"></a>`200` | Successful Response |
-| <a id="s-e4cf7b183f"></a>`400` | Bad Request |
-| <a id="s-b9d9c46e22"></a>`401` | Unauthorized |
-| <a id="s-72105632e1"></a>`403` | Forbidden |
-| <a id="s-29f2b1186f"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-9d615de310"></a>`200` | Successful Response | application/json | [AppListOut](../http-schemas/schemas-applistout.md) | not declared |
+| <a id="s-e4cf7b183f"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-b9d9c46e22"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-72105632e1"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-29f2b1186f"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -68,6 +68,7 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Related interface records
 
 - [piggity app list](../../piggity/cli/piggity-app-list.md)
+- [riverhog_client.ApiClient.list_apps](../../riverhog-client/python/riverhog-client-apiclient-list-apps.md)
 
 ### Referenced contract dossiers
 
@@ -94,21 +95,47 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/apps.py::list_apps](../../../../../../riverhog/src/riverhog_api/routers/apps.py#L45)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "app list",
+      "source": {
+        "line": 938,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "app_list_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "app list"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.list_apps",
+      "source": {
+        "line": 2059,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.list_apps"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "list_apps",
   "path": "/v1/apps",
@@ -124,6 +151,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

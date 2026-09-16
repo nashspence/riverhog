@@ -19,25 +19,26 @@ Backfill Admission Policy
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-b6cc543640"></a>`policy_id` | path | yes | type="string" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-b6cc543640"></a>`policy_id` | path | yes | not declared | type="string" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-c589a46b03"></a>`200` | Successful Response |
-| <a id="s-33d86e5074"></a>`400` | Bad Request |
-| <a id="s-96370e1b48"></a>`401` | Unauthorized |
-| <a id="s-15c08c80dd"></a>`403` | Forbidden |
-| <a id="s-06c122ae8e"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-c589a46b03"></a>`200` | Successful Response | application/json | [AdmissionPolicyStatus](../http-schemas/schemas-admissionpolicystatus.md) | not declared |
+| <a id="s-33d86e5074"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-96370e1b48"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-15c08c80dd"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-06c122ae8e"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [stove0 admission policy backfill](../../stove0-client/cli/stove0-admission-policy-backfill.md)
+- [stove0_api_client.Stove0ApiClient.backfill_admission_policy](../../stove0-api-client/python/stove0-api-client-stove0apiclient-backfill-admission-policy.md)
 
 ### Referenced contract dossiers
 
@@ -58,21 +59,47 @@ Backfill Admission Policy
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:stove0](../../../evidence/sources.md#src-52e6e32124)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/stove0/application/server/src/stove0_api/app.py::create_app.<locals>.backfill_admission_policy](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L593)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "stove0",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "admission policy backfill",
+      "source": {
+        "line": 201,
+        "module": "stove0_cli.main",
+        "path": "reference/stove0/application/client/src/stove0_cli/main.py",
+        "symbol": "backfill_admission_policy"
+      }
+    }
+  ],
   "cli_commands": [
     "admission policy backfill"
   ],
   "client": "Stove0ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "stove0_api_client.Stove0ApiClient.backfill_admission_policy",
+      "source": {
+        "line": 173,
+        "module": "stove0_api_client.client",
+        "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py",
+        "symbol": "Stove0ApiClient.backfill_admission_policy"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "backfill_admission_policy",
   "path": "/v1/admission-policies/{policy_id}:backfill",
@@ -81,6 +108,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "operator-projection"
 }
 ```
+
+</details>
 
 ### Machine authority
 

@@ -20,10 +20,10 @@ Add App Key Access
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-63893cdb93"></a>`app` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
-| <a id="s-08375718d6"></a>`key_id` | path | yes | type="string"; pattern="^[0-9a-f]{16}$" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-63893cdb93"></a>`app` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| <a id="s-08375718d6"></a>`key_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{16}$" |
 
 ### <a id="s-e7ba4e90d6"></a>Request body
 
@@ -31,15 +31,15 @@ Add App Key Access
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-f1906aba47"></a>`200` | Successful Response |
-| <a id="s-d51e8deadd"></a>`400` | Bad Request |
-| <a id="s-70b7679316"></a>`401` | Unauthorized |
-| <a id="s-23814ad55b"></a>`403` | Forbidden |
-| <a id="s-564a26372f"></a>`404` | Not Found |
-| <a id="s-ab82137c69"></a>`409` | Conflict |
-| <a id="s-4b5155e96b"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-f1906aba47"></a>`200` | Successful Response | application/json | [AppAccessSetOut](../http-schemas/schemas-appaccesssetout.md) | not declared |
+| <a id="s-d51e8deadd"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-70b7679316"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-23814ad55b"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-564a26372f"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-ab82137c69"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict` |
+| <a id="s-4b5155e96b"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -56,6 +56,7 @@ Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-publ
 ### Related interface records
 
 - [piggity app key access add](../../piggity/cli/piggity-app-key-access-add.md)
+- [riverhog_client.ApiClient.add_app_key_access](../../riverhog-client/python/riverhog-client-apiclient-add-app-key-access.md)
 
 ### Referenced contract dossiers
 
@@ -78,21 +79,47 @@ Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-publ
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/apps.py::add_app_key_access](../../../../../../riverhog/src/riverhog_api/routers/apps.py#L198)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "app key access add",
+      "source": {
+        "line": 1316,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "app_key_access_add_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "app key access add"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.add_app_key_access",
+      "source": {
+        "line": 2200,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.add_app_key_access"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "add_app_key_access",
   "path": "/v1/apps/{app}/keys/{key_id}/access",
@@ -101,6 +128,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

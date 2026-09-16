@@ -20,28 +20,29 @@ Cancel Archive Copy Job
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-c86344a94b"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-77db46652b"></a>`destination_store` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-c86344a94b"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-77db46652b"></a>`destination_store` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-a26bbed67a"></a>`200` | Successful Response |
-| <a id="s-91784f4dd6"></a>`400` | Bad Request |
-| <a id="s-fe5b6f3432"></a>`401` | Unauthorized |
-| <a id="s-916f8e7812"></a>`403` | Forbidden |
-| <a id="s-bd7dec8a85"></a>`404` | Not Found |
-| <a id="s-4bff21ec64"></a>`409` | Conflict |
-| <a id="s-8a864586a0"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-a26bbed67a"></a>`200` | Successful Response | application/json | [ArchiveCopyJobOut](../http-schemas/schemas-archivecopyjobout.md) | not declared |
+| <a id="s-91784f4dd6"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-fe5b6f3432"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-916f8e7812"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-bd7dec8a85"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-4bff21ec64"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `invalid_state` |
+| <a id="s-8a864586a0"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [piggity archive copy cancel](../../piggity/cli/piggity-archive-copy-cancel.md)
+- [riverhog_client.ApiClient.cancel_archive_copy_job](../../riverhog-client/python/riverhog-client-apiclient-cancel-archive-copy-job.md)
 
 ### Referenced contract dossiers
 
@@ -62,21 +63,47 @@ Cancel Archive Copy Job
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/archive.py::cancel_archive_copy_job](../../../../../../riverhog/src/riverhog_api/routers/archive.py#L101)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "archive copy cancel",
+      "source": {
+        "line": 3062,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "archive_copy_cancel_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "archive copy cancel"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.cancel_archive_copy_job",
+      "source": {
+        "line": 2474,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.cancel_archive_copy_job"
+      }
+    }
+  ],
   "method": "DELETE",
   "operation_id": "cancel_archive_copy_job",
   "path": "/v1/archive/copies/{collection_id}/{destination_store}",
@@ -85,6 +112,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

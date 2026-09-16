@@ -29,6 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [PUT /v1/target-executions/{job_id}/outputs/{artifact_id}](../../stove0/http-operations/put-v1-target-executions-job-id-outputs-artifact-id.md)
 - [TargetCallbackClient](stove0-target-client-targetcallbackclient.md)
 
 ## Governing policies
@@ -46,6 +47,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 - [python:stove0-target-client:stove0_target_client](../../../evidence/sources.md#src-be4c80156f) — `reference/stove0/packages/target-client/src/stove0_target_client/__init__.py`
+- **Client method:** [reference/stove0/packages/target-client/src/stove0_target_client/client.py::TargetCallbackClient.declare_target_execution_output](../../../../../../reference/stove0/packages/target-client/src/stove0_target_client/client.py#L236)
 
 ### Machine authority
 

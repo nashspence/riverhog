@@ -52,6 +52,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [GET /v1/status](../http-operations/get-v1-status.md)
+- [riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.get_ftp_adapter_status](../../riverhog-ftp-adapter-api-client/python/riverhog-ftp-adapter-api-client-riverhogftpadapterclient-get-ftp-adapter-status.md)
 
 ## Governing policies
 
@@ -68,6 +69,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - [cli:riverhog-ftp-adapter](../../../evidence/sources.md#src-303f765bca) — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::_status_command](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py#L395)
 
 ### Machine authority
 

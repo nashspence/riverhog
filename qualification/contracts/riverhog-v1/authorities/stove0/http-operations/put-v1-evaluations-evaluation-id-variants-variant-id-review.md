@@ -19,10 +19,10 @@ Review Evaluation Variant
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-7d6d76bff4"></a>`evaluation_id` | path | yes | type="string" |
-| <a id="s-d5d468b277"></a>`variant_id` | path | yes | type="string" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-7d6d76bff4"></a>`evaluation_id` | path | yes | not declared | type="string" |
+| <a id="s-d5d468b277"></a>`variant_id` | path | yes | not declared | type="string" |
 
 ### <a id="s-f2b96df34f"></a>Request body
 
@@ -30,21 +30,22 @@ Review Evaluation Variant
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-efd76461f6"></a>`200` | Successful Response |
-| <a id="s-a90a718e05"></a>`400` | Bad Request |
-| <a id="s-3b25eb3bf7"></a>`401` | Unauthorized |
-| <a id="s-7cd394e1c8"></a>`403` | Forbidden |
-| <a id="s-009996cdec"></a>`404` | Not Found |
-| <a id="s-34eb7fb837"></a>`409` | Conflict |
-| <a id="s-3c3dc958bd"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-efd76461f6"></a>`200` | Successful Response | application/json | [EvaluationView](../http-schemas/schemas-evaluationview.md) | not declared |
+| <a id="s-a90a718e05"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-3b25eb3bf7"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-7cd394e1c8"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-009996cdec"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-34eb7fb837"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict` |
+| <a id="s-3c3dc958bd"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [stove0 evaluation review](../../stove0-client/cli/stove0-evaluation-review.md)
+- [stove0_api_client.Stove0ApiClient.review_evaluation_variant](../../stove0-api-client/python/stove0-api-client-stove0apiclient-review-evaluation-variant.md)
 
 ### Referenced contract dossiers
 
@@ -66,21 +67,47 @@ Review Evaluation Variant
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:stove0](../../../evidence/sources.md#src-52e6e32124)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/stove0/application/server/src/stove0_api/app.py::create_app.<locals>.review_evaluation_variant](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L936)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "stove0",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "evaluation review",
+      "source": {
+        "line": 455,
+        "module": "stove0_cli.main",
+        "path": "reference/stove0/application/client/src/stove0_cli/main.py",
+        "symbol": "review_evaluation"
+      }
+    }
+  ],
   "cli_commands": [
     "evaluation review"
   ],
   "client": "Stove0ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "stove0_api_client.Stove0ApiClient.review_evaluation_variant",
+      "source": {
+        "line": 429,
+        "module": "stove0_api_client.client",
+        "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py",
+        "symbol": "Stove0ApiClient.review_evaluation_variant"
+      }
+    }
+  ],
   "method": "PUT",
   "operation_id": "review_evaluation_variant",
   "path": "/v1/evaluations/{evaluation_id}/variants/{variant_id}/review",
@@ -89,6 +116,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "operator-projection"
 }
 ```
+
+</details>
 
 ### Machine authority
 

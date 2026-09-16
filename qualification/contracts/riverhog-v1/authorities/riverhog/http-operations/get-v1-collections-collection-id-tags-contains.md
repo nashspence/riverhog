@@ -20,24 +20,24 @@ Collection Contains Tag
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-234c3b9e4a"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-a9d8b50545"></a>`tag` | query | yes | #/components/schemas/CollectionTag |
-| <a id="s-d314b5a767"></a>`revision` | query | yes | type="integer"; minimum=1 |
-| <a id="s-2807a21da2"></a>`tag_set_identity` | query | yes | type="string"; pattern="^[0-9a-f]{64}$" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-234c3b9e4a"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-a9d8b50545"></a>`tag` | query | yes | not declared | [CollectionTag](../http-schemas/schemas-collectiontag.md) |
+| <a id="s-d314b5a767"></a>`revision` | query | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-2807a21da2"></a>`tag_set_identity` | query | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-02989a39c4"></a>`200` | Successful Response |
-| <a id="s-9c209972c1"></a>`400` | Bad Request |
-| <a id="s-33482f9ae5"></a>`401` | Unauthorized |
-| <a id="s-3ea1e0e8fb"></a>`403` | Forbidden |
-| <a id="s-f21bc1a6cd"></a>`404` | Not Found |
-| <a id="s-3d9646a86a"></a>`409` | Conflict |
-| <a id="s-2c1f136096"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-02989a39c4"></a>`200` | Successful Response | application/json | [CollectionTagMembershipOut](../http-schemas/schemas-collectiontagmembershipout.md) | not declared |
+| <a id="s-9c209972c1"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-33482f9ae5"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-3ea1e0e8fb"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-f21bc1a6cd"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-3d9646a86a"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict` |
+| <a id="s-2c1f136096"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -54,6 +54,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 ### Related interface records
 
 - [piggity collection tag contains](../../piggity/cli/piggity-collection-tag-contains.md)
+- [riverhog_client.ApiClient.collection_contains_tag](../../riverhog-client/python/riverhog-client-apiclient-collection-contains-tag.md)
 
 ### Referenced contract dossiers
 
@@ -76,21 +77,47 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/tags.py::collection_contains_tag](../../../../../../riverhog/src/riverhog_api/routers/tags.py#L116)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "collection tag contains",
+      "source": {
+        "line": 1030,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "collection_tag_contains_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "collection tag contains"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.collection_contains_tag",
+      "source": {
+        "line": 2265,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.collection_contains_tag"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "collection_contains_tag",
   "path": "/v1/collections/{collection_id}/tags:contains",
@@ -99,6 +126,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

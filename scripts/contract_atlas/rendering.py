@@ -34,6 +34,7 @@ from .navigation import (
     _relationship_edge_anchor,
     _relationship_node_anchor,
     _relative_link,
+    _repository_source_link,
     _source_anchor,
 )
 from .relationships import _relationship_model
@@ -939,12 +940,18 @@ def _render_atlas(
     )
     for witness in witnesses:
         witness_id = str(witness["id"])
+        witness_anchor = _anchor_id("extent-witness", witness_id)
+        witness_label = (
+            f"[{_md(witness_id)}](#{witness_anchor})"
+            if witness["test_scopes"]
+            else f"{_html_anchor(witness_anchor)}`{_md(witness_id)}`"
+        )
         bound_count = sum(
             witness_id in cast(Sequence[str], link.get("segmented_extent_witnesses", ()))
             for link in cast(Sequence[Mapping[str, object]], trace["extent_sources"])
         )
         source_lines.append(
-            f"| {_html_anchor(_anchor_id('extent-witness', witness_id))}`{_md(witness_id)}` | "
+            f"| {witness_label} | "
             f"{bound_count} | {len(cast(Sequence[str], witness['test_node_ids']))} | "
             + ", ".join(
                 _md(claim.replace("_", " "))
@@ -954,8 +961,19 @@ def _render_atlas(
         )
     source_lines.extend(["", "### Reviewed test scopes", ""])
     for witness in witnesses:
-        for test in cast(Sequence[Mapping[str, str]], witness["test_scopes"]):
-            source_lines.extend([f"- `{_md(test['node_id'])}`: {_md(test['scope'])}", ""])
+        if not witness["test_scopes"]:
+            continue
+        source_lines.extend(
+            [
+                f"#### {_html_anchor(_anchor_id('extent-witness', str(witness['id'])))}"
+                f"{_md(witness['id'])}",
+                "",
+            ]
+        )
+        for test in cast(Sequence[Mapping[str, object]], witness["test_scopes"]):
+            test_source = cast(Mapping[str, object], test["source"])
+            link = _repository_source_link(source_evidence_path, test_source, str(test["node_id"]))
+            source_lines.extend([f"- {link}: {_md(test['scope'])}", ""])
     files[source_evidence_path] = ("\n".join(source_lines).rstrip() + "\n").encode()
 
     authority_registry = cast(Mapping[str, object], trace["authority_registry"])

@@ -20,24 +20,28 @@ Seal Collection Upload Session Provenance Journal
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-ae79c83f69"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-1fabf5b977"></a>`journal_id` | path | yes | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-ae79c83f69"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-1fabf5b977"></a>`journal_id` | path | yes | not declared | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-b95ea8203c"></a>`200` | Successful Response |
-| <a id="s-3641951878"></a>`400` | Bad Request |
-| <a id="s-a827cde3fb"></a>`401` | Unauthorized |
-| <a id="s-1c9d8855bf"></a>`403` | Forbidden |
-| <a id="s-3fec9c4194"></a>`404` | Not Found |
-| <a id="s-f3ffa3dd77"></a>`409` | Conflict |
-| <a id="s-e40181c7bd"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-b95ea8203c"></a>`200` | Successful Response | application/json | [CollectionUploadProvenanceJournalStatusDocument](../http-schemas/schemas-collectionuploadprovenancejournalstatusdocument.md) | not declared |
+| <a id="s-3641951878"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-a827cde3fb"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-1c9d8855bf"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-3fec9c4194"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-f3ffa3dd77"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict` |
+| <a id="s-e40181c7bd"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_client.ApiClient.seal_collection_upload_session_provenance_journal](../../riverhog-client/python/riverhog-client-apiclient-seal-collection-upload-session-provenance-journal.md)
 
 ### Referenced contract dossiers
 
@@ -58,19 +62,35 @@ Seal Collection Upload Session Provenance Journal
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/collections.py::seal_collection_upload_session_provenance_journal](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L381)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "client-only-primitive",
+  "cli_bindings": [],
   "cli_commands": [],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.seal_collection_upload_session_provenance_journal",
+      "source": {
+        "line": 1306,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.seal_collection_upload_session_provenance_journal"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "seal_collection_upload_session_provenance_journal",
   "path": "/v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}/seal",
@@ -79,6 +99,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "canonical-document"
 }
 ```
+
+</details>
 
 ### Machine authority
 

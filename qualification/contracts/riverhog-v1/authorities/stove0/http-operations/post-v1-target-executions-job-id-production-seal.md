@@ -19,21 +19,25 @@ Seal Target Execution Production
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-a6d0f47dfc"></a>`job_id` | path | yes | type="string" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-a6d0f47dfc"></a>`job_id` | path | yes | not declared | type="string" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-3dd5c8a6d0"></a>`200` | Successful Response |
-| <a id="s-4d9f5a330c"></a>`400` | Bad Request |
-| <a id="s-6acb6e5983"></a>`401` | Unauthorized |
-| <a id="s-09302a55de"></a>`403` | Forbidden |
-| <a id="s-ef82909d37"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-3dd5c8a6d0"></a>`200` | Successful Response | application/json | [TargetProductionSealResponse](../http-schemas/schemas-targetproductionsealresponse.md) | not declared |
+| <a id="s-4d9f5a330c"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-6acb6e5983"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-09302a55de"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-ef82909d37"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
+
+### Related interface records
+
+- [stove0_target_client.TargetCallbackClient.seal_target_execution_production](../../stove0-target-client/python/stove0-target-client-targetcallbackclient-seal-target-execution-production.md)
 
 ### Referenced contract dossiers
 
@@ -54,19 +58,35 @@ Seal Target Execution Production
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:stove0](../../../evidence/sources.md#src-52e6e32124)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/stove0/application/server/src/stove0_api/app.py::create_app.<locals>.seal_target_execution_production](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L451)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "stove0",
   "classification": "client-only-primitive",
+  "cli_bindings": [],
   "cli_commands": [],
   "client": "TargetCallbackClient",
+  "client_bindings": [
+    {
+      "public_identity": "stove0_target_client.TargetCallbackClient.seal_target_execution_production",
+      "source": {
+        "line": 265,
+        "module": "stove0_target_client.client",
+        "path": "reference/stove0/packages/target-client/src/stove0_target_client/client.py",
+        "symbol": "TargetCallbackClient.seal_target_execution_production"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "seal_target_execution_production",
   "path": "/v1/target-executions/{job_id}/production/seal",
@@ -75,6 +95,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "canonical-document"
 }
 ```
+
+</details>
 
 ### Machine authority
 

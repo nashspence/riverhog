@@ -29,6 +29,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [piggity local repair](../../piggity/cli/piggity-local-repair.md)
+- [piggity local sync](../../piggity/cli/piggity-local-sync.md)
+- [POST /v1/retrieval-plans/{plan_id}/advance](../../riverhog/http-operations/post-v1-retrieval-plans-plan-id-advance.md)
 - [ApiClient](riverhog-client-apiclient.md)
 
 ## Governing policies
@@ -46,6 +49,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 - [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
+- **Client method:** [packages/riverhog-client/src/riverhog_client/client.py::ApiClient.advance_retrieval_plan](../../../../../../packages/riverhog-client/src/riverhog_client/client.py#L834)
 
 ### Machine authority
 

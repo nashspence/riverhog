@@ -19,27 +19,28 @@ Get Evaluation
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-51f484987a"></a>`evaluation_id` | path | yes | type="string" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-51f484987a"></a>`evaluation_id` | path | yes | not declared | type="string" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-51f1089ac7"></a>`200` | Successful Response |
-| <a id="s-f674f2d69d"></a>`400` | Bad Request |
-| <a id="s-3dc67d834f"></a>`401` | Unauthorized |
-| <a id="s-b1e74d104a"></a>`403` | Forbidden |
-| <a id="s-07e9cb251b"></a>`404` | Not Found |
-| <a id="s-a43942f241"></a>`409` | Conflict |
-| <a id="s-3757f00740"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-51f1089ac7"></a>`200` | Successful Response | application/json | [EvaluationView](../http-schemas/schemas-evaluationview.md) | not declared |
+| <a id="s-f674f2d69d"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-3dc67d834f"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-b1e74d104a"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-07e9cb251b"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-a43942f241"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict` |
+| <a id="s-3757f00740"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [stove0 evaluation show](../../stove0-client/cli/stove0-evaluation-show.md)
+- [stove0_api_client.Stove0ApiClient.get_evaluation](../../stove0-api-client/python/stove0-api-client-stove0apiclient-get-evaluation.md)
 
 ### Referenced contract dossiers
 
@@ -60,21 +61,47 @@ Get Evaluation
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:stove0](../../../evidence/sources.md#src-52e6e32124)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/stove0/application/server/src/stove0_api/app.py::create_app.<locals>.get_evaluation](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L877)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "stove0",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "evaluation show",
+      "source": {
+        "line": 424,
+        "module": "stove0_cli.main",
+        "path": "reference/stove0/application/client/src/stove0_cli/main.py",
+        "symbol": "show_evaluation"
+      }
+    }
+  ],
   "cli_commands": [
     "evaluation show"
   ],
   "client": "Stove0ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "stove0_api_client.Stove0ApiClient.get_evaluation",
+      "source": {
+        "line": 398,
+        "module": "stove0_api_client.client",
+        "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py",
+        "symbol": "Stove0ApiClient.get_evaluation"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "get_evaluation",
   "path": "/v1/evaluations/{evaluation_id}",
@@ -83,6 +110,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "operator-projection"
 }
 ```
+
+</details>
 
 ### Machine authority
 

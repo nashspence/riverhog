@@ -20,24 +20,24 @@ List Archive Copy Jobs
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-6a836ad124"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| <a id="s-c618f326fe"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
-| <a id="s-3eb290e690"></a>`q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
-| <a id="s-19bdc1af5a"></a>`state` | query | no | anyOf=#/components/schemas/ArchiveCopyState \| type="null" |
-| <a id="s-266b97f0ac"></a>`sort` | query | no | $ref="#/components/schemas/ArchiveCopySort" |
-| <a id="s-ce30819930"></a>`order` | query | no | $ref="#/components/schemas/SortOrder" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-6a836ad124"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
+| <a id="s-c618f326fe"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
+| <a id="s-3eb290e690"></a>`q` | query | no | not declared | anyOf=[BrowseQuery](../http-schemas/schemas-browsequery.md) \| type="null" |
+| <a id="s-19bdc1af5a"></a>`state` | query | no | not declared | anyOf=[ArchiveCopyState](../http-schemas/schemas-archivecopystate.md) \| type="null" |
+| <a id="s-266b97f0ac"></a>`sort` | query | no | `"requested_at"` | [ArchiveCopySort](../http-schemas/schemas-archivecopysort.md) |
+| <a id="s-ce30819930"></a>`order` | query | no | `"desc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-74d5af4df6"></a>`200` | Successful Response |
-| <a id="s-bb7683a1a8"></a>`400` | Bad Request |
-| <a id="s-ae23ee0e86"></a>`401` | Unauthorized |
-| <a id="s-8bc663d64b"></a>`403` | Forbidden |
-| <a id="s-1361c6806e"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-74d5af4df6"></a>`200` | Successful Response | application/json | [ArchiveCopyJobListOut](../http-schemas/schemas-archivecopyjoblistout.md) | not declared |
+| <a id="s-bb7683a1a8"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-ae23ee0e86"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-8bc663d64b"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-1361c6806e"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -68,6 +68,7 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Related interface records
 
 - [piggity archive copy list](../../piggity/cli/piggity-archive-copy-list.md)
+- [riverhog_client.ApiClient.list_archive_copy_jobs](../../riverhog-client/python/riverhog-client-apiclient-list-archive-copy-jobs.md)
 
 ### Referenced contract dossiers
 
@@ -95,21 +96,47 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/archive.py::list_archive_copy_jobs](../../../../../../riverhog/src/riverhog_api/routers/archive.py#L59)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "archive copy list",
+      "source": {
+        "line": 3001,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "archive_copy_list_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "archive copy list"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.list_archive_copy_jobs",
+      "source": {
+        "line": 2432,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.list_archive_copy_jobs"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "list_archive_copy_jobs",
   "path": "/v1/archive/copies",
@@ -125,6 +152,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

@@ -51,6 +51,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [POST /v1/sources/{source_id}/flush](../http-operations/post-v1-sources-source-id-flush.md)
+- [riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.flush_ftp_adapter_source](../../riverhog-ftp-adapter-api-client/python/riverhog-ftp-adapter-api-client-riverhogftpadapterclient-flush-ftp-adapter-source.md)
 
 ## Governing policies
 
@@ -67,6 +68,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - [cli:riverhog-ftp-adapter](../../../evidence/sources.md#src-303f765bca) — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::_flush_command](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py#L404)
 
 ### Machine authority
 

@@ -20,12 +20,12 @@ Append Collection Upload Session Provenance Journal
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-19150eead7"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-c08d475e33"></a>`journal_id` | path | yes | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
-| <a id="s-e9674a110d"></a>`Upload-Offset` | header | yes | type="integer"; minimum=0 |
-| <a id="s-c3c2815fa2"></a>`Content-Length` | header | yes | type="integer"; minimum=1; maximum=1048576 |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-19150eead7"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-c08d475e33"></a>`journal_id` | path | yes | not declared | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
+| <a id="s-e9674a110d"></a>`Upload-Offset` | header | yes | not declared | type="integer"; minimum=0 |
+| <a id="s-c3c2815fa2"></a>`Content-Length` | header | yes | not declared | type="integer"; minimum=1; maximum=1048576 |
 
 ### <a id="s-7a66b60cea"></a>Request body
 
@@ -33,16 +33,16 @@ Append Collection Upload Session Provenance Journal
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-14c3eb722c"></a>`200` | Successful Response |
-| <a id="s-de30d6047a"></a>`400` | Bad Request |
-| <a id="s-8245d6d669"></a>`401` | Unauthorized |
-| <a id="s-d6d6d10f2f"></a>`403` | Forbidden |
-| <a id="s-8895a08cc0"></a>`404` | Not Found |
-| <a id="s-cbbd0cae8d"></a>`409` | Conflict |
-| <a id="s-f09b3cb539"></a>`411` | Length Required |
-| <a id="s-5d3d3ad6de"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-14c3eb722c"></a>`200` | Successful Response | application/json | [CollectionUploadProvenanceJournalStatusDocument](../http-schemas/schemas-collectionuploadprovenancejournalstatusdocument.md) | not declared |
+| <a id="s-de30d6047a"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-8245d6d669"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-d6d6d10f2f"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-8895a08cc0"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-cbbd0cae8d"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict` |
+| <a id="s-f09b3cb539"></a>`411` | Length Required | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `length_required` |
+| <a id="s-5d3d3ad6de"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -55,6 +55,10 @@ Shared facts for every subject below: maximum=1048576; minimum=1; reason="schema
 | <a id="s-1ec924e50b"></a>[parameter Content-Length](#s-c3c2815fa2) | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_client.ApiClient.append_collection_upload_session_provenance_journal](../../riverhog-client/python/riverhog-client-apiclient-append-collection-upload-session-provenance-journal.md)
 
 ### Referenced contract dossiers
 
@@ -76,19 +80,35 @@ Shared facts for every subject below: maximum=1048576; minimum=1; reason="schema
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/collections.py::append_collection_upload_session_provenance_journal](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L344)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "client-only-primitive",
+  "cli_bindings": [],
   "cli_commands": [],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.append_collection_upload_session_provenance_journal",
+      "source": {
+        "line": 1278,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.append_collection_upload_session_provenance_journal"
+      }
+    }
+  ],
   "method": "PATCH",
   "operation_id": "append_collection_upload_session_provenance_journal",
   "path": "/v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}",
@@ -97,6 +117,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "canonical-document"
 }
 ```
+
+</details>
 
 ### Machine authority
 

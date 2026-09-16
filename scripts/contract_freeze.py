@@ -2091,6 +2091,70 @@ def _source_owner(projects: list[release_contract.Project], source: Mapping[str,
     return owner.name
 
 
+def _linked_source_ref(value: object) -> dict[str, object]:
+    """Locate a repository callable at the line inspected for this trace."""
+
+    if not callable(value):
+        raise ContractFreezeError("source binding is not callable")
+    definition = inspect.unwrap(value)
+    source: dict[str, object] = dict(_source_ref(definition))
+    if "path" not in source:
+        raise ContractFreezeError(f"callable has no repository source: {source}")
+    source["line"] = inspect.getsourcelines(definition)[1]
+    return source
+
+
+def _operation_trace(external: Mapping[str, object]) -> list[dict[str, object]]:
+    """Bind discovered operations to actual exported clients and command callbacks."""
+
+    python = cast(Mapping[str, Mapping[str, object]], external["python"])
+    exported_classes = {
+        identity: getattr(importlib.import_module(str(item["module"])), str(item["name"]))
+        for identity, item in python.items()
+        if item["unit"] == "export"
+        and cast(Mapping[str, object], item["contract"])["kind"] == "class"
+    }
+    surfaces = {surface.name: surface for surface in operation_qualification.application_surfaces()}
+    records: list[dict[str, object]] = []
+    for operation in operation_qualification.operation_matrix():
+        record = asdict(operation)
+        surface = surfaces[operation.application]
+        client_bindings: list[dict[str, object]] = []
+        if operation.client is not None:
+            client_types = [
+                client for client in surface.client_types if client.__name__ == operation.client
+            ]
+            if len(client_types) != 1:
+                raise ContractFreezeError(f"ambiguous operation client: {operation.operation_id}")
+            client_type = client_types[0]
+            method = next(
+                (
+                    supplement.client_method
+                    for supplement in surface.supplemental_operations
+                    if supplement.operation_id == operation.operation_id
+                ),
+                operation.operation_id,
+            )
+            for identity, exported in exported_classes.items():
+                if exported is not client_type:
+                    continue
+                member = f"{identity}.{method}"
+                client_bindings.append(
+                    {
+                        "public_identity": member,
+                        "source": _linked_source_ref(getattr(client_type, method)),
+                    }
+                )
+        record["client_bindings"] = client_bindings
+        record["cli_bindings"] = [
+            {"command": command, "source": _linked_source_ref(callback)}
+            for command, callback, _has_json in surface.cli_commands
+            if command in operation.cli_commands
+        ]
+        records.append(record)
+    return records
+
+
 def _openapi_trace() -> list[dict[str, object]]:
     traced: list[dict[str, object]] = []
     for surface in operation_qualification.application_surfaces():
@@ -2105,7 +2169,7 @@ def _openapi_trace() -> list[dict[str, object]]:
                     "operation_id": operation_id,
                     "path": path,
                     "methods": sorted(getattr(route, "methods", ()) or ()),
-                    "source": _source_ref(endpoint),
+                    "source": _linked_source_ref(endpoint),
                 }
             )
         traced.append(
@@ -2525,9 +2589,7 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
     python_registry = surface_registries["python_packages"]
     console_script_registry = surface_registries["console_scripts"]
     authority_registry = _authority_registry(projects, projection)
-    operation_records = [
-        asdict(operation) for operation in operation_qualification.operation_matrix()
-    ]
+    operation_records = _operation_trace(external)
     exception_source = (
         CONTRACT_FREEZE_EXCEPTIONS.relative_to(ROOT).as_posix()
         if CONTRACT_FREEZE_EXCEPTIONS.is_relative_to(ROOT)

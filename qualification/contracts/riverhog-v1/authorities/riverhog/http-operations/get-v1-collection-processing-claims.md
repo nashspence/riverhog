@@ -20,24 +20,24 @@ List Processing Claims
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-2321207667"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| <a id="s-37f200ec6c"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
-| <a id="s-96a5f47301"></a>`state` | query | no | anyOf=type="string"; enum=["active","settled","retiring","abandoned","released"] \| type="null" |
-| <a id="s-6308dc537d"></a>`sort` | query | no | type="string"; enum=["created_at","updated_at","expires_at","state","work_id","execution_id"] |
-| <a id="s-fa342e9615"></a>`order` | query | no | type="string"; enum=["asc","desc"] |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-2321207667"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
+| <a id="s-37f200ec6c"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
+| <a id="s-96a5f47301"></a>`state` | query | no | not declared | anyOf=type="string"; enum=["active","settled","retiring","abandoned","released"] \| type="null" |
+| <a id="s-6308dc537d"></a>`sort` | query | no | `"updated_at"` | type="string"; enum=["created_at","updated_at","expires_at","state","work_id","execution_id"] |
+| <a id="s-fa342e9615"></a>`order` | query | no | `"desc"` | type="string"; enum=["asc","desc"] |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-c7dbec4dcf"></a>`200` | Successful Response |
-| <a id="s-2ab72efb00"></a>`400` | Bad Request |
-| <a id="s-69b1b770d1"></a>`401` | Unauthorized |
-| <a id="s-ff02bb11b9"></a>`403` | Forbidden |
-| <a id="s-d4893dfda8"></a>`409` | Conflict |
-| <a id="s-911a4536fc"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-c7dbec4dcf"></a>`200` | Successful Response | application/json | [ProcessingClaimPageDocument](../http-schemas/schemas-processingclaimpagedocument.md) | not declared |
+| <a id="s-2ab72efb00"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-69b1b770d1"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-ff02bb11b9"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-d4893dfda8"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `invalid_state` |
+| <a id="s-911a4536fc"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -87,19 +87,37 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/workflows.py::list_processing_claims](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L240)
+
+**Accounting gap:** [riverhog_client.ApiClient.list_processing_claims](../../../../../../packages/riverhog-client/src/riverhog_client/workflows.py#L225) is callable through the maintained client but has no Python contract dossier in the current freeze.
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "client-only-primitive",
+  "cli_bindings": [],
   "cli_commands": [],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.list_processing_claims",
+      "source": {
+        "line": 225,
+        "module": "riverhog_client.workflows",
+        "path": "packages/riverhog-client/src/riverhog_client/workflows.py",
+        "symbol": "CollectionWorkflowMethods.list_processing_claims"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "list_processing_claims",
   "path": "/v1/collection-processing-claims",
@@ -115,6 +133,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "canonical-document"
 }
 ```
+
+</details>
 
 ### Machine authority
 

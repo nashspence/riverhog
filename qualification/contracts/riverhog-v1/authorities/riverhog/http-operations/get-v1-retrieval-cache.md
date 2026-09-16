@@ -20,19 +20,20 @@ Retrieval Cache Status
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-27e211ffbb"></a>`200` | Successful Response |
-| <a id="s-9233e64928"></a>`400` | Bad Request |
-| <a id="s-bad2ef208e"></a>`401` | Unauthorized |
-| <a id="s-62c1707d91"></a>`403` | Forbidden |
-| <a id="s-7bfbb4ccc4"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-27e211ffbb"></a>`200` | Successful Response | application/json | [RetrievalCacheStatusOut](../http-schemas/schemas-retrievalcachestatusout.md) | not declared |
+| <a id="s-9233e64928"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-bad2ef208e"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-62c1707d91"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-7bfbb4ccc4"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [piggity retrieval cache status](../../piggity/cli/piggity-retrieval-cache-status.md)
+- [riverhog_client.ApiClient.retrieval_cache_status](../../riverhog-client/python/riverhog-client-apiclient-retrieval-cache-status.md)
 
 ### Referenced contract dossiers
 
@@ -53,21 +54,47 @@ Retrieval Cache Status
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/retrieval.py::retrieval_cache_status](../../../../../../riverhog/src/riverhog_api/routers/retrieval.py#L55)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "retrieval cache status",
+      "source": {
+        "line": 2767,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "retrieval_cache_status_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "retrieval cache status"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.retrieval_cache_status",
+      "source": {
+        "line": 898,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.retrieval_cache_status"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "retrieval_cache_status",
   "path": "/v1/retrieval-cache",
@@ -76,6 +103,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

@@ -46,6 +46,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [GET /v1/admin/scheduler](../../stove0/http-operations/get-v1-admin-scheduler.md)
+- [stove0_api_client.Stove0ApiClient.scheduler_status](../../stove0-api-client/python/stove0-api-client-stove0apiclient-scheduler-status.md)
 
 ## Governing policies
 
@@ -62,6 +63,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - [cli:stove0](../../../evidence/sources.md#src-6203ae7d88) — `reference/stove0/application/client/src/stove0_cli/main.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/stove0/application/client/src/stove0_cli/main.py::scheduler_status](../../../../../../reference/stove0/application/client/src/stove0_cli/main.py#L489)
 
 ### Machine authority
 

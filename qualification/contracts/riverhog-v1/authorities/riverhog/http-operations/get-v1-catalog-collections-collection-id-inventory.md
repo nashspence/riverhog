@@ -20,25 +20,25 @@ Get Portable Collection Inventory
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-d4fa758cae"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-d8cb38ecac"></a>`cursor` | query | no | anyOf=type="string"; minLength=1; maxLength=8192 \| type="null" |
-| <a id="s-86388b9ad1"></a>`limit` | query | no | type="integer"; minimum=1; maximum=1000 |
-| <a id="s-7620688610"></a>`If-Match` | header | no | anyOf=type="string"; pattern="^\"[0-9a-f]{64}\"$" \| type="null" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-d4fa758cae"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-d8cb38ecac"></a>`cursor` | query | no | not declared | anyOf=type="string"; minLength=1; maxLength=8192 \| type="null" |
+| <a id="s-86388b9ad1"></a>`limit` | query | no | `100` | type="integer"; minimum=1; maximum=1000 |
+| <a id="s-7620688610"></a>`If-Match` | header | no | not declared | anyOf=type="string"; pattern="^\"[0-9a-f]{64}\"$" \| type="null" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-4c657abee9"></a>`200` | Successful Response |
-| <a id="s-0acee23acf"></a>`400` | Bad Request |
-| <a id="s-693d94ba8f"></a>`401` | Unauthorized |
-| <a id="s-f1be810f81"></a>`403` | Forbidden |
-| <a id="s-68d71c6c15"></a>`404` | Not Found |
-| <a id="s-b8b057a58d"></a>`412` | Precondition Failed |
-| <a id="s-3158a7f072"></a>`428` | Precondition Required |
-| <a id="s-7940c10130"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-4c657abee9"></a>`200` | Successful Response | application/json | [PortableCollectionInventoryPage](../http-schemas/schemas-portablecollectioninventorypage.md) | not declared |
+| <a id="s-0acee23acf"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-693d94ba8f"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-f1be810f81"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-68d71c6c15"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-b8b057a58d"></a>`412` | Precondition Failed | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `precondition_failed` |
+| <a id="s-3158a7f072"></a>`428` | Precondition Required | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `precondition_required` |
+| <a id="s-7940c10130"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -72,6 +72,7 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - [piggity local add](../../piggity/cli/piggity-local-add.md)
 - [piggity local repair](../../piggity/cli/piggity-local-repair.md)
 - [piggity local sync](../../piggity/cli/piggity-local-sync.md)
+- [riverhog_client.ApiClient.get_portable_collection_inventory](../../riverhog-client/python/riverhog-client-apiclient-get-portable-collection-inventory.md)
 
 ### Referenced contract dossiers
 
@@ -94,23 +95,67 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/portable_collections.py::get_portable_collection_inventory](../../../../../../riverhog/src/riverhog_api/routers/portable_collections.py#L22)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "standard-tool/protocol",
+  "cli_bindings": [
+    {
+      "command": "local add",
+      "source": {
+        "line": 902,
+        "module": "piggity.local",
+        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "symbol": "add_collection"
+      }
+    },
+    {
+      "command": "local sync",
+      "source": {
+        "line": 1101,
+        "module": "piggity.local",
+        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "symbol": "sync"
+      }
+    },
+    {
+      "command": "local repair",
+      "source": {
+        "line": 1122,
+        "module": "piggity.local",
+        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "symbol": "repair"
+      }
+    }
+  ],
   "cli_commands": [
     "local add",
     "local repair",
     "local sync"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.get_portable_collection_inventory",
+      "source": {
+        "line": 769,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.get_portable_collection_inventory"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "get_portable_collection_inventory",
   "path": "/v1/catalog/collections/{collection_id}/inventory",
@@ -125,6 +170,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "canonical-document"
 }
 ```
+
+</details>
 
 ### Machine authority
 

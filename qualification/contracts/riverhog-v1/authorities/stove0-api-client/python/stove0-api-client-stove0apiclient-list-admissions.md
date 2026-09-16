@@ -29,6 +29,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [stove0 admission list](../../stove0-client/cli/stove0-admission-list.md)
+- [GET /v1/admissions](../../stove0/http-operations/get-v1-admissions.md)
 - [Stove0ApiClient](stove0-api-client-stove0apiclient.md)
 
 ## Governing policies
@@ -46,6 +48,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 - [python:stove0-api-client:stove0_api_client](../../../evidence/sources.md#src-5d52ac5998) — `reference/stove0/packages/api-client/src/stove0_api_client/__init__.py`
+- **Client method:** [reference/stove0/packages/api-client/src/stove0_api_client/client.py::Stove0ApiClient.list_admissions](../../../../../../reference/stove0/packages/api-client/src/stove0_api_client/client.py#L182)
 
 ### Machine authority
 

@@ -20,20 +20,20 @@ Status
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-702a3a9511"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| <a id="s-9a0968104e"></a>`page_token` | query | no | anyOf=type="string"; minLength=1; maxLength=120 \| type="null" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-702a3a9511"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
+| <a id="s-9a0968104e"></a>`page_token` | query | no | not declared | anyOf=type="string"; minLength=1; maxLength=120 \| type="null" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-de7ccd665a"></a>`200` | Successful Response |
-| <a id="s-ce6b0b2450"></a>`400` | Bad Request |
-| <a id="s-ca2c31b304"></a>`401` | Unauthorized |
-| <a id="s-fa00d2585f"></a>`403` | Forbidden |
-| <a id="s-8fcac3eae8"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-de7ccd665a"></a>`200` | Successful Response | application/json | type="object"; additional keys=`additionalProperties` | not declared |
+| <a id="s-ce6b0b2450"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-ca2c31b304"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-fa00d2585f"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-8fcac3eae8"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -73,6 +73,7 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Related interface records
 
 - [riverhog-ftp-adapter status](../cli/riverhog-ftp-adapter-status.md)
+- [riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.get_ftp_adapter_status](../../riverhog-ftp-adapter-api-client/python/riverhog-ftp-adapter-api-client-riverhogftpadapterclient-get-ftp-adapter-status.md)
 
 ### Referenced contract dossiers
 
@@ -95,21 +96,47 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29a) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29a)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::create_app.<locals>.status](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py#L270)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog-ftp-adapter",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "status",
+      "source": {
+        "line": 395,
+        "module": "riverhog_ftp_adapter.app",
+        "path": "reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py",
+        "symbol": "_status_command"
+      }
+    }
+  ],
   "cli_commands": [
     "status"
   ],
   "client": "RiverhogFtpAdapterClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.get_ftp_adapter_status",
+      "source": {
+        "line": 88,
+        "module": "riverhog_ftp_adapter_api_client.client",
+        "path": "reference/riverhog/ingress/ftp-api-client/src/riverhog_ftp_adapter_api_client/client.py",
+        "symbol": "RiverhogFtpAdapterClient.get_ftp_adapter_status"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "get_ftp_adapter_status",
   "path": "/v1/status",
@@ -125,6 +152,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

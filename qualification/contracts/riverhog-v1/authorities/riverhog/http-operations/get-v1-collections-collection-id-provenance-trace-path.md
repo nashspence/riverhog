@@ -20,24 +20,24 @@ Trace Collection File Provenance
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-a876758119"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-908b33e7a9"></a>`path` | path | yes | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
-| <a id="s-11242a91f3"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| <a id="s-23428b14d3"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-a876758119"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-908b33e7a9"></a>`path` | path | yes | not declared | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
+| <a id="s-11242a91f3"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
+| <a id="s-23428b14d3"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-88d1d82fa6"></a>`200` | Successful Response |
-| <a id="s-842198879d"></a>`400` | Bad Request |
-| <a id="s-a55cf0c15e"></a>`401` | Unauthorized |
-| <a id="s-735c2a55c2"></a>`403` | Forbidden |
-| <a id="s-16f9f7c008"></a>`404` | Not Found |
-| <a id="s-7a969e01c8"></a>`409` | Conflict |
-| <a id="s-d6e7e00c31"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-88d1d82fa6"></a>`200` | Successful Response | application/json | [CollectionFileProvenanceTraceOut](../http-schemas/schemas-collectionfileprovenancetraceout.md) | not declared |
+| <a id="s-842198879d"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-a55cf0c15e"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-735c2a55c2"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-16f9f7c008"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-7a969e01c8"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `invalid_state` |
+| <a id="s-d6e7e00c31"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -69,6 +69,7 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Related interface records
 
 - [piggity collection provenance trace](../../piggity/cli/piggity-collection-provenance-trace.md)
+- [riverhog_client.ApiClient.trace_collection_file_provenance](../../riverhog-client/python/riverhog-client-apiclient-trace-collection-file-provenance.md)
 
 ### Referenced contract dossiers
 
@@ -92,21 +93,47 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/provenance.py::trace_collection_file_provenance](../../../../../../riverhog/src/riverhog_api/routers/provenance.py#L136)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "collection provenance trace",
+      "source": {
+        "line": 2635,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "provenance_trace_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "collection provenance trace"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.trace_collection_file_provenance",
+      "source": {
+        "line": 1667,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.trace_collection_file_provenance"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "trace_collection_file_provenance",
   "path": "/v1/collections/{collection_id}/provenance/trace/{path}",
@@ -122,6 +149,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

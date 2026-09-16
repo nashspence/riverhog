@@ -20,20 +20,20 @@ Get Collection Derivation
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-724fe221a4"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-724fe221a4"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-d364f203ce"></a>`200` | Successful Response |
-| <a id="s-306074cea3"></a>`400` | Bad Request |
-| <a id="s-3745d9154a"></a>`401` | Unauthorized |
-| <a id="s-1e2db56e2b"></a>`403` | Forbidden |
-| <a id="s-81424d9d89"></a>`404` | Not Found |
-| <a id="s-9da70667e3"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-d364f203ce"></a>`200` | Successful Response | application/json | [CollectionDerivationResponseDocument](../http-schemas/schemas-collectionderivationresponsedocument.md) | not declared |
+| <a id="s-306074cea3"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-3745d9154a"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-1e2db56e2b"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-81424d9d89"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-9da70667e3"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
@@ -56,19 +56,37 @@ Get Collection Derivation
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/workflows.py::get_collection_derivation](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L723)
+
+**Accounting gap:** [riverhog_client.ApiClient.get_collection_derivation](../../../../../../packages/riverhog-client/src/riverhog_client/workflows.py#L672) is callable through the maintained client but has no Python contract dossier in the current freeze.
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "client-only-primitive",
+  "cli_bindings": [],
   "cli_commands": [],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.get_collection_derivation",
+      "source": {
+        "line": 672,
+        "module": "riverhog_client.workflows",
+        "path": "packages/riverhog-client/src/riverhog_client/workflows.py",
+        "symbol": "CollectionWorkflowMethods.get_collection_derivation"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "get_collection_derivation",
   "path": "/v1/collections/{collection_id}/derivation",
@@ -77,6 +95,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "canonical-document"
 }
 ```
+
+</details>
 
 ### Machine authority
 

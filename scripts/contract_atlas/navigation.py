@@ -6,7 +6,9 @@ import hashlib
 import posixpath
 from collections import defaultdict
 from collections.abc import Callable, Mapping, Sequence
+from pathlib import PurePosixPath
 from typing import cast
+from urllib.parse import quote
 
 from .model import (
     ATLAS_DIRECTORY,
@@ -37,6 +39,48 @@ def _assign_dossiers(elements: list[dict[str, object]]) -> None:
 
 def _relative_link(source: str, target: str) -> str:
     return posixpath.relpath(target, posixpath.dirname(source))
+
+
+def _repository_source_target(location: Mapping[str, object]) -> str:
+    path = location.get("path")
+    line = location.get("line")
+    if (
+        not isinstance(path, str)
+        or not path
+        or not PurePosixPath(path).parts
+        or PurePosixPath(path).is_absolute()
+        or ".." in PurePosixPath(path).parts
+        or PurePosixPath(path).parts[0] in {".venv", ".git"}
+        or not isinstance(line, int)
+        or isinstance(line, bool)
+        or line < 1
+    ):
+        raise ContractAtlasError(f"invalid repository source location: {location}")
+    # Atlas paths are relative to qualification/contracts. Relative repository
+    # links retain the revision currently being viewed on GitHub.
+    return f"../../{quote(path, safe='/')}#L{line}"
+
+
+def _repository_source_link(document: str, location: Mapping[str, object], label: str) -> str:
+    return f"[{_md(label)}]({_relative_link(document, _repository_source_target(location))})"
+
+
+def _repository_source_targets(trace: Mapping[str, object]) -> set[str]:
+    targets: set[str] = set()
+
+    def visit(value: object) -> None:
+        if isinstance(value, Mapping):
+            source = value.get("source")
+            if isinstance(source, Mapping) and "line" in source:
+                targets.add(_repository_source_target(source))
+            for child in value.values():
+                visit(child)
+        elif isinstance(value, list):
+            for child in value:
+                visit(child)
+
+    visit(trace)
+    return targets
 
 
 def _anchor_id(kind: str, identity: str) -> str:

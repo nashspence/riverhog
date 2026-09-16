@@ -20,9 +20,9 @@ Record Processing Claim Dispositions
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-93b6d490bc"></a>`claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-93b6d490bc"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
 
 ### <a id="s-387236627b"></a>Request body
 
@@ -30,15 +30,15 @@ Record Processing Claim Dispositions
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-73aee5c4da"></a>`200` | Successful Response |
-| <a id="s-7d82752a4e"></a>`400` | Bad Request |
-| <a id="s-930c78a4c9"></a>`401` | Unauthorized |
-| <a id="s-2d6253a32f"></a>`403` | Forbidden |
-| <a id="s-288924eb27"></a>`404` | Not Found |
-| <a id="s-8d76c77c85"></a>`409` | Conflict |
-| <a id="s-d28f32772e"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-73aee5c4da"></a>`200` | Successful Response | application/json | [ArtifactDispositionSetDocument](../http-schemas/schemas-artifactdispositionsetdocument.md) | not declared |
+| <a id="s-7d82752a4e"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-930c78a4c9"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-2d6253a32f"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-288924eb27"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-8d76c77c85"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict`, `invalid_state` |
+| <a id="s-d28f32772e"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -73,19 +73,37 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/workflows.py::record_processing_claim_dispositions](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L460)
+
+**Accounting gap:** [riverhog_client.ApiClient.record_processing_claim_dispositions](../../../../../../packages/riverhog-client/src/riverhog_client/workflows.py#L493) is callable through the maintained client but has no Python contract dossier in the current freeze.
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "client-only-primitive",
+  "cli_bindings": [],
   "cli_commands": [],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.record_processing_claim_dispositions",
+      "source": {
+        "line": 493,
+        "module": "riverhog_client.workflows",
+        "path": "packages/riverhog-client/src/riverhog_client/workflows.py",
+        "symbol": "CollectionWorkflowMethods.record_processing_claim_dispositions"
+      }
+    }
+  ],
   "method": "PUT",
   "operation_id": "record_processing_claim_dispositions",
   "path": "/v1/collection-processing-claims/{claim_id}/derivation/dispositions",
@@ -94,6 +112,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "canonical-document"
 }
 ```
+
+</details>
 
 ### Machine authority
 

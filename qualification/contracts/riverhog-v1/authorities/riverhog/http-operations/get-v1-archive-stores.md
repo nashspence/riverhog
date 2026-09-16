@@ -20,23 +20,23 @@ List Archive Stores
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-d658ce8d36"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| <a id="s-3e606657b2"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
-| <a id="s-9a1b243da7"></a>`q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
-| <a id="s-eeee1e8f4f"></a>`sort` | query | no | $ref="#/components/schemas/ArchiveStoreSort" |
-| <a id="s-b046437824"></a>`order` | query | no | $ref="#/components/schemas/SortOrder" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-d658ce8d36"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
+| <a id="s-3e606657b2"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
+| <a id="s-9a1b243da7"></a>`q` | query | no | not declared | anyOf=[BrowseQuery](../http-schemas/schemas-browsequery.md) \| type="null" |
+| <a id="s-eeee1e8f4f"></a>`sort` | query | no | `"store"` | [ArchiveStoreSort](../http-schemas/schemas-archivestoresort.md) |
+| <a id="s-b046437824"></a>`order` | query | no | `"asc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-6ed52937e5"></a>`200` | Successful Response |
-| <a id="s-810a17eadf"></a>`400` | Bad Request |
-| <a id="s-0fc0ad608f"></a>`401` | Unauthorized |
-| <a id="s-4fb402e923"></a>`403` | Forbidden |
-| <a id="s-be8b7f20b2"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-6ed52937e5"></a>`200` | Successful Response | application/json | [ArchiveStoreListOut](../http-schemas/schemas-archivestorelistout.md) | not declared |
+| <a id="s-810a17eadf"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-0fc0ad608f"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-4fb402e923"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-be8b7f20b2"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -67,6 +67,7 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Related interface records
 
 - [piggity archive store list](../../piggity/cli/piggity-archive-store-list.md)
+- [riverhog_client.ApiClient.list_archive_stores](../../riverhog-client/python/riverhog-client-apiclient-list-archive-stores.md)
 
 ### Referenced contract dossiers
 
@@ -93,21 +94,47 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/archive.py::list_archive_stores](../../../../../../riverhog/src/riverhog_api/routers/archive.py#L178)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "archive store list",
+      "source": {
+        "line": 2865,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "archive_store_list_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "archive store list"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.list_archive_stores",
+      "source": {
+        "line": 2030,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.list_archive_stores"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "list_archive_stores",
   "path": "/v1/archive/stores",
@@ -123,6 +150,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

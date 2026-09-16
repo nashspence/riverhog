@@ -20,9 +20,9 @@ Add Collection Tag
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-8ea57df8d0"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-8ea57df8d0"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
 
 ### <a id="s-4543d27edd"></a>Request body
 
@@ -30,22 +30,23 @@ Add Collection Tag
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-293ae74875"></a>`200` | Successful Response |
-| <a id="s-bd782dd9ae"></a>`400` | Bad Request |
-| <a id="s-34df859566"></a>`401` | Unauthorized |
-| <a id="s-d1c114371c"></a>`403` | Forbidden |
-| <a id="s-7bf0f4f631"></a>`404` | Not Found |
-| <a id="s-e6a8959322"></a>`409` | Conflict |
-| <a id="s-d2053e05da"></a>`412` | Precondition Failed |
-| <a id="s-6e8ee18cc7"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-293ae74875"></a>`200` | Successful Response | application/json | [CollectionTagMutationOut](../http-schemas/schemas-collectiontagmutationout.md) | not declared |
+| <a id="s-bd782dd9ae"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-34df859566"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-d1c114371c"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-7bf0f4f631"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-e6a8959322"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict` |
+| <a id="s-d2053e05da"></a>`412` | Precondition Failed | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `precondition_failed` |
+| <a id="s-6e8ee18cc7"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [piggity collection tag add](../../piggity/cli/piggity-collection-tag-add.md)
+- [riverhog_client.ApiClient.add_collection_tag](../../riverhog-client/python/riverhog-client-apiclient-add-collection-tag.md)
 
 ### Referenced contract dossiers
 
@@ -67,21 +68,47 @@ Add Collection Tag
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/tags.py::add_collection_tag](../../../../../../riverhog/src/riverhog_api/routers/tags.py#L139)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "collection tag add",
+      "source": {
+        "line": 1057,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "collection_tag_add_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "collection tag add"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.add_collection_tag",
+      "source": {
+        "line": 2284,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.add_collection_tag"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "add_collection_tag",
   "path": "/v1/collections/{collection_id}/tags:add",
@@ -90,6 +117,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

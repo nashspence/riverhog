@@ -915,11 +915,14 @@ def _link_operation_qualification(
 ) -> None:
     http: dict[tuple[str, str], dict[str, object]] = {}
     cli: dict[tuple[str, str], dict[str, object]] = {}
+    python: dict[str, dict[str, object]] = {}
     for element in elements:
         details = cast(Mapping[str, object], element.get("details", {}))
         operation_id = details.get("operation_id")
         if element["interface"] == "http-operations" and operation_id:
             http[(str(element["authority"]), str(operation_id))] = element
+        elif element["interface"] == "python":
+            python[str(details["public_identity"])] = element
         elif element["interface"] == "cli":
             command_parts = cast(Sequence[str], details.get("command_path", ()))
             command = " ".join(command_parts)
@@ -949,6 +952,14 @@ def _link_operation_qualification(
         cast(list[str], http_element["source_authority_ids"]).append("operations:operation-matrix")
         details = cast(dict[str, object], http_element["details"])
         details["qualification_key"] = list(key)
+        related = [http_element]
+        for binding in cast(Sequence[Mapping[str, object]], record["client_bindings"]):
+            public_identity = str(binding["public_identity"])
+            if public_identity not in python:
+                # The callable binding is still useful evidence. The dossier
+                # renders this projection gap explicitly instead of inventing a unit.
+                continue
+            related.append(python[public_identity])
         for command in cast(Sequence[str], record.get("cli_commands", ())):
             command_authority = cli_authority.get(key[0], key[0])
             cli_element = cli.get((command_authority, command))
@@ -973,8 +984,11 @@ def _link_operation_qualification(
                 raise ContractAtlasError(
                     f"operation qualification references an unknown CLI command: {key}: {command}"
                 )
-            cast(list[str], http_element["related_element_ids"]).append(str(cli_element["id"]))
-            cast(list[str], cli_element["related_element_ids"]).append(str(http_element["id"]))
+            related.append(cli_element)
+        for member in related:
+            cast(list[str], member["related_element_ids"]).extend(
+                str(other["id"]) for other in related if other["interface"] != member["interface"]
+            )
     for element in elements:
         element["source_authority_ids"] = sorted(
             set(cast(Sequence[str], element["source_authority_ids"]))

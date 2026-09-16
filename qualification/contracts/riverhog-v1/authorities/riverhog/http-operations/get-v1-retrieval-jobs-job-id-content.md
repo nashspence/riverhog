@@ -20,29 +20,29 @@ Download Retrieval File
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-4ac607f909"></a>`job_id` | path | yes | type="string" |
-| <a id="s-0f44a5997d"></a>`collection_id` | query | yes | #/components/schemas/CollectionIdParameter |
-| <a id="s-c2dded5d77"></a>`path` | query | yes | type="string" |
-| <a id="s-b26dd4f5ac"></a>`If-Match` | header | yes | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
-| <a id="s-2a974ee7d8"></a>`Range` | header | no | anyOf=type="string" \| type="null" |
-| <a id="s-a7a12d14ae"></a>`If-None-Match` | header | no | anyOf=type="string" \| type="null" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-4ac607f909"></a>`job_id` | path | yes | not declared | type="string" |
+| <a id="s-0f44a5997d"></a>`collection_id` | query | yes | not declared | [CollectionIdParameter](../http-schemas/schemas-collectionidparameter.md) |
+| <a id="s-c2dded5d77"></a>`path` | query | yes | not declared | type="string" |
+| <a id="s-b26dd4f5ac"></a>`If-Match` | header | yes | not declared | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
+| <a id="s-2a974ee7d8"></a>`Range` | header | no | not declared | anyOf=type="string" \| type="null" |
+| <a id="s-a7a12d14ae"></a>`If-None-Match` | header | no | not declared | anyOf=type="string" \| type="null" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-8aae1aafce"></a>`200` | Successful Response |
-| <a id="s-96028b3e13"></a>`400` | Bad Request |
-| <a id="s-8c8a839936"></a>`401` | Unauthorized |
-| <a id="s-34190f6e02"></a>`403` | Forbidden |
-| <a id="s-ef41c9f9ca"></a>`404` | Not Found |
-| <a id="s-7fc74353a8"></a>`409` | Conflict |
-| <a id="s-eb7df68430"></a>`412` | Precondition Failed |
-| <a id="s-fe427dd012"></a>`416` | Requested Range Not Satisfiable |
-| <a id="s-d380cee0b5"></a>`429` | Too Many Requests |
-| <a id="s-fd7dcc0ebc"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-8aae1aafce"></a>`200` | Successful Response | — | not declared | not declared |
+| <a id="s-96028b3e13"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-8c8a839936"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-34190f6e02"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-ef41c9f9ca"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-7fc74353a8"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `invalid_state` |
+| <a id="s-eb7df68430"></a>`412` | Precondition Failed | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `precondition_failed` |
+| <a id="s-fe427dd012"></a>`416` | Requested Range Not Satisfiable | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `invalid_range` |
+| <a id="s-d380cee0b5"></a>`429` | Too Many Requests | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `download_allowance_exceeded` |
+| <a id="s-fd7dcc0ebc"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
@@ -50,6 +50,7 @@ Download Retrieval File
 
 - [piggity local repair](../../piggity/cli/piggity-local-repair.md)
 - [piggity local sync](../../piggity/cli/piggity-local-sync.md)
+- [riverhog_client.ApiClient.download_retrieval_file](../../riverhog-client/python/riverhog-client-apiclient-download-retrieval-file.md)
 
 ### Referenced contract dossiers
 
@@ -70,22 +71,57 @@ Download Retrieval File
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/retrieval.py::download_retrieval_file](../../../../../../riverhog/src/riverhog_api/routers/retrieval.py#L341)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "client-only-primitive",
+  "cli_bindings": [
+    {
+      "command": "local sync",
+      "source": {
+        "line": 1101,
+        "module": "piggity.local",
+        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "symbol": "sync"
+      }
+    },
+    {
+      "command": "local repair",
+      "source": {
+        "line": 1122,
+        "module": "piggity.local",
+        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "symbol": "repair"
+      }
+    }
+  ],
   "cli_commands": [
     "local repair",
     "local sync"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.download_retrieval_file",
+      "source": {
+        "line": 971,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.download_retrieval_file"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "download_retrieval_file",
   "path": "/v1/retrieval-jobs/{job_id}/content",
@@ -94,6 +130,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "stream-or-empty"
 }
 ```
+
+</details>
 
 ### Machine authority
 

@@ -20,21 +20,21 @@ List Processing Claim Outcomes
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-149540dba9"></a>`claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
-| <a id="s-000a0f0754"></a>`authority_sha256` | query | yes | type="string"; pattern="^[0-9a-f]{64}$" |
-| <a id="s-86f7a2f33a"></a>`start_ordinal` | query | no | type="integer"; minimum=0 |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-149540dba9"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-000a0f0754"></a>`authority_sha256` | query | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-86f7a2f33a"></a>`start_ordinal` | query | no | `0` | type="integer"; minimum=0 |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-16288a2f24"></a>`200` | Successful Response |
-| <a id="s-6c6ccbcf73"></a>`400` | Bad Request |
-| <a id="s-413489ab16"></a>`401` | Unauthorized |
-| <a id="s-f150ebf170"></a>`403` | Forbidden |
-| <a id="s-41df1bfb19"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-16288a2f24"></a>`200` | Successful Response | application/json | [ProcessingOutcomePageDocument](../http-schemas/schemas-processingoutcomepagedocument.md) | not declared |
+| <a id="s-6c6ccbcf73"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-413489ab16"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-f150ebf170"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-41df1bfb19"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -84,19 +84,37 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/workflows.py::list_processing_claim_outcomes](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L653)
+
+**Accounting gap:** [riverhog_client.ApiClient.list_processing_claim_outcomes](../../../../../../packages/riverhog-client/src/riverhog_client/workflows.py#L627) is callable through the maintained client but has no Python contract dossier in the current freeze.
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "client-only-primitive",
+  "cli_bindings": [],
   "cli_commands": [],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.list_processing_claim_outcomes",
+      "source": {
+        "line": 627,
+        "module": "riverhog_client.workflows",
+        "path": "packages/riverhog-client/src/riverhog_client/workflows.py",
+        "symbol": "CollectionWorkflowMethods.list_processing_claim_outcomes"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "list_processing_claim_outcomes",
   "path": "/v1/collection-processing-claims/{claim_id}/outcomes",
@@ -111,6 +129,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "canonical-document"
 }
 ```
+
+</details>
 
 ### Machine authority
 

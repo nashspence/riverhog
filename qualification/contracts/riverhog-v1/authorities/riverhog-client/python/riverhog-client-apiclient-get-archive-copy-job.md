@@ -29,6 +29,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [piggity archive copy show](../../piggity/cli/piggity-archive-copy-show.md)
+- [piggity archive copy watch](../../piggity/cli/piggity-archive-copy-watch.md)
+- [GET /v1/archive/copies/{collection_id}/{destination_store}](../../riverhog/http-operations/get-v1-archive-copies-collection-id-destination-store.md)
 - [ApiClient](riverhog-client-apiclient.md)
 
 ## Governing policies
@@ -46,6 +49,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 - [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
+- **Client method:** [packages/riverhog-client/src/riverhog_client/client.py::ApiClient.get_archive_copy_job](../../../../../../packages/riverhog-client/src/riverhog_client/client.py#L2461)
 
 ### Machine authority
 

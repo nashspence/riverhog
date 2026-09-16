@@ -29,6 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [GET /health/ready](../../riverhog-ftp-adapter/http-operations/get-health-ready.md)
 - [RiverhogFtpAdapterClient](riverhog-ftp-adapter-api-client-riverhogftpadapterclient.md)
 
 ## Governing policies
@@ -46,6 +47,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 - [python:riverhog-ftp-adapter-api-client:riverhog_ftp_adapter_api_client](../../../evidence/sources.md#src-a83ae875ae) — `reference/riverhog/ingress/ftp-api-client/src/riverhog_ftp_adapter_api_client/__init__.py`
+- **Client method:** [reference/riverhog/ingress/ftp-api-client/src/riverhog_ftp_adapter_api_client/client.py::RiverhogFtpAdapterClient.ftp_adapter_health_ready](../../../../../../reference/riverhog/ingress/ftp-api-client/src/riverhog_ftp_adapter_api_client/client.py#L83)
 
 ### Machine authority
 

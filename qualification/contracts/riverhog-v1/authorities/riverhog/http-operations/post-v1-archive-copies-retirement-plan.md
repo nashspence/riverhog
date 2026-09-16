@@ -24,21 +24,22 @@ Plan Archive Copy Retirement
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-75066bfe2a"></a>`200` | Successful Response |
-| <a id="s-f96efd060b"></a>`400` | Bad Request |
-| <a id="s-50ba041d14"></a>`401` | Unauthorized |
-| <a id="s-338f4f888d"></a>`403` | Forbidden |
-| <a id="s-1e1bb0b74b"></a>`404` | Not Found |
-| <a id="s-c79f703bb8"></a>`409` | Conflict |
-| <a id="s-a454625b80"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-75066bfe2a"></a>`200` | Successful Response | application/json | [ArchiveCopyRetirementPlanOut](../http-schemas/schemas-archivecopyretirementplanout.md) | not declared |
+| <a id="s-f96efd060b"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-50ba041d14"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-338f4f888d"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-1e1bb0b74b"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-c79f703bb8"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `invalid_state` |
+| <a id="s-a454625b80"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [piggity archive retire](../../piggity/cli/piggity-archive-retire.md)
+- [riverhog_client.ApiClient.plan_archive_copy_retirement](../../riverhog-client/python/riverhog-client-apiclient-plan-archive-copy-retirement.md)
 
 ### Referenced contract dossiers
 
@@ -60,21 +61,47 @@ Plan Archive Copy Retirement
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/archive.py::plan_archive_copy_retirement](../../../../../../riverhog/src/riverhog_api/routers/archive.py#L141)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "archive retire",
+      "source": {
+        "line": 3110,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "archive_retire_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "archive retire"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.plan_archive_copy_retirement",
+      "source": {
+        "line": 2487,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.plan_archive_copy_retirement"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "plan_archive_copy_retirement",
   "path": "/v1/archive/copies/retirement-plan",
@@ -83,6 +110,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

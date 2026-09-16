@@ -20,20 +20,20 @@ Get Collection Provenance Verification
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-fe54297ab2"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-fe54297ab2"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-d1f90bc6b1"></a>`200` | Successful Response |
-| <a id="s-4d7e0340dc"></a>`400` | Bad Request |
-| <a id="s-dd22622f62"></a>`401` | Unauthorized |
-| <a id="s-06f1a4742b"></a>`403` | Forbidden |
-| <a id="s-eec8024348"></a>`404` | Not Found |
-| <a id="s-de46d6f4a9"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-d1f90bc6b1"></a>`200` | Successful Response | application/json | [CollectionProvenanceVerificationJobOut](../http-schemas/schemas-collectionprovenanceverificationjobout.md) | not declared |
+| <a id="s-4d7e0340dc"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-dd22622f62"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-06f1a4742b"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-eec8024348"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-de46d6f4a9"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
@@ -41,6 +41,7 @@ Get Collection Provenance Verification
 
 - [piggity collection provenance verification-show](../../piggity/cli/piggity-collection-provenance-verification-show.md)
 - [piggity collection provenance verify](../../piggity/cli/piggity-collection-provenance-verify.md)
+- [riverhog_client.ApiClient.get_collection_provenance_verification](../../riverhog-client/python/riverhog-client-apiclient-get-collection-provenance-verification.md)
 
 ### Referenced contract dossiers
 
@@ -61,22 +62,57 @@ Get Collection Provenance Verification
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/provenance.py::get_collection_provenance_verification](../../../../../../riverhog/src/riverhog_api/routers/provenance.py#L318)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "collection provenance verify",
+      "source": {
+        "line": 2706,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "provenance_verify_cmd"
+      }
+    },
+    {
+      "command": "collection provenance verification-show",
+      "source": {
+        "line": 2725,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "provenance_verification_show_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "collection provenance verification-show",
     "collection provenance verify"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.get_collection_provenance_verification",
+      "source": {
+        "line": 1940,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.get_collection_provenance_verification"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "get_collection_provenance_verification",
   "path": "/v1/collections/{collection_id}/provenance/verification",
@@ -85,6 +121,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

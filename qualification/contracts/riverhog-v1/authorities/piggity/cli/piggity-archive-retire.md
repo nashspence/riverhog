@@ -74,6 +74,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [POST /v1/archive/copies/retire](../../riverhog/http-operations/post-v1-archive-copies-retire.md)
 - [POST /v1/archive/copies/retirement-plan](../../riverhog/http-operations/post-v1-archive-copies-retirement-plan.md)
+- [riverhog_client.ApiClient.plan_archive_copy_retirement](../../riverhog-client/python/riverhog-client-apiclient-plan-archive-copy-retirement.md)
+- [riverhog_client.ApiClient.retire_archive_copy](../../riverhog-client/python/riverhog-client-apiclient-retire-archive-copy.md)
 
 ## Governing policies
 
@@ -91,6 +93,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [cli:piggity](../../../evidence/sources.md#src-094022231f) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::archive_retire_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L3110)
 
 ### Machine authority
 

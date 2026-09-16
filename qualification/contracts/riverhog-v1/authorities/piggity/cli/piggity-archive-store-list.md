@@ -75,6 +75,7 @@ Shared facts for every subject below: minimum=1
 ### Related interface records
 
 - [GET /v1/archive/stores](../../riverhog/http-operations/get-v1-archive-stores.md)
+- [riverhog_client.ApiClient.list_archive_stores](../../riverhog-client/python/riverhog-client-apiclient-list-archive-stores.md)
 
 ## Governing policies
 
@@ -92,6 +93,7 @@ Shared facts for every subject below: minimum=1
 
 - [cli:piggity](../../../evidence/sources.md#src-094022231f) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::archive_store_list_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L2865)
 
 ### Machine authority
 

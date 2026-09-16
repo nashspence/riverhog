@@ -82,6 +82,7 @@ Repeated `tag` accepts at most **100** occurrences, through [GET /v1/collections
 ### Related interface records
 
 - [GET /v1/collections](../../riverhog/http-operations/get-v1-collections.md)
+- [riverhog_client.ApiClient.list_collections](../../riverhog-client/python/riverhog-client-apiclient-list-collections.md)
 
 ## Governing policies
 
@@ -99,6 +100,7 @@ Repeated `tag` accepts at most **100** occurrences, through [GET /v1/collections
 
 - [cli:piggity](../../../evidence/sources.md#src-094022231f) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::collection_list_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L2095)
 
 ### Machine authority
 

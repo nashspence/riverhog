@@ -97,6 +97,15 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 - [POST /v1/collection-upload-sessions/{collection_id}/raw-part-digests](../../riverhog/http-operations/post-v1-collection-upload-sessions-collection-id-raw-part-digests.md)
 - [POST /v1/collection-upload-sessions](../../riverhog/http-operations/post-v1-collection-upload-sessions.md)
 - [PUT /v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}](../../riverhog/http-operations/put-v1-collection-upload-sessions-collection-id-volumes-volume-id-units-unit.md)
+- [riverhog_client.ApiClient.acquire_collection_upload_session_work](../../riverhog-client/python/riverhog-client-apiclient-acquire-collection-upload-session-work.md)
+- [riverhog_client.ApiClient.add_collection_upload_session_tags](../../riverhog-client/python/riverhog-client-apiclient-add-collection-upload-session-tags.md)
+- [riverhog_client.ApiClient.complete_collection_upload_session](../../riverhog-client/python/riverhog-client-apiclient-complete-collection-upload-session.md)
+- [riverhog_client.ApiClient.create_or_resume_collection_upload_session](../../riverhog-client/python/riverhog-client-apiclient-create-or-resume-collection-upload-session.md)
+- [riverhog_client.ApiClient.get_collection_upload_session](../../riverhog-client/python/riverhog-client-apiclient-get-collection-upload-session.md)
+- [riverhog_client.ApiClient.get_collection_upload_session_unit](../../riverhog-client/python/riverhog-client-apiclient-get-collection-upload-session-unit.md)
+- [riverhog_client.ApiClient.put_collection_upload_session_unit](../../riverhog-client/python/riverhog-client-apiclient-put-collection-upload-session-unit.md)
+- [riverhog_client.ApiClient.register_collection_upload_session_files](../../riverhog-client/python/riverhog-client-apiclient-register-collection-upload-session-files.md)
+- [riverhog_client.ApiClient.register_collection_upload_session_raw_part_digests](../../riverhog-client/python/riverhog-client-apiclient-register-collection-upload-session-raw-part-digests.md)
 
 ## Governing policies
 
@@ -115,6 +124,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [cli:piggity](../../../evidence/sources.md#src-094022231f) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::upload_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L2170)
 
 ### Machine authority
 

@@ -19,11 +19,15 @@ Health Live
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-ab22712980"></a>`200` | Successful Response |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-ab22712980"></a>`200` | Successful Response | application/json | [HealthResponse](../http-schemas/schemas-healthresponse.md) | not declared |
 
 ## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.ftp_adapter_health_live](../../riverhog-ftp-adapter-api-client/python/riverhog-ftp-adapter-api-client-riverhogftpadapterclient-ftp-adapter-health-live.md)
 
 ### Referenced contract dossiers
 
@@ -43,19 +47,35 @@ Health Live
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29a) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29a)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::create_app.<locals>.health_live](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py#L243)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog-ftp-adapter",
   "classification": "standard-tool/protocol",
+  "cli_bindings": [],
   "cli_commands": [],
   "client": "RiverhogFtpAdapterClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.ftp_adapter_health_live",
+      "source": {
+        "line": 80,
+        "module": "riverhog_ftp_adapter_api_client.client",
+        "path": "reference/riverhog/ingress/ftp-api-client/src/riverhog_ftp_adapter_api_client/client.py",
+        "symbol": "RiverhogFtpAdapterClient.ftp_adapter_health_live"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "ftp_adapter_health_live",
   "path": "/health/live",
@@ -64,6 +84,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

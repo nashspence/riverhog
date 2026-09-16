@@ -71,6 +71,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [GET /v1/collections/{collection_id}/tags:contains](../../riverhog/http-operations/get-v1-collections-collection-id-tags-contains.md)
 - [GET /v1/collections/{collection_id}](../../riverhog/http-operations/get-v1-collections-collection-id.md)
+- [riverhog_client.ApiClient.collection_contains_tag](../../riverhog-client/python/riverhog-client-apiclient-collection-contains-tag.md)
+- [riverhog_client.ApiClient.get_collection](../../riverhog-client/python/riverhog-client-apiclient-get-collection.md)
 
 ## Governing policies
 
@@ -88,6 +90,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [cli:piggity](../../../evidence/sources.md#src-094022231f) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::collection_tag_contains_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L1030)
 
 ### Machine authority
 

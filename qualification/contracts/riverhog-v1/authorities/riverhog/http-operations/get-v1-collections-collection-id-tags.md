@@ -20,25 +20,25 @@ List Collection Tags
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-61d6bf74c3"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-d879f8ea42"></a>`revision` | query | yes | type="integer"; minimum=1 |
-| <a id="s-a651f24cea"></a>`tag_set_identity` | query | yes | type="string"; pattern="^[0-9a-f]{64}$" |
-| <a id="s-9d44d0e0b3"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| <a id="s-8ca4af851e"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-61d6bf74c3"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-d879f8ea42"></a>`revision` | query | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-a651f24cea"></a>`tag_set_identity` | query | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-9d44d0e0b3"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
+| <a id="s-8ca4af851e"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-55b4e0fcfa"></a>`200` | Successful Response |
-| <a id="s-91b9e58165"></a>`400` | Bad Request |
-| <a id="s-04b4e54794"></a>`401` | Unauthorized |
-| <a id="s-177afcce12"></a>`403` | Forbidden |
-| <a id="s-60b919b53b"></a>`404` | Not Found |
-| <a id="s-1968e4d755"></a>`409` | Conflict |
-| <a id="s-7daee174eb"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-55b4e0fcfa"></a>`200` | Successful Response | application/json | [CollectionTagListOut](../http-schemas/schemas-collectiontaglistout.md) | not declared |
+| <a id="s-91b9e58165"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-04b4e54794"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-177afcce12"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-60b919b53b"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-1968e4d755"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict` |
+| <a id="s-7daee174eb"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -71,6 +71,7 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - [piggity local add](../../piggity/cli/piggity-local-add.md)
 - [piggity local repair](../../piggity/cli/piggity-local-repair.md)
 - [piggity local sync](../../piggity/cli/piggity-local-sync.md)
+- [riverhog_client.ApiClient.list_collection_tags](../../riverhog-client/python/riverhog-client-apiclient-list-collection-tags.md)
 
 ### Referenced contract dossiers
 
@@ -94,17 +95,59 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/tags.py::list_collection_tags](../../../../../../riverhog/src/riverhog_api/routers/tags.py#L66)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "collection tag list",
+      "source": {
+        "line": 998,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "collection_tag_list_cmd"
+      }
+    },
+    {
+      "command": "local add",
+      "source": {
+        "line": 902,
+        "module": "piggity.local",
+        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "symbol": "add_collection"
+      }
+    },
+    {
+      "command": "local sync",
+      "source": {
+        "line": 1101,
+        "module": "piggity.local",
+        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "symbol": "sync"
+      }
+    },
+    {
+      "command": "local repair",
+      "source": {
+        "line": 1122,
+        "module": "piggity.local",
+        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "symbol": "repair"
+      }
+    }
+  ],
   "cli_commands": [
     "collection tag list",
     "local add",
@@ -112,6 +155,17 @@ This generated record links maintained client, CLI, response-authority, and prov
     "local sync"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.list_collection_tags",
+      "source": {
+        "line": 2244,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.list_collection_tags"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "list_collection_tags",
   "path": "/v1/collections/{collection_id}/tags",
@@ -126,6 +180,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

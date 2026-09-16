@@ -20,25 +20,25 @@ List Retrieval Plan Files
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-f9f5dd3ea1"></a>`plan_id` | path | yes | type="string" |
-| <a id="s-b7b9300a2d"></a>`start_ordinal` | query | no | type="integer"; minimum=0; maximum=10000 |
-| <a id="s-ee956f2b24"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| <a id="s-44a185df9a"></a>`If-Match` | header | yes | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-f9f5dd3ea1"></a>`plan_id` | path | yes | not declared | type="string" |
+| <a id="s-b7b9300a2d"></a>`start_ordinal` | query | no | `0` | type="integer"; minimum=0; maximum=10000 |
+| <a id="s-ee956f2b24"></a>`page_size` | query | no | `100` | type="integer"; minimum=1; maximum=100 |
+| <a id="s-44a185df9a"></a>`If-Match` | header | yes | not declared | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-85f358c0bc"></a>`200` | Successful Response |
-| <a id="s-7badd60fa1"></a>`400` | Bad Request |
-| <a id="s-9015f8bd0a"></a>`401` | Unauthorized |
-| <a id="s-06ec61c8b6"></a>`403` | Forbidden |
-| <a id="s-99f3ea6246"></a>`404` | Not Found |
-| <a id="s-1ef560b954"></a>`409` | Conflict |
-| <a id="s-df924e03b9"></a>`412` | Precondition Failed |
-| <a id="s-533383f4a4"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-85f358c0bc"></a>`200` | Successful Response | application/json | [RetrievalPlanFilePageOut](../http-schemas/schemas-retrievalplanfilepageout.md) | not declared |
+| <a id="s-7badd60fa1"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-9015f8bd0a"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-06ec61c8b6"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-99f3ea6246"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-1ef560b954"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `invalid_state` |
+| <a id="s-df924e03b9"></a>`412` | Precondition Failed | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `precondition_failed` |
+| <a id="s-533383f4a4"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -71,6 +71,7 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 - [piggity local repair](../../piggity/cli/piggity-local-repair.md)
 - [piggity local sync](../../piggity/cli/piggity-local-sync.md)
+- [riverhog_client.ApiClient.list_retrieval_plan_files](../../riverhog-client/python/riverhog-client-apiclient-list-retrieval-plan-files.md)
 
 ### Referenced contract dossiers
 
@@ -93,22 +94,57 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/retrieval.py::list_retrieval_plan_files](../../../../../../riverhog/src/riverhog_api/routers/retrieval.py#L211)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "client-only-primitive",
+  "cli_bindings": [
+    {
+      "command": "local sync",
+      "source": {
+        "line": 1101,
+        "module": "piggity.local",
+        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "symbol": "sync"
+      }
+    },
+    {
+      "command": "local repair",
+      "source": {
+        "line": 1122,
+        "module": "piggity.local",
+        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "symbol": "repair"
+      }
+    }
+  ],
   "cli_commands": [
     "local repair",
     "local sync"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.list_retrieval_plan_files",
+      "source": {
+        "line": 841,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.list_retrieval_plan_files"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "list_retrieval_plan_files",
   "path": "/v1/retrieval-plans/{plan_id}/files",
@@ -122,6 +158,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

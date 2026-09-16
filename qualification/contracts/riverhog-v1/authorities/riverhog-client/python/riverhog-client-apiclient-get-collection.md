@@ -29,6 +29,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [piggity collection describe](../../piggity/cli/piggity-collection-describe.md)
+- [piggity collection show](../../piggity/cli/piggity-collection-show.md)
+- [piggity collection tag add](../../piggity/cli/piggity-collection-tag-add.md)
+- [piggity collection tag contains](../../piggity/cli/piggity-collection-tag-contains.md)
+- [piggity collection tag list](../../piggity/cli/piggity-collection-tag-list.md)
+- [piggity collection tag remove](../../piggity/cli/piggity-collection-tag-remove.md)
+- [piggity local add](../../piggity/cli/piggity-local-add.md)
+- [piggity local repair](../../piggity/cli/piggity-local-repair.md)
+- [piggity local sync](../../piggity/cli/piggity-local-sync.md)
+- [GET /v1/collections/{collection_id}](../../riverhog/http-operations/get-v1-collections-collection-id.md)
 - [ApiClient](riverhog-client-apiclient.md)
 
 ## Governing policies
@@ -46,6 +56,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 - [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
+- **Client method:** [packages/riverhog-client/src/riverhog_client/client.py::ApiClient.get_collection](../../../../../../packages/riverhog-client/src/riverhog_client/client.py#L1572)
 
 ### Machine authority
 

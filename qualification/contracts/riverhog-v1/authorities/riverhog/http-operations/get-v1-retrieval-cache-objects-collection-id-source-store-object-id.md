@@ -20,28 +20,29 @@ Get Retrieval Cache Object
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-3f640503ff"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-b5fc534559"></a>`source_store` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
-| <a id="s-847eae74a7"></a>`object_id` | path | yes | type="string" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-3f640503ff"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-b5fc534559"></a>`source_store` | path | yes | not declared | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| <a id="s-847eae74a7"></a>`object_id` | path | yes | not declared | type="string" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-ffc0a1dc71"></a>`200` | Successful Response |
-| <a id="s-dff249924e"></a>`400` | Bad Request |
-| <a id="s-8a8490528c"></a>`401` | Unauthorized |
-| <a id="s-c757eebef1"></a>`403` | Forbidden |
-| <a id="s-610fc23789"></a>`404` | Not Found |
-| <a id="s-948f582d70"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-ffc0a1dc71"></a>`200` | Successful Response | application/json | [RetrievalCacheObjectOut](../http-schemas/schemas-retrievalcacheobjectout.md) | not declared |
+| <a id="s-dff249924e"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-8a8490528c"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-c757eebef1"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-610fc23789"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-948f582d70"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [piggity retrieval cache show](../../piggity/cli/piggity-retrieval-cache-show.md)
+- [riverhog_client.ApiClient.get_retrieval_cache_object](../../riverhog-client/python/riverhog-client-apiclient-get-retrieval-cache-object.md)
 
 ### Referenced contract dossiers
 
@@ -62,21 +63,47 @@ Get Retrieval Cache Object
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/retrieval.py::get_retrieval_cache_object](../../../../../../riverhog/src/riverhog_api/routers/retrieval.py#L130)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "retrieval cache show",
+      "source": {
+        "line": 2850,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "retrieval_cache_show_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "retrieval cache show"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.get_retrieval_cache_object",
+      "source": {
+        "line": 956,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.get_retrieval_cache_object"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "get_retrieval_cache_object",
   "path": "/v1/retrieval-cache/objects/{collection_id}/{source_store}/{object_id}",
@@ -85,6 +112,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

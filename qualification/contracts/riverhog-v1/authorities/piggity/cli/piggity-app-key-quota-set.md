@@ -68,6 +68,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Related interface records
 
 - [PUT /v1/apps/{app}/keys/{key_id}/download-quota](../../riverhog/http-operations/put-v1-apps-app-keys-key-id-download-quota.md)
+- [riverhog_client.ApiClient.set_app_key_download_quota](../../riverhog-client/python/riverhog-client-apiclient-set-app-key-download-quota.md)
 
 ## Governing policies
 
@@ -85,6 +86,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [cli:piggity](../../../evidence/sources.md#src-094022231f) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::app_key_quota_set_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L1365)
 
 ### Machine authority
 

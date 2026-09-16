@@ -20,13 +20,13 @@ Run Pass
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-52ad3c0e19"></a>`200` | Successful Response |
-| <a id="s-5adeebb411"></a>`400` | Bad Request |
-| <a id="s-d23416f258"></a>`401` | Unauthorized |
-| <a id="s-2d6c5f3aff"></a>`403` | Forbidden |
-| <a id="s-3a833d8f38"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-52ad3c0e19"></a>`200` | Successful Response | application/json | type="object"; additional keys=`additionalProperties` | not declared |
+| <a id="s-5adeebb411"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-d23416f258"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-2d6c5f3aff"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-3a833d8f38"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -43,6 +43,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 ### Related interface records
 
 - [riverhog-ftp-adapter run](../cli/riverhog-ftp-adapter-run.md)
+- [riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.run_ftp_adapter_pass](../../riverhog-ftp-adapter-api-client/python/riverhog-ftp-adapter-api-client-riverhogftpadapterclient-run-ftp-adapter-pass.md)
 
 ### Referenced contract dossiers
 
@@ -63,21 +64,47 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29a) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29a)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::create_app.<locals>.run_pass](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py#L283)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog-ftp-adapter",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "run",
+      "source": {
+        "line": 389,
+        "module": "riverhog_ftp_adapter.app",
+        "path": "reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py",
+        "symbol": "_run_command"
+      }
+    }
+  ],
   "cli_commands": [
     "run"
   ],
   "client": "RiverhogFtpAdapterClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.run_ftp_adapter_pass",
+      "source": {
+        "line": 99,
+        "module": "riverhog_ftp_adapter_api_client.client",
+        "path": "reference/riverhog/ingress/ftp-api-client/src/riverhog_ftp_adapter_api_client/client.py",
+        "symbol": "RiverhogFtpAdapterClient.run_ftp_adapter_pass"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "run_ftp_adapter_pass",
   "path": "/v1/run",
@@ -86,6 +113,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

@@ -23,21 +23,22 @@ Create Work
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-bc8a3b692a"></a>`201` | Successful Response |
-| <a id="s-91b5b5e2ec"></a>`400` | Bad Request |
-| <a id="s-b690a7d530"></a>`401` | Unauthorized |
-| <a id="s-0a5928f843"></a>`403` | Forbidden |
-| <a id="s-563a5450db"></a>`404` | Not Found |
-| <a id="s-cb81ab1c0b"></a>`409` | Conflict |
-| <a id="s-3bdbaf0871"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-bc8a3b692a"></a>`201` | Successful Response | application/json | [WorkView](../http-schemas/schemas-workview.md) | not declared |
+| <a id="s-91b5b5e2ec"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-b690a7d530"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-0a5928f843"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-563a5450db"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-cb81ab1c0b"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict` |
+| <a id="s-3bdbaf0871"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [stove0 work create](../../stove0-client/cli/stove0-work-create.md)
+- [stove0_api_client.Stove0ApiClient.create_work](../../stove0-api-client/python/stove0-api-client-stove0apiclient-create-work.md)
 
 ### Referenced contract dossiers
 
@@ -59,21 +60,47 @@ Create Work
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:stove0](../../../evidence/sources.md#src-52e6e32124)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/stove0/application/server/src/stove0_api/app.py::create_app.<locals>.create_work](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L700)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "stove0",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "work create",
+      "source": {
+        "line": 295,
+        "module": "stove0_cli.main",
+        "path": "reference/stove0/application/client/src/stove0_cli/main.py",
+        "symbol": "create_work"
+      }
+    }
+  ],
   "cli_commands": [
     "work create"
   ],
   "client": "Stove0ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "stove0_api_client.Stove0ApiClient.create_work",
+      "source": {
+        "line": 255,
+        "module": "stove0_api_client.client",
+        "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py",
+        "symbol": "Stove0ApiClient.create_work"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "create_work",
   "path": "/v1/work",
@@ -82,6 +109,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "operator-projection"
 }
 ```
+
+</details>
 
 ### Machine authority
 

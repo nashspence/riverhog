@@ -72,6 +72,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [POST /v1/collection-upload-sessions/{collection_id}/discard-plan](../../riverhog/http-operations/post-v1-collection-upload-sessions-collection-id-discard-plan.md)
 - [POST /v1/collection-upload-sessions/{collection_id}/discard](../../riverhog/http-operations/post-v1-collection-upload-sessions-collection-id-discard.md)
+- [riverhog_client.ApiClient.discard_collection_upload](../../riverhog-client/python/riverhog-client-apiclient-discard-collection-upload.md)
+- [riverhog_client.ApiClient.plan_collection_upload_discard](../../riverhog-client/python/riverhog-client-apiclient-plan-collection-upload-discard.md)
 
 ## Governing policies
 
@@ -89,6 +91,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [cli:piggity](../../../evidence/sources.md#src-094022231f) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::upload_discard_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L2424)
 
 ### Machine authority
 

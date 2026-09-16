@@ -20,28 +20,28 @@ List App Key Access
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-34884d05d9"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| <a id="s-0c1b73e009"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
-| <a id="s-9c2c7f379a"></a>`sort` | query | no | $ref="#/components/schemas/ApplicationAccessSort" |
-| <a id="s-bb3990152c"></a>`order` | query | no | $ref="#/components/schemas/SortOrder" |
-| <a id="s-a8d34e4650"></a>`q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
-| <a id="s-8c4d8992cd"></a>`app` | query | no | anyOf=#/components/schemas/ApplicationName \| type="null" |
-| <a id="s-1db5767afc"></a>`key` | query | no | anyOf=#/components/schemas/ApplicationKeyId \| type="null" |
-| <a id="s-a728d4ed13"></a>`permission` | query | no | anyOf=#/components/schemas/ApplicationPermission \| type="null" |
-| <a id="s-581adbcf51"></a>`resource` | query | no | anyOf=#/components/schemas/ApplicationResource \| type="null" |
-| <a id="s-92d75808e9"></a>`active` | query | no | anyOf=type="boolean" \| type="null" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-34884d05d9"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
+| <a id="s-0c1b73e009"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
+| <a id="s-9c2c7f379a"></a>`sort` | query | no | `"permission"` | [ApplicationAccessSort](../http-schemas/schemas-applicationaccesssort.md) |
+| <a id="s-bb3990152c"></a>`order` | query | no | `"asc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
+| <a id="s-a8d34e4650"></a>`q` | query | no | not declared | anyOf=[BrowseQuery](../http-schemas/schemas-browsequery.md) \| type="null" |
+| <a id="s-8c4d8992cd"></a>`app` | query | no | not declared | anyOf=[ApplicationName](../http-schemas/schemas-applicationname.md) \| type="null" |
+| <a id="s-1db5767afc"></a>`key` | query | no | not declared | anyOf=[ApplicationKeyId](../http-schemas/schemas-applicationkeyid.md) \| type="null" |
+| <a id="s-a728d4ed13"></a>`permission` | query | no | not declared | anyOf=[ApplicationPermission](../http-schemas/schemas-applicationpermission.md) \| type="null" |
+| <a id="s-581adbcf51"></a>`resource` | query | no | not declared | anyOf=[ApplicationResource](../http-schemas/schemas-applicationresource.md) \| type="null" |
+| <a id="s-92d75808e9"></a>`active` | query | no | not declared | anyOf=type="boolean" \| type="null" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-9a0e80f83f"></a>`200` | Successful Response |
-| <a id="s-94ffa37439"></a>`400` | Bad Request |
-| <a id="s-070b17e6f3"></a>`401` | Unauthorized |
-| <a id="s-dd33089161"></a>`403` | Forbidden |
-| <a id="s-fd31092711"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-9a0e80f83f"></a>`200` | Successful Response | application/json | [AppAccessListOut](../http-schemas/schemas-appaccesslistout.md) | not declared |
+| <a id="s-94ffa37439"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-070b17e6f3"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-dd33089161"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-fd31092711"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -72,6 +72,7 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Related interface records
 
 - [piggity app key access list](../../piggity/cli/piggity-app-key-access-list.md)
+- [riverhog_client.ApiClient.list_app_key_access](../../riverhog-client/python/riverhog-client-apiclient-list-app-key-access.md)
 
 ### Referenced contract dossiers
 
@@ -102,21 +103,47 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/apps.py::list_app_key_access](../../../../../../riverhog/src/riverhog_api/routers/apps.py#L119)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "app key access list",
+      "source": {
+        "line": 1233,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "app_key_access_list_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "app key access list"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.list_app_key_access",
+      "source": {
+        "line": 2148,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.list_app_key_access"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "list_app_key_access",
   "path": "/v1/app-key-access",
@@ -132,6 +159,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

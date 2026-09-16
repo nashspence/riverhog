@@ -24,15 +24,15 @@ Create Or Resume Processing Claim
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-1a7f39cecc"></a>`200` | Successful Response |
-| <a id="s-2702385e59"></a>`400` | Bad Request |
-| <a id="s-4407627fc0"></a>`401` | Unauthorized |
-| <a id="s-76adc32432"></a>`403` | Forbidden |
-| <a id="s-db68694f14"></a>`404` | Not Found |
-| <a id="s-c03e23d464"></a>`409` | Conflict |
-| <a id="s-0591f37fc9"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-1a7f39cecc"></a>`200` | Successful Response | application/json | [ProcessingClaimDocument](../http-schemas/schemas-processingclaimdocument.md) | not declared |
+| <a id="s-2702385e59"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-4407627fc0"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-76adc32432"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-db68694f14"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-c03e23d464"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict`, `invalid_state` |
+| <a id="s-0591f37fc9"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
@@ -56,19 +56,37 @@ Create Or Resume Processing Claim
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/workflows.py::create_or_resume_processing_claim](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L68)
+
+**Accounting gap:** [riverhog_client.ApiClient.create_or_resume_processing_claim](../../../../../../packages/riverhog-client/src/riverhog_client/workflows.py#L121) is callable through the maintained client but has no Python contract dossier in the current freeze.
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "client-only-primitive",
+  "cli_bindings": [],
   "cli_commands": [],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.create_or_resume_processing_claim",
+      "source": {
+        "line": 121,
+        "module": "riverhog_client.workflows",
+        "path": "packages/riverhog-client/src/riverhog_client/workflows.py",
+        "symbol": "CollectionWorkflowMethods.create_or_resume_processing_claim"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "create_or_resume_processing_claim",
   "path": "/v1/collection-processing-claims",
@@ -77,6 +95,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "canonical-document"
 }
 ```
+
+</details>
 
 ### Machine authority
 

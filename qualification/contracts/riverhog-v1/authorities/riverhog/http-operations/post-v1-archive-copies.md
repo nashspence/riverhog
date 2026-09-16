@@ -24,21 +24,22 @@ Create Or Resume Archive Copy
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-39d8493e84"></a>`200` | Successful Response |
-| <a id="s-b7745610eb"></a>`400` | Bad Request |
-| <a id="s-ad6df6f94e"></a>`401` | Unauthorized |
-| <a id="s-1ce05e5dcf"></a>`403` | Forbidden |
-| <a id="s-b417964ab7"></a>`404` | Not Found |
-| <a id="s-cc6d320143"></a>`409` | Conflict |
-| <a id="s-3a188b5f67"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-39d8493e84"></a>`200` | Successful Response | application/json | [ArchiveCopyJobOut](../http-schemas/schemas-archivecopyjobout.md) | not declared |
+| <a id="s-b7745610eb"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-ad6df6f94e"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-1ce05e5dcf"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-b417964ab7"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-cc6d320143"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict`, `invalid_state` |
+| <a id="s-3a188b5f67"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [piggity archive copy start](../../piggity/cli/piggity-archive-copy-start.md)
+- [riverhog_client.ApiClient.create_or_resume_archive_copy](../../riverhog-client/python/riverhog-client-apiclient-create-or-resume-archive-copy.md)
 
 ### Referenced contract dossiers
 
@@ -60,21 +61,47 @@ Create Or Resume Archive Copy
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/archive.py::create_or_resume_archive_copy](../../../../../../riverhog/src/riverhog_api/routers/archive.py#L41)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "archive copy start",
+      "source": {
+        "line": 2969,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "archive_copy_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "archive copy start"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.create_or_resume_archive_copy",
+      "source": {
+        "line": 2405,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.create_or_resume_archive_copy"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "create_or_resume_archive_copy",
   "path": "/v1/archive/copies",
@@ -83,6 +110,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

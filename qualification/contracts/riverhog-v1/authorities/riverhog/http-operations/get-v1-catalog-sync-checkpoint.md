@@ -20,19 +20,20 @@ Create Catalog Sync Checkpoint
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-d00c372b8d"></a>`200` | Successful Response |
-| <a id="s-ddbf280258"></a>`400` | Bad Request |
-| <a id="s-333d129fc5"></a>`401` | Unauthorized |
-| <a id="s-df041cd847"></a>`403` | Forbidden |
-| <a id="s-40b0712f12"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-d00c372b8d"></a>`200` | Successful Response | application/json | [CatalogSyncCheckpoint](../http-schemas/schemas-catalogsynccheckpoint.md) | not declared |
+| <a id="s-ddbf280258"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-333d129fc5"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-df041cd847"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-40b0712f12"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [piggity catalog-sync checkpoint](../../piggity/cli/piggity-catalog-sync-checkpoint.md)
+- [riverhog_client.ApiClient.create_catalog_sync_checkpoint](../../riverhog-client/python/riverhog-client-apiclient-create-catalog-sync-checkpoint.md)
 
 ### Referenced contract dossiers
 
@@ -53,21 +54,47 @@ Create Catalog Sync Checkpoint
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/catalog_sync.py::create_catalog_sync_checkpoint](../../../../../../riverhog/src/riverhog_api/routers/catalog_sync.py#L30)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "client-only-primitive",
+  "cli_bindings": [
+    {
+      "command": "catalog-sync checkpoint",
+      "source": {
+        "line": 770,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "catalog_sync_checkpoint_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "catalog-sync checkpoint"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.create_catalog_sync_checkpoint",
+      "source": {
+        "line": 734,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.create_catalog_sync_checkpoint"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "create_catalog_sync_checkpoint",
   "path": "/v1/catalog-sync/checkpoint",
@@ -76,6 +103,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "canonical-document"
 }
 ```
+
+</details>
 
 ### Machine authority
 

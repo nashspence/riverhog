@@ -19,19 +19,20 @@ List Recipes
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-a3267f057b"></a>`200` | Successful Response |
-| <a id="s-cee290a15f"></a>`400` | Bad Request |
-| <a id="s-553f3580e8"></a>`401` | Unauthorized |
-| <a id="s-4a2af01f18"></a>`403` | Forbidden |
-| <a id="s-f1ddbd3b59"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-a3267f057b"></a>`200` | Successful Response | application/json | [RecipeCatalogView](../http-schemas/schemas-recipecatalogview.md) | not declared |
+| <a id="s-cee290a15f"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-553f3580e8"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-4a2af01f18"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-f1ddbd3b59"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [stove0 recipe list](../../stove0-client/cli/stove0-recipe-list.md)
+- [stove0_api_client.Stove0ApiClient.list_recipes](../../stove0-api-client/python/stove0-api-client-stove0apiclient-list-recipes.md)
 
 ### Referenced contract dossiers
 
@@ -52,21 +53,47 @@ List Recipes
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:stove0](../../../evidence/sources.md#src-52e6e32124)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/stove0/application/server/src/stove0_api/app.py::create_app.<locals>.list_recipes](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L547)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "stove0",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "recipe list",
+      "source": {
+        "line": 169,
+        "module": "stove0_cli.main",
+        "path": "reference/stove0/application/client/src/stove0_cli/main.py",
+        "symbol": "list_recipes"
+      }
+    }
+  ],
   "cli_commands": [
     "recipe list"
   ],
   "client": "Stove0ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "stove0_api_client.Stove0ApiClient.list_recipes",
+      "source": {
+        "line": 146,
+        "module": "stove0_api_client.client",
+        "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py",
+        "symbol": "Stove0ApiClient.list_recipes"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "list_recipes",
   "path": "/v1/recipes",
@@ -75,6 +102,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "operator-projection"
 }
 ```
+
+</details>
 
 ### Machine authority
 

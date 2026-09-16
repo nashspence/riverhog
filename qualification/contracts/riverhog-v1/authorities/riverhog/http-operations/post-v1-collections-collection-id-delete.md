@@ -20,9 +20,9 @@ Delete Collection
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-97e74929ce"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-97e74929ce"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
 
 ### <a id="s-205df74924"></a>Request body
 
@@ -30,21 +30,22 @@ Delete Collection
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-257294134c"></a>`200` | Successful Response |
-| <a id="s-3674f1890c"></a>`400` | Bad Request |
-| <a id="s-8a999f83c5"></a>`401` | Unauthorized |
-| <a id="s-bc93bd0c77"></a>`403` | Forbidden |
-| <a id="s-4132017a45"></a>`404` | Not Found |
-| <a id="s-fa85a79931"></a>`409` | Conflict |
-| <a id="s-fc82a90145"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-257294134c"></a>`200` | Successful Response | application/json | [CollectionDeletionResultOut](../http-schemas/schemas-collectiondeletionresultout.md) | not declared |
+| <a id="s-3674f1890c"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-8a999f83c5"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-bc93bd0c77"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-4132017a45"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-fa85a79931"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict`, `invalid_state` |
+| <a id="s-fc82a90145"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [piggity collection delete](../../piggity/cli/piggity-collection-delete.md)
+- [riverhog_client.ApiClient.delete_collection](../../riverhog-client/python/riverhog-client-apiclient-delete-collection.md)
 
 ### Referenced contract dossiers
 
@@ -66,21 +67,47 @@ Delete Collection
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/collections.py::delete_collection](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L676)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "collection delete",
+      "source": {
+        "line": 2911,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "collection_delete_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "collection delete"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.delete_collection",
+      "source": {
+        "line": 1974,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.delete_collection"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "delete_collection",
   "path": "/v1/collections/{collection_id}/delete",
@@ -89,6 +116,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

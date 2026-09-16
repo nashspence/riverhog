@@ -19,25 +19,26 @@ Get Admission
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-7c12b87afb"></a>`admission_id` | path | yes | type="string" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-7c12b87afb"></a>`admission_id` | path | yes | not declared | type="string" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-b0cd202f5e"></a>`200` | Successful Response |
-| <a id="s-01f2cf0d10"></a>`400` | Bad Request |
-| <a id="s-a3aac7f8d3"></a>`401` | Unauthorized |
-| <a id="s-ba083c67b5"></a>`403` | Forbidden |
-| <a id="s-0775eed8e2"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-b0cd202f5e"></a>`200` | Successful Response | application/json | [AdmissionView](../http-schemas/schemas-admissionview.md) | not declared |
+| <a id="s-01f2cf0d10"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-a3aac7f8d3"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-ba083c67b5"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-0775eed8e2"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [stove0 admission show](../../stove0-client/cli/stove0-admission-show.md)
+- [stove0_api_client.Stove0ApiClient.get_admission](../../stove0-api-client/python/stove0-api-client-stove0apiclient-get-admission.md)
 
 ### Referenced contract dossiers
 
@@ -58,21 +59,47 @@ Get Admission
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:stove0](../../../evidence/sources.md#src-52e6e32124)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/stove0/application/server/src/stove0_api/app.py::create_app.<locals>.get_admission](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L649)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "stove0",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "admission show",
+      "source": {
+        "line": 246,
+        "module": "stove0_cli.main",
+        "path": "reference/stove0/application/client/src/stove0_cli/main.py",
+        "symbol": "show_admission"
+      }
+    }
+  ],
   "cli_commands": [
     "admission show"
   ],
   "client": "Stove0ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "stove0_api_client.Stove0ApiClient.get_admission",
+      "source": {
+        "line": 214,
+        "module": "stove0_api_client.client",
+        "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py",
+        "symbol": "Stove0ApiClient.get_admission"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "get_admission",
   "path": "/v1/admissions/{admission_id}",
@@ -81,6 +108,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "operator-projection"
 }
 ```
+
+</details>
 
 ### Machine authority
 

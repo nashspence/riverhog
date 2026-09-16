@@ -19,21 +19,21 @@ Get Artifact Selection
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-bef50296e9"></a>`selection_sha256` | path | yes | type="string" |
-| <a id="s-aa2e76ccfa"></a>`continuation` | query | no | anyOf=type="string" \| type="null" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-bef50296e9"></a>`selection_sha256` | path | yes | not declared | type="string" |
+| <a id="s-aa2e76ccfa"></a>`continuation` | query | no | not declared | anyOf=type="string" \| type="null" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-3453778107"></a>`200` | Successful Response |
-| <a id="s-c52052fdef"></a>`400` | Bad Request |
-| <a id="s-97b3183eb0"></a>`401` | Unauthorized |
-| <a id="s-d266895c74"></a>`403` | Forbidden |
-| <a id="s-c2f146cba9"></a>`404` | Not Found |
-| <a id="s-1554018758"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-3453778107"></a>`200` | Successful Response | application/json | [ArtifactSelectionPage](../http-schemas/schemas-artifactselectionpage.md) | not declared |
+| <a id="s-c52052fdef"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-97b3183eb0"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-d266895c74"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-c2f146cba9"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-1554018758"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -56,6 +56,7 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Related interface records
 
 - [stove0 selection show](../../stove0-client/cli/stove0-selection-show.md)
+- [stove0_api_client.Stove0ApiClient.get_artifact_selection](../../stove0-api-client/python/stove0-api-client-stove0apiclient-get-artifact-selection.md)
 
 ### Referenced contract dossiers
 
@@ -77,21 +78,47 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:stove0](../../../evidence/sources.md#src-52e6e32124)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/stove0/application/server/src/stove0_api/app.py::create_app.<locals>.get_artifact_selection](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L752)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "stove0",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "selection show",
+      "source": {
+        "line": 332,
+        "module": "stove0_cli.main",
+        "path": "reference/stove0/application/client/src/stove0_cli/main.py",
+        "symbol": "get_artifact_selection"
+      }
+    }
+  ],
   "cli_commands": [
     "selection show"
   ],
   "client": "Stove0ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "stove0_api_client.Stove0ApiClient.get_artifact_selection",
+      "source": {
+        "line": 294,
+        "module": "stove0_api_client.client",
+        "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py",
+        "symbol": "Stove0ApiClient.get_artifact_selection"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "get_artifact_selection",
   "path": "/v1/artifact-selections/{selection_sha256}",
@@ -106,6 +133,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "canonical-document"
 }
 ```
+
+</details>
 
 ### Machine authority
 

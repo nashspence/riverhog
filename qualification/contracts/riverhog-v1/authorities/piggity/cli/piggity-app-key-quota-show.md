@@ -62,6 +62,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Related interface records
 
 - [GET /v1/download-quota](../../riverhog/http-operations/get-v1-download-quota.md)
+- [riverhog_client.ApiClient.get_download_quota](../../riverhog-client/python/riverhog-client-apiclient-get-download-quota.md)
 
 ## Governing policies
 
@@ -79,6 +80,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [cli:piggity](../../../evidence/sources.md#src-094022231f) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::app_key_quota_show_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L1355)
 
 ### Machine authority
 

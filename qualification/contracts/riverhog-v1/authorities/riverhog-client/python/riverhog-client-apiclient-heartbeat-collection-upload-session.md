@@ -29,6 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
+- [POST /v1/collection-upload-sessions/{collection_id}/heartbeat](../../riverhog/http-operations/post-v1-collection-upload-sessions-collection-id-heartbeat.md)
 - [ApiClient](riverhog-client-apiclient.md)
 
 ## Governing policies
@@ -46,6 +47,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 - [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
+- **Client method:** [packages/riverhog-client/src/riverhog_client/client.py::ApiClient.heartbeat_collection_upload_session](../../../../../../packages/riverhog-client/src/riverhog_client/client.py#L1455)
 
 ### Machine authority
 

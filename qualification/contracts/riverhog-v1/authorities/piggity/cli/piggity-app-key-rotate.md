@@ -66,6 +66,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Related interface records
 
 - [POST /v1/apps/{app}/keys/{key_id}/rotate](../../riverhog/http-operations/post-v1-apps-app-keys-key-id-rotate.md)
+- [riverhog_client.ApiClient.rotate_app_key](../../riverhog-client/python/riverhog-client-apiclient-rotate-app-key.md)
 
 ## Governing policies
 
@@ -83,6 +84,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [cli:piggity](../../../evidence/sources.md#src-094022231f) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::app_key_rotate_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L1221)
 
 ### Machine authority
 

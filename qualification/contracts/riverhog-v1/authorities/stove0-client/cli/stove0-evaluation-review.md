@@ -69,6 +69,7 @@ Shared facts for every subject below: minimum=1
 ### Related interface records
 
 - [PUT /v1/evaluations/{evaluation_id}/variants/{variant_id}/review](../../stove0/http-operations/put-v1-evaluations-evaluation-id-variants-variant-id-review.md)
+- [stove0_api_client.Stove0ApiClient.review_evaluation_variant](../../stove0-api-client/python/stove0-api-client-stove0apiclient-review-evaluation-variant.md)
 
 ## Governing policies
 
@@ -86,6 +87,7 @@ Shared facts for every subject below: minimum=1
 
 - [cli:stove0](../../../evidence/sources.md#src-6203ae7d88) — `reference/stove0/application/client/src/stove0_cli/main.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/stove0/application/client/src/stove0_cli/main.py::review_evaluation](../../../../../../reference/stove0/application/client/src/stove0_cli/main.py#L455)
 
 ### Machine authority
 

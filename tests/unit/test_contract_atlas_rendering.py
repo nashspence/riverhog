@@ -1,18 +1,25 @@
 from __future__ import annotations
 
 import hashlib
+import inspect
 import re
 import sys
+from copy import deepcopy
 from pathlib import Path
 from typing import Any, cast
+from urllib.parse import unquote
 
+import piggity.main
 import pytest
+from riverhog_api.routers import collections as collection_routes
+from riverhog_client import ApiClient
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
 import contract_atlas as atlas  # noqa: E402
+from contract_atlas import dossier_rendering, navigation  # noqa: E402
 
 ARTIFACT = REPO_ROOT / "qualification/contracts/riverhog-v1.json"
 _CHECKED_ATLAS: atlas.ContractAtlas | None = None
@@ -150,6 +157,105 @@ def test_collection_list_audit_exposes_scoped_tests_and_unestablished_progressio
     assert "Shared token codec" in sources
     assert "does not prove each route supplies those bindings correctly" in sources
     assert "uses a fake client and does not establish general output parity" in sources
+
+
+def test_collection_list_has_a_readable_mutual_http_client_cli_audit_path() -> None:
+    checked = checked_atlas()
+    selected = [
+        next(item for item in checked.root["elements"] if item["title"] == title)
+        for title in (
+            "GET /v1/collections",
+            "riverhog_client.ApiClient.list_collections",
+            "piggity collection list",
+        )
+    ]
+    ids = {item["id"] for item in selected}
+    for item, implementation in zip(
+        selected,
+        (
+            collection_routes.list_collections,
+            ApiClient.list_collections,
+            piggity.main.collection_list_cmd,
+        ),
+        strict=True,
+    ):
+        assert ids - {item["id"]} <= set(item["related_element_ids"])
+        page = checked.files[item["dossier"]].decode()
+        source_links = {
+            (
+                (REPO_ROOT / "qualification/contracts" / item["dossier"])
+                .parent.joinpath(unquote(target))
+                .resolve(),
+                int(line),
+            )
+            for target, line in re.findall(r"\]\(([^)]+)#L(\d+)\)", page)
+        }
+        definition = inspect.unwrap(implementation)
+        assert (
+            Path(inspect.getsourcefile(definition)),
+            inspect.getsourcelines(definition)[1],
+        ) in source_links
+        for other in selected:
+            if other is not item:
+                assert f"]({navigation._relative_link(item['dossier'], other['dossier'])})" in page
+
+    reading_path = (
+        checked.files[selected[0]["dossier"]].decode().split("## Maintained corroboration", 1)[0]
+    )
+    parameter = next(line for line in reading_path.splitlines() if "`page_size` | query" in line)
+    assert "| no | `25` |" in parameter
+    assert "minimum=1; maximum=100" in parameter
+    response = next(line for line in reading_path.splitlines() if "`200` |" in line)
+    assert "application/json" in response
+    assert (
+        "[ListCollectionsResponse](../http-schemas/schemas-listcollectionsresponse.md)" in response
+    )
+    for status, code in (
+        (400, "bad_request"),
+        (401, "unauthorized"),
+        (403, "forbidden"),
+        (500, "internal_error"),
+    ):
+        response = next(line for line in reading_path.splitlines() if f"`{status}` |" in line)
+        assert "[ErrorResponse](../http-schemas/schemas-errorresponse.md)" in response
+        assert f"`{code}`" in response
+
+
+def test_missing_python_unit_is_visible_without_an_invented_dossier_link() -> None:
+    checked = checked_atlas()
+    elements = {item["id"]: item for item in checked.root["elements"]}
+    operation = next(item for item in elements.values() if item["title"] == "GET /v1/collections")
+    trace = deepcopy(checked.root["trace"])
+    record = next(
+        item
+        for item in trace["operation_qualification"]["records"]
+        if item["application"] == "riverhog" and item["operation_id"] == "list_collections"
+    )
+    record["client_bindings"][0]["public_identity"] = "example.Client.inherited_method"
+
+    page = dossier_rendering._render_dossier(
+        operation, checked.root["projection"], trace, elements
+    ).decode()
+
+    assert "**Accounting gap:** [example.Client.inherited_method]" in page
+    assert "has no Python contract dossier in the current freeze" in page
+    assert "example-client-inherited-method.md" not in page
+
+
+@pytest.mark.parametrize(
+    "target",
+    ("../../../tests/example.py#L8", "../../../tests/other.py#L7", "../../../tests/example.py"),
+)
+def test_repository_links_accept_only_trace_recorded_file_and_line(target: str) -> None:
+    root = "riverhog-v1/index.md"
+    allowed = {"../../tests/example.py#L7"}
+    assert atlas._reachable_atlas_documents(
+        root, {root: b"[test](../../../tests/example.py#L7)\n"}, repository_sources=allowed
+    ) == {root}
+    with pytest.raises(atlas.ContractAtlasError, match="unresolved local link"):
+        atlas._reachable_atlas_documents(
+            root, {root: f"[test]({target})\n".encode()}, repository_sources=allowed
+        )
 
 
 def test_every_dossier_is_lossless_and_representative_contract_classes_are_semantics_first() -> (

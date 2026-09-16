@@ -20,22 +20,22 @@ Get Collection File Provenance
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-163dce2876"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-24db11cead"></a>`path` | path | yes | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-163dce2876"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-24db11cead"></a>`path` | path | yes | not declared | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-15bacadd6f"></a>`200` | Successful Response |
-| <a id="s-83bd1fa2e2"></a>`400` | Bad Request |
-| <a id="s-c6c3dc38ea"></a>`401` | Unauthorized |
-| <a id="s-f09456aff1"></a>`403` | Forbidden |
-| <a id="s-86dbd7d5b7"></a>`404` | Not Found |
-| <a id="s-61e0e42d67"></a>`409` | Conflict |
-| <a id="s-161bb063af"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-15bacadd6f"></a>`200` | Successful Response | application/json | [CollectionFileProvenanceDetailOut](../http-schemas/schemas-collectionfileprovenancedetailout.md) | not declared |
+| <a id="s-83bd1fa2e2"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-c6c3dc38ea"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-f09456aff1"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-86dbd7d5b7"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-61e0e42d67"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `invalid_state` |
+| <a id="s-161bb063af"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -52,6 +52,7 @@ Shared facts for every subject below: maximum=4096; minimum=1; reason="schema-ma
 ### Related interface records
 
 - [piggity collection provenance show](../../piggity/cli/piggity-collection-provenance-show.md)
+- [riverhog_client.ApiClient.get_collection_file_provenance](../../riverhog-client/python/riverhog-client-apiclient-get-collection-file-provenance.md)
 
 ### Referenced contract dossiers
 
@@ -73,21 +74,47 @@ Shared facts for every subject below: maximum=4096; minimum=1; reason="schema-ma
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/provenance.py::get_collection_file_provenance](../../../../../../riverhog/src/riverhog_api/routers/provenance.py#L122)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "collection provenance show",
+      "source": {
+        "line": 2623,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "provenance_show_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "collection provenance show"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.get_collection_file_provenance",
+      "source": {
+        "line": 1655,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.get_collection_file_provenance"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "get_collection_file_provenance",
   "path": "/v1/collections/{collection_id}/provenance/files/{path}",
@@ -96,6 +123,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

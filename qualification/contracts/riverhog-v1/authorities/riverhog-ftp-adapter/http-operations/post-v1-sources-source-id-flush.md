@@ -20,19 +20,19 @@ Flush
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-208515f96a"></a>`source_id` | path | yes | type="string" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-208515f96a"></a>`source_id` | path | yes | not declared | type="string" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-010c427b4f"></a>`200` | Successful Response |
-| <a id="s-e2ac7e3c6a"></a>`400` | Bad Request |
-| <a id="s-86321cc684"></a>`401` | Unauthorized |
-| <a id="s-ead99851f5"></a>`403` | Forbidden |
-| <a id="s-c169c18007"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-010c427b4f"></a>`200` | Successful Response | application/json | type="object"; additional keys=`additionalProperties` | not declared |
+| <a id="s-e2ac7e3c6a"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-86321cc684"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-ead99851f5"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-c169c18007"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -49,6 +49,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 ### Related interface records
 
 - [riverhog-ftp-adapter flush](../cli/riverhog-ftp-adapter-flush.md)
+- [riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.flush_ftp_adapter_source](../../riverhog-ftp-adapter-api-client/python/riverhog-ftp-adapter-api-client-riverhogftpadapterclient-flush-ftp-adapter-source.md)
 
 ### Referenced contract dossiers
 
@@ -69,21 +70,47 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29a) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29a)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::create_app.<locals>.flush](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py#L292)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog-ftp-adapter",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "flush",
+      "source": {
+        "line": 404,
+        "module": "riverhog_ftp_adapter.app",
+        "path": "reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py",
+        "symbol": "_flush_command"
+      }
+    }
+  ],
   "cli_commands": [
     "flush"
   ],
   "client": "RiverhogFtpAdapterClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.flush_ftp_adapter_source",
+      "source": {
+        "line": 102,
+        "module": "riverhog_ftp_adapter_api_client.client",
+        "path": "reference/riverhog/ingress/ftp-api-client/src/riverhog_ftp_adapter_api_client/client.py",
+        "symbol": "RiverhogFtpAdapterClient.flush_ftp_adapter_source"
+      }
+    }
+  ],
   "method": "POST",
   "operation_id": "flush_ftp_adapter_source",
   "path": "/v1/sources/{source_id}/flush",
@@ -92,6 +119,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 

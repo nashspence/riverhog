@@ -19,26 +19,27 @@ Inspect Work Coordination
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-d01c651ce3"></a>`work_id` | path | yes | type="string" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-d01c651ce3"></a>`work_id` | path | yes | not declared | type="string" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-51b7e8e06d"></a>`200` | Successful Response |
-| <a id="s-a4e0d2b42e"></a>`400` | Bad Request |
-| <a id="s-0f87e73bae"></a>`401` | Unauthorized |
-| <a id="s-9ae3130b0f"></a>`403` | Forbidden |
-| <a id="s-2c0ea53089"></a>`404` | Not Found |
-| <a id="s-da4f3c5f56"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-51b7e8e06d"></a>`200` | Successful Response | application/json | [BranchSetEvaluation](../http-schemas/schemas-branchsetevaluation.md) | not declared |
+| <a id="s-a4e0d2b42e"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-0f87e73bae"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-9ae3130b0f"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-2c0ea53089"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-da4f3c5f56"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ## Maintained corroboration
 
 ### Related interface records
 
 - [stove0 work coordination](../../stove0-client/cli/stove0-work-coordination.md)
+- [stove0_api_client.Stove0ApiClient.inspect_work_coordination](../../stove0-api-client/python/stove0-api-client-stove0apiclient-inspect-work-coordination.md)
 
 ### Referenced contract dossiers
 
@@ -59,21 +60,47 @@ Inspect Work Coordination
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:stove0](../../../evidence/sources.md#src-52e6e32124)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [reference/stove0/application/server/src/stove0_api/app.py::create_app.<locals>.inspect_work_coordination](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L742)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "stove0",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "work coordination",
+      "source": {
+        "line": 326,
+        "module": "stove0_cli.main",
+        "path": "reference/stove0/application/client/src/stove0_cli/main.py",
+        "symbol": "inspect_work_coordination"
+      }
+    }
+  ],
   "cli_commands": [
     "work coordination"
   ],
   "client": "Stove0ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "stove0_api_client.Stove0ApiClient.inspect_work_coordination",
+      "source": {
+        "line": 285,
+        "module": "stove0_api_client.client",
+        "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py",
+        "symbol": "Stove0ApiClient.inspect_work_coordination"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "inspect_work_coordination",
   "path": "/v1/work/{work_id}/coordination",
@@ -82,6 +109,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "canonical-document"
 }
 ```
+
+</details>
 
 ### Machine authority
 

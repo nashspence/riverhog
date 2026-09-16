@@ -62,6 +62,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Related interface records
 
 - [GET /v1/catalog-sync/checkpoint](../../riverhog/http-operations/get-v1-catalog-sync-checkpoint.md)
+- [riverhog_client.ApiClient.create_catalog_sync_checkpoint](../../riverhog-client/python/riverhog-client-apiclient-create-catalog-sync-checkpoint.md)
 
 ## Governing policies
 
@@ -79,6 +80,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [cli:piggity](../../../evidence/sources.md#src-094022231f) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::catalog_sync_checkpoint_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L770)
 
 ### Machine authority
 

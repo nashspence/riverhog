@@ -20,22 +20,22 @@ List Collection Upload Session Files
 
 ### Parameters
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| <a id="s-65d8972471"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-8a07abd5bb"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| <a id="s-b7d4837a98"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
+| Name | In | Required | Default | Schema |
+|---|---|---:|---|---|
+| <a id="s-65d8972471"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
+| <a id="s-8a07abd5bb"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
+| <a id="s-b7d4837a98"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
 
 ### Responses
 
-| Status | Description |
-|---|---|
-| <a id="s-4651ddfbd4"></a>`200` | Successful Response |
-| <a id="s-151efe834f"></a>`400` | Bad Request |
-| <a id="s-d8f940b00e"></a>`401` | Unauthorized |
-| <a id="s-773a3be2dc"></a>`403` | Forbidden |
-| <a id="s-a326ec7f08"></a>`404` | Not Found |
-| <a id="s-347524cc62"></a>`500` | Internal Server Error |
+| Status | Description | Media type | Schema | Declared error codes |
+|---|---|---|---|---|
+| <a id="s-4651ddfbd4"></a>`200` | Successful Response | application/json | [ListCollectionUploadSessionFilesResponse](../http-schemas/schemas-listcollectionuploadsessionfilesresponse.md) | not declared |
+| <a id="s-151efe834f"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-d8f940b00e"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-773a3be2dc"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-a326ec7f08"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-347524cc62"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -66,6 +66,7 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Related interface records
 
 - [piggity collection upload files](../../piggity/cli/piggity-collection-upload-files.md)
+- [riverhog_client.ApiClient.list_collection_upload_session_files](../../riverhog-client/python/riverhog-client-apiclient-list-collection-upload-session-files.md)
 
 ### Referenced contract dossiers
 
@@ -89,21 +90,47 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+- **Handler:** [riverhog/src/riverhog_api/routers/collections.py::list_collection_upload_session_files](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L415)
 
 ### Structural operation bindings
 
 This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
+<details>
+<summary>Exact structural binding record</summary>
+
 ```json
 {
   "application": "riverhog",
   "classification": "human-cli+json",
+  "cli_bindings": [
+    {
+      "command": "collection upload files",
+      "source": {
+        "line": 2375,
+        "module": "piggity.main",
+        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "symbol": "upload_files_cmd"
+      }
+    }
+  ],
   "cli_commands": [
     "collection upload files"
   ],
   "client": "ApiClient",
+  "client_bindings": [
+    {
+      "public_identity": "riverhog_client.ApiClient.list_collection_upload_session_files",
+      "source": {
+        "line": 1215,
+        "module": "riverhog_client.client",
+        "path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "symbol": "ApiClient.list_collection_upload_session_files"
+      }
+    }
+  ],
   "method": "GET",
   "operation_id": "list_collection_upload_session_files",
   "path": "/v1/collection-upload-sessions/{collection_id}/files",
@@ -119,6 +146,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "response_authority": "http-json"
 }
 ```
+
+</details>
 
 ### Machine authority
 
