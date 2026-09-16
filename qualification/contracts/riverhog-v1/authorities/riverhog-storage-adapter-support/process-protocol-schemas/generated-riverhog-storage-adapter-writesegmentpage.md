@@ -54,6 +54,12 @@ Shared facts for every subject below: maximum=128; minimum=null; progression={"p
 | <a id="s-61c3694c07"></a>[definition WriteSegmentReceipt · field segment_token](#s-49182d9498) | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
 | <a id="s-0833484d84"></a>[definition WriteSegmentReceipt · field stored_sha256 · string value](#s-49182d9498) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
+### Progression evidence and open obligations
+
+These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+
+- [riverhog-storage-write-segment-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-26637e3f38)
+
 ## Maintained corroboration
 
 ### Related interface records

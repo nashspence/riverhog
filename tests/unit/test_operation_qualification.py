@@ -3,8 +3,13 @@ from __future__ import annotations
 import importlib.util
 import json
 import sys
+from collections import defaultdict
 from pathlib import Path
 from types import ModuleType
+
+import pytest
+
+from tests import operation_observer
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts/operation_qualification.py"
@@ -121,12 +126,12 @@ def test_exact_sha_evidence_contains_only_generated_current_rows(
                 "source_sha": source_sha,
                 "pytest_exit_status": 0,
                 "operations": timing_rows,
-                "cli_projections": [
+                "cli_callback_entries": [
                     {
                         "application": application,
                         "command": command,
-                        "human_executions": 1,
-                        "json_executions": 1,
+                        "human_entries": 1,
+                        "json_entries": 1,
                     }
                     for application, command in sorted(
                         {
@@ -152,7 +157,10 @@ def test_exact_sha_evidence_contains_only_generated_current_rows(
     assert payload["provider_evidence"]["required_for"]
     assert payload["performance"]["cold_cli_startup"]["riverhog"]["median_ms"] == 1.0
     assert payload["performance"]["local_api"]["operations"]
-    assert payload["qualification"]["positive_local_lifecycles"]["status"] == "passed"
+    assert payload["qualification"]["positive_local_lifecycles"]["status"] == "not_established"
+    assert payload["qualification"]["positive_local_lifecycles"][
+        "operations_with_successful_responses"
+    ] == sum(item.provider_evidence is None for item in matrix)
     extent = payload["qualification"]["extent_contract"]
     assert extent["status"] == "passed"
     assert extent["schema"] == "riverhog-contract-machine-closure/v1"
@@ -160,25 +168,25 @@ def test_exact_sha_evidence_contains_only_generated_current_rows(
     assert extent["extent_decisions"] > 0
     assert len(extent["projection_sha256"]) == 64
     assert len(extent["extent_sha256"]) == 64
-    assert payload["qualification"]["cli_human_json_projection"]["status"] == "passed"
-    assert payload["qualification"]["bounded_state_access"]["status"] == "passed"
-    assert payload["qualification"]["event_cursor_restart_resume"]["status"] == "passed"
+    assert payload["qualification"]["cli_human_json_projection"]["status"] == "not_established"
+    assert payload["qualification"]["bounded_state_access"]["status"] == "not_established"
+    assert payload["qualification"]["event_cursor_restart_resume"]["status"] == "not_established"
     assert all(set(item) == set(module.Operation.__dataclass_fields__) for item in operations)
 
     incomplete = json.loads(timings.read_text())
     projection = next(
         item
-        for item in incomplete["cli_projections"]
+        for item in incomplete["cli_callback_entries"]
         if item["application"] == "riverhog" and item["command"] == "retrieval cache status"
     )
-    projection["json_executions"] = 0
+    projection["json_entries"] = 0
     timings.write_text(json.dumps(incomplete))
     try:
         module._load_operation_timings(timings, source_sha=source_sha, matrix=matrix)
     except module.QualificationError as exc:
-        assert "commands lack executed human/JSON projection parity" in str(exc)
+        assert "commands lack human/JSON callback entries" in str(exc)
     else:
-        raise AssertionError("missing executable CLI projection parity must fail qualification")
+        raise AssertionError("missing CLI callback coverage must fail observation validation")
 
 
 def test_operation_evidence_rejects_an_incomplete_extent_authority(tmp_path: Path) -> None:
@@ -201,6 +209,39 @@ def test_operation_evidence_rejects_an_incomplete_extent_authority(tmp_path: Pat
         raise AssertionError("incomplete extent authority must fail runtime qualification")
 
 
+def test_failed_cli_callbacks_are_only_reported_as_entries(monkeypatch) -> None:
+    def failed_command(*, json_mode: bool) -> None:
+        raise RuntimeError("command failed before producing output")
+
+    monkeypatch.setattr(operation_observer, "_OBSERVERS", [])
+    monkeypatch.setattr(
+        operation_observer,
+        "_CLI_CALLBACKS",
+        {failed_command.__code__: [("riverhog", "collection list")]},
+    )
+    monkeypatch.setattr(
+        operation_observer, "_CLI_CALLBACK_ENTRIES", defaultdict(lambda: defaultdict(int))
+    )
+    previous = sys.getprofile()
+    try:
+        sys.setprofile(operation_observer._observe_cli_callback_entry)
+        for mode in (False, True):
+            with pytest.raises(RuntimeError, match="before producing output"):
+                failed_command(json_mode=mode)
+    finally:
+        sys.setprofile(previous)
+
+    payload = operation_observer.timing_evidence(source_sha="a" * 40, exit_status=0)
+    assert payload["cli_callback_entries"] == [
+        {
+            "application": "riverhog",
+            "command": "collection list",
+            "human_entries": 1,
+            "json_entries": 1,
+        }
+    ]
+
+
 def test_timing_evidence_fails_closed_on_missing_local_operation(tmp_path: Path) -> None:
     module = load_script()
     source_sha = "b" * 40
@@ -212,7 +253,7 @@ def test_timing_evidence_fails_closed_on_missing_local_operation(tmp_path: Path)
                 "source_sha": source_sha,
                 "pytest_exit_status": 0,
                 "operations": [],
-                "cli_projections": [],
+                "cli_callback_entries": [],
             }
         )
     )

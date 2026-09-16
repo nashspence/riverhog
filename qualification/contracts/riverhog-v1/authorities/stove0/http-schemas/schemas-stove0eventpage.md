@@ -35,6 +35,12 @@ Shared facts for every subject below: progression={"cursor_parameter":"after","k
 |---|---|---|
 | [field events](#s-339a218ffa) | `cardinality · items · segmented_no_total_max` | shared above |
 
+### Progression evidence and open obligations
+
+These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+
+- [stove0-read-collection-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-34931f753b)
+
 ## Maintained corroboration
 
 ### Referenced contract dossiers

@@ -44,6 +44,12 @@ Shared facts for every subject below: maximum=200; minimum=1; reason="schema-max
 |---|---|---|
 | [field idempotency_key](#s-1281abc044) | `length · characters · contract_max` | shared above |
 
+### Progression evidence and open obligations
+
+These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+
+- [riverhog-retrieval-work-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-bff92ce2bd)
+
 ## Maintained corroboration
 
 ### Referenced contract dossiers

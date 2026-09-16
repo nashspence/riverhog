@@ -47,6 +47,12 @@ Shared facts for every subject below: maximum=100; progression={"authority":"ret
 | <a id="s-081802f705"></a>[field next_ordinal · integer value](#s-b41186f25a) | `value · schema-value · contract_max` | maximum=10000; minimum=1; reason="schema-maximum" |
 | [field start_ordinal](#s-8dc3c38e1e) | `value · schema-value · contract_max` | maximum=10000; minimum=0; reason="schema-maximum" |
 
+### Progression evidence and open obligations
+
+These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+
+- [riverhog-read-collection-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-1536c4a29a)
+
 ## Maintained corroboration
 
 ### Referenced contract dossiers

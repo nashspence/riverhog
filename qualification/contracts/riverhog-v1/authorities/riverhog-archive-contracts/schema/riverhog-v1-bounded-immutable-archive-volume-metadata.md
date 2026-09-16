@@ -74,6 +74,12 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [definition sequence](#s-b18c6e158b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition sha256](#s-ddfc70e987) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
+### Progression evidence and open obligations
+
+These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+
+- [riverhog-archive-volume-part-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-a01ca2b113)
+
 ## Governing policies
 
 - <a id="pa-a267938e80"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)

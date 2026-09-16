@@ -60,6 +60,12 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 |---|---|---|
 | [definition sha256](#s-8a9c94c093) | `length · characters · fixed` | shared above |
 
+### Progression evidence and open obligations
+
+These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+
+- [riverhog-provenance-volume-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-8577e11c6a)
+
 ## Governing policies
 
 - <a id="pa-8a37471c01"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)

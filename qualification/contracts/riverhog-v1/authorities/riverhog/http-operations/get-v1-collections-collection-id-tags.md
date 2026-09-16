@@ -57,6 +57,12 @@ Shared facts for every subject below: progression={"authority":"collection-tag-s
 | <a id="s-741ef68ae4"></a>[parameter page_size](#s-9d44d0e0b3) | `value · schema-value · contract_max` | maximum=100; minimum=1; reason="schema-maximum" |
 | <a id="s-00e27b38e6"></a>[parameter tag_set_identity](#s-a651f24cea) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
+### Progression evidence and open obligations
+
+These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+
+- [riverhog-read-collection-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-1536c4a29a)
+
 ## Maintained corroboration
 
 ### Related interface records
@@ -91,9 +97,9 @@ Shared facts for every subject below: progression={"authority":"collection-tag-s
 - [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
 
-### Operation qualification evidence
+### Structural operation bindings
 
-This evidence proves maintained client, CLI, response-authority, and provider qualification without creating a second semantic operation.
+This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
 ```json
 {

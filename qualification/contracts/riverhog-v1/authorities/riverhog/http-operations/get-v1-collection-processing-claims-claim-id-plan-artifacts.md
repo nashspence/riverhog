@@ -55,6 +55,12 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 | <a id="s-e07bfa9fd0"></a>[parameter claim_id](#s-54928f2c7e) | `length · characters · fixed` | shared above |
 | <a id="s-86acefe408"></a>[parameter authority_sha256](#s-ea94e7774c) | `length · characters · fixed` | shared above |
 
+### Progression evidence and open obligations
+
+These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+
+- [riverhog-read-collection-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-1536c4a29a)
+
 ## Maintained corroboration
 
 ### Referenced contract dossiers
@@ -81,9 +87,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
 
-### Operation qualification evidence
+### Structural operation bindings
 
-This evidence proves maintained client, CLI, response-authority, and provider qualification without creating a second semantic operation.
+This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
 ```json
 {

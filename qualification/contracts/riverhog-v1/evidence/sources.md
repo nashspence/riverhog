@@ -2,7 +2,7 @@
 
 [Atlas](../index.md) · [Freeze evidence](index.md)
 
-This page is proof routing, not contract navigation. Every dossier names its locally applicable executable sources and qualification routes.
+This page routes audit work to executable sources and qualification commands. A binding means the source exists; it does not mean a behavioral claim was proved. This checked-in atlas contains no executed qualification result or CI attestation. A passing run applies only to its executed checks and exact source SHA; main CI does not imply release or provider qualification.
 
 ## Qualification routes
 
@@ -526,3 +526,44 @@ Fixtures prove restart and introspection behavior; component declarations above 
 | `state:stove0-target-jobs` | `tests/fixtures/state/v1_0001/stove0-target/transform.status.json` | `29254d1dc7d6429b8368f311c1d25fee6bf059f55d5f1b9e309e507659920cf7` |
 | `state:stove0-target-jobs` | `tests/fixtures/state/v1_0001/stove0-target/effect.accepted.json` | `dbb18aa80a2e9e15f6dacf3194928b42411aea66004bb20663ab90749ad8e33b` |
 | `state:stove0-target-jobs` | `tests/fixtures/state/v1_0001/stove0-target/effect.status.json` | `626cdf4d36eedf18fcd596fb81a6c49ea1fea98845f773ec33f8dd0b00887071` |
+
+## Progression evidence and open obligations
+
+Each group lists its unestablished obligations. Test-symbol existence and owner/reason matching validate routing only. A shared codec test requires a separate route-wiring argument; mutable browsing carries no implied snapshot-completeness guarantee.
+
+| Candidate group | Bound extent decisions | Candidate tests | Unestablished claims |
+|---|---:|---:|---|
+| <a id="e-5707b3a2d3-b068c34cbb"></a>`riverhog-upload-work-progression/v1` | 1 | 3 | bounded step, forward progress, multiple segments, no silent truncation, restart |
+| <a id="e-5707b3a2d3-a01ca2b113"></a>`riverhog-archive-volume-part-progression/v1` | 2 | 3 | bounded step, forward progress, multiple segments, no silent truncation, restart |
+| <a id="e-5707b3a2d3-26637e3f38"></a>`riverhog-storage-write-segment-progression/v1` | 1 | 3 | bounded step, forward progress, multiple segments, no silent truncation, restart |
+| <a id="e-5707b3a2d3-6a55d20aca"></a>`riverhog-work-authority-append/v1` | 2 | 2 | bounded step, forward progress, multiple segments, no silent truncation, restart |
+| <a id="e-5707b3a2d3-401544f03b"></a>`riverhog-work-disposition-append/v1` | 2 | 2 | bounded step, forward progress, multiple segments, no silent truncation, restart |
+| <a id="e-5707b3a2d3-8577e11c6a"></a>`riverhog-provenance-volume-progression/v1` | 1 | 3 | bounded step, forward progress, multiple segments, no silent truncation, restart |
+| <a id="e-5707b3a2d3-dbc4c688e1"></a>`riverhog-raw-digest-progression/v1` | 1 | 2 | bounded step, forward progress, multiple segments, no silent truncation, restart |
+| <a id="e-5707b3a2d3-bff92ce2bd"></a>`riverhog-retrieval-work-progression/v1` | 1 | 2 | bounded step, forward progress, multiple segments, no silent truncation, restart |
+| <a id="e-5707b3a2d3-1536c4a29a"></a>`riverhog-read-collection-progression/v1` | 54 | 9 | bounded step, forward progress, multiple segments, no silent truncation, restart |
+| <a id="e-5707b3a2d3-34931f753b"></a>`stove0-read-collection-progression/v1` | 12 | 3 | bounded step, forward progress, multiple segments, no silent truncation, restart |
+| <a id="e-5707b3a2d3-98357b3ef7"></a>`riverhog-ftp-adapter-status-progression/v1` | 1 | 17 | bounded step, forward progress, multiple segments, no silent truncation, restart |
+| <a id="e-5707b3a2d3-ca266cc9fb"></a>`riverhog-upload-registration-progression/v1` | 1 | 2 | bounded step, forward progress, multiple segments, no silent truncation, restart |
+| <a id="e-5707b3a2d3-5f2b3d8179"></a>`riverhog-upload-tag-staging-progression/v1` | 2 | 8 | bounded step, forward progress, multiple segments, no silent truncation, restart |
+| <a id="e-5707b3a2d3-7e680acb75"></a>`riverhog-upload-unit-source-progression/v1` | 1 | 3 | bounded step, forward progress, multiple segments, no silent truncation, restart |
+
+### Reviewed test scopes
+
+- `tests/unit/test_public_interface_parity.py::test_public_read_collection_selectors_are_bounded_and_frozen`: Structural OpenAPI checks for bounded read selectors; no traversal is executed.
+
+- `tests/unit/test_collection_reads.py::test_collection_list_query_count_is_independent_of_page_rows`: Collection-list service query count and archive-object loading on one page; does not test traversal or restart.
+
+- `tests/unit/test_collection_reads.py::test_collection_encryption_filters_preserve_catalog_authorization`: Collection-list service encryption filters and catalog authorization on one page.
+
+- `packages/http-api-contracts/tests/test_browse_tokens.py::test_browse_token_round_trips_opaque_binary_position_across_restart`: Shared token codec reconstructs a position after codec recreation with the same signing configuration; does not prove route wiring or database traversal.
+
+- `packages/http-api-contracts/tests/test_browse_tokens.py::test_browse_token_fails_closed_outside_its_request_binding`: Shared token codec rejects changed operation, principal, and selectors; does not prove each route supplies those bindings correctly.
+
+- `tests/unit/test_operation_lifecycle_api.py::test_riverhog_official_client_positive_disposable_lifecycle`: Real API and official client lifecycle includes a one-page collection list; its restart assertion concerns events, not collection-list continuation.
+
+- `tests/unit/test_cli_json_output.py::test_collection_list_json_emits_the_api_response_without_a_second_model`: Collection-list CLI accepts a current-schema fixture in both output modes, preserves the entire JSON response, and displays its description and encryption in human output; uses a fake client and does not establish general output parity.
+
+- `tests/unit/test_catalog_sync.py::test_catalog_sync_crosses_many_pages_and_repairs_fixed_frontier_changes`: Catalog-sync fixed-frontier traversal and repair; ordinary mutable collection browsing has different semantics and gains no snapshot-completeness claim.
+
+- `tests/integration/test_lifecycle_event_concurrency.py::test_event_reads_and_concurrent_context_reapers_do_only_bounded_work`: Lifecycle-event reads and concurrent context reaping; not collection browsing.

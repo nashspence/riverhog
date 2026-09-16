@@ -62,6 +62,12 @@ Shared facts for every subject below: minimum=1; reason="schema-maximum"
 | <a id="s-c027b22e80"></a>[parameter page_size](#s-702a3a9511) | `value · schema-value · contract_max` | maximum=100 |
 | <a id="s-f6f8d4c4d8"></a>[parameter page_token · string value](#s-9a0968104e) | `length · characters · contract_max` | maximum=120 |
 
+### Progression evidence and open obligations
+
+These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+
+- [riverhog-ftp-adapter-status-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-98357b3ef7)
+
 ## Maintained corroboration
 
 ### Related interface records
@@ -92,9 +98,9 @@ Shared facts for every subject below: minimum=1; reason="schema-maximum"
 - [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29a) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
 
-### Operation qualification evidence
+### Structural operation bindings
 
-This evidence proves maintained client, CLI, response-authority, and provider qualification without creating a second semantic operation.
+This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
 ```json
 {

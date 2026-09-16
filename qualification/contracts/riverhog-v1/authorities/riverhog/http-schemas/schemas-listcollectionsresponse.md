@@ -50,6 +50,12 @@ Shared facts for every subject below: maximum=100
 | [field page_size](#s-f6b9eb37e9) | `value · schema-value · contract_max` | minimum=1; reason="schema-maximum" |
 | [field tags](#s-3ce334b3ba) | `cardinality · items · contract_max` | reason="bounded-exact-tag-selector-batch" |
 
+### Progression evidence and open obligations
+
+These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+
+- [riverhog-read-collection-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-1536c4a29a)
+
 ## Maintained corroboration
 
 ### Referenced contract dossiers

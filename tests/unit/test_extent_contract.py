@@ -480,7 +480,7 @@ def test_trace_index_covers_every_extent_and_only_current_source_paths() -> None
         witness_id for link in linked_segmented for witness_id in link["segmented_extent_witnesses"]
     } == set(witnesses)
     for witness in witnesses.values():
-        assert set(witness["claims"]) == {
+        assert set(witness["unestablished_claims"]) == {
             "bounded_step",
             "forward_progress",
             "multiple_segments",
@@ -489,6 +489,9 @@ def test_trace_index_covers_every_extent_and_only_current_source_paths() -> None
         }
         assert witness["gates"]
         assert witness["test_node_ids"]
+        if witness["test_scopes"]:
+            assert [item["node_id"] for item in witness["test_scopes"]] == witness["test_node_ids"]
+            assert all(item["scope"] for item in witness["test_scopes"])
         for node_id in witness["test_node_ids"]:
             assert (REPO_ROOT / node_id.split("::", 1)[0]).is_file()
     assert len({source["id"] for source in trace["sources"]}) == len(trace["sources"])

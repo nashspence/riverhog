@@ -958,27 +958,27 @@ def _load_operation_timings(
         raise QualificationError(
             f"official-client operations lack client wall timings: {missing_client}"
         )
-    raw_projections = payload.get("cli_projections")
-    if not isinstance(raw_projections, list):
-        raise QualificationError("CLI projection evidence rows are invalid")
+    raw_entries = payload.get("cli_callback_entries")
+    if not isinstance(raw_entries, list):
+        raise QualificationError("CLI callback-entry evidence rows are invalid")
     required_commands = {
         (item.application, command)
         for item in matrix
         if item.classification == "human-cli+json"
         for command in item.cli_commands
     }
-    projections: list[dict[str, object]] = []
-    projection_identities: set[tuple[str, str]] = set()
-    complete_commands: set[tuple[str, str]] = set()
-    for raw in raw_projections:
+    entries: list[dict[str, object]] = []
+    entry_identities: set[tuple[str, str]] = set()
+    entered_commands: set[tuple[str, str]] = set()
+    for raw in raw_entries:
         if not isinstance(raw, dict):
-            raise QualificationError("CLI projection evidence row is invalid")
+            raise QualificationError("CLI callback-entry evidence row is invalid")
         identity = (str(raw.get("application") or ""), str(raw.get("command") or ""))
-        if identity not in required_commands or identity in projection_identities:
-            raise QualificationError(f"CLI projection evidence identity is invalid: {identity}")
-        projection_identities.add(identity)
-        human = raw.get("human_executions")
-        machine = raw.get("json_executions")
+        if identity not in required_commands or identity in entry_identities:
+            raise QualificationError(f"CLI callback-entry evidence identity is invalid: {identity}")
+        entry_identities.add(identity)
+        human = raw.get("human_entries")
+        machine = raw.get("json_entries")
         if (
             not isinstance(human, int)
             or isinstance(human, bool)
@@ -987,21 +987,21 @@ def _load_operation_timings(
             or isinstance(machine, bool)
             or machine < 0
         ):
-            raise QualificationError(f"CLI projection evidence counts are invalid: {identity}")
+            raise QualificationError(f"CLI callback-entry evidence counts are invalid: {identity}")
         if human > 0 and machine > 0:
-            complete_commands.add(identity)
-        projections.append(
+            entered_commands.add(identity)
+        entries.append(
             {
                 "application": identity[0],
                 "command": identity[1],
-                "human_executions": human,
-                "json_executions": machine,
+                "human_entries": human,
+                "json_entries": machine,
             }
         )
-    missing_cli_commands = sorted(required_commands - complete_commands)
+    missing_cli_commands = sorted(required_commands - entered_commands)
     if missing_cli_commands:
         raise QualificationError(
-            f"CLI commands lack executed human/JSON projection parity: {missing_cli_commands}"
+            f"CLI commands lack human/JSON callback entries: {missing_cli_commands}"
         )
     return {
         "schema": TIMING_SCHEMA,
@@ -1010,11 +1010,11 @@ def _load_operation_timings(
             validated,
             key=lambda item: (str(item["application"]), str(item["operation_id"])),
         ),
-        "cli_projections": sorted(
-            projections,
+        "cli_callback_entries": sorted(
+            entries,
             key=lambda item: (str(item["application"]), str(item["command"])),
         ),
-        "complete_cli_commands": len(complete_commands),
+        "entered_cli_commands": len(entered_commands),
     }
 
 
@@ -1036,20 +1036,30 @@ def evidence(*, source_sha: str, timings: Path) -> dict[str, object]:
                 **_contract_freeze_identity(),
             },
             "positive_local_lifecycles": {
-                "status": "passed",
-                "operations": sum(item.provider_evidence is None for item in matrix),
+                "status": "not_established",
+                "reason": "Successful HTTP responses and timings do not establish "
+                "complete lifecycle behavior.",
+                "operations_with_successful_responses": sum(
+                    item.provider_evidence is None for item in matrix
+                ),
             },
             "cli_human_json_projection": {
-                "status": "passed",
+                "status": "not_established",
+                "reason": "Callback entries establish neither successful command execution "
+                "nor human/JSON output equivalence.",
                 "operations": sum(item.classification == "human-cli+json" for item in matrix),
-                "commands": cast(int, local_timings["complete_cli_commands"]),
+                "commands_with_both_callback_modes": cast(
+                    int, local_timings["entered_cli_commands"]
+                ),
             },
             "bounded_state_access": {
-                "status": "passed",
+                "status": "not_established",
+                "reason": "Operation timings do not measure state-access bounds.",
                 "applications": ["riverhog", "riverhog-ftp-adapter", "stove0"],
             },
             "event_cursor_restart_resume": {
-                "status": "passed",
+                "status": "not_established",
+                "reason": "Operation timings do not identify restart/resume assertions.",
                 "applications": ["riverhog", "riverhog-ftp-adapter", "stove0"],
             },
             "provider_backed_lifecycles": {

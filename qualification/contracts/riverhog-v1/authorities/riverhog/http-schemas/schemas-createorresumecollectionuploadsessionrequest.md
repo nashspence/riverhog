@@ -58,6 +58,12 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [field idempotency_key](#s-11b776ca6b) | `length · characters · contract_max` | maximum=200; minimum=1; reason="schema-maximum" |
 | [field initial_tag_set_identity](#s-9c8b7f769b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
+### Progression evidence and open obligations
+
+These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+
+- [riverhog-upload-tag-staging-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-5f2b3d8179)
+
 ## Maintained corroboration
 
 ### Referenced contract dossiers

@@ -36,6 +36,12 @@ Shared facts for every subject below: maximum=128; progression={"authority":"pro
 |---|---|---|
 | [field outcomes](#s-7532886b30) | `cardinality · items · segmented_no_total_max` | shared above |
 
+### Progression evidence and open obligations
+
+These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+
+- [riverhog-read-collection-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-1536c4a29a)
+
 ## Maintained corroboration
 
 ### Referenced contract dossiers

@@ -47,6 +47,12 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 | <a id="s-330a239872"></a>[field continuation · string value](#s-e195a811d3) | `length · characters · fixed` | shared above |
 | <a id="s-297d81aa68"></a>[field next_continuation · string value](#s-e35da8a356) | `length · characters · fixed` | shared above |
 
+### Progression evidence and open obligations
+
+These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+
+- [stove0-read-collection-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-34931f753b)
+
 ## Maintained corroboration
 
 ### Referenced contract dossiers

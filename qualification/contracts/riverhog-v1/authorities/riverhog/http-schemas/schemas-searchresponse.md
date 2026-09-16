@@ -47,6 +47,12 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 |---|---|---|
 | [field page_size](#s-dd8aeabd12) | `value · schema-value · contract_max` | shared above |
 
+### Progression evidence and open obligations
+
+These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+
+- [riverhog-read-collection-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-1536c4a29a)
+
 ## Maintained corroboration
 
 ### Referenced contract dossiers

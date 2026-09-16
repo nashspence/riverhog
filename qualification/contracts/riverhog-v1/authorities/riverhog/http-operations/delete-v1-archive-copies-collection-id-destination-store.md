@@ -65,9 +65,9 @@ Cancel Archive Copy Job
 - [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
 
-### Operation qualification evidence
+### Structural operation bindings
 
-This evidence proves maintained client, CLI, response-authority, and provider qualification without creating a second semantic operation.
+This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
 ```json
 {

@@ -98,7 +98,7 @@ def test_durable_state_and_python_structures_are_exact_human_audit_units() -> No
     assert "tests/fixtures/state/v1_0001/riverhog.postgresql.sql" in sources_page
 
 
-def test_http_semantics_are_owned_once_and_operation_parity_remains_exact_evidence() -> None:
+def test_http_semantics_are_owned_once_and_operation_bindings_remain_structural() -> None:
     checked = checked_atlas()
     root = checked.root
     elements = root["elements"]
@@ -129,6 +129,27 @@ def test_http_semantics_are_owned_once_and_operation_parity_remains_exact_eviden
         item = qualified[(record["application"], record["operation_id"])]
         page = checked.files[item["dossier"]].decode()
         assert atlas._pretty_json(record) in page
+        assert "### Structural operation bindings" in page
+        assert "not executed qualification" in page
+
+
+def test_collection_list_audit_exposes_scoped_tests_and_unestablished_progression() -> None:
+    checked = checked_atlas()
+    operation = next(
+        item
+        for item in checked.root["elements"]
+        if item["interface"] == "http-operations"
+        and item["authority"] == "riverhog"
+        and item["details"]["operation_id"] == "list_collections"
+    )
+    page = checked.files[operation["dossier"]].decode()
+    assert "### Progression evidence and open obligations" in page
+    assert "riverhog-read-collection-progression/v1" in page
+    sources = checked.files["riverhog-v1/evidence/sources.md"].decode()
+    assert "no executed qualification result or CI attestation" in sources
+    assert "Shared token codec" in sources
+    assert "does not prove each route supplies those bindings correctly" in sources
+    assert "uses a fake client and does not establish general output parity" in sources
 
 
 def test_every_dossier_is_lossless_and_representative_contract_classes_are_semantics_first() -> (

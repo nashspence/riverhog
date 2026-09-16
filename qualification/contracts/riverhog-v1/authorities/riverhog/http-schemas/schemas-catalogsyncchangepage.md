@@ -48,6 +48,12 @@ Shared facts for every subject below: maximum=100; progression={"cursor_paramete
 | [field source_identity](#s-aad3b69d89) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation" |
 | [field through_revision](#s-7679cb53ca) | `length · characters · contract_max` | maximum=19; minimum=1; reason="schema-maximum" |
 
+### Progression evidence and open obligations
+
+These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+
+- [riverhog-read-collection-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-1536c4a29a)
+
 ## Maintained corroboration
 
 ### Referenced contract dossiers

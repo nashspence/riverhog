@@ -52,6 +52,12 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 |---|---|---|
 | <a id="s-76bcd66c7f"></a>[parameter limit](#s-f727189551) | `value · schema-value · contract_max` | shared above |
 
+### Progression evidence and open obligations
+
+These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+
+- [stove0-read-collection-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-34931f753b)
+
 ## Maintained corroboration
 
 ### Related interface records
@@ -82,9 +88,9 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 - [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 - [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
 
-### Operation qualification evidence
+### Structural operation bindings
 
-This evidence proves maintained client, CLI, response-authority, and provider qualification without creating a second semantic operation.
+This generated record links maintained client, CLI, response-authority, and provider routes. It checks interface structure, not executed qualification, successful CLI execution, or human/JSON equivalence. Test bindings and qualification commands are audit leads, not run results.
 
 ```json
 {

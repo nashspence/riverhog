@@ -848,8 +848,11 @@ def _render_atlas(
         f"[Atlas]({_relative_link(source_evidence_path, root_path)}) · "
         f"[Freeze evidence]({_relative_link(source_evidence_path, evidence_path)})",
         "",
-        "This page is proof routing, not contract navigation. Every dossier names its locally "
-        "applicable executable sources and qualification routes.",
+        "This page routes audit work to executable sources and qualification commands. "
+        "A binding means the source exists; it does not mean a behavioral claim was proved. "
+        "This checked-in atlas contains no executed qualification result or CI attestation. "
+        "A passing run applies only to its executed checks and exact source SHA; main CI "
+        "does not imply release or provider qualification.",
         "",
         "## Qualification routes",
         "",
@@ -919,6 +922,40 @@ def _render_atlas(
                     f"| `{_md(state_source['id'])}` | `{_md(fixture['path'])}` | "
                     f"`{_md(fixture['sha256'])}` |"
                 )
+    witnesses = cast(Sequence[Mapping[str, object]], trace["segmented_extent_witnesses"])
+    source_lines.extend(
+        [
+            "",
+            "## Progression evidence and open obligations",
+            "",
+            "Each group lists its unestablished obligations. Test-symbol existence and "
+            "owner/reason matching validate routing only. A shared codec test "
+            "requires a separate route-wiring argument; mutable browsing carries no implied "
+            "snapshot-completeness guarantee.",
+            "",
+            "| Candidate group | Bound extent decisions | Candidate tests | Unestablished claims |",
+            "|---|---:|---:|---|",
+        ]
+    )
+    for witness in witnesses:
+        witness_id = str(witness["id"])
+        bound_count = sum(
+            witness_id in cast(Sequence[str], link.get("segmented_extent_witnesses", ()))
+            for link in cast(Sequence[Mapping[str, object]], trace["extent_sources"])
+        )
+        source_lines.append(
+            f"| {_html_anchor(_anchor_id('extent-witness', witness_id))}`{_md(witness_id)}` | "
+            f"{bound_count} | {len(cast(Sequence[str], witness['test_node_ids']))} | "
+            + ", ".join(
+                _md(claim.replace("_", " "))
+                for claim in cast(Sequence[str], witness["unestablished_claims"])
+            )
+            + " |"
+        )
+    source_lines.extend(["", "### Reviewed test scopes", ""])
+    for witness in witnesses:
+        for test in cast(Sequence[Mapping[str, str]], witness["test_scopes"]):
+            source_lines.extend([f"- `{_md(test['node_id'])}`: {_md(test['scope'])}", ""])
     files[source_evidence_path] = ("\n".join(source_lines).rstrip() + "\n").encode()
 
     authority_registry = cast(Mapping[str, object], trace["authority_registry"])
