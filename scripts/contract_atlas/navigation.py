@@ -62,7 +62,10 @@ def _repository_source_target(location: Mapping[str, object]) -> str:
 
 
 def _repository_source_link(document: str, location: Mapping[str, object], label: str) -> str:
-    return f"[{_md(label)}]({_relative_link(document, _repository_source_target(location))})"
+    # These targets leave qualification/contracts. Keep their parent traversal
+    # lexical: relpath would resolve it against the checkout's current directory.
+    parents = "../" * len(PurePosixPath(document).parent.parts)
+    return f"[{_md(label)}]({parents}{_repository_source_target(location)})"
 
 
 def _repository_source_targets(trace: Mapping[str, object]) -> set[str]:
