@@ -14,20 +14,39 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d3e1aec762"></a>
-- <a id="s-51615cd833"></a>`title`: ReviewTargetConfig
-- <a id="s-4280543e3c"></a>`type`: object
+
+- <a id="s-4280543e3c"></a>`type`: `"object"`
+- <a id="s-0f1d00142d"></a>`additionalProperties`: `false`
+- <a id="s-2e54db8d3b"></a>`required`: `["samplers"]`
+- <a id="s-51615cd833"></a>`title`: `"ReviewTargetConfig"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1c32ef932b"></a>`samplers` | yes | type="array"; minItems=1; items=(#/$defs/SamplerConfig) |  |
+| <a id="s-1c32ef932b"></a>`samplers` | yes | type="array"; items=([SamplerConfig](#s-59188e1eee)); minItems=1 |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-59188e1eee"></a>`SamplerConfig` | type="object"; fields=`allow_insecure_http`, `base_url`, `descriptor_sha256`, `id`, `image_digest`, `token_file`; additional keys=`additionalProperties`, `required` |
+- [SamplerConfig](#s-59188e1eee)
+
+### <a id="s-59188e1eee"></a>definition `SamplerConfig`
+
+- <a id="s-18d09066d0"></a>`type`: `"object"`
+- <a id="s-535ec1e598"></a>`additionalProperties`: `false`
+- <a id="s-b3f463d63d"></a>`required`: `["id","base_url","token_file","descriptor_sha256","image_digest"]`
+- <a id="s-e8fcbe747e"></a>`title`: `"SamplerConfig"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-682215731b"></a>`allow_insecure_http` | no | type="boolean"; default=false |  |
+| <a id="s-1cfe63b462"></a>`base_url` | yes | type="string"; maxLength=2048; minLength=1 |  |
+| <a id="s-377424141f"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-cd93604a6a"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$" |  |
+| <a id="s-5f406f7876"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-4ebab6c7fe"></a>`token_file` | yes | type="string"; format="path" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -43,9 +62,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-1cfe63b462"></a>[definition SamplerConfig · field base_url](#s-59188e1eee) | `length · characters · contract_max` | maximum=2048; minimum=1; reason="schema-maximum" |
-| <a id="s-377424141f"></a>[definition SamplerConfig · field descriptor_sha256](#s-59188e1eee) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-5f406f7876"></a>[definition SamplerConfig · field image_digest](#s-59188e1eee) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition SamplerConfig · field base_url](#s-1cfe63b462) | `length · characters · contract_max` | maximum=2048; minimum=1; reason="schema-maximum" |
+| [definition SamplerConfig · field descriptor_sha256](#s-377424141f) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition SamplerConfig · field image_digest](#s-5f406f7876) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Governing policies
 
@@ -70,6 +89,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/configuration_documents/stove0-review-target-support:configuration:review-target-config`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -142,3 +164,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -26,8 +26,8 @@ Download Retrieval File
 | <a id="s-0f44a5997d"></a>`collection_id` | query | yes | not declared | [CollectionIdParameter](../http-schemas/schemas-collectionidparameter.md) |
 | <a id="s-c2dded5d77"></a>`path` | query | yes | not declared | type="string" |
 | <a id="s-b26dd4f5ac"></a>`If-Match` | header | yes | not declared | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
-| <a id="s-2a974ee7d8"></a>`Range` | header | no | not declared | anyOf=type="string" \| type="null" |
-| <a id="s-a7a12d14ae"></a>`If-None-Match` | header | no | not declared | anyOf=type="string" \| type="null" |
+| <a id="s-2a974ee7d8"></a>`Range` | header | no | not declared | anyOf=(type="string") \| (type="null") |
+| <a id="s-a7a12d14ae"></a>`If-None-Match` | header | no | not declared | anyOf=(type="string") \| (type="null") |
 
 ### Responses
 
@@ -138,6 +138,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}~1content/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -357,3 +360,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   ]
 }
 ```
+
+</details>

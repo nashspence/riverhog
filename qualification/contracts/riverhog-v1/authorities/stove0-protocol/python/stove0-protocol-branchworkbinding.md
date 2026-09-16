@@ -27,16 +27,19 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-c31550b92b"></a>
-- <a id="s-4b881d95e3"></a>`type`: object
 
-### Fields
+- <a id="s-4b881d95e3"></a>`type`: `"object"`
+- <a id="s-0f96c6f46b"></a>`additionalProperties`: `false`
+- <a id="s-6595269319"></a>`required`: `["parent_work_id","branch_id","decision_sha256","artifact_selection_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-e96414b511"></a>`artifact_selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-6a1a2c95ed"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-269fd921d0"></a>`decision_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-c1d540294e"></a>`kind` | no | type="string"; const="branch" |  |
+| <a id="s-c1d540294e"></a>`kind` | no | type="string"; const="branch"; default="branch" |  |
 | <a id="s-8638fc8d8c"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Governing policies
@@ -60,6 +63,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_protocol.BranchWorkBinding`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -110,3 +116,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

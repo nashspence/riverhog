@@ -27,16 +27,19 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-6b6311c3b3"></a>
-- <a id="s-8c8dc28740"></a>`type`: object
 
-### Fields
+- <a id="s-8c8dc28740"></a>`type`: `"object"`
+- <a id="s-124e36c4ff"></a>`additionalProperties`: `false`
+- <a id="s-f3fe166045"></a>`required`: `["fence","audience"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7b3788c2b2"></a>`actions` | no | type="array"; minItems=1; items=(type="string"; enum=["read-inputs","write-output"]); oneOf=const=["read-inputs"] \| const=["read-inputs","write-output"] |  |
+| <a id="s-7b3788c2b2"></a>`actions` | no | type="array"; items=(type="string"; enum=["read-inputs","write-output"]); minItems=1; oneOf=(const=["read-inputs"]) \| (const=["read-inputs","write-output"]) |  |
 | <a id="s-3677aee9dc"></a>`audience` | yes | type="string"; pattern="^[a-z0-9][a-z0-9._:/-]{0,299}$" |  |
 | <a id="s-517200eda4"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-fbbcc79c6e"></a>`ttl_seconds` | no | type="integer"; minimum=30; maximum=86400 |  |
+| <a id="s-fbbcc79c6e"></a>`ttl_seconds` | no | type="integer"; minimum=30; maximum=86400; default=900 |  |
 
 ## Maintained corroboration
 
@@ -67,6 +70,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.TransformCapabilityCreateDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -132,3 +138,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

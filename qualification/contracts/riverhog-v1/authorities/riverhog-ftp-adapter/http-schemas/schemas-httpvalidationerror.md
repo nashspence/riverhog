@@ -14,8 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e56876550a"></a>
-- <a id="s-80163497bd"></a>`title`: HTTPValidationError
-- <a id="s-3f107bb300"></a>`type`: object
+
+- <a id="s-3f107bb300"></a>`type`: `"object"`
+- <a id="s-80163497bd"></a>`title`: `"HTTPValidationError"`
 
 ### Fields
 
@@ -62,6 +63,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 7373c21f1389312367e27e440140ba11d587693c56d8aa27249b36d3f58c10c6 -->
@@ -81,3 +85,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

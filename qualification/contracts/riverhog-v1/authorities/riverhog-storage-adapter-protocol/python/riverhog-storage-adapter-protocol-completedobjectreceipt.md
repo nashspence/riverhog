@@ -27,19 +27,22 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-e49af6a44f"></a>
-- <a id="s-9c6edd0b86"></a>`type`: object
 
-### Fields
+- <a id="s-9c6edd0b86"></a>`type`: `"object"`
+- <a id="s-7a13382623"></a>`additionalProperties`: `false`
+- <a id="s-e3d5d357ae"></a>`required`: `["object_path","stored_bytes","verified_content_type","verified_identity_assertions","verified_placement","completed_at"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4cb2f85567"></a>`completed_at` | yes | type="string"; minLength=1; maxLength=100 |  |
-| <a id="s-ca77fdd25d"></a>`entity_token` | no | anyOf=type="string"; minLength=1; maxLength=4000 \| type="null" |  |
-| <a id="s-3d56fe7991"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-6172d99bd4"></a>`revision` | no | anyOf=type="string"; minLength=1; maxLength=2000 \| type="null" |  |
+| <a id="s-4cb2f85567"></a>`completed_at` | yes | type="string"; maxLength=100; minLength=1 |  |
+| <a id="s-ca77fdd25d"></a>`entity_token` | no | anyOf=(type="string"; maxLength=4000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-3d56fe7991"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-6172d99bd4"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
 | <a id="s-1e07875f37"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-aa2f38771f"></a>`verified_content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
-| <a id="s-0aea214e3f"></a>`verified_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| <a id="s-aa2f38771f"></a>`verified_content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
+| <a id="s-0aea214e3f"></a>`verified_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} |  |
 | <a id="s-fb208f5363"></a>`verified_placement` | yes | type="string"; enum=["archive","immediate"] |  |
 
 ## Maintained corroboration
@@ -71,6 +74,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.CompletedObjectReceipt`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -166,3 +172,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

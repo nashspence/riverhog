@@ -14,14 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2b28861351"></a>
-- <a id="s-cb58ebc063"></a>`title`: SetKeyDownloadQuotaRequest
-- <a id="s-7a74c08ed5"></a>`type`: object
+
+- <a id="s-7a74c08ed5"></a>`type`: `"object"`
+- <a id="s-a8046636a5"></a>`additionalProperties`: `false`
+- <a id="s-de326106bc"></a>`required`: `["monthly_bytes"]`
+- <a id="s-cb58ebc063"></a>`title`: `"SetKeyDownloadQuotaRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-60ad711d07"></a>`monthly_bytes` | yes | anyOf=#/components/schemas/MonthlyDownloadQuotaBytes \| type="null" |  |
+| <a id="s-60ad711d07"></a>`monthly_bytes` | yes | anyOf=(#/components/schemas/MonthlyDownloadQuotaBytes) \| (type="null") |  |
 
 ## Maintained corroboration
 
@@ -51,6 +54,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 5db7dca3d11b00250fcdfb044e4521283e93acdaaece25d0d55ba8256d0bdd24 -->
@@ -77,3 +83,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

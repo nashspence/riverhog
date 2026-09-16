@@ -27,28 +27,96 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ac3087e8e5"></a>
-- <a id="s-431c1cf8c3"></a>`type`: object
 
-### Fields
+- <a id="s-431c1cf8c3"></a>`type`: `"object"`
+- <a id="s-9518e0664a"></a>`additionalProperties`: `false`
+- <a id="s-07467b6129"></a>`required`: `["path","bytes","sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-8ef0950b9b"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-7e7965894e"></a>`path` | yes | #/$defs/CanonicalRelPath |  |
-| <a id="s-f6526b2622"></a>`provenance` | no | anyOf=oneOf=#/$defs/CapturedFileProvenanceBinding \| #/$defs/OmittedFileProvenanceBinding; additional keys=`discriminator` \| type="null" |  |
-| <a id="s-d708f72f7f"></a>`raw_parts` | no | anyOf=#/$defs/CollectionUploadRawPartsIn \| type="null" |  |
+| <a id="s-7e7965894e"></a>`path` | yes | [CanonicalRelPath](#s-2c127c38b4) |  |
+| <a id="s-f6526b2622"></a>`provenance` | no | anyOf=(discriminator={"mapping":{"captured":"[CapturedFileProvenanceBinding](#s-e4b2dfa1c2)","omitted":"[OmittedFileProvenanceBinding](#s-774afcbe22)"},"propertyName":"status"}; oneOf=([CapturedFileProvenanceBinding](#s-e4b2dfa1c2)) \| ([OmittedFileProvenanceBinding](#s-774afcbe22))) \| (type="null"); default=null |  |
+| <a id="s-d708f72f7f"></a>`raw_parts` | no | anyOf=([CollectionUploadRawPartsIn](#s-9617869a96)) \| (type="null"); default=null |  |
 | <a id="s-d662903a5f"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
+- [CanonicalRelPath](#s-2c127c38b4)
+- [CapturedFileProvenanceBinding](#s-e4b2dfa1c2)
+- [CollectionUploadRawPartsIn](#s-9617869a96)
+- [OmittedFileProvenanceBinding](#s-774afcbe22)
+- [ProvenanceJournalId](#s-71d9f30b54)
+- [ProvenanceStateId](#s-31a410e8a3)
+
+##### <a id="s-2c127c38b4"></a>definition `CanonicalRelPath`
+
+- <a id="s-b9496795ac"></a>`type`: `"string"`
+- <a id="s-6735846618"></a>`format`: `"riverhog-canonical-relpath-v1"`
+- <a id="s-d27e2c3720"></a>`maxLength`: `4096`
+- <a id="s-caeb44ae68"></a>`minLength`: `1`
+- <a id="s-20edd778a4"></a>`pattern`: `"^[^/\\\\]+(?:/[^/\\\\]+)*$"`
+- <a id="s-22239b79cf"></a>`x-unicode-normalization`: `"NFC"`
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
 |---|---|
-| <a id="s-2c127c38b4"></a>`CanonicalRelPath` | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
-| <a id="s-e4b2dfa1c2"></a>`CapturedFileProvenanceBinding` | type="object"; fields=`current_state_id`, `journal_id`, `status`; additional keys=`additionalProperties`, `required` |
-| <a id="s-9617869a96"></a>`CollectionUploadRawPartsIn` | type="object"; fields=`ordered_sha256`, `part_count`, `part_plaintext_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-774afcbe22"></a>`OmittedFileProvenanceBinding` | type="object"; fields=`omission_reason`, `status`; additional keys=`additionalProperties`, `required` |
-| <a id="s-71d9f30b54"></a>`ProvenanceJournalId` | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
-| <a id="s-31a410e8a3"></a>`ProvenanceStateId` | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
+| <a id="s-230558973c"></a>1 | not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)") |
+| <a id="s-a41f196552"></a>2 | not=(pattern="^\\s\|\\s$") |
+
+##### <a id="s-e4b2dfa1c2"></a>definition `CapturedFileProvenanceBinding`
+
+- <a id="s-6184453edd"></a>`type`: `"object"`
+- <a id="s-c77aa1f299"></a>`additionalProperties`: `false`
+- <a id="s-15d2473e5b"></a>`required`: `["journal_id","current_state_id","status"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-109bf645de"></a>`current_state_id` | yes | [ProvenanceStateId](#s-31a410e8a3) |  |
+| <a id="s-f1800ef574"></a>`journal_id` | yes | [ProvenanceJournalId](#s-71d9f30b54) |  |
+| <a id="s-72e276dc82"></a>`status` | yes | type="string"; const="captured" |  |
+
+##### <a id="s-9617869a96"></a>definition `CollectionUploadRawPartsIn`
+
+- <a id="s-c0f3611bc9"></a>`type`: `"object"`
+- <a id="s-0b30457318"></a>`additionalProperties`: `false`
+- <a id="s-50c453cae5"></a>`required`: `["part_plaintext_bytes","part_count","ordered_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-9caff934d7"></a>`ordered_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1c9e32d236"></a>`part_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-74bf523b87"></a>`part_plaintext_bytes` | yes | type="integer"; minimum=65536 |  |
+
+##### <a id="s-774afcbe22"></a>definition `OmittedFileProvenanceBinding`
+
+- <a id="s-a96d69a283"></a>`type`: `"object"`
+- <a id="s-1ba932c334"></a>`additionalProperties`: `false`
+- <a id="s-6b18de5f37"></a>`required`: `["status","omission_reason"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-27a4e7ac40"></a>`omission_reason` | yes | type="string"; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
+| <a id="s-5a990e3352"></a>`status` | yes | type="string"; const="omitted" |  |
+
+##### <a id="s-71d9f30b54"></a>definition `ProvenanceJournalId`
+
+- <a id="s-78dd0592a4"></a>`type`: `"string"`
+- <a id="s-388d30ce72"></a>`pattern`: `"^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"`
+
+##### <a id="s-31a410e8a3"></a>definition `ProvenanceStateId`
+
+- <a id="s-2b9a1dfe2a"></a>`type`: `"string"`
+- <a id="s-09131f3abf"></a>`pattern`: `"^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"`
 
 ## Governing policies
 
@@ -71,6 +139,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.CollectionUploadFileIn`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -239,3 +310,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

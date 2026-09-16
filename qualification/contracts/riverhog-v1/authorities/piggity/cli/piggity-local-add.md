@@ -44,7 +44,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-ba8f17cf23"></a>`completed` | <a id="s-6191846f61"></a>`{"kind":"command-completed"}` | <a id="s-2ca0d4c6a2"></a>`0` | <a id="s-3ec7696914"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-local-add-result/v1](#s-3ec7696914) | <a id="s-cf05916a92"></a>all: `empty` |
+| <a id="s-ba8f17cf23"></a>`completed` | <a id="s-6191846f61"></a>`{"kind":"command-completed"}` | <a id="s-2ca0d4c6a2"></a>`0` | <a id="s-3ec7696914"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-local-add-result/v1](#s-47c1b8cdd2) | <a id="s-cf05916a92"></a>all: `empty` |
 
 #### Failure outcomes
 
@@ -52,6 +52,43 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|---|
 | <a id="s-85bcf7d329"></a>`usage` | <a id="s-22cfb407fa"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-1f5517d615"></a>`2` | <a id="s-70e77ea78a"></a>all: `empty` | <a id="s-d0209239bb"></a>all: `noncontractual-usage-diagnostic` |
 | <a id="s-65f80b576a"></a>`operational` | <a id="s-67407cc036"></a>`{"kind":"application-error"}` | <a id="s-0b5581bf48"></a>`1` | <a id="s-9bed62b9aa"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-d436be9c29"></a>human: `noncontractual-diagnostic`; json: `empty` |
+
+### Local structured outputs
+
+
+#### <a id="s-47c1b8cdd2"></a>`piggity-local-add-result/v1`
+
+Applies to: completed · stdout (json).
+
+<a id="s-c5d3cfb131"></a>
+
+- <a id="s-1a4b63fbd4"></a>`type`: `"object"`
+- <a id="s-74be903758"></a>`additionalProperties`: `false`
+- <a id="s-69d375ed7d"></a>`required`: `["status","collection"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `collection` | yes | [See field `collection`](#s-e8c315b9e3) |  |
+| <a id="s-04276f05ce"></a>`status` | yes | const="added" |  |
+
+##### <a id="s-e8c315b9e3"></a>field `collection`
+
+- <a id="s-375e0c6192"></a>`type`: `"object"`
+- <a id="s-c8421fae82"></a>`additionalProperties`: `false`
+- <a id="s-882efc6c00"></a>`required`: `["collection_id","created_at","tag_count","status","files","bytes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a82c809166"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-71ceee83b8"></a>`collection_id` | yes | type="integer"; minimum=1 |  |
+| <a id="s-97746b45e1"></a>`created_at` | yes | type="string" |  |
+| <a id="s-5351954972"></a>`files` | yes | type="integer"; minimum=0 |  |
+| <a id="s-bb68e09549"></a>`status` | yes | enum=["desired","remote-deleted","synchronizing"] |  |
+| <a id="s-1d8a8a317e"></a>`tag_count` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -104,6 +141,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 - `/external_contract/cli/piggity/commands/local/commands/add/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -370,3 +410,5 @@ false
   }
 ]
 ```
+
+</details>

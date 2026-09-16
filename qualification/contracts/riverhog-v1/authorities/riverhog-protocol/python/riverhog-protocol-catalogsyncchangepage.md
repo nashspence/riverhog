@@ -27,28 +27,78 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-41e3ad29a6"></a>
-- <a id="s-af3d3bf176"></a>`type`: object
 
-### Fields
+- <a id="s-af3d3bf176"></a>`type`: `"object"`
+- <a id="s-4ba5954d79"></a>`additionalProperties`: `false`
+- <a id="s-dd92c57493"></a>`required`: `["source_identity","authorization_view_identity","changes","next_cursor","caught_up","through_revision"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0a4585062d"></a>`authorization_view_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-0a4585062d"></a>`authorization_view_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-41c8947328"></a>`caught_up` | yes | type="boolean" |  |
-| <a id="s-c2575cc1c5"></a>`changes` | yes | type="array"; maxItems=100; items=(oneOf=#/$defs/CatalogSyncUpsert \| #/$defs/CatalogSyncDelete; additional keys=`discriminator`) |  |
-| <a id="s-abca29af81"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1" |  |
-| <a id="s-708ac3cf38"></a>`next_cursor` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-d0e9a7990f"></a>`source_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-b4ec350e94"></a>`through_revision` | yes | type="string"; minLength=1; maxLength=19; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+| <a id="s-c2575cc1c5"></a>`changes` | yes | type="array"; items=(discriminator={"mapping":{"delete":"[CatalogSyncDelete](#s-168dffbf4b)","upsert":"[CatalogSyncUpsert](#s-4015421cfa)"},"propertyName":"operation"}; oneOf=([CatalogSyncUpsert](#s-4015421cfa)) \| ([CatalogSyncDelete](#s-168dffbf4b))); maxItems=100 |  |
+| <a id="s-abca29af81"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1"; default="riverhog-catalog-sync/v1" |  |
+| <a id="s-708ac3cf38"></a>`next_cursor` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-d0e9a7990f"></a>`source_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b4ec350e94"></a>`through_revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-168dffbf4b"></a>`CatalogSyncDelete` | type="object"; fields=`collection_id`, `operation`, `revision`; additional keys=`additionalProperties`, `required` |
-| <a id="s-4015421cfa"></a>`CatalogSyncUpsert` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`, `description`, `description_identity`, `description_revision`, `operation`, `revision`, `tag_revision`, `tag_set_identity`; additional keys=`additionalProperties`, `required` |
-| <a id="s-aafc0c1ae8"></a>`CollectionDescription` | type="string"; minLength=1; maxLength=32768; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
-| <a id="s-389380939c"></a>`CollectionId` | type="integer"; minimum=1 |
+- [CatalogSyncDelete](#s-168dffbf4b)
+- [CatalogSyncUpsert](#s-4015421cfa)
+- [CollectionDescription](#s-aafc0c1ae8)
+- [CollectionId](#s-389380939c)
+
+##### <a id="s-168dffbf4b"></a>definition `CatalogSyncDelete`
+
+- <a id="s-668c57e50d"></a>`type`: `"object"`
+- <a id="s-36a38667f6"></a>`additionalProperties`: `false`
+- <a id="s-5ee264b16b"></a>`required`: `["collection_id","revision"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-d6acbd562e"></a>`collection_id` | yes | [CollectionId](#s-389380939c) |  |
+| <a id="s-0f2bac5ce5"></a>`operation` | no | type="string"; const="delete"; default="delete" |  |
+| <a id="s-45aa2629f1"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+
+##### <a id="s-4015421cfa"></a>definition `CatalogSyncUpsert`
+
+- <a id="s-650825daaa"></a>`type`: `"object"`
+- <a id="s-c35c20cbf0"></a>`additionalProperties`: `false`
+- <a id="s-2b8912e396"></a>`required`: `["collection_id","archive_root_sha256","content_identity","description","description_revision","description_identity","tag_revision","tag_set_identity","revision"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-538e027e62"></a>`archive_root_sha256` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1b69b1a43a"></a>`collection_id` | yes | [CollectionId](#s-389380939c) |  |
+| <a id="s-f358322e30"></a>`content_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-77c3b2ee5e"></a>`description` | yes | anyOf=([CollectionDescription](#s-aafc0c1ae8)) \| (type="null") |  |
+| <a id="s-9be1b15cf2"></a>`description_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b13e8e62b6"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
+| <a id="s-01ffef1667"></a>`operation` | no | type="string"; const="upsert"; default="upsert" |  |
+| <a id="s-292c7f971c"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+| <a id="s-56c9249cab"></a>`tag_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
+| <a id="s-730a5bad66"></a>`tag_set_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-aafc0c1ae8"></a>definition `CollectionDescription`
+
+- <a id="s-e522f5fd76"></a>`type`: `"string"`
+- <a id="s-76fa736420"></a>`maxLength`: `32768`
+- <a id="s-1f4fde7293"></a>`minLength`: `1`
+- <a id="s-a2dcdc4ab8"></a>`x-riverhog-encoded-bytes-max`: `32768`
+- <a id="s-decf001d0c"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-catalog-description"}`
+- <a id="s-469133de35"></a>`x-unicode-normalization`: `"NFC"`
+
+##### <a id="s-389380939c"></a>definition `CollectionId`
+
+- <a id="s-9dddada050"></a>`type`: `"integer"`
+- <a id="s-669cfd00a3"></a>`minimum`: `1`
 
 ## Governing policies
 
@@ -71,6 +121,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.CatalogSyncChangePage`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -270,3 +323,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

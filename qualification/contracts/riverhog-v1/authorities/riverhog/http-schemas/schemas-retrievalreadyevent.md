@@ -14,19 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-38d6ad8439"></a>
-- <a id="s-de37f7a8cd"></a>`title`: RetrievalReadyEvent
-- <a id="s-c3c03e1023"></a>`type`: object
+
+- <a id="s-c3c03e1023"></a>`type`: `"object"`
+- <a id="s-afce010b64"></a>`additionalProperties`: `false`
+- <a id="s-0794ea509c"></a>`required`: `["id","source","type","time","data"]`
+- <a id="s-de37f7a8cd"></a>`title`: `"RetrievalReadyEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-68122ab8cd"></a>`data` | yes | #/components/schemas/RetrievalReadyData |  |
-| <a id="s-439f04025d"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-439f04025d"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-b4a383aa60"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-bf46e50353"></a>`source` | yes | type="string"; minLength=1 |  |
-| <a id="s-7bad14c84c"></a>`specversion` | no | type="string"; const="1.0" |  |
-| <a id="s-d45f3e80da"></a>`subject` | no | anyOf=type="string"; minLength=1 \| type="null" |  |
+| <a id="s-7bad14c84c"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-d45f3e80da"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null") |  |
 | <a id="s-41e929a32e"></a>`time` | yes | type="string" |  |
 | <a id="s-9b5ee6830d"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.ready" |  |
 
@@ -57,6 +60,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/RetrievalReadyEvent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -124,3 +130,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

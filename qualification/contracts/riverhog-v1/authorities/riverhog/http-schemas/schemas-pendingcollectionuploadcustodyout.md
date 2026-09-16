@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0b4513d179"></a>
-- <a id="s-d780353257"></a>`title`: PendingCollectionUploadCustodyOut
-- <a id="s-3fc701d0a2"></a>`type`: object
+
+- <a id="s-3fc701d0a2"></a>`type`: `"object"`
+- <a id="s-10166bcc37"></a>`additionalProperties`: `false`
+- <a id="s-9cd66fd9b5"></a>`required`: `["state","files","bytes"]`
+- <a id="s-d780353257"></a>`title`: `"PendingCollectionUploadCustodyOut"`
 
 ### Fields
 
@@ -59,6 +62,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: bba3c06332a578b2b21e4382d6c7fffbc08107d4af02df1ec79ed7e4a839cbb7 -->
@@ -92,3 +98,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

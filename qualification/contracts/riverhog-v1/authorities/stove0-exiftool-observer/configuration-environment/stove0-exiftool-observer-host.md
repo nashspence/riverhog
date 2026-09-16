@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6b9a1cd0e6"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-a1ede7b4cd"></a>`consumers` | ["stove0-exiftool-observer"] |
-| <a id="s-0e927dd781"></a>`default_expressions` | ["'127.0.0.1'"] |
-| <a id="s-eb324e3723"></a>`id` | "stove0-exiftool-observer:environment:STOVE0_EXIFTOOL_OBSERVER_HOST" |
-| <a id="s-0147bb6300"></a>`input_shape` | "environment-string" |
-| <a id="s-b2c273c0ba"></a>`name` | "STOVE0_EXIFTOOL_OBSERVER_HOST" |
-| <a id="s-4e30a4d523"></a>`owner` | "stove0-exiftool-observer" |
+| <a id="s-a1ede7b4cd"></a>`consumers` | `["stove0-exiftool-observer"]` |
+| <a id="s-0e927dd781"></a>`default_expressions` | `["'127.0.0.1'"]` |
+| <a id="s-eb324e3723"></a>`id` | `"stove0-exiftool-observer:environment:STOVE0_EXIFTOOL_OBSERVER_HOST"` |
+| <a id="s-0147bb6300"></a>`input_shape` | `"environment-string"` |
+| <a id="s-b2c273c0ba"></a>`name` | `"STOVE0_EXIFTOOL_OBSERVER_HOST"` |
+| <a id="s-4e30a4d523"></a>`owner` | `"stove0-exiftool-observer"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 1d0d2b0ad62550f7ad32b44adeb0786fc39c1dcecab73981e1119b82325e0022 -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "stove0-exiftool-observer"
 }
 ```
+
+</details>

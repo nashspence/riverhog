@@ -22,7 +22,7 @@ Get Recipe
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-6eecb65b87"></a>`recipe_id` | path | yes | not declared | type="string" |
-| <a id="s-220fc4fec4"></a>`revision` | query | no | not declared | anyOf=type="integer" \| type="null" |
+| <a id="s-220fc4fec4"></a>`revision` | query | no | not declared | anyOf=(type="integer") \| (type="null") |
 
 ### Responses
 
@@ -118,6 +118,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -236,3 +239,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   ]
 }
 ```
+
+</details>

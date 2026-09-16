@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4c548f4342"></a>
-- <a id="s-0a15ad2a71"></a>`title`: CollectionUploadDiscardResultOut
-- <a id="s-ec25a7020b"></a>`type`: object
+
+- <a id="s-ec25a7020b"></a>`type`: `"object"`
+- <a id="s-9b2a8abbf7"></a>`additionalProperties`: `false`
+- <a id="s-187c82aa3c"></a>`required`: `["status","collection_id","files","bytes","custody","archive_objects"]`
+- <a id="s-0a15ad2a71"></a>`title`: `"CollectionUploadDiscardResultOut"`
 
 ### Fields
 
@@ -24,7 +27,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-32e26780ea"></a>`archive_objects` | yes | type="integer" |  |
 | <a id="s-84ff4adb17"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-896537db7e"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-c2e32227eb"></a>`custody` | yes | oneOf=#/components/schemas/PendingCollectionUploadCustodyOut \| #/components/schemas/CompleteCollectionUploadCustodyOut; additional keys=`discriminator` |  |
+| <a id="s-c2e32227eb"></a>`custody` | yes | discriminator={"mapping":{"complete":"#/components/schemas/CompleteCollectionUploadCustodyOut","pending":"#/components/schemas/PendingCollectionUploadCustodyOut"},"propertyName":"state"}; oneOf=(#/components/schemas/PendingCollectionUploadCustodyOut) \| (#/components/schemas/CompleteCollectionUploadCustodyOut) |  |
 | <a id="s-c5147f11e8"></a>`files` | yes | type="integer"; minimum=0 |  |
 | <a id="s-7c66179bc1"></a>`status` | yes | type="string"; enum=["discarded","already_absent"] |  |
 
@@ -69,6 +72,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadDiscardResultOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -134,3 +140,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

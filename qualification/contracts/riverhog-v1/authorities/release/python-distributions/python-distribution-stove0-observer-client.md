@@ -58,6 +58,9 @@ Publication preserves these existing component authorities; it does not reclassi
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 06324a4c93ecb5827f4f658fb9665562775a41086c01fb188c8ccf217f2a8df1 -->
@@ -87,3 +90,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "source": "reference/stove0/packages/observer-client/pyproject.toml"
 }
 ```
+
+</details>

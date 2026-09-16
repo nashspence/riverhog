@@ -27,15 +27,18 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-9fb71ba400"></a>
-- <a id="s-ecb292acb2"></a>`type`: object
 
-### Fields
+- <a id="s-ecb292acb2"></a>`type`: `"object"`
+- <a id="s-9f600cee74"></a>`additionalProperties`: `false`
+- <a id="s-d9be947756"></a>`required`: `["branch_id","work_id","workflow_plan_sha256","effect_receipt_sha256","settlement_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-2b40572333"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-e048dc94a3"></a>`effect_receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-f408df7e04"></a>`format` | no | type="string"; const="stove0-branch-effect-settlement/v1" |  |
+| <a id="s-f408df7e04"></a>`format` | no | type="string"; const="stove0-branch-effect-settlement/v1"; default="stove0-branch-effect-settlement/v1" |  |
 | <a id="s-476e450987"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-b7677d118d"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-74ffdfff9b"></a>`workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -68,6 +71,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_protocol.BranchEffectSettlement`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -123,3 +129,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

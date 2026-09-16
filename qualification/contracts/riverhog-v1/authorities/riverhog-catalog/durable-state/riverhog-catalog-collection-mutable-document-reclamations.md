@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fe55b29314"></a>
-- Table: `collection_mutable_document_reclamations`
 
-### Columns
+### Table: `collection_mutable_document_reclamations`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -32,7 +33,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-62a6a202ae"></a>`next_attempt_at` | `VARCHAR` | no | `—` | — |
 | <a id="s-08fa9ba900"></a>`failure` | `TEXT` | yes | `—` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -72,6 +73,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/0/structure/tables/58`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -201,3 +205,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "collection_mutable_document_reclamations"
 }
 ```
+
+</details>

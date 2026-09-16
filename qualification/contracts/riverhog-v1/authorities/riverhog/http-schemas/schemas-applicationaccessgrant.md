@@ -14,16 +14,81 @@ One canonical public application-access request or response grant.
 ## External contract
 
 <a id="s-ee1b3c97d7"></a>
-- <a id="s-bdfdb13bfb"></a>`title`: ApplicationAccessGrant
-- <a id="s-5f6a2a8d90"></a>`description`: One canonical public application-access request or response grant.
-- <a id="s-2c00789161"></a>`type`: object
+
+- <a id="s-2c00789161"></a>`type`: `"object"`
+- <a id="s-ce5d8d75f5"></a>`additionalProperties`: `false`
+- <a id="s-5f6a2a8d90"></a>`description`: `"One canonical public application-access request or response grant."`
+- <a id="s-7bed041f7b"></a>`required`: `["permission"]`
+- <a id="s-bdfdb13bfb"></a>`title`: `"ApplicationAccessGrant"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-c2cd54ec86"></a>`permission` | yes | #/components/schemas/ApplicationPermission |  |
-| <a id="s-ea597f207a"></a>`resource` | no | $ref="#/components/schemas/ApplicationResource" |  |
+| <a id="s-ea597f207a"></a>`resource` | no | $ref="#/components/schemas/ApplicationResource"; default="*" |  |
+
+### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| 1 | [See `allOf` alternative 1](#s-2ccce8339b) |
+
+### <a id="s-2ccce8339b"></a>`allOf` alternative 1
+
+
+#### Exactly one must match (`oneOf`)
+
+| Alternative | Schema |
+|---|---|
+| 1 | [See `allOf` alternative 1 · `oneOf` alternative 1](#s-7107962cf4) |
+| 2 | [See `allOf` alternative 1 · `oneOf` alternative 2](#s-4c880580ed) |
+| 3 | [See `allOf` alternative 1 · `oneOf` alternative 3](#s-7d157e5c2d) |
+| 4 | [See `allOf` alternative 1 · `oneOf` alternative 4](#s-fbcd7b5b19) |
+
+### <a id="s-7107962cf4"></a>`allOf` alternative 1 · `oneOf` alternative 1
+
+- <a id="s-42de5767ff"></a>`required`: `["permission"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-23290cbe92"></a>`permission` | yes | const="*" |  |
+| <a id="s-c42a16c078"></a>`resource` | no | const="*" |  |
+
+### <a id="s-4c880580ed"></a>`allOf` alternative 1 · `oneOf` alternative 2
+
+- <a id="s-9299b16a53"></a>`required`: `["permission"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-996525436e"></a>`permission` | yes | const="collections:create" |  |
+| <a id="s-d33ebe3dd1"></a>`resource` | no | type="string"; pattern="^(?:\\*\|tag:.+)$" |  |
+
+### <a id="s-7d157e5c2d"></a>`allOf` alternative 1 · `oneOf` alternative 3
+
+- <a id="s-9af7e1bc5a"></a>`required`: `["permission"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-8b0a864b05"></a>`permission` | yes | enum=["archives:manage","archives:read","catalog:read","collection-descriptions:manage","collection-tags:manage","collections:delete","provenance:export","provenance:read","retrieval:manage"] |  |
+| <a id="s-9758c5cd01"></a>`resource` | no | type="string"; pattern="^(?:\\*\|tag:.+\|collection:[1-9][0-9]*)$" |  |
+
+### <a id="s-fbcd7b5b19"></a>`allOf` alternative 1 · `oneOf` alternative 4
+
+- <a id="s-2040edf3f2"></a>`required`: `["permission"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e49c189b6a"></a>`permission` | yes | enum=["collection-transforms:control","collection-transforms:execute","events:read","events:read_all","keys:manage","quotas:manage"] |  |
+| <a id="s-f29b6433d2"></a>`resource` | no | const="*" |  |
 
 ## Maintained corroboration
 
@@ -53,6 +118,9 @@ One canonical public application-access request or response grant.
 - `/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrant`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -155,3 +223,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

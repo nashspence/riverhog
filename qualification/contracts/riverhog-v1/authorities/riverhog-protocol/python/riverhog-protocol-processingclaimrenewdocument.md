@@ -27,14 +27,17 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-0e65013f90"></a>
-- <a id="s-0095a52f9f"></a>`type`: object
 
-### Fields
+- <a id="s-0095a52f9f"></a>`type`: `"object"`
+- <a id="s-97774f793c"></a>`additionalProperties`: `false`
+- <a id="s-b9adf70659"></a>`required`: `["fence"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-c6ad8973f0"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-c75d18c697"></a>`lease_seconds` | no | type="integer"; minimum=30; maximum=86400 |  |
+| <a id="s-c75d18c697"></a>`lease_seconds` | no | type="integer"; minimum=30; maximum=86400; default=1800 |  |
 
 ## Maintained corroboration
 
@@ -64,6 +67,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -100,3 +106,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

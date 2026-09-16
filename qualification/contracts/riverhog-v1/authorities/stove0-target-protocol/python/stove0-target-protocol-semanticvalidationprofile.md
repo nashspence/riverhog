@@ -27,16 +27,19 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-64d59e4e0e"></a>
-- <a id="s-7a6d002705"></a>`type`: object
 
-### Fields
+- <a id="s-7a6d002705"></a>`type`: `"object"`
+- <a id="s-5b86fb94c1"></a>`additionalProperties`: `false`
+- <a id="s-b8ba62793b"></a>`required`: `["id","rules","profile_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f147db3713"></a>`conformance_vectors_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-f147db3713"></a>`conformance_vectors_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
 | <a id="s-43cee0072e"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-cf36349185"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-c170c99cea"></a>`rules` | yes | type="array"; minItems=1; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| <a id="s-c170c99cea"></a>`rules` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
 
 ## Maintained corroboration
 
@@ -67,6 +70,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_protocol.SemanticValidationProfile`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -123,3 +129,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

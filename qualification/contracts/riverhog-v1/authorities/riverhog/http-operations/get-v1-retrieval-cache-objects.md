@@ -23,15 +23,15 @@ List Retrieval Cache Objects
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-e92cbb3fea"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-dd0f2add97"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
-| <a id="s-aded9a430c"></a>`q` | query | no | not declared | anyOf=[BrowseQuery](../http-schemas/schemas-browsequery.md) \| type="null" |
-| <a id="s-c8add90ad7"></a>`collection_id` | query | no | not declared | anyOf=[CollectionIdParameter](../http-schemas/schemas-collectionidparameter.md) \| type="null" |
-| <a id="s-a9e9c9b389"></a>`source_store` | query | no | not declared | anyOf=[ArchiveStoreName](../http-schemas/schemas-archivestorename.md) \| type="null" |
-| <a id="s-1f2a183ae9"></a>`cache_store` | query | no | not declared | anyOf=[RetrievalCacheStoreName](../http-schemas/schemas-retrievalcachestorename.md) \| type="null" |
-| <a id="s-278a2451e8"></a>`state` | query | no | not declared | anyOf=[RetrievalCacheState](../http-schemas/schemas-retrievalcachestate.md) \| type="null" |
-| <a id="s-2cdb46627a"></a>`protection` | query | no | not declared | anyOf=[RetrievalCacheProtection](../http-schemas/schemas-retrievalcacheprotection.md) \| type="null" |
-| <a id="s-09dfc97256"></a>`expires_before` | query | no | not declared | anyOf=type="string" \| type="null" |
-| <a id="s-bcbff18e3a"></a>`expires_after` | query | no | not declared | anyOf=type="string" \| type="null" |
+| <a id="s-dd0f2add97"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
+| <a id="s-aded9a430c"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
+| <a id="s-c8add90ad7"></a>`collection_id` | query | no | not declared | anyOf=([CollectionIdParameter](../http-schemas/schemas-collectionidparameter.md)) \| (type="null") |
+| <a id="s-a9e9c9b389"></a>`source_store` | query | no | not declared | anyOf=([ArchiveStoreName](../http-schemas/schemas-archivestorename.md)) \| (type="null") |
+| <a id="s-1f2a183ae9"></a>`cache_store` | query | no | not declared | anyOf=([RetrievalCacheStoreName](../http-schemas/schemas-retrievalcachestorename.md)) \| (type="null") |
+| <a id="s-278a2451e8"></a>`state` | query | no | not declared | anyOf=([RetrievalCacheState](../http-schemas/schemas-retrievalcachestate.md)) \| (type="null") |
+| <a id="s-2cdb46627a"></a>`protection` | query | no | not declared | anyOf=([RetrievalCacheProtection](../http-schemas/schemas-retrievalcacheprotection.md)) \| (type="null") |
+| <a id="s-09dfc97256"></a>`expires_before` | query | no | not declared | anyOf=(type="string") \| (type="null") |
+| <a id="s-bcbff18e3a"></a>`expires_after` | query | no | not declared | anyOf=(type="string") \| (type="null") |
 | <a id="s-3f24af8c90"></a>`sort` | query | no | `"cached_at"` | [RetrievalCacheSort](../http-schemas/schemas-retrievalcachesort.md) |
 | <a id="s-2e8818cb8a"></a>`order` | query | no | `"desc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
 
@@ -170,6 +170,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-cache~1objects/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -444,3 +447,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

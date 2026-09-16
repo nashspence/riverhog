@@ -56,6 +56,9 @@ Publication preserves these existing component authorities; it does not reclassi
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 8770c413e848114f77dbf5fb4899b429e3c93dd70b7628b0d43c88ae54d4bc88 -->
@@ -76,3 +79,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   ]
 }
 ```
+
+</details>

@@ -14,27 +14,75 @@ One bounded page under an adapter-owned immutable traversal view.
 ## External contract
 
 <a id="s-d39c66e138"></a>
-- <a id="s-3251df53fd"></a>`title`: WriteSegmentPage
-- <a id="s-bccfafd22d"></a>`description`: One bounded page under an adapter-owned immutable traversal view.
-- <a id="s-eebb216bdf"></a>`type`: object
+
+- <a id="s-eebb216bdf"></a>`type`: `"object"`
+- <a id="s-5a0fc5c6e4"></a>`additionalProperties`: `false`
+- <a id="s-bccfafd22d"></a>`description`: `"One bounded page under an adapter-owned immutable traversal view."`
+- <a id="s-9d672c5f5e"></a>`required`: `["session","traversal_token"]`
+- <a id="s-3251df53fd"></a>`title`: `"WriteSegmentPage"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-05723f37a4"></a>`completion` | no | anyOf=#/$defs/WriteCompletionAuthority \| type="null" |  |
-| <a id="s-2130080be0"></a>`next_after_number` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
-| <a id="s-33643dd5a1"></a>`segments` | no | type="array"; maxItems=128; items=(#/$defs/WriteSegmentReceipt); additional keys=`x-riverhog-extent` |  |
-| <a id="s-2b84ac917f"></a>`session` | yes | #/$defs/WriteSession |  |
-| <a id="s-401c234753"></a>`traversal_token` | yes | type="string"; minLength=1; maxLength=4000 |  |
+| <a id="s-05723f37a4"></a>`completion` | no | anyOf=([WriteCompletionAuthority](#s-21da49f925)) \| (type="null"); default=null |  |
+| <a id="s-2130080be0"></a>`next_after_number` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
+| <a id="s-33643dd5a1"></a>`segments` | no | type="array"; default=[]; items=([WriteSegmentReceipt](#s-49182d9498)); maxItems=128; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"exact-adapter-write-traversal","reason":"bounded-storage-write-segment-page"} |  |
+| <a id="s-2b84ac917f"></a>`session` | yes | [WriteSession](#s-182505f3d5) |  |
+| <a id="s-401c234753"></a>`traversal_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-21da49f925"></a>`WriteCompletionAuthority` | type="object"; fields=`authority_token`, `segment_count`, `stored_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-49182d9498"></a>`WriteSegmentReceipt` | type="object"; fields=`number`, `segment_token`, `stored_bytes`, `stored_sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-182505f3d5"></a>`WriteSession` | type="object"; fields=`expected_bytes`, `object_path`, `write_token`; additional keys=`additionalProperties`, `required` |
+- [WriteCompletionAuthority](#s-21da49f925)
+- [WriteSegmentReceipt](#s-49182d9498)
+- [WriteSession](#s-182505f3d5)
+
+### <a id="s-21da49f925"></a>definition `WriteCompletionAuthority`
+
+- <a id="s-5187ac4808"></a>`type`: `"object"`
+- <a id="s-21193e2351"></a>`additionalProperties`: `false`
+- <a id="s-a335faf8e1"></a>`description`: `"Adapter-issued terminal authority for one exact active-write state.\n\nConsumers echo the opaque token unchanged. It is neither a credential nor a\nbearer capability; completion remains independently authorized. Once an exact\nimmutable object is published, its completed-object identity supersedes this\ntransport authority for terminal reconciliation."`
+- <a id="s-b39f82fd05"></a>`required`: `["segment_count","stored_bytes","authority_token"]`
+- <a id="s-a21e438197"></a>`title`: `"WriteCompletionAuthority"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-be34d2262f"></a>`authority_token` | yes | type="string"; maxLength=4000; minLength=1 | Bounded opaque adapter-issued authority for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged. |
+| <a id="s-10adf909eb"></a>`segment_count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-347c213eaf"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
+
+### <a id="s-49182d9498"></a>definition `WriteSegmentReceipt`
+
+- <a id="s-10f4eeb6f9"></a>`type`: `"object"`
+- <a id="s-650eab54e1"></a>`additionalProperties`: `false`
+- <a id="s-325e4e8529"></a>`required`: `["number","segment_token","stored_bytes"]`
+- <a id="s-2e21b73a54"></a>`title`: `"WriteSegmentReceipt"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4cd5e84a2c"></a>`number` | yes | type="integer"; minimum=1 |  |
+| <a id="s-61c3694c07"></a>`segment_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
+| <a id="s-888b147fe3"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-bf436c18ac"></a>`stored_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+
+### <a id="s-182505f3d5"></a>definition `WriteSession`
+
+- <a id="s-c5f3b5c39f"></a>`type`: `"object"`
+- <a id="s-c16ac49bbd"></a>`additionalProperties`: `false`
+- <a id="s-ea97a3d165"></a>`required`: `["object_path","expected_bytes","write_token"]`
+- <a id="s-e091763de4"></a>`title`: `"WriteSession"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-191777666f"></a>`expected_bytes` | yes | type="integer"; minimum=1 | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
+| <a id="s-d8564aa07c"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-059cc0748b"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1 | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
 
 ### Progression, limits, and lifecycle
 
@@ -51,8 +99,8 @@ Shared facts for every subject below: maximum=128; minimum=null; progression={"p
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [field traversal_token](#s-401c234753) | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
-| <a id="s-61c3694c07"></a>[definition WriteSegmentReceipt · field segment_token](#s-49182d9498) | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
-| <a id="s-0833484d84"></a>[definition WriteSegmentReceipt · field stored_sha256 · string value](#s-49182d9498) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition WriteSegmentReceipt · field segment_token](#s-61c3694c07) | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
+| <a id="s-0833484d84"></a>[definition WriteSegmentReceipt · field stored_sha256 · string value](#s-bf436c18ac) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ### Progression evidence and open obligations
 
@@ -89,6 +137,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -259,3 +310,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

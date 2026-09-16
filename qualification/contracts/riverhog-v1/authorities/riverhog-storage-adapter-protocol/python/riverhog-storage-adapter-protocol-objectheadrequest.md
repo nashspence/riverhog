@@ -27,20 +27,34 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-70d5e9eea3"></a>
-- <a id="s-e0ac15e6f5"></a>`type`: object
 
-### Fields
+- <a id="s-e0ac15e6f5"></a>`type`: `"object"`
+- <a id="s-e3a97b24c8"></a>`additionalProperties`: `false`
+- <a id="s-cab2844872"></a>`required`: `["object","expected_placement"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-1798c06a34"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
-| <a id="s-01cf494aa8"></a>`object` | yes | #/$defs/ObjectLocator |  |
+| <a id="s-01cf494aa8"></a>`object` | yes | [ObjectLocator](#s-6b8a5bc6a1) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-6b8a5bc6a1"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
+- [ObjectLocator](#s-6b8a5bc6a1)
+
+##### <a id="s-6b8a5bc6a1"></a>definition `ObjectLocator`
+
+- <a id="s-e8714356b3"></a>`type`: `"object"`
+- <a id="s-9e297301bc"></a>`additionalProperties`: `false`
+- <a id="s-66f738fd4b"></a>`required`: `["object_path"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cc7230a836"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-36f67bf238"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
 
 ## Governing policies
 
@@ -63,6 +77,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.ObjectHeadRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -129,3 +146,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

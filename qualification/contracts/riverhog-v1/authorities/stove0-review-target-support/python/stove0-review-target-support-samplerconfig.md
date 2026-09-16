@@ -27,14 +27,17 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-9bc151343f"></a>
-- <a id="s-971ab32c45"></a>`type`: object
 
-### Fields
+- <a id="s-971ab32c45"></a>`type`: `"object"`
+- <a id="s-6a2731b98e"></a>`additionalProperties`: `false`
+- <a id="s-1068d7f97b"></a>`required`: `["id","base_url","token_file","descriptor_sha256","image_digest"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7fcd57f9c8"></a>`allow_insecure_http` | no | type="boolean" |  |
-| <a id="s-72fae61c7e"></a>`base_url` | yes | type="string"; minLength=1; maxLength=2048 |  |
+| <a id="s-7fcd57f9c8"></a>`allow_insecure_http` | no | type="boolean"; default=false |  |
+| <a id="s-72fae61c7e"></a>`base_url` | yes | type="string"; maxLength=2048; minLength=1 |  |
 | <a id="s-63506a3da1"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-63eed70b10"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$" |  |
 | <a id="s-04a91eb91f"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -67,6 +70,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_review_target_support.SamplerConfig`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -122,3 +128,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

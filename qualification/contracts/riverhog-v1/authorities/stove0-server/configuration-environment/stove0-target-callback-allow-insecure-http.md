@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-511d2ba0da"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-95f3a14158"></a>`consumers` | ["stove0-server"] |
-| <a id="s-3f7daf7f5f"></a>`default_expressions` | ["unset"] |
-| <a id="s-eefa9e99c9"></a>`id` | "stove0-server:environment:STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP" |
-| <a id="s-168f3b71fe"></a>`input_shape` | "environment-string" |
-| <a id="s-f58b650a7a"></a>`name` | "STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP" |
-| <a id="s-13d61e494d"></a>`owner` | "stove0-server" |
+| <a id="s-95f3a14158"></a>`consumers` | `["stove0-server"]` |
+| <a id="s-3f7daf7f5f"></a>`default_expressions` | `["unset"]` |
+| <a id="s-eefa9e99c9"></a>`id` | `"stove0-server:environment:STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP"` |
+| <a id="s-168f3b71fe"></a>`input_shape` | `"environment-string"` |
+| <a id="s-f58b650a7a"></a>`name` | `"STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP"` |
+| <a id="s-13d61e494d"></a>`owner` | `"stove0-server"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 7279023a5dfc3f21ce245c451d9d61bdfe9e3536012320f529f151833635ff78 -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "stove0-server"
 }
 ```
+
+</details>

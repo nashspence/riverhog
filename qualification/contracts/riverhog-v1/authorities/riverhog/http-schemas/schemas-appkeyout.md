@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-30b79f4da3"></a>
-- <a id="s-b5bbd41ed4"></a>`title`: AppKeyOut
-- <a id="s-78e9e2b54f"></a>`type`: object
+
+- <a id="s-78e9e2b54f"></a>`type`: `"object"`
+- <a id="s-042bdf4019"></a>`additionalProperties`: `false`
+- <a id="s-caa13a1a82"></a>`required`: `["id","app","access","monthly_download_quota_bytes","status","created_at","expires_at","revoked_at","last_used_at"]`
+- <a id="s-b5bbd41ed4"></a>`title`: `"AppKeyOut"`
 
 ### Fields
 
@@ -24,12 +27,19 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-de20ad219d"></a>`access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
 | <a id="s-f98913f6b5"></a>`app` | yes | #/components/schemas/ApplicationName |  |
 | <a id="s-a7a363cae1"></a>`created_at` | yes | type="string" |  |
-| <a id="s-f354ddeeb2"></a>`expires_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-f354ddeeb2"></a>`expires_at` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-f8ace5c134"></a>`id` | yes | #/components/schemas/ApplicationKeyId |  |
-| <a id="s-ff83a181db"></a>`last_used_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-3607996617"></a>`monthly_download_quota_bytes` | yes | anyOf=#/components/schemas/MonthlyDownloadQuotaBytes \| type="null" |  |
-| <a id="s-7354f9aecf"></a>`revoked_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-ff83a181db"></a>`last_used_at` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-3607996617"></a>`monthly_download_quota_bytes` | yes | anyOf=(#/components/schemas/MonthlyDownloadQuotaBytes) \| (type="null") |  |
+| <a id="s-7354f9aecf"></a>`revoked_at` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-d6933d5f36"></a>`status` | yes | type="string"; enum=["active","expired","revoked"] |  |
+
+### All must match (`allOf`)
+
+| Rule | If schema matches | Then must match | Otherwise must match |
+|---|---|---|---|
+| <a id="s-95865a7804"></a>1 | properties={status: (const="revoked")} | properties={revoked_at: (type="string")} | properties={revoked_at: (type="null")} |
+| <a id="s-24e267f0a5"></a>2 | properties={status: (const="expired")} | properties={expires_at: (type="string")} | no additional constraint |
 
 ## Maintained corroboration
 
@@ -61,6 +71,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/AppKeyOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -192,3 +205,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -27,14 +27,43 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-c3c9c96bae"></a>
-- <a id="s-d3100af1b2"></a>`type`: object
 
-### Fields
+- <a id="s-d3100af1b2"></a>`type`: `"object"`
+- <a id="s-ee18bef1a6"></a>`additionalProperties`: `false`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8f6ed07d62"></a>`note` | no | anyOf=type="string"; minLength=1; maxLength=4000; pattern="^\\S(?:[\\s\\S]*\\S)?$" \| type="null" |  |
-| <a id="s-a7f49cdf49"></a>`rating` | no | anyOf=type="integer"; minimum=1; maximum=5 \| type="null" |  |
+| <a id="s-8f6ed07d62"></a>`note` | no | anyOf=(type="string"; maxLength=4000; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$") \| (type="null"); default=null |  |
+| <a id="s-a7f49cdf49"></a>`rating` | no | anyOf=(type="integer"; minimum=1; maximum=5) \| (type="null"); default=null |  |
+
+##### At least one must match (`anyOf`)
+
+| Alternative | Schema |
+|---|---|
+| 1 | [See `anyOf` alternative 1](#s-701da37c1d) |
+| 2 | [See `anyOf` alternative 2](#s-c02aa6fa29) |
+
+##### <a id="s-701da37c1d"></a>`anyOf` alternative 1
+
+- <a id="s-8f29836679"></a>`required`: `["rating"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-1bbe283d07"></a>`rating` | yes | type="integer" |  |
+
+##### <a id="s-c02aa6fa29"></a>`anyOf` alternative 2
+
+- <a id="s-68bad54edf"></a>`required`: `["note"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c603fa7fe2"></a>`note` | yes | type="string" |  |
 
 ## Maintained corroboration
 
@@ -63,6 +92,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.EvaluationReviewIn`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -135,3 +167,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

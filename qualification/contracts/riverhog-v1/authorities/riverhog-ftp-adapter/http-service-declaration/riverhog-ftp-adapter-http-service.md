@@ -13,10 +13,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-| Subject | Shape |
+<a id="s-ca90b0c459"></a>
+
+| Field | Value |
 |---|---|
-| <a id="s-ca90b0c459"></a>`info` | additional keys=`version` |
-| <a id="s-e4c15d9272"></a>`openapi` | "3.1.0" |
+| <a id="s-147a848294"></a>`info · description` | `"Content-opaque FTP collection producer."` |
+| <a id="s-1833c49b61"></a>`info · title` | `"Riverhog FTP adapter API"` |
+| <a id="s-7c6aa9ce29"></a>`info · version` | `"1.0.0"` |
+| <a id="s-e4c15d9272"></a>`openapi` | `"3.1.0"` |
 
 ## Governing policies
 
@@ -41,6 +45,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 ### `/external_contract/http_openapi/riverhog-ftp-adapter/info`
@@ -62,3 +69,5 @@ The following JSON is the complete value owned at each machine-authority pointer
 ```json
 "3.1.0"
 ```
+
+</details>

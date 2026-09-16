@@ -27,25 +27,60 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-874c7f4608"></a>
-- <a id="s-155bb0da2e"></a>`type`: object
 
-### Fields
+- <a id="s-155bb0da2e"></a>`type`: `"object"`
+- <a id="s-a5808f3509"></a>`additionalProperties`: `false`
+- <a id="s-0f345b6523"></a>`required`: `["job_id","production_sha256","output_collection","output_bindings"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-236dcd4b3f"></a>`format` | no | type="string"; const="stove0-target-settlement/v1" |  |
+| <a id="s-236dcd4b3f"></a>`format` | no | type="string"; const="stove0-target-settlement/v1"; default="stove0-target-settlement/v1" |  |
 | <a id="s-50a9863786"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-09edab56a9"></a>`output_bindings` | yes | #/$defs/TargetOutputBindingSetIdentity |  |
-| <a id="s-566f0729ca"></a>`output_collection` | yes | #/$defs/OutputCollectionRef |  |
+| <a id="s-09edab56a9"></a>`output_bindings` | yes | [TargetOutputBindingSetIdentity](#s-897edc1cc2) |  |
+| <a id="s-566f0729ca"></a>`output_collection` | yes | [OutputCollectionRef](#s-3255c55702) |  |
 | <a id="s-5ad8646018"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-2089952b87"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-3255c55702"></a>`OutputCollectionRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`, `derivation_sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-897edc1cc2"></a>`TargetOutputBindingSetIdentity` | type="object"; fields=`artifact_count`, `sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
+- [CollectionId](#s-2089952b87)
+- [OutputCollectionRef](#s-3255c55702)
+- [TargetOutputBindingSetIdentity](#s-897edc1cc2)
+
+##### <a id="s-2089952b87"></a>definition `CollectionId`
+
+- <a id="s-07d5a90bfe"></a>`type`: `"integer"`
+- <a id="s-f2c064c706"></a>`minimum`: `1`
+
+##### <a id="s-3255c55702"></a>definition `OutputCollectionRef`
+
+- <a id="s-83527a47a0"></a>`type`: `"object"`
+- <a id="s-950ccbfdf9"></a>`additionalProperties`: `false`
+- <a id="s-e782a33c42"></a>`required`: `["collection_id","archive_root_sha256","content_identity","derivation_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e7ea1a4775"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-101a534e36"></a>`collection_id` | yes | [CollectionId](#s-2089952b87) |  |
+| <a id="s-9b7276968e"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2b702da3ab"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-897edc1cc2"></a>definition `TargetOutputBindingSetIdentity`
+
+- <a id="s-4191ee4ce6"></a>`type`: `"object"`
+- <a id="s-ba5b750320"></a>`additionalProperties`: `false`
+- <a id="s-8a9e176bec"></a>`required`: `["artifact_count","total_bytes","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e5d1dcc11e"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-49207694f8"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a402379666"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
 
 ## Governing policies
 
@@ -68,6 +103,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_protocol.TargetSettlementAuthorityPayload`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -172,3 +210,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

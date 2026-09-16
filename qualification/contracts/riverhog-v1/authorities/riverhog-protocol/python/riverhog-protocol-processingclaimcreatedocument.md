@@ -27,15 +27,18 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-066637d859"></a>
-- <a id="s-85e8f017f0"></a>`type`: object
 
-### Fields
+- <a id="s-85e8f017f0"></a>`type`: `"object"`
+- <a id="s-24777272ac"></a>`additionalProperties`: `false`
+- <a id="s-e8e063f2a6"></a>`required`: `["work_id","work_document","work_document_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-54899f9616"></a>`lease_seconds` | no | type="integer"; minimum=30; maximum=86400 |  |
-| <a id="s-2300784e92"></a>`purpose` | no | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-7279ed4f97"></a>`work_document` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| <a id="s-54899f9616"></a>`lease_seconds` | no | type="integer"; minimum=30; maximum=86400; default=1800 |  |
+| <a id="s-2300784e92"></a>`purpose` | no | type="string"; default="collection-work/v1"; maxLength=160; minLength=1 |  |
+| <a id="s-7279ed4f97"></a>`work_document` | yes | type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4194304; x-riverhog-extent={"policy":"contract_max","reason":"bounded-work-document-envelope"} |  |
 | <a id="s-3a0a371c33"></a>`work_document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-1a257e4bf5"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
@@ -68,6 +71,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -125,3 +131,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

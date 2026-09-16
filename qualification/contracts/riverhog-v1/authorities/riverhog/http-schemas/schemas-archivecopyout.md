@@ -14,7 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b315c612f6"></a>
-- <a id="s-ef910131ef"></a>`title`: ArchiveCopyOut
+
+- <a id="s-c6659fc9ec"></a>`discriminator`: `{"mapping":{"failed":"#/components/schemas/FailedArchiveCopyOut","pending":"#/components/schemas/IncompleteArchiveCopyOut","retrying":"#/components/schemas/IncompleteArchiveCopyOut","uploaded":"#/components/schemas/UploadedArchiveCopyOut","uploading":"#/components/schemas/IncompleteArchiveCopyOut"},"propertyName":"state"}`
+- <a id="s-ef910131ef"></a>`title`: `"ArchiveCopyOut"`
+
+### Exactly one must match (`oneOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-c23c3acf2f"></a>1 | #/components/schemas/IncompleteArchiveCopyOut |
+| <a id="s-ce48c65989"></a>2 | #/components/schemas/UploadedArchiveCopyOut |
+| <a id="s-801c95d81d"></a>3 | #/components/schemas/FailedArchiveCopyOut |
 
 ## Maintained corroboration
 
@@ -46,6 +56,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 978aa8902a1ae7506a429f1503173c2cdfaa37ba4d366b316b2ab3a8a939c385 -->
@@ -76,3 +89,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "title": "ArchiveCopyOut"
 }
 ```
+
+</details>

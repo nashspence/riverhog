@@ -27,24 +27,29 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-4352af8c5c"></a>
-- <a id="s-c5ec6c6787"></a>`type`: object
 
-### Fields
+- <a id="s-c5ec6c6787"></a>`type`: `"object"`
+- <a id="s-df11c63712"></a>`additionalProperties`: `false`
+- <a id="s-8ba01215c8"></a>`required`: `["protocol","target_implementation_id","target_contract_sha256","operation_contract_sha256","plan","plan_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-e3a400da96"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-b0fa6e771c"></a>`plan` | yes | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-b0fa6e771c"></a>`plan` | yes | type="object"; additionalProperties=([JsonValue](#s-7750faf457)) |  |
 | <a id="s-e84f9971a0"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-29ab907d9a"></a>`protocol` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-ebba738005"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-17d2780941"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-7750faf457"></a>`JsonValue` | empty object |
+- [JsonValue](#s-7750faf457)
+
+##### <a id="s-7750faf457"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Maintained corroboration
 
@@ -73,6 +78,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_protocol.TargetPlanBinding`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -133,3 +141,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

@@ -27,15 +27,18 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-51109b7c24"></a>
-- <a id="s-3863944cf4"></a>`type`: object
 
-### Fields
+- <a id="s-3863944cf4"></a>`type`: `"object"`
+- <a id="s-a4bded7956"></a>`additionalProperties`: `false`
+- <a id="s-dd99a3e8f8"></a>`required`: `["code","message"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-2946b55f45"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-a7784c6ecf"></a>`message` | yes | type="string"; minLength=1; maxLength=1000 |  |
-| <a id="s-7a03ef4cce"></a>`retryable` | no | anyOf=type="boolean" \| type="null" |  |
+| <a id="s-a7784c6ecf"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-7a03ef4cce"></a>`retryable` | no | anyOf=(type="boolean") \| (type="null"); default=null |  |
 
 ## Governing policies
 
@@ -58,6 +61,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_protocol.PreviewOutcome`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -105,3 +111,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

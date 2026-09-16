@@ -14,15 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-904e7d48d1"></a>
-- <a id="s-89a904fd63"></a>`title`: SchedulerRunIn
-- <a id="s-93c50c3642"></a>`type`: object
+
+- <a id="s-93c50c3642"></a>`type`: `"object"`
+- <a id="s-cdf187446a"></a>`additionalProperties`: `false`
+- <a id="s-89a904fd63"></a>`title`: `"SchedulerRunIn"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-010d640160"></a>`role` | no | type="string"; enum=["controller","worker","combined"] |  |
-| <a id="s-083bb6e401"></a>`work_limit` | no | type="integer"; minimum=1; maximum=100 |  |
+| <a id="s-010d640160"></a>`role` | no | type="string"; enum=["controller","worker","combined"]; default="combined" |  |
+| <a id="s-083bb6e401"></a>`work_limit` | no | type="integer"; minimum=1; maximum=100; default=25 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -57,6 +59,9 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: bb6999171d296c228fdb5ff3ba85eb17a54fcbccdc9cfd7f0af37f0db3209dd5 -->
@@ -87,3 +92,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

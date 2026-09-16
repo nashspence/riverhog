@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c782efceef"></a>
-- <a id="s-6f51d26ce0"></a>`title`: CreateArchiveCopyRequest
-- <a id="s-5cf0442448"></a>`type`: object
+
+- <a id="s-5cf0442448"></a>`type`: `"object"`
+- <a id="s-f41af76630"></a>`additionalProperties`: `false`
+- <a id="s-b148ad983a"></a>`required`: `["destination_store","collection_id"]`
+- <a id="s-6f51d26ce0"></a>`title`: `"CreateArchiveCopyRequest"`
 
 ### Fields
 
@@ -23,8 +26,8 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-40f34e16aa"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
 | <a id="s-dc194966f1"></a>`destination_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-d8b0ca353c"></a>`event_context` | no | anyOf=type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` \| type="null" |  |
-| <a id="s-b8c0920ade"></a>`source_store` | no | anyOf=#/components/schemas/ArchiveStoreName \| type="null" |  |
+| <a id="s-d8b0ca353c"></a>`event_context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null") |  |
+| <a id="s-b8c0920ade"></a>`source_store` | no | anyOf=(#/components/schemas/ArchiveStoreName) \| (type="null") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -74,6 +77,9 @@ Shared facts for every subject below: maximum=4096; reason="bounded-lifecycle-ev
 - `/external_contract/http_openapi/riverhog/components/schemas/CreateArchiveCopyRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -125,3 +131,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

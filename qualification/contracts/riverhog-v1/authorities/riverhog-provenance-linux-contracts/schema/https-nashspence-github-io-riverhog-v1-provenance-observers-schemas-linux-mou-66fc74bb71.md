@@ -14,8 +14,12 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0ad7283c6e"></a>
-- <a id="s-c27f03c136"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-mount-context.json
-- <a id="s-f419b07e1d"></a>`type`: object
+
+- <a id="s-f419b07e1d"></a>`type`: `"object"`
+- <a id="s-c27f03c136"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-mount-context.json"`
+- <a id="s-398b9a9735"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-2549788df5"></a>`additionalProperties`: `false`
+- <a id="s-26929e00ae"></a>`required`: `["mount_id","parent_id","device","root","mount_point","mount_options","optional_fields","filesystem_type","source","super_options"]`
 
 ### Fields
 
@@ -66,6 +70,9 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 - `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -135,3 +142,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,11 +14,12 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-880614cb87"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-303840ad30"></a>`authority` | "the independently versioned extension contract" |
-| <a id="s-d368ac3e44"></a>`core_semantic_maximum` | null |
-| <a id="s-01a1566171"></a>`policy` | "extension_owned" |
+| <a id="s-303840ad30"></a>`authority` | `"the independently versioned extension contract"` |
+| <a id="s-d368ac3e44"></a>`core_semantic_maximum` | `null` |
+| <a id="s-01a1566171"></a>`policy` | `"extension_owned"` |
 
 ## Governing policies
 
@@ -42,6 +43,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: efca5346e716188b9a70547266ccd8626625735fffbb778123b478aa23865ec2 -->
@@ -53,3 +57,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "policy": "extension_owned"
 }
 ```
+
+</details>

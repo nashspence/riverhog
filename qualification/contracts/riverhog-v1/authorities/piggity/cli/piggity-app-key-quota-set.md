@@ -105,6 +105,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 ### `/external_contract/cli/piggity/commands/app/commands/key/commands/quota/commands/set/allow_extra_args`
@@ -356,3 +359,5 @@ false
   }
 ]
 ```
+
+</details>

@@ -13,8 +13,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-ce83c4f0c1"></a>
-- Shape: "Buffers, provider mechanics, database layout, and other non-observable implementation extents are not frozen here."
+
+| Field | Value |
+|---|---|
+| <a id="s-ce83c4f0c1"></a>`implementation_privacy` | `"Buffers, provider mechanics, database layout, and other non-observable implementation extents are not frozen here."` |
 
 ## Governing policies
 
@@ -38,6 +40,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 07993a79f7c7765bcaed9507d56d48ca824daa5f17f94597b36afa302dc99e93 -->
@@ -45,3 +50,5 @@ The following JSON is the complete value owned at each machine-authority pointer
 ```json
 "Buffers, provider mechanics, database layout, and other non-observable implementation extents are not frozen here."
 ```
+
+</details>

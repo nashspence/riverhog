@@ -14,17 +14,20 @@ Stable branch-set lineage for one ordinary join work identity.
 ## External contract
 
 <a id="s-57421a0aa8"></a>
-- <a id="s-d74b458e12"></a>`title`: JoinWorkBinding
-- <a id="s-c94f020779"></a>`description`: Stable branch-set lineage for one ordinary join work identity.
-- <a id="s-a60ed1074f"></a>`type`: object
+
+- <a id="s-a60ed1074f"></a>`type`: `"object"`
+- <a id="s-93eb646ec0"></a>`additionalProperties`: `false`
+- <a id="s-c94f020779"></a>`description`: `"Stable branch-set lineage for one ordinary join work identity."`
+- <a id="s-03cceafc9f"></a>`required`: `["parent_work_id","branch_set_sha256","members"]`
+- <a id="s-d74b458e12"></a>`title`: `"JoinWorkBinding"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-4034723c28"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-0b3cd7bd11"></a>`kind` | no | type="string"; const="join" |  |
-| <a id="s-469029f453"></a>`members` | yes | type="array"; minItems=2; items=(#/components/schemas/JoinWorkMemberBinding) |  |
+| <a id="s-0b3cd7bd11"></a>`kind` | no | type="string"; const="join"; default="join" |  |
+| <a id="s-469029f453"></a>`members` | yes | type="array"; items=(#/components/schemas/JoinWorkMemberBinding); minItems=2 |  |
 | <a id="s-fbd3cc4a8a"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
@@ -76,6 +79,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 2f2994411487c2f5a213ce07a72a8092d94a0e6a56dcccb7110296f6f222b472 -->
@@ -119,3 +125,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,24 +14,34 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7eb40bb862"></a>
-- <a id="s-06125bc5d9"></a>`title`: ArchiveCopyJobOut
-- <a id="s-e85e3e0f34"></a>`type`: object
+
+- <a id="s-e85e3e0f34"></a>`type`: `"object"`
+- <a id="s-11abcce352"></a>`additionalProperties`: `false`
+- <a id="s-d8044f6042"></a>`required`: `["collection_id","source_store","destination_store","initiated_by_app","initiated_by_key_id","state","requested_at","ready_at","expires_at","completed_at","failure"]`
+- <a id="s-06125bc5d9"></a>`title`: `"ArchiveCopyJobOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-f94ca18605"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-c99eec83e0"></a>`completed_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-c99eec83e0"></a>`completed_at` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-ee02c17aac"></a>`destination_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-17ef5e59ff"></a>`expires_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-79dd5dafe3"></a>`failure` | yes | anyOf=type="string"; minLength=1 \| type="null" |  |
-| <a id="s-c07f6332bc"></a>`initiated_by_app` | yes | anyOf=#/components/schemas/ApplicationName \| type="null" |  |
-| <a id="s-0bcb097c2c"></a>`initiated_by_key_id` | yes | anyOf=#/components/schemas/ApplicationKeyId \| type="null" |  |
-| <a id="s-88e645a59b"></a>`ready_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-69542ab9df"></a>`requested_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-7dd0ee0992"></a>`source_store` | yes | anyOf=#/components/schemas/ArchiveStoreName \| type="null" |  |
+| <a id="s-17ef5e59ff"></a>`expires_at` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-79dd5dafe3"></a>`failure` | yes | anyOf=(type="string"; minLength=1) \| (type="null") |  |
+| <a id="s-c07f6332bc"></a>`initiated_by_app` | yes | anyOf=(#/components/schemas/ApplicationName) \| (type="null") |  |
+| <a id="s-0bcb097c2c"></a>`initiated_by_key_id` | yes | anyOf=(#/components/schemas/ApplicationKeyId) \| (type="null") |  |
+| <a id="s-88e645a59b"></a>`ready_at` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-69542ab9df"></a>`requested_at` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-7dd0ee0992"></a>`source_store` | yes | anyOf=(#/components/schemas/ArchiveStoreName) \| (type="null") |  |
 | <a id="s-9877b84351"></a>`state` | yes | #/components/schemas/ArchiveCopyState |  |
+
+### All must match (`allOf`)
+
+| Rule | If schema matches | Then must match | Otherwise must match |
+|---|---|---|---|
+| <a id="s-fbea60a442"></a>1 | properties={state: (enum=["completed","canceled"])} | properties={completed_at: (type="string")} | properties={completed_at: (type="null")} |
+| <a id="s-ab9983dcd9"></a>2 | properties={state: (const="failed")} | properties={failure: (type="string"; minLength=1)} | properties={failure: (type="null")} |
 
 ## Maintained corroboration
 
@@ -64,6 +74,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -238,3 +251,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

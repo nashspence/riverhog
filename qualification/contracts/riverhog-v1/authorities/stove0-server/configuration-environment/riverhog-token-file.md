@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fb95996087"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-0cfaaf5cc7"></a>`consumers` | ["stove0-server"] |
-| <a id="s-6d7f32c41a"></a>`default_expressions` | ["''"] |
-| <a id="s-335c2b4e87"></a>`id` | "stove0-server:environment:RIVERHOG_TOKEN_FILE" |
-| <a id="s-35470fd7f7"></a>`input_shape` | "environment-string" |
-| <a id="s-081e60778b"></a>`name` | "RIVERHOG_TOKEN_FILE" |
-| <a id="s-04c95d4c9b"></a>`owner` | "stove0-server" |
+| <a id="s-0cfaaf5cc7"></a>`consumers` | `["stove0-server"]` |
+| <a id="s-6d7f32c41a"></a>`default_expressions` | `["''"]` |
+| <a id="s-335c2b4e87"></a>`id` | `"stove0-server:environment:RIVERHOG_TOKEN_FILE"` |
+| <a id="s-35470fd7f7"></a>`input_shape` | `"environment-string"` |
+| <a id="s-081e60778b"></a>`name` | `"RIVERHOG_TOKEN_FILE"` |
+| <a id="s-04c95d4c9b"></a>`owner` | `"stove0-server"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 8551ddea738d204ede9d98b311409599ecc652af40d176b6ef2e37b52f2aa483 -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "stove0-server"
 }
 ```
+
+</details>

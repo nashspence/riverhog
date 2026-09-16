@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-997fad8712"></a>
-- <a id="s-a3fe5d1a54"></a>`title`: ArtifactDispositionSetDocument
-- <a id="s-e15b82ce92"></a>`type`: object
+
+- <a id="s-e15b82ce92"></a>`type`: `"object"`
+- <a id="s-e29304d0da"></a>`additionalProperties`: `false`
+- <a id="s-f75132fb40"></a>`required`: `["claim_id","state","disposition_count","output_edge_count","output_artifact_count"]`
+- <a id="s-a3fe5d1a54"></a>`title`: `"ArtifactDispositionSetDocument"`
 
 ### Fields
 
@@ -23,8 +26,8 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-3514768052"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-8863e8a714"></a>`disposition_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-b0f5f1d2f0"></a>`failure` | no | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
-| <a id="s-f610e69944"></a>`identity` | no | anyOf=#/components/schemas/ArtifactDispositionSetIdentityDocument \| type="null" |  |
+| <a id="s-b0f5f1d2f0"></a>`failure` | no | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null") |  |
+| <a id="s-f610e69944"></a>`identity` | no | anyOf=(#/components/schemas/ArtifactDispositionSetIdentityDocument) \| (type="null") |  |
 | <a id="s-e06604fb79"></a>`output_artifact_count` | yes | type="integer"; minimum=0 |  |
 | <a id="s-242852ab10"></a>`output_edge_count` | yes | type="integer"; minimum=0 |  |
 | <a id="s-a339b730cb"></a>`state` | yes | type="string"; enum=["receiving","sealing","sealed","failed"] |  |
@@ -66,6 +69,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionSetDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -140,3 +146,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

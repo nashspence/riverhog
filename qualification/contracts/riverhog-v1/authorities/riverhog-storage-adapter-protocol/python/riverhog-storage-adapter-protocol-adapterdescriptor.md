@@ -27,18 +27,21 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-8b430ee967"></a>
-- <a id="s-b14721e05d"></a>`type`: object
 
-### Fields
+- <a id="s-b14721e05d"></a>`type`: `"object"`
+- <a id="s-df5e49bf4d"></a>`additionalProperties`: `false`
+- <a id="s-5005f5c155"></a>`required`: `["implementation_id","implementation_version","read_mode","minimum_nonfinal_segment_bytes"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-7d113a0a6f"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-0816c01412"></a>`implementation_version` | yes | type="string"; minLength=1; maxLength=120 |  |
-| <a id="s-2bf6e29577"></a>`maximum_segment_bytes` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
-| <a id="s-4de2d33675"></a>`maximum_segment_count` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| <a id="s-0816c01412"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1 |  |
+| <a id="s-2bf6e29577"></a>`maximum_segment_bytes` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
+| <a id="s-4de2d33675"></a>`maximum_segment_count` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
 | <a id="s-5b5c395f56"></a>`minimum_nonfinal_segment_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-c01ebffa91"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1" |  |
+| <a id="s-c01ebffa91"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1"; default="riverhog-storage-adapter/v1" |  |
 | <a id="s-f27205a52f"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"] |  |
 
 ## Maintained corroboration
@@ -68,6 +71,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.AdapterDescriptor`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -146,3 +152,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

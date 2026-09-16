@@ -14,18 +14,21 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4f74f11a9b"></a>
-- <a id="s-772bd198cf"></a>`title`: WorkIdentity
-- <a id="s-7da3819b2c"></a>`type`: object
+
+- <a id="s-7da3819b2c"></a>`type`: `"object"`
+- <a id="s-f81d32d691"></a>`additionalProperties`: `false`
+- <a id="s-e7a02a4d86"></a>`required`: `["recipe","inputs","work_id"]`
+- <a id="s-772bd198cf"></a>`title`: `"WorkIdentity"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-94dc797a9d"></a>`effective_intent` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-1f8b8e35e0"></a>`evaluation` | no | anyOf=#/components/schemas/EvaluationBinding \| type="null" |  |
-| <a id="s-627ac6d042"></a>`fork_join` | no | anyOf=oneOf=#/components/schemas/BranchWorkBinding \| #/components/schemas/JoinWorkBinding; additional keys=`discriminator` \| type="null" |  |
-| <a id="s-3b7d02e296"></a>`format` | no | type="string"; const="stove0-work/v1" |  |
-| <a id="s-181af1fa7a"></a>`inputs` | yes | type="array"; minItems=1; items=(#/components/schemas/CollectionRootRef) |  |
+| <a id="s-94dc797a9d"></a>`effective_intent` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-1f8b8e35e0"></a>`evaluation` | no | anyOf=(#/components/schemas/EvaluationBinding) \| (type="null") |  |
+| <a id="s-627ac6d042"></a>`fork_join` | no | anyOf=(discriminator={"mapping":{"branch":"#/components/schemas/BranchWorkBinding","join":"#/components/schemas/JoinWorkBinding"},"propertyName":"kind"}; oneOf=(#/components/schemas/BranchWorkBinding) \| (#/components/schemas/JoinWorkBinding)) \| (type="null") |  |
+| <a id="s-3b7d02e296"></a>`format` | no | type="string"; const="stove0-work/v1"; default="stove0-work/v1" |  |
+| <a id="s-181af1fa7a"></a>`inputs` | yes | type="array"; items=(#/components/schemas/CollectionRootRef); minItems=1 |  |
 | <a id="s-adf4a103e4"></a>`recipe` | yes | #/components/schemas/RecipeRef |  |
 | <a id="s-81ce230f85"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
@@ -82,6 +85,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/WorkIdentity`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -165,3 +171,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

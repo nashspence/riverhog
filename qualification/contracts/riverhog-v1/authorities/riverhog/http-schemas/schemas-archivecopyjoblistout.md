@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1e640239fe"></a>
-- <a id="s-ddc136013c"></a>`title`: ArchiveCopyJobListOut
-- <a id="s-05c1c9f223"></a>`type`: object
+
+- <a id="s-05c1c9f223"></a>`type`: `"object"`
+- <a id="s-88aaaa0ab4"></a>`additionalProperties`: `false`
+- <a id="s-8e51b64181"></a>`required`: `["page_size","next_page_token","sort","order","query","filters","copies"]`
+- <a id="s-ddc136013c"></a>`title`: `"ArchiveCopyJobListOut"`
 
 ### Fields
 
@@ -23,10 +26,10 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-4db973405e"></a>`copies` | yes | type="array"; items=(#/components/schemas/ArchiveCopyJobOut) |  |
 | <a id="s-5f552953c9"></a>`filters` | yes | #/components/schemas/ArchiveCopyJobListFiltersOut |  |
-| <a id="s-35da4724d8"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-35da4724d8"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-55b6ab5d20"></a>`order` | yes | #/components/schemas/SortOrder |  |
 | <a id="s-f77467ada2"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-5571409571"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-5571409571"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-2815c28bbe"></a>`sort` | yes | #/components/schemas/ArchiveCopySort |  |
 
 ### Progression, limits, and lifecycle
@@ -86,6 +89,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobListOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -152,3 +158,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

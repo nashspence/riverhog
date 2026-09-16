@@ -14,17 +14,20 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e4f8cab7c7"></a>
-- <a id="s-d38617d68c"></a>`title`: CollectionUploadFileOut
-- <a id="s-ef2c474e9d"></a>`type`: object
+
+- <a id="s-ef2c474e9d"></a>`type`: `"object"`
+- <a id="s-7a625e070b"></a>`additionalProperties`: `false`
+- <a id="s-a92662eea1"></a>`required`: `["path","bytes","sha256"]`
+- <a id="s-d38617d68c"></a>`title`: `"CollectionUploadFileOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-2eda695e01"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-57decd2dfa"></a>`custody_receipt` | no | anyOf=#/components/schemas/CollectionUploadArtifactCustodyReceiptDocument \| type="null" |  |
+| <a id="s-57decd2dfa"></a>`custody_receipt` | no | anyOf=(#/components/schemas/CollectionUploadArtifactCustodyReceiptDocument) \| (type="null") |  |
 | <a id="s-e476e99a4f"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
-| <a id="s-954031ac14"></a>`provenance` | no | anyOf=oneOf=#/components/schemas/CapturedFileProvenanceBinding \| #/components/schemas/OmittedFileProvenanceBinding; additional keys=`discriminator` \| type="null" |  |
+| <a id="s-954031ac14"></a>`provenance` | no | anyOf=(discriminator={"mapping":{"captured":"#/components/schemas/CapturedFileProvenanceBinding","omitted":"#/components/schemas/OmittedFileProvenanceBinding"},"propertyName":"status"}; oneOf=(#/components/schemas/CapturedFileProvenanceBinding) \| (#/components/schemas/OmittedFileProvenanceBinding)) \| (type="null") |  |
 | <a id="s-e71d2c6050"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
@@ -77,6 +80,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -144,3 +150,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b33c27141e"></a>
-- <a id="s-6f14e0333f"></a>`title`: ArtifactDispositionPageDocument
-- <a id="s-aaa0bbc906"></a>`type`: object
+
+- <a id="s-aaa0bbc906"></a>`type`: `"object"`
+- <a id="s-358cba2955"></a>`additionalProperties`: `false`
+- <a id="s-c567ae74f3"></a>`required`: `["authority","start_ordinal","dispositions"]`
+- <a id="s-6f14e0333f"></a>`title`: `"ArtifactDispositionPageDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-0a4be28e4a"></a>`authority` | yes | #/components/schemas/ArtifactDispositionSetIdentityDocument |  |
-| <a id="s-300c0e231e"></a>`dispositions` | yes | type="array"; maxItems=128; items=(#/components/schemas/ArtifactDispositionDocument); additional keys=`x-riverhog-extent` |  |
-| <a id="s-964eecf671"></a>`next_ordinal` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| <a id="s-300c0e231e"></a>`dispositions` | yes | type="array"; items=(#/components/schemas/ArtifactDispositionDocument); maxItems=128; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
+| <a id="s-964eecf671"></a>`next_ordinal` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
 | <a id="s-986071d04a"></a>`start_ordinal` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
@@ -71,6 +74,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionPageDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -123,3 +129,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

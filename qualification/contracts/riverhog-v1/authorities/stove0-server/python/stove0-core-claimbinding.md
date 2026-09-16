@@ -27,13 +27,16 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-577bfcf6b0"></a>
-- <a id="s-5177d009da"></a>`type`: object
 
-### Fields
+- <a id="s-5177d009da"></a>`type`: `"object"`
+- <a id="s-82f0ec912c"></a>`additionalProperties`: `false`
+- <a id="s-7084106f97"></a>`required`: `["claim_id","fence"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-897c4d7dda"></a>`claim_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-897c4d7dda"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-e99e03e44d"></a>`fence` | yes | type="integer"; minimum=1 |  |
 
 ## Governing policies
@@ -57,6 +60,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_core.ClaimBinding`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -93,3 +99,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

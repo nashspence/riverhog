@@ -27,21 +27,27 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-79de46c8fb"></a>
-- <a id="s-2a14510f0c"></a>`type`: object
 
-### Fields
+- <a id="s-2a14510f0c"></a>`type`: `"object"`
+- <a id="s-24f5a3fbe1"></a>`additionalProperties`: `false`
+- <a id="s-934dbcc801"></a>`required`: `["collection_id","revision"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e49e26afec"></a>`collection_id` | yes | #/$defs/CollectionId |  |
-| <a id="s-158b4ec8c7"></a>`operation` | no | type="string"; const="delete" |  |
-| <a id="s-1a3a7c99bf"></a>`revision` | yes | type="string"; minLength=1; maxLength=19; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+| <a id="s-e49e26afec"></a>`collection_id` | yes | [CollectionId](#s-de7607d230) |  |
+| <a id="s-158b4ec8c7"></a>`operation` | no | type="string"; const="delete"; default="delete" |  |
+| <a id="s-1a3a7c99bf"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-de7607d230"></a>`CollectionId` | type="integer"; minimum=1 |
+- [CollectionId](#s-de7607d230)
+
+##### <a id="s-de7607d230"></a>definition `CollectionId`
+
+- <a id="s-ca049c277c"></a>`type`: `"integer"`
+- <a id="s-bc56b01a84"></a>`minimum`: `1`
 
 ## Governing policies
 
@@ -64,6 +70,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.CatalogSyncDelete`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -111,3 +120,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

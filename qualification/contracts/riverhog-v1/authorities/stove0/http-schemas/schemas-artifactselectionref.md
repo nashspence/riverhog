@@ -14,9 +14,12 @@ Closed reference to a separately retained selection document.
 ## External contract
 
 <a id="s-bd12209c43"></a>
-- <a id="s-512635ca2f"></a>`title`: ArtifactSelectionRef
-- <a id="s-f5f68bd01b"></a>`description`: Closed reference to a separately retained selection document.
-- <a id="s-39aec049de"></a>`type`: object
+
+- <a id="s-39aec049de"></a>`type`: `"object"`
+- <a id="s-c61f70470c"></a>`additionalProperties`: `false`
+- <a id="s-f5f68bd01b"></a>`description`: `"Closed reference to a separately retained selection document."`
+- <a id="s-9517387a3f"></a>`required`: `["selection_sha256","artifact_count","total_bytes"]`
+- <a id="s-512635ca2f"></a>`title`: `"ArtifactSelectionRef"`
 
 ### Fields
 
@@ -59,6 +62,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: e8cd0eea202ee0c8f3d19552216aa1b0d50521d431df3a185e911bfe1c3aa4c7 -->
@@ -93,3 +99,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

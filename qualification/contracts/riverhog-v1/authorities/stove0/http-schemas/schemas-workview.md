@@ -14,39 +14,42 @@ Operator projection of mutable work; never an execution identity.
 ## External contract
 
 <a id="s-69e6f54265"></a>
-- <a id="s-04d9fb929b"></a>`title`: WorkView
-- <a id="s-073263515f"></a>`description`: Operator projection of mutable work; never an execution identity.
-- <a id="s-c46c0a68b2"></a>`type`: object
+
+- <a id="s-c46c0a68b2"></a>`type`: `"object"`
+- <a id="s-3a52f1ffd6"></a>`additionalProperties`: `false`
+- <a id="s-073263515f"></a>`description`: `"Operator projection of mutable work; never an execution identity."`
+- <a id="s-c19140c483"></a>`required`: `["work_id","work","phase","revision"]`
+- <a id="s-04d9fb929b"></a>`title`: `"WorkView"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c69239134c"></a>`abandon_outcome` | no | anyOf=type="string"; enum=["inapplicable","failed","canceled"] \| type="null" |  |
-| <a id="s-d9d46d49c0"></a>`branch_set_plan` | no | anyOf=#/components/schemas/BranchSetPlan \| type="null" |  |
-| <a id="s-08fea03bf8"></a>`claim` | no | anyOf=#/components/schemas/WorkClaimView \| type="null" |  |
-| <a id="s-42584f4aa1"></a>`controller_evidence` | no | anyOf=#/components/schemas/ControllerEvidence \| type="null" |  |
-| <a id="s-99a30a713a"></a>`coordination_cancel_requested` | no | type="boolean" |  |
-| <a id="s-f050d1c364"></a>`coordination_settlement` | no | anyOf=#/components/schemas/CoordinationSettlement \| type="null" |  |
-| <a id="s-3e04aba910"></a>`expected_target_plan_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-47052796f8"></a>`failure` | no | anyOf=#/components/schemas/WorkFailureView \| type="null" |  |
-| <a id="s-4c1ffdf0d3"></a>`format` | no | type="string"; const="stove0-work-view/v1" |  |
-| <a id="s-ad37985d90"></a>`inapplicable` | no | anyOf=#/components/schemas/WorkInapplicableView \| type="null" |  |
-| <a id="s-9ab84bc2ad"></a>`join_plan` | no | anyOf=#/components/schemas/JoinPlan \| type="null" |  |
-| <a id="s-0d80f7addf"></a>`observation_requests` | no | type="array"; items=(#/components/schemas/ObservationRequest) |  |
-| <a id="s-33173849b4"></a>`observation_results` | no | type="array"; items=(#/components/schemas/ObservationResult) |  |
-| <a id="s-7cd6caa0b2"></a>`output` | no | anyOf=#/components/schemas/OutputCollectionRef \| type="null" |  |
+| <a id="s-c69239134c"></a>`abandon_outcome` | no | anyOf=(type="string"; enum=["inapplicable","failed","canceled"]) \| (type="null") |  |
+| <a id="s-d9d46d49c0"></a>`branch_set_plan` | no | anyOf=(#/components/schemas/BranchSetPlan) \| (type="null") |  |
+| <a id="s-08fea03bf8"></a>`claim` | no | anyOf=(#/components/schemas/WorkClaimView) \| (type="null") |  |
+| <a id="s-42584f4aa1"></a>`controller_evidence` | no | anyOf=(#/components/schemas/ControllerEvidence) \| (type="null") |  |
+| <a id="s-99a30a713a"></a>`coordination_cancel_requested` | no | type="boolean"; default=false |  |
+| <a id="s-f050d1c364"></a>`coordination_settlement` | no | anyOf=(#/components/schemas/CoordinationSettlement) \| (type="null") |  |
+| <a id="s-3e04aba910"></a>`expected_target_plan_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
+| <a id="s-47052796f8"></a>`failure` | no | anyOf=(#/components/schemas/WorkFailureView) \| (type="null") |  |
+| <a id="s-4c1ffdf0d3"></a>`format` | no | type="string"; const="stove0-work-view/v1"; default="stove0-work-view/v1" |  |
+| <a id="s-ad37985d90"></a>`inapplicable` | no | anyOf=(#/components/schemas/WorkInapplicableView) \| (type="null") |  |
+| <a id="s-9ab84bc2ad"></a>`join_plan` | no | anyOf=(#/components/schemas/JoinPlan) \| (type="null") |  |
+| <a id="s-0d80f7addf"></a>`observation_requests` | no | type="array"; default=[]; items=(#/components/schemas/ObservationRequest) |  |
+| <a id="s-33173849b4"></a>`observation_results` | no | type="array"; default=[]; items=(#/components/schemas/ObservationResult) |  |
+| <a id="s-7cd6caa0b2"></a>`output` | no | anyOf=(#/components/schemas/OutputCollectionRef) \| (type="null") |  |
 | <a id="s-426ffe9458"></a>`phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] |  |
-| <a id="s-46d5cbd753"></a>`preview_acceptance` | no | anyOf=#/components/schemas/PreviewAcceptanceView \| type="null" |  |
-| <a id="s-6a0a7b056c"></a>`retirement_remaining` | no | type="array"; items=(type="integer") |  |
+| <a id="s-46d5cbd753"></a>`preview_acceptance` | no | anyOf=(#/components/schemas/PreviewAcceptanceView) \| (type="null") |  |
+| <a id="s-6a0a7b056c"></a>`retirement_remaining` | no | type="array"; default=[]; items=(type="integer") |  |
 | <a id="s-59b5cf38e7"></a>`revision` | yes | type="integer"; minimum=1 |  |
-| <a id="s-089cf18873"></a>`target_plan` | no | anyOf=oneOf=#/components/schemas/TransformPlan \| #/components/schemas/EffectPlan; additional keys=`discriminator` \| type="null" |  |
-| <a id="s-3238506934"></a>`target_request` | no | anyOf=#/components/schemas/AcceptedTargetJob \| type="null" |  |
-| <a id="s-47c9f56e77"></a>`target_settlement` | no | anyOf=#/components/schemas/TargetSettlementAuthority \| type="null" |  |
-| <a id="s-191b9a3de7"></a>`target_status` | no | anyOf=#/components/schemas/TargetJobStatus \| type="null" |  |
+| <a id="s-089cf18873"></a>`target_plan` | no | anyOf=(discriminator={"mapping":{"stove0-effect-target/v1":"#/components/schemas/EffectPlan","stove0-transform-target/v1":"#/components/schemas/TransformPlan"},"propertyName":"protocol"}; oneOf=(#/components/schemas/TransformPlan) \| (#/components/schemas/EffectPlan)) \| (type="null") |  |
+| <a id="s-3238506934"></a>`target_request` | no | anyOf=(#/components/schemas/AcceptedTargetJob) \| (type="null") |  |
+| <a id="s-47c9f56e77"></a>`target_settlement` | no | anyOf=(#/components/schemas/TargetSettlementAuthority) \| (type="null") |  |
+| <a id="s-191b9a3de7"></a>`target_status` | no | anyOf=(#/components/schemas/TargetJobStatus) \| (type="null") |  |
 | <a id="s-7fdbb2aaa6"></a>`work` | yes | #/components/schemas/WorkIdentity |  |
 | <a id="s-6b0ef08835"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-b23ed55dc5"></a>`workflow_plan` | no | anyOf=#/components/schemas/WorkflowPlan \| type="null" |  |
+| <a id="s-b23ed55dc5"></a>`workflow_plan` | no | anyOf=(#/components/schemas/WorkflowPlan) \| (type="null") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -116,6 +119,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/WorkView`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -391,3 +397,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

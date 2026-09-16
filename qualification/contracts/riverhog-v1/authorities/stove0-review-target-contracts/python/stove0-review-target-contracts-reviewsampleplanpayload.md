@@ -27,23 +27,38 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2634f1ca5e"></a>
-- <a id="s-edef076a79"></a>`type`: object
 
-### Fields
+- <a id="s-edef076a79"></a>`type`: `"object"`
+- <a id="s-68b9bda81b"></a>`additionalProperties`: `false`
+- <a id="s-aca562ea92"></a>`required`: `["samples_per_artifact","window_duration_ms","windows"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-39c68a4c3a"></a>`format` | no | type="string"; const="stove0-review-sample-plan/v1" |  |
+| <a id="s-39c68a4c3a"></a>`format` | no | type="string"; const="stove0-review-sample-plan/v1"; default="stove0-review-sample-plan/v1" |  |
 | <a id="s-ba72ad0a30"></a>`samples_per_artifact` | yes | type="integer"; minimum=1 |  |
-| <a id="s-251300e0e5"></a>`selection_method` | no | type="string"; const="evenly-spaced/v1" |  |
+| <a id="s-251300e0e5"></a>`selection_method` | no | type="string"; const="evenly-spaced/v1"; default="evenly-spaced/v1" |  |
 | <a id="s-959d642cbd"></a>`window_duration_ms` | yes | type="integer"; minimum=1 |  |
-| <a id="s-29c539549f"></a>`windows` | yes | type="array"; minItems=1; items=(#/$defs/ReviewSampleWindow) |  |
+| <a id="s-29c539549f"></a>`windows` | yes | type="array"; items=([ReviewSampleWindow](#s-cd64eb8571)); minItems=1 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-cd64eb8571"></a>`ReviewSampleWindow` | type="object"; fields=`artifact_id`, `duration_ms`, `start_ms`; additional keys=`additionalProperties`, `required` |
+- [ReviewSampleWindow](#s-cd64eb8571)
+
+##### <a id="s-cd64eb8571"></a>definition `ReviewSampleWindow`
+
+- <a id="s-023dab2bc1"></a>`type`: `"object"`
+- <a id="s-1528a557e0"></a>`additionalProperties`: `false`
+- <a id="s-bd5345fa6d"></a>`required`: `["artifact_id","start_ms","duration_ms"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cdb5a7214a"></a>`artifact_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-e292f5928e"></a>`duration_ms` | yes | type="integer"; minimum=1 |  |
+| <a id="s-7d8571426c"></a>`start_ms` | yes | type="integer"; minimum=0 |  |
 
 ## Maintained corroboration
 
@@ -73,6 +88,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_review_target_contracts.ReviewSamplePlanPayload`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -152,3 +170,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

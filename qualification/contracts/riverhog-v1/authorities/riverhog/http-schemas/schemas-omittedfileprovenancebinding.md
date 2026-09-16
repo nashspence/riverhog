@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-552d497bab"></a>
-- <a id="s-fb810a5303"></a>`title`: OmittedFileProvenanceBinding
-- <a id="s-7bbee14efc"></a>`type`: object
+
+- <a id="s-7bbee14efc"></a>`type`: `"object"`
+- <a id="s-f8e822b26f"></a>`additionalProperties`: `false`
+- <a id="s-514bd92d58"></a>`required`: `["status","omission_reason"]`
+- <a id="s-fb810a5303"></a>`title`: `"OmittedFileProvenanceBinding"`
 
 ### Fields
 
@@ -46,6 +49,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 5eba6adbe60f961048cf4ff31b645ca43fb22f9f4ff95b3476666b75a05b8a3c -->
@@ -74,3 +80,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

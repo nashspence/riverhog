@@ -131,6 +131,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 6dc15f1231d287346e2d6b30ff0c6d90fe98110a8b74f472f84be130d32293ec -->
@@ -255,3 +258,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   ]
 }
 ```
+
+</details>

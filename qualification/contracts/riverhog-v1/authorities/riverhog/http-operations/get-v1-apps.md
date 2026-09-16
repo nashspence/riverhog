@@ -23,11 +23,11 @@ List Apps
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-fca1366943"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-fcd2e9d893"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
+| <a id="s-fcd2e9d893"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
 | <a id="s-9558df2387"></a>`sort` | query | no | `"name"` | [ApplicationSort](../http-schemas/schemas-applicationsort.md) |
 | <a id="s-8dcd585087"></a>`order` | query | no | `"asc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
-| <a id="s-899794f1ca"></a>`q` | query | no | not declared | anyOf=[BrowseQuery](../http-schemas/schemas-browsequery.md) \| type="null" |
-| <a id="s-d8225d7f7b"></a>`active` | query | no | not declared | anyOf=type="boolean" \| type="null" |
+| <a id="s-899794f1ca"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
+| <a id="s-d8225d7f7b"></a>`active` | query | no | not declared | anyOf=(type="boolean") \| (type="null") |
 
 ### Responses
 
@@ -159,6 +159,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/riverhog/paths/~1v1~1apps/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -337,3 +340,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

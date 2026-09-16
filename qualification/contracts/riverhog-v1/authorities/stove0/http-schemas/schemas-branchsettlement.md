@@ -14,9 +14,12 @@ Success-only, Riverhog-verified result of one branch workflow plan.
 ## External contract
 
 <a id="s-408a56022c"></a>
-- <a id="s-d7c8b30fe8"></a>`title`: BranchSettlement
-- <a id="s-9b0d642fa2"></a>`description`: Success-only, Riverhog-verified result of one branch workflow plan.
-- <a id="s-320b6230bf"></a>`type`: object
+
+- <a id="s-320b6230bf"></a>`type`: `"object"`
+- <a id="s-49ac7a3c9e"></a>`additionalProperties`: `false`
+- <a id="s-9b0d642fa2"></a>`description`: `"Success-only, Riverhog-verified result of one branch workflow plan."`
+- <a id="s-670b7e2ea8"></a>`required`: `["branch_id","work_id","workflow_plan_sha256","derivation_sha256","producer_settlement_sha256","output_collection","output_selection","settlement_sha256"]`
+- <a id="s-d7c8b30fe8"></a>`title`: `"BranchSettlement"`
 
 ### Fields
 
@@ -24,7 +27,7 @@ Success-only, Riverhog-verified result of one branch workflow plan.
 |---|---:|---|---|
 | <a id="s-d14fc4aaa1"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-b122415c3e"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-8cc42659eb"></a>`format` | no | type="string"; const="stove0-branch-settlement/v1" |  |
+| <a id="s-8cc42659eb"></a>`format` | no | type="string"; const="stove0-branch-settlement/v1"; default="stove0-branch-settlement/v1" |  |
 | <a id="s-9a2f0035d4"></a>`output_collection` | yes | #/components/schemas/CollectionRootRef |  |
 | <a id="s-3523e63710"></a>`output_selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
 | <a id="s-3aa87a4f91"></a>`producer_settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -75,6 +78,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/BranchSettlement`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -142,3 +148,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

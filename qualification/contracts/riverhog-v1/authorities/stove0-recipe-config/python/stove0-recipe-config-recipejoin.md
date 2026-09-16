@@ -27,28 +27,61 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d16a3c32cf"></a>
-- <a id="s-1f48fb4fb8"></a>`type`: object
 
-### Fields
+- <a id="s-1f48fb4fb8"></a>`type`: `"object"`
+- <a id="s-fcbc8e2909"></a>`additionalProperties`: `false`
+- <a id="s-2d7aaae763"></a>`required`: `["id","members","operation_id","target_registration_id"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-6195bd8c6c"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-c23629ec46"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
-| <a id="s-feebc6fc22"></a>`intent` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-10d81d6560"></a>`members` | yes | type="array"; minItems=2; items=(#/$defs/RecipeJoinMember) |  |
+| <a id="s-c23629ec46"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-feebc6fc22"></a>`intent` | no | type="object"; additionalProperties=([JsonValue](#s-43a3175f14)) |  |
+| <a id="s-10d81d6560"></a>`members` | yes | type="array"; items=([RecipeJoinMember](#s-4e893b9aee)); minItems=2 |  |
 | <a id="s-3b53494533"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-713bdbd2ca"></a>`projections` | no | type="array"; items=(#/$defs/OperationProjection) |  |
-| <a id="s-c492917418"></a>`target_options` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-713bdbd2ca"></a>`projections` | no | type="array"; default=[]; items=([OperationProjection](#s-6d62c8e596)) |  |
+| <a id="s-c492917418"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-43a3175f14)) |  |
 | <a id="s-fd8185303e"></a>`target_registration_id` | yes | type="string" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-43a3175f14"></a>`JsonValue` | empty object |
-| <a id="s-6d62c8e596"></a>`OperationProjection` | type="object"; fields=`destination`, `destination_pointer`, `source`, `source_pointer`; additional keys=`additionalProperties`, `required` |
-| <a id="s-4e893b9aee"></a>`RecipeJoinMember` | type="object"; fields=`branch_id`, `output_roles`; additional keys=`additionalProperties`, `required` |
+- [JsonValue](#s-43a3175f14)
+- [OperationProjection](#s-6d62c8e596)
+- [RecipeJoinMember](#s-4e893b9aee)
+
+##### <a id="s-43a3175f14"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-6d62c8e596"></a>definition `OperationProjection`
+
+- <a id="s-3718a1ba1a"></a>`type`: `"object"`
+- <a id="s-61e9809826"></a>`additionalProperties`: `false`
+- <a id="s-2343a20a6a"></a>`required`: `["source","source_pointer","destination","destination_pointer"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-5552eac40a"></a>`destination` | yes | type="string"; enum=["intent","target-options"] |  |
+| <a id="s-83635dc2ac"></a>`destination_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
+| <a id="s-41b1d2a430"></a>`source` | yes | type="string"; enum=["work-effective-intent","work-evaluation"] |  |
+| <a id="s-27e8b67a72"></a>`source_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
+
+##### <a id="s-4e893b9aee"></a>definition `RecipeJoinMember`
+
+- <a id="s-e0eb8236d2"></a>`type`: `"object"`
+- <a id="s-76828c7e74"></a>`additionalProperties`: `false`
+- <a id="s-bd2a938a90"></a>`required`: `["branch_id","output_roles"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-32584a941e"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-e0be4274f0"></a>`output_roles` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
 
 ## Maintained corroboration
 
@@ -77,6 +110,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_recipe_config.RecipeJoin`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -210,3 +246,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

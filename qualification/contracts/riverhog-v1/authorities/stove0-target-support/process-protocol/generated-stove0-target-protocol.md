@@ -13,14 +13,25 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-| Subject | Shape |
+<a id="s-19ff2c9676"></a>
+<a id="s-9269284132"></a>
+<a id="s-459baccad4"></a>
+
+| Field | Value |
 |---|---|
-| <a id="s-459baccad4"></a>`authorities` | additional keys=`http_operations`, `semantic_acceptance`, `structural_models` |
-| <a id="s-1181fd9fea"></a>`bundle_sha256` | "916d26a1630afc12fe746ce28f8ba0f2639264e14929dd60b02c6c9059444b80" |
-| <a id="s-9269284132"></a>`compatibility` | additional keys=`contract_identity`, `unknown_fields`, `unknown_protocol_revision` |
-| <a id="s-e51e46fd84"></a>`format` | "stove0-target-schema-bundle/v1" |
-| <a id="s-aeb93f5dc6"></a>`protocols` | ["stove0-transform-target/v1","stove0-effect-target/v1"] |
-| <a id="s-19ff2c9676"></a>`semantic_acceptance` | additional keys=`binding`, `identity`, `kind`, `request_response_relations` |
+| <a id="s-5cae7e4762"></a>`authorities · http_operations` | `"http_binding.operations"` |
+| <a id="s-33a0a01689"></a>`authorities · semantic_acceptance` | `"semantic_acceptance"` |
+| <a id="s-6508281ade"></a>`authorities · structural_models` | `"schemas"` |
+| <a id="s-1181fd9fea"></a>`bundle_sha256` | `"916d26a1630afc12fe746ce28f8ba0f2639264e14929dd60b02c6c9059444b80"` |
+| <a id="s-a8b1495338"></a>`compatibility · contract_identity` | `"rfc8785-sha256"` |
+| <a id="s-61caf561fe"></a>`compatibility · unknown_fields` | `"reject"` |
+| <a id="s-cb84c5173d"></a>`compatibility · unknown_protocol_revision` | `"reject"` |
+| <a id="s-e51e46fd84"></a>`format` | `"stove0-target-schema-bundle/v1"` |
+| <a id="s-aeb93f5dc6"></a>`protocols` | `["stove0-transform-target/v1","stove0-effect-target/v1"]` |
+| <a id="s-f06050ba6c"></a>`semantic_acceptance · binding` | `"OperationContract.intent_semantics"` |
+| <a id="s-476e256aa7"></a>`semantic_acceptance · identity` | `["id","profile_sha256"]` |
+| <a id="s-868e8c2ec7"></a>`semantic_acceptance · kind` | `"operation-contract"` |
+| <a id="s-0543785f8d"></a>`semantic_acceptance · request_response_relations` | `"required"` |
 
 ## Maintained corroboration
 
@@ -66,6 +77,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/protocol_schemas/generated:stove0-target/semantic_acceptance`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -135,3 +149,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "request_response_relations": "required"
 }
 ```
+
+</details>

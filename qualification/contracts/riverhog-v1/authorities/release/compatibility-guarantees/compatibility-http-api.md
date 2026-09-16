@@ -13,8 +13,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-9e2eb4b18c"></a>
-- Shape: "Published v1 HTTP and CloudEvents contracts remain backward compatible throughout v1."
+
+| Field | Value |
+|---|---|
+| <a id="s-9e2eb4b18c"></a>`http_api` | `"Published v1 HTTP and CloudEvents contracts remain backward compatible throughout v1."` |
 
 ## Governing policies
 
@@ -39,6 +41,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 2585cfdddab6eb45045fb1e0a19776f07029a40553fc17b28811f710586512ac -->
@@ -46,3 +51,5 @@ The following JSON is the complete value owned at each machine-authority pointer
 ```json
 "Published v1 HTTP and CloudEvents contracts remain backward compatible throughout v1."
 ```
+
+</details>

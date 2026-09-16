@@ -14,14 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d9e09e8c88"></a>
-- <a id="s-b486b1a7bf"></a>`title`: RegisterCollectionUploadSessionFilesRequest
-- <a id="s-e1210a6619"></a>`type`: object
+
+- <a id="s-e1210a6619"></a>`type`: `"object"`
+- <a id="s-cca069d17e"></a>`additionalProperties`: `false`
+- <a id="s-8e46c1bcb1"></a>`required`: `["files"]`
+- <a id="s-b486b1a7bf"></a>`title`: `"RegisterCollectionUploadSessionFilesRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2885a9acd1"></a>`files` | yes | type="array"; minItems=1; maxItems=100; items=(#/components/schemas/CollectionUploadFileIn); additional keys=`x-riverhog-extent` |  |
+| <a id="s-2885a9acd1"></a>`files` | yes | type="array"; items=(#/components/schemas/CollectionUploadFileIn); maxItems=100; minItems=1; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"repeated-artifact-registration","reason":"bounded-upload-registration"} |  |
 
 ### Progression, limits, and lifecycle
 
@@ -68,6 +71,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 5b8ad7b15f6269dc58795f409f2f100545ba5b117958e211c90bcd689253ed24 -->
@@ -98,3 +104,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

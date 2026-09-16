@@ -27,23 +27,69 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-c091031172"></a>
-- <a id="s-09667644eb"></a>`type`: object
 
-### Fields
+- <a id="s-09667644eb"></a>`type`: `"object"`
+- <a id="s-1b25300ce9"></a>`additionalProperties`: `false`
+- <a id="s-dba794caf8"></a>`required`: `["volume","plan_sha256","unit"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-e622ff639b"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ccdd4bed5e"></a>`unit` | yes | #/$defs/CollectionUploadUnitWorkDocument |  |
-| <a id="s-1be20f559c"></a>`volume` | yes | #/$defs/CollectionUploadVolumeSummaryDocument |  |
+| <a id="s-ccdd4bed5e"></a>`unit` | yes | [CollectionUploadUnitWorkDocument](#s-e7fc0df57a) |  |
+| <a id="s-1be20f559c"></a>`volume` | yes | [CollectionUploadVolumeSummaryDocument](#s-a20aef8598) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-d12188e833"></a>`CollectionUploadUnitSourceDocument` | type="object"; fields=`artifact_sha256`, `bytes`, `offset`, `path`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e7fc0df57a"></a>`CollectionUploadUnitWorkDocument` | type="object"; fields=`payload_bytes`, `plaintext_bytes`, `sources`, `state`, `unit`; additional keys=`additionalProperties`, `required` |
-| <a id="s-a20aef8598"></a>`CollectionUploadVolumeSummaryDocument` | type="object"; fields=`kind`, `sequence`, `volume_id`; additional keys=`additionalProperties`, `required` |
+- [CollectionUploadUnitSourceDocument](#s-d12188e833)
+- [CollectionUploadUnitWorkDocument](#s-e7fc0df57a)
+- [CollectionUploadVolumeSummaryDocument](#s-a20aef8598)
+
+##### <a id="s-d12188e833"></a>definition `CollectionUploadUnitSourceDocument`
+
+- <a id="s-5de5388840"></a>`type`: `"object"`
+- <a id="s-654785851a"></a>`additionalProperties`: `false`
+- <a id="s-abb8ce52da"></a>`required`: `["path","offset","bytes","artifact_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f55ec22682"></a>`artifact_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-8a834688c6"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-bb945ed89d"></a>`offset` | yes | type="integer"; minimum=0 |  |
+| <a id="s-1e8d3750a0"></a>`path` | yes | type="string" |  |
+
+##### <a id="s-e7fc0df57a"></a>definition `CollectionUploadUnitWorkDocument`
+
+- <a id="s-1371414108"></a>`type`: `"object"`
+- <a id="s-e43b487455"></a>`additionalProperties`: `false`
+- <a id="s-072a69acfb"></a>`required`: `["unit","payload_bytes","plaintext_bytes","sources","state"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-538ec52b7e"></a>`payload_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-2cb1770cb6"></a>`plaintext_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-a01a88dc1b"></a>`sources` | yes | type="array"; items=([CollectionUploadUnitSourceDocument](#s-d12188e833)); maxItems=1000; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"collection-volume-sequence","reason":"bounded-upload-unit-source-map"} |  |
+| <a id="s-e7b49d9602"></a>`state` | yes | type="string"; enum=["pending","committed"] |  |
+| <a id="s-39c0575712"></a>`unit` | yes | type="integer"; minimum=0 |  |
+
+##### <a id="s-a20aef8598"></a>definition `CollectionUploadVolumeSummaryDocument`
+
+- <a id="s-f85e595b78"></a>`type`: `"object"`
+- <a id="s-c418ea3ec8"></a>`additionalProperties`: `false`
+- <a id="s-e0a616fb49"></a>`required`: `["volume_id","sequence","kind"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-be0976b9b6"></a>`kind` | yes | type="string"; enum=["pack","segment"] |  |
+| <a id="s-b5eabe3bab"></a>`sequence` | yes | type="integer"; minimum=0 |  |
+| <a id="s-b06857b9eb"></a>`volume_id` | yes | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$" |  |
 
 ## Governing policies
 
@@ -66,6 +112,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -203,3 +252,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

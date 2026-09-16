@@ -23,7 +23,7 @@ Get Collection File Provenance
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-163dce2876"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-24db11cead"></a>`path` | path | yes | not declared | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
+| <a id="s-24db11cead"></a>`path` | path | yes | not declared | type="string"; format="riverhog-canonical-relpath-v1"; allOf=(not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)")) \| (not=(pattern="^\\s\|\\s$")); maxLength=4096; minLength=1; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; x-unicode-normalization="NFC" |
 
 ### Responses
 
@@ -131,6 +131,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1files~1{path}/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -285,3 +288,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   ]
 }
 ```
+
+</details>

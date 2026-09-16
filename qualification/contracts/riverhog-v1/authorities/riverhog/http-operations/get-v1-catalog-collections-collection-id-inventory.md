@@ -23,9 +23,9 @@ Get Portable Collection Inventory
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-d4fa758cae"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-d8cb38ecac"></a>`cursor` | query | no | not declared | anyOf=type="string"; minLength=1; maxLength=8192 \| type="null" |
+| <a id="s-d8cb38ecac"></a>`cursor` | query | no | not declared | anyOf=(type="string"; maxLength=8192; minLength=1) \| (type="null") |
 | <a id="s-86388b9ad1"></a>`limit` | query | no | `100` | type="integer"; minimum=1; maximum=1000 |
-| <a id="s-7620688610"></a>`If-Match` | header | no | not declared | anyOf=type="string"; pattern="^\"[0-9a-f]{64}\"$" \| type="null" |
+| <a id="s-7620688610"></a>`If-Match` | header | no | not declared | anyOf=(type="string"; pattern="^\"[0-9a-f]{64}\"$") \| (type="null") |
 
 ### Responses
 
@@ -39,6 +39,12 @@ Get Portable Collection Inventory
 | <a id="s-b8b057a58d"></a>`412` | Precondition Failed | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `precondition_failed` |
 | <a id="s-3158a7f072"></a>`428` | Precondition Required | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `precondition_required` |
 | <a id="s-7940c10130"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
+
+#### Response headers
+
+| Status | Header | Required | Schema | Description |
+|---|---|---|---|---|
+| `200` | <a id="s-5df89ad5dc"></a>`ETag` | not declared | type="string"; pattern="^\"[0-9a-f]{64}\"$" | Strong identity of the immutable inventory authority. |
 
 ### Progression, limits, and lifecycle
 
@@ -178,6 +184,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/riverhog/paths/~1v1~1catalog~1collections~1{collection_id}~1inventory/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -383,3 +392,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

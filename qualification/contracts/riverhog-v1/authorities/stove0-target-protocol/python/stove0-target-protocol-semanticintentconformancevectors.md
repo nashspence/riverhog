@@ -27,22 +27,41 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-4d6e331430"></a>
-- <a id="s-58735656dd"></a>`type`: object
 
-### Fields
+- <a id="s-58735656dd"></a>`type`: `"object"`
+- <a id="s-c611b1e392"></a>`additionalProperties`: `false`
+- <a id="s-67c9a7d30a"></a>`required`: `["profile_id","vectors"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-19302fb3e3"></a>`format` | no | type="string"; const="stove0-semantic-intent-conformance/v1" |  |
+| <a id="s-19302fb3e3"></a>`format` | no | type="string"; const="stove0-semantic-intent-conformance/v1"; default="stove0-semantic-intent-conformance/v1" |  |
 | <a id="s-942f665176"></a>`profile_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-acab2eba81"></a>`vectors` | yes | type="array"; minItems=2; items=(#/$defs/SemanticIntentConformanceVector) |  |
+| <a id="s-acab2eba81"></a>`vectors` | yes | type="array"; items=([SemanticIntentConformanceVector](#s-32cf7b6f36)); minItems=2 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-f6959d296b"></a>`JsonValue` | empty object |
-| <a id="s-32cf7b6f36"></a>`SemanticIntentConformanceVector` | type="object"; fields=`accepted`, `id`, `intent`; additional keys=`additionalProperties`, `required` |
+- [JsonValue](#s-f6959d296b)
+- [SemanticIntentConformanceVector](#s-32cf7b6f36)
+
+##### <a id="s-f6959d296b"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-32cf7b6f36"></a>definition `SemanticIntentConformanceVector`
+
+- <a id="s-8b72019fb2"></a>`type`: `"object"`
+- <a id="s-4b55fc8d78"></a>`additionalProperties`: `false`
+- <a id="s-b0ac12b500"></a>`required`: `["id","accepted","intent"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-87a16ed4fa"></a>`accepted` | yes | type="boolean" |  |
+| <a id="s-c4c00e8e72"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-1bfd47f3e3"></a>`intent` | yes | type="object"; additionalProperties=([JsonValue](#s-f6959d296b)) |  |
 
 ## Maintained corroboration
 
@@ -73,6 +92,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_protocol.SemanticIntentConformanceVectors`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -143,3 +165,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

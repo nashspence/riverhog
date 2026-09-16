@@ -13,8 +13,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-11a2acfae8"></a>
-- Shape: "Command names, options, exit status, and structured output remain backward compatible throughout v1; prose output is for people."
+
+| Field | Value |
+|---|---|
+| <a id="s-11a2acfae8"></a>`cli` | `"Command names, options, exit status, and structured output remain backward compatible throughout v1; prose output is for people."` |
 
 ## Governing policies
 
@@ -39,6 +41,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: e729f79071583e4a90de990d6f8b6da8a2e7eb3dbd228a7383834c7f95993d70 -->
@@ -46,3 +51,5 @@ The following JSON is the complete value owned at each machine-authority pointer
 ```json
 "Command names, options, exit status, and structured output remain backward compatible throughout v1; prose output is for people."
 ```
+
+</details>

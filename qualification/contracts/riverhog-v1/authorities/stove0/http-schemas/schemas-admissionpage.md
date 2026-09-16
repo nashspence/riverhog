@@ -14,21 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d8099e381e"></a>
-- <a id="s-19178e63f6"></a>`title`: AdmissionPage
-- <a id="s-6f94d51bc4"></a>`type`: object
+
+- <a id="s-6f94d51bc4"></a>`type`: `"object"`
+- <a id="s-60b56522e4"></a>`additionalProperties`: `false`
+- <a id="s-a364b74bbf"></a>`required`: `["page_size","next_page_token","sort","order","filters","policy_id","state","admissions"]`
+- <a id="s-19178e63f6"></a>`title`: `"AdmissionPage"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-d5f270254c"></a>`admissions` | yes | type="array"; items=(#/components/schemas/AdmissionView) |  |
-| <a id="s-3e881f6885"></a>`filters` | yes | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-9a36eb1fac"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-3e881f6885"></a>`filters` | yes | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-9a36eb1fac"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-3123ed8fc8"></a>`order` | yes | type="string"; enum=["asc","desc"] |  |
 | <a id="s-d9ac4cae18"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-36fb196aae"></a>`policy_id` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-36fb196aae"></a>`policy_id` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-cbcb64b233"></a>`sort` | yes | type="string"; enum=["created_at","updated_at","state","admission_id"] |  |
-| <a id="s-f4c994c20c"></a>`state` | yes | anyOf=type="string"; enum=["intent","previewed","work_bound"] \| type="null" |  |
+| <a id="s-f4c994c20c"></a>`state` | yes | anyOf=(type="string"; enum=["intent","previewed","work_bound"]) \| (type="null") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -94,6 +97,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/stove0/components/schemas/AdmissionPage`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -193,3 +199,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

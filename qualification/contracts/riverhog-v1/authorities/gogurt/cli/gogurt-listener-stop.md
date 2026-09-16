@@ -44,14 +44,126 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-413bf5ade1"></a>`completed` | <a id="s-31c47a75a2"></a>`{"kind":"command-completed"}` | <a id="s-d7087fdf5d"></a>`0` | <a id="s-d10a50bdd8"></a>human: `noncontractual-presentation-of-command-result`; json: [gogurt-listener-status/v1](#s-d10a50bdd8) | <a id="s-ed27c8de11"></a>all: `empty` |
+| <a id="s-413bf5ade1"></a>`completed` | <a id="s-31c47a75a2"></a>`{"kind":"command-completed"}` | <a id="s-d7087fdf5d"></a>`0` | <a id="s-d10a50bdd8"></a>human: `noncontractual-presentation-of-command-result`; json: [gogurt-listener-status/v1](#s-8a3c97fd8b) | <a id="s-ed27c8de11"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-97035ade3f"></a>`usage` | <a id="s-d415ce5cf4"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-b719577371"></a>`2` | <a id="s-3e2f239655"></a>all: `empty` | <a id="s-0aeb4e772d"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-34ad9f46fd"></a>`operational` | <a id="s-b0b04eb16f"></a>`{"kind":"application-error"}` | <a id="s-6074c71542"></a>`1` | <a id="s-c5185a10e4"></a>human: `empty`; json: [gogurt-cli-error/v1](#s-c5185a10e4) | <a id="s-8cdb0c18a5"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-34ad9f46fd"></a>`operational` | <a id="s-b0b04eb16f"></a>`{"kind":"application-error"}` | <a id="s-6074c71542"></a>`1` | <a id="s-c5185a10e4"></a>human: `empty`; json: [gogurt-cli-error/v1](#s-8f4b7ca766) | <a id="s-8cdb0c18a5"></a>human: `noncontractual-diagnostic`; json: `empty` |
+
+### Local structured outputs
+
+
+#### <a id="s-8a3c97fd8b"></a>`gogurt-listener-status/v1`
+
+Applies to: completed · stdout (json).
+
+<a id="s-e76f47d6cb"></a>
+
+- <a id="s-9ad1f9da7e"></a>`type`: `"object"`
+- <a id="s-5677827007"></a>`additionalProperties`: `false`
+- <a id="s-c0b9bd00a3"></a>`required`: `["schema","manager_version","platform","installed","enabled","running","health","config_file","state_dir","executable","mounted_volume_provider","listener_host_provider","heartbeat_age_seconds","heartbeat","dispatches","mount_attention","diagnostic"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4baa1a0b69"></a>`config_file` | yes | type="string" |  |
+| <a id="s-4a66287501"></a>`diagnostic` | yes | type=["string","null"] |  |
+| <a id="s-d28b7eb8f6"></a>`dispatches` | yes | type="object" |  |
+| <a id="s-0fd4b353b6"></a>`enabled` | yes | type="boolean" |  |
+| <a id="s-48f0c38df6"></a>`executable` | yes | type=["string","null"] |  |
+| <a id="s-b89840ef3e"></a>`health` | yes | enum=["absent","stopped","failed","starting","healthy","stale"] |  |
+| <a id="s-1644a51ba3"></a>`heartbeat` | yes | type=["object","null"] |  |
+| <a id="s-fab6694148"></a>`heartbeat_age_seconds` | yes | type=["number","null"]; minimum=0 |  |
+| <a id="s-ee455eeca6"></a>`installed` | yes | type="boolean" |  |
+| `listener_host_provider` | yes | [See field `listener_host_provider`](#s-aedc58d84b) |  |
+| <a id="s-c6c111c226"></a>`manager_version` | yes | type="string" |  |
+| <a id="s-a2e99f5389"></a>`mount_attention` | yes | type="array" |  |
+| `mounted_volume_provider` | yes | [See field `mounted_volume_provider`](#s-8e4fcebe46) |  |
+| <a id="s-cafecbe18d"></a>`platform` | yes | type="string" |  |
+| <a id="s-3a03d9b4eb"></a>`running` | yes | type="boolean" |  |
+| <a id="s-0383182bd5"></a>`schema` | yes | const="gogurt-listener-status/v1" |  |
+| <a id="s-1be6ca5932"></a>`state_dir` | yes | type="string" |  |
+
+##### <a id="s-aedc58d84b"></a>field `listener_host_provider`
+
+
+###### At least one must match (`anyOf`)
+
+| Alternative | Schema |
+|---|---|
+| 1 | [See field `listener_host_provider` · `anyOf` alternative 1](#s-c6b44e3dcb) |
+| <a id="s-5fc1c7b787"></a>2 | type="null" |
+
+##### <a id="s-8e4fcebe46"></a>field `mounted_volume_provider`
+
+
+###### At least one must match (`anyOf`)
+
+| Alternative | Schema |
+|---|---|
+| 1 | [See field `mounted_volume_provider` · `anyOf` alternative 1](#s-cefb3d5c72) |
+| <a id="s-08ebebd154"></a>2 | type="null" |
+
+##### <a id="s-c6b44e3dcb"></a>field `listener_host_provider` · `anyOf` alternative 1
+
+- <a id="s-1818f37519"></a>`type`: `"object"`
+- <a id="s-d6e5011366"></a>`additionalProperties`: `false`
+- <a id="s-a55dbbf422"></a>`required`: `["kind","name","provider_id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-238cdd232b"></a>`kind` | yes | enum=["mounted-volume","listener-host"] |  |
+| <a id="s-68340476e6"></a>`name` | yes | type="string" |  |
+| <a id="s-59db9edf38"></a>`provider_id` | yes | type="string" |  |
+
+##### <a id="s-cefb3d5c72"></a>field `mounted_volume_provider` · `anyOf` alternative 1
+
+- <a id="s-787fa3735d"></a>`type`: `"object"`
+- <a id="s-fc972f6651"></a>`additionalProperties`: `false`
+- <a id="s-47ae60fa18"></a>`required`: `["kind","name","provider_id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-08a9679706"></a>`kind` | yes | enum=["mounted-volume","listener-host"] |  |
+| <a id="s-2b9d732107"></a>`name` | yes | type="string" |  |
+| <a id="s-680cec24a2"></a>`provider_id` | yes | type="string" |  |
+
+#### <a id="s-8f4b7ca766"></a>`gogurt-cli-error/v1`
+
+Applies to: operational · stdout (json).
+
+<a id="s-0faceebb62"></a>
+
+- <a id="s-15f0b7c257"></a>`type`: `"object"`
+- <a id="s-7ea96f6055"></a>`additionalProperties`: `false`
+- <a id="s-6619a549d7"></a>`required`: `["error"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `error` | yes | [See field `error`](#s-6f279911fa) |  |
+
+##### <a id="s-6f279911fa"></a>field `error`
+
+- <a id="s-67b4c8558a"></a>`type`: `"object"`
+- <a id="s-dff5f10a1f"></a>`additionalProperties`: `false`
+- <a id="s-04a1a5f03a"></a>`required`: `["code","message"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-638458b15e"></a>`code` | yes | enum=["config_error","listener_error"] |  |
+| <a id="s-9a31b95e85"></a>`message` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -92,6 +204,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 - `/external_contract/cli/gogurt/commands/listener/commands/stop/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -436,3 +551,5 @@ false
   }
 ]
 ```
+
+</details>

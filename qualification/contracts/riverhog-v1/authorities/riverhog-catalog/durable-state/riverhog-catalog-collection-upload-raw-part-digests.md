@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-35e966f894"></a>
-- Table: `collection_upload_raw_part_digests`
 
-### Columns
+### Table: `collection_upload_raw_part_digests`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -25,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-3717432186"></a>`part_number` | `BIGINT` | no | `—` | — |
 | <a id="s-dad8e45b59"></a>`sha256` | `VARCHAR(64)` | no | `—` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -62,6 +63,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/0/structure/tables/66`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -143,3 +147,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "collection_upload_raw_part_digests"
 }
 ```
+
+</details>

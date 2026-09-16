@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8489af8a61"></a>
-- <a id="s-3458023d0e"></a>`title`: CreateAppKeyRequest
-- <a id="s-387c6d3823"></a>`type`: object
+
+- <a id="s-387c6d3823"></a>`type`: `"object"`
+- <a id="s-61bad05673"></a>`additionalProperties`: `false`
+- <a id="s-b0cf2fd726"></a>`required`: `["access"]`
+- <a id="s-3458023d0e"></a>`title`: `"CreateAppKeyRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-c99d7d5a34"></a>`access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
-| <a id="s-cf3b3599cf"></a>`expires_in_seconds` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| <a id="s-cf3b3599cf"></a>`expires_in_seconds` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
 
 ## Maintained corroboration
 
@@ -51,6 +54,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/CreateAppKeyRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -83,3 +89,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -27,21 +27,36 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-bd69fedff3"></a>
-- <a id="s-848c16a168"></a>`type`: object
 
-### Fields
+- <a id="s-848c16a168"></a>`type`: `"object"`
+- <a id="s-525f24c867"></a>`additionalProperties`: `false`
+- <a id="s-138ffe5831"></a>`required`: `["preview_sha256","branch_set_sha256","target_plans"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-9ba93024fb"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-09b6390989"></a>`preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-98dac4a244"></a>`target_plans` | yes | type="array"; items=(#/$defs/PreviewTargetExpectation) |  |
+| <a id="s-98dac4a244"></a>`target_plans` | yes | type="array"; items=([PreviewTargetExpectation](#s-72283ea66c)) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-72283ea66c"></a>`PreviewTargetExpectation` | type="object"; fields=`branch_id`, `plan_sha256`, `work_id`; additional keys=`additionalProperties`, `required` |
+- [PreviewTargetExpectation](#s-72283ea66c)
+
+##### <a id="s-72283ea66c"></a>definition `PreviewTargetExpectation`
+
+- <a id="s-cb5e23f2da"></a>`type`: `"object"`
+- <a id="s-11adf7e994"></a>`additionalProperties`: `false`
+- <a id="s-965f18d2e8"></a>`required`: `["branch_id","work_id","plan_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6795c73d5f"></a>`branch_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-a42059f60d"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-8635d860ad"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -71,6 +86,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_core.PreviewAcceptance`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -139,3 +157,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

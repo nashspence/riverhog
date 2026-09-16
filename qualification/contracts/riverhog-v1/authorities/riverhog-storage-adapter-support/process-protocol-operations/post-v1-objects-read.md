@@ -52,6 +52,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: ff38b1951537bf8291dad5b8cc4ea87d221a0d43d52e5222529cbe6917b98ecf -->
@@ -152,3 +155,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

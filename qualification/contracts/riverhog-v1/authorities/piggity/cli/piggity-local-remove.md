@@ -44,7 +44,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-d4b6e13a20"></a>`completed` | <a id="s-a4a80982e7"></a>`{"kind":"command-completed"}` | <a id="s-36c96dfa29"></a>`0` | <a id="s-dcf6b4bf36"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-local-remove-result/v1](#s-dcf6b4bf36) | <a id="s-5c9954c18a"></a>all: `empty` |
+| <a id="s-d4b6e13a20"></a>`completed` | <a id="s-a4a80982e7"></a>`{"kind":"command-completed"}` | <a id="s-36c96dfa29"></a>`0` | <a id="s-dcf6b4bf36"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-local-remove-result/v1](#s-12188a0fdb) | <a id="s-5c9954c18a"></a>all: `empty` |
 
 #### Failure outcomes
 
@@ -52,6 +52,28 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|---|
 | <a id="s-f0f5cd3d2a"></a>`usage` | <a id="s-1414cc91fc"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-ea2cc73865"></a>`2` | <a id="s-1fb6f1fee2"></a>all: `empty` | <a id="s-1db40d339e"></a>all: `noncontractual-usage-diagnostic` |
 | <a id="s-822795332e"></a>`operational` | <a id="s-cb0abd90f6"></a>`{"kind":"application-error"}` | <a id="s-5b45e87b22"></a>`1` | <a id="s-8236970d8a"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-b213eea07f"></a>human: `noncontractual-diagnostic`; json: `empty` |
+
+### Local structured outputs
+
+
+#### <a id="s-12188a0fdb"></a>`piggity-local-remove-result/v1`
+
+Applies to: completed · stdout (json).
+
+<a id="s-60df9ab97f"></a>
+
+- <a id="s-7edbfc77ab"></a>`type`: `"object"`
+- <a id="s-51b3b6b731"></a>`additionalProperties`: `false`
+- <a id="s-06bf59c225"></a>`required`: `["status","collection_id","local_files","retrievals_canceled"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-1464eecd13"></a>`collection_id` | yes | type="integer"; minimum=1 |  |
+| <a id="s-c8a7e28142"></a>`local_files` | yes | const="retained" |  |
+| <a id="s-6e5dd743b1"></a>`retrievals_canceled` | yes | type="array"; items=(type="string") |  |
+| <a id="s-c44734abdd"></a>`status` | yes | const="removed" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -102,6 +124,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 - `/external_contract/cli/piggity/commands/local/commands/remove/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -343,3 +368,5 @@ false
   }
 ]
 ```
+
+</details>

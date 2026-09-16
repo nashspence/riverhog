@@ -58,6 +58,9 @@ Publication preserves these existing component authorities; it does not reclassi
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: a01b2c9d1ed0ad3ac36f1471280aaa5292182f6cc314b39e1e05265a3e3e91c4 -->
@@ -87,3 +90,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "source": "reference/gogurt/listener-host/linux/pyproject.toml"
 }
 ```
+
+</details>

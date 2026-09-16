@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-cbedc559e6"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-339b989f89"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-02e4d9f7d4"></a>`default_expressions` | ["unset"] |
-| <a id="s-ab96b2e072"></a>`id` | "riverhog-server:environment:RIVERHOG_RETRIEVAL_READ_CHUNK_BYTES" |
-| <a id="s-debabc62df"></a>`input_shape` | "environment-string" |
-| <a id="s-7dead87c9e"></a>`name` | "RIVERHOG_RETRIEVAL_READ_CHUNK_BYTES" |
-| <a id="s-a99760a4aa"></a>`owner` | "riverhog-server" |
+| <a id="s-339b989f89"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-02e4d9f7d4"></a>`default_expressions` | `["unset"]` |
+| <a id="s-ab96b2e072"></a>`id` | `"riverhog-server:environment:RIVERHOG_RETRIEVAL_READ_CHUNK_BYTES"` |
+| <a id="s-debabc62df"></a>`input_shape` | `"environment-string"` |
+| <a id="s-7dead87c9e"></a>`name` | `"RIVERHOG_RETRIEVAL_READ_CHUNK_BYTES"` |
+| <a id="s-a99760a4aa"></a>`owner` | `"riverhog-server"` |
 
 ### Progression, limits, and lifecycle
 
@@ -64,6 +65,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: fe5335a04030e2a75c97ae924ef38d6e1054085713d326e3333c3dae03adf30a -->
@@ -82,3 +86,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "riverhog-server"
 }
 ```
+
+</details>

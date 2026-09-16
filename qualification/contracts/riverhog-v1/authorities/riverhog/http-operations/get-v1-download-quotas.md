@@ -23,12 +23,12 @@ List Download Quotas
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-bf5a76fe35"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-5b0ea802cc"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
+| <a id="s-5b0ea802cc"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
 | <a id="s-1e0b21dfc5"></a>`sort` | query | no | `"app"` | [DownloadQuotaSort](../http-schemas/schemas-downloadquotasort.md) |
 | <a id="s-b28e08ffe9"></a>`order` | query | no | `"asc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
-| <a id="s-b29b8e0ba2"></a>`q` | query | no | not declared | anyOf=[BrowseQuery](../http-schemas/schemas-browsequery.md) \| type="null" |
-| <a id="s-06c5d460e7"></a>`app` | query | no | not declared | anyOf=[ApplicationName](../http-schemas/schemas-applicationname.md) \| type="null" |
-| <a id="s-7a2a85af8b"></a>`active` | query | no | not declared | anyOf=type="boolean" \| type="null" |
+| <a id="s-b29b8e0ba2"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
+| <a id="s-06c5d460e7"></a>`app` | query | no | not declared | anyOf=([ApplicationName](../http-schemas/schemas-applicationname.md)) \| (type="null") |
+| <a id="s-7a2a85af8b"></a>`active` | query | no | not declared | anyOf=(type="boolean") \| (type="null") |
 
 ### Responses
 
@@ -161,6 +161,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -355,3 +358,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

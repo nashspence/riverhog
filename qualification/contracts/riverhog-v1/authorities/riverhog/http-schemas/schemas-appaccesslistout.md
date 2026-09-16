@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-dd90b8f9fa"></a>
-- <a id="s-8f19d8bf61"></a>`title`: AppAccessListOut
-- <a id="s-9594c65264"></a>`type`: object
+
+- <a id="s-9594c65264"></a>`type`: `"object"`
+- <a id="s-fb2dc23f57"></a>`additionalProperties`: `false`
+- <a id="s-ac08611248"></a>`required`: `["page_size","next_page_token","sort","order","query","filters","access"]`
+- <a id="s-8f19d8bf61"></a>`title`: `"AppAccessListOut"`
 
 ### Fields
 
@@ -23,10 +26,10 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-227c4d3cb0"></a>`access` | yes | type="array"; items=(#/components/schemas/AppAccessListItemOut) |  |
 | <a id="s-3a7cadd946"></a>`filters` | yes | #/components/schemas/AppAccessListFiltersOut |  |
-| <a id="s-b1450b3d35"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-b1450b3d35"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-aa5e6807e0"></a>`order` | yes | #/components/schemas/SortOrder |  |
 | <a id="s-5dabba4ac6"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-d9fbae8b32"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-d9fbae8b32"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-49383a1598"></a>`sort` | yes | #/components/schemas/ApplicationAccessSort |  |
 
 ### Progression, limits, and lifecycle
@@ -86,6 +89,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/AppAccessListOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -152,3 +158,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

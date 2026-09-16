@@ -27,21 +27,36 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-af6898c92c"></a>
-- <a id="s-8b119c136e"></a>`type`: object
 
-### Fields
+- <a id="s-8b119c136e"></a>`type`: `"object"`
+- <a id="s-3d7f79f0d0"></a>`additionalProperties`: `false`
+- <a id="s-c2a507f4a9"></a>`required`: `["session","number","stored_bytes"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-29ec31d434"></a>`number` | yes | type="integer"; minimum=1 |  |
-| <a id="s-a92f6bcec1"></a>`session` | yes | #/$defs/WriteSession |  |
+| <a id="s-a92f6bcec1"></a>`session` | yes | [WriteSession](#s-3bcf6f4274) |  |
 | <a id="s-bdfbfb086e"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-3bcf6f4274"></a>`WriteSession` | type="object"; fields=`expected_bytes`, `object_path`, `write_token`; additional keys=`additionalProperties`, `required` |
+- [WriteSession](#s-3bcf6f4274)
+
+##### <a id="s-3bcf6f4274"></a>definition `WriteSession`
+
+- <a id="s-2e6103c361"></a>`type`: `"object"`
+- <a id="s-c6f1f7b523"></a>`additionalProperties`: `false`
+- <a id="s-005ad67ded"></a>`required`: `["object_path","expected_bytes","write_token"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-fb09cd7729"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-f42929e90e"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-9a5d226096"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
 
 ## Governing policies
 
@@ -64,6 +79,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.WriteSegmentRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -130,3 +148,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

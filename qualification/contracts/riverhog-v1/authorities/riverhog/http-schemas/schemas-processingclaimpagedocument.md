@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6041073899"></a>
-- <a id="s-a020b53a87"></a>`title`: ProcessingClaimPageDocument
-- <a id="s-8ce43a30b1"></a>`type`: object
+
+- <a id="s-8ce43a30b1"></a>`type`: `"object"`
+- <a id="s-b45181da06"></a>`additionalProperties`: `false`
+- <a id="s-b73cbeb8e6"></a>`required`: `["page_size","next_page_token","sort","order","filters","claims"]`
+- <a id="s-a020b53a87"></a>`title`: `"ProcessingClaimPageDocument"`
 
 ### Fields
 
@@ -23,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-8e545456d5"></a>`claims` | yes | type="array"; items=(#/components/schemas/ProcessingClaimDocument) |  |
 | <a id="s-ef1ff79919"></a>`filters` | yes | #/components/schemas/ProcessingClaimFiltersDocument |  |
-| <a id="s-7409e9be17"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-7409e9be17"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-aad6de037e"></a>`order` | yes | #/components/schemas/SortOrder |  |
 | <a id="s-a12a255dad"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
 | <a id="s-239812ea90"></a>`sort` | yes | #/components/schemas/ProcessingClaimSort |  |
@@ -86,6 +89,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 671fc271e83cea3f708e84026473a959d1ec05965a2294f734e1b4459b4c6a42 -->
@@ -139,3 +145,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

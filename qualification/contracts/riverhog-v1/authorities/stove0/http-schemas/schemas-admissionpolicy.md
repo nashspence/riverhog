@@ -14,22 +14,25 @@ One bounded, exact all-of classification admission rule.
 ## External contract
 
 <a id="s-9dd4f15559"></a>
-- <a id="s-99894eeca3"></a>`title`: AdmissionPolicy
-- <a id="s-e714fd9d0a"></a>`description`: One bounded, exact all-of classification admission rule.
-- <a id="s-05470c8cac"></a>`type`: object
+
+- <a id="s-05470c8cac"></a>`type`: `"object"`
+- <a id="s-f96d685d70"></a>`additionalProperties`: `false`
+- <a id="s-e714fd9d0a"></a>`description`: `"One bounded, exact all-of classification admission rule."`
+- <a id="s-8b6c4855c7"></a>`required`: `["id","revision","required_tags","recipe_id","recipe_revision","recipe_sha256"]`
+- <a id="s-99894eeca3"></a>`title`: `"AdmissionPolicy"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4825bdded5"></a>`automatic_preview` | no | type="string"; const="accept-ready" |  |
-| <a id="s-fe0784373c"></a>`effective_intent` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-7ca1adfe1d"></a>`format` | no | type="string"; const="stove0-admission-policy/v1" |  |
+| <a id="s-4825bdded5"></a>`automatic_preview` | no | type="string"; const="accept-ready"; default="accept-ready" |  |
+| <a id="s-fe0784373c"></a>`effective_intent` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-7ca1adfe1d"></a>`format` | no | type="string"; const="stove0-admission-policy/v1"; default="stove0-admission-policy/v1" |  |
 | <a id="s-f6d577c8df"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-fff97fd387"></a>`recipe_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-fff97fd387"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-f81203e699"></a>`recipe_revision` | yes | type="integer"; minimum=1 |  |
 | <a id="s-59bbce29c6"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a53f69ac6c"></a>`required_tags` | yes | type="array"; minItems=1; maxItems=100; items=(#/components/schemas/CollectionTag); additional keys=`x-riverhog-extent` |  |
+| <a id="s-a53f69ac6c"></a>`required_tags` | yes | type="array"; items=(#/components/schemas/CollectionTag); maxItems=100; minItems=1; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-classification-admission-predicate"} |  |
 | <a id="s-558e3f83fb"></a>`revision` | yes | type="integer"; minimum=1 |  |
 
 ### Progression, limits, and lifecycle
@@ -80,6 +83,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicy`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -161,3 +167,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

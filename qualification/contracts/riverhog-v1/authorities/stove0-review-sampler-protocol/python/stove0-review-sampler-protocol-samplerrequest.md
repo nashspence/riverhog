@@ -27,30 +27,67 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-e958c04ed7"></a>
-- <a id="s-031b8e7636"></a>`type`: object
 
-### Fields
+- <a id="s-031b8e7636"></a>`type`: `"object"`
+- <a id="s-2b23a0a5dd"></a>`additionalProperties`: `false`
+- <a id="s-96fb3e921c"></a>`required`: `["sampler_descriptor_sha256","workspace_id","inputs","windows","portable_intent","maximum_output_bytes","timeout_seconds","cancellation_path","request_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-95ef59c592"></a>`cancellation_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-0ee1b5ec51"></a>`format` | no | type="string"; const="stove0-review-sampler-request/v1" |  |
-| <a id="s-12f1a70259"></a>`inputs` | yes | type="array"; minItems=1; items=(#/$defs/SamplerInput) |  |
+| <a id="s-95ef59c592"></a>`cancellation_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-0ee1b5ec51"></a>`format` | no | type="string"; const="stove0-review-sampler-request/v1"; default="stove0-review-sampler-request/v1" |  |
+| <a id="s-12f1a70259"></a>`inputs` | yes | type="array"; items=([SamplerInput](#s-70bfab0b91)); minItems=1 |  |
 | <a id="s-3faf0eddb5"></a>`maximum_output_bytes` | yes | type="integer"; minimum=1; maximum=1099511627776 |  |
-| <a id="s-2f30679eba"></a>`portable_intent` | yes | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-2f30679eba"></a>`portable_intent` | yes | type="object"; additionalProperties=([JsonValue](#s-9ab47fe995)) |  |
 | <a id="s-c05fa076b8"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-4173cedc4b"></a>`sampler_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-9d2fa7cdf8"></a>`timeout_seconds` | yes | type="integer"; minimum=1; maximum=86400 |  |
-| <a id="s-8f679e0056"></a>`windows` | yes | type="array"; minItems=1; items=(#/$defs/SamplerWindow) |  |
+| <a id="s-8f679e0056"></a>`windows` | yes | type="array"; items=([SamplerWindow](#s-f9ad7a1f9a)); minItems=1 |  |
 | <a id="s-f46379ed20"></a>`workspace_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-9ab47fe995"></a>`JsonValue` | empty object |
-| <a id="s-70bfab0b91"></a>`SamplerInput` | type="object"; fields=`bytes`, `id`, `media_type`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-f9ad7a1f9a"></a>`SamplerWindow` | type="object"; fields=`duration_ms`, `id`, `input_id`, `output_path`, `start_ms`; additional keys=`additionalProperties`, `required` |
+- [JsonValue](#s-9ab47fe995)
+- [SamplerInput](#s-70bfab0b91)
+- [SamplerWindow](#s-f9ad7a1f9a)
+
+##### <a id="s-9ab47fe995"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-70bfab0b91"></a>definition `SamplerInput`
+
+- <a id="s-63f45ce449"></a>`type`: `"object"`
+- <a id="s-813ff751fe"></a>`additionalProperties`: `false`
+- <a id="s-2bb4b9b3e0"></a>`required`: `["id","path","bytes","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b415320dc7"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-4a57ca9b6e"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-6bbfc32518"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-25c2f514cc"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-5cc2e2190e"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-f9ad7a1f9a"></a>definition `SamplerWindow`
+
+- <a id="s-909bdcaabd"></a>`type`: `"object"`
+- <a id="s-6a5e4fafa4"></a>`additionalProperties`: `false`
+- <a id="s-31468b18a6"></a>`required`: `["id","input_id","start_ms","duration_ms","output_path"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f0be2913a9"></a>`duration_ms` | yes | type="integer"; minimum=1 |  |
+| <a id="s-c29c0641cd"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-c18a951dd6"></a>`input_id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-845d3c13db"></a>`output_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-dc3a577c1c"></a>`start_ms` | yes | type="integer"; minimum=0 |  |
 
 ## Maintained corroboration
 
@@ -84,6 +121,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_review_sampler_protocol.SamplerRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -249,3 +289,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

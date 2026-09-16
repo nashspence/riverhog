@@ -27,21 +27,56 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-379ee065cb"></a>
-- <a id="s-b3278f72da"></a>`type`: object
 
-### Fields
+- <a id="s-b3278f72da"></a>`type`: `"object"`
+- <a id="s-474fc5b7da"></a>`additionalProperties`: `false`
+- <a id="s-51a89a330a"></a>`required`: `["files"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-968becece6"></a>`files` | yes | type="array"; minItems=1; maxItems=10000; items=(#/$defs/RetrievalFileReferenceDocument); additional keys=`x-riverhog-extent` |  |
+| <a id="s-968becece6"></a>`files` | yes | type="array"; items=([RetrievalFileReferenceDocument](#s-221613439d)); maxItems=10000; minItems=1; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"multiple-retrieval-jobs","reason":"bounded-retrieval-work-request"} |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
+- [CanonicalRelPath](#s-1828163c8e)
+- [CollectionId](#s-e440dc7980)
+- [RetrievalFileReferenceDocument](#s-221613439d)
+
+##### <a id="s-1828163c8e"></a>definition `CanonicalRelPath`
+
+- <a id="s-915b3a9da3"></a>`type`: `"string"`
+- <a id="s-10d691c19a"></a>`format`: `"riverhog-canonical-relpath-v1"`
+- <a id="s-eb0b5bd178"></a>`maxLength`: `4096`
+- <a id="s-8936d6641d"></a>`minLength`: `1`
+- <a id="s-c2a6398846"></a>`pattern`: `"^[^/\\\\]+(?:/[^/\\\\]+)*$"`
+- <a id="s-444684c321"></a>`x-unicode-normalization`: `"NFC"`
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
 |---|---|
-| <a id="s-1828163c8e"></a>`CanonicalRelPath` | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
-| <a id="s-e440dc7980"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-221613439d"></a>`RetrievalFileReferenceDocument` | type="object"; fields=`collection_id`, `path`; additional keys=`additionalProperties`, `required` |
+| <a id="s-90c917009f"></a>1 | not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)") |
+| <a id="s-4801cbe113"></a>2 | not=(pattern="^\\s\|\\s$") |
+
+##### <a id="s-e440dc7980"></a>definition `CollectionId`
+
+- <a id="s-a3bba1d596"></a>`type`: `"integer"`
+- <a id="s-323fb0bc65"></a>`minimum`: `1`
+
+##### <a id="s-221613439d"></a>definition `RetrievalFileReferenceDocument`
+
+- <a id="s-ad07143daa"></a>`type`: `"object"`
+- <a id="s-236a48ce3f"></a>`additionalProperties`: `false`
+- <a id="s-30804f1ab7"></a>`required`: `["collection_id","path"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a556096b60"></a>`collection_id` | yes | [CollectionId](#s-e440dc7980) |  |
+| <a id="s-4fcc8b9428"></a>`path` | yes | [CanonicalRelPath](#s-1828163c8e) |  |
 
 ## Maintained corroboration
 
@@ -70,6 +105,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.RetrievalFileReferenceSetDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -151,3 +189,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

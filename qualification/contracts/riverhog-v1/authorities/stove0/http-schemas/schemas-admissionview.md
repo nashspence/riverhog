@@ -14,22 +14,25 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4c588910d9"></a>
-- <a id="s-7315e158ba"></a>`title`: AdmissionView
-- <a id="s-64172b366f"></a>`type`: object
+
+- <a id="s-64172b366f"></a>`type`: `"object"`
+- <a id="s-bb34f9600d"></a>`additionalProperties`: `false`
+- <a id="s-cc8d70a20b"></a>`required`: `["intent","state","attempt_count","created_at","updated_at"]`
+- <a id="s-7315e158ba"></a>`title`: `"AdmissionView"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-2876199d78"></a>`attempt_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-6df2d3fad6"></a>`created_at` | yes | type="string"; minLength=1; maxLength=40 |  |
-| <a id="s-c08d71353e"></a>`failure` | no | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
+| <a id="s-6df2d3fad6"></a>`created_at` | yes | type="string"; maxLength=40; minLength=1 |  |
+| <a id="s-c08d71353e"></a>`failure` | no | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null") |  |
 | <a id="s-22ad3d0ba1"></a>`intent` | yes | #/components/schemas/AdmissionIntent |  |
-| <a id="s-95bb151c01"></a>`next_attempt_at` | no | anyOf=type="string"; minLength=1; maxLength=40 \| type="null" |  |
-| <a id="s-c05701d9fd"></a>`preview_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-95bb151c01"></a>`next_attempt_at` | no | anyOf=(type="string"; maxLength=40; minLength=1) \| (type="null") |  |
+| <a id="s-c05701d9fd"></a>`preview_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 | <a id="s-21f919bc64"></a>`state` | yes | type="string"; enum=["intent","previewed","work_bound"] |  |
-| <a id="s-500fd66991"></a>`updated_at` | yes | type="string"; minLength=1; maxLength=40 |  |
-| <a id="s-93af888f26"></a>`work_id` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-500fd66991"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
+| <a id="s-93af888f26"></a>`work_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -72,6 +75,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/stove0/components/schemas/AdmissionView`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -172,3 +178,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

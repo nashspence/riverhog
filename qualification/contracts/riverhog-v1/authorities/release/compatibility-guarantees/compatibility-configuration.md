@@ -13,8 +13,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-43f1f247d9"></a>
-- Shape: "Accepted v1 configuration remains valid throughout v1 unless an unsafe value must be rejected."
+
+| Field | Value |
+|---|---|
+| <a id="s-43f1f247d9"></a>`configuration` | `"Accepted v1 configuration remains valid throughout v1 unless an unsafe value must be rejected."` |
 
 ## Governing policies
 
@@ -39,6 +41,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: de93df3805314638224be1b8f0f4a7b30bd0b1d03e6c8b6938130f9b08122aec -->
@@ -46,3 +51,5 @@ The following JSON is the complete value owned at each machine-authority pointer
 ```json
 "Accepted v1 configuration remains valid throughout v1 unless an unsafe value must be rejected."
 ```
+
+</details>

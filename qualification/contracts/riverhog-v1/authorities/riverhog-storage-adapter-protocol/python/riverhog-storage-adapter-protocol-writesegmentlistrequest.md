@@ -27,22 +27,37 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-bb9487fbdc"></a>
-- <a id="s-d723c95cd1"></a>`type`: object
 
-### Fields
+- <a id="s-d723c95cd1"></a>`type`: `"object"`
+- <a id="s-e017f55073"></a>`additionalProperties`: `false`
+- <a id="s-1128a4bfb9"></a>`required`: `["session"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-9de7fb3114"></a>`after_number` | no | type="integer"; minimum=0; additional keys=`x-riverhog-extent` |  |
-| <a id="s-271af5454e"></a>`maximum_items` | no | type="integer"; minimum=1; maximum=128 |  |
-| <a id="s-3d7b574285"></a>`session` | yes | #/$defs/WriteSession |  |
-| <a id="s-a54ca5cef3"></a>`traversal_token` | no | anyOf=type="string"; minLength=1; maxLength=4000 \| type="null" |  |
+| <a id="s-9de7fb3114"></a>`after_number` | no | type="integer"; minimum=0; default=0; x-riverhog-extent={"policy":"segmented_no_total_max","reason":"write-segment-history-bounded-traversal"} |  |
+| <a id="s-271af5454e"></a>`maximum_items` | no | type="integer"; minimum=1; maximum=128; default=128 |  |
+| <a id="s-3d7b574285"></a>`session` | yes | [WriteSession](#s-14ac5609c9) |  |
+| <a id="s-a54ca5cef3"></a>`traversal_token` | no | anyOf=(type="string"; maxLength=4000; minLength=1) \| (type="null"); default=null |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-14ac5609c9"></a>`WriteSession` | type="object"; fields=`expected_bytes`, `object_path`, `write_token`; additional keys=`additionalProperties`, `required` |
+- [WriteSession](#s-14ac5609c9)
+
+##### <a id="s-14ac5609c9"></a>definition `WriteSession`
+
+- <a id="s-8dfbfcc31c"></a>`type`: `"object"`
+- <a id="s-68020854c7"></a>`additionalProperties`: `false`
+- <a id="s-72958fe320"></a>`required`: `["object_path","expected_bytes","write_token"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e37c716bf7"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-068572d749"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-66f531fe7f"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
 
 ## Governing policies
 
@@ -65,6 +80,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.WriteSegmentListRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -149,3 +167,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

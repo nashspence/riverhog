@@ -14,23 +14,26 @@ One exact subrecipe selected as a branch-bound coordinator.
 ## External contract
 
 <a id="s-49c4834612"></a>
-- <a id="s-5024797bd0"></a>`title`: RecipeCoordinationRoute
-- <a id="s-b5f335c1e3"></a>`description`: One exact subrecipe selected as a branch-bound coordinator.
-- <a id="s-fec7e8204d"></a>`type`: object
+
+- <a id="s-fec7e8204d"></a>`type`: `"object"`
+- <a id="s-688e24598d"></a>`additionalProperties`: `false`
+- <a id="s-b5f335c1e3"></a>`description`: `"One exact subrecipe selected as a branch-bound coordinator."`
+- <a id="s-92a3458aab"></a>`required`: `["id","recipe"]`
+- <a id="s-5024797bd0"></a>`title`: `"RecipeCoordinationRoute"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d85117f452"></a>`artifact_rules` | no | type="array"; items=(#/components/schemas/ArtifactRule) |  |
-| <a id="s-700d57d1c0"></a>`associated_roles` | no | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| <a id="s-d85117f452"></a>`artifact_rules` | no | type="array"; default=[{"glob":"*","role":"stove0.source/v1"}]; items=(#/components/schemas/ArtifactRule) |  |
+| <a id="s-700d57d1c0"></a>`associated_roles` | no | type="array"; default=[]; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
 | <a id="s-1e59584371"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-755ac34ea8"></a>`intent` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-028eb1ca79"></a>`kind` | no | type="string"; const="coordination" |  |
-| <a id="s-0b22e4cc4a"></a>`primary_role` | no | anyOf=type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" \| type="null" |  |
-| <a id="s-2deb6d5c81"></a>`projections` | no | type="array"; items=(#/components/schemas/OperationProjection) |  |
+| <a id="s-755ac34ea8"></a>`intent` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-028eb1ca79"></a>`kind` | no | type="string"; const="coordination"; default="coordination" |  |
+| <a id="s-0b22e4cc4a"></a>`primary_role` | no | anyOf=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") \| (type="null") |  |
+| <a id="s-2deb6d5c81"></a>`projections` | no | type="array"; default=[]; items=(#/components/schemas/OperationProjection) |  |
 | <a id="s-c91319df09"></a>`recipe` | yes | #/components/schemas/RecipeRef |  |
-| <a id="s-4c285d7366"></a>`when` | no | type="array"; items=(#/components/schemas/FactPredicate) |  |
+| <a id="s-4c285d7366"></a>`when` | no | type="array"; default=[]; items=(#/components/schemas/FactPredicate) |  |
 
 ### Progression, limits, and lifecycle
 
@@ -78,6 +81,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/stove0/components/schemas/RecipeCoordinationRoute`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -168,3 +174,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

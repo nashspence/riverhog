@@ -27,26 +27,31 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-a9ad9ff0ee"></a>
-- <a id="s-5f2ee45baa"></a>`type`: object
 
-### Fields
+- <a id="s-5f2ee45baa"></a>`type`: `"object"`
+- <a id="s-0384b20f52"></a>`additionalProperties`: `false`
+- <a id="s-3cecb59e88"></a>`required`: `["job_id","request_sha256","target_contract_sha256","operation_contract_sha256","plan_sha256","execution_sha256","result"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-86dda56244"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-657cf15c01"></a>`format` | no | type="string"; const="stove0-external-effect-receipt/v1" |  |
+| <a id="s-657cf15c01"></a>`format` | no | type="string"; const="stove0-external-effect-receipt/v1"; default="stove0-external-effect-receipt/v1" |  |
 | <a id="s-5c618a14a1"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-7ae548529b"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-8c53d67360"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-102785bd0a"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-bdd80480f2"></a>`result` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| <a id="s-bdd80480f2"></a>`result` | yes | type="object"; additionalProperties=([JsonValue](#s-5ade87f137)); x-riverhog-encoded-bytes-max=65536; x-riverhog-extent={"policy":"contract_max","reason":"bounded-external-effect-receipt"} |  |
 | <a id="s-7880beddc2"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-5ade87f137"></a>`JsonValue` | empty object |
+- [JsonValue](#s-5ade87f137)
+
+##### <a id="s-5ade87f137"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Maintained corroboration
 
@@ -75,6 +80,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_support.ExternalEffectReceiptPayload`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -150,3 +158,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

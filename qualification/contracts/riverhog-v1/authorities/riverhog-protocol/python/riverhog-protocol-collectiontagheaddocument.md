@@ -27,17 +27,20 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ce4ab1a01c"></a>
-- <a id="s-6ca05613b3"></a>`type`: object
 
-### Fields
+- <a id="s-6ca05613b3"></a>`type`: `"object"`
+- <a id="s-50d3def074"></a>`additionalProperties`: `false`
+- <a id="s-1a36d40f94"></a>`required`: `["archive_root_sha256","revision","tag_set_identity","head_identity"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-a1c9e422b3"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-6d8f707f07"></a>`format` | no | type="string"; const="riverhog-collection-tag-head/v1" |  |
+| <a id="s-6d8f707f07"></a>`format` | no | type="string"; const="riverhog-collection-tag-head/v1"; default="riverhog-collection-tag-head/v1" |  |
 | <a id="s-ce95c34a50"></a>`head_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-c714f6110c"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
-| <a id="s-1381339e01"></a>`root_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-1381339e01"></a>`root_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
 | <a id="s-1f359cc827"></a>`tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
@@ -70,6 +73,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.CollectionTagHeadDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -133,3 +139,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

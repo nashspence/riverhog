@@ -14,16 +14,39 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7ba16e9301"></a>
-- <a id="s-0275659017"></a>`title`: ProcessingClaimOutcomesSettleDocument
-- <a id="s-be047dc069"></a>`type`: object
+
+- <a id="s-be047dc069"></a>`type`: `"object"`
+- <a id="s-39d310e232"></a>`additionalProperties`: `false`
+- `if`: [See `if`](#s-097084343c)
+- <a id="s-6ce96fb578"></a>`required`: `["fence"]`
+- `then`: [See `then`](#s-e69183022b)
+- <a id="s-0275659017"></a>`title`: `"ProcessingClaimOutcomesSettleDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-f42f23efd4"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-4816a9f240"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0 |  |
-| <a id="s-4cb34386fa"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"] |  |
+| <a id="s-4816a9f240"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-4cb34386fa"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
+
+### <a id="s-097084343c"></a>`if`
+
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4d88daf71f"></a>`retirement_policy` | no | const="retain" |  |
+
+### <a id="s-e69183022b"></a>`then`
+
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f8c8918373"></a>`retirement_grace_seconds` | no | const=0 |  |
 
 ## Governing policies
 
@@ -46,6 +69,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -97,3 +123,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

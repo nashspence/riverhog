@@ -14,9 +14,11 @@ Small identity for one sealed claim-scoped relational disposition set.
 ## External contract
 
 <a id="s-4b1b583c98"></a>
-- <a id="s-e34cd61d43"></a>`title`: ArtifactDispositionSetIdentity
-- <a id="s-77e2142af6"></a>`description`: Small identity for one sealed claim-scoped relational disposition set.
-- <a id="s-4a0ec0fbad"></a>`type`: object
+
+- <a id="s-4a0ec0fbad"></a>`type`: `"object"`
+- <a id="s-77e2142af6"></a>`description`: `"Small identity for one sealed claim-scoped relational disposition set."`
+- <a id="s-df3ed3f41a"></a>`required`: `["disposition_count","output_edge_count","output_artifact_count","sha256"]`
+- <a id="s-e34cd61d43"></a>`title`: `"ArtifactDispositionSetIdentity"`
 
 ### Fields
 
@@ -48,6 +50,9 @@ Small identity for one sealed claim-scoped relational disposition set.
 - `/external_contract/http_openapi/stove0/components/schemas/ArtifactDispositionSetIdentity`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -84,3 +89,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

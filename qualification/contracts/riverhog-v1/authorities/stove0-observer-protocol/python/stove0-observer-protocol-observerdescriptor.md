@@ -27,28 +27,82 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-76460c69d0"></a>
-- <a id="s-7fd1a8986b"></a>`type`: object
 
-### Fields
+- <a id="s-7fd1a8986b"></a>`type`: `"object"`
+- <a id="s-0fe06f87bf"></a>`additionalProperties`: `false`
+- <a id="s-314c22ff73"></a>`required`: `["implementation_id","implementation_version","source_revision","image_digest","contracts","descriptor_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-bbfda6966c"></a>`contracts` | yes | type="array"; minItems=1; items=(#/$defs/ObserverContractSupport) |  |
+| <a id="s-bbfda6966c"></a>`contracts` | yes | type="array"; items=([ObserverContractSupport](#s-8508ad0f92)); minItems=1 |  |
 | <a id="s-792e058da3"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-7d28b7d5cd"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-fd38d5855d"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-ddca7aa3e3"></a>`implementation_version` | yes | type="string"; minLength=1; maxLength=120 |  |
-| <a id="s-f4542ba322"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1" |  |
-| <a id="s-34e3494bae"></a>`source_revision` | yes | type="string"; minLength=1; maxLength=200 |  |
+| <a id="s-ddca7aa3e3"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1 |  |
+| <a id="s-f4542ba322"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1"; default="stove0-content-observer/v1" |  |
+| <a id="s-34e3494bae"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-53ceb7ff5d"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-0d91f96b71"></a>`JsonValue` | empty object |
-| <a id="s-8508ad0f92"></a>`ObserverContractSupport` | type="object"; fields=`contract_id`, `contract_sha256`, `facts_schema`, `facts_semantics`, `maximum_result_bytes`, `options_schema`, `preferred_subject_batch_size`; additional keys=`additionalProperties`, `required` |
-| <a id="s-3e7f407eeb"></a>`SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
+- [JsonSchemaDocument](#s-53ceb7ff5d)
+- [JsonValue](#s-0d91f96b71)
+- [ObserverContractSupport](#s-8508ad0f92)
+- [SemanticValidationProfile](#s-3e7f407eeb)
+
+##### <a id="s-53ceb7ff5d"></a>definition `JsonSchemaDocument`
+
+- <a id="s-19ddaaefc9"></a>`type`: `"object"`
+- <a id="s-f531d2c4d3"></a>`additionalProperties`: `false`
+- <a id="s-60ec68288e"></a>`required`: `["id","sha256","schema"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-02f4c8e80c"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-fc015d75b7"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-61f4a51db9"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-f1ab89c1ea"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-0d91f96b71)) |  |
+| <a id="s-bb993606a9"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-0d91f96b71"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-8508ad0f92"></a>definition `ObserverContractSupport`
+
+- <a id="s-8e2cc080b2"></a>`type`: `"object"`
+- <a id="s-560cc63e15"></a>`additionalProperties`: `false`
+- <a id="s-48d78d924f"></a>`required`: `["contract_id","contract_sha256","options_schema","facts_schema","facts_semantics","maximum_result_bytes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-25103029b6"></a>`contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-ef80d92142"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-92db38b820"></a>`facts_schema` | yes | [JsonSchemaDocument](#s-53ceb7ff5d) |  |
+| <a id="s-790996af2b"></a>`facts_semantics` | yes | [SemanticValidationProfile](#s-3e7f407eeb) |  |
+| <a id="s-9b4d52ccd7"></a>`maximum_result_bytes` | yes | type="integer"; minimum=1; maximum=67108864 |  |
+| <a id="s-0e45ea61ea"></a>`options_schema` | yes | [JsonSchemaDocument](#s-53ceb7ff5d) |  |
+| <a id="s-e36695e079"></a>`preferred_subject_batch_size` | no | type="integer"; minimum=1; default=128 |  |
+
+##### <a id="s-3e7f407eeb"></a>definition `SemanticValidationProfile`
+
+- <a id="s-5073ef5da5"></a>`type`: `"object"`
+- <a id="s-0c82956c6f"></a>`additionalProperties`: `false`
+- <a id="s-788633e11f"></a>`required`: `["id","rules","profile_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7f92cb1935"></a>`conformance_vectors_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-a256087471"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-928f4ee935"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-9e85ac85ab"></a>`rules` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
 
 ## Maintained corroboration
 
@@ -80,6 +134,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_observer_protocol.ObserverDescriptor`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -263,3 +320,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

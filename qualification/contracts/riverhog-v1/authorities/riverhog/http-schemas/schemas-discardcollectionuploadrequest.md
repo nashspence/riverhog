@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8f24d030c0"></a>
-- <a id="s-c390fe52ba"></a>`title`: DiscardCollectionUploadRequest
-- <a id="s-8b77b67f57"></a>`type`: object
+
+- <a id="s-8b77b67f57"></a>`type`: `"object"`
+- <a id="s-0e6ededd2d"></a>`additionalProperties`: `false`
+- <a id="s-7232eae580"></a>`required`: `["challenge"]`
+- <a id="s-c390fe52ba"></a>`title`: `"DiscardCollectionUploadRequest"`
 
 ### Fields
 
@@ -45,6 +48,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: d79783a6821604c4992d7a97f1007b46d65c25bc3f650494e5c4d29412ee3b5d -->
@@ -67,3 +73,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

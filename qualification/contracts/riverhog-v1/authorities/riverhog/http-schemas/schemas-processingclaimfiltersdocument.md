@@ -14,14 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a70300dbcf"></a>
-- <a id="s-fd946a5579"></a>`title`: ProcessingClaimFiltersDocument
-- <a id="s-0fb9297f4f"></a>`type`: object
+
+- <a id="s-0fb9297f4f"></a>`type`: `"object"`
+- <a id="s-a14ccb7c00"></a>`additionalProperties`: `false`
+- <a id="s-fd946a5579"></a>`title`: `"ProcessingClaimFiltersDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6a7a54d76b"></a>`state` | no | anyOf=type="string"; enum=["active","settled","retiring","abandoned","released"] \| type="null" |  |
+| <a id="s-6a7a54d76b"></a>`state` | no | anyOf=(type="string"; enum=["active","settled","retiring","abandoned","released"]) \| (type="null") |  |
 
 ## Governing policies
 
@@ -44,6 +46,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimFiltersDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -76,3 +81,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3204df2fc3"></a>
-- <a id="s-cbd43d9a68"></a>`title`: RetrievalPlanFileOut
-- <a id="s-8e3814d88d"></a>`type`: object
+
+- <a id="s-8e3814d88d"></a>`type`: `"object"`
+- <a id="s-2f1216f422"></a>`additionalProperties`: `false`
+- <a id="s-89d59628d5"></a>`required`: `["path","bytes","sha256","collection_id","requires_restore"]`
+- <a id="s-cbd43d9a68"></a>`title`: `"RetrievalPlanFileOut"`
 
 ### Fields
 
@@ -76,6 +79,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: e691d6f9eba92c150d3318be4a56e5c404238f52d7d7703491302d2d21b01519 -->
@@ -116,3 +122,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

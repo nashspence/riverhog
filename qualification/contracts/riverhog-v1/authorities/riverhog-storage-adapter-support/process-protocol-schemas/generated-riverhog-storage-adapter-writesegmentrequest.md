@@ -14,22 +14,38 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9929dcbde1"></a>
-- <a id="s-c3edda53c8"></a>`title`: WriteSegmentRequest
-- <a id="s-ae1b9f4813"></a>`type`: object
+
+- <a id="s-ae1b9f4813"></a>`type`: `"object"`
+- <a id="s-de74089348"></a>`additionalProperties`: `false`
+- <a id="s-c8eba87cd9"></a>`required`: `["session","number","stored_bytes"]`
+- <a id="s-c3edda53c8"></a>`title`: `"WriteSegmentRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-ce0948c417"></a>`number` | yes | type="integer"; minimum=1 |  |
-| <a id="s-493606ef17"></a>`session` | yes | #/$defs/WriteSession |  |
+| <a id="s-493606ef17"></a>`session` | yes | [WriteSession](#s-dcf667e799) |  |
 | <a id="s-2bda4ac939"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-dcf667e799"></a>`WriteSession` | type="object"; fields=`expected_bytes`, `object_path`, `write_token`; additional keys=`additionalProperties`, `required` |
+- [WriteSession](#s-dcf667e799)
+
+### <a id="s-dcf667e799"></a>definition `WriteSession`
+
+- <a id="s-8759e0bc60"></a>`type`: `"object"`
+- <a id="s-67322ca484"></a>`additionalProperties`: `false`
+- <a id="s-817b5b11aa"></a>`required`: `["object_path","expected_bytes","write_token"]`
+- <a id="s-201e1d2415"></a>`title`: `"WriteSession"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-79867a2dcf"></a>`expected_bytes` | yes | type="integer"; minimum=1 | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
+| <a id="s-6f6eec603c"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-743f3b5ac0"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1 | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
 
 ## Maintained corroboration
 
@@ -58,6 +74,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -123,3 +142,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

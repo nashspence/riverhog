@@ -14,19 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d146425e2c"></a>
-- <a id="s-f6db17f11c"></a>`title`: RetrievalCacheObjectListOut
-- <a id="s-f5770d0622"></a>`type`: object
+
+- <a id="s-f5770d0622"></a>`type`: `"object"`
+- <a id="s-7907aaac26"></a>`additionalProperties`: `false`
+- <a id="s-f29a8a4ca8"></a>`required`: `["page_size","next_page_token","sort","order","query","filters","objects"]`
+- <a id="s-f6db17f11c"></a>`title`: `"RetrievalCacheObjectListOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-30b2a98980"></a>`filters` | yes | #/components/schemas/RetrievalCacheObjectListFiltersOut |  |
-| <a id="s-1896763d33"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-1896763d33"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-80a1fca6a6"></a>`objects` | yes | type="array"; items=(#/components/schemas/RetrievalCacheObjectOut) |  |
 | <a id="s-8569d48df2"></a>`order` | yes | #/components/schemas/SortOrder |  |
 | <a id="s-b5cbb0e784"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-e9876fe3eb"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-e9876fe3eb"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-6edb249881"></a>`sort` | yes | #/components/schemas/RetrievalCacheSort |  |
 
 ### Progression, limits, and lifecycle
@@ -86,6 +89,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheObjectListOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -152,3 +158,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

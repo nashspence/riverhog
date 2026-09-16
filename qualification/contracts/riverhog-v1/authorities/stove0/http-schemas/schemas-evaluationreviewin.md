@@ -14,15 +14,44 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d1a5ea0009"></a>
-- <a id="s-2526acc199"></a>`title`: EvaluationReviewIn
-- <a id="s-68c174083d"></a>`type`: object
+
+- <a id="s-68c174083d"></a>`type`: `"object"`
+- <a id="s-3d4d3a24e9"></a>`additionalProperties`: `false`
+- <a id="s-2526acc199"></a>`title`: `"EvaluationReviewIn"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-521cc519ce"></a>`note` | no | anyOf=type="string"; minLength=1; maxLength=4000; pattern="^\\S(?:[\\s\\S]*\\S)?$" \| type="null" |  |
-| <a id="s-ea089efab5"></a>`rating` | no | anyOf=type="integer"; minimum=1; maximum=5 \| type="null" |  |
+| <a id="s-521cc519ce"></a>`note` | no | anyOf=(type="string"; maxLength=4000; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$") \| (type="null") |  |
+| <a id="s-ea089efab5"></a>`rating` | no | anyOf=(type="integer"; minimum=1; maximum=5) \| (type="null") |  |
+
+### At least one must match (`anyOf`)
+
+| Alternative | Schema |
+|---|---|
+| 1 | [See `anyOf` alternative 1](#s-16e9e7f805) |
+| 2 | [See `anyOf` alternative 2](#s-975da0f24a) |
+
+### <a id="s-16e9e7f805"></a>`anyOf` alternative 1
+
+- <a id="s-91f704a6d3"></a>`required`: `["rating"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-75e29733b7"></a>`rating` | yes | type="integer" |  |
+
+### <a id="s-975da0f24a"></a>`anyOf` alternative 2
+
+- <a id="s-be65350add"></a>`required`: `["note"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b0a28c5daf"></a>`note` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -57,6 +86,9 @@ Shared facts for every subject below: minimum=1; reason="schema-maximum"
 - `/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewIn`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -120,3 +152,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

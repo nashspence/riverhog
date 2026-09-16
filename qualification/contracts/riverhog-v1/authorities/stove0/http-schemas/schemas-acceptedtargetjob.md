@@ -14,9 +14,12 @@ Durable, non-secret identity of one accepted target job request.
 ## External contract
 
 <a id="s-0b3d1b3480"></a>
-- <a id="s-62ac17eb15"></a>`title`: AcceptedTargetJob
-- <a id="s-ee57f72a82"></a>`description`: Durable, non-secret identity of one accepted target job request.
-- <a id="s-b7f9ca6c75"></a>`type`: object
+
+- <a id="s-b7f9ca6c75"></a>`type`: `"object"`
+- <a id="s-979fe17e46"></a>`additionalProperties`: `false`
+- <a id="s-ee57f72a82"></a>`description`: `"Durable, non-secret identity of one accepted target job request."`
+- <a id="s-504c319471"></a>`required`: `["declaration","request_sha256"]`
+- <a id="s-62ac17eb15"></a>`title`: `"AcceptedTargetJob"`
 
 ### Fields
 
@@ -64,6 +67,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 5f00e108b9ab996f28a1dfd3928c40b9045b480dd5240737de55621c6ceb42bd -->
@@ -90,3 +96,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

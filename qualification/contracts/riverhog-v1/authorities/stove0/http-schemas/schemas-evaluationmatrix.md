@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-42674da55c"></a>
-- <a id="s-4bc22de259"></a>`title`: EvaluationMatrix
-- <a id="s-b2fcf12d3e"></a>`type`: object
+
+- <a id="s-b2fcf12d3e"></a>`type`: `"object"`
+- <a id="s-0277a9d53b"></a>`additionalProperties`: `false`
+- <a id="s-9556aeae46"></a>`required`: `["variants","matrix_sha256"]`
+- <a id="s-4bc22de259"></a>`title`: `"EvaluationMatrix"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-36c2f17f34"></a>`format` | no | type="string"; const="stove0-evaluation-matrix/v1" |  |
+| <a id="s-36c2f17f34"></a>`format` | no | type="string"; const="stove0-evaluation-matrix/v1"; default="stove0-evaluation-matrix/v1" |  |
 | <a id="s-184e486a2e"></a>`matrix_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-4177bbefab"></a>`variants` | yes | type="array"; minItems=1; items=(#/components/schemas/EvaluationVariant) |  |
+| <a id="s-4177bbefab"></a>`variants` | yes | type="array"; items=(#/components/schemas/EvaluationVariant); minItems=1 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -73,6 +76,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: a2ca6c94739f3ab55f1dd9a80c12df7af452e1bab0cff3d020cdc543918b73e9 -->
@@ -109,3 +115,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

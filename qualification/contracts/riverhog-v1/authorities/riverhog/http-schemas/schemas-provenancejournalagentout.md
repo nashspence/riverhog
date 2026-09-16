@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-929c31d612"></a>
-- <a id="s-1e7fff064e"></a>`title`: ProvenanceJournalAgentOut
-- <a id="s-8a7765faaa"></a>`type`: object
+
+- <a id="s-8a7765faaa"></a>`type`: `"object"`
+- <a id="s-11130b26a9"></a>`additionalProperties`: `false`
+- <a id="s-45d90a590c"></a>`required`: `["agent_id"]`
+- <a id="s-1e7fff064e"></a>`title`: `"ProvenanceJournalAgentOut"`
 
 ### Fields
 
@@ -45,6 +48,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: f583f1b6cd0a63844e10b628bea016e3aa237fb18e598f3e20a7dd739a3d0151 -->
@@ -65,3 +71,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

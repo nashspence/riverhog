@@ -27,27 +27,96 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d7dbb6340d"></a>
-- <a id="s-6f91f83dce"></a>`type`: object
 
-### Fields
+- <a id="s-6f91f83dce"></a>`type`: `"object"`
+- <a id="s-dc4b67e911"></a>`additionalProperties`: `false`
+- <a id="s-fa312aacb3"></a>`required`: `["authority","files","complete"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-5d0beadb56"></a>`authority` | yes | #/$defs/PortableCollectionInventoryAuthority |  |
+| <a id="s-5d0beadb56"></a>`authority` | yes | [PortableCollectionInventoryAuthority](#s-58d933375e) |  |
 | <a id="s-f5a81c0a53"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-32163b904e"></a>`files` | yes | type="array"; maxItems=1000; items=(#/$defs/ImmutableFileIdentityDocument); additional keys=`x-riverhog-extent` |  |
-| <a id="s-daf906b4ae"></a>`format` | no | type="string"; const="riverhog-collection-inventory-page/v1" |  |
-| <a id="s-a8c96c4171"></a>`next_cursor` | no | anyOf=type="string"; minLength=1; maxLength=8192 \| type="null" |  |
+| <a id="s-32163b904e"></a>`files` | yes | type="array"; items=([ImmutableFileIdentityDocument](#s-9185aadd43)); maxItems=1000; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-cursor","reason":"bounded-portable-inventory-page"} |  |
+| <a id="s-daf906b4ae"></a>`format` | no | type="string"; const="riverhog-collection-inventory-page/v1"; default="riverhog-collection-inventory-page/v1" |  |
+| <a id="s-a8c96c4171"></a>`next_cursor` | no | anyOf=(type="string"; maxLength=8192; minLength=1) \| (type="null"); default=null |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
+- [CanonicalRelPath](#s-859b45e2c0)
+- [CollectionId](#s-75898504ca)
+- [ImmutableFileIdentityDocument](#s-9185aadd43)
+- [PortableCollectionHeader](#s-c2615d6cd5)
+- [PortableCollectionInventoryAuthority](#s-58d933375e)
+
+##### <a id="s-859b45e2c0"></a>definition `CanonicalRelPath`
+
+- <a id="s-15f9db64d9"></a>`type`: `"string"`
+- <a id="s-708ec30e25"></a>`format`: `"riverhog-canonical-relpath-v1"`
+- <a id="s-0a9473d302"></a>`maxLength`: `4096`
+- <a id="s-04c1b33859"></a>`minLength`: `1`
+- <a id="s-8e5f461b81"></a>`pattern`: `"^[^/\\\\]+(?:/[^/\\\\]+)*$"`
+- <a id="s-988e470b99"></a>`x-unicode-normalization`: `"NFC"`
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
 |---|---|
-| <a id="s-859b45e2c0"></a>`CanonicalRelPath` | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
-| <a id="s-75898504ca"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-9185aadd43"></a>`ImmutableFileIdentityDocument` | type="object"; fields=`bytes`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-c2615d6cd5"></a>`PortableCollectionHeader` | type="object"; fields=`collection`, `content_identity`, `encryption_format`, `format`, `passphrase_id`, `provenance_identity`, `provenance_mode`; additional keys=`additionalProperties`, `required` |
-| <a id="s-58d933375e"></a>`PortableCollectionInventoryAuthority` | type="object"; fields=`file_bytes`, `file_count`, `header`, `inventory_identity`; additional keys=`additionalProperties`, `required` |
+| <a id="s-d7d2a868e2"></a>1 | not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)") |
+| <a id="s-1d4d69d54f"></a>2 | not=(pattern="^\\s\|\\s$") |
+
+##### <a id="s-75898504ca"></a>definition `CollectionId`
+
+- <a id="s-58b3433b8e"></a>`type`: `"integer"`
+- <a id="s-826fa8b10e"></a>`minimum`: `1`
+
+##### <a id="s-9185aadd43"></a>definition `ImmutableFileIdentityDocument`
+
+- <a id="s-55524e5057"></a>`type`: `"object"`
+- <a id="s-c4e4e3b9ac"></a>`additionalProperties`: `false`
+- <a id="s-283f3e97de"></a>`required`: `["path","bytes","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2f0d8b60b0"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-335b811df3"></a>`path` | yes | [CanonicalRelPath](#s-859b45e2c0) |  |
+| <a id="s-76d39360f5"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-c2615d6cd5"></a>definition `PortableCollectionHeader`
+
+- <a id="s-416e25431d"></a>`type`: `"object"`
+- <a id="s-73920817df"></a>`additionalProperties`: `false`
+- <a id="s-9847e05d82"></a>`required`: `["collection","content_identity","encryption_format","passphrase_id","provenance_mode"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-268c1100e2"></a>`collection` | yes | [CollectionId](#s-75898504ca) |  |
+| <a id="s-ca504cf17d"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6e123bf42d"></a>`encryption_format` | yes | type="string"; minLength=1 |  |
+| <a id="s-1a6f7a11e9"></a>`format` | no | type="string"; const="riverhog-collection/v1"; default="riverhog-collection/v1" |  |
+| <a id="s-0c90b603d9"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
+| <a id="s-c1e75c8c23"></a>`provenance_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-1e87596e88"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"] |  |
+
+##### <a id="s-58d933375e"></a>definition `PortableCollectionInventoryAuthority`
+
+- <a id="s-db6b6ca068"></a>`type`: `"object"`
+- <a id="s-d0d258419e"></a>`additionalProperties`: `false`
+- <a id="s-f30203ebab"></a>`required`: `["header","inventory_identity","file_count","file_bytes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b53a6f0d2e"></a>`file_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-a1d85e04cc"></a>`file_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-8b7a816e50"></a>`header` | yes | [PortableCollectionHeader](#s-c2615d6cd5) |  |
+| <a id="s-d75447da31"></a>`inventory_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -76,6 +145,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.PortableCollectionInventoryPage`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -268,3 +340,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

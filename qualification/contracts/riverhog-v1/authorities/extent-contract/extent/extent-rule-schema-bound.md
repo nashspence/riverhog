@@ -14,12 +14,13 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6b20b7da6a"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-5a12cda572"></a>`authority` | "the projected JSON Schema constraint" |
-| <a id="s-87b468c17c"></a>`exceeded` | "schema-validation-error" |
-| <a id="s-8477a70770"></a>`policy` | "fixed-or-contract-max" |
-| <a id="s-0aa687ca3d"></a>`requirement` | "a non-fixed set maximum carries an owning reason declaration" |
+| <a id="s-5a12cda572"></a>`authority` | `"the projected JSON Schema constraint"` |
+| <a id="s-87b468c17c"></a>`exceeded` | `"schema-validation-error"` |
+| <a id="s-8477a70770"></a>`policy` | `"fixed-or-contract-max"` |
+| <a id="s-0aa687ca3d"></a>`requirement` | `"a non-fixed set maximum carries an owning reason declaration"` |
 
 ## Governing policies
 
@@ -43,6 +44,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 67a37a1700f335d04859cdd7551d06b87954e7eb258eadcfcec4e38f8d01a96d -->
@@ -55,3 +59,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "requirement": "a non-fixed set maximum carries an owning reason declaration"
 }
 ```
+
+</details>

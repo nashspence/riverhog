@@ -14,23 +14,38 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-081aefc53c"></a>
-- <a id="s-2ef1a56d86"></a>`title`: ObjectReadRequest
-- <a id="s-9ff82f8017"></a>`type`: object
+
+- <a id="s-9ff82f8017"></a>`type`: `"object"`
+- <a id="s-9c7759bc68"></a>`additionalProperties`: `false`
+- <a id="s-a2c4ba4972"></a>`required`: `["object","expected_bytes"]`
+- <a id="s-2ef1a56d86"></a>`title`: `"ObjectReadRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-debcf1b15e"></a>`expected_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-6d80e36046"></a>`object` | yes | #/$defs/ObjectLocator |  |
-| <a id="s-57ba00ac3d"></a>`offset` | no | anyOf=type="integer"; minimum=0 \| type="null" |  |
-| <a id="s-56c4609936"></a>`size` | no | anyOf=type="integer"; minimum=0 \| type="null" |  |
+| <a id="s-6d80e36046"></a>`object` | yes | [ObjectLocator](#s-a35c176f55) |  |
+| <a id="s-57ba00ac3d"></a>`offset` | no | anyOf=(type="integer"; minimum=0) \| (type="null"); default=null |  |
+| <a id="s-56c4609936"></a>`size` | no | anyOf=(type="integer"; minimum=0) \| (type="null"); default=null |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-a35c176f55"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
+- [ObjectLocator](#s-a35c176f55)
+
+### <a id="s-a35c176f55"></a>definition `ObjectLocator`
+
+- <a id="s-40ee573162"></a>`type`: `"object"`
+- <a id="s-764452a881"></a>`additionalProperties`: `false`
+- <a id="s-94b8b90e99"></a>`required`: `["object_path"]`
+- <a id="s-578d80a927"></a>`title`: `"ObjectLocator"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4dfbf936c2"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-ca9b9d8e31"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
 
 ## Maintained corroboration
 
@@ -59,6 +74,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -143,3 +161,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

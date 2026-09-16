@@ -14,20 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-62829ebffc"></a>
-- <a id="s-006b649cde"></a>`title`: RecipeJoin
-- <a id="s-fca6274d44"></a>`type`: object
+
+- <a id="s-fca6274d44"></a>`type`: `"object"`
+- <a id="s-9a3f115125"></a>`additionalProperties`: `false`
+- <a id="s-7498e71165"></a>`required`: `["id","members","operation_id","target_registration_id"]`
+- <a id="s-006b649cde"></a>`title`: `"RecipeJoin"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-cabb20a9f5"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-c9445dc761"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
-| <a id="s-3f09da3f00"></a>`intent` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-ef3d4bd9a9"></a>`members` | yes | type="array"; minItems=2; items=(#/components/schemas/RecipeJoinMember) |  |
+| <a id="s-c9445dc761"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-3f09da3f00"></a>`intent` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-ef3d4bd9a9"></a>`members` | yes | type="array"; items=(#/components/schemas/RecipeJoinMember); minItems=2 |  |
 | <a id="s-3a69110b26"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-ce2768e698"></a>`projections` | no | type="array"; items=(#/components/schemas/OperationProjection) |  |
-| <a id="s-0b3cfd21e6"></a>`target_options` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-ce2768e698"></a>`projections` | no | type="array"; default=[]; items=(#/components/schemas/OperationProjection) |  |
+| <a id="s-0b3cfd21e6"></a>`target_options` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
 | <a id="s-6ad86b13a3"></a>`target_registration_id` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
@@ -73,6 +76,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/stove0/components/schemas/RecipeJoin`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -146,3 +152,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

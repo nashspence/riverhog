@@ -14,10 +14,27 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-05d5a98472"></a>
-| Field | Shape |
+
+- <a id="s-7610d187c0"></a>`discriminator`: `{"mapping":{"io.riverhog.riverhog.archive_copy.canceled":"#/components/schemas/ArchiveCopyCanceledEvent","io.riverhog.riverhog.archive_copy.completed":"#/components/schemas/ArchiveCopyCompletedEvent","io.riverhog.riverhog.archive_copy.issue":"#/components/schemas/ArchiveCopyIssueEvent","io.riverhog.riverhog.archive_copy.requested":"#/components/schemas/ArchiveCopyRequestedEvent","io.riverhog.riverhog.collection.deleted":"#/components/schemas/CollectionDeletedEvent","io.riverhog.riverhog.collection.finalized":"#/components/schemas/CollectionFinalizedEvent","io.riverhog.riverhog.retrieval.canceled":"#/components/schemas/RetrievalCanceledEvent","io.riverhog.riverhog.retrieval.completed":"#/components/schemas/RetrievalCompletedEvent","io.riverhog.riverhog.retrieval.expired":"#/components/schemas/RetrievalExpiredEvent","io.riverhog.riverhog.retrieval.failed":"#/components/schemas/RetrievalFailedEvent","io.riverhog.riverhog.retrieval.issue":"#/components/schemas/RetrievalIssueEvent","io.riverhog.riverhog.retrieval.ready":"#/components/schemas/RetrievalReadyEvent","io.riverhog.riverhog.retrieval.renewed":"#/components/schemas/RetrievalRenewedEvent","io.riverhog.riverhog.retrieval.requested":"#/components/schemas/RetrievalRequestedEvent"},"propertyName":"type"}`
+
+### Exactly one must match (`oneOf`)
+
+| Alternative | Schema |
 |---|---|
-| <a id="s-7610d187c0"></a>`discriminator` | additional keys=`mapping`, `propertyName` |
-| <a id="s-a732e4c217"></a>`oneOf` | items=#/components/schemas/CollectionFinalizedEvent \| #/components/schemas/CollectionDeletedEvent \| #/components/schemas/ArchiveCopyRequestedEvent \| #/components/schemas/ArchiveCopyCompletedEvent \| #/components/schemas/ArchiveCopyIssueEvent \| #/components/schemas/ArchiveCopyCanceledEvent \| #/components/schemas/RetrievalRequestedEvent \| #/components/schemas/RetrievalReadyEvent \| #/components/schemas/RetrievalRenewedEvent \| #/components/schemas/RetrievalCompletedEvent \| #/components/schemas/RetrievalCanceledEvent \| #/components/schemas/RetrievalExpiredEvent \| #/components/schemas/RetrievalIssueEvent \| #/components/schemas/RetrievalFailedEvent |
+| <a id="s-e329a936f8"></a>1 | #/components/schemas/CollectionFinalizedEvent |
+| <a id="s-647809a727"></a>2 | #/components/schemas/CollectionDeletedEvent |
+| <a id="s-0373d6bc05"></a>3 | #/components/schemas/ArchiveCopyRequestedEvent |
+| <a id="s-a41fa3dd49"></a>4 | #/components/schemas/ArchiveCopyCompletedEvent |
+| <a id="s-7e38c2bdf8"></a>5 | #/components/schemas/ArchiveCopyIssueEvent |
+| <a id="s-b0544dd01d"></a>6 | #/components/schemas/ArchiveCopyCanceledEvent |
+| <a id="s-91af0a56a3"></a>7 | #/components/schemas/RetrievalRequestedEvent |
+| <a id="s-bd66337253"></a>8 | #/components/schemas/RetrievalReadyEvent |
+| <a id="s-c4ae8c3d56"></a>9 | #/components/schemas/RetrievalRenewedEvent |
+| <a id="s-20fd46f18e"></a>10 | #/components/schemas/RetrievalCompletedEvent |
+| <a id="s-bd3fce7c7a"></a>11 | #/components/schemas/RetrievalCanceledEvent |
+| <a id="s-aac32b2632"></a>12 | #/components/schemas/RetrievalExpiredEvent |
+| <a id="s-04a9b2de8a"></a>13 | #/components/schemas/RetrievalIssueEvent |
+| <a id="s-f63dc058cd"></a>14 | #/components/schemas/RetrievalFailedEvent |
 
 ## Maintained corroboration
 
@@ -59,6 +76,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/RiverhogLifecycleEvent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -131,3 +151,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   ]
 }
 ```
+
+</details>

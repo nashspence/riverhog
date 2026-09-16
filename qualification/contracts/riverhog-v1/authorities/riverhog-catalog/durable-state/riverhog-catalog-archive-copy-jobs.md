@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-07d9a1b0cb"></a>
-- Table: `archive_copy_jobs`
 
-### Columns
+### Table: `archive_copy_jobs`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -40,7 +41,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-da04114afb"></a>`failure` | `VARCHAR` | yes | `—` | — |
 | <a id="s-9173b6f815"></a>`search_text` | `VARCHAR` | no | `—` | {"generated":"GENERATED ALWAYS AS (lower(CAST(collection_id AS TEXT) \|\| ' ' \|\| source_store \|\| ' ' \|\| destination_store \|\| ' ' \|\| state)) STORED"} |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -78,6 +79,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/0/structure/tables/39`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -255,3 +259,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "archive_copy_jobs"
 }
 ```
+
+</details>

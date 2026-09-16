@@ -14,17 +14,20 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2da953d573"></a>
-- <a id="s-aa75a865b1"></a>`title`: WriteSegmentReceipt
-- <a id="s-85cd4b164c"></a>`type`: object
+
+- <a id="s-85cd4b164c"></a>`type`: `"object"`
+- <a id="s-e3c51c7f73"></a>`additionalProperties`: `false`
+- <a id="s-91387670fb"></a>`required`: `["number","segment_token","stored_bytes"]`
+- <a id="s-aa75a865b1"></a>`title`: `"WriteSegmentReceipt"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-88035ebc6e"></a>`number` | yes | type="integer"; minimum=1 |  |
-| <a id="s-0f6d9c2a15"></a>`segment_token` | yes | type="string"; minLength=1; maxLength=4000 |  |
+| <a id="s-0f6d9c2a15"></a>`segment_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
 | <a id="s-4186773e61"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-48aa910874"></a>`stored_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-48aa910874"></a>`stored_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
 
 ### Progression, limits, and lifecycle
 
@@ -63,6 +66,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentReceipt`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -111,3 +117,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

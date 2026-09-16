@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8dea5e6d7d"></a>
-- <a id="s-3bb2e798a0"></a>`title`: DeleteCollectionRequest
-- <a id="s-f22afd69da"></a>`type`: object
+
+- <a id="s-f22afd69da"></a>`type`: `"object"`
+- <a id="s-ae28c67701"></a>`additionalProperties`: `false`
+- <a id="s-c0e1b58735"></a>`required`: `["challenge"]`
+- <a id="s-3bb2e798a0"></a>`title`: `"DeleteCollectionRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-238e9e80f8"></a>`challenge` | yes | type="string" |  |
-| <a id="s-cad18f2c6c"></a>`event_context` | no | anyOf=type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` \| type="null" |  |
-| <a id="s-a4430dd637"></a>`retirement_claim_id` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-cad18f2c6c"></a>`event_context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null") |  |
+| <a id="s-a4430dd637"></a>`retirement_claim_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -65,6 +68,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/DeleteCollectionRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -115,3 +121,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

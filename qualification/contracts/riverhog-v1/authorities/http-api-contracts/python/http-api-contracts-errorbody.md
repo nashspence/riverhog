@@ -27,14 +27,17 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-5887f8d888"></a>
-- <a id="s-a088576b95"></a>`type`: object
 
-### Fields
+- <a id="s-a088576b95"></a>`type`: `"object"`
+- <a id="s-712aef54e9"></a>`additionalProperties`: `false`
+- <a id="s-f0013763bb"></a>`required`: `["code","message"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-53d24d4f9b"></a>`code` | yes | type="string"; minLength=1 |  |
-| <a id="s-e465fc5cf6"></a>`details` | no | anyOf=type="object"; additional keys=`additionalProperties` \| type="null" |  |
+| <a id="s-e465fc5cf6"></a>`details` | no | anyOf=(type="object"; additionalProperties=true) \| (type="null"); default=null |  |
 | <a id="s-4da8dc85c7"></a>`message` | yes | type="string"; minLength=1 |  |
 
 ## Governing policies
@@ -58,6 +61,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/http_api_contracts.ErrorBody`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -105,3 +111,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

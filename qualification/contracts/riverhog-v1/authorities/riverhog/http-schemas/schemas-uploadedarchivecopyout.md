@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1ee1a50656"></a>
-- <a id="s-e0c41366e6"></a>`title`: UploadedArchiveCopyOut
-- <a id="s-f58244b2fc"></a>`type`: object
+
+- <a id="s-f58244b2fc"></a>`type`: `"object"`
+- <a id="s-63ab2e4253"></a>`additionalProperties`: `false`
+- <a id="s-27eff04cc4"></a>`required`: `["store","storage_prefix","object_count","stored_bytes","last_uploaded_at","last_verified_at","archive_root","state","failure"]`
+- <a id="s-e0c41366e6"></a>`title`: `"UploadedArchiveCopyOut"`
 
 ### Fields
 
@@ -59,6 +62,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/UploadedArchiveCopyOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -122,3 +128,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

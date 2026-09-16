@@ -27,27 +27,63 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-fe971f71c7"></a>
-- <a id="s-ecff2ede8b"></a>`type`: object
 
-### Fields
+- <a id="s-ecff2ede8b"></a>`type`: `"object"`
+- <a id="s-c5310f8bd9"></a>`additionalProperties`: `false`
+- <a id="s-6c3a2d74cf"></a>`required`: `["implementation_id","implementation_version","source_revision","image_digest","operations"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-a65cc4eb7f"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-09f2074044"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-1df6f7f20a"></a>`implementation_version` | yes | type="string"; minLength=1; maxLength=120 |  |
-| <a id="s-d7e6341378"></a>`operations` | yes | type="array"; minItems=1; items=(#/$defs/TargetOperationSupport) |  |
-| <a id="s-c2519b56b3"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"] |  |
-| <a id="s-84eb3d618e"></a>`source_revision` | yes | type="string"; minLength=1; maxLength=200 |  |
-| <a id="s-c300e070c6"></a>`transport` | no | type="string"; const="riverhog-capability/v1" |  |
+| <a id="s-1df6f7f20a"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1 |  |
+| <a id="s-d7e6341378"></a>`operations` | yes | type="array"; items=([TargetOperationSupport](#s-19ce961c7e)); minItems=1 |  |
+| <a id="s-c2519b56b3"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1" |  |
+| <a id="s-84eb3d618e"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
+| <a id="s-c300e070c6"></a>`transport` | no | type="string"; const="riverhog-capability/v1"; default="riverhog-capability/v1" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-954f049f4d"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-fcfc17375a"></a>`JsonValue` | empty object |
-| <a id="s-19ce961c7e"></a>`TargetOperationSupport` | type="object"; fields=`operation_contract_sha256`, `operation_id`, `options_schema`, `result_kind`; additional keys=`additionalProperties`, `required` |
+- [JsonSchemaDocument](#s-954f049f4d)
+- [JsonValue](#s-fcfc17375a)
+- [TargetOperationSupport](#s-19ce961c7e)
+
+##### <a id="s-954f049f4d"></a>definition `JsonSchemaDocument`
+
+- <a id="s-ee385f46a0"></a>`type`: `"object"`
+- <a id="s-480059654a"></a>`additionalProperties`: `false`
+- <a id="s-39e8c7eff8"></a>`required`: `["id","sha256","schema"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f2a25afb72"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-c26136b7f5"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-7a7c6e6827"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-9bc0084402"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-fcfc17375a)) |  |
+| <a id="s-360e886a61"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-fcfc17375a"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-19ce961c7e"></a>definition `TargetOperationSupport`
+
+- <a id="s-e3d780a082"></a>`type`: `"object"`
+- <a id="s-b4720e44f8"></a>`additionalProperties`: `false`
+- <a id="s-990583fe72"></a>`required`: `["operation_id","operation_contract_sha256","options_schema"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-26d75cb90c"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-34fda3057f"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-26a8c65a16"></a>`options_schema` | yes | [JsonSchemaDocument](#s-954f049f4d) |  |
+| <a id="s-1c24da1465"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
 
 ## Maintained corroboration
 
@@ -77,6 +113,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_protocol.TargetContractPayload`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -213,3 +252,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

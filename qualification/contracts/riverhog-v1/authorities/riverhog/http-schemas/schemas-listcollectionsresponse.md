@@ -14,22 +14,25 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d9858fd321"></a>
-- <a id="s-54809b9c43"></a>`title`: ListCollectionsResponse
-- <a id="s-77f4f9b8da"></a>`type`: object
+
+- <a id="s-77f4f9b8da"></a>`type`: `"object"`
+- <a id="s-c3f8441000"></a>`additionalProperties`: `false`
+- <a id="s-121fc63c9c"></a>`required`: `["page_size","next_page_token","sort","order","query","encryption_format","passphrase_id","tags","collections"]`
+- <a id="s-54809b9c43"></a>`title`: `"ListCollectionsResponse"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-1d875f0d26"></a>`collections` | yes | type="array"; items=(#/components/schemas/CollectionSummaryOut) |  |
-| <a id="s-a2ba0da479"></a>`encryption_format` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-a18815df9e"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-a2ba0da479"></a>`encryption_format` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-a18815df9e"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-e0b450d7ec"></a>`order` | yes | #/components/schemas/SortOrder |  |
 | <a id="s-f6b9eb37e9"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-585f47498a"></a>`passphrase_id` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-316d14721e"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-585f47498a"></a>`passphrase_id` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-316d14721e"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-15d2c2d924"></a>`sort` | yes | #/components/schemas/CollectionSort |  |
-| <a id="s-3ce334b3ba"></a>`tags` | yes | type="array"; maxItems=100; items=(#/components/schemas/CollectionTag); additional keys=`x-riverhog-extent` |  |
+| <a id="s-3ce334b3ba"></a>`tags` | yes | type="array"; items=(#/components/schemas/CollectionTag); maxItems=100; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-tag-selector-batch"} |  |
 
 ### Progression, limits, and lifecycle
 
@@ -89,6 +92,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsResponse`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -188,3 +194,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

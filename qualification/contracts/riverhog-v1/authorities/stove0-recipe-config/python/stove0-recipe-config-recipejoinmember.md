@@ -27,14 +27,17 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-b3976bdc31"></a>
-- <a id="s-74dbfb34bf"></a>`type`: object
 
-### Fields
+- <a id="s-74dbfb34bf"></a>`type`: `"object"`
+- <a id="s-eccf0ba66d"></a>`additionalProperties`: `false`
+- <a id="s-972f1aff8e"></a>`required`: `["branch_id","output_roles"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-e882923afd"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-a081eaf028"></a>`output_roles` | yes | type="array"; minItems=1; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| <a id="s-a081eaf028"></a>`output_roles` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
 
 ## Maintained corroboration
 
@@ -63,6 +66,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_recipe_config.RecipeJoinMember`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -102,3 +108,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

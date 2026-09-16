@@ -43,7 +43,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-438c10413b"></a>`completed` | <a id="s-fdc8348dc9"></a>`{"kind":"command-completed"}` | <a id="s-50b7dcb700"></a>`0` | <a id="s-02dd319343"></a>human: `noncontractual-presentation-of-command-result`; json: [state-schema-status/v1](#s-02dd319343) | <a id="s-5c35921de6"></a>all: `empty` |
+| <a id="s-438c10413b"></a>`completed` | <a id="s-fdc8348dc9"></a>`{"kind":"command-completed"}` | <a id="s-50b7dcb700"></a>`0` | <a id="s-02dd319343"></a>human: `noncontractual-presentation-of-command-result`; json: [state-schema-status/v1](#s-77fcdf377b) | <a id="s-5c35921de6"></a>all: `empty` |
 
 #### Failure outcomes
 
@@ -51,6 +51,28 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|---|
 | <a id="s-4df8f7f7d9"></a>`usage` | <a id="s-d477ae5cc7"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-c32c9dcc22"></a>`2` | <a id="s-f7e6e2299d"></a>all: `empty` | <a id="s-45c154d7e9"></a>all: `noncontractual-usage-diagnostic` |
 | <a id="s-69ed37ac93"></a>`operational` | <a id="s-010a17cd9d"></a>`{"kind":"application-error"}` | <a id="s-f923f75f25"></a>`1` | <a id="s-e28c7464ca"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-d1d0dc7e09"></a>human: `noncontractual-diagnostic`; json: `empty` |
+
+### Local structured outputs
+
+
+#### <a id="s-77fcdf377b"></a>`state-schema-status/v1`
+
+Applies to: completed · stdout (json).
+
+<a id="s-73da966248"></a>
+
+- <a id="s-fb46cfb971"></a>`type`: `"object"`
+- <a id="s-6d85c6fefe"></a>`additionalProperties`: `false`
+- <a id="s-c53b13fa19"></a>`required`: `["name","condition","current_revision","head_revision"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-499bf2f556"></a>`condition` | yes | enum=["empty","current","upgrade_required","unversioned","incompatible"] |  |
+| <a id="s-5580ba7aed"></a>`current_revision` | yes | type=["string","null"] |  |
+| <a id="s-2522a76b75"></a>`head_revision` | yes | type="string" |  |
+| <a id="s-da7a17222f"></a>`name` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -90,6 +112,9 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 - `/external_contract/cli/piggity/commands/local/commands/state/commands/status/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -320,3 +345,5 @@ false
   }
 ]
 ```
+
+</details>

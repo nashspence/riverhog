@@ -27,20 +27,35 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-4205c86be7"></a>
-- <a id="s-121f3b37ec"></a>`type`: object
 
-### Fields
+- <a id="s-121f3b37ec"></a>`type`: `"object"`
+- <a id="s-68167a7fbd"></a>`additionalProperties`: `false`
+- <a id="s-0812503572"></a>`required`: `["progressed"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-90d835b272"></a>`failures` | no | type="array"; items=(#/$defs/SchedulerFailure) |  |
+| <a id="s-90d835b272"></a>`failures` | no | type="array"; default=[]; items=([SchedulerFailure](#s-109f10b819)) |  |
 | <a id="s-0a310f71eb"></a>`progressed` | yes | type="array"; items=(type="string") |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-109f10b819"></a>`SchedulerFailure` | type="object"; fields=`error`, `event_id`, `work_id`; additional keys=`additionalProperties`, `required` |
+- [SchedulerFailure](#s-109f10b819)
+
+##### <a id="s-109f10b819"></a>definition `SchedulerFailure`
+
+- <a id="s-c41ae4d490"></a>`type`: `"object"`
+- <a id="s-fab598d88c"></a>`additionalProperties`: `false`
+- <a id="s-2384938150"></a>`required`: `["error"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-af0171dba2"></a>`error` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-52be12e3fe"></a>`event_id` | no | anyOf=(type="string") \| (type="null"); default=null |  |
+| <a id="s-895387f455"></a>`work_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
 
 ## Governing policies
 
@@ -63,6 +78,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.AdmissionRun`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -141,3 +159,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

@@ -14,8 +14,12 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-11492b1a1d"></a>
-- <a id="s-2e25bc508d"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-integrity-info.json
-- <a id="s-8f43ce6668"></a>`type`: object
+
+- <a id="s-8f43ce6668"></a>`type`: `"object"`
+- <a id="s-2e25bc508d"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-integrity-info.json"`
+- <a id="s-10e3a3c299"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-f8fcaa3e26"></a>`additionalProperties`: `false`
+- <a id="s-bdbebb8a8a"></a>`required`: `["checksum_algorithm","flags","checksum_chunk_size","cluster_size"]`
 
 ### Fields
 
@@ -60,6 +64,9 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 986c12768cb14d0aceae4c926c74f7230aac4e51cd9cbb0c04e6453b35a2aaad -->
@@ -96,3 +103,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,20 +14,54 @@ Exact claim evidence authorizing one retirement deletion plan.
 ## External contract
 
 <a id="s-41ae99dfe3"></a>
-- <a id="s-3f0c6f431f"></a>`title`: RetirementClaimReferenceDocument
-- <a id="s-bf12ac752b"></a>`description`: Exact claim evidence authorizing one retirement deletion plan.
-- <a id="s-0618482f13"></a>`type`: object
+
+- <a id="s-0618482f13"></a>`type`: `"object"`
+- <a id="s-60c80365a9"></a>`additionalProperties`: `false`
+- <a id="s-bf12ac752b"></a>`description`: `"Exact claim evidence authorizing one retirement deletion plan."`
+- <a id="s-221af02e54"></a>`required`: `["claim_id","fence","work_id"]`
+- <a id="s-3f0c6f431f"></a>`title`: `"RetirementClaimReferenceDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-61665e5e9e"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-c71cfa0fc9"></a>`execution_id` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-c71cfa0fc9"></a>`execution_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 | <a id="s-77cbd0e0de"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-aeaffe0495"></a>`outcomes` | no | anyOf=#/components/schemas/ExactSetAuthorityDocument \| type="null" |  |
-| <a id="s-b4b8f49228"></a>`output_collection_id` | no | anyOf=#/components/schemas/CollectionId \| type="null" |  |
+| <a id="s-aeaffe0495"></a>`outcomes` | no | anyOf=(#/components/schemas/ExactSetAuthorityDocument) \| (type="null") |  |
+| <a id="s-b4b8f49228"></a>`output_collection_id` | no | anyOf=(#/components/schemas/CollectionId) \| (type="null") |  |
 | <a id="s-e9e363aaf6"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### Exactly one must match (`oneOf`)
+
+| Alternative | Schema |
+|---|---|
+| 1 | [See `oneOf` alternative 1](#s-d900f9d126) |
+| 2 | [See `oneOf` alternative 2](#s-33fc5cf119) |
+
+### <a id="s-d900f9d126"></a>`oneOf` alternative 1
+
+- <a id="s-4c64a0b8d5"></a>`required`: `["execution_id","output_collection_id"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7bcd44a05c"></a>`execution_id` | yes | type="string" |  |
+| <a id="s-12f7ce203e"></a>`outcomes` | no | type="null" |  |
+| <a id="s-39f7c3bf74"></a>`output_collection_id` | yes | type="integer" |  |
+
+### <a id="s-33fc5cf119"></a>`oneOf` alternative 2
+
+- <a id="s-48f37f74c7"></a>`required`: `["outcomes"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6cf04c2010"></a>`execution_id` | no | type="null" |  |
+| <a id="s-45c45c44dd"></a>`outcomes` | yes | type="object" |  |
+| <a id="s-c235f69279"></a>`output_collection_id` | no | type="null" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -37,7 +71,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-39f7c3bf74"></a>[oneOf alternative 1 · field output_collection_id](#s-41ae99dfe3) | `value · schema-value · operational_policy` | shared above |
+| [oneOf alternative 1 · field output_collection_id](#s-39f7c3bf74) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
@@ -79,6 +113,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/riverhog/components/schemas/RetirementClaimReferenceDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -181,3 +218,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,18 +14,21 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c18ac0714e"></a>
-- <a id="s-2a0e135c28"></a>`title`: AppAccessListFiltersOut
-- <a id="s-095198a992"></a>`type`: object
+
+- <a id="s-095198a992"></a>`type`: `"object"`
+- <a id="s-715c5b7bd3"></a>`additionalProperties`: `false`
+- <a id="s-9146cad20c"></a>`required`: `["app","key_id","permission","resource","active"]`
+- <a id="s-2a0e135c28"></a>`title`: `"AppAccessListFiltersOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-00a576f7d9"></a>`active` | yes | anyOf=type="boolean" \| type="null" |  |
-| <a id="s-f9c07ac7d4"></a>`app` | yes | anyOf=#/components/schemas/ApplicationName \| type="null" |  |
-| <a id="s-58bc6e1be8"></a>`key_id` | yes | anyOf=#/components/schemas/ApplicationKeyId \| type="null" |  |
-| <a id="s-9a0a41b672"></a>`permission` | yes | anyOf=#/components/schemas/ApplicationPermission \| type="null" |  |
-| <a id="s-546a9b227f"></a>`resource` | yes | anyOf=#/components/schemas/ApplicationResource \| type="null" |  |
+| <a id="s-00a576f7d9"></a>`active` | yes | anyOf=(type="boolean") \| (type="null") |  |
+| <a id="s-f9c07ac7d4"></a>`app` | yes | anyOf=(#/components/schemas/ApplicationName) \| (type="null") |  |
+| <a id="s-58bc6e1be8"></a>`key_id` | yes | anyOf=(#/components/schemas/ApplicationKeyId) \| (type="null") |  |
+| <a id="s-9a0a41b672"></a>`permission` | yes | anyOf=(#/components/schemas/ApplicationPermission) \| (type="null") |  |
+| <a id="s-546a9b227f"></a>`resource` | yes | anyOf=(#/components/schemas/ApplicationResource) \| (type="null") |  |
 
 ## Maintained corroboration
 
@@ -57,6 +60,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/AppAccessListFiltersOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -129,3 +135,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

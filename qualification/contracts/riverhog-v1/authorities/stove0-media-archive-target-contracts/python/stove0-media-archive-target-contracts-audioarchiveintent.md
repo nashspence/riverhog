@@ -27,24 +27,67 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-cd9f857894"></a>
-- <a id="s-2301185882"></a>`type`: object
 
-### Fields
+- <a id="s-2301185882"></a>`type`: `"object"`
+- <a id="s-54d7b9e1ea"></a>`additionalProperties`: `false`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4de69062e4"></a>`bitrate_kbps` | no | type="integer"; minimum=16; maximum=512 |  |
-| <a id="s-63c15502f4"></a>`codec` | no | type="string"; const="opus" |  |
-| <a id="s-ad463d6aa3"></a>`container` | no | type="string"; const="opus" |  |
-| <a id="s-8cc72d3b41"></a>`metadata_projection` | no | #/$defs/MediaProjectionPolicy |  |
+| <a id="s-4de69062e4"></a>`bitrate_kbps` | no | type="integer"; minimum=16; maximum=512; default=128 |  |
+| <a id="s-63c15502f4"></a>`codec` | no | type="string"; const="opus"; default="opus" |  |
+| <a id="s-ad463d6aa3"></a>`container` | no | type="string"; const="opus"; default="opus" |  |
+| <a id="s-8cc72d3b41"></a>`metadata_projection` | no | [MediaProjectionPolicy](#s-89c84af88a) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-e222d648c9"></a>`MediaFieldPreference` | type="object"; fields=`fields`, `name`; additional keys=`additionalProperties`, `required` |
-| <a id="s-08ab823d60"></a>`MediaGps` | type="object"; fields=`latitude`, `longitude`; additional keys=`additionalProperties`, `required` |
-| <a id="s-89c84af88a"></a>`MediaProjectionPolicy` | type="object"; fields=`creators`, `device_make`, `device_model`, `field_preferences`, `format`, `gps`, `tags`; additional keys=`additionalProperties` |
+- [MediaFieldPreference](#s-e222d648c9)
+- [MediaGps](#s-08ab823d60)
+- [MediaProjectionPolicy](#s-89c84af88a)
+
+##### <a id="s-e222d648c9"></a>definition `MediaFieldPreference`
+
+- <a id="s-cdaa260d33"></a>`type`: `"object"`
+- <a id="s-582c4781dd"></a>`additionalProperties`: `false`
+- <a id="s-f32fcf4780"></a>`required`: `["name","fields"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-87e2b4889c"></a>`fields` | yes | type="array"; items=(type="string"); minItems=1 |  |
+| <a id="s-1f997c5967"></a>`name` | yes | type="string"; enum=["capture-time","creator","device-make","device-model","gps-latitude","gps-longitude"] |  |
+
+##### <a id="s-08ab823d60"></a>definition `MediaGps`
+
+- <a id="s-d2d7467bd0"></a>`type`: `"object"`
+- <a id="s-6ab2401432"></a>`additionalProperties`: `false`
+- <a id="s-0516664118"></a>`required`: `["latitude","longitude"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2a475d11b5"></a>`latitude` | yes | type="number" |  |
+| <a id="s-349d10d8ff"></a>`longitude` | yes | type="number" |  |
+
+##### <a id="s-89c84af88a"></a>definition `MediaProjectionPolicy`
+
+- <a id="s-4c77f35f5c"></a>`type`: `"object"`
+- <a id="s-434b973cb5"></a>`additionalProperties`: `false`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-68c91641ed"></a>`creators` | no | type="array"; default=[]; items=(type="string") |  |
+| <a id="s-dda1ba525f"></a>`device_make` | no | anyOf=(type="string") \| (type="null"); default=null |  |
+| <a id="s-b4dcb42879"></a>`device_model` | no | anyOf=(type="string") \| (type="null"); default=null |  |
+| <a id="s-fe8cbe0bf4"></a>`field_preferences` | no | type="array"; default=[]; items=([MediaFieldPreference](#s-e222d648c9)) |  |
+| <a id="s-a0c73b3253"></a>`format` | no | type="string"; const="stove0-media-projection-policy/v1"; default="stove0-media-projection-policy/v1" |  |
+| <a id="s-ec7a4f028b"></a>`gps` | no | anyOf=([MediaGps](#s-08ab823d60)) \| (type="null"); default=null |  |
+| <a id="s-7563bacfb4"></a>`tags` | no | type="array"; default=[]; items=(type="string") |  |
 
 ## Governing policies
 
@@ -67,6 +110,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_media_archive_target_contracts.AudioArchiveIntent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -220,3 +266,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

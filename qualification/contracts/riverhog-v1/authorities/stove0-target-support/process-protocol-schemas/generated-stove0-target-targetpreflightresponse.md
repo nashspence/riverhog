@@ -14,29 +14,176 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-98bf5efc84"></a>
-- <a id="s-160f48c14c"></a>`title`: TargetPreflightResponse
-- <a id="s-8265320694"></a>`type`: object
+
+- <a id="s-8265320694"></a>`type`: `"object"`
+- <a id="s-cea58fca35"></a>`additionalProperties`: `false`
+- <a id="s-5d213f0404"></a>`required`: `["target","plan"]`
+- <a id="s-160f48c14c"></a>`title`: `"TargetPreflightResponse"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b2eadc07e6"></a>`plan` | yes | oneOf=#/$defs/TransformPlan \| #/$defs/EffectPlan; additional keys=`discriminator` |  |
-| <a id="s-e6c89ac6df"></a>`target` | yes | #/$defs/TargetContract |  |
+| <a id="s-b2eadc07e6"></a>`plan` | yes | discriminator={"mapping":{"stove0-effect-target/v1":"[EffectPlan](#s-11bebc4dd2)","stove0-transform-target/v1":"[TransformPlan](#s-2398dee3b8)"},"propertyName":"protocol"}; oneOf=([TransformPlan](#s-2398dee3b8)) \| ([EffectPlan](#s-11bebc4dd2)) |  |
+| <a id="s-e6c89ac6df"></a>`target` | yes | [TargetContract](#s-d29225bb03) |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-6e82db4fba"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-11bebc4dd2"></a>`EffectPlan` | type="object"; fields=`inputs`, `intent`, `observation_result_sha256s`, `operation_contract_sha256`, `operation_id`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`, `target_options`; additional keys=`additionalProperties`, `required` |
-| <a id="s-60608cfe3b"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-885012f602"></a>`JsonValue` | empty object |
-| <a id="s-d29225bb03"></a>`TargetContract` | type="object"; fields=`contract_sha256`, `image_digest`, `implementation_id`, `implementation_version`, `operations`, `protocol`, `source_revision`, `transport`; additional keys=`additionalProperties`, `required` |
-| <a id="s-18093afb67"></a>`TargetInputAuthority` | type="object"; fields=`roles`, `selection`; additional keys=`additionalProperties`, `required` |
-| <a id="s-026358c5f8"></a>`TargetInputRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
-| <a id="s-40a67f974a"></a>`TargetOperationSupport` | type="object"; fields=`operation_contract_sha256`, `operation_id`, `options_schema`, `result_kind`; additional keys=`additionalProperties`, `required` |
-| <a id="s-2398dee3b8"></a>`TransformPlan` | type="object"; fields=`inputs`, `intent`, `observation_result_sha256s`, `operation_contract_sha256`, `operation_id`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`, `target_options`; additional keys=`additionalProperties`, `required` |
+- [ArtifactSelectionRef](#s-6e82db4fba)
+- [EffectPlan](#s-11bebc4dd2)
+- [JsonSchemaDocument](#s-60608cfe3b)
+- [JsonValue](#s-885012f602)
+- [TargetContract](#s-d29225bb03)
+- [TargetInputAuthority](#s-18093afb67)
+- [TargetInputRoleCount](#s-026358c5f8)
+- [TargetOperationSupport](#s-40a67f974a)
+- [TransformPlan](#s-2398dee3b8)
+
+### <a id="s-6e82db4fba"></a>definition `ArtifactSelectionRef`
+
+- <a id="s-2645a3478a"></a>`type`: `"object"`
+- <a id="s-013638f8f4"></a>`additionalProperties`: `false`
+- <a id="s-cb0df0e97b"></a>`description`: `"Closed reference to a separately retained selection document."`
+- <a id="s-d68b08c86c"></a>`required`: `["selection_sha256","artifact_count","total_bytes"]`
+- <a id="s-7cd5cc9c01"></a>`title`: `"ArtifactSelectionRef"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-91c1a2048a"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-eed1f0328c"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a79f343304"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+
+### <a id="s-11bebc4dd2"></a>definition `EffectPlan`
+
+- <a id="s-829e9f8a98"></a>`type`: `"object"`
+- <a id="s-1c19661537"></a>`additionalProperties`: `false`
+- <a id="s-817f7bafb0"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent","target_implementation_id","target_contract_sha256","plan_sha256"]`
+- <a id="s-30ad2e76a4"></a>`title`: `"EffectPlan"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-d368acee72"></a>`inputs` | yes | [TargetInputAuthority](#s-18093afb67) |  |
+| <a id="s-51c58b479a"></a>`intent` | yes | type="object"; additionalProperties=([JsonValue](#s-885012f602)) |  |
+| <a id="s-91627aa6cc"></a>`observation_result_sha256s` | no | type="array"; default=[]; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
+| <a id="s-55dacd3c6d"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6eccc15ae3"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-b1431c0cfd"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a9b7569a60"></a>`protocol` | no | type="string"; const="stove0-effect-target/v1"; default="stove0-effect-target/v1" |  |
+| <a id="s-ae5cad52fa"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1728972dbd"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-253ffbfb8a"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-885012f602)) |  |
+
+### <a id="s-60608cfe3b"></a>definition `JsonSchemaDocument`
+
+- <a id="s-5a674a96bc"></a>`type`: `"object"`
+- <a id="s-0b34dbe114"></a>`additionalProperties`: `false`
+- <a id="s-5353144947"></a>`required`: `["id","sha256","schema"]`
+- <a id="s-86398b0db1"></a>`title`: `"JsonSchemaDocument"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a47fd4f465"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-0bab766f14"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-35110c04a2"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-3490292536"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-885012f602)) |  |
+| <a id="s-c282e43d95"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### <a id="s-885012f602"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+### <a id="s-d29225bb03"></a>definition `TargetContract`
+
+- <a id="s-6c5836d193"></a>`type`: `"object"`
+- <a id="s-20c201c3ae"></a>`additionalProperties`: `false`
+- <a id="s-e5ac3e1b54"></a>`required`: `["implementation_id","implementation_version","source_revision","image_digest","operations","contract_sha256"]`
+- <a id="s-829d904ed1"></a>`title`: `"TargetContract"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-791145bbfa"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-23a84ce5f2"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a383521d81"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-004149fbb9"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1 |  |
+| <a id="s-58a80a3bdd"></a>`operations` | yes | type="array"; items=([TargetOperationSupport](#s-40a67f974a)); minItems=1 |  |
+| <a id="s-8a396d9a23"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1" |  |
+| <a id="s-37e5ac4a4b"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
+| <a id="s-4f552cbb16"></a>`transport` | no | type="string"; const="riverhog-capability/v1"; default="riverhog-capability/v1" |  |
+
+### <a id="s-18093afb67"></a>definition `TargetInputAuthority`
+
+- <a id="s-868127a5b8"></a>`type`: `"object"`
+- <a id="s-55d214b89b"></a>`additionalProperties`: `false`
+- <a id="s-97ee97dfdc"></a>`description`: `"Small exact input authority retained by Stove0 and traversed in bounded pages."`
+- <a id="s-ec266afcda"></a>`required`: `["selection","roles"]`
+- <a id="s-92bd5ff2d3"></a>`title`: `"TargetInputAuthority"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2796eeb1cd"></a>`roles` | yes | type="array"; items=([TargetInputRoleCount](#s-026358c5f8)); minItems=1 |  |
+| <a id="s-bd3262dcaf"></a>`selection` | yes | [ArtifactSelectionRef](#s-6e82db4fba) |  |
+
+### <a id="s-026358c5f8"></a>definition `TargetInputRoleCount`
+
+- <a id="s-41a482a81b"></a>`type`: `"object"`
+- <a id="s-9013d6066f"></a>`additionalProperties`: `false`
+- <a id="s-7be7b288a7"></a>`required`: `["role","count"]`
+- <a id="s-778ce1e3d9"></a>`title`: `"TargetInputRoleCount"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e212a71813"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-60e41e7c5b"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+
+### <a id="s-40a67f974a"></a>definition `TargetOperationSupport`
+
+- <a id="s-9acbafb7fb"></a>`type`: `"object"`
+- <a id="s-b1c59e7504"></a>`additionalProperties`: `false`
+- <a id="s-5d4f9be278"></a>`required`: `["operation_id","operation_contract_sha256","options_schema"]`
+- <a id="s-9d64fc1bb7"></a>`title`: `"TargetOperationSupport"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-fb06e03c39"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6735f2b9dc"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-e2bceafed9"></a>`options_schema` | yes | [JsonSchemaDocument](#s-60608cfe3b) |  |
+| <a id="s-1bfa3e093c"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
+
+### <a id="s-2398dee3b8"></a>definition `TransformPlan`
+
+- <a id="s-c92bc46869"></a>`type`: `"object"`
+- <a id="s-925d0a347d"></a>`additionalProperties`: `false`
+- <a id="s-aa1e52a977"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent","target_implementation_id","target_contract_sha256","plan_sha256"]`
+- <a id="s-28e48aa423"></a>`title`: `"TransformPlan"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0a787fb4eb"></a>`inputs` | yes | [TargetInputAuthority](#s-18093afb67) |  |
+| <a id="s-237cb127e7"></a>`intent` | yes | type="object"; additionalProperties=([JsonValue](#s-885012f602)) |  |
+| <a id="s-4bb56be6c8"></a>`observation_result_sha256s` | no | type="array"; default=[]; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
+| <a id="s-92eab5005b"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2c38e1fa91"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-bf99e64d9a"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-509f9c011c"></a>`protocol` | no | type="string"; const="stove0-transform-target/v1"; default="stove0-transform-target/v1" |  |
+| <a id="s-128c56a7e7"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-0a2c2cc978"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-3595c033b4"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-885012f602)) |  |
 
 ## Maintained corroboration
 
@@ -65,6 +212,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -465,3 +615,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

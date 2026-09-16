@@ -14,19 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0c63f79edb"></a>
-- <a id="s-d7a1b8c167"></a>`title`: RetrievalFailedEvent
-- <a id="s-7bdd13aadb"></a>`type`: object
+
+- <a id="s-7bdd13aadb"></a>`type`: `"object"`
+- <a id="s-e268d50197"></a>`additionalProperties`: `false`
+- <a id="s-472320befb"></a>`required`: `["id","source","type","time","data"]`
+- <a id="s-d7a1b8c167"></a>`title`: `"RetrievalFailedEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-5a3043da3e"></a>`data` | yes | #/components/schemas/RetrievalFailedData |  |
-| <a id="s-18a9dd8d69"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-18a9dd8d69"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-6bee5ce69d"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-0189802cc0"></a>`source` | yes | type="string"; minLength=1 |  |
-| <a id="s-3b028c5774"></a>`specversion` | no | type="string"; const="1.0" |  |
-| <a id="s-0c9259d07a"></a>`subject` | no | anyOf=type="string"; minLength=1 \| type="null" |  |
+| <a id="s-3b028c5774"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-0c9259d07a"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null") |  |
 | <a id="s-ebbc8d7562"></a>`time` | yes | type="string" |  |
 | <a id="s-a50bef74c4"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.failed" |  |
 
@@ -57,6 +60,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/RetrievalFailedEvent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -124,3 +130,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9a945539e1"></a>
-- <a id="s-3a1c0cf219"></a>`title`: TargetInputRoleCount
-- <a id="s-aab06705dd"></a>`type`: object
+
+- <a id="s-aab06705dd"></a>`type`: `"object"`
+- <a id="s-bef6f48a5a"></a>`additionalProperties`: `false`
+- <a id="s-7614ffa81f"></a>`required`: `["role","count"]`
+- <a id="s-3a1c0cf219"></a>`title`: `"TargetInputRoleCount"`
 
 ### Fields
 
@@ -57,6 +60,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: cd93b356fb498257b255f7262952a01f1fa657555e9644325bdee9e3c4f14028 -->
@@ -84,3 +90,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

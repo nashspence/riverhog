@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b4761108c0"></a>
-- <a id="s-80e79fb104"></a>`title`: WorkFailureView
-- <a id="s-e20222ca3a"></a>`type`: object
+
+- <a id="s-e20222ca3a"></a>`type`: `"object"`
+- <a id="s-7c798eb9a5"></a>`additionalProperties`: `false`
+- <a id="s-e5849b5a6e"></a>`required`: `["code","message","retryable"]`
+- <a id="s-80e79fb104"></a>`title`: `"WorkFailureView"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7402188896"></a>`code` | yes | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-c750f10414"></a>`message` | yes | type="string"; minLength=1; maxLength=1000 |  |
+| <a id="s-7402188896"></a>`code` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-c750f10414"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
 | <a id="s-ee8f4b742c"></a>`retryable` | yes | type="boolean" |  |
 
 ### Progression, limits, and lifecycle
@@ -59,6 +62,9 @@ Shared facts for every subject below: minimum=1; reason="schema-maximum"
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 3a61374424ae470a2c694ac13502faf98f91af05992638c02e1d5b5380dac0c4 -->
@@ -93,3 +99,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

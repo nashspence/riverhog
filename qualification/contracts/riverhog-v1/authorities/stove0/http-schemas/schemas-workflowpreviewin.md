@@ -14,17 +14,20 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-91b3bb9a57"></a>
-- <a id="s-c39e031afe"></a>`title`: WorkflowPreviewIn
-- <a id="s-3a1816b961"></a>`type`: object
+
+- <a id="s-3a1816b961"></a>`type`: `"object"`
+- <a id="s-b4e2d53cae"></a>`additionalProperties`: `false`
+- <a id="s-f2c853f3bf"></a>`required`: `["recipe_id","inputs"]`
+- <a id="s-c39e031afe"></a>`title`: `"WorkflowPreviewIn"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8250b31586"></a>`effective_intent` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-6c92b782aa"></a>`inputs` | yes | type="array"; minItems=1; items=(#/components/schemas/CollectionRootRef) |  |
-| <a id="s-5308fa97b6"></a>`recipe_id` | yes | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-231030b92d"></a>`recipe_revision` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| <a id="s-8250b31586"></a>`effective_intent` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-6c92b782aa"></a>`inputs` | yes | type="array"; items=(#/components/schemas/CollectionRootRef); minItems=1 |  |
+| <a id="s-5308fa97b6"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-231030b92d"></a>`recipe_revision` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -76,6 +79,9 @@ Shared facts for every subject below: maximum=160; minimum=1; reason="schema-max
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: d7a96d936032649ccfe393754cd7845b9f8251a631eef1e7af249617d68aecea -->
@@ -126,3 +132,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

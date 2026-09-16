@@ -14,16 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ba9096018d"></a>
-- <a id="s-76da84bf70"></a>`title`: ValidationError
-- <a id="s-9f2fff08b8"></a>`type`: object
+
+- <a id="s-9f2fff08b8"></a>`type`: `"object"`
+- <a id="s-928a56c26b"></a>`required`: `["loc","msg","type"]`
+- <a id="s-76da84bf70"></a>`title`: `"ValidationError"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-2f5294f7e5"></a>`ctx` | no | type="object" |  |
-| <a id="s-f955b96458"></a>`input` | no | empty object |  |
-| <a id="s-06910d05cb"></a>`loc` | yes | type="array"; items=(anyOf=type="string" \| type="integer") |  |
+| <a id="s-f955b96458"></a>`input` | no | any JSON value |  |
+| <a id="s-06910d05cb"></a>`loc` | yes | type="array"; items=(anyOf=(type="string") \| (type="integer")) |  |
 | <a id="s-5425926fa9"></a>`msg` | yes | type="string" |  |
 | <a id="s-cef4c995a8"></a>`type` | yes | type="string" |  |
 
@@ -59,6 +61,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/ValidationError`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -106,3 +111,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

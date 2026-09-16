@@ -27,9 +27,12 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2c6cccb853"></a>
-- <a id="s-ca46b77744"></a>`type`: object
 
-### Fields
+- <a id="s-ca46b77744"></a>`type`: `"object"`
+- <a id="s-eab1006e4a"></a>`additionalProperties`: `false`
+- <a id="s-ddad2fdf30"></a>`required`: `["work","work_bytes","evaluations","evaluation_bytes","selections","selection_bytes","events","event_bytes"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
@@ -63,6 +66,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.SchedulerPruning`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -128,3 +134,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

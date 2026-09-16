@@ -22,7 +22,7 @@ List Lifecycle Events
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-2def9a57e2"></a>`after` | query | no | not declared | anyOf=[LifecycleEventCursor](../http-schemas/schemas-lifecycleeventcursor.md) \| type="null" |
+| <a id="s-2def9a57e2"></a>`after` | query | no | not declared | anyOf=([LifecycleEventCursor](../http-schemas/schemas-lifecycleeventcursor.md)) \| (type="null") |
 | <a id="s-cb497e59ec"></a>`limit` | query | no | `100` | type="integer"; minimum=1; maximum=100 |
 
 ### Responses
@@ -150,6 +150,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: eb97911416915278417657151b16268dd76bf0fdbbb7ab55bd7829d61c21474d -->
@@ -274,3 +277,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

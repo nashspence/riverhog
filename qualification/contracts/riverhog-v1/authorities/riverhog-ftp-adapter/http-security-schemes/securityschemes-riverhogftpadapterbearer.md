@@ -14,7 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-34e06de066"></a>
-- <a id="s-b098781e12"></a>`type`: http
+
+| Field | Value |
+|---|---|
+| <a id="s-4fadd69d09"></a>`scheme` | `"bearer"` |
+| <a id="s-b098781e12"></a>`type` | `"http"` |
 
 ## Governing policies
 
@@ -38,6 +42,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 178204f758fb78d572ed6d4673385f99c0e8697ced9fb775e7bb9851df3e06ee -->
@@ -48,3 +55,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "http"
 }
 ```
+
+</details>

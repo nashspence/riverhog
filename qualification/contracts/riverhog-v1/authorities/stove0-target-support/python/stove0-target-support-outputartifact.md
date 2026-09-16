@@ -27,16 +27,19 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2c07b215d8"></a>
-- <a id="s-52553755ea"></a>`type`: object
 
-### Fields
+- <a id="s-52553755ea"></a>`type`: `"object"`
+- <a id="s-eb46f7f1dc"></a>`additionalProperties`: `false`
+- <a id="s-12f9474f4f"></a>`required`: `["id","role","path","bytes","sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-14c608fd22"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-af54bd7d6a"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-24276f6634"></a>`media_type` | no | anyOf=type="string"; minLength=1; maxLength=255 \| type="null" |  |
-| <a id="s-d7e8e5723b"></a>`path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-24276f6634"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-d7e8e5723b"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-91ddac3026"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-f6c5c79519"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
@@ -67,6 +70,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_support.OutputArtifact`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -131,3 +137,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

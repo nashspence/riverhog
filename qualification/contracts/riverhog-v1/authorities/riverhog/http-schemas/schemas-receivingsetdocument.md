@@ -14,14 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f21bf588a0"></a>
-- <a id="s-dd60e3fe88"></a>`title`: ReceivingSetDocument
-- <a id="s-02791136a1"></a>`type`: object
+
+- <a id="s-02791136a1"></a>`type`: `"object"`
+- <a id="s-c6ce16df0a"></a>`additionalProperties`: `false`
+- <a id="s-28f01cf4b5"></a>`required`: `["state","count"]`
+- <a id="s-dd60e3fe88"></a>`title`: `"ReceivingSetDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-9aafbb77a1"></a>`authority` | no | anyOf=#/components/schemas/ExactSetAuthorityDocument \| type="null" |  |
+| <a id="s-9aafbb77a1"></a>`authority` | no | anyOf=(#/components/schemas/ExactSetAuthorityDocument) \| (type="null") |  |
 | <a id="s-7af5ab6592"></a>`count` | yes | type="integer"; minimum=0 |  |
 | <a id="s-9d3a07ed65"></a>`state` | yes | type="string"; enum=["receiving","sealed"] |  |
 
@@ -64,6 +67,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: bdae856bb3b833bd968c3093868c21529535df0ab22642823b261aeb4d63f282 -->
@@ -104,3 +110,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

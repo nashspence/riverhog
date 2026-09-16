@@ -27,15 +27,18 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-37bafc7f25"></a>
-- <a id="s-fc94cff2cc"></a>`type`: object
 
-### Fields
+- <a id="s-fc94cff2cc"></a>`type`: `"object"`
+- <a id="s-ef11a36b45"></a>`additionalProperties`: `false`
+- <a id="s-8d231e8581"></a>`required`: `["role","derived_from_roles"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a481c53b16"></a>`derived_from_roles` | yes | type="array"; minItems=1; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
-| <a id="s-d8883937ed"></a>`maximum` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
-| <a id="s-a7fa2a9e89"></a>`minimum` | no | type="integer"; minimum=0 |  |
+| <a id="s-a481c53b16"></a>`derived_from_roles` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
+| <a id="s-d8883937ed"></a>`maximum` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
+| <a id="s-a7fa2a9e89"></a>`minimum` | no | type="integer"; minimum=0; default=1 |  |
 | <a id="s-6404d08988"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ## Maintained corroboration
@@ -66,6 +69,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_support.OutputArtifactContract`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -122,3 +128,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

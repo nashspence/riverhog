@@ -14,16 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9bafbbe862"></a>
-- Table: `desired_collection_tags`
 
-### Columns
+### Table: `desired_collection_tags`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
 | <a id="s-147e9f12e2"></a>`collection_id` | `INTEGER` | no | `—` | — |
 | <a id="s-6ec282f7c8"></a>`tag` | `TEXT` | no | `—` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -57,6 +58,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/1/structure/tables/3`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -105,3 +109,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "desired_collection_tags"
 }
 ```
+
+</details>

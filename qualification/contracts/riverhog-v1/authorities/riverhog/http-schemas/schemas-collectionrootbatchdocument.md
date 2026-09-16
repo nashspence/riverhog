@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-beeeba53c5"></a>
-- <a id="s-b7d49ba41a"></a>`title`: CollectionRootBatchDocument
-- <a id="s-fbd771a65a"></a>`type`: object
+
+- <a id="s-fbd771a65a"></a>`type`: `"object"`
+- <a id="s-917e272ed3"></a>`additionalProperties`: `false`
+- <a id="s-a9d78b9ca7"></a>`required`: `["fence","start_ordinal","inputs"]`
+- <a id="s-b7d49ba41a"></a>`title`: `"CollectionRootBatchDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-94a5c12b16"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-ab04ca5dfd"></a>`inputs` | yes | type="array"; minItems=1; maxItems=128; items=(#/components/schemas/CollectionRootIdentityDocument); additional keys=`uniqueItems`, `x-riverhog-extent` |  |
+| <a id="s-ab04ca5dfd"></a>`inputs` | yes | type="array"; items=(#/components/schemas/CollectionRootIdentityDocument); maxItems=128; minItems=1; uniqueItems=true; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"start_ordinal","reason":"bounded-authority-append"} |  |
 | <a id="s-9c6772d7f8"></a>`start_ordinal` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
@@ -70,6 +73,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: acf1b1c5363045debca142fa788e0aa4a48f38956eb2841b6c5949e94253710c -->
@@ -113,3 +119,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

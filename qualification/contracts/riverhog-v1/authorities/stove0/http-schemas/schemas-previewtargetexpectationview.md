@@ -14,14 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9d02d3705b"></a>
-- <a id="s-e04016021d"></a>`title`: PreviewTargetExpectationView
-- <a id="s-d8cc2c8747"></a>`type`: object
+
+- <a id="s-d8cc2c8747"></a>`type`: `"object"`
+- <a id="s-922c47a74c"></a>`additionalProperties`: `false`
+- <a id="s-2f76e2c210"></a>`required`: `["branch_id","work_id","plan_sha256"]`
+- <a id="s-e04016021d"></a>`title`: `"PreviewTargetExpectationView"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4da8083975"></a>`branch_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-4da8083975"></a>`branch_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-cccc57ac09"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-bfcb19dacf"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
@@ -58,6 +61,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 581425e1055d7eec18f490cb5b2d2a5831a8516dd03460d4c159ee3743e6df34 -->
@@ -92,3 +98,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

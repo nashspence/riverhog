@@ -14,24 +14,27 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-62031e66a6"></a>
-- <a id="s-a1984b91f9"></a>`title`: ObservationRequest
-- <a id="s-944051be41"></a>`type`: object
+
+- <a id="s-944051be41"></a>`type`: `"object"`
+- <a id="s-b5de7d6bef"></a>`additionalProperties`: `false`
+- <a id="s-1b866b0da2"></a>`required`: `["work_id","observer_registration_id","observer_descriptor_sha256","observer_contract_id","observer_contract_sha256","subjects","request_id"]`
+- <a id="s-a1984b91f9"></a>`title`: `"ObservationRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d6e8803262"></a>`format` | no | type="string"; const="stove0-observation-request/v1" |  |
-| <a id="s-b2704269ad"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864 |  |
+| <a id="s-d6e8803262"></a>`format` | no | type="string"; const="stove0-observation-request/v1"; default="stove0-observation-request/v1" |  |
+| <a id="s-b2704269ad"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
 | <a id="s-dcf378d6a2"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-59c784d543"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-dfb26a8874"></a>`observer_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-3cd9f0ed9d"></a>`observer_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
-| <a id="s-6d486c894d"></a>`options` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-6d486c894d"></a>`options` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
 | <a id="s-602b52c8a1"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-b16393f0df"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
-| <a id="s-1b6c6673ea"></a>`subjects` | yes | type="array"; minItems=1; items=(#/components/schemas/ArtifactSubject) |  |
-| <a id="s-3cc30d6b48"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400 |  |
+| <a id="s-b16393f0df"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-1b6c6673ea"></a>`subjects` | yes | type="array"; items=(#/components/schemas/ArtifactSubject); minItems=1 |  |
+| <a id="s-3cc30d6b48"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300 |  |
 | <a id="s-44cda49790"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
@@ -86,6 +89,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/stove0/components/schemas/ObservationRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -183,3 +189,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

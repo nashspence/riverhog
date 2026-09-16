@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b6d05ff815"></a>
-- <a id="s-d67d8f58d8"></a>`title`: ErrorResponse
-- <a id="s-f5613aa2f2"></a>`type`: object
+
+- <a id="s-f5613aa2f2"></a>`type`: `"object"`
+- <a id="s-87821e3300"></a>`additionalProperties`: `false`
+- <a id="s-a488683fd8"></a>`required`: `["error"]`
+- <a id="s-d67d8f58d8"></a>`title`: `"ErrorResponse"`
 
 ### Fields
 
@@ -51,6 +54,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: f512af6aea84106cb490abc5a849a56c6836aec507f2a2906f6d3301ed551137 -->
@@ -70,3 +76,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

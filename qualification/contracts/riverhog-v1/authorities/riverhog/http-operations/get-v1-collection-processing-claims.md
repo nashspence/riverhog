@@ -23,8 +23,8 @@ List Processing Claims
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-2321207667"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-37f200ec6c"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
-| <a id="s-96a5f47301"></a>`state` | query | no | not declared | anyOf=type="string"; enum=["active","settled","retiring","abandoned","released"] \| type="null" |
+| <a id="s-37f200ec6c"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
+| <a id="s-96a5f47301"></a>`state` | query | no | not declared | anyOf=(type="string"; enum=["active","settled","retiring","abandoned","released"]) \| (type="null") |
 | <a id="s-6308dc537d"></a>`sort` | query | no | `"updated_at"` | type="string"; enum=["created_at","updated_at","expires_at","state","work_id","execution_id"] |
 | <a id="s-fa342e9615"></a>`order` | query | no | `"desc"` | type="string"; enum=["asc","desc"] |
 
@@ -143,6 +143,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -340,3 +343,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

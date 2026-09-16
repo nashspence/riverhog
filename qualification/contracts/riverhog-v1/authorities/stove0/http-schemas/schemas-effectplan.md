@@ -14,23 +14,26 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8485814f8e"></a>
-- <a id="s-47fb8e647e"></a>`title`: EffectPlan
-- <a id="s-ee7da793c3"></a>`type`: object
+
+- <a id="s-ee7da793c3"></a>`type`: `"object"`
+- <a id="s-fb28e95d06"></a>`additionalProperties`: `false`
+- <a id="s-6d01dc9d18"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent","target_implementation_id","target_contract_sha256","plan_sha256"]`
+- <a id="s-47fb8e647e"></a>`title`: `"EffectPlan"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-db34175e92"></a>`inputs` | yes | #/components/schemas/TargetInputAuthority |  |
-| <a id="s-a50283aacb"></a>`intent` | yes | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-73e7c4241f"></a>`observation_result_sha256s` | no | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
+| <a id="s-a50283aacb"></a>`intent` | yes | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-73e7c4241f"></a>`observation_result_sha256s` | no | type="array"; default=[]; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
 | <a id="s-32963f2a0f"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-e510f4e7d6"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-1a7e01efe5"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-4b9d796104"></a>`protocol` | no | type="string"; const="stove0-effect-target/v1" |  |
+| <a id="s-4b9d796104"></a>`protocol` | no | type="string"; const="stove0-effect-target/v1"; default="stove0-effect-target/v1" |  |
 | <a id="s-3801ab0d31"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-5265da247b"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-b4e9848bc5"></a>`target_options` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-b4e9848bc5"></a>`target_options` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
 
 ### Progression, limits, and lifecycle
 
@@ -85,6 +88,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/EffectPlan`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -165,3 +171,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

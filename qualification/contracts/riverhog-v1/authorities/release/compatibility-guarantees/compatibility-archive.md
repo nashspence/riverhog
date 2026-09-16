@@ -13,8 +13,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-484612c67b"></a>
-- Shape: "A valid v1 archive remains independently recoverable throughout the supported v1 lifetime. Pack construction, ingress checkpointing, and resumable-write strategies are not archive-format compatibility promises."
+
+| Field | Value |
+|---|---|
+| <a id="s-484612c67b"></a>`archive` | `"A valid v1 archive remains independently recoverable throughout the supported v1 lifetime. Pack construction, ingress checkpointing, and resumable-write strategies are not archive-format compatibility promises."` |
 
 ## Governing policies
 
@@ -39,6 +41,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 12131fa17ee13c3795532979ccfd8b5095c8239671134270909a68afdff5308a -->
@@ -46,3 +51,5 @@ The following JSON is the complete value owned at each machine-authority pointer
 ```json
 "A valid v1 archive remains independently recoverable throughout the supported v1 lifetime. Pack construction, ingress checkpointing, and resumable-write strategies are not archive-format compatibility promises."
 ```
+
+</details>

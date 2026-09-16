@@ -27,18 +27,21 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-a247abab03"></a>
-- <a id="s-53c1393412"></a>`type`: object
 
-### Fields
+- <a id="s-53c1393412"></a>`type`: `"object"`
+- <a id="s-c7cd530751"></a>`additionalProperties`: `false`
+- <a id="s-b295ae5692"></a>`required`: `["branch_id","work_id","state"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-01bd34421c"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-98f8aff547"></a>`branch_set_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-5b4f066dc6"></a>`format` | no | type="string"; const="stove0-branch-outcome/v1" |  |
+| <a id="s-98f8aff547"></a>`branch_set_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-5b4f066dc6"></a>`format` | no | type="string"; const="stove0-branch-outcome/v1"; default="stove0-branch-outcome/v1" |  |
 | <a id="s-9d9231ca67"></a>`state` | yes | type="string"; enum=["failed","inapplicable","interrupted","canceled"] |  |
 | <a id="s-f27ad0208a"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-cb21b5c0fb"></a>`workflow_plan_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-cb21b5c0fb"></a>`workflow_plan_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
 
 ## Maintained corroboration
 
@@ -67,6 +70,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_protocol.BranchOutcome`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -141,3 +147,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

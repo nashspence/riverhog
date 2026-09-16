@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ed18e124ca"></a>
-- <a id="s-b4be5e79c0"></a>`title`: ArtifactDispositionOutputPageDocument
-- <a id="s-d7659f4569"></a>`type`: object
+
+- <a id="s-d7659f4569"></a>`type`: `"object"`
+- <a id="s-48966cfb5b"></a>`additionalProperties`: `false`
+- <a id="s-09fd97b6fd"></a>`required`: `["authority","start_ordinal","outputs"]`
+- <a id="s-b4be5e79c0"></a>`title`: `"ArtifactDispositionOutputPageDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-38a8152364"></a>`authority` | yes | #/components/schemas/ArtifactDispositionSetIdentityDocument |  |
-| <a id="s-ec50ac8374"></a>`next_ordinal` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
-| <a id="s-e1fedbe99d"></a>`outputs` | yes | type="array"; maxItems=128; items=(#/components/schemas/ArtifactDispositionOutputDocument); additional keys=`x-riverhog-extent` |  |
+| <a id="s-ec50ac8374"></a>`next_ordinal` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
+| <a id="s-e1fedbe99d"></a>`outputs` | yes | type="array"; items=(#/components/schemas/ArtifactDispositionOutputDocument); maxItems=128; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
 | <a id="s-3b4b64fa8a"></a>`start_ordinal` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
@@ -71,6 +74,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionOutputPageDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -123,3 +129,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

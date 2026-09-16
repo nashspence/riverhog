@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9857458ffa"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-fe693377ae"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-0473aebcab"></a>`default_expressions` | ["'7d'"] |
-| <a id="s-8cbdf403cb"></a>`id` | "riverhog-server:environment:RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME" |
-| <a id="s-7b2e5c71b6"></a>`input_shape` | "environment-string" |
-| <a id="s-03c589148c"></a>`name` | "RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME" |
-| <a id="s-0666993cd6"></a>`owner` | "riverhog-server" |
+| <a id="s-fe693377ae"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-0473aebcab"></a>`default_expressions` | `["'7d'"]` |
+| <a id="s-8cbdf403cb"></a>`id` | `"riverhog-server:environment:RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME"` |
+| <a id="s-7b2e5c71b6"></a>`input_shape` | `"environment-string"` |
+| <a id="s-03c589148c"></a>`name` | `"RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME"` |
+| <a id="s-0666993cd6"></a>`owner` | `"riverhog-server"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 60a9369be20017e0e474fec863c8b1dd23a29cb1bb68609dc4ce70a90574fe94 -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "riverhog-server"
 }
 ```
+
+</details>

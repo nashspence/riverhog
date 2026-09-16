@@ -14,15 +14,38 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f4386b98bf"></a>
-- <a id="s-9d6bc1bde7"></a>`type`: object
+
+- <a id="s-9d6bc1bde7"></a>`type`: `"object"`
+- <a id="s-7bbeca7b57"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-43146c76c3"></a>`additionalProperties`: `false`
+- <a id="s-90d1d0dea2"></a>`required`: `["schema_version","kind","routes"]`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-281b9c9044"></a>`kind` | yes | type="string"; const="gogurt.routes" |  |
-| <a id="s-cb8e5e292c"></a>`routes` | yes | type="object"; additional keys=`additionalProperties`, `propertyNames` |  |
+| `routes` | yes | [See field `routes`](#s-cb8e5e292c) |  |
 | <a id="s-c5ff414687"></a>`schema_version` | yes | type="integer"; const=1 |  |
+
+### <a id="s-cb8e5e292c"></a>field `routes`
+
+- <a id="s-175a552f6b"></a>`type`: `"object"`
+- `additionalProperties`: [See field `routes` · `additionalProperties`](#s-c6de0d0ee5)
+- <a id="s-83d917ba74"></a>`propertyNames`: pattern="^[a-z0-9]&#40;?:[a-z0-9-]{0,61}[a-z0-9])?$"
+
+### <a id="s-c6de0d0ee5"></a>field `routes` · `additionalProperties`
+
+- <a id="s-bed06600de"></a>`type`: `"object"`
+- <a id="s-2ec69efabc"></a>`additionalProperties`: `false`
+- <a id="s-1a943779ea"></a>`required`: `["command"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-787fb41e83"></a>`command` | yes | type="array"; items=(type="string"; minLength=1); minItems=1 |  |
+| <a id="s-5ad47b718e"></a>`enabled` | no | type="boolean" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -32,7 +55,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-787fb41e83"></a>[field routes · additional values · field command](#s-cb8e5e292c) | `cardinality · items · operational_policy` | shared above |
+| [field routes · additional values · field command](#s-787fb41e83) | `cardinality · items · operational_policy` | shared above |
 | [field routes](#s-cb8e5e292c) | `cardinality · entries · operational_policy` | shared above |
 
 ## Governing policies
@@ -57,6 +80,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/configuration_documents/gogurt-core:configuration:gogurt-routes-schema`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -110,3 +136,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

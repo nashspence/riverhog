@@ -27,21 +27,32 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-17b24caaf5"></a>
-- <a id="s-65e243e3dc"></a>`type`: object
 
-### Fields
+- <a id="s-65e243e3dc"></a>`type`: `"object"`
+- <a id="s-d3ff5b398a"></a>`additionalProperties`: `false`
+- <a id="s-4a5d49abae"></a>`required`: `["journal_id","current_state_id"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-bbe83a98ba"></a>`current_state_id` | yes | #/$defs/ProvenanceStateId |  |
-| <a id="s-22d8155f9c"></a>`journal_id` | yes | #/$defs/ProvenanceJournalId |  |
+| <a id="s-bbe83a98ba"></a>`current_state_id` | yes | [ProvenanceStateId](#s-b300ca59b7) |  |
+| <a id="s-22d8155f9c"></a>`journal_id` | yes | [ProvenanceJournalId](#s-647d53bd23) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-647d53bd23"></a>`ProvenanceJournalId` | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
-| <a id="s-b300ca59b7"></a>`ProvenanceStateId` | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
+- [ProvenanceJournalId](#s-647d53bd23)
+- [ProvenanceStateId](#s-b300ca59b7)
+
+##### <a id="s-647d53bd23"></a>definition `ProvenanceJournalId`
+
+- <a id="s-5bf5818779"></a>`type`: `"string"`
+- <a id="s-db6dd09519"></a>`pattern`: `"^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"`
+
+##### <a id="s-b300ca59b7"></a>definition `ProvenanceStateId`
+
+- <a id="s-6df5827f61"></a>`type`: `"string"`
+- <a id="s-db01f5d7a2"></a>`pattern`: `"^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"`
 
 ## Governing policies
 
@@ -64,6 +75,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -107,3 +121,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

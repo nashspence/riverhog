@@ -14,15 +14,38 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-355a3bb2b9"></a>
-- <a id="s-22f558f449"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/sparse-map.json
-- <a id="s-099f69e6ee"></a>`type`: object
+
+- <a id="s-099f69e6ee"></a>`type`: `"object"`
+- <a id="s-22f558f449"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/sparse-map.json"`
+- <a id="s-ea2eb953be"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-5521758056"></a>`additionalProperties`: `false`
+- <a id="s-67e1b84e5f"></a>`required`: `["complete","extents"]`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-54706e967d"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-47d52016f8"></a>`extents` | yes | type="array"; items=(type="object"; fields=`kind`, `length`, `offset`; additional keys=`additionalProperties`, `required`) |  |
+| `extents` | yes | [See field `extents`](#s-47d52016f8) |  |
+
+### <a id="s-47d52016f8"></a>field `extents`
+
+- <a id="s-c0203775cf"></a>`type`: `"array"`
+- `items`: [See field `extents` · `items`](#s-030f8d4339)
+
+### <a id="s-030f8d4339"></a>field `extents` · `items`
+
+- <a id="s-84b951528e"></a>`type`: `"object"`
+- <a id="s-2b32c1ff23"></a>`additionalProperties`: `false`
+- <a id="s-c9a5b779b2"></a>`required`: `["kind","offset","length"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-077f632b1c"></a>`kind` | yes | enum=["data","hole"] |  |
+| <a id="s-efe1d55da1"></a>`length` | yes | type="integer"; minimum=0 |  |
+| <a id="s-6d97c28b99"></a>`offset` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -32,8 +55,8 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-efe1d55da1"></a>[field extents · items · field length](#s-47d52016f8) | `value · schema-value · operational_policy` | shared above |
-| <a id="s-6d97c28b99"></a>[field extents · items · field offset](#s-47d52016f8) | `value · schema-value · operational_policy` | shared above |
+| [field extents · items · field length](#s-efe1d55da1) | `value · schema-value · operational_policy` | shared above |
+| [field extents · items · field offset](#s-6d97c28b99) | `value · schema-value · operational_policy` | shared above |
 | [field extents](#s-47d52016f8) | `cardinality · items · operational_policy` | shared above |
 
 ## Governing policies
@@ -58,6 +81,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1sparse-map.json`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -108,3 +134,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

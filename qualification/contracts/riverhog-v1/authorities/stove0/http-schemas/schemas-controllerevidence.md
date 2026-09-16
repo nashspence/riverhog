@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d61f5ac1c7"></a>
-- <a id="s-59e457ab9e"></a>`title`: ControllerEvidence
-- <a id="s-a3778ada36"></a>`type`: object
+
+- <a id="s-a3778ada36"></a>`type`: `"object"`
+- <a id="s-3fd02fda35"></a>`additionalProperties`: `false`
+- <a id="s-d7968e480b"></a>`required`: `["execution_envelope","controller_evidence_sha256"]`
+- <a id="s-59e457ab9e"></a>`title`: `"ControllerEvidence"`
 
 ### Fields
 
@@ -23,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-6248d0a5d5"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-f3bb084220"></a>`execution_envelope` | yes | #/components/schemas/ExecutionEnvelope |  |
-| <a id="s-3c35b188e7"></a>`format` | no | type="string"; const="stove0-controller-evidence/v1" |  |
+| <a id="s-3c35b188e7"></a>`format` | no | type="string"; const="stove0-controller-evidence/v1"; default="stove0-controller-evidence/v1" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -64,6 +67,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: b115148b1c0d4c82c733fe44bf6428461157534079886b60530b9f14c008818e -->
@@ -95,3 +101,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -27,20 +27,48 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-7f78559b40"></a>
-- <a id="s-bceebe10e7"></a>`type`: object
 
-### Fields
+- <a id="s-bceebe10e7"></a>`type`: `"object"`
+- <a id="s-ffeb231c84"></a>`additionalProperties`: `false`
+- <a id="s-93bf105478"></a>`required`: `["artifacts"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-71eae395d0"></a>`artifacts` | yes | type="array"; minItems=1; items=(#/$defs/MediaSamplingArtifactFacts) |  |
+| <a id="s-71eae395d0"></a>`artifacts` | yes | type="array"; items=([MediaSamplingArtifactFacts](#s-57a6c63181)); minItems=1 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-57a6c63181"></a>`MediaSamplingArtifactFacts` | type="object"; fields=`artifact_id`, `duration_ms`, `sampleable_ranges`; additional keys=`additionalProperties`, `required` |
-| <a id="s-27ea6724f4"></a>`SampleableRange` | type="object"; fields=`duration_ms`, `start_ms`; additional keys=`additionalProperties`, `required` |
+- [MediaSamplingArtifactFacts](#s-57a6c63181)
+- [SampleableRange](#s-27ea6724f4)
+
+##### <a id="s-57a6c63181"></a>definition `MediaSamplingArtifactFacts`
+
+- <a id="s-3d171d2a83"></a>`type`: `"object"`
+- <a id="s-682aa25c0a"></a>`additionalProperties`: `false`
+- <a id="s-edbbb6af09"></a>`required`: `["artifact_id","duration_ms","sampleable_ranges"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3433a1df5d"></a>`artifact_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-36a1ef84a6"></a>`duration_ms` | yes | type="integer"; minimum=1 |  |
+| <a id="s-c993dc453e"></a>`sampleable_ranges` | yes | type="array"; items=([SampleableRange](#s-27ea6724f4)); minItems=1 |  |
+
+##### <a id="s-27ea6724f4"></a>definition `SampleableRange`
+
+- <a id="s-77f41b48aa"></a>`type`: `"object"`
+- <a id="s-07510d5a2b"></a>`additionalProperties`: `false`
+- <a id="s-6f3312b776"></a>`required`: `["start_ms","duration_ms"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-5f14e32aed"></a>`duration_ms` | yes | type="integer"; minimum=1 |  |
+| <a id="s-ab52779446"></a>`start_ms` | yes | type="integer"; minimum=0 |  |
 
 ## Maintained corroboration
 
@@ -69,6 +97,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_media_sampling_observer_contracts.MediaSamplingFacts`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -149,3 +180,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

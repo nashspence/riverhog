@@ -22,7 +22,7 @@ Get Target Execution Inputs
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-71bac0a8b3"></a>`job_id` | path | yes | not declared | type="string" |
-| <a id="s-f3e43785ca"></a>`continuation` | query | no | not declared | anyOf=type="string" \| type="null" |
+| <a id="s-f3e43785ca"></a>`continuation` | query | no | not declared | anyOf=(type="string") \| (type="null") |
 
 ### Responses
 
@@ -126,6 +126,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -238,3 +241,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

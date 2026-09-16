@@ -14,7 +14,13 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a9656ba901"></a>
-- <a id="s-e92fe0fa37"></a>`type`: string
+
+- <a id="s-e92fe0fa37"></a>`type`: `"string"`
+- <a id="s-c5789880fe"></a>`maxLength`: `32768`
+- <a id="s-58fa788f9c"></a>`minLength`: `1`
+- <a id="s-1961afea35"></a>`x-riverhog-encoded-bytes-max`: `32768`
+- <a id="s-5dce35f005"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-catalog-description"}`
+- <a id="s-6274b67d83"></a>`x-unicode-normalization`: `"NFC"`
 
 ### Progression, limits, and lifecycle
 
@@ -50,6 +56,9 @@ Shared facts for every subject below: maximum=32768
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: daefae928b8ba365eb083c697fe3d6d1635c9772e1689e8785f4b8c33183cf9a -->
@@ -67,3 +76,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "x-unicode-normalization": "NFC"
 }
 ```
+
+</details>

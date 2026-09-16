@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5d276c77f5"></a>
-- <a id="s-9a6acf1bee"></a>`title`: WriteSession
-- <a id="s-514d7def0e"></a>`type`: object
+
+- <a id="s-514d7def0e"></a>`type`: `"object"`
+- <a id="s-bee685210f"></a>`additionalProperties`: `false`
+- <a id="s-80cb8c0bda"></a>`required`: `["object_path","expected_bytes","write_token"]`
+- <a id="s-9a6acf1bee"></a>`title`: `"WriteSession"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-b573b398f3"></a>`expected_bytes` | yes | type="integer"; minimum=1 | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
-| <a id="s-f382e94026"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-bb12b9b006"></a>`write_token` | yes | type="string"; minLength=1; maxLength=4000 | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
+| <a id="s-f382e94026"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-bb12b9b006"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1 | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
 
 ### Progression, limits, and lifecycle
 
@@ -65,6 +68,9 @@ Shared facts for every subject below: minimum=1; reason="schema-maximum"
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 8273b4a0c12b6fa55f8669267e1ed4d9a0091e43944c85d6f7e1c16aa6e892ac -->
@@ -102,3 +108,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

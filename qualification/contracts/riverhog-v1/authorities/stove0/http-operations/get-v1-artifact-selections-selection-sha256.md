@@ -22,7 +22,7 @@ Get Artifact Selection
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-bef50296e9"></a>`selection_sha256` | path | yes | not declared | type="string" |
-| <a id="s-aa2e76ccfa"></a>`continuation` | query | no | not declared | anyOf=type="string" \| type="null" |
+| <a id="s-aa2e76ccfa"></a>`continuation` | query | no | not declared | anyOf=(type="string") \| (type="null") |
 
 ### Responses
 
@@ -141,6 +141,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -266,3 +269,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

@@ -14,24 +14,77 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d7e97ded86"></a>
-- <a id="s-503de59ef9"></a>`title`: ReadStatus
-- <a id="s-b939c496b7"></a>`type`: object
+
+- <a id="s-b939c496b7"></a>`type`: `"object"`
+- <a id="s-594e9cd362"></a>`additionalProperties`: `false`
+- <a id="s-2a59149353"></a>`required`: `["objects","readiness"]`
+- <a id="s-503de59ef9"></a>`title`: `"ReadStatus"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4344c1608a"></a>`objects` | yes | type="array"; minItems=1; items=(#/$defs/ObjectLocator) |  |
-| <a id="s-f6a789a1fb"></a>`readiness` | yes | oneOf=#/$defs/ReadRequested \| #/$defs/ReadReady \| #/$defs/ReadExpired; additional keys=`discriminator` |  |
+| <a id="s-4344c1608a"></a>`objects` | yes | type="array"; items=([ObjectLocator](#s-d7a7425eaa)); minItems=1 |  |
+| <a id="s-f6a789a1fb"></a>`readiness` | yes | discriminator={"mapping":{"expired":"[ReadExpired](#s-285138754e)","ready":"[ReadReady](#s-e03e1a2323)","requested":"[ReadRequested](#s-c23f02270e)"},"propertyName":"state"}; oneOf=([ReadRequested](#s-c23f02270e)) \| ([ReadReady](#s-e03e1a2323)) \| ([ReadExpired](#s-285138754e)) |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-d7a7425eaa"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
-| <a id="s-285138754e"></a>`ReadExpired` | type="object"; fields=`state`; additional keys=`additionalProperties` |
-| <a id="s-e03e1a2323"></a>`ReadReady` | type="object"; fields=`available_until`, `state`; additional keys=`additionalProperties` |
-| <a id="s-c23f02270e"></a>`ReadRequested` | type="object"; fields=`estimated_ready_at`, `state`; additional keys=`additionalProperties` |
+- [ObjectLocator](#s-d7a7425eaa)
+- [ReadExpired](#s-285138754e)
+- [ReadReady](#s-e03e1a2323)
+- [ReadRequested](#s-c23f02270e)
+
+### <a id="s-d7a7425eaa"></a>definition `ObjectLocator`
+
+- <a id="s-cd344d52b7"></a>`type`: `"object"`
+- <a id="s-e98d368795"></a>`additionalProperties`: `false`
+- <a id="s-e64b6387cf"></a>`required`: `["object_path"]`
+- <a id="s-e5e0127bf1"></a>`title`: `"ObjectLocator"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c1fb151a13"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-10c072a33f"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
+
+### <a id="s-285138754e"></a>definition `ReadExpired`
+
+- <a id="s-bd756d95f3"></a>`type`: `"object"`
+- <a id="s-30003bac3b"></a>`additionalProperties`: `false`
+- <a id="s-3e45ee3692"></a>`title`: `"ReadExpired"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-36323568e0"></a>`state` | no | type="string"; const="expired"; default="expired" |  |
+
+### <a id="s-e03e1a2323"></a>definition `ReadReady`
+
+- <a id="s-f90716a20c"></a>`type`: `"object"`
+- <a id="s-bef2594833"></a>`additionalProperties`: `false`
+- <a id="s-0fa95a4ebc"></a>`title`: `"ReadReady"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-8f1c09c270"></a>`available_until` | no | anyOf=(type="string"; maxLength=100; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-6593f5851e"></a>`state` | no | type="string"; const="ready"; default="ready" |  |
+
+### <a id="s-c23f02270e"></a>definition `ReadRequested`
+
+- <a id="s-ab9c6a7ac2"></a>`type`: `"object"`
+- <a id="s-6847afb26c"></a>`additionalProperties`: `false`
+- <a id="s-8c5e8ad085"></a>`title`: `"ReadRequested"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ed34680d49"></a>`estimated_ready_at` | no | anyOf=(type="string"; maxLength=100; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-a235938066"></a>`state` | no | type="string"; const="requested"; default="requested" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -49,8 +102,8 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-b6fb007001"></a>[definition ReadReady · field available_until · string value](#s-e03e1a2323) | `length · characters · contract_max` | shared above |
-| <a id="s-ab68818a64"></a>[definition ReadRequested · field estimated_ready_at · string value](#s-c23f02270e) | `length · characters · contract_max` | shared above |
+| <a id="s-b6fb007001"></a>[definition ReadReady · field available_until · string value](#s-8f1c09c270) | `length · characters · contract_max` | shared above |
+| <a id="s-ab68818a64"></a>[definition ReadRequested · field estimated_ready_at · string value](#s-ed34680d49) | `length · characters · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -81,6 +134,9 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ReadStatus`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -228,3 +284,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

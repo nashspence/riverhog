@@ -27,9 +27,12 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-5c52b4089d"></a>
-- <a id="s-786b75a7f2"></a>`type`: object
 
-### Fields
+- <a id="s-786b75a7f2"></a>`type`: `"object"`
+- <a id="s-57cf690889"></a>`additionalProperties`: `false`
+- <a id="s-84e17f1057"></a>`required`: `["source","source_pointer","destination","destination_pointer"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
@@ -59,6 +62,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_recipe_config.OperationProjection`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -110,3 +116,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

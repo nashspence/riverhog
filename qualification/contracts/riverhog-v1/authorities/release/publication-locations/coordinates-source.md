@@ -13,8 +13,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-2bc3eac8a6"></a>
-- Shape: "https://github.com/nashspence/riverhog"
+
+| Field | Value |
+|---|---|
+| <a id="s-2bc3eac8a6"></a>`source` | `"https://github.com/nashspence/riverhog"` |
 
 ## Governing policies
 
@@ -40,6 +42,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 39b0d4a15f53286b5322881372ceb8058312d0168def000511635ea347efc50d -->
@@ -47,3 +52,5 @@ The following JSON is the complete value owned at each machine-authority pointer
 ```json
 "https://github.com/nashspence/riverhog"
 ```
+
+</details>

@@ -14,8 +14,12 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d2b0286240"></a>
-- <a id="s-247fcf4997"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json
-- <a id="s-b41079f681"></a>`type`: object
+
+- <a id="s-b41079f681"></a>`type`: `"object"`
+- <a id="s-247fcf4997"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json"`
+- <a id="s-1f98fe8398"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-4e186cf096"></a>`additionalProperties`: `false`
+- <a id="s-4df36a1197"></a>`required`: `["device","inode","mode","nlink","uid","gid","size"]`
 
 ### Fields
 
@@ -83,6 +87,9 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 - `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-file-stat.json`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -202,3 +209,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

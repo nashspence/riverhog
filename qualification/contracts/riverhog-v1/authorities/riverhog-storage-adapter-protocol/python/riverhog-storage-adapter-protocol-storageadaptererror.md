@@ -27,19 +27,33 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-8273a3b582"></a>
-- <a id="s-60f4870d95"></a>`type`: object
 
-### Fields
+- <a id="s-60f4870d95"></a>`type`: `"object"`
+- <a id="s-8254b4a502"></a>`additionalProperties`: `false`
+- <a id="s-baae39d7a9"></a>`required`: `["error"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3f94044d27"></a>`error` | yes | #/$defs/StorageAdapterErrorBody |  |
+| <a id="s-3f94044d27"></a>`error` | yes | [StorageAdapterErrorBody](#s-1ac506b6c2) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-1ac506b6c2"></a>`StorageAdapterErrorBody` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
+- [StorageAdapterErrorBody](#s-1ac506b6c2)
+
+##### <a id="s-1ac506b6c2"></a>definition `StorageAdapterErrorBody`
+
+- <a id="s-c0d03c9e90"></a>`type`: `"object"`
+- <a id="s-7124a7f214"></a>`additionalProperties`: `false`
+- <a id="s-d5f891dc25"></a>`required`: `["code","message"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7b9790221e"></a>`code` | yes | type="string"; enum=["unauthorized","invalid_request","not_found","method_not_allowed","length_required","request_too_large","insufficient_storage","identity_conflict","traversal_invalidated","invalid_path","invalid_range","read_not_ready","read_expired","integrity_failure","provider_unavailable","internal_failure"] |  |
+| <a id="s-08df8c5a33"></a>`message` | yes | type="string"; maxLength=2000; minLength=1 |  |
 
 ## Governing policies
 
@@ -62,6 +76,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.StorageAdapterError`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -129,3 +146,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

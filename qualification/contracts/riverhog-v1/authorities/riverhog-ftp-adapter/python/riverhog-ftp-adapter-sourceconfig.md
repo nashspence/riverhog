@@ -27,30 +27,49 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-3abecbca66"></a>
-- <a id="s-e0685f4790"></a>`type`: object
 
-### Fields
+- <a id="s-e0685f4790"></a>`type`: `"object"`
+- <a id="s-66a36bb4d7"></a>`additionalProperties`: `false`
+- <a id="s-0970bbe49d"></a>`required`: `["id","root","ingest_source"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a2f6e360bd"></a>`archive_store` | no | anyOf=type="string"; minLength=1; maxLength=160 \| type="null" |  |
-| <a id="s-61be86a337"></a>`close_mode` | no | type="string"; enum=["stable","explicit-flush"] |  |
-| <a id="s-aa5b361399"></a>`description` | no | anyOf=#/$defs/CollectionDescription \| type="null" |  |
+| <a id="s-a2f6e360bd"></a>`archive_store` | no | anyOf=(type="string"; maxLength=160; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-61be86a337"></a>`close_mode` | no | type="string"; enum=["stable","explicit-flush"]; default="stable" |  |
+| <a id="s-aa5b361399"></a>`description` | no | anyOf=([CollectionDescription](#s-f5f291f15b)) \| (type="null"); default=null |  |
 | <a id="s-91145a9ec7"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$" |  |
-| <a id="s-4eac7856d0"></a>`ingest_source` | yes | type="string"; minLength=1; maxLength=512 |  |
-| <a id="s-20a31ed4e5"></a>`max_bytes` | no | type="integer"; minimum=1 |  |
-| <a id="s-d1f237a26c"></a>`max_files` | no | type="integer"; minimum=1 |  |
-| <a id="s-45fe0b309b"></a>`provenance` | no | type="string"; enum=["capture","omit"] |  |
-| <a id="s-61c3fd440f"></a>`provenance_omission_reason` | no | anyOf=type="string"; maxLength=1000 \| type="null" |  |
+| <a id="s-4eac7856d0"></a>`ingest_source` | yes | type="string"; maxLength=512; minLength=1 |  |
+| <a id="s-20a31ed4e5"></a>`max_bytes` | no | type="integer"; minimum=1; default=107374182400 |  |
+| <a id="s-d1f237a26c"></a>`max_files` | no | type="integer"; minimum=1; default=1000 |  |
+| <a id="s-45fe0b309b"></a>`provenance` | no | type="string"; enum=["capture","omit"]; default="capture" |  |
+| <a id="s-61c3fd440f"></a>`provenance_omission_reason` | no | anyOf=(type="string"; maxLength=1000) \| (type="null"); default=null |  |
 | <a id="s-23579dbc50"></a>`root` | yes | type="string"; format="path" |  |
-| <a id="s-75b01acf3e"></a>`tags` | no | type="array"; items=(#/$defs/CollectionTag) |  |
+| <a id="s-75b01acf3e"></a>`tags` | no | type="array"; default=[]; items=([CollectionTag](#s-7aafaec44c)) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-f5f291f15b"></a>`CollectionDescription` | type="string"; minLength=1; maxLength=32768; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
-| <a id="s-7aafaec44c"></a>`CollectionTag` | type="string"; minLength=1; maxLength=65536; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
+- [CollectionDescription](#s-f5f291f15b)
+- [CollectionTag](#s-7aafaec44c)
+
+##### <a id="s-f5f291f15b"></a>definition `CollectionDescription`
+
+- <a id="s-909f236f55"></a>`type`: `"string"`
+- <a id="s-9352f3f184"></a>`maxLength`: `32768`
+- <a id="s-ba2ed5f4a5"></a>`minLength`: `1`
+- <a id="s-69ba062702"></a>`x-riverhog-encoded-bytes-max`: `32768`
+- <a id="s-8a8a4b074f"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-catalog-description"}`
+- <a id="s-1d10432e66"></a>`x-unicode-normalization`: `"NFC"`
+
+##### <a id="s-7aafaec44c"></a>definition `CollectionTag`
+
+- <a id="s-a07a73e219"></a>`type`: `"string"`
+- <a id="s-099bca58ee"></a>`maxLength`: `65536`
+- <a id="s-57e4948dec"></a>`minLength`: `1`
+- <a id="s-7465e9f1b3"></a>`x-riverhog-encoded-bytes-max`: `65536`
+- <a id="s-9775a6bb24"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-collection-tag"}`
+- <a id="s-116a0845f3"></a>`x-unicode-normalization`: `"NFC"`
 
 ## Maintained corroboration
 
@@ -80,6 +99,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_ftp_adapter.SourceConfig`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -214,3 +236,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

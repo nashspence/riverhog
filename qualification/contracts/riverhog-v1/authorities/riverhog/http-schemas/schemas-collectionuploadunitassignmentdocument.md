@@ -14,9 +14,12 @@ One bounded, immutable unit offered by an exact upload session.
 ## External contract
 
 <a id="s-2964a95373"></a>
-- <a id="s-10c77c82e3"></a>`title`: CollectionUploadUnitAssignmentDocument
-- <a id="s-71d774a366"></a>`description`: One bounded, immutable unit offered by an exact upload session.
-- <a id="s-2ed2603f50"></a>`type`: object
+
+- <a id="s-2ed2603f50"></a>`type`: `"object"`
+- <a id="s-1172987ce2"></a>`additionalProperties`: `false`
+- <a id="s-71d774a366"></a>`description`: `"One bounded, immutable unit offered by an exact upload session."`
+- <a id="s-9436e19dfd"></a>`required`: `["volume","plan_sha256","unit"]`
+- <a id="s-10c77c82e3"></a>`title`: `"CollectionUploadUnitAssignmentDocument"`
 
 ### Fields
 
@@ -66,6 +69,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 6e281174c6520832c75ebed0cb4aa7f8b44365cf8b1745789293a46869d2a60d -->
@@ -96,3 +102,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

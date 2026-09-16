@@ -14,28 +14,40 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ed5a2f6274"></a>
-- <a id="s-757ab5370c"></a>`title`: RetrievalJobOut
-- <a id="s-9ae89f2ba9"></a>`type`: object
+
+- <a id="s-9ae89f2ba9"></a>`type`: `"object"`
+- <a id="s-46fe1e104b"></a>`additionalProperties`: `false`
+- <a id="s-468daa761a"></a>`required`: `["id","plan_id","state","plan_etag","created_at","requested_at","restore_requested_at","ready_at","expires_at","completed_at","canceled_at","failure","lease_seconds","restore_policy","requires_restore"]`
+- <a id="s-757ab5370c"></a>`title`: `"RetrievalJobOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4a26bd20ca"></a>`canceled_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-62ab89c460"></a>`completed_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-4a26bd20ca"></a>`canceled_at` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-62ab89c460"></a>`completed_at` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-3969583590"></a>`created_at` | yes | type="string" |  |
-| <a id="s-3f1631fe3f"></a>`expires_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-47cbd02588"></a>`failure` | yes | anyOf=type="string"; minLength=1 \| type="null" |  |
+| <a id="s-3f1631fe3f"></a>`expires_at` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-47cbd02588"></a>`failure` | yes | anyOf=(type="string"; minLength=1) \| (type="null") |  |
 | <a id="s-ba2913517e"></a>`id` | yes | type="string" |  |
 | <a id="s-4309221e14"></a>`lease_seconds` | yes | type="integer" |  |
 | <a id="s-7d910b2388"></a>`plan_etag` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-b3a272f4b1"></a>`plan_id` | yes | type="string" |  |
-| <a id="s-73a1545b22"></a>`ready_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-e2e4bf916b"></a>`requested_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-73a1545b22"></a>`ready_at` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-e2e4bf916b"></a>`requested_at` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-a1460da5f4"></a>`requires_restore` | yes | type="boolean" |  |
 | <a id="s-a9bf8be7aa"></a>`restore_policy` | yes | type="string"; enum=["allow","never"] |  |
-| <a id="s-4e2d281293"></a>`restore_requested_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-4e2d281293"></a>`restore_requested_at` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-89d57750d5"></a>`state` | yes | type="string"; enum=["requested","ready","completed","expired","failed","canceled"] |  |
+
+### All must match (`allOf`)
+
+| Rule | If schema matches | Then must match | Otherwise must match |
+|---|---|---|---|
+| <a id="s-b6440e4ca0"></a>1 | properties={state: (const="completed")} | properties={completed_at: (type="string")} | properties={completed_at: (type="null")} |
+| <a id="s-04ad3a2fdf"></a>2 | properties={state: (const="canceled")} | properties={canceled_at: (type="string")} | properties={canceled_at: (type="null")} |
+| <a id="s-da08214472"></a>3 | properties={state: (const="failed")} | properties={failure: (type="string"; minLength=1)} | no additional constraint |
+| <a id="s-51d0a5038f"></a>4 | properties={state: (enum=["requested","failed"])} | no additional constraint | properties={failure: (type="null")} |
 
 ### Progression, limits, and lifecycle
 
@@ -69,6 +81,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/riverhog/components/schemas/RetrievalJobOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -307,3 +322,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

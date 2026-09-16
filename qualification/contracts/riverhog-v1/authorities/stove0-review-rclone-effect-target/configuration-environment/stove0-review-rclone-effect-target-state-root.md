@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b1ba755d84"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-c26d089493"></a>`consumers` | ["stove0-review-rclone-effect-target"] |
-| <a id="s-49bffd7273"></a>`default_expressions` | ["'/var/lib/stove0-review-rclone-effect-target'"] |
-| <a id="s-3789b05811"></a>`id` | "stove0-review-rclone-effect-target:environment:STOVE0_REVIEW_RCLONE_EFFECT_TARGET_STATE_ROOT" |
-| <a id="s-085e8e61c2"></a>`input_shape` | "environment-string" |
-| <a id="s-593baac063"></a>`name` | "STOVE0_REVIEW_RCLONE_EFFECT_TARGET_STATE_ROOT" |
-| <a id="s-4486e5a845"></a>`owner` | "stove0-review-rclone-effect-target" |
+| <a id="s-c26d089493"></a>`consumers` | `["stove0-review-rclone-effect-target"]` |
+| <a id="s-49bffd7273"></a>`default_expressions` | `["'/var/lib/stove0-review-rclone-effect-target'"]` |
+| <a id="s-3789b05811"></a>`id` | `"stove0-review-rclone-effect-target:environment:STOVE0_REVIEW_RCLONE_EFFECT_TARGET_STATE_ROOT"` |
+| <a id="s-085e8e61c2"></a>`input_shape` | `"environment-string"` |
+| <a id="s-593baac063"></a>`name` | `"STOVE0_REVIEW_RCLONE_EFFECT_TARGET_STATE_ROOT"` |
+| <a id="s-4486e5a845"></a>`owner` | `"stove0-review-rclone-effect-target"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 8f4f59e4bba8412e0ce87901eb70fe3e1d60a2c91a5e08464517375739a281cf -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "stove0-review-rclone-effect-target"
 }
 ```
+
+</details>

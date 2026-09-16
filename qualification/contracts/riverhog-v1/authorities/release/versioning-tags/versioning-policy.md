@@ -13,8 +13,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-620022b012"></a>
-- Shape: "coordinated"
+
+| Field | Value |
+|---|---|
+| <a id="s-620022b012"></a>`policy` | `"coordinated"` |
 
 ## Governing policies
 
@@ -40,6 +42,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 6db9d9cdfd4e4e9364a7a1ba4139851f811f90e2d8a9ccd713f6851607e920d8 -->
@@ -47,3 +52,5 @@ The following JSON is the complete value owned at each machine-authority pointer
 ```json
 "coordinated"
 ```
+
+</details>

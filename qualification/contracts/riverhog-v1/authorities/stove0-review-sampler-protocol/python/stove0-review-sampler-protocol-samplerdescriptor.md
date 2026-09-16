@@ -27,29 +27,50 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-073c74adb8"></a>
-- <a id="s-abfaa34213"></a>`type`: object
 
-### Fields
+- <a id="s-abfaa34213"></a>`type`: `"object"`
+- <a id="s-bab9fa3e63"></a>`additionalProperties`: `false`
+- <a id="s-04f16ae451"></a>`required`: `["implementation_id","implementation_version","source_revision","image_digest","primary_operation_id","primary_operation_contract_sha256","portable_intent_schema","output_role","descriptor_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-3e039473af"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-dea685dce0"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-bb1bb97ee4"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-67d7cdeb94"></a>`implementation_version` | yes | type="string"; minLength=1; maxLength=120 |  |
+| <a id="s-67d7cdeb94"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1 |  |
 | <a id="s-9e5ab3e9c9"></a>`output_role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-372a1f6b42"></a>`portable_intent_schema` | yes | #/$defs/JsonSchemaDocument |  |
+| <a id="s-372a1f6b42"></a>`portable_intent_schema` | yes | [JsonSchemaDocument](#s-ae02eb99b6) |  |
 | <a id="s-47bea75618"></a>`primary_operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-62d54a7559"></a>`primary_operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-e8f6b6ba55"></a>`protocol` | no | type="string"; const="stove0-review-sampler/v1" |  |
-| <a id="s-5744fc2d0d"></a>`source_revision` | yes | type="string"; minLength=1; maxLength=200 |  |
+| <a id="s-e8f6b6ba55"></a>`protocol` | no | type="string"; const="stove0-review-sampler/v1"; default="stove0-review-sampler/v1" |  |
+| <a id="s-5744fc2d0d"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-ae02eb99b6"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e5a91221a3"></a>`JsonValue` | empty object |
+- [JsonSchemaDocument](#s-ae02eb99b6)
+- [JsonValue](#s-e5a91221a3)
+
+##### <a id="s-ae02eb99b6"></a>definition `JsonSchemaDocument`
+
+- <a id="s-1cfd8f13a2"></a>`type`: `"object"`
+- <a id="s-5a19079d16"></a>`additionalProperties`: `false`
+- <a id="s-f46b34df94"></a>`required`: `["id","sha256","schema"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-740cde9a36"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-51e30e013c"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-47e55006b7"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-669b7138b3"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-e5a91221a3)) |  |
+| <a id="s-cce5d7dd98"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-e5a91221a3"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Maintained corroboration
 
@@ -79,6 +100,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_review_sampler_protocol.SamplerDescriptor`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -193,3 +217,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

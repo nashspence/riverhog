@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-80bb6959f9"></a>
-- <a id="s-01cef67a30"></a>`title`: Stove0EventPage
-- <a id="s-c171ef6681"></a>`type`: object
+
+- <a id="s-c171ef6681"></a>`type`: `"object"`
+- <a id="s-db171c377f"></a>`additionalProperties`: `false`
+- <a id="s-f844ed6c6e"></a>`required`: `["events","next_cursor","has_more"]`
+- <a id="s-01cef67a30"></a>`title`: `"Stove0EventPage"`
 
 ### Fields
 
@@ -70,6 +73,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 4d8c540fb948db60713013d0ef55dbacdc480b5aefdf0df87abe2698a052140c -->
@@ -103,3 +109,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-636a85068a"></a>
-- Table: `listener_meta`
 
-### Columns
+### Table: `listener_meta`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -51,6 +52,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 440c1b22dc97e9556b8d32034f51383a90afd424df17bf16ce1118abb62113f2 -->
@@ -76,3 +80,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "listener_meta"
 }
 ```
+
+</details>

@@ -14,8 +14,12 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fb6062ee71"></a>
-- <a id="s-e625ee524c"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-stat.json
-- <a id="s-704cd8c542"></a>`type`: object
+
+- <a id="s-704cd8c542"></a>`type`: `"object"`
+- <a id="s-e625ee524c"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-stat.json"`
+- <a id="s-623ed0a5f6"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-8a90b22b6c"></a>`additionalProperties`: `false`
+- <a id="s-c487271d99"></a>`required`: `["volume_serial_number","file_id_hex","file_id_bits","file_id_scheme","file_index_64","creation_time_ticks","last_access_time_ticks","last_write_time_ticks","change_time_ticks","file_attributes","reparse_tag","allocation_size","end_of_file","number_of_links","delete_pending","storage"]`
 
 ### Fields
 
@@ -35,8 +39,25 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-1f4002e73c"></a>`last_write_time_ticks` | yes | type="integer" |  |
 | <a id="s-3c314f81c8"></a>`number_of_links` | yes | type="integer"; minimum=0 |  |
 | <a id="s-f2a08f0300"></a>`reparse_tag` | yes | type="integer"; minimum=0 |  |
-| <a id="s-59bba6e348"></a>`storage` | yes | type="object"; fields=`byte_offset_for_partition_alignment`, `byte_offset_for_sector_alignment`, `filesystem_effective_physical_bytes_per_sector_for_atomicity`, `flags`, `logical_bytes_per_sector`, `physical_bytes_per_sector_for_atomicity`, `physical_bytes_per_sector_for_performance`; additional keys=`additionalProperties` |  |
+| `storage` | yes | [See field `storage`](#s-59bba6e348) |  |
 | <a id="s-27bddf3c48"></a>`volume_serial_number` | yes | type="integer"; minimum=0 |  |
+
+### <a id="s-59bba6e348"></a>field `storage`
+
+- <a id="s-85d91220f8"></a>`type`: `"object"`
+- <a id="s-02a5031da1"></a>`additionalProperties`: `false`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e3f23ed149"></a>`byte_offset_for_partition_alignment` | no | type="integer"; minimum=0 |  |
+| <a id="s-5d167ac729"></a>`byte_offset_for_sector_alignment` | no | type="integer"; minimum=0 |  |
+| <a id="s-e93e4f749a"></a>`filesystem_effective_physical_bytes_per_sector_for_atomicity` | no | type="integer"; minimum=0 |  |
+| <a id="s-fdf617d5e5"></a>`flags` | no | type="integer"; minimum=0 |  |
+| <a id="s-bee06254ad"></a>`logical_bytes_per_sector` | no | type="integer"; minimum=0 |  |
+| <a id="s-5c09c76c78"></a>`physical_bytes_per_sector_for_atomicity` | no | type="integer"; minimum=0 |  |
+| <a id="s-0ddc665411"></a>`physical_bytes_per_sector_for_performance` | no | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -51,12 +72,12 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 | [field file_attributes](#s-e912033c6c) | `value · schema-value · extension_owned` | shared above |
 | [field file_id_bits](#s-d765965d60) | `value · schema-value · extension_owned` | shared above |
 | [field file_index_64](#s-f85d98af56) | `value · schema-value · extension_owned` | shared above |
-| <a id="s-e3f23ed149"></a>[field storage · field byte_offset_for_partition_alignment](#s-59bba6e348) | `value · schema-value · extension_owned` | shared above |
-| <a id="s-5d167ac729"></a>[field storage · field byte_offset_for_sector_alignment](#s-59bba6e348) | `value · schema-value · extension_owned` | shared above |
-| <a id="s-e93e4f749a"></a>[field storage · field filesystem_effective_physical_bytes_per_sector_for_atomicity](#s-59bba6e348) | `value · schema-value · extension_owned` | shared above |
-| <a id="s-bee06254ad"></a>[field storage · field logical_bytes_per_sector](#s-59bba6e348) | `value · schema-value · extension_owned` | shared above |
-| <a id="s-5c09c76c78"></a>[field storage · field physical_bytes_per_sector_for_atomicity](#s-59bba6e348) | `value · schema-value · extension_owned` | shared above |
-| <a id="s-0ddc665411"></a>[field storage · field physical_bytes_per_sector_for_performance](#s-59bba6e348) | `value · schema-value · extension_owned` | shared above |
+| [field storage · field byte_offset_for_partition_alignment](#s-e3f23ed149) | `value · schema-value · extension_owned` | shared above |
+| [field storage · field byte_offset_for_sector_alignment](#s-5d167ac729) | `value · schema-value · extension_owned` | shared above |
+| [field storage · field filesystem_effective_physical_bytes_per_sector_for_atomicity](#s-e93e4f749a) | `value · schema-value · extension_owned` | shared above |
+| [field storage · field logical_bytes_per_sector](#s-bee06254ad) | `value · schema-value · extension_owned` | shared above |
+| [field storage · field physical_bytes_per_sector_for_atomicity](#s-5c09c76c78) | `value · schema-value · extension_owned` | shared above |
+| [field storage · field physical_bytes_per_sector_for_performance](#s-0ddc665411) | `value · schema-value · extension_owned` | shared above |
 
 ## Governing policies
 
@@ -80,6 +101,9 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 - `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -207,3 +231,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

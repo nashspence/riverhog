@@ -33,13 +33,34 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-99a6e5ad36"></a>`completed` | <a id="s-5bd8803a71"></a>`{"kind":"command-completed"}` | <a id="s-081524bb41"></a>`0` | <a id="s-cb8aa96d78"></a>human: `noncontractual-presentation-of-command-result`; json: [riverhog-ftp-adapter-config-check/v1](#s-cb8aa96d78) | <a id="s-c556170d4f"></a>all: `empty` |
+| <a id="s-99a6e5ad36"></a>`completed` | <a id="s-5bd8803a71"></a>`{"kind":"command-completed"}` | <a id="s-081524bb41"></a>`0` | <a id="s-cb8aa96d78"></a>human: `noncontractual-presentation-of-command-result`; json: [riverhog-ftp-adapter-config-check/v1](#s-c2f0c9c648) | <a id="s-c556170d4f"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-fd0313879a"></a>`usage` | <a id="s-fc1bc234a3"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-9b6f49f57d"></a>`2` | <a id="s-a9fddab3b9"></a>all: `empty` | <a id="s-e5ab4560d5"></a>all: `noncontractual-usage-diagnostic` |
+
+### Local structured outputs
+
+
+#### <a id="s-c2f0c9c648"></a>`riverhog-ftp-adapter-config-check/v1`
+
+Applies to: completed · stdout (json).
+
+<a id="s-4386bd0348"></a>
+
+- <a id="s-35ea6ba45d"></a>`type`: `"object"`
+- <a id="s-075663a0b0"></a>`additionalProperties`: `false`
+- <a id="s-5325a5d51e"></a>`required`: `["format","status","sources"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-caaa38dbda"></a>`format` | yes | const="riverhog-ftp-adapter-config-check/v1" |  |
+| <a id="s-ab68f354d7"></a>`sources` | yes | type="integer"; minimum=1 |  |
+| <a id="s-14251e4293"></a>`status` | yes | const="ok" |  |
 
 ## Governing policies
 
@@ -66,6 +87,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/cli/riverhog-ftp-adapter/commands/check-config/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -182,3 +206,5 @@ true
   }
 ]
 ```
+
+</details>

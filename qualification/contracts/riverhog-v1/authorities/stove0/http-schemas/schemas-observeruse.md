@@ -14,21 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-20174c0218"></a>
-- <a id="s-467e721d49"></a>`title`: ObserverUse
-- <a id="s-f4e5e64527"></a>`type`: object
+
+- <a id="s-f4e5e64527"></a>`type`: `"object"`
+- <a id="s-e9cf6fc143"></a>`additionalProperties`: `false`
+- <a id="s-49a54c440b"></a>`required`: `["registration_id","contract_id","contract_sha256"]`
+- <a id="s-467e721d49"></a>`title`: `"ObserverUse"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-5d6aaa430a"></a>`artifact_rules` | no | type="array"; items=(#/components/schemas/ArtifactRule) |  |
+| <a id="s-5d6aaa430a"></a>`artifact_rules` | no | type="array"; default=[{"glob":"*","role":"stove0.source/v1"}]; items=(#/components/schemas/ArtifactRule) |  |
 | <a id="s-81278b328f"></a>`contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-cd6fb17a6b"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-82b6002609"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864 |  |
-| <a id="s-1443df63c8"></a>`options` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-82b6002609"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
+| <a id="s-1443df63c8"></a>`options` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
 | <a id="s-401f013502"></a>`registration_id` | yes | type="string" |  |
-| <a id="s-c8ef1bbb04"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
-| <a id="s-daf8962421"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400 |  |
+| <a id="s-c8ef1bbb04"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-daf8962421"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -79,6 +82,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/stove0/components/schemas/ObserverUse`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -155,3 +161,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

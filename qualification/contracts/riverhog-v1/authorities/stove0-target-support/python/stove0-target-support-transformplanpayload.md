@@ -27,30 +27,75 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2732d56d71"></a>
-- <a id="s-d6148d723f"></a>`type`: object
 
-### Fields
+- <a id="s-d6148d723f"></a>`type`: `"object"`
+- <a id="s-6d8d514dc6"></a>`additionalProperties`: `false`
+- <a id="s-f97fdad5e3"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent","target_implementation_id","target_contract_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6847f8513b"></a>`inputs` | yes | #/$defs/TargetInputAuthority |  |
-| <a id="s-cd7afd96c9"></a>`intent` | yes | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-411be1b274"></a>`observation_result_sha256s` | no | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
+| <a id="s-6847f8513b"></a>`inputs` | yes | [TargetInputAuthority](#s-e393d5abb7) |  |
+| <a id="s-cd7afd96c9"></a>`intent` | yes | type="object"; additionalProperties=([JsonValue](#s-109ea7f1b5)) |  |
+| <a id="s-411be1b274"></a>`observation_result_sha256s` | no | type="array"; default=[]; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
 | <a id="s-8c011c21bc"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-57150a0b2d"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-258b3b94ab"></a>`protocol` | no | type="string"; const="stove0-transform-target/v1" |  |
+| <a id="s-258b3b94ab"></a>`protocol` | no | type="string"; const="stove0-transform-target/v1"; default="stove0-transform-target/v1" |  |
 | <a id="s-7ce45a4cef"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-b649dc8b8b"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-f4d6269c7a"></a>`target_options` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-f4d6269c7a"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-109ea7f1b5)) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-5fc5f00b09"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-109ea7f1b5"></a>`JsonValue` | empty object |
-| <a id="s-e393d5abb7"></a>`TargetInputAuthority` | type="object"; fields=`roles`, `selection`; additional keys=`additionalProperties`, `required` |
-| <a id="s-98a56b07b1"></a>`TargetInputRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
+- [ArtifactSelectionRef](#s-5fc5f00b09)
+- [JsonValue](#s-109ea7f1b5)
+- [TargetInputAuthority](#s-e393d5abb7)
+- [TargetInputRoleCount](#s-98a56b07b1)
+
+##### <a id="s-5fc5f00b09"></a>definition `ArtifactSelectionRef`
+
+- <a id="s-83805b756b"></a>`type`: `"object"`
+- <a id="s-18d0a772d5"></a>`additionalProperties`: `false`
+- <a id="s-f0482e6922"></a>`required`: `["selection_sha256","artifact_count","total_bytes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e221a27b41"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-8a22320850"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d1b6c87e22"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+
+##### <a id="s-109ea7f1b5"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-e393d5abb7"></a>definition `TargetInputAuthority`
+
+- <a id="s-b8e4ea17ec"></a>`type`: `"object"`
+- <a id="s-9f4a2e421e"></a>`additionalProperties`: `false`
+- <a id="s-13ed9e1344"></a>`required`: `["selection","roles"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-da8b657f62"></a>`roles` | yes | type="array"; items=([TargetInputRoleCount](#s-98a56b07b1)); minItems=1 |  |
+| <a id="s-c558029922"></a>`selection` | yes | [ArtifactSelectionRef](#s-5fc5f00b09) |  |
+
+##### <a id="s-98a56b07b1"></a>definition `TargetInputRoleCount`
+
+- <a id="s-efaa5031e7"></a>`type`: `"object"`
+- <a id="s-2c2a597bc8"></a>`additionalProperties`: `false`
+- <a id="s-9799c0cbee"></a>`required`: `["role","count"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3bd3a8b7b4"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-432098b292"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ## Maintained corroboration
 
@@ -79,6 +124,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_support.TransformPlanPayload`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -218,3 +266,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

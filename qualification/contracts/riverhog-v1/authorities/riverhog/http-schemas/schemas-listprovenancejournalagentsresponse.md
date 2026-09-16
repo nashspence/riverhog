@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-21a8cfb0d8"></a>
-- <a id="s-e57dbe70da"></a>`title`: ListProvenanceJournalAgentsResponse
-- <a id="s-d79bbc264a"></a>`type`: object
+
+- <a id="s-d79bbc264a"></a>`type`: `"object"`
+- <a id="s-e4b46aeada"></a>`additionalProperties`: `false`
+- <a id="s-d8585804b9"></a>`required`: `["collection_id","journal_id","page_size","next_page_token","agents"]`
+- <a id="s-e57dbe70da"></a>`title`: `"ListProvenanceJournalAgentsResponse"`
 
 ### Fields
 
@@ -24,7 +27,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-e9ed861c18"></a>`agents` | yes | type="array"; items=(#/components/schemas/ProvenanceJournalAgentOut) |  |
 | <a id="s-5355e5f6b0"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
 | <a id="s-1f61ad15dc"></a>`journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
-| <a id="s-cb4d194207"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-cb4d194207"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-7b808efc53"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
 
 ### Progression, limits, and lifecycle
@@ -84,6 +87,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 49714167644d18cabb26c9bef93acc269985c01433f93c17107afa90c22980aa -->
@@ -133,3 +139,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

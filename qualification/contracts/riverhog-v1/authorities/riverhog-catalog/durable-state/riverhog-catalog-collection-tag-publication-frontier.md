@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5e15c17a39"></a>
-- Table: `collection_tag_publication_frontier`
 
-### Columns
+### Table: `collection_tag_publication_frontier`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -27,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-2c48cc5719"></a>`expanded` | `BOOLEAN` | no | `false` | — |
 | <a id="s-c7b45d8f32"></a>`published` | `BOOLEAN` | no | `false` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -65,6 +66,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/0/structure/tables/72`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -167,3 +171,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "collection_tag_publication_frontier"
 }
 ```
+
+</details>

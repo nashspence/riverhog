@@ -14,17 +14,20 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d1b5748025"></a>
-- <a id="s-c3cdf5c07e"></a>`title`: TransformCapabilityCreateDocument
-- <a id="s-5731a83f69"></a>`type`: object
+
+- <a id="s-5731a83f69"></a>`type`: `"object"`
+- <a id="s-a12be7455f"></a>`additionalProperties`: `false`
+- <a id="s-8b7d5b4243"></a>`required`: `["fence","audience"]`
+- <a id="s-c3cdf5c07e"></a>`title`: `"TransformCapabilityCreateDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-97683ba1b7"></a>`actions` | no | type="array"; minItems=1; items=(type="string"; enum=["read-inputs","write-output"]); oneOf=const=["read-inputs"] \| const=["read-inputs","write-output"] |  |
+| <a id="s-97683ba1b7"></a>`actions` | no | type="array"; items=(type="string"; enum=["read-inputs","write-output"]); minItems=1; oneOf=(const=["read-inputs"]) \| (const=["read-inputs","write-output"]) |  |
 | <a id="s-bdff65438d"></a>`audience` | yes | type="string"; pattern="^[a-z0-9][a-z0-9._:/-]{0,299}$" |  |
 | <a id="s-6b1157a1fa"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-706e86c697"></a>`ttl_seconds` | no | type="integer"; minimum=30; maximum=86400 |  |
+| <a id="s-706e86c697"></a>`ttl_seconds` | no | type="integer"; minimum=30; maximum=86400; default=900 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -67,6 +70,9 @@ Shared facts for every subject below: maximum=86400; minimum=30; reason="schema-
 - `/external_contract/http_openapi/riverhog/components/schemas/TransformCapabilityCreateDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -127,3 +133,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

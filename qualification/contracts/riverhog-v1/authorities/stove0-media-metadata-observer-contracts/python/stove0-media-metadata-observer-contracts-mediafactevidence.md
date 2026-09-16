@@ -27,14 +27,17 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-3efc7d4cd1"></a>
-- <a id="s-0eee201dc4"></a>`type`: object
 
-### Fields
+- <a id="s-0eee201dc4"></a>`type`: `"object"`
+- <a id="s-395b28a353"></a>`additionalProperties`: `false`
+- <a id="s-c23e6201f2"></a>`required`: `["artifact_id","field"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7237631024"></a>`artifact_id` | yes | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-df5f38ad8a"></a>`field` | yes | type="string"; minLength=1; maxLength=240 |  |
+| <a id="s-7237631024"></a>`artifact_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-df5f38ad8a"></a>`field` | yes | type="string"; maxLength=240; minLength=1 |  |
 
 ## Governing policies
 
@@ -57,6 +60,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_media_metadata_observer_contracts.MediaFactEvidence`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -94,3 +100,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

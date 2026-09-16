@@ -14,19 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e64b807a4f"></a>
-- <a id="s-cf9bcc0b9d"></a>`title`: SearchResponse
-- <a id="s-e2fb76d6c3"></a>`type`: object
+
+- <a id="s-e2fb76d6c3"></a>`type`: `"object"`
+- <a id="s-00eeb4a361"></a>`additionalProperties`: `false`
+- <a id="s-46eab68606"></a>`required`: `["query","collection","page_size","next_page_token","sort","order","files"]`
+- <a id="s-cf9bcc0b9d"></a>`title`: `"SearchResponse"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1e9fcde2d6"></a>`collection` | yes | anyOf=#/components/schemas/CollectionId \| type="null" |  |
+| <a id="s-1e9fcde2d6"></a>`collection` | yes | anyOf=(#/components/schemas/CollectionId) \| (type="null") |  |
 | <a id="s-0d7c551f3a"></a>`files` | yes | type="array"; items=(#/components/schemas/SearchFileOut) |  |
-| <a id="s-a2e3054466"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-a2e3054466"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-d0c8462799"></a>`order` | yes | #/components/schemas/SortOrder |  |
 | <a id="s-dd8aeabd12"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-a185b44ebe"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-a185b44ebe"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-29873fe494"></a>`sort` | yes | #/components/schemas/SearchSort |  |
 
 ### Progression, limits, and lifecycle
@@ -86,6 +89,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/SearchResponse`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -159,3 +165,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

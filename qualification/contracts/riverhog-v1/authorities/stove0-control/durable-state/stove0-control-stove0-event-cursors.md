@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ee83fb8e33"></a>
-- Table: `stove0_event_cursors`
 
-### Columns
+### Table: `stove0_event_cursors`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -25,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-e8d072e3dc"></a>`revision` | `INTEGER` | no | `—` | — |
 | <a id="s-31e9bd711c"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -59,6 +60,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/3/structure/tables/6`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -110,3 +114,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "stove0_event_cursors"
 }
 ```
+
+</details>

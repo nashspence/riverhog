@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7369fcabeb"></a>
-- Table: `retrieval_job_object_progress`
 
-### Columns
+### Table: `retrieval_job_object_progress`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -28,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-f965282383"></a>`next_poll_at` | `VARCHAR` | no | `—` | — |
 | <a id="s-ab326bc70c"></a>`cache_store` | `VARCHAR` | yes | `—` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -64,6 +65,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/0/structure/tables/78`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -165,3 +169,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "retrieval_job_object_progress"
 }
 ```
+
+</details>

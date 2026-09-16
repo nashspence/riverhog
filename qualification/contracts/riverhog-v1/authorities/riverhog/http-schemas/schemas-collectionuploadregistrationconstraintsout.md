@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f33fdf46d9"></a>
-- <a id="s-ec74161340"></a>`title`: CollectionUploadRegistrationConstraintsOut
-- <a id="s-34c81b8c37"></a>`type`: object
+
+- <a id="s-34c81b8c37"></a>`type`: `"object"`
+- <a id="s-198118cea1"></a>`additionalProperties`: `false`
+- <a id="s-8353943a1b"></a>`required`: `["pack_member_bytes","raw_part_plaintext_bytes"]`
+- <a id="s-ec74161340"></a>`title`: `"CollectionUploadRegistrationConstraintsOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-50f00cd230"></a>`pack_member_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-7a8fa45dda"></a>`raw_part_plaintext_bytes` | yes | type="integer"; minimum=65536; additional keys=`multipleOf` |  |
+| <a id="s-7a8fa45dda"></a>`raw_part_plaintext_bytes` | yes | type="integer"; minimum=65536; multipleOf=65536 |  |
 
 ## Governing policies
 
@@ -45,6 +48,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadRegistrationConstraintsOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -74,3 +80,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

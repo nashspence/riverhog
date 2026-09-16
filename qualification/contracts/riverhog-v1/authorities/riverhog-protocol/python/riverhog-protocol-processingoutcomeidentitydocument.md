@@ -27,23 +27,43 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-0f42bb2ef8"></a>
-- <a id="s-7f84618032"></a>`type`: object
 
-### Fields
+- <a id="s-7f84618032"></a>`type`: `"object"`
+- <a id="s-024f86a7e3"></a>`additionalProperties`: `false`
+- <a id="s-5ea768c7e0"></a>`required`: `["outcome_id","source_claim_id","output_collection","derivation_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-7888da1110"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-11ae19fbde"></a>`outcome_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-a92119db8c"></a>`output_collection` | yes | #/$defs/CollectionRootIdentityDocument |  |
+| <a id="s-a92119db8c"></a>`output_collection` | yes | [CollectionRootIdentityDocument](#s-7aa06b3d4f) |  |
 | <a id="s-680392bdca"></a>`source_claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-3475778270"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-7aa06b3d4f"></a>`CollectionRootIdentityDocument` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
+- [CollectionId](#s-3475778270)
+- [CollectionRootIdentityDocument](#s-7aa06b3d4f)
+
+##### <a id="s-3475778270"></a>definition `CollectionId`
+
+- <a id="s-8b96604ed7"></a>`type`: `"integer"`
+- <a id="s-1aff3d4026"></a>`minimum`: `1`
+
+##### <a id="s-7aa06b3d4f"></a>definition `CollectionRootIdentityDocument`
+
+- <a id="s-2f9ef730e3"></a>`type`: `"object"`
+- <a id="s-5ecf0f050e"></a>`additionalProperties`: `false`
+- <a id="s-b225dfb67d"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7bcd71f12c"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b32d7f5055"></a>`collection_id` | yes | [CollectionId](#s-3475778270) |  |
+| <a id="s-b80ed7c06d"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -74,6 +94,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.ProcessingOutcomeIdentityDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -146,3 +169,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

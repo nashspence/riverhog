@@ -27,9 +27,12 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-3bcc965813"></a>
-- <a id="s-24e69f7113"></a>`type`: object
 
-### Fields
+- <a id="s-24e69f7113"></a>`type`: `"object"`
+- <a id="s-9724b0accc"></a>`additionalProperties`: `false`
+- <a id="s-6b5f051137"></a>`required`: `["work_id","phase","revision","branch_set_sha256","branch_count","admitted_work_count"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
@@ -68,6 +71,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEventData`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -123,3 +129,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

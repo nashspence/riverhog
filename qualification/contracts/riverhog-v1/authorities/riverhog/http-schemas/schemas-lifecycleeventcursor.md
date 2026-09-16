@@ -14,7 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-83181c31b6"></a>
-- <a id="s-f86e7795f3"></a>`type`: string
+
+- <a id="s-f86e7795f3"></a>`type`: `"string"`
+- <a id="s-847c90f91d"></a>`maxLength`: `19`
+- <a id="s-f11e5224ba"></a>`minLength`: `1`
+- <a id="s-86d40d302d"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)$"`
 
 ### Progression, limits, and lifecycle
 
@@ -49,6 +53,9 @@ Shared facts for every subject below: maximum=19; minimum=1; reason="schema-maxi
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: b2bd38d4ffa640e182b719183718a4ce55d6914da3bb18bfbe32e4633d2c7815 -->
@@ -61,3 +68,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "string"
 }
 ```
+
+</details>

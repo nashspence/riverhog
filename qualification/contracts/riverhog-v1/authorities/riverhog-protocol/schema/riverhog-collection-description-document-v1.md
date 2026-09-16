@@ -14,19 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8609cbea6f"></a>
-- <a id="s-9b49978133"></a>`$id`: https://nashspence.github.io/riverhog/v1/schemas/riverhog-collection-description-v1.schema.json
-- <a id="s-b6e2c77d61"></a>`title`: Riverhog collection description document v1
-- <a id="s-ca6e9ba2c0"></a>`type`: object
+
+- <a id="s-ca6e9ba2c0"></a>`type`: `"object"`
+- <a id="s-9b49978133"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/schemas/riverhog-collection-description-v1.schema.json"`
+- <a id="s-53e4404928"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-9b6566a588"></a>`additionalProperties`: `false`
+- <a id="s-56351d245d"></a>`required`: `["archive_root_sha256","description","description_identity","format","revision"]`
+- <a id="s-b6e2c77d61"></a>`title`: `"Riverhog collection description document v1"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-884eb7f63f"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-908415d773"></a>`description` | yes | oneOf=type="string"; minLength=1; maxLength=32768; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` \| type="null" |  |
+| <a id="s-908415d773"></a>`description` | yes | oneOf=(type="string"; maxLength=32768; minLength=1; x-riverhog-encoded-bytes-max=32768; x-riverhog-extent={"policy":"contract_max","reason":"bounded-human-authored-catalog-description"}; x-unicode-normalization="NFC") \| (type="null") |  |
 | <a id="s-2ab1f766a7"></a>`description_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-49e4a4e153"></a>`format` | yes | const="riverhog-collection-description/v1" |  |
-| <a id="s-db04814e8f"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991; additional keys=`x-riverhog-extent` |  |
+| <a id="s-db04814e8f"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991; x-riverhog-extent={"policy":"fixed","reason":"exact-json-safe-monotonic-description-revision"} |  |
 
 ### Progression, limits, and lifecycle
 
@@ -62,6 +66,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1riverhog-collection-description-v1.schema.json`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -123,3 +130,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

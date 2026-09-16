@@ -14,8 +14,12 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f19000daa2"></a>
-- <a id="s-22cc58575a"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json
-- <a id="s-d9da4f992c"></a>`type`: object
+
+- <a id="s-d9da4f992c"></a>`type`: `"object"`
+- <a id="s-22cc58575a"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json"`
+- <a id="s-be57f3c4fd"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-52ed411979"></a>`additionalProperties`: `false`
+- <a id="s-a2099f814c"></a>`required`: `["xflags","xflag_names","extent_size","nextents","project_id","cow_extent_size"]`
 
 ### Fields
 
@@ -25,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-4f887e8570"></a>`extent_size` | yes | type="integer"; minimum=0 |  |
 | <a id="s-dc83d4064f"></a>`nextents` | yes | type="integer"; minimum=0 |  |
 | <a id="s-bde51c8c0f"></a>`project_id` | yes | type="integer"; minimum=0 |  |
-| <a id="s-5aa7e4b9c0"></a>`xflag_names` | yes | type="array"; items=(type="string"); additional keys=`uniqueItems` |  |
+| <a id="s-5aa7e4b9c0"></a>`xflag_names` | yes | type="array"; items=(type="string"); uniqueItems=true |  |
 | <a id="s-3f6fc5521c"></a>`xflags` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
@@ -62,6 +66,9 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 - `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -112,3 +119,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

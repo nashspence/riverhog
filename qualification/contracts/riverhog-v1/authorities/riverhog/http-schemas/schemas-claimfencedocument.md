@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f25a034aa4"></a>
-- <a id="s-a43fed2df2"></a>`title`: ClaimFenceDocument
-- <a id="s-9c1790a9db"></a>`type`: object
+
+- <a id="s-9c1790a9db"></a>`type`: `"object"`
+- <a id="s-9aecb00674"></a>`additionalProperties`: `false`
+- <a id="s-b7ff387d57"></a>`required`: `["id","fence"]`
+- <a id="s-a43fed2df2"></a>`title`: `"ClaimFenceDocument"`
 
 ### Fields
 
@@ -57,6 +60,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 8b4a48bad1d6f0f80b34316c1d147a3ba35c6f8c7341ffc096d514d8b5b9b5ff -->
@@ -84,3 +90,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

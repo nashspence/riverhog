@@ -27,100 +27,1024 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-a40389dd8c"></a>
-- <a id="s-d9fcb94add"></a>`type`: object
 
-### Fields
+- <a id="s-d9fcb94add"></a>`type`: `"object"`
+- <a id="s-020ce278f6"></a>`additionalProperties`: `false`
+- <a id="s-61be1eea86"></a>`required`: `["work_id","work","phase","revision"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ab960e0d3d"></a>`abandon_outcome` | no | anyOf=type="string"; enum=["inapplicable","failed","canceled"] \| type="null" |  |
-| <a id="s-f958ec485a"></a>`branch_set_plan` | no | anyOf=#/$defs/BranchSetPlan \| type="null" |  |
-| <a id="s-bd573492a7"></a>`claim` | no | anyOf=#/$defs/WorkClaimView \| type="null" |  |
-| <a id="s-b1e2a94d1f"></a>`controller_evidence` | no | anyOf=#/$defs/ControllerEvidence \| type="null" |  |
-| <a id="s-38800f8969"></a>`coordination_cancel_requested` | no | type="boolean" |  |
-| <a id="s-24e82d8b48"></a>`coordination_settlement` | no | anyOf=#/$defs/CoordinationSettlement \| type="null" |  |
-| <a id="s-0a25ef733a"></a>`expected_target_plan_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-755a0aa975"></a>`failure` | no | anyOf=#/$defs/WorkFailureView \| type="null" |  |
-| <a id="s-6e80be1bc8"></a>`format` | no | type="string"; const="stove0-work-view/v1" |  |
-| <a id="s-1c1aa9aed3"></a>`inapplicable` | no | anyOf=#/$defs/WorkInapplicableView \| type="null" |  |
-| <a id="s-9ecde628f8"></a>`join_plan` | no | anyOf=#/$defs/JoinPlan \| type="null" |  |
-| <a id="s-2eac372f78"></a>`observation_requests` | no | type="array"; items=(#/$defs/ObservationRequest) |  |
-| <a id="s-d1adc32ca5"></a>`observation_results` | no | type="array"; items=(#/$defs/ObservationResult) |  |
-| <a id="s-496eb2f34b"></a>`output` | no | anyOf=#/$defs/OutputCollectionRef \| type="null" |  |
+| <a id="s-ab960e0d3d"></a>`abandon_outcome` | no | anyOf=(type="string"; enum=["inapplicable","failed","canceled"]) \| (type="null"); default=null |  |
+| <a id="s-f958ec485a"></a>`branch_set_plan` | no | anyOf=([BranchSetPlan](#s-dd5e33c681)) \| (type="null"); default=null |  |
+| <a id="s-bd573492a7"></a>`claim` | no | anyOf=([WorkClaimView](#s-427778f2b9)) \| (type="null"); default=null |  |
+| <a id="s-b1e2a94d1f"></a>`controller_evidence` | no | anyOf=([ControllerEvidence](#s-8b01483f06)) \| (type="null"); default=null |  |
+| <a id="s-38800f8969"></a>`coordination_cancel_requested` | no | type="boolean"; default=false |  |
+| <a id="s-24e82d8b48"></a>`coordination_settlement` | no | anyOf=([CoordinationSettlement](#s-1d102c88d4)) \| (type="null"); default=null |  |
+| <a id="s-0a25ef733a"></a>`expected_target_plan_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-755a0aa975"></a>`failure` | no | anyOf=([WorkFailureView](#s-3d393d60f5)) \| (type="null"); default=null |  |
+| <a id="s-6e80be1bc8"></a>`format` | no | type="string"; const="stove0-work-view/v1"; default="stove0-work-view/v1" |  |
+| <a id="s-1c1aa9aed3"></a>`inapplicable` | no | anyOf=([WorkInapplicableView](#s-b96615054f)) \| (type="null"); default=null |  |
+| <a id="s-9ecde628f8"></a>`join_plan` | no | anyOf=([JoinPlan](#s-580727b15b)) \| (type="null"); default=null |  |
+| <a id="s-2eac372f78"></a>`observation_requests` | no | type="array"; default=[]; items=([ObservationRequest](#s-9d08881319)) |  |
+| <a id="s-d1adc32ca5"></a>`observation_results` | no | type="array"; default=[]; items=([ObservationResult](#s-eaf3d12493)) |  |
+| <a id="s-496eb2f34b"></a>`output` | no | anyOf=([OutputCollectionRef](#s-875ef95b02)) \| (type="null"); default=null |  |
 | <a id="s-0f3b7878ab"></a>`phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] |  |
-| <a id="s-c6e7d1e9da"></a>`preview_acceptance` | no | anyOf=#/$defs/PreviewAcceptanceView \| type="null" |  |
-| <a id="s-d7b0180b01"></a>`retirement_remaining` | no | type="array"; items=(type="integer") |  |
+| <a id="s-c6e7d1e9da"></a>`preview_acceptance` | no | anyOf=([PreviewAcceptanceView](#s-3f37573c13)) \| (type="null"); default=null |  |
+| <a id="s-d7b0180b01"></a>`retirement_remaining` | no | type="array"; default=[]; items=(type="integer") |  |
 | <a id="s-31c116f346"></a>`revision` | yes | type="integer"; minimum=1 |  |
-| <a id="s-dc1b03eaf2"></a>`target_plan` | no | anyOf=oneOf=#/$defs/TransformPlan \| #/$defs/EffectPlan; additional keys=`discriminator` \| type="null" |  |
-| <a id="s-21ea49ddbd"></a>`target_request` | no | anyOf=#/$defs/AcceptedTargetJob \| type="null" |  |
-| <a id="s-06b370748a"></a>`target_settlement` | no | anyOf=#/$defs/TargetSettlementAuthority \| type="null" |  |
-| <a id="s-862849fdb3"></a>`target_status` | no | anyOf=#/$defs/TargetJobStatus \| type="null" |  |
-| <a id="s-4e27e5925b"></a>`work` | yes | #/$defs/WorkIdentity |  |
+| <a id="s-dc1b03eaf2"></a>`target_plan` | no | anyOf=(discriminator={"mapping":{"stove0-effect-target/v1":"[EffectPlan](#s-014776d0e1)","stove0-transform-target/v1":"[TransformPlan](#s-e6d9103d68)"},"propertyName":"protocol"}; oneOf=([TransformPlan](#s-e6d9103d68)) \| ([EffectPlan](#s-014776d0e1))) \| (type="null"); default=null |  |
+| <a id="s-21ea49ddbd"></a>`target_request` | no | anyOf=([AcceptedTargetJob](#s-c2ad8615d4)) \| (type="null"); default=null |  |
+| <a id="s-06b370748a"></a>`target_settlement` | no | anyOf=([TargetSettlementAuthority](#s-0123d3e011)) \| (type="null"); default=null |  |
+| <a id="s-862849fdb3"></a>`target_status` | no | anyOf=([TargetJobStatus](#s-a1c5d06fa9)) \| (type="null"); default=null |  |
+| <a id="s-4e27e5925b"></a>`work` | yes | [WorkIdentity](#s-9c239c9b47) |  |
 | <a id="s-2f68bca083"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-3d3a1fc440"></a>`workflow_plan` | no | anyOf=#/$defs/WorkflowPlan \| type="null" |  |
+| <a id="s-3d3a1fc440"></a>`workflow_plan` | no | anyOf=([WorkflowPlan](#s-eb01ec776f)) \| (type="null"); default=null |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-c2ad8615d4"></a>`AcceptedTargetJob` | type="object"; fields=`declaration`, `request_sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-ce60455507"></a>`ArtifactDispositionSetIdentity` | type="object"; fields=`disposition_count`, `output_artifact_count`, `output_edge_count`, `sha256`; additional keys=`required` |
-| <a id="s-02ae186c7f"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-b2a1547159"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-1e5a1e87dc"></a>`BranchPlan` | type="object"; fields=`artifact_selection`, `branch_id`, `kind`, `workflow_plan`; additional keys=`additionalProperties`, `required` |
-| <a id="s-dd5e33c681"></a>`BranchSetPlan` | type="object"; fields=`branch_set_sha256`, `branches`, `decision_sha256`, `evidence_sha256s`, `format`, `join`, `parent_work`, `retirement_grace_seconds`, `retirement_policy`; additional keys=`additionalProperties`, `required` |
-| <a id="s-b2406b87c9"></a>`BranchWorkBinding` | type="object"; fields=`artifact_selection_sha256`, `branch_id`, `decision_sha256`, `kind`, `parent_work_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-4dbecc0dae"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-0c67995e84"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
-| <a id="s-8b01483f06"></a>`ControllerEvidence` | type="object"; fields=`controller_evidence_sha256`, `execution_envelope`, `format`; additional keys=`additionalProperties`, `required` |
-| <a id="s-1519e82c69"></a>`CoordinationBranchPlan` | type="object"; fields=`artifact_selection`, `branch_id`, `branch_set_sha256`, `kind`, `work`; additional keys=`additionalProperties`, `required` |
-| <a id="s-a2dcd47a50"></a>`CoordinationChildSettlementRef` | type="object"; fields=`branch_id`, `kind`, `settlement_sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-d545cb9313"></a>`CoordinationCollectionResult` | type="object"; fields=`derivation_sha256`, `join_settlement_sha256`, `output_collection`, `output_selection`, `producer_work_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-1d102c88d4"></a>`CoordinationSettlement` | type="object"; fields=`branch_set_sha256`, `children`, `collection_result`, `contains_external_effects`, `final_join_settlement_sha256`, `format`, `settlement_sha256`, `work`; additional keys=`additionalProperties`, `required` |
-| <a id="s-014776d0e1"></a>`EffectPlan` | type="object"; fields=`inputs`, `intent`, `observation_result_sha256s`, `operation_contract_sha256`, `operation_id`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`, `target_options`; additional keys=`additionalProperties`, `required` |
-| <a id="s-80d3264a22"></a>`EvaluationBinding` | type="object"; fields=`evaluation_id`, `matrix_sha256`, `parameters`, `variant_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-fce11dc92f"></a>`ExecutionEnvelope` | type="object"; fields=`claim_id`, `execution_envelope_sha256`, `fence`, `format`, `target_plan`, `workflow_plan`; additional keys=`additionalProperties`, `required` |
-| <a id="s-233c85f6dd"></a>`ExternalEffectReceipt` | type="object"; fields=`execution_sha256`, `format`, `job_id`, `operation_contract_sha256`, `plan_sha256`, `receipt_sha256`, `request_sha256`, `result`, `target_contract_sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-c1baf21d38"></a>`JoinDeclaration` | type="object"; fields=`effective_intent`, `format`, `join_declaration_sha256`, `members`, `recipe`, `workflow_intent`; additional keys=`additionalProperties`, `required` |
-| <a id="s-91107c71f9"></a>`JoinInputPlan` | type="object"; fields=`artifact_selection`, `branch_id`, `derivation_sha256`, `output_collection`, `producer_settlement_sha256`, `settlement_sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-ffbd632b88"></a>`JoinMemberDeclaration` | type="object"; fields=`branch_id`, `output_roles`; additional keys=`additionalProperties`, `required` |
-| <a id="s-580727b15b"></a>`JoinPlan` | type="object"; fields=`branch_set_sha256`, `declaration`, `format`, `inputs`, `join_plan_sha256`, `parent_work_id`, `work`, `workflow_plan`; additional keys=`additionalProperties`, `required` |
-| <a id="s-1382221b54"></a>`JoinWorkBinding` | type="object"; fields=`branch_set_sha256`, `kind`, `members`, `parent_work_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-4a00613a76"></a>`JoinWorkMemberBinding` | type="object"; fields=`artifact_selection_sha256`, `branch_id`, `producer_settlement_sha256`, `settlement_sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-389e4021e8"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-51b717ae82"></a>`JsonValue` | empty object |
-| <a id="s-2166c47ce3"></a>`ObservationEvidence` | type="object"; fields=`request`, `result`; additional keys=`additionalProperties`, `required` |
-| <a id="s-039e82c574"></a>`ObservationFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
-| <a id="s-0b96b49cc7"></a>`ObservationInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
-| <a id="s-9d08881319"></a>`ObservationRequest` | type="object"; fields=`format`, `maximum_result_bytes`, `observer_contract_id`, `observer_contract_sha256`, `observer_descriptor_sha256`, `observer_registration_id`, `options`, `request_id`, `retrieval_policy`, `subjects`, `timeout_seconds`, `work_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-eaf3d12493"></a>`ObservationResult` | type="object"; fields=`execution_evidence`, `facts`, `facts_schema`, `facts_sha256`, `failure`, `format`, `inapplicable`, `observer`, `observer_contract_id`, `observer_contract_sha256`, `request_id`, `result_sha256`, `state`, `subjects`; additional keys=`additionalProperties`, `required` |
-| <a id="s-4f624728c8"></a>`ObserverImplementation` | type="object"; fields=`descriptor_sha256`, `id`, `protocol`, `source_revision`, `version`; additional keys=`additionalProperties`, `required` |
-| <a id="s-673b4315d4"></a>`OperationRef` | type="object"; fields=`id`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-2794126534"></a>`OutputArtifactRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
-| <a id="s-27cd42b093"></a>`OutputArtifactSetIdentity` | type="object"; fields=`artifact_count`, `roles`, `sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-875ef95b02"></a>`OutputCollectionRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`, `derivation_sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-3f37573c13"></a>`PreviewAcceptanceView` | type="object"; fields=`branch_set_sha256`, `preview_sha256`, `target_plans`; additional keys=`additionalProperties`, `required` |
-| <a id="s-436a7cc3a8"></a>`PreviewTargetExpectationView` | type="object"; fields=`branch_id`, `plan_sha256`, `work_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-5f53bb63ed"></a>`RecipeRef` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-280bb22c73"></a>`TargetExecutionEvidence` | type="object"; fields=`execution_sha256`, `operation_contract_sha256`, `plan_sha256`, `runtime`, `target_contract_sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-43f40e974c"></a>`TargetFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
-| <a id="s-a6ab979dc2"></a>`TargetInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
-| <a id="s-afa6c620cf"></a>`TargetInputAuthority` | type="object"; fields=`roles`, `selection`; additional keys=`additionalProperties`, `required` |
-| <a id="s-c94d2a1e38"></a>`TargetInputRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
-| <a id="s-f46f29e737"></a>`TargetJobDeclaration` | type="object"; fields=`claim_id`, `controller_evidence`, `fence`, `job_id`, `plan`, `workspace_assurance`; additional keys=`additionalProperties`, `required` |
-| <a id="s-a1c5d06fa9"></a>`TargetJobStatus` | type="object"; fields=`attempt`, `derivation`, `effect_receipt`, `execution_evidence`, `failure`, `inapplicable`, `job_id`, `output_collection`, `plan_sha256`, `production`, `progress`, `protocol`, `request_sha256`, `state`; allOf=additional keys=`else`, `if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-44ba4eaf6e"></a>`TargetOutputBindingSetIdentity` | type="object"; fields=`artifact_count`, `sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-ca9c274c51"></a>`TargetPlanBinding` | type="object"; fields=`operation_contract_sha256`, `plan`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-0793231fae"></a>`TargetProductionAuthority` | type="object"; fields=`disposition_count`, `disposition_sha256`, `format`, `job_id`, `outputs`, `plan_sha256`, `production_sha256`, `riverhog_disposition_set`, `source_edge_count`, `source_edge_sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-509bfc0c82"></a>`TargetProgress` | type="object"; fields=`completed`, `phase`, `total`, `unit`; additional keys=`additionalProperties`, `required` |
-| <a id="s-0123d3e011"></a>`TargetSettlementAuthority` | type="object"; fields=`format`, `job_id`, `output_bindings`, `output_collection`, `production_sha256`, `settlement_sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e6d9103d68"></a>`TransformPlan` | type="object"; fields=`inputs`, `intent`, `observation_result_sha256s`, `operation_contract_sha256`, `operation_id`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`, `target_options`; additional keys=`additionalProperties`, `required` |
-| <a id="s-427778f2b9"></a>`WorkClaimView` | type="object"; fields=`claim_id`, `fence`; additional keys=`additionalProperties`, `required` |
-| <a id="s-3d393d60f5"></a>`WorkFailureView` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
-| <a id="s-9c239c9b47"></a>`WorkIdentity` | type="object"; fields=`effective_intent`, `evaluation`, `fork_join`, `format`, `inputs`, `recipe`, `work_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-b96615054f"></a>`WorkInapplicableView` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
-| <a id="s-eb01ec776f"></a>`WorkflowPlan` | type="object"; fields=`format`, `input_retrieval_policy`, `observations`, `operation`, `output_policy`, `requested_target_options`, `result_kind`, `retirement_grace_seconds`, `retirement_policy`, `target_contract_sha256`, `target_registration_id`, `work`, `workflow_plan_sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-ef75a8f0d2"></a>`WorkflowPlanIntent` | type="object"; fields=`input_retrieval_policy`, `operation`, `output_policy`, `requested_target_options`, `result_kind`, `retirement_grace_seconds`, `retirement_policy`, `target_contract_sha256`, `target_registration_id`; additional keys=`additionalProperties`, `required` |
+- [AcceptedTargetJob](#s-c2ad8615d4)
+- [ArtifactDispositionSetIdentity](#s-ce60455507)
+- [ArtifactSelectionRef](#s-02ae186c7f)
+- [ArtifactSubject](#s-b2a1547159)
+- [BranchPlan](#s-1e5a1e87dc)
+- [BranchSetPlan](#s-dd5e33c681)
+- [BranchWorkBinding](#s-b2406b87c9)
+- [CollectionId](#s-4dbecc0dae)
+- [CollectionRootRef](#s-0c67995e84)
+- [ControllerEvidence](#s-8b01483f06)
+- [CoordinationBranchPlan](#s-1519e82c69)
+- [CoordinationChildSettlementRef](#s-a2dcd47a50)
+- [CoordinationCollectionResult](#s-d545cb9313)
+- [CoordinationSettlement](#s-1d102c88d4)
+- [EffectPlan](#s-014776d0e1)
+- [EvaluationBinding](#s-80d3264a22)
+- [ExecutionEnvelope](#s-fce11dc92f)
+- [ExternalEffectReceipt](#s-233c85f6dd)
+- [JoinDeclaration](#s-c1baf21d38)
+- [JoinInputPlan](#s-91107c71f9)
+- [JoinMemberDeclaration](#s-ffbd632b88)
+- [JoinPlan](#s-580727b15b)
+- [JoinWorkBinding](#s-1382221b54)
+- [JoinWorkMemberBinding](#s-4a00613a76)
+- [JsonSchemaDocument](#s-389e4021e8)
+- [JsonValue](#s-51b717ae82)
+- [ObservationEvidence](#s-2166c47ce3)
+- [ObservationFailure](#s-039e82c574)
+- [ObservationInapplicable](#s-0b96b49cc7)
+- [ObservationRequest](#s-9d08881319)
+- [ObservationResult](#s-eaf3d12493)
+- [ObserverImplementation](#s-4f624728c8)
+- [OperationRef](#s-673b4315d4)
+- [OutputArtifactRoleCount](#s-2794126534)
+- [OutputArtifactSetIdentity](#s-27cd42b093)
+- [OutputCollectionRef](#s-875ef95b02)
+- [PreviewAcceptanceView](#s-3f37573c13)
+- [PreviewTargetExpectationView](#s-436a7cc3a8)
+- [RecipeRef](#s-5f53bb63ed)
+- [TargetExecutionEvidence](#s-280bb22c73)
+- [TargetFailure](#s-43f40e974c)
+- [TargetInapplicable](#s-a6ab979dc2)
+- [TargetInputAuthority](#s-afa6c620cf)
+- [TargetInputRoleCount](#s-c94d2a1e38)
+- [TargetJobDeclaration](#s-f46f29e737)
+- [TargetJobStatus](#s-a1c5d06fa9)
+- [TargetOutputBindingSetIdentity](#s-44ba4eaf6e)
+- [TargetPlanBinding](#s-ca9c274c51)
+- [TargetProductionAuthority](#s-0793231fae)
+- [TargetProgress](#s-509bfc0c82)
+- [TargetSettlementAuthority](#s-0123d3e011)
+- [TransformPlan](#s-e6d9103d68)
+- [WorkClaimView](#s-427778f2b9)
+- [WorkFailureView](#s-3d393d60f5)
+- [WorkIdentity](#s-9c239c9b47)
+- [WorkInapplicableView](#s-b96615054f)
+- [WorkflowPlan](#s-eb01ec776f)
+- [WorkflowPlanIntent](#s-ef75a8f0d2)
+
+##### <a id="s-c2ad8615d4"></a>definition `AcceptedTargetJob`
+
+- <a id="s-ef4cfe5df5"></a>`type`: `"object"`
+- <a id="s-15959b1872"></a>`additionalProperties`: `false`
+- <a id="s-2d6e5be533"></a>`required`: `["declaration","request_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cb3bdef16a"></a>`declaration` | yes | [TargetJobDeclaration](#s-f46f29e737) |  |
+| <a id="s-5ade17cc37"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-ce60455507"></a>definition `ArtifactDispositionSetIdentity`
+
+- <a id="s-2a0269dfcd"></a>`type`: `"object"`
+- <a id="s-874c0dfbef"></a>`required`: `["disposition_count","output_edge_count","output_artifact_count","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-59b7f1d981"></a>`disposition_count` | yes | type="integer" |  |
+| <a id="s-fd73125c81"></a>`output_artifact_count` | yes | type="integer" |  |
+| <a id="s-e6b900dcb6"></a>`output_edge_count` | yes | type="integer" |  |
+| <a id="s-25541d3a25"></a>`sha256` | yes | type="string" |  |
+
+##### <a id="s-02ae186c7f"></a>definition `ArtifactSelectionRef`
+
+- <a id="s-9c4fb81452"></a>`type`: `"object"`
+- <a id="s-ee596a1033"></a>`additionalProperties`: `false`
+- <a id="s-96ad0a7a71"></a>`required`: `["selection_sha256","artifact_count","total_bytes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-50bcddf04f"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-40db8c03a5"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b458aa1b4f"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+
+##### <a id="s-b2a1547159"></a>definition `ArtifactSubject`
+
+- <a id="s-9705e5e69a"></a>`type`: `"object"`
+- <a id="s-93c606b17c"></a>`additionalProperties`: `false`
+- <a id="s-4523e75da5"></a>`required`: `["id","role","collection","path","bytes","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-df410c49e0"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-5810740434"></a>`collection` | yes | [CollectionRootRef](#s-0c67995e84) |  |
+| <a id="s-ed1468d170"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-f7cdebecdb"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-01e4956500"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-57f6af84fc"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-62cdca60dc"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-1e5a1e87dc"></a>definition `BranchPlan`
+
+- <a id="s-709a29af70"></a>`type`: `"object"`
+- <a id="s-de2bf72fc1"></a>`additionalProperties`: `false`
+- <a id="s-1610ec2598"></a>`required`: `["branch_id","artifact_selection","workflow_plan"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-d4833b36a3"></a>`artifact_selection` | yes | [ArtifactSelectionRef](#s-02ae186c7f) |  |
+| <a id="s-6694454137"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-2c98ba3964"></a>`kind` | no | type="string"; const="leaf"; default="leaf" |  |
+| <a id="s-5f360e3082"></a>`workflow_plan` | yes | [WorkflowPlan](#s-eb01ec776f) |  |
+
+##### <a id="s-dd5e33c681"></a>definition `BranchSetPlan`
+
+- <a id="s-c1eab3dfed"></a>`type`: `"object"`
+- <a id="s-87075b84d9"></a>`additionalProperties`: `false`
+- <a id="s-4777f38636"></a>`required`: `["parent_work","decision_sha256","branches","branch_set_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b3abee8a30"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-3fcbb52569"></a>`branches` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"[CoordinationBranchPlan](#s-1519e82c69)","leaf":"[BranchPlan](#s-1e5a1e87dc)"},"propertyName":"kind"}; oneOf=([BranchPlan](#s-1e5a1e87dc)) \| ([CoordinationBranchPlan](#s-1519e82c69))); minItems=1 |  |
+| <a id="s-8d0af96e65"></a>`decision_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6e23d0088e"></a>`evidence_sha256s` | no | type="array"; default=[]; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
+| <a id="s-552d504f76"></a>`format` | no | type="string"; const="stove0-branch-set/v1"; default="stove0-branch-set/v1" |  |
+| <a id="s-4309f16143"></a>`join` | no | anyOf=([JoinDeclaration](#s-c1baf21d38)) \| (type="null"); default=null |  |
+| <a id="s-a49334563f"></a>`parent_work` | yes | [WorkIdentity](#s-9c239c9b47) |  |
+| <a id="s-3d04d7ae2d"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-ae9c11e69f"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
+
+##### <a id="s-b2406b87c9"></a>definition `BranchWorkBinding`
+
+- <a id="s-3c7e6d0ff2"></a>`type`: `"object"`
+- <a id="s-ea332d56ac"></a>`additionalProperties`: `false`
+- <a id="s-469851727b"></a>`required`: `["parent_work_id","branch_id","decision_sha256","artifact_selection_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-703f4a44bc"></a>`artifact_selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f2557f28e8"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-aeb79c8e5e"></a>`decision_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-5833058b87"></a>`kind` | no | type="string"; const="branch"; default="branch" |  |
+| <a id="s-667ae7bde3"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-4dbecc0dae"></a>definition `CollectionId`
+
+- <a id="s-8b751d171f"></a>`type`: `"integer"`
+- <a id="s-af986ee003"></a>`minimum`: `1`
+
+##### <a id="s-0c67995e84"></a>definition `CollectionRootRef`
+
+- <a id="s-373956ba41"></a>`type`: `"object"`
+- <a id="s-6c91e775ae"></a>`additionalProperties`: `false`
+- <a id="s-e425b59de8"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-d726ab01c1"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-18210e33b9"></a>`collection_id` | yes | [CollectionId](#s-4dbecc0dae) |  |
+| <a id="s-95e1fbab5d"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-8b01483f06"></a>definition `ControllerEvidence`
+
+- <a id="s-6205980d42"></a>`type`: `"object"`
+- <a id="s-be65a85089"></a>`additionalProperties`: `false`
+- <a id="s-52d3dd484d"></a>`required`: `["execution_envelope","controller_evidence_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-01e55d984a"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-83c0bd5988"></a>`execution_envelope` | yes | [ExecutionEnvelope](#s-fce11dc92f) |  |
+| <a id="s-4d5408a00a"></a>`format` | no | type="string"; const="stove0-controller-evidence/v1"; default="stove0-controller-evidence/v1" |  |
+
+##### <a id="s-1519e82c69"></a>definition `CoordinationBranchPlan`
+
+- <a id="s-1a97ee31c3"></a>`type`: `"object"`
+- <a id="s-8ace32451e"></a>`additionalProperties`: `false`
+- <a id="s-eea7728219"></a>`required`: `["branch_id","artifact_selection","work","branch_set_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c6c8899a85"></a>`artifact_selection` | yes | [ArtifactSelectionRef](#s-02ae186c7f) |  |
+| <a id="s-23408be125"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-8e79be1cc1"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-0c2cf74251"></a>`kind` | no | type="string"; const="coordination"; default="coordination" |  |
+| <a id="s-dba8f489e1"></a>`work` | yes | [WorkIdentity](#s-9c239c9b47) |  |
+
+##### <a id="s-a2dcd47a50"></a>definition `CoordinationChildSettlementRef`
+
+- <a id="s-af396c959c"></a>`type`: `"object"`
+- <a id="s-c96b0c1a70"></a>`additionalProperties`: `false`
+- <a id="s-9194594ddf"></a>`required`: `["branch_id","kind","settlement_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0302ed771f"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-de9b53c3ef"></a>`kind` | yes | type="string"; enum=["collection","external-effect","coordination"] |  |
+| <a id="s-15c64add61"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-d545cb9313"></a>definition `CoordinationCollectionResult`
+
+- <a id="s-e94303e960"></a>`type`: `"object"`
+- <a id="s-2206f2597f"></a>`additionalProperties`: `false`
+- <a id="s-c2df027eff"></a>`required`: `["producer_work_id","join_settlement_sha256","derivation_sha256","output_collection","output_selection"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-95d2fe61e7"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2397f1650b"></a>`join_settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-8bff6c4936"></a>`output_collection` | yes | [CollectionRootRef](#s-0c67995e84) |  |
+| <a id="s-14a9e89862"></a>`output_selection` | yes | [ArtifactSelectionRef](#s-02ae186c7f) |  |
+| <a id="s-f1a4f679de"></a>`producer_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-1d102c88d4"></a>definition `CoordinationSettlement`
+
+- <a id="s-38c92ee05f"></a>`type`: `"object"`
+- <a id="s-92e79b52c5"></a>`additionalProperties`: `false`
+- <a id="s-e7ff7494c9"></a>`required`: `["work","branch_set_sha256","children","contains_external_effects","settlement_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2f0e0f22ae"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2799e7c723"></a>`children` | yes | type="array"; items=([CoordinationChildSettlementRef](#s-a2dcd47a50)) |  |
+| <a id="s-f71f6e03a5"></a>`collection_result` | no | anyOf=([CoordinationCollectionResult](#s-d545cb9313)) \| (type="null"); default=null |  |
+| <a id="s-8f7fc5f516"></a>`contains_external_effects` | yes | type="boolean" |  |
+| <a id="s-3db394c721"></a>`final_join_settlement_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-e9968643db"></a>`format` | no | type="string"; const="stove0-coordination-settlement/v1"; default="stove0-coordination-settlement/v1" |  |
+| <a id="s-2d7acce4e1"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2000c99227"></a>`work` | yes | [WorkIdentity](#s-9c239c9b47) |  |
+
+##### <a id="s-014776d0e1"></a>definition `EffectPlan`
+
+- <a id="s-ee134b4799"></a>`type`: `"object"`
+- <a id="s-718e1de2b1"></a>`additionalProperties`: `false`
+- <a id="s-b02f5e431d"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent","target_implementation_id","target_contract_sha256","plan_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-84831691e3"></a>`inputs` | yes | [TargetInputAuthority](#s-afa6c620cf) |  |
+| <a id="s-63638e6d1c"></a>`intent` | yes | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
+| <a id="s-103dbdb19c"></a>`observation_result_sha256s` | no | type="array"; default=[]; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
+| <a id="s-135a6ffa34"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ac003b7096"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-08eb524e4d"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-dd9d19659c"></a>`protocol` | no | type="string"; const="stove0-effect-target/v1"; default="stove0-effect-target/v1" |  |
+| <a id="s-06b90de773"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a9b6fbe415"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-3dee8c7567"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
+
+##### <a id="s-80d3264a22"></a>definition `EvaluationBinding`
+
+- <a id="s-41db7ee56b"></a>`type`: `"object"`
+- <a id="s-762c2e335f"></a>`additionalProperties`: `false`
+- <a id="s-f6f33d0b16"></a>`required`: `["evaluation_id","matrix_sha256","variant_id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-8b135942d6"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-17a271d308"></a>`matrix_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b94e5bce12"></a>`parameters` | no | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
+| <a id="s-0e616f97e7"></a>`variant_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+
+##### <a id="s-fce11dc92f"></a>definition `ExecutionEnvelope`
+
+- <a id="s-eec2927e69"></a>`type`: `"object"`
+- <a id="s-e8f7e736f5"></a>`additionalProperties`: `false`
+- <a id="s-988bfdf061"></a>`required`: `["claim_id","fence","workflow_plan","target_plan","execution_envelope_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cdc20f3775"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-36f5d50da2"></a>`execution_envelope_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-07e3c16502"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-62f1ebaa8b"></a>`format` | no | type="string"; const="stove0-execution-envelope/v1"; default="stove0-execution-envelope/v1" |  |
+| <a id="s-b6e895aa37"></a>`target_plan` | yes | [TargetPlanBinding](#s-ca9c274c51) |  |
+| <a id="s-b8bcc36af3"></a>`workflow_plan` | yes | [WorkflowPlan](#s-eb01ec776f) |  |
+
+##### <a id="s-233c85f6dd"></a>definition `ExternalEffectReceipt`
+
+- <a id="s-9b7cfafd94"></a>`type`: `"object"`
+- <a id="s-76953ba4c8"></a>`additionalProperties`: `false`
+- <a id="s-6ff396da9a"></a>`required`: `["job_id","request_sha256","target_contract_sha256","operation_contract_sha256","plan_sha256","execution_sha256","result","receipt_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ea42f689fa"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-24528514be"></a>`format` | no | type="string"; const="stove0-external-effect-receipt/v1"; default="stove0-external-effect-receipt/v1" |  |
+| <a id="s-2ae0176508"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-0941d003a8"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c245a1dbbb"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f48f5ef200"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-206c187821"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-dcfc6ecab9"></a>`result` | yes | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)); x-riverhog-encoded-bytes-max=65536; x-riverhog-extent={"policy":"contract_max","reason":"bounded-external-effect-receipt"} |  |
+| <a id="s-bcdabe21b6"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-c1baf21d38"></a>definition `JoinDeclaration`
+
+- <a id="s-3fc92998c8"></a>`type`: `"object"`
+- <a id="s-2b99d53811"></a>`additionalProperties`: `false`
+- <a id="s-c73eac568f"></a>`required`: `["members","recipe","workflow_intent","join_declaration_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-8e8f0fba70"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
+| <a id="s-b9693fc381"></a>`format` | no | type="string"; const="stove0-join-declaration/v1"; default="stove0-join-declaration/v1" |  |
+| <a id="s-c384c4190c"></a>`join_declaration_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-663d3da993"></a>`members` | yes | type="array"; items=([JoinMemberDeclaration](#s-ffbd632b88)); minItems=2 |  |
+| <a id="s-f172045bbf"></a>`recipe` | yes | [RecipeRef](#s-5f53bb63ed) |  |
+| <a id="s-3c958231fa"></a>`workflow_intent` | yes | [WorkflowPlanIntent](#s-ef75a8f0d2) |  |
+
+##### <a id="s-91107c71f9"></a>definition `JoinInputPlan`
+
+- <a id="s-4612533890"></a>`type`: `"object"`
+- <a id="s-b2e0df97e4"></a>`additionalProperties`: `false`
+- <a id="s-433d3848d7"></a>`required`: `["branch_id","settlement_sha256","derivation_sha256","output_collection","artifact_selection"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-373c8613a7"></a>`artifact_selection` | yes | [ArtifactSelectionRef](#s-02ae186c7f) |  |
+| <a id="s-c9a84ef776"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-5598adb625"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-63f113903f"></a>`output_collection` | yes | [CollectionRootRef](#s-0c67995e84) |  |
+| <a id="s-1d25973c64"></a>`producer_settlement_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-f06b09199a"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-ffbd632b88"></a>definition `JoinMemberDeclaration`
+
+- <a id="s-aec3db680e"></a>`type`: `"object"`
+- <a id="s-f60c362aea"></a>`additionalProperties`: `false`
+- <a id="s-23f97d4a07"></a>`required`: `["branch_id","output_roles"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-62ef04a0d5"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-b77a0710ac"></a>`output_roles` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
+
+##### <a id="s-580727b15b"></a>definition `JoinPlan`
+
+- <a id="s-986ab4333c"></a>`type`: `"object"`
+- <a id="s-f0b1dd8914"></a>`additionalProperties`: `false`
+- <a id="s-0920c6b252"></a>`required`: `["parent_work_id","branch_set_sha256","declaration","inputs","work","workflow_plan","join_plan_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-fa3121563e"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b2517f05fd"></a>`declaration` | yes | [JoinDeclaration](#s-c1baf21d38) |  |
+| <a id="s-3772659ed2"></a>`format` | no | type="string"; const="stove0-join-plan/v1"; default="stove0-join-plan/v1" |  |
+| <a id="s-ae792d5980"></a>`inputs` | yes | type="array"; items=([JoinInputPlan](#s-91107c71f9)); minItems=2 |  |
+| <a id="s-db46d97831"></a>`join_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c95e141ddb"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-967f7aee42"></a>`work` | yes | [WorkIdentity](#s-9c239c9b47) |  |
+| <a id="s-615556d272"></a>`workflow_plan` | yes | [WorkflowPlan](#s-eb01ec776f) |  |
+
+##### <a id="s-1382221b54"></a>definition `JoinWorkBinding`
+
+- <a id="s-b10bfd0d82"></a>`type`: `"object"`
+- <a id="s-439a7c43c3"></a>`additionalProperties`: `false`
+- <a id="s-0174cf0916"></a>`required`: `["parent_work_id","branch_set_sha256","members"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-88f0589449"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-59a0e07194"></a>`kind` | no | type="string"; const="join"; default="join" |  |
+| <a id="s-4745f4fbb9"></a>`members` | yes | type="array"; items=([JoinWorkMemberBinding](#s-4a00613a76)); minItems=2 |  |
+| <a id="s-6c0305119e"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-4a00613a76"></a>definition `JoinWorkMemberBinding`
+
+- <a id="s-4355001ffb"></a>`type`: `"object"`
+- <a id="s-bd316409fb"></a>`additionalProperties`: `false`
+- <a id="s-806362c319"></a>`required`: `["branch_id","settlement_sha256","artifact_selection_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f20cde2028"></a>`artifact_selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a3d17fe041"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-d6555874d0"></a>`producer_settlement_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-68f221a586"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-389e4021e8"></a>definition `JsonSchemaDocument`
+
+- <a id="s-dde72a172e"></a>`type`: `"object"`
+- <a id="s-d0b75c55b2"></a>`additionalProperties`: `false`
+- <a id="s-4279827d08"></a>`required`: `["id","sha256","schema"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2f7a79e080"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-170c918f2b"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-acc1e54c72"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-ba729bd61d"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
+| <a id="s-574e2cd477"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-51b717ae82"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-2166c47ce3"></a>definition `ObservationEvidence`
+
+- <a id="s-d806992e23"></a>`type`: `"object"`
+- <a id="s-3ff764a45a"></a>`additionalProperties`: `false`
+- <a id="s-4447983d42"></a>`required`: `["request","result"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ed1d3d4a8e"></a>`request` | yes | [ObservationRequest](#s-9d08881319) |  |
+| <a id="s-13904688ce"></a>`result` | yes | [ObservationResult](#s-eaf3d12493) |  |
+
+##### <a id="s-039e82c574"></a>definition `ObservationFailure`
+
+- <a id="s-9c3196ab71"></a>`type`: `"object"`
+- <a id="s-03db48505f"></a>`additionalProperties`: `false`
+- <a id="s-c22c422115"></a>`required`: `["code","message","retryable"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-444f2f82d3"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-283733d7b3"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-d26b51f8de"></a>`retryable` | yes | type="boolean" |  |
+
+##### <a id="s-0b96b49cc7"></a>definition `ObservationInapplicable`
+
+- <a id="s-e69129d2a6"></a>`type`: `"object"`
+- <a id="s-4c243f7577"></a>`additionalProperties`: `false`
+- <a id="s-d2fd274d08"></a>`required`: `["code","message"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7d46b58d8a"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-e86872ddf6"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+
+##### <a id="s-9d08881319"></a>definition `ObservationRequest`
+
+- <a id="s-a8f402d77b"></a>`type`: `"object"`
+- <a id="s-bd6f8f3935"></a>`additionalProperties`: `false`
+- <a id="s-2b20fd74a9"></a>`required`: `["work_id","observer_registration_id","observer_descriptor_sha256","observer_contract_id","observer_contract_sha256","subjects","request_id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-db4ea1d7ba"></a>`format` | no | type="string"; const="stove0-observation-request/v1"; default="stove0-observation-request/v1" |  |
+| <a id="s-827b53633a"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
+| <a id="s-c55ea89913"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-b02484bad6"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f023e39080"></a>`observer_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c86dbb2483"></a>`observer_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
+| <a id="s-d93d763984"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
+| <a id="s-09052c2c9d"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-08fdf124f9"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-f74459ea6c"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-b2a1547159)); minItems=1 |  |
+| <a id="s-f337934e97"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300 |  |
+| <a id="s-e3fdcb8b56"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-eaf3d12493"></a>definition `ObservationResult`
+
+- <a id="s-dd5701d006"></a>`type`: `"object"`
+- <a id="s-1254c6b944"></a>`additionalProperties`: `false`
+- <a id="s-477a44fa51"></a>`required`: `["request_id","state","observer","observer_contract_id","observer_contract_sha256","subjects","result_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7d2a94798e"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
+| <a id="s-e96107f9f9"></a>`facts` | no | anyOf=(type="object"; additionalProperties=([JsonValue](#s-51b717ae82))) \| (type="null"); default=null |  |
+| <a id="s-cbabbe1be3"></a>`facts_schema` | no | anyOf=([JsonSchemaDocument](#s-389e4021e8)) \| (type="null"); default=null |  |
+| <a id="s-9056d86eaa"></a>`facts_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-c76cd705ed"></a>`failure` | no | anyOf=([ObservationFailure](#s-039e82c574)) \| (type="null"); default=null |  |
+| <a id="s-f6f806d8f8"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1" |  |
+| <a id="s-64e4251888"></a>`inapplicable` | no | anyOf=([ObservationInapplicable](#s-0b96b49cc7)) \| (type="null"); default=null |  |
+| <a id="s-a3fc810993"></a>`observer` | yes | [ObserverImplementation](#s-4f624728c8) |  |
+| <a id="s-d4940bd8d8"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-75adc1fe55"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-69ddd96afa"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-14cb4c4628"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-57817aed70"></a>`state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"] |  |
+| <a id="s-5105b0e41f"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-b2a1547159)); minItems=1 |  |
+
+##### <a id="s-4f624728c8"></a>definition `ObserverImplementation`
+
+- <a id="s-ee3821d74d"></a>`type`: `"object"`
+- <a id="s-d3a647c791"></a>`additionalProperties`: `false`
+- <a id="s-3152478efd"></a>`required`: `["id","version","source_revision","descriptor_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3e1b92cd31"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ac8e5f10e4"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-9b5a7ccf54"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1"; default="stove0-content-observer/v1" |  |
+| <a id="s-9f64b4bed1"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
+| <a id="s-6502874256"></a>`version` | yes | type="string"; maxLength=120; minLength=1 |  |
+
+##### <a id="s-673b4315d4"></a>definition `OperationRef`
+
+- <a id="s-bbc9ba0ba5"></a>`type`: `"object"`
+- <a id="s-61293e5a3f"></a>`additionalProperties`: `false`
+- <a id="s-2ff377b182"></a>`required`: `["id","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-d30642d9a2"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-4d7708f1c3"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-2794126534"></a>definition `OutputArtifactRoleCount`
+
+- <a id="s-445eacb405"></a>`type`: `"object"`
+- <a id="s-e205722427"></a>`additionalProperties`: `false`
+- <a id="s-24f4146bdc"></a>`required`: `["role","count"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-83f69c48c7"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-2748414093"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+
+##### <a id="s-27cd42b093"></a>definition `OutputArtifactSetIdentity`
+
+- <a id="s-b192a8dea9"></a>`type`: `"object"`
+- <a id="s-a0eefbd31c"></a>`additionalProperties`: `false`
+- <a id="s-23dfd7e287"></a>`required`: `["artifact_count","total_bytes","roles","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7a253111a5"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-7593c18d8d"></a>`roles` | yes | type="array"; items=([OutputArtifactRoleCount](#s-2794126534)); minItems=1 |  |
+| <a id="s-60638eebe3"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2275c9ccf3"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+
+##### <a id="s-875ef95b02"></a>definition `OutputCollectionRef`
+
+- <a id="s-1802535693"></a>`type`: `"object"`
+- <a id="s-86174a1273"></a>`additionalProperties`: `false`
+- <a id="s-728393b32d"></a>`required`: `["collection_id","archive_root_sha256","content_identity","derivation_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-d193249bbf"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-883af209f0"></a>`collection_id` | yes | [CollectionId](#s-4dbecc0dae) |  |
+| <a id="s-9263290fd8"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-836af3fe58"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-3f37573c13"></a>definition `PreviewAcceptanceView`
+
+- <a id="s-9d5ba36c24"></a>`type`: `"object"`
+- <a id="s-2fb6b762d3"></a>`additionalProperties`: `false`
+- <a id="s-2156a3f8c0"></a>`required`: `["preview_sha256","branch_set_sha256","target_plans"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-8a23298ce9"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-9dbbd2182a"></a>`preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-59563296f9"></a>`target_plans` | yes | type="array"; items=([PreviewTargetExpectationView](#s-436a7cc3a8)) |  |
+
+##### <a id="s-436a7cc3a8"></a>definition `PreviewTargetExpectationView`
+
+- <a id="s-bb3958ef67"></a>`type`: `"object"`
+- <a id="s-4d7f90aacd"></a>`additionalProperties`: `false`
+- <a id="s-052b3331b9"></a>`required`: `["branch_id","work_id","plan_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3aaf397226"></a>`branch_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-db05eda3be"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1137bc0900"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-5f53bb63ed"></a>definition `RecipeRef`
+
+- <a id="s-28e9343fd0"></a>`type`: `"object"`
+- <a id="s-fee8045100"></a>`additionalProperties`: `false`
+- <a id="s-a9e221d25b"></a>`required`: `["id","revision","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c0b40d77ba"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-39c0d4c9fa"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-1273a0ce67"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-280bb22c73"></a>definition `TargetExecutionEvidence`
+
+- <a id="s-f496886ab3"></a>`type`: `"object"`
+- <a id="s-d2d2d6bc86"></a>`additionalProperties`: `false`
+- <a id="s-3cb6432bfa"></a>`required`: `["target_contract_sha256","operation_contract_sha256","plan_sha256","execution_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-68d0f40b3e"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-04ec7256da"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-4055f5dba0"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-7f0e4212ba"></a>`runtime` | no | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
+| <a id="s-9f854f5b17"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-43f40e974c"></a>definition `TargetFailure`
+
+- <a id="s-129eeee89f"></a>`type`: `"object"`
+- <a id="s-0a2d178acb"></a>`additionalProperties`: `false`
+- <a id="s-d58fbd3fd4"></a>`required`: `["code","message","retryable"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-177e0e4d37"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-bbc94551b4"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-0421ac6254"></a>`retryable` | yes | type="boolean" |  |
+
+##### <a id="s-a6ab979dc2"></a>definition `TargetInapplicable`
+
+- <a id="s-5b335de9db"></a>`type`: `"object"`
+- <a id="s-dcba1d9f9c"></a>`additionalProperties`: `false`
+- <a id="s-0ab3d7b5c1"></a>`required`: `["code","message"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7557be594c"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-7cda2f7081"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+
+##### <a id="s-afa6c620cf"></a>definition `TargetInputAuthority`
+
+- <a id="s-a619f05a94"></a>`type`: `"object"`
+- <a id="s-531db1cecd"></a>`additionalProperties`: `false`
+- <a id="s-d5846cfa02"></a>`required`: `["selection","roles"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cb11aedaee"></a>`roles` | yes | type="array"; items=([TargetInputRoleCount](#s-c94d2a1e38)); minItems=1 |  |
+| <a id="s-7704a3a851"></a>`selection` | yes | [ArtifactSelectionRef](#s-02ae186c7f) |  |
+
+##### <a id="s-c94d2a1e38"></a>definition `TargetInputRoleCount`
+
+- <a id="s-e74eca20fe"></a>`type`: `"object"`
+- <a id="s-9188d5fbf3"></a>`additionalProperties`: `false`
+- <a id="s-a6ab4f114e"></a>`required`: `["role","count"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-23ef5f4d0e"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-1b26ffedd0"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+
+##### <a id="s-f46f29e737"></a>definition `TargetJobDeclaration`
+
+- <a id="s-63ce409e42"></a>`type`: `"object"`
+- <a id="s-eb6193b66d"></a>`additionalProperties`: `false`
+- <a id="s-6af507fca1"></a>`required`: `["job_id","claim_id","fence","controller_evidence","plan","workspace_assurance"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7113ff8e93"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-ebc598f038"></a>`controller_evidence` | yes | [ControllerEvidence](#s-8b01483f06) |  |
+| <a id="s-ae29e9b9b5"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-e9141da4d3"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-431fa94f0b"></a>`plan` | yes | discriminator={"mapping":{"stove0-effect-target/v1":"[EffectPlan](#s-014776d0e1)","stove0-transform-target/v1":"[TransformPlan](#s-e6d9103d68)"},"propertyName":"protocol"}; oneOf=([TransformPlan](#s-e6d9103d68)) \| ([EffectPlan](#s-014776d0e1)) |  |
+| <a id="s-19f9510e8c"></a>`workspace_assurance` | yes | type="string"; enum=["encrypted","ephemeral"] |  |
+
+##### <a id="s-a1c5d06fa9"></a>definition `TargetJobStatus`
+
+- <a id="s-2ab3d45b3e"></a>`type`: `"object"`
+- <a id="s-eb20a6ff5c"></a>`additionalProperties`: `false`
+- <a id="s-df3c7617f0"></a>`required`: `["job_id","state","attempt","request_sha256","plan_sha256","progress"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-8b4f6128e9"></a>`attempt` | yes | type="integer"; minimum=1 |  |
+| <a id="s-d396417626"></a>`derivation` | no | anyOf=(type="object"; additionalProperties=true) \| (type="null"); default=null |  |
+| <a id="s-60d89d4aa2"></a>`effect_receipt` | no | anyOf=([ExternalEffectReceipt](#s-233c85f6dd)) \| (type="null"); default=null |  |
+| <a id="s-1ea93e8c0c"></a>`execution_evidence` | no | anyOf=([TargetExecutionEvidence](#s-280bb22c73)) \| (type="null"); default=null |  |
+| <a id="s-2dea9d3137"></a>`failure` | no | anyOf=([TargetFailure](#s-43f40e974c)) \| (type="null"); default=null |  |
+| <a id="s-586946552e"></a>`inapplicable` | no | anyOf=([TargetInapplicable](#s-a6ab979dc2)) \| (type="null"); default=null |  |
+| <a id="s-8b3ffd5479"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ae50c8248b"></a>`output_collection` | no | anyOf=([OutputCollectionRef](#s-875ef95b02)) \| (type="null"); default=null |  |
+| <a id="s-1578835364"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c839cc27ca"></a>`production` | no | anyOf=([TargetProductionAuthority](#s-0793231fae)) \| (type="null"); default=null |  |
+| <a id="s-9cd6e92b59"></a>`progress` | yes | [TargetProgress](#s-509bfc0c82) |  |
+| <a id="s-17eb23c5ee"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1" |  |
+| <a id="s-9ae6e4de6c"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b954866701"></a>`state` | yes | type="string"; enum=["queued","running","canceling","interrupted","inapplicable","succeeded","failed","canceled"] |  |
+
+###### All must match (`allOf`)
+
+| Rule | If schema matches | Then must match | Otherwise must match |
+|---|---|---|---|
+| <a id="s-0d70aff632"></a>1 | properties={state: (const="failed")} | properties={failure: (type="object")}; required=["failure"] | properties={failure: (type="null")} |
+
+##### <a id="s-44ba4eaf6e"></a>definition `TargetOutputBindingSetIdentity`
+
+- <a id="s-2162af41be"></a>`type`: `"object"`
+- <a id="s-f937f3e622"></a>`additionalProperties`: `false`
+- <a id="s-64309be23f"></a>`required`: `["artifact_count","total_bytes","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0fbad77715"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-e94470be05"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-00c6f35590"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+
+##### <a id="s-ca9c274c51"></a>definition `TargetPlanBinding`
+
+- <a id="s-2d1b92ec0d"></a>`type`: `"object"`
+- <a id="s-9da10028f3"></a>`additionalProperties`: `false`
+- <a id="s-aba1b09b87"></a>`required`: `["protocol","target_implementation_id","target_contract_sha256","operation_contract_sha256","plan","plan_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ddcc095ad5"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-44bebf4a91"></a>`plan` | yes | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
+| <a id="s-d4bcada89e"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c65732c500"></a>`protocol` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-478ca2068a"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-eb4dce3869"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+
+##### <a id="s-0793231fae"></a>definition `TargetProductionAuthority`
+
+- <a id="s-319653a745"></a>`type`: `"object"`
+- <a id="s-464c29b519"></a>`additionalProperties`: `false`
+- <a id="s-05674a22bc"></a>`required`: `["job_id","plan_sha256","outputs","disposition_count","disposition_sha256","source_edge_count","source_edge_sha256","riverhog_disposition_set","production_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6c78fd1c64"></a>`disposition_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-4bc2782bf1"></a>`disposition_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d3aad54019"></a>`format` | no | type="string"; const="stove0-target-production/v1"; default="stove0-target-production/v1" |  |
+| <a id="s-ae116bd3ad"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f34224e953"></a>`outputs` | yes | [OutputArtifactSetIdentity](#s-27cd42b093) |  |
+| <a id="s-99483927e4"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b344169587"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-005ad94cb9"></a>`riverhog_disposition_set` | yes | [ArtifactDispositionSetIdentity](#s-ce60455507) |  |
+| <a id="s-3f3fbb2851"></a>`source_edge_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-d08b7512a9"></a>`source_edge_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-509bfc0c82"></a>definition `TargetProgress`
+
+- <a id="s-252d04a937"></a>`type`: `"object"`
+- <a id="s-6d781dcf05"></a>`additionalProperties`: `false`
+- <a id="s-b3929bc205"></a>`required`: `["phase","completed"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7c450bcc99"></a>`completed` | yes | type="integer"; minimum=0 |  |
+| <a id="s-eb3b7f0c57"></a>`phase` | yes | type="string"; maxLength=120; minLength=1 |  |
+| <a id="s-4f60514794"></a>`total` | no | anyOf=(type="integer"; minimum=0) \| (type="null"); default=null |  |
+| <a id="s-d09b9ee956"></a>`unit` | no | anyOf=(type="string"; maxLength=40; minLength=1) \| (type="null"); default=null |  |
+
+##### <a id="s-0123d3e011"></a>definition `TargetSettlementAuthority`
+
+- <a id="s-be2f882803"></a>`type`: `"object"`
+- <a id="s-183fe2f37f"></a>`additionalProperties`: `false`
+- <a id="s-10c13abc1c"></a>`required`: `["job_id","production_sha256","output_collection","output_bindings","settlement_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-bc34a31008"></a>`format` | no | type="string"; const="stove0-target-settlement/v1"; default="stove0-target-settlement/v1" |  |
+| <a id="s-d254190479"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-7466836827"></a>`output_bindings` | yes | [TargetOutputBindingSetIdentity](#s-44ba4eaf6e) |  |
+| <a id="s-5ef6d67468"></a>`output_collection` | yes | [OutputCollectionRef](#s-875ef95b02) |  |
+| <a id="s-0f70378ca4"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-3bc1159cf8"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-e6d9103d68"></a>definition `TransformPlan`
+
+- <a id="s-9f4e8799c9"></a>`type`: `"object"`
+- <a id="s-7e08a8f85b"></a>`additionalProperties`: `false`
+- <a id="s-ce72b5cf65"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent","target_implementation_id","target_contract_sha256","plan_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-d4a53ebe3c"></a>`inputs` | yes | [TargetInputAuthority](#s-afa6c620cf) |  |
+| <a id="s-d20c22398e"></a>`intent` | yes | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
+| <a id="s-ea5ac40576"></a>`observation_result_sha256s` | no | type="array"; default=[]; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
+| <a id="s-089f85bb3e"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d412c08907"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-c831800b57"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c04a9a75b9"></a>`protocol` | no | type="string"; const="stove0-transform-target/v1"; default="stove0-transform-target/v1" |  |
+| <a id="s-24f2d4ded0"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-47be0d30b3"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-383f2dd9f8"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
+
+##### <a id="s-427778f2b9"></a>definition `WorkClaimView`
+
+- <a id="s-a4af5499dd"></a>`type`: `"object"`
+- <a id="s-6dca7365cc"></a>`additionalProperties`: `false`
+- <a id="s-78a0d434df"></a>`required`: `["claim_id","fence"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ce6dc06b6b"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-becf367e67"></a>`fence` | yes | type="integer"; minimum=1 |  |
+
+##### <a id="s-3d393d60f5"></a>definition `WorkFailureView`
+
+- <a id="s-5253454c5b"></a>`type`: `"object"`
+- <a id="s-84e1547204"></a>`additionalProperties`: `false`
+- <a id="s-0e8e6da2d3"></a>`required`: `["code","message","retryable"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f2743ee2a4"></a>`code` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-19bcc0d976"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-135d377198"></a>`retryable` | yes | type="boolean" |  |
+
+##### <a id="s-9c239c9b47"></a>definition `WorkIdentity`
+
+- <a id="s-17ba947b3a"></a>`type`: `"object"`
+- <a id="s-0808a47cb5"></a>`additionalProperties`: `false`
+- <a id="s-a03fb6b98a"></a>`required`: `["recipe","inputs","work_id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b3c8ff41cd"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
+| <a id="s-32c462d0f5"></a>`evaluation` | no | anyOf=([EvaluationBinding](#s-80d3264a22)) \| (type="null"); default=null |  |
+| <a id="s-071846b040"></a>`fork_join` | no | anyOf=(discriminator={"mapping":{"branch":"[BranchWorkBinding](#s-b2406b87c9)","join":"[JoinWorkBinding](#s-1382221b54)"},"propertyName":"kind"}; oneOf=([BranchWorkBinding](#s-b2406b87c9)) \| ([JoinWorkBinding](#s-1382221b54))) \| (type="null"); default=null |  |
+| <a id="s-048ddd21eb"></a>`format` | no | type="string"; const="stove0-work/v1"; default="stove0-work/v1" |  |
+| <a id="s-7def94aa7c"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](#s-0c67995e84)); minItems=1 |  |
+| <a id="s-95d8658e71"></a>`recipe` | yes | [RecipeRef](#s-5f53bb63ed) |  |
+| <a id="s-6fc62b1d5e"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-b96615054f"></a>definition `WorkInapplicableView`
+
+- <a id="s-1b9282677f"></a>`type`: `"object"`
+- <a id="s-71509b28fb"></a>`additionalProperties`: `false`
+- <a id="s-d7811996d5"></a>`required`: `["code","message"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e6ab9a6322"></a>`code` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-522e1e15b8"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+
+##### <a id="s-eb01ec776f"></a>definition `WorkflowPlan`
+
+- <a id="s-f4ab44d29e"></a>`type`: `"object"`
+- <a id="s-7803659d75"></a>`additionalProperties`: `false`
+- <a id="s-d646b2c9bd"></a>`required`: `["work","operation","target_registration_id","target_contract_sha256","workflow_plan_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-1a73a6edb9"></a>`format` | no | type="string"; const="stove0-workflow-plan/v1"; default="stove0-workflow-plan/v1" |  |
+| <a id="s-a07730c7f5"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-f627f64c49"></a>`observations` | no | type="array"; default=[]; items=([ObservationEvidence](#s-2166c47ce3)) |  |
+| <a id="s-fd4e5ef98c"></a>`operation` | yes | [OperationRef](#s-673b4315d4) |  |
+| <a id="s-4ba3d3fe78"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
+| <a id="s-debc92cb04"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
+| <a id="s-52de873acd"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
+| <a id="s-8e964ec93e"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-615db0e147"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
+| <a id="s-d72c350d4d"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-560f70e10c"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
+| <a id="s-583039e459"></a>`work` | yes | [WorkIdentity](#s-9c239c9b47) |  |
+| <a id="s-2524d7bb47"></a>`workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-ef75a8f0d2"></a>definition `WorkflowPlanIntent`
+
+- <a id="s-1801760575"></a>`type`: `"object"`
+- <a id="s-b23bd610a5"></a>`additionalProperties`: `false`
+- <a id="s-a4571d1947"></a>`required`: `["operation","target_registration_id","target_contract_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-15814f14b9"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-9c9e49fe96"></a>`operation` | yes | [OperationRef](#s-673b4315d4) |  |
+| <a id="s-413d840dc7"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
+| <a id="s-87246782bf"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](#s-51b717ae82)) |  |
+| <a id="s-f5defad7d1"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
+| <a id="s-ecae2e1945"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-58d4954eed"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
+| <a id="s-2253641f4c"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f7f1f9a166"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
 
 ## Maintained corroboration
 
@@ -150,6 +1074,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.WorkView`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -2664,3 +3591,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

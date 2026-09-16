@@ -14,9 +14,12 @@ One declarative JSON-pointer copy into an operation request.
 ## External contract
 
 <a id="s-d57d52f12b"></a>
-- <a id="s-2c1cc9b409"></a>`title`: OperationProjection
-- <a id="s-94c32e17af"></a>`description`: One declarative JSON-pointer copy into an operation request.
-- <a id="s-976351d405"></a>`type`: object
+
+- <a id="s-976351d405"></a>`type`: `"object"`
+- <a id="s-2b77f4794d"></a>`additionalProperties`: `false`
+- <a id="s-94c32e17af"></a>`description`: `"One declarative JSON-pointer copy into an operation request."`
+- <a id="s-9fa2a69c9e"></a>`required`: `["source","source_pointer","destination","destination_pointer"]`
+- <a id="s-2c1cc9b409"></a>`title`: `"OperationProjection"`
 
 ### Fields
 
@@ -48,6 +51,9 @@ One declarative JSON-pointer copy into an operation request.
 - `/external_contract/http_openapi/stove0/components/schemas/OperationProjection`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -95,3 +101,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

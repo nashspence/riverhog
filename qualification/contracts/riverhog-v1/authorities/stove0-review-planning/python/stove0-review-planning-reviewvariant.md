@@ -27,21 +27,26 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-119f275b32"></a>
-- <a id="s-fa72432407"></a>`type`: object
 
-### Fields
+- <a id="s-fa72432407"></a>`type`: `"object"`
+- <a id="s-519e91c74a"></a>`additionalProperties`: `false`
+- <a id="s-2596517c75"></a>`required`: `["id"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-c33ed454d4"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-0b5d6934d6"></a>`portable_intent` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-917c3968f0"></a>`target_options` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-0b5d6934d6"></a>`portable_intent` | no | type="object"; additionalProperties=([JsonValue](#s-126b5d9bd8)) |  |
+| <a id="s-917c3968f0"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-126b5d9bd8)) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-126b5d9bd8"></a>`JsonValue` | empty object |
+- [JsonValue](#s-126b5d9bd8)
+
+##### <a id="s-126b5d9bd8"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Governing policies
 
@@ -64,6 +69,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_review_planning.ReviewVariant`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -109,3 +117,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

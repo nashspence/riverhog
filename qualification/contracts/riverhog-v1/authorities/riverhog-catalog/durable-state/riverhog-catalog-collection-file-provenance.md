@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5135cc46d8"></a>
-- Table: `collection_file_provenance`
 
-### Columns
+### Table: `collection_file_provenance`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -27,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-ba869643a0"></a>`current_state_id` | `VARCHAR` | yes | `—` | — |
 | <a id="s-fc0510f0ef"></a>`omission_reason` | `TEXT` | yes | `—` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -64,6 +65,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/0/structure/tables/44`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -166,3 +170,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "collection_file_provenance"
 }
 ```
+
+</details>

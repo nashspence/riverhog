@@ -14,14 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-725b5b627a"></a>
-- <a id="s-00697fcd8b"></a>`title`: AddCollectionUploadTagsRequest
-- <a id="s-d72c7ccc05"></a>`type`: object
+
+- <a id="s-d72c7ccc05"></a>`type`: `"object"`
+- <a id="s-12e6c4f665"></a>`additionalProperties`: `false`
+- <a id="s-3f7a93066b"></a>`required`: `["tags"]`
+- <a id="s-00697fcd8b"></a>`title`: `"AddCollectionUploadTagsRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7bad0c6531"></a>`tags` | yes | type="array"; minItems=1; maxItems=100; items=(#/components/schemas/CollectionTag); additional keys=`x-riverhog-extent` |  |
+| <a id="s-7bad0c6531"></a>`tags` | yes | type="array"; items=(#/components/schemas/CollectionTag); maxItems=100; minItems=1; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"repeat-request","reason":"bounded-upload-staging-step; collection-tag-set-is-unbounded"} |  |
 
 ### Progression, limits, and lifecycle
 
@@ -68,6 +71,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 214539b2d2c07af11ffdb113fd836214811fd2a8395f88cd0be7e3e3bfd8fa3a -->
@@ -98,3 +104,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

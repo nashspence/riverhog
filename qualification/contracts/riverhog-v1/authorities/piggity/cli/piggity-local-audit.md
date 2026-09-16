@@ -43,7 +43,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-b2c9087580"></a>`completed` | <a id="s-7270ded0ea"></a>`{"kind":"command-completed"}` | <a id="s-8cc110a0a6"></a>`0` | <a id="s-7923b371d9"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-local-audit-result/v1](#s-7923b371d9) | <a id="s-61aa49cd92"></a>all: `empty` |
+| <a id="s-b2c9087580"></a>`completed` | <a id="s-7270ded0ea"></a>`{"kind":"command-completed"}` | <a id="s-8cc110a0a6"></a>`0` | <a id="s-7923b371d9"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-local-audit-result/v1](#s-d674179474) | <a id="s-61aa49cd92"></a>all: `empty` |
 
 #### Failure outcomes
 
@@ -51,7 +51,48 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|---|
 | <a id="s-f9a7b01ee7"></a>`usage` | <a id="s-0971b08506"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-e09219d1f2"></a>`2` | <a id="s-d5f38b7b34"></a>all: `empty` | <a id="s-64a8941ac9"></a>all: `noncontractual-usage-diagnostic` |
 | <a id="s-f6e8c9c6bc"></a>`operational` | <a id="s-6d7826f892"></a>`{"kind":"application-error"}` | <a id="s-cb91e9abd4"></a>`1` | <a id="s-d682d26a84"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-6830214707"></a>human: `noncontractual-diagnostic`; json: `empty` |
-| <a id="s-3085f2c952"></a>`audit-issues` | <a id="s-8ada29b221"></a>`{"kind":"local-audit-problem-count-positive"}` | <a id="s-fad0414f0a"></a>`1` | <a id="s-cd7eb3d6da"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-local-audit-result/v1](#s-cd7eb3d6da) | <a id="s-0d1aefa173"></a>all: `empty` |
+| <a id="s-3085f2c952"></a>`audit-issues` | <a id="s-8ada29b221"></a>`{"kind":"local-audit-problem-count-positive"}` | <a id="s-fad0414f0a"></a>`1` | <a id="s-cd7eb3d6da"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-local-audit-result/v1](#s-03028cc2c8) | <a id="s-0d1aefa173"></a>all: `empty` |
+
+### Local structured outputs
+
+
+#### <a id="s-d674179474"></a>`piggity-local-audit-result/v1`
+
+Applies to: completed · stdout (json).
+
+<a id="s-6879261c97"></a>
+
+- <a id="s-6ff87e9546"></a>`type`: `"object"`
+- <a id="s-e21e42dc4a"></a>`additionalProperties`: `false`
+- <a id="s-67429944a4"></a>`required`: `["status","problems","samples","samples_truncated"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-46ddb3296a"></a>`problems` | yes | type="integer"; minimum=0 |  |
+| <a id="s-7a3698d54a"></a>`samples` | yes | type="array"; items=(type="string"); maxItems=100 |  |
+| <a id="s-c0130ab445"></a>`samples_truncated` | yes | type="boolean" |  |
+| <a id="s-7932ae4ee0"></a>`status` | yes | enum=["ok","issues"] |  |
+
+#### <a id="s-03028cc2c8"></a>`piggity-local-audit-result/v1`
+
+Applies to: audit-issues · stdout (json).
+
+<a id="s-248a3c4b1f"></a>
+
+- <a id="s-78625681fd"></a>`type`: `"object"`
+- <a id="s-be5d45912d"></a>`additionalProperties`: `false`
+- <a id="s-43ba127ead"></a>`required`: `["status","problems","samples","samples_truncated"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-69b70b1835"></a>`problems` | yes | type="integer"; minimum=0 |  |
+| <a id="s-7d444e010f"></a>`samples` | yes | type="array"; items=(type="string"); maxItems=100 |  |
+| <a id="s-b60401df2c"></a>`samples_truncated` | yes | type="boolean" |  |
+| <a id="s-ce9bc0089e"></a>`status` | yes | enum=["ok","issues"] |  |
 
 ### Progression, limits, and lifecycle
 
@@ -91,6 +132,9 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 - `/external_contract/cli/piggity/commands/local/commands/audit/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -369,3 +413,5 @@ false
   }
 ]
 ```
+
+</details>

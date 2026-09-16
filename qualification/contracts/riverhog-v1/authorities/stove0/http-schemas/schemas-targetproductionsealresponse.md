@@ -14,14 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-80154241ca"></a>
-- <a id="s-390c89951d"></a>`title`: TargetProductionSealResponse
-- <a id="s-8d5d314868"></a>`type`: object
+
+- <a id="s-8d5d314868"></a>`type`: `"object"`
+- <a id="s-a1d74f755e"></a>`additionalProperties`: `false`
+- <a id="s-1e5db42538"></a>`required`: `["state"]`
+- <a id="s-390c89951d"></a>`title`: `"TargetProductionSealResponse"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b76d61e14c"></a>`production` | no | anyOf=#/components/schemas/TargetProductionAuthority \| type="null" |  |
+| <a id="s-b76d61e14c"></a>`production` | no | anyOf=(#/components/schemas/TargetProductionAuthority) \| (type="null") |  |
 | <a id="s-62b7d0e7eb"></a>`state` | yes | type="string"; enum=["sealing","sealed"] |  |
 
 ## Maintained corroboration
@@ -51,6 +54,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/stove0/components/schemas/TargetProductionSealResponse`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -86,3 +92,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

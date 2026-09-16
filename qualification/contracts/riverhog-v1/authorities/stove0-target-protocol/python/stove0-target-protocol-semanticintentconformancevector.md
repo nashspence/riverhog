@@ -27,21 +27,26 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-732070400a"></a>
-- <a id="s-7425697313"></a>`type`: object
 
-### Fields
+- <a id="s-7425697313"></a>`type`: `"object"`
+- <a id="s-fc161d496f"></a>`additionalProperties`: `false`
+- <a id="s-ed3d11eec8"></a>`required`: `["id","accepted","intent"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-76494e4f0f"></a>`accepted` | yes | type="boolean" |  |
 | <a id="s-c10206aec8"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-45417c7724"></a>`intent` | yes | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-45417c7724"></a>`intent` | yes | type="object"; additionalProperties=([JsonValue](#s-1bf21429a7)) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-1bf21429a7"></a>`JsonValue` | empty object |
+- [JsonValue](#s-1bf21429a7)
+
+##### <a id="s-1bf21429a7"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Governing policies
 
@@ -64,6 +69,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_protocol.SemanticIntentConformanceVector`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -108,3 +116,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

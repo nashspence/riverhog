@@ -14,9 +14,12 @@ Bounded immutable metadata that owns one portable file inventory.
 ## External contract
 
 <a id="s-b136bcb9c1"></a>
-- <a id="s-01256d4246"></a>`title`: PortableCollectionHeader
-- <a id="s-519f6be1ef"></a>`description`: Bounded immutable metadata that owns one portable file inventory.
-- <a id="s-50d2eb1565"></a>`type`: object
+
+- <a id="s-50d2eb1565"></a>`type`: `"object"`
+- <a id="s-157c1fa1c8"></a>`additionalProperties`: `false`
+- <a id="s-519f6be1ef"></a>`description`: `"Bounded immutable metadata that owns one portable file inventory."`
+- <a id="s-e4ea89c847"></a>`required`: `["collection","content_identity","encryption_format","passphrase_id","provenance_mode"]`
+- <a id="s-01256d4246"></a>`title`: `"PortableCollectionHeader"`
 
 ### Fields
 
@@ -25,9 +28,9 @@ Bounded immutable metadata that owns one portable file inventory.
 | <a id="s-24956a7c4e"></a>`collection` | yes | #/components/schemas/CollectionId |  |
 | <a id="s-08d76496f4"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-7980aa414c"></a>`encryption_format` | yes | type="string"; minLength=1 |  |
-| <a id="s-e67a06239f"></a>`format` | no | type="string"; const="riverhog-collection/v1" |  |
+| <a id="s-e67a06239f"></a>`format` | no | type="string"; const="riverhog-collection/v1"; default="riverhog-collection/v1" |  |
 | <a id="s-e61a66d8d0"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
-| <a id="s-9d38e0d114"></a>`provenance_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-9d38e0d114"></a>`provenance_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 | <a id="s-f354b26fe8"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"] |  |
 
 ### Progression, limits, and lifecycle
@@ -69,6 +72,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionHeader`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -136,3 +142,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

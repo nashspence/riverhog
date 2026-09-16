@@ -23,13 +23,13 @@ Status
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-702a3a9511"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-9a0968104e"></a>`page_token` | query | no | not declared | anyOf=type="string"; minLength=1; maxLength=120 \| type="null" |
+| <a id="s-9a0968104e"></a>`page_token` | query | no | not declared | anyOf=(type="string"; maxLength=120; minLength=1) \| (type="null") |
 
 ### Responses
 
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
-| <a id="s-de7ccd665a"></a>`200` | Successful Response | application/json | type="object"; additional keys=`additionalProperties` | not declared |
+| <a id="s-de7ccd665a"></a>`200` | Successful Response | application/json | type="object"; additionalProperties=true | not declared |
 | <a id="s-ce6b0b2450"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
 | <a id="s-ca2c31b304"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
 | <a id="s-fa00d2585f"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
@@ -161,6 +161,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 2ef0b2fa72d8f06e46d0863bd34f0c35b1345f1e3b99b5e77e33984f7df5a4b6 -->
@@ -285,3 +288,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

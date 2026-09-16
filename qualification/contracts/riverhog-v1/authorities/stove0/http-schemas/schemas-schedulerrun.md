@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6407a73b91"></a>
-- <a id="s-7b437e479d"></a>`title`: SchedulerRun
-- <a id="s-76621ef99a"></a>`type`: object
+
+- <a id="s-76621ef99a"></a>`type`: `"object"`
+- <a id="s-9a2d1bc1d3"></a>`additionalProperties`: `false`
+- <a id="s-f890af8706"></a>`required`: `["pruning","work"]`
+- <a id="s-7b437e479d"></a>`title`: `"SchedulerRun"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-42061fffc2"></a>`admission` | no | anyOf=#/components/schemas/AdmissionRun \| type="null" |  |
-| <a id="s-e949e7bfc6"></a>`pruning` | yes | anyOf=#/components/schemas/SchedulerPruning \| type="null" |  |
+| <a id="s-42061fffc2"></a>`admission` | no | anyOf=(#/components/schemas/AdmissionRun) \| (type="null") |  |
+| <a id="s-e949e7bfc6"></a>`pruning` | yes | anyOf=(#/components/schemas/SchedulerPruning) \| (type="null") |  |
 | <a id="s-3b50dd5ead"></a>`work` | yes | #/components/schemas/SchedulerWorkBatch |  |
 
 ## Maintained corroboration
@@ -54,6 +57,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/stove0/components/schemas/SchedulerRun`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -95,3 +101,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

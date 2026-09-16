@@ -27,28 +27,126 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-3b78000f99"></a>
-- <a id="s-01be60b278"></a>`type`: object
 
-### Fields
+- <a id="s-01be60b278"></a>`type`: `"object"`
+- <a id="s-8ab96069ad"></a>`additionalProperties`: `false`
+- <a id="s-5423aafed7"></a>`required`: `["fence","output_collection_id","derivation"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-dd4b96785f"></a>`derivation` | yes | #/$defs/CollectionDerivationDocument |  |
+| <a id="s-dd4b96785f"></a>`derivation` | yes | [CollectionDerivationDocument](#s-2bd8d62893) |  |
 | <a id="s-011a82f456"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-84a0f0c6d4"></a>`outcome` | no | anyOf=#/$defs/ProcessingOutcomeBindingDocument \| type="null" |  |
-| <a id="s-67ff0b4dc2"></a>`output_collection_id` | yes | #/$defs/CollectionId |  |
+| <a id="s-84a0f0c6d4"></a>`outcome` | no | anyOf=([ProcessingOutcomeBindingDocument](#s-c7e96fccf8)) \| (type="null"); default=null |  |
+| <a id="s-67ff0b4dc2"></a>`output_collection_id` | yes | [CollectionId](#s-e37ce6215f) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-bcbe294d68"></a>`ArtifactDispositionSetIdentityDocument` | type="object"; fields=`disposition_count`, `output_artifact_count`, `output_edge_count`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-adf64e03c7"></a>`ClaimFenceDocument` | type="object"; fields=`fence`, `id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-2bd8d62893"></a>`CollectionDerivationDocument` | type="object"; fields=`artifact_set_sha256`, `claim`, `controller_evidence`, `controller_evidence_sha256`, `disposition_set`, `execution_envelope_sha256`, `execution_id`, `execution_sha256`, `format`, `input_set_sha256`, `operation`, `recipe`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e37ce6215f"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-769008a64e"></a>`OperationIdentityDocument` | type="object"; fields=`id`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-c7e96fccf8"></a>`ProcessingOutcomeBindingDocument` | type="object"; fields=`claim_id`, `fence`, `outcome_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-7b57800bfc"></a>`RecipeIdentityDocument` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
+- [ArtifactDispositionSetIdentityDocument](#s-bcbe294d68)
+- [ClaimFenceDocument](#s-adf64e03c7)
+- [CollectionDerivationDocument](#s-2bd8d62893)
+- [CollectionId](#s-e37ce6215f)
+- [OperationIdentityDocument](#s-769008a64e)
+- [ProcessingOutcomeBindingDocument](#s-c7e96fccf8)
+- [RecipeIdentityDocument](#s-7b57800bfc)
+
+##### <a id="s-bcbe294d68"></a>definition `ArtifactDispositionSetIdentityDocument`
+
+- <a id="s-6b761da8f8"></a>`type`: `"object"`
+- <a id="s-f99a4692f8"></a>`additionalProperties`: `false`
+- <a id="s-e47a5f4018"></a>`required`: `["disposition_count","output_edge_count","output_artifact_count","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6ebf0c7298"></a>`disposition_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-729ed387ef"></a>`output_artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-c9ad170317"></a>`output_edge_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-330f18cf95"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-adf64e03c7"></a>definition `ClaimFenceDocument`
+
+- <a id="s-8cf805c957"></a>`type`: `"object"`
+- <a id="s-dbc0f03a92"></a>`additionalProperties`: `false`
+- <a id="s-dbc13f2135"></a>`required`: `["id","fence"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-504601e9c3"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-f57273e012"></a>`id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-2bd8d62893"></a>definition `CollectionDerivationDocument`
+
+- <a id="s-ea81121cc8"></a>`type`: `"object"`
+- <a id="s-d31d199a16"></a>`additionalProperties`: `false`
+- <a id="s-87ee6836b0"></a>`required`: `["format","execution_id","claim","recipe","operation","input_set_sha256","artifact_set_sha256","execution_envelope_sha256","execution_sha256","controller_evidence","controller_evidence_sha256","disposition_set"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-46c59448a7"></a>`artifact_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1f59ed16bc"></a>`claim` | yes | [ClaimFenceDocument](#s-adf64e03c7) |  |
+| <a id="s-67d62ddd80"></a>`controller_evidence` | yes | type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
+| <a id="s-04e5367438"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-34f6825596"></a>`disposition_set` | yes | [ArtifactDispositionSetIdentityDocument](#s-bcbe294d68) |  |
+| <a id="s-54a4d89179"></a>`execution_envelope_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-aa12042477"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f4d91f287c"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-e09d612a64"></a>`format` | yes | type="string"; const="riverhog-collection-derivation/v1" |  |
+| <a id="s-7d7236241f"></a>`input_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-527987acc0"></a>`operation` | yes | [OperationIdentityDocument](#s-769008a64e) |  |
+| <a id="s-aba4688a18"></a>`recipe` | yes | [RecipeIdentityDocument](#s-7b57800bfc) |  |
+
+##### <a id="s-e37ce6215f"></a>definition `CollectionId`
+
+- <a id="s-7bf946aec7"></a>`type`: `"integer"`
+- <a id="s-100ac3d0cb"></a>`minimum`: `1`
+
+##### <a id="s-769008a64e"></a>definition `OperationIdentityDocument`
+
+- <a id="s-06eed4e563"></a>`type`: `"object"`
+- <a id="s-830f7b2277"></a>`additionalProperties`: `false`
+- <a id="s-a35cfc2308"></a>`required`: `["id","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3d6b19a771"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-3e461d4d05"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-c7e96fccf8"></a>definition `ProcessingOutcomeBindingDocument`
+
+- <a id="s-20e5693d6a"></a>`type`: `"object"`
+- <a id="s-b43dc586db"></a>`additionalProperties`: `false`
+- <a id="s-62c9e1e6a1"></a>`required`: `["claim_id","fence","outcome_id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-aee45cd2fa"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-e5b7c1ecfe"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-f13c90ff3a"></a>`outcome_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+
+##### <a id="s-7b57800bfc"></a>definition `RecipeIdentityDocument`
+
+- <a id="s-a069a3d0f6"></a>`type`: `"object"`
+- <a id="s-2e8ca6b201"></a>`additionalProperties`: `false`
+- <a id="s-4a8a078106"></a>`required`: `["id","revision","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7a850eb03a"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-74b5c5fe67"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-ccde48c239"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -78,6 +176,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -312,3 +413,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

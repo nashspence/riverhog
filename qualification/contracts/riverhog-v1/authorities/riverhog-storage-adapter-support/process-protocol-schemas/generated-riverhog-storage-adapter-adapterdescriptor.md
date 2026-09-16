@@ -14,19 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4d4503852a"></a>
-- <a id="s-c33981da12"></a>`title`: AdapterDescriptor
-- <a id="s-eca284d012"></a>`type`: object
+
+- <a id="s-eca284d012"></a>`type`: `"object"`
+- <a id="s-808a2f7150"></a>`additionalProperties`: `false`
+- <a id="s-59e897ad89"></a>`required`: `["implementation_id","implementation_version","read_mode","minimum_nonfinal_segment_bytes"]`
+- <a id="s-c33981da12"></a>`title`: `"AdapterDescriptor"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-6157396c02"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-ad077bc43a"></a>`implementation_version` | yes | type="string"; minLength=1; maxLength=120 |  |
-| <a id="s-e4c53eefe8"></a>`maximum_segment_bytes` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
-| <a id="s-bca1f9556e"></a>`maximum_segment_count` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| <a id="s-ad077bc43a"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1 |  |
+| <a id="s-e4c53eefe8"></a>`maximum_segment_bytes` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
+| <a id="s-bca1f9556e"></a>`maximum_segment_count` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
 | <a id="s-7886488551"></a>`minimum_nonfinal_segment_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-f345896a9f"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1" |  |
+| <a id="s-f345896a9f"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1"; default="riverhog-storage-adapter/v1" |  |
 | <a id="s-33e9ebd76a"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"] |  |
 
 ### Progression, limits, and lifecycle
@@ -67,6 +70,9 @@ Shared facts for every subject below: maximum=120; minimum=1; reason="schema-max
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/AdapterDescriptor`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -143,3 +149,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -27,13 +27,16 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-59622a48b3"></a>
-- <a id="s-fd8fc72ccd"></a>`type`: object
 
-### Fields
+- <a id="s-fd8fc72ccd"></a>`type`: `"object"`
+- <a id="s-d4024c609a"></a>`additionalProperties`: `false`
+- <a id="s-5863726560"></a>`required`: `["work_id","workflow_plan_sha256","join_plan_sha256","state"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-bade89ad86"></a>`format` | no | type="string"; const="stove0-join-outcome/v1" |  |
+| <a id="s-bade89ad86"></a>`format` | no | type="string"; const="stove0-join-outcome/v1"; default="stove0-join-outcome/v1" |  |
 | <a id="s-5f4884d3a7"></a>`join_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-3af8b3e403"></a>`state` | yes | type="string"; enum=["failed","inapplicable","interrupted","canceled"] |  |
 | <a id="s-9045d5709f"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -60,6 +63,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_protocol.JoinOutcome`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -115,3 +121,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

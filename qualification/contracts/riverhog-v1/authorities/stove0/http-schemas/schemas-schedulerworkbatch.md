@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-91b2b76dcb"></a>
-- <a id="s-722e47111c"></a>`title`: SchedulerWorkBatch
-- <a id="s-264d2157f8"></a>`type`: object
+
+- <a id="s-264d2157f8"></a>`type`: `"object"`
+- <a id="s-b1faad5177"></a>`additionalProperties`: `false`
+- <a id="s-1da29cd7da"></a>`required`: `["role","cursor","next_cursor","progressed","failures"]`
+- <a id="s-722e47111c"></a>`title`: `"SchedulerWorkBatch"`
 
 ### Fields
 
@@ -76,6 +79,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 8bc39e7070ed70678d9f49add76a6806022e801c3461554beebb6ae95228e285 -->
@@ -128,3 +134,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

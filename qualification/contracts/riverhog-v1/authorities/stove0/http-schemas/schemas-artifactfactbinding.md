@@ -14,15 +14,18 @@ Locate subject-keyed records inside one observer's declared facts schema.
 ## External contract
 
 <a id="s-ceab5b82fb"></a>
-- <a id="s-62a5af5334"></a>`title`: ArtifactFactBinding
-- <a id="s-e417b95fbe"></a>`description`: Locate subject-keyed records inside one observer's declared facts schema.
-- <a id="s-3dec4792e9"></a>`type`: object
+
+- <a id="s-3dec4792e9"></a>`type`: `"object"`
+- <a id="s-267c3118f0"></a>`additionalProperties`: `false`
+- <a id="s-e417b95fbe"></a>`description`: `"Locate subject-keyed records inside one observer's declared facts schema."`
+- <a id="s-20e4539450"></a>`required`: `["records_pointer"]`
+- <a id="s-62a5af5334"></a>`title`: `"ArtifactFactBinding"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ced3f84eac"></a>`artifact_id_pointer` | no | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
+| <a id="s-ced3f84eac"></a>`artifact_id_pointer` | no | type="string"; default="/artifact_id"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
 | <a id="s-1cd1f7bbbe"></a>`records_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
 
 ## Governing policies
@@ -46,6 +49,9 @@ Locate subject-keyed records inside one observer's declared facts schema.
 - `/external_contract/http_openapi/stove0/components/schemas/ArtifactFactBinding`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -75,3 +81,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

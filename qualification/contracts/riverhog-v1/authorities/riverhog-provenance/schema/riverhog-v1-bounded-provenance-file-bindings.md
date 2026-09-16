@@ -14,24 +14,78 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8fae636dba"></a>
-- <a id="s-161c46ee86"></a>`$id`: https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-bindings-v1.schema.json
-- <a id="s-bfaa76465d"></a>`title`: Riverhog v1 bounded provenance file bindings
-- <a id="s-926a3b93f1"></a>`type`: object
+
+- <a id="s-926a3b93f1"></a>`type`: `"object"`
+- <a id="s-161c46ee86"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-bindings-v1.schema.json"`
+- <a id="s-beb0521d6e"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-389d942af1"></a>`additionalProperties`: `false`
+- <a id="s-2be9600819"></a>`required`: `["schema","first_file_order","files"]`
+- <a id="s-bfaa76465d"></a>`title`: `"Riverhog v1 bounded provenance file bindings"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f6fb3fdf31"></a>`files` | yes | type="array"; minItems=1; maxItems=512; items=(#/$defs/file); additional keys=`x-riverhog-extent` |  |
+| <a id="s-f6fb3fdf31"></a>`files` | yes | type="array"; items=([file](#s-25211fe36a)); maxItems=512; minItems=1; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"ordered-provenance-volume-sequence","reason":"bounded-provenance-binding-volume"} |  |
 | <a id="s-809fd78862"></a>`first_file_order` | yes | type="integer"; minimum=0 |  |
 | <a id="s-14600985bd"></a>`schema` | yes | const="riverhog-provenance-bindings/v1" |  |
 
 ### Definitions
 
-| Definition | Shape |
+- [file](#s-25211fe36a)
+- [sha256](#s-8a9c94c093)
+
+### <a id="s-25211fe36a"></a>definition `file`
+
+- <a id="s-1a3dca93d3"></a>`type`: `"object"`
+- <a id="s-cdfde6cf22"></a>`additionalProperties`: `false`
+- <a id="s-a0efb075ae"></a>`required`: `["path","bytes","sha256","status"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ba7ec24ff1"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-b176e675ef"></a>`current_state_id` | no | type="string" |  |
+| <a id="s-15dae341e6"></a>`journal_id` | no | type="string" |  |
+| <a id="s-22a3db4c25"></a>`omission_reason` | no | type="string"; minLength=1 |  |
+| <a id="s-c564f51f56"></a>`path` | yes | type="string"; minLength=1 |  |
+| <a id="s-c8d6cc5f2b"></a>`sha256` | yes | [sha256](#s-8a9c94c093) |  |
+| <a id="s-d4c223227b"></a>`status` | yes | enum=["captured","omitted"] |  |
+
+#### Exactly one must match (`oneOf`)
+
+| Alternative | Schema |
 |---|---|
-| <a id="s-25211fe36a"></a>`file` | type="object"; fields=`bytes`, `current_state_id`, `journal_id`, `omission_reason`, `path`, `sha256`, `status`; oneOf=fields=`status`; additional keys=`not`, `required` \| fields=`status`; additional keys=`not`, `required`; additional keys=`additionalProperties`, `required` |
-| <a id="s-8a9c94c093"></a>`sha256` | type="string"; pattern="^[0-9a-f]{64}$" |
+| 1 | [See definition `file` · `oneOf` alternative 1](#s-67ae496375) |
+| 2 | [See definition `file` · `oneOf` alternative 2](#s-e309e272d7) |
+
+### <a id="s-8a9c94c093"></a>definition `sha256`
+
+- <a id="s-290cb66444"></a>`type`: `"string"`
+- <a id="s-1ca4c2174f"></a>`pattern`: `"^[0-9a-f]{64}$"`
+
+### <a id="s-67ae496375"></a>definition `file` · `oneOf` alternative 1
+
+- <a id="s-759eeda733"></a>`not`: required=["omission_reason"]
+- <a id="s-25f00377ad"></a>`required`: `["journal_id","current_state_id"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3ef1e884f3"></a>`status` | no | const="captured" |  |
+
+### <a id="s-e309e272d7"></a>definition `file` · `oneOf` alternative 2
+
+- <a id="s-e4a157927e"></a>`not`: anyOf=(required=["journal_id"]) \| (required=["current_state_id"])
+- <a id="s-007eca4651"></a>`required`: `["omission_reason"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-5650dd2fcb"></a>`status` | no | const="omitted" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -49,7 +103,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-ba7ec24ff1"></a>[definition file · field bytes](#s-25211fe36a) | `value · schema-value · operational_policy` | shared above |
+| [definition file · field bytes](#s-ba7ec24ff1) | `value · schema-value · operational_policy` | shared above |
 | [field first_file_order](#s-809fd78862) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
@@ -90,6 +144,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1riverhog-provenance-bindings-v1.schema.json`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -218,3 +275,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

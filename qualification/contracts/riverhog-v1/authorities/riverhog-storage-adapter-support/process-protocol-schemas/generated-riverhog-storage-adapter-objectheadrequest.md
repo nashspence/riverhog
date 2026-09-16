@@ -14,21 +14,36 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1d0923d679"></a>
-- <a id="s-43f6a60384"></a>`title`: ObjectHeadRequest
-- <a id="s-9c07a6f0f2"></a>`type`: object
+
+- <a id="s-9c07a6f0f2"></a>`type`: `"object"`
+- <a id="s-85883b5aa8"></a>`additionalProperties`: `false`
+- <a id="s-4f333ef0a1"></a>`required`: `["object","expected_placement"]`
+- <a id="s-43f6a60384"></a>`title`: `"ObjectHeadRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-6e4b7e80f0"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
-| <a id="s-5415a60fb9"></a>`object` | yes | #/$defs/ObjectLocator |  |
+| <a id="s-5415a60fb9"></a>`object` | yes | [ObjectLocator](#s-3721011c38) |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-3721011c38"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
+- [ObjectLocator](#s-3721011c38)
+
+### <a id="s-3721011c38"></a>definition `ObjectLocator`
+
+- <a id="s-06f7981479"></a>`type`: `"object"`
+- <a id="s-6f648c2376"></a>`additionalProperties`: `false`
+- <a id="s-c56d093e77"></a>`required`: `["object_path"]`
+- <a id="s-96205888f8"></a>`title`: `"ObjectLocator"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3bedd7888d"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-0391dfaa3e"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
 
 ## Maintained corroboration
 
@@ -57,6 +72,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectHeadRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -118,3 +136,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -13,8 +13,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-20ed0aa4fc"></a>
-- Shape: "A supported deployment runs components from one coordinated product version."
+
+| Field | Value |
+|---|---|
+| <a id="s-20ed0aa4fc"></a>`components` | `"A supported deployment runs components from one coordinated product version."` |
 
 ## Governing policies
 
@@ -39,6 +41,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: b2f0f3bfa6f92cd063f8130be900cbf2e446f38b94c0b918ea0fa6c36c24e295 -->
@@ -46,3 +51,5 @@ The following JSON is the complete value owned at each machine-authority pointer
 ```json
 "A supported deployment runs components from one coordinated product version."
 ```
+
+</details>

@@ -27,9 +27,12 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-a6a5fbcb59"></a>
-- <a id="s-c36814c318"></a>`type`: object
 
-### Fields
+- <a id="s-c36814c318"></a>`type`: `"object"`
+- <a id="s-f53dcaa250"></a>`additionalProperties`: `false`
+- <a id="s-190dd119a5"></a>`required`: `["service","status"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
@@ -57,6 +60,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/http_api_contracts.HealthResponse`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -92,3 +98,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

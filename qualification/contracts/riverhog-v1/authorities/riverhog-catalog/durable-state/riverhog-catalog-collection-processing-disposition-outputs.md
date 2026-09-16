@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-08dd5aa791"></a>
-- Table: `collection_processing_disposition_outputs`
 
-### Columns
+### Table: `collection_processing_disposition_outputs`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -26,7 +27,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-9943017599"></a>`input_path` | `VARCHAR` | no | `—` | — |
 | <a id="s-eecedaa9a6"></a>`output_order` | `BIGINT` | yes | `—` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -62,6 +63,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/0/structure/tables/80`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -146,3 +150,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "collection_processing_disposition_outputs"
 }
 ```
+
+</details>

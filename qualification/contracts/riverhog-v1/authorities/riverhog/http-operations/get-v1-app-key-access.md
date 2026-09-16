@@ -23,15 +23,15 @@ List App Key Access
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-34884d05d9"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-0c1b73e009"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
+| <a id="s-0c1b73e009"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
 | <a id="s-9c2c7f379a"></a>`sort` | query | no | `"permission"` | [ApplicationAccessSort](../http-schemas/schemas-applicationaccesssort.md) |
 | <a id="s-bb3990152c"></a>`order` | query | no | `"asc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
-| <a id="s-a8d34e4650"></a>`q` | query | no | not declared | anyOf=[BrowseQuery](../http-schemas/schemas-browsequery.md) \| type="null" |
-| <a id="s-8c4d8992cd"></a>`app` | query | no | not declared | anyOf=[ApplicationName](../http-schemas/schemas-applicationname.md) \| type="null" |
-| <a id="s-1db5767afc"></a>`key` | query | no | not declared | anyOf=[ApplicationKeyId](../http-schemas/schemas-applicationkeyid.md) \| type="null" |
-| <a id="s-a728d4ed13"></a>`permission` | query | no | not declared | anyOf=[ApplicationPermission](../http-schemas/schemas-applicationpermission.md) \| type="null" |
-| <a id="s-581adbcf51"></a>`resource` | query | no | not declared | anyOf=[ApplicationResource](../http-schemas/schemas-applicationresource.md) \| type="null" |
-| <a id="s-92d75808e9"></a>`active` | query | no | not declared | anyOf=type="boolean" \| type="null" |
+| <a id="s-a8d34e4650"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
+| <a id="s-8c4d8992cd"></a>`app` | query | no | not declared | anyOf=([ApplicationName](../http-schemas/schemas-applicationname.md)) \| (type="null") |
+| <a id="s-1db5767afc"></a>`key` | query | no | not declared | anyOf=([ApplicationKeyId](../http-schemas/schemas-applicationkeyid.md)) \| (type="null") |
+| <a id="s-a728d4ed13"></a>`permission` | query | no | not declared | anyOf=([ApplicationPermission](../http-schemas/schemas-applicationpermission.md)) \| (type="null") |
+| <a id="s-581adbcf51"></a>`resource` | query | no | not declared | anyOf=([ApplicationResource](../http-schemas/schemas-applicationresource.md)) \| (type="null") |
+| <a id="s-92d75808e9"></a>`active` | query | no | not declared | anyOf=(type="boolean") \| (type="null") |
 
 ### Responses
 
@@ -167,6 +167,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/riverhog/paths/~1v1~1app-key-access/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -409,3 +412,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

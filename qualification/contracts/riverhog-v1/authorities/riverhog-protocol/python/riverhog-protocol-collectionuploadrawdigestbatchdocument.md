@@ -27,15 +27,18 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-0916434e96"></a>
-- <a id="s-c7c5a50ae9"></a>`type`: object
 
-### Fields
+- <a id="s-c7c5a50ae9"></a>`type`: `"object"`
+- <a id="s-2b59f0fc8d"></a>`additionalProperties`: `false`
+- <a id="s-6ee88be58a"></a>`required`: `["path","first_part","sha256s"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-ac6b8dd81c"></a>`first_part` | yes | type="integer"; minimum=0 |  |
 | <a id="s-a44cdb5394"></a>`path` | yes | type="string" |  |
-| <a id="s-4ea3a086a9"></a>`sha256s` | yes | type="array"; minItems=1; maxItems=1024; items=(type="string"; pattern="^[0-9a-f]{64}$"); additional keys=`x-riverhog-extent` |  |
+| <a id="s-4ea3a086a9"></a>`sha256s` | yes | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$"); maxItems=1024; minItems=1; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"first_part","reason":"bounded-raw-digest-append"} |  |
 
 ## Maintained corroboration
 
@@ -64,6 +67,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.CollectionUploadRawDigestBatchDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -113,3 +119,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

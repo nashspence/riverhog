@@ -14,14 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0950bd2aa2"></a>
-- <a id="s-12a81cd590"></a>`title`: SchedulerStatus
-- <a id="s-84ef31a555"></a>`type`: object
+
+- <a id="s-84ef31a555"></a>`type`: `"object"`
+- <a id="s-e7b7305364"></a>`additionalProperties`: `false`
+- <a id="s-e2cedc91cf"></a>`required`: `["running","interval_seconds","roles"]`
+- <a id="s-12a81cd590"></a>`title`: `"SchedulerStatus"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-abc73db796"></a>`interval_seconds` | yes | type="number"; additional keys=`exclusiveMinimum` |  |
+| <a id="s-abc73db796"></a>`interval_seconds` | yes | type="number"; exclusiveMinimum=0 |  |
 | <a id="s-818b34c678"></a>`roles` | yes | type="array"; items=(type="string"; enum=["controller","worker","combined"]) |  |
 | <a id="s-d854a9bbee"></a>`running` | yes | type="boolean" |  |
 
@@ -57,6 +60,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/stove0/components/schemas/SchedulerStatus`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -97,3 +103,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

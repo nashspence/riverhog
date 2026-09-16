@@ -27,17 +27,20 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-a4aaaab6d9"></a>
-- <a id="s-486af52e6d"></a>`type`: object
 
-### Fields
+- <a id="s-486af52e6d"></a>`type`: `"object"`
+- <a id="s-e58aad16f7"></a>`additionalProperties`: `false`
+- <a id="s-5d0795774b"></a>`required`: `["variant_id","updated_by","updated_at"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-86cd0fbc39"></a>`note` | no | anyOf=type="string"; maxLength=4000 \| type="null" |  |
-| <a id="s-1925280957"></a>`rating` | no | anyOf=type="integer"; minimum=1; maximum=5 \| type="null" |  |
-| <a id="s-33963925a9"></a>`updated_at` | yes | type="string"; minLength=1; maxLength=40 |  |
-| <a id="s-4bcd006ee3"></a>`updated_by` | yes | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-a03c66e0ad"></a>`variant_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-86cd0fbc39"></a>`note` | no | anyOf=(type="string"; maxLength=4000) \| (type="null"); default=null |  |
+| <a id="s-1925280957"></a>`rating` | no | anyOf=(type="integer"; minimum=1; maximum=5) \| (type="null"); default=null |  |
+| <a id="s-33963925a9"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
+| <a id="s-4bcd006ee3"></a>`updated_by` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-a03c66e0ad"></a>`variant_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 
 ## Maintained corroboration
 
@@ -66,6 +69,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_core.EvaluationReview`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -134,3 +140,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

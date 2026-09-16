@@ -27,26 +27,32 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-e4009535b1"></a>
-- <a id="s-5af6e0eda3"></a>`type`: object
 
-### Fields
+- <a id="s-5af6e0eda3"></a>`type`: `"object"`
+- <a id="s-83431d8412"></a>`additionalProperties`: `false`
+- <a id="s-48f0e0b67c"></a>`required`: `["collection_id","path","bytes","sha256","archive_object_count","archive_object_set_sha256","receipt_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-5f24861dbc"></a>`archive_object_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-4697eb4666"></a>`archive_object_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-098d868844"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-5d89499379"></a>`collection_id` | yes | #/$defs/CollectionId |  |
-| <a id="s-cb6df9e360"></a>`format` | no | type="string"; const="riverhog-artifact-custody-receipt/v1" |  |
+| <a id="s-5d89499379"></a>`collection_id` | yes | [CollectionId](#s-08f619d576) |  |
+| <a id="s-cb6df9e360"></a>`format` | no | type="string"; const="riverhog-artifact-custody-receipt/v1"; default="riverhog-artifact-custody-receipt/v1" |  |
 | <a id="s-62de67a206"></a>`path` | yes | type="string" |  |
 | <a id="s-dcf7b7c59d"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-fdea4a93de"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-08f619d576"></a>`CollectionId` | type="integer"; minimum=1 |
+- [CollectionId](#s-08f619d576)
+
+##### <a id="s-08f619d576"></a>definition `CollectionId`
+
+- <a id="s-62202c7345"></a>`type`: `"integer"`
+- <a id="s-96c316f3c6"></a>`minimum`: `1`
 
 ## Maintained corroboration
 
@@ -78,6 +84,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -147,3 +156,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

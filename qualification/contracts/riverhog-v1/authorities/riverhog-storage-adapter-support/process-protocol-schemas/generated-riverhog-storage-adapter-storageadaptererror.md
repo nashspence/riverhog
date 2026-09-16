@@ -14,20 +14,35 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-81e0279481"></a>
-- <a id="s-15a4c3c3d3"></a>`title`: StorageAdapterError
-- <a id="s-d54a2fa63d"></a>`type`: object
+
+- <a id="s-d54a2fa63d"></a>`type`: `"object"`
+- <a id="s-d5ba6c7b0a"></a>`additionalProperties`: `false`
+- <a id="s-dfeb4fa1e9"></a>`required`: `["error"]`
+- <a id="s-15a4c3c3d3"></a>`title`: `"StorageAdapterError"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-896bc94219"></a>`error` | yes | #/$defs/StorageAdapterErrorBody |  |
+| <a id="s-896bc94219"></a>`error` | yes | [StorageAdapterErrorBody](#s-16d9d4653c) |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-16d9d4653c"></a>`StorageAdapterErrorBody` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
+- [StorageAdapterErrorBody](#s-16d9d4653c)
+
+### <a id="s-16d9d4653c"></a>definition `StorageAdapterErrorBody`
+
+- <a id="s-0460b5335e"></a>`type`: `"object"`
+- <a id="s-fa5c4b1a13"></a>`additionalProperties`: `false`
+- <a id="s-d92551f155"></a>`required`: `["code","message"]`
+- <a id="s-b7181d9ef7"></a>`title`: `"StorageAdapterErrorBody"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f0c7f497d1"></a>`code` | yes | type="string"; enum=["unauthorized","invalid_request","not_found","method_not_allowed","length_required","request_too_large","insufficient_storage","identity_conflict","traversal_invalidated","invalid_path","invalid_range","read_not_ready","read_expired","integrity_failure","provider_unavailable","internal_failure"] |  |
+| <a id="s-396a1bf2d8"></a>`message` | yes | type="string"; maxLength=2000; minLength=1 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -37,7 +52,7 @@ Shared facts for every subject below: maximum=2000; minimum=1; reason="schema-ma
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-396a1bf2d8"></a>[definition StorageAdapterErrorBody · field message](#s-16d9d4653c) | `length · characters · contract_max` | shared above |
+| [definition StorageAdapterErrorBody · field message](#s-396a1bf2d8) | `length · characters · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -67,6 +82,9 @@ Shared facts for every subject below: maximum=2000; minimum=1; reason="schema-ma
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/StorageAdapterError`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -128,3 +146,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

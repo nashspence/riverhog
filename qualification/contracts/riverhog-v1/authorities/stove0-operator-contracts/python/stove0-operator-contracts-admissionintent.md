@@ -27,33 +27,81 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-825ec0fc90"></a>
-- <a id="s-41c6814b9d"></a>`type`: object
 
-### Fields
+- <a id="s-41c6814b9d"></a>`type`: `"object"`
+- <a id="s-fbb353d6c3"></a>`additionalProperties`: `false`
+- <a id="s-2f1ab13f3e"></a>`required`: `["admission_id","policy_id","policy_revision","policy_sha256","required_tags","collection","recipe_id","recipe_revision","recipe_sha256","effective_intent"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-9b47b9fd8d"></a>`admission_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ef4e52df48"></a>`collection` | yes | #/$defs/CatalogSyncDescriptor |  |
-| <a id="s-bd1b3c1f0d"></a>`effective_intent` | yes | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-d43901978a"></a>`format` | no | type="string"; const="stove0-admission-intent/v1" |  |
-| <a id="s-89c9695f4f"></a>`policy_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-ef4e52df48"></a>`collection` | yes | [CatalogSyncDescriptor](#s-becf941a62) |  |
+| <a id="s-bd1b3c1f0d"></a>`effective_intent` | yes | type="object"; additionalProperties=([JsonValue](#s-87dae79148)) |  |
+| <a id="s-d43901978a"></a>`format` | no | type="string"; const="stove0-admission-intent/v1"; default="stove0-admission-intent/v1" |  |
+| <a id="s-89c9695f4f"></a>`policy_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-e6bd64bb79"></a>`policy_revision` | yes | type="integer"; minimum=1 |  |
 | <a id="s-b4296f7571"></a>`policy_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-e2909a4b58"></a>`recipe_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-e2909a4b58"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-4d0773f3f1"></a>`recipe_revision` | yes | type="integer"; minimum=1 |  |
 | <a id="s-c1303526bb"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-10f74caced"></a>`required_tags` | yes | type="array"; items=(#/$defs/CollectionTag) |  |
+| <a id="s-10f74caced"></a>`required_tags` | yes | type="array"; items=([CollectionTag](#s-949d5d67c3)) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-becf941a62"></a>`CatalogSyncDescriptor` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`, `description`, `description_identity`, `description_revision`, `revision`, `tag_revision`, `tag_set_identity`; additional keys=`additionalProperties`, `required` |
-| <a id="s-8da18b255b"></a>`CollectionDescription` | type="string"; minLength=1; maxLength=32768; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
-| <a id="s-581e1f826a"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-949d5d67c3"></a>`CollectionTag` | type="string"; minLength=1; maxLength=65536; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
-| <a id="s-87dae79148"></a>`JsonValue` | empty object |
+- [CatalogSyncDescriptor](#s-becf941a62)
+- [CollectionDescription](#s-8da18b255b)
+- [CollectionId](#s-581e1f826a)
+- [CollectionTag](#s-949d5d67c3)
+- [JsonValue](#s-87dae79148)
+
+##### <a id="s-becf941a62"></a>definition `CatalogSyncDescriptor`
+
+- <a id="s-1e6438568a"></a>`type`: `"object"`
+- <a id="s-d8a4176dee"></a>`additionalProperties`: `false`
+- <a id="s-8ed3924314"></a>`required`: `["collection_id","archive_root_sha256","content_identity","description","description_revision","description_identity","tag_revision","tag_set_identity","revision"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-12f3f18469"></a>`archive_root_sha256` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-839fe420cc"></a>`collection_id` | yes | [CollectionId](#s-581e1f826a) |  |
+| <a id="s-a0b50003fb"></a>`content_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-7458a633ef"></a>`description` | yes | anyOf=([CollectionDescription](#s-8da18b255b)) \| (type="null") |  |
+| <a id="s-98f2eb76d8"></a>`description_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-4ec2ec7d31"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
+| <a id="s-0ab3f643c9"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+| <a id="s-090ab4f91e"></a>`tag_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
+| <a id="s-2b50a6b9d7"></a>`tag_set_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-8da18b255b"></a>definition `CollectionDescription`
+
+- <a id="s-ca397ce749"></a>`type`: `"string"`
+- <a id="s-3ee4db1c87"></a>`maxLength`: `32768`
+- <a id="s-29636ea3b4"></a>`minLength`: `1`
+- <a id="s-2a976cacd4"></a>`x-riverhog-encoded-bytes-max`: `32768`
+- <a id="s-668f5c0de5"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-catalog-description"}`
+- <a id="s-df9a378560"></a>`x-unicode-normalization`: `"NFC"`
+
+##### <a id="s-581e1f826a"></a>definition `CollectionId`
+
+- <a id="s-7f857fce52"></a>`type`: `"integer"`
+- <a id="s-151681941f"></a>`minimum`: `1`
+
+##### <a id="s-949d5d67c3"></a>definition `CollectionTag`
+
+- <a id="s-118b8258dd"></a>`type`: `"string"`
+- <a id="s-79d54a96c3"></a>`maxLength`: `65536`
+- <a id="s-d0ee8f80b7"></a>`minLength`: `1`
+- <a id="s-df04564ab1"></a>`x-riverhog-encoded-bytes-max`: `65536`
+- <a id="s-545e19a67f"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-collection-tag"}`
+- <a id="s-baeee27802"></a>`x-unicode-normalization`: `"NFC"`
+
+##### <a id="s-87dae79148"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Maintained corroboration
 
@@ -83,6 +131,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.AdmissionIntent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -267,3 +318,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

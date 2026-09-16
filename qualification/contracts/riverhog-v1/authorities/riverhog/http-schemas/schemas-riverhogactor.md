@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-dfa081e99d"></a>
-- <a id="s-b7b55d1149"></a>`title`: RiverhogActor
-- <a id="s-3e08a408c6"></a>`type`: object
+
+- <a id="s-3e08a408c6"></a>`type`: `"object"`
+- <a id="s-0b79164001"></a>`additionalProperties`: `false`
+- <a id="s-7d83a5b1b7"></a>`required`: `["app"]`
+- <a id="s-b7b55d1149"></a>`title`: `"RiverhogActor"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3d49c0fa88"></a>`app` | yes | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-dc7ca6a622"></a>`key_id` | no | anyOf=type="string"; minLength=1; maxLength=300 \| type="null" |  |
+| <a id="s-3d49c0fa88"></a>`app` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-dc7ca6a622"></a>`key_id` | no | anyOf=(type="string"; maxLength=300; minLength=1) \| (type="null") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -57,6 +60,9 @@ Shared facts for every subject below: minimum=1; reason="schema-maximum"
 - `/external_contract/http_openapi/riverhog/components/schemas/RiverhogActor`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -93,3 +99,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

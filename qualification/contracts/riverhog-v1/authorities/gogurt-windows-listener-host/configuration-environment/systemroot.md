@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e46514ac5a"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-0a3f486fd1"></a>`consumers` | ["gogurt-windows-listener-host"] |
-| <a id="s-884373744b"></a>`default_expressions` | ["'C:\\\\Windows'"] |
-| <a id="s-fff4744bb1"></a>`id` | "gogurt-windows-listener-host:environment:SystemRoot" |
-| <a id="s-33e9f176ca"></a>`input_shape` | "environment-string" |
-| <a id="s-92c12c2ce2"></a>`name` | "SystemRoot" |
-| <a id="s-97c3efd577"></a>`owner` | "gogurt-windows-listener-host" |
+| <a id="s-0a3f486fd1"></a>`consumers` | `["gogurt-windows-listener-host"]` |
+| <a id="s-884373744b"></a>`default_expressions` | `["'C:\\\\Windows'"]` |
+| <a id="s-fff4744bb1"></a>`id` | `"gogurt-windows-listener-host:environment:SystemRoot"` |
+| <a id="s-33e9f176ca"></a>`input_shape` | `"environment-string"` |
+| <a id="s-92c12c2ce2"></a>`name` | `"SystemRoot"` |
+| <a id="s-97c3efd577"></a>`owner` | `"gogurt-windows-listener-host"` |
 
 ## Governing policies
 
@@ -54,6 +55,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 13852a76170b471e65d4327f0ad346ecc166aa994f69d6212e156d3c9e5dcc3f -->
@@ -72,3 +76,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "gogurt-windows-listener-host"
 }
 ```
+
+</details>

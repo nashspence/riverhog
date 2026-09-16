@@ -14,9 +14,12 @@ One named required child work using the ordinary WorkflowPlan contract.
 ## External contract
 
 <a id="s-5396b7fe22"></a>
-- <a id="s-22c75a0a68"></a>`title`: BranchPlan
-- <a id="s-bd87915606"></a>`description`: One named required child work using the ordinary WorkflowPlan contract.
-- <a id="s-2ce2e459f5"></a>`type`: object
+
+- <a id="s-2ce2e459f5"></a>`type`: `"object"`
+- <a id="s-cdc19de536"></a>`additionalProperties`: `false`
+- <a id="s-bd87915606"></a>`description`: `"One named required child work using the ordinary WorkflowPlan contract."`
+- <a id="s-17a839b8bc"></a>`required`: `["branch_id","artifact_selection","workflow_plan"]`
+- <a id="s-22c75a0a68"></a>`title`: `"BranchPlan"`
 
 ### Fields
 
@@ -24,7 +27,7 @@ One named required child work using the ordinary WorkflowPlan contract.
 |---|---:|---|---|
 | <a id="s-2cdbafca54"></a>`artifact_selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
 | <a id="s-160b934f9b"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-2a843b5db3"></a>`kind` | no | type="string"; const="leaf" |  |
+| <a id="s-2a843b5db3"></a>`kind` | no | type="string"; const="leaf"; default="leaf" |  |
 | <a id="s-2dd1c57657"></a>`workflow_plan` | yes | #/components/schemas/WorkflowPlan |  |
 
 ## Maintained corroboration
@@ -55,6 +58,9 @@ One named required child work using the ordinary WorkflowPlan contract.
 - `/external_contract/http_openapi/stove0/components/schemas/BranchPlan`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -92,3 +98,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

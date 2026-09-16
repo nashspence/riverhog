@@ -27,20 +27,26 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-81572973e4"></a>
-- <a id="s-ceffc5fb57"></a>`type`: object
 
-### Fields
+- <a id="s-ceffc5fb57"></a>`type`: `"object"`
+- <a id="s-ea271148df"></a>`additionalProperties`: `false`
+- <a id="s-ae6031100a"></a>`required`: `["destination_store"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-95af627683"></a>`destination_store` | yes | #/$defs/ArchiveStoreName |  |
-| <a id="s-3ebeef1a2b"></a>`source_store` | no | anyOf=#/$defs/ArchiveStoreName \| type="null" |  |
+| <a id="s-95af627683"></a>`destination_store` | yes | [ArchiveStoreName](#s-49e2d5d755) |  |
+| <a id="s-3ebeef1a2b"></a>`source_store` | no | anyOf=([ArchiveStoreName](#s-49e2d5d755)) \| (type="null"); default=null |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-49e2d5d755"></a>`ArchiveStoreName` | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+- [ArchiveStoreName](#s-49e2d5d755)
+
+##### <a id="s-49e2d5d755"></a>definition `ArchiveStoreName`
+
+- <a id="s-966172016a"></a>`type`: `"string"`
+- <a id="s-08866f5eb0"></a>`pattern`: `"^[a-z0-9]+(?:-[a-z0-9]+)*$"`
 
 ## Maintained corroboration
 
@@ -69,6 +75,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.ArchiveCopyStoreSelectionDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -115,3 +124,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

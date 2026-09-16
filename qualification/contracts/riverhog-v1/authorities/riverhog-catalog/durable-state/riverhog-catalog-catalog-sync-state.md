@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-08ed02092e"></a>
-- Table: `catalog_sync_state`
 
-### Columns
+### Table: `catalog_sync_state`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -25,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-445eb048f6"></a>`committed_revision` | `BIGINT` | no | `0` | — |
 | <a id="s-21ccb15417"></a>`retained_revision` | `BIGINT` | no | `0` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -62,6 +63,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/0/structure/tables/3`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -133,3 +137,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "catalog_sync_state"
 }
 ```
+
+</details>

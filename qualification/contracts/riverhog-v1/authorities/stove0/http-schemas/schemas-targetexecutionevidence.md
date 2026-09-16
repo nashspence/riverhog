@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d1cc74145f"></a>
-- <a id="s-1b9cbf8489"></a>`title`: TargetExecutionEvidence
-- <a id="s-a1556263da"></a>`type`: object
+
+- <a id="s-a1556263da"></a>`type`: `"object"`
+- <a id="s-37e15c18d3"></a>`additionalProperties`: `false`
+- <a id="s-7d03e268f9"></a>`required`: `["target_contract_sha256","operation_contract_sha256","plan_sha256","execution_sha256"]`
+- <a id="s-1b9cbf8489"></a>`title`: `"TargetExecutionEvidence"`
 
 ### Fields
 
@@ -24,7 +27,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-0702eb4e69"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-190d671a90"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-427d486dae"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a67d9da8a7"></a>`runtime` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-a67d9da8a7"></a>`runtime` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
 | <a id="s-2e35457826"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
@@ -78,6 +81,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 49ee579a04f4aeb23dc0b1a4c6638cde055c1e5198c38a2b31b859c65580563f -->
@@ -124,3 +130,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

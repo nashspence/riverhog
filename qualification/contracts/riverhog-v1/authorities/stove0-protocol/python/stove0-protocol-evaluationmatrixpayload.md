@@ -27,21 +27,39 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-6c92a201ba"></a>
-- <a id="s-0193dc5767"></a>`type`: object
 
-### Fields
+- <a id="s-0193dc5767"></a>`type`: `"object"`
+- <a id="s-91a8346174"></a>`additionalProperties`: `false`
+- <a id="s-bc2f496fe9"></a>`required`: `["variants"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7d9792edab"></a>`format` | no | type="string"; const="stove0-evaluation-matrix/v1" |  |
-| <a id="s-669002b757"></a>`variants` | yes | type="array"; minItems=1; items=(#/$defs/EvaluationVariant) |  |
+| <a id="s-7d9792edab"></a>`format` | no | type="string"; const="stove0-evaluation-matrix/v1"; default="stove0-evaluation-matrix/v1" |  |
+| <a id="s-669002b757"></a>`variants` | yes | type="array"; items=([EvaluationVariant](#s-bc8dc94e3b)); minItems=1 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-bc8dc94e3b"></a>`EvaluationVariant` | type="object"; fields=`id`, `parameters`; additional keys=`additionalProperties`, `required` |
-| <a id="s-09ae6204e9"></a>`JsonValue` | empty object |
+- [EvaluationVariant](#s-bc8dc94e3b)
+- [JsonValue](#s-09ae6204e9)
+
+##### <a id="s-bc8dc94e3b"></a>definition `EvaluationVariant`
+
+- <a id="s-336cbb5796"></a>`type`: `"object"`
+- <a id="s-2e75feed91"></a>`additionalProperties`: `false`
+- <a id="s-28df29c659"></a>`required`: `["id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0496392720"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-02f404a3cf"></a>`parameters` | no | type="object"; additionalProperties=([JsonValue](#s-09ae6204e9)) |  |
+
+##### <a id="s-09ae6204e9"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Maintained corroboration
 
@@ -70,6 +88,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_protocol.EvaluationMatrixPayload`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -130,3 +151,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

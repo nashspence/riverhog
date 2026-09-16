@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ea79e7a459"></a>
-- <a id="s-dea0e54233"></a>`title`: RecipeIdentityDocument
-- <a id="s-9dcef87c0d"></a>`type`: object
+
+- <a id="s-9dcef87c0d"></a>`type`: `"object"`
+- <a id="s-8dfbde92e7"></a>`additionalProperties`: `false`
+- <a id="s-1de39a56f4"></a>`required`: `["id","revision","sha256"]`
+- <a id="s-dea0e54233"></a>`title`: `"RecipeIdentityDocument"`
 
 ### Fields
 
@@ -58,6 +61,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 81bbe8a24ba76905f82e67de9251e42afc958acd711d9c908bc8802d921fe544 -->
@@ -91,3 +97,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

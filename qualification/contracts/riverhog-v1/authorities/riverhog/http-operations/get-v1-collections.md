@@ -23,13 +23,13 @@ List Collections
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-2076d85ce1"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-9731e95241"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
-| <a id="s-2bab53adb8"></a>`q` | query | no | not declared | anyOf=[BrowseQuery](../http-schemas/schemas-browsequery.md) \| type="null" |
+| <a id="s-9731e95241"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
+| <a id="s-2bab53adb8"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
 | <a id="s-3495833d03"></a>`sort` | query | no | `"id"` | [CollectionSort](../http-schemas/schemas-collectionsort.md) |
 | <a id="s-fba33675a7"></a>`order` | query | no | `"asc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
-| <a id="s-a62ca229bb"></a>`encryption_format` | query | no | not declared | anyOf=type="string" \| type="null" |
-| <a id="s-6516891cb2"></a>`passphrase_id` | query | no | not declared | anyOf=type="string" \| type="null" |
-| <a id="s-c928d33a4d"></a>`tags` | query | no | not declared | anyOf=type="array"; maxItems=100; items=([CollectionTag](../http-schemas/schemas-collectiontag.md)); additional keys=`x-riverhog-extent` \| type="null" |
+| <a id="s-a62ca229bb"></a>`encryption_format` | query | no | not declared | anyOf=(type="string") \| (type="null") |
+| <a id="s-6516891cb2"></a>`passphrase_id` | query | no | not declared | anyOf=(type="string") \| (type="null") |
+| <a id="s-c928d33a4d"></a>`tags` | query | no | not declared | anyOf=(type="array"; items=([CollectionTag](../http-schemas/schemas-collectiontag.md)); maxItems=100; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-tag-selector-batch"}) \| (type="null") |
 
 ### Responses
 
@@ -164,6 +164,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/riverhog/paths/~1v1~1collections/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -383,3 +386,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e57385ebd5"></a>
-- <a id="s-f8886fc573"></a>`title`: PreviewAcceptanceView
-- <a id="s-2c142acf40"></a>`type`: object
+
+- <a id="s-2c142acf40"></a>`type`: `"object"`
+- <a id="s-74da45b147"></a>`additionalProperties`: `false`
+- <a id="s-380892191a"></a>`required`: `["preview_sha256","branch_set_sha256","target_plans"]`
+- <a id="s-f8886fc573"></a>`title`: `"PreviewAcceptanceView"`
 
 ### Fields
 
@@ -74,6 +77,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: e903a5a8059f4c069db940e9fbb02a433f66d3d048c897077e9e35dcac7e90d7 -->
@@ -109,3 +115,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

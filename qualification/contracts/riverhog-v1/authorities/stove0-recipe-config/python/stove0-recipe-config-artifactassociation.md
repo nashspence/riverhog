@@ -27,14 +27,17 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2230a51faf"></a>
-- <a id="s-aabc0229d5"></a>`type`: object
 
-### Fields
+- <a id="s-aabc0229d5"></a>`type`: `"object"`
+- <a id="s-fbe21b94c3"></a>`additionalProperties`: `false`
+- <a id="s-7a0170f133"></a>`required`: `["primary_role","associated_roles"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c6bb642d0c"></a>`associated_roles` | yes | type="array"; minItems=1; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
-| <a id="s-b60af1bdda"></a>`path_identity` | no | type="string"; const="same-parent-stem" |  |
+| <a id="s-c6bb642d0c"></a>`associated_roles` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
+| <a id="s-b60af1bdda"></a>`path_identity` | no | type="string"; const="same-parent-stem"; default="same-parent-stem" |  |
 | <a id="s-d1e139800a"></a>`primary_role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ## Maintained corroboration
@@ -64,6 +67,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_recipe_config.ArtifactAssociation`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -108,3 +114,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

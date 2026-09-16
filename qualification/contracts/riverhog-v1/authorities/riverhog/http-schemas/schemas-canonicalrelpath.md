@@ -14,8 +14,20 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e74ba753c4"></a>
-- <a id="s-b3e5d56f4f"></a>`type`: string
-- <a id="s-de4ca879e7"></a>`format`: riverhog-canonical-relpath-v1
+
+- <a id="s-b3e5d56f4f"></a>`type`: `"string"`
+- <a id="s-de4ca879e7"></a>`format`: `"riverhog-canonical-relpath-v1"`
+- <a id="s-e4873d9a9a"></a>`maxLength`: `4096`
+- <a id="s-041cae012f"></a>`minLength`: `1`
+- <a id="s-c8e3a51b5b"></a>`pattern`: `"^[^/\\\\]+(?:/[^/\\\\]+)*$"`
+- <a id="s-c43503ebca"></a>`x-unicode-normalization`: `"NFC"`
+
+### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-161ce9f1ad"></a>1 | not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)") |
+| <a id="s-3a21cd534f"></a>2 | not=(pattern="^\\s\|\\s$") |
 
 ### Progression, limits, and lifecycle
 
@@ -50,6 +62,9 @@ Shared facts for every subject below: maximum=4096; minimum=1; reason="schema-ma
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: fa3392977e23c3c604f49fed3024ddfc514d329289c0f292c3ebe3e4c3748e66 -->
@@ -76,3 +91,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "x-unicode-normalization": "NFC"
 }
 ```
+
+</details>

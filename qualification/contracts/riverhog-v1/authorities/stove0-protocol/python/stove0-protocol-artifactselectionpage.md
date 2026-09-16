@@ -27,26 +27,78 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-73808f3317"></a>
-- <a id="s-cb61981483"></a>`type`: object
 
-### Fields
+- <a id="s-cb61981483"></a>`type`: `"object"`
+- <a id="s-bae1591c6e"></a>`additionalProperties`: `false`
+- <a id="s-f241ab95b6"></a>`required`: `["authority","complete","artifacts"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4228ab83c9"></a>`artifacts` | yes | type="array"; maxItems=256; items=(#/$defs/ArtifactSubject); additional keys=`x-riverhog-extent` |  |
-| <a id="s-a807dd959e"></a>`authority` | yes | #/$defs/ArtifactSelectionRef |  |
+| <a id="s-4228ab83c9"></a>`artifacts` | yes | type="array"; items=([ArtifactSubject](#s-d3858e980e)); maxItems=256; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"selection-bound-start_ordinal","reason":"bounded-artifact-selection-page"} |  |
+| <a id="s-a807dd959e"></a>`authority` | yes | [ArtifactSelectionRef](#s-4d88ccaa17) |  |
 | <a id="s-2460fa0fde"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-c6f2138d13"></a>`continuation` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-5169754d6f"></a>`next_continuation` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-c6f2138d13"></a>`continuation` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-5169754d6f"></a>`next_continuation` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-4d88ccaa17"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-d3858e980e"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-9da40006db"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-283e8f0087"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
+- [ArtifactSelectionRef](#s-4d88ccaa17)
+- [ArtifactSubject](#s-d3858e980e)
+- [CollectionId](#s-9da40006db)
+- [CollectionRootRef](#s-283e8f0087)
+
+##### <a id="s-4d88ccaa17"></a>definition `ArtifactSelectionRef`
+
+- <a id="s-c300627963"></a>`type`: `"object"`
+- <a id="s-fbc722e3ce"></a>`additionalProperties`: `false`
+- <a id="s-f95bbf315c"></a>`required`: `["selection_sha256","artifact_count","total_bytes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cac78848a3"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-95cc4da6e7"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-bdf2eb65e2"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+
+##### <a id="s-d3858e980e"></a>definition `ArtifactSubject`
+
+- <a id="s-3c600d23bd"></a>`type`: `"object"`
+- <a id="s-90802a0531"></a>`additionalProperties`: `false`
+- <a id="s-f75d63d859"></a>`required`: `["id","role","collection","path","bytes","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cf07035b61"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-cb5fd12368"></a>`collection` | yes | [CollectionRootRef](#s-283e8f0087) |  |
+| <a id="s-67eb1af4b9"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-e04aa59c68"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-50bd7a63bb"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-e03d3bf8d9"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-d0d0432f68"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-9da40006db"></a>definition `CollectionId`
+
+- <a id="s-c6a61b233e"></a>`type`: `"integer"`
+- <a id="s-0943f75ec6"></a>`minimum`: `1`
+
+##### <a id="s-283e8f0087"></a>definition `CollectionRootRef`
+
+- <a id="s-c54028bece"></a>`type`: `"object"`
+- <a id="s-80b24bad78"></a>`additionalProperties`: `false`
+- <a id="s-c5221ab841"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-abcbbf33ab"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c5112551fc"></a>`collection_id` | yes | [CollectionId](#s-9da40006db) |  |
+| <a id="s-2044be11fa"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -75,6 +127,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_protocol.ArtifactSelectionPage`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -247,3 +302,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

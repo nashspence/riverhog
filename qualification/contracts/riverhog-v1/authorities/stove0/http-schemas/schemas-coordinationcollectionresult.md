@@ -14,9 +14,12 @@ Parent-visible collection produced by the coordinator's actual join leaf.
 ## External contract
 
 <a id="s-a58a7320a1"></a>
-- <a id="s-82a4310f27"></a>`title`: CoordinationCollectionResult
-- <a id="s-957b57059e"></a>`description`: Parent-visible collection produced by the coordinator's actual join leaf.
-- <a id="s-8e5422d43a"></a>`type`: object
+
+- <a id="s-8e5422d43a"></a>`type`: `"object"`
+- <a id="s-3dba31ec2e"></a>`additionalProperties`: `false`
+- <a id="s-957b57059e"></a>`description`: `"Parent-visible collection produced by the coordinator's actual join leaf."`
+- <a id="s-14858446a9"></a>`required`: `["producer_work_id","join_settlement_sha256","derivation_sha256","output_collection","output_selection"]`
+- <a id="s-82a4310f27"></a>`title`: `"CoordinationCollectionResult"`
 
 ### Fields
 
@@ -70,6 +73,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 820ceced08fd62e760ccc86af09c0c0853234f5a2890ee7e56de01a2420d37ce -->
@@ -112,3 +118,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

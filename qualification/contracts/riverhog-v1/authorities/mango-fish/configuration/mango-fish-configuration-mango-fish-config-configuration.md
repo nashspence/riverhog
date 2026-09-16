@@ -14,25 +14,42 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-19de51639f"></a>
-- <a id="s-e67bca452e"></a>`title`: MangoFishConfig
-- <a id="s-9ae9fa9a9f"></a>`type`: object
+
+- <a id="s-9ae9fa9a9f"></a>`type`: `"object"`
+- <a id="s-662ca0eb33"></a>`additionalProperties`: `false`
+- <a id="s-65f9b458d6"></a>`required`: `["state_path","sources"]`
+- <a id="s-e67bca452e"></a>`title`: `"MangoFishConfig"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e58849def3"></a>`batch_size` | no | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-4983396f84"></a>`poll_interval_seconds` | no | type="number"; additional keys=`exclusiveMinimum` |  |
-| <a id="s-65906d0517"></a>`request_timeout_seconds` | no | type="number"; additional keys=`exclusiveMinimum` |  |
-| <a id="s-bbb230564e"></a>`sources` | yes | type="array"; minItems=1; items=(#/$defs/SourceConfig) |  |
+| <a id="s-e58849def3"></a>`batch_size` | no | type="integer"; minimum=1; maximum=100; default=100 |  |
+| <a id="s-4983396f84"></a>`poll_interval_seconds` | no | type="number"; default=5; exclusiveMinimum=0 |  |
+| <a id="s-65906d0517"></a>`request_timeout_seconds` | no | type="number"; default=10; exclusiveMinimum=0 |  |
+| <a id="s-bbb230564e"></a>`sources` | yes | type="array"; items=([SourceConfig](#s-ccfb15558e)); minItems=1 |  |
 | <a id="s-1bf9c39c6c"></a>`state_path` | yes | type="string"; format="path" |  |
-| <a id="s-4b9b4c32a2"></a>`version` | no | type="integer" |  |
+| <a id="s-4b9b4c32a2"></a>`version` | no | type="integer"; default=1 |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-ccfb15558e"></a>`SourceConfig` | type="object"; fields=`events_url`, `name`, `token_env`, `webhook_url_env`; additional keys=`additionalProperties`, `required` |
+- [SourceConfig](#s-ccfb15558e)
+
+### <a id="s-ccfb15558e"></a>definition `SourceConfig`
+
+- <a id="s-c602663a41"></a>`type`: `"object"`
+- <a id="s-d5d8d697e8"></a>`additionalProperties`: `false`
+- <a id="s-a2817f8e23"></a>`required`: `["name","events_url","token_env","webhook_url_env"]`
+- <a id="s-096924184f"></a>`title`: `"SourceConfig"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-13ca8db29d"></a>`events_url` | yes | type="string"; minLength=1 |  |
+| <a id="s-7989249ee6"></a>`name` | yes | type="string"; minLength=1; pattern="^[A-Za-z0-9._-]+$" |  |
+| <a id="s-b2b73415c5"></a>`token_env` | yes | type="string"; minLength=1 |  |
+| <a id="s-64488d3345"></a>`webhook_url_env` | yes | type="string"; minLength=1 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -75,6 +92,9 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 - `/external_contract/configuration_documents/mango-fish:configuration:mango-fish-config`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -166,3 +186,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9491946c66"></a>
-- <a id="s-f6da33e223"></a>`title`: ArchiveStoreOut
-- <a id="s-b4d948d077"></a>`type`: object
+
+- <a id="s-b4d948d077"></a>`type`: `"object"`
+- <a id="s-7bbbd444b8"></a>`additionalProperties`: `false`
+- <a id="s-65dd1e7fb5"></a>`required`: `["store","read_mode","read_priority","write_target","collections","objects","stored_bytes","download_allowance"]`
+- <a id="s-f6da33e223"></a>`title`: `"ArchiveStoreOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-ed8363ddd4"></a>`collections` | yes | type="integer" |  |
-| <a id="s-6d9173b8e5"></a>`download_allowance` | yes | anyOf=#/components/schemas/ArchiveDownloadAllowanceOut \| type="null" |  |
+| <a id="s-6d9173b8e5"></a>`download_allowance` | yes | anyOf=(#/components/schemas/ArchiveDownloadAllowanceOut) \| (type="null") |  |
 | <a id="s-e4bb5e060b"></a>`objects` | yes | type="integer" |  |
 | <a id="s-831daffcba"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"] |  |
 | <a id="s-97417b240e"></a>`read_priority` | yes | type="integer" |  |
@@ -58,6 +61,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/ArchiveStoreOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -123,3 +129,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

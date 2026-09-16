@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-dcc8e57ff8"></a>
-- <a id="s-5828b81fc7"></a>`title`: EvaluationVariant
-- <a id="s-21e5efb904"></a>`type`: object
+
+- <a id="s-21e5efb904"></a>`type`: `"object"`
+- <a id="s-1cec278757"></a>`additionalProperties`: `false`
+- <a id="s-c8c54dc2eb"></a>`required`: `["id"]`
+- <a id="s-5828b81fc7"></a>`title`: `"EvaluationVariant"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-6f8754aa9d"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-f77624eae7"></a>`parameters` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-f77624eae7"></a>`parameters` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
 
 ### Progression, limits, and lifecycle
 
@@ -63,6 +66,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 3e8958115a2db11803c3309a3413ad857ef50c32a66a2eebb3bbe835315ec19d -->
@@ -91,3 +97,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

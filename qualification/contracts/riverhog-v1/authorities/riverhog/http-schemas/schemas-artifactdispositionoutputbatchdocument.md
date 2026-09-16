@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-61e1fc1e96"></a>
-- <a id="s-808b4bbacc"></a>`title`: ArtifactDispositionOutputBatchDocument
-- <a id="s-e1ee278302"></a>`type`: object
+
+- <a id="s-e1ee278302"></a>`type`: `"object"`
+- <a id="s-cb806a551f"></a>`additionalProperties`: `false`
+- <a id="s-c612871ad2"></a>`required`: `["fence","outputs"]`
+- <a id="s-808b4bbacc"></a>`title`: `"ArtifactDispositionOutputBatchDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-261db41370"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-c4cb257ac3"></a>`outputs` | yes | type="array"; minItems=1; maxItems=128; items=(#/components/schemas/ArtifactDispositionOutputDocument); additional keys=`uniqueItems`, `x-riverhog-extent` |  |
+| <a id="s-c4cb257ac3"></a>`outputs` | yes | type="array"; items=(#/components/schemas/ArtifactDispositionOutputDocument); maxItems=128; minItems=1; uniqueItems=true; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"sealed-disposition-authority","reason":"bounded-disposition-append"} |  |
 
 ### Progression, limits, and lifecycle
 
@@ -69,6 +72,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 9a8553cb62301ed415596ad8bfe5a4c99594157b30d5ee67a82bc913a7e4f211 -->
@@ -106,3 +112,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -13,8 +13,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-0680f26670"></a>
-- Shape: "Every later v1 recovery release reads every valid earlier v1 archive and provenance set."
+
+| Field | Value |
+|---|---|
+| <a id="s-0680f26670"></a>`recovery` | `"Every later v1 recovery release reads every valid earlier v1 archive and provenance set."` |
 
 ## Governing policies
 
@@ -39,6 +41,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 5f7f0f48d479c3063f37943c291f033ea396284b3228af54b185b755b0b3e968 -->
@@ -46,3 +51,5 @@ The following JSON is the complete value owned at each machine-authority pointer
 ```json
 "Every later v1 recovery release reads every valid earlier v1 archive and provenance set."
 ```
+
+</details>

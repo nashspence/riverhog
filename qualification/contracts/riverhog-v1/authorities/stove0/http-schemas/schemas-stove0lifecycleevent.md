@@ -14,10 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-63a02222a0"></a>
-| Field | Shape |
+
+- <a id="s-9d9bc62db0"></a>`discriminator`: `{"mapping":{"io.riverhog.stove0.branch-set.admitted":"#/components/schemas/BranchSetAdmittedEvent","io.riverhog.stove0.evaluation.created":"#/components/schemas/EvaluationCreatedEvent","io.riverhog.stove0.evaluation.updated":"#/components/schemas/EvaluationUpdatedEvent","io.riverhog.stove0.join.admitted":"#/components/schemas/JoinAdmittedEvent","io.riverhog.stove0.work.created":"#/components/schemas/WorkCreatedEvent","io.riverhog.stove0.work.updated":"#/components/schemas/WorkUpdatedEvent"},"propertyName":"type"}`
+
+### Exactly one must match (`oneOf`)
+
+| Alternative | Schema |
 |---|---|
-| <a id="s-9d9bc62db0"></a>`discriminator` | additional keys=`mapping`, `propertyName` |
-| <a id="s-8f85ecfde2"></a>`oneOf` | items=#/components/schemas/WorkCreatedEvent \| #/components/schemas/WorkUpdatedEvent \| #/components/schemas/BranchSetAdmittedEvent \| #/components/schemas/JoinAdmittedEvent \| #/components/schemas/EvaluationCreatedEvent \| #/components/schemas/EvaluationUpdatedEvent |
+| <a id="s-b90e21f48f"></a>1 | #/components/schemas/WorkCreatedEvent |
+| <a id="s-a2ac6b1637"></a>2 | #/components/schemas/WorkUpdatedEvent |
+| <a id="s-ec15054d3b"></a>3 | #/components/schemas/BranchSetAdmittedEvent |
+| <a id="s-b5e370a6b3"></a>4 | #/components/schemas/JoinAdmittedEvent |
+| <a id="s-849a8fd6cc"></a>5 | #/components/schemas/EvaluationCreatedEvent |
+| <a id="s-ebf6041aa7"></a>6 | #/components/schemas/EvaluationUpdatedEvent |
 
 ## Maintained corroboration
 
@@ -51,6 +60,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/stove0/components/schemas/Stove0LifecycleEvent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -91,3 +103,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   ]
 }
 ```
+
+</details>

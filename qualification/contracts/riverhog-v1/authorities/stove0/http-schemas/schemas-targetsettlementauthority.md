@@ -14,14 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-428567adad"></a>
-- <a id="s-6bb82eba89"></a>`title`: TargetSettlementAuthority
-- <a id="s-49261af54d"></a>`type`: object
+
+- <a id="s-49261af54d"></a>`type`: `"object"`
+- <a id="s-dc7c14f671"></a>`additionalProperties`: `false`
+- <a id="s-1015e80964"></a>`required`: `["job_id","production_sha256","output_collection","output_bindings","settlement_sha256"]`
+- <a id="s-6bb82eba89"></a>`title`: `"TargetSettlementAuthority"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ea9a996c0a"></a>`format` | no | type="string"; const="stove0-target-settlement/v1" |  |
+| <a id="s-ea9a996c0a"></a>`format` | no | type="string"; const="stove0-target-settlement/v1"; default="stove0-target-settlement/v1" |  |
 | <a id="s-cde8f44573"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-55ad886411"></a>`output_bindings` | yes | #/components/schemas/TargetOutputBindingSetIdentity |  |
 | <a id="s-4b257ebb6b"></a>`output_collection` | yes | #/components/schemas/OutputCollectionRef |  |
@@ -70,6 +73,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: a811b1b88f435f8192083bd5bb9cab621322a012a9d17a39beebcbf46f0b2e02 -->
@@ -117,3 +123,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

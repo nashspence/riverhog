@@ -27,9 +27,12 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-c51483f666"></a>
-- <a id="s-c4f786fc96"></a>`type`: object
 
-### Fields
+- <a id="s-c4f786fc96"></a>`type`: `"object"`
+- <a id="s-a8dde2351a"></a>`additionalProperties`: `false`
+- <a id="s-d6932e6849"></a>`required`: `["bytes","sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
@@ -57,6 +60,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -92,3 +98,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

@@ -14,9 +14,12 @@ Immutable membership of one work item in a trial/evaluation matrix.
 ## External contract
 
 <a id="s-3fc3b22e69"></a>
-- <a id="s-be4827d504"></a>`title`: EvaluationBinding
-- <a id="s-2ac46e2bde"></a>`description`: Immutable membership of one work item in a trial/evaluation matrix.
-- <a id="s-e432e8d081"></a>`type`: object
+
+- <a id="s-e432e8d081"></a>`type`: `"object"`
+- <a id="s-16a889eaf6"></a>`additionalProperties`: `false`
+- <a id="s-2ac46e2bde"></a>`description`: `"Immutable membership of one work item in a trial/evaluation matrix."`
+- <a id="s-b75d292d1b"></a>`required`: `["evaluation_id","matrix_sha256","variant_id"]`
+- <a id="s-be4827d504"></a>`title`: `"EvaluationBinding"`
 
 ### Fields
 
@@ -24,7 +27,7 @@ Immutable membership of one work item in a trial/evaluation matrix.
 |---|---:|---|---|
 | <a id="s-308184d938"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-865de73e81"></a>`matrix_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-610a9c9368"></a>`parameters` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-610a9c9368"></a>`parameters` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
 | <a id="s-f164968bc6"></a>`variant_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ### Progression, limits, and lifecycle
@@ -76,6 +79,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 7e2445a55677db47a8bf6815b4e0bdea90186cd0fa199e2761b789fabc3c17be -->
@@ -117,3 +123,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

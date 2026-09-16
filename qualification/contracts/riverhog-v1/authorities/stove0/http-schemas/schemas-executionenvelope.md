@@ -14,17 +14,20 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fc88d5a952"></a>
-- <a id="s-d493c8c79f"></a>`title`: ExecutionEnvelope
-- <a id="s-abdee4f349"></a>`type`: object
+
+- <a id="s-abdee4f349"></a>`type`: `"object"`
+- <a id="s-b3d876118e"></a>`additionalProperties`: `false`
+- <a id="s-4d6c0171ac"></a>`required`: `["claim_id","fence","workflow_plan","target_plan","execution_envelope_sha256"]`
+- <a id="s-d493c8c79f"></a>`title`: `"ExecutionEnvelope"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-254db14200"></a>`claim_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-254db14200"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-7722433db7"></a>`execution_envelope_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-5debb009eb"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-7e6d8ecf9e"></a>`format` | no | type="string"; const="stove0-execution-envelope/v1" |  |
+| <a id="s-7e6d8ecf9e"></a>`format` | no | type="string"; const="stove0-execution-envelope/v1"; default="stove0-execution-envelope/v1" |  |
 | <a id="s-b47a72301b"></a>`target_plan` | yes | #/components/schemas/TargetPlanBinding |  |
 | <a id="s-3d863bfbd7"></a>`workflow_plan` | yes | #/components/schemas/WorkflowPlan |  |
 
@@ -66,6 +69,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/stove0/components/schemas/ExecutionEnvelope`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -115,3 +121,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

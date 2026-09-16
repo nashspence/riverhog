@@ -14,26 +14,29 @@ One ordinary target/effect leaf selected by a recipe.
 ## External contract
 
 <a id="s-ff8515a74c"></a>
-- <a id="s-b033d3afe8"></a>`title`: RecipeRoute
-- <a id="s-b1fa805af6"></a>`description`: One ordinary target/effect leaf selected by a recipe.
-- <a id="s-46086beeb2"></a>`type`: object
+
+- <a id="s-46086beeb2"></a>`type`: `"object"`
+- <a id="s-a4279f2381"></a>`additionalProperties`: `false`
+- <a id="s-b1fa805af6"></a>`description`: `"One ordinary target/effect leaf selected by a recipe."`
+- <a id="s-d385809037"></a>`required`: `["id","operation_id","target_registration_id"]`
+- <a id="s-b033d3afe8"></a>`title`: `"RecipeRoute"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a9eea0d359"></a>`artifact_rules` | no | type="array"; items=(#/components/schemas/ArtifactRule) |  |
-| <a id="s-1219143978"></a>`associated_roles` | no | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| <a id="s-a9eea0d359"></a>`artifact_rules` | no | type="array"; default=[{"glob":"*","role":"stove0.source/v1"}]; items=(#/components/schemas/ArtifactRule) |  |
+| <a id="s-1219143978"></a>`associated_roles` | no | type="array"; default=[]; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
 | <a id="s-b95e5c198f"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-ba31dee9dd"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
-| <a id="s-933eae7c5b"></a>`intent` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-e07a66df92"></a>`kind` | no | type="string"; const="operation" |  |
+| <a id="s-ba31dee9dd"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-933eae7c5b"></a>`intent` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-e07a66df92"></a>`kind` | no | type="string"; const="operation"; default="operation" |  |
 | <a id="s-92aa53f071"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-02f69c80ce"></a>`primary_role` | no | anyOf=type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" \| type="null" |  |
-| <a id="s-0216849edb"></a>`projections` | no | type="array"; items=(#/components/schemas/OperationProjection) |  |
-| <a id="s-fd18a88ac7"></a>`target_options` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-02f69c80ce"></a>`primary_role` | no | anyOf=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") \| (type="null") |  |
+| <a id="s-0216849edb"></a>`projections` | no | type="array"; default=[]; items=(#/components/schemas/OperationProjection) |  |
+| <a id="s-fd18a88ac7"></a>`target_options` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
 | <a id="s-49924f12d8"></a>`target_registration_id` | yes | type="string" |  |
-| <a id="s-10fc7e90e5"></a>`when` | no | type="array"; items=(#/components/schemas/FactPredicate) |  |
+| <a id="s-10fc7e90e5"></a>`when` | no | type="array"; default=[]; items=(#/components/schemas/FactPredicate) |  |
 
 ### Progression, limits, and lifecycle
 
@@ -81,6 +84,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/stove0/components/schemas/RecipeRoute`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -194,3 +200,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

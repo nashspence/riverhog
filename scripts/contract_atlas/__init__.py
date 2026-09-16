@@ -24,7 +24,7 @@ from .dossier_rendering import _cli_authority_reference, _pretty_json
 from .model import (
     ATLAS_DIRECTORY,
     ATLAS_SCHEMA,
-    AUDIT_DOCUMENT_TARGET_BYTES,
+    AUDIT_PRIMARY_CONTENT_TARGET_BYTES,
     CONTRACT_MAP_SCHEMA,
     COVERAGE_IDENTITY_SCHEMA,
     INTERFACE_LABELS,
@@ -75,7 +75,7 @@ from .rendering import _render_atlas
 from .validation import _atlas_paths, _reachable_atlas_documents, validate_atlas
 
 __all__ = [
-    "AUDIT_DOCUMENT_TARGET_BYTES",
+    "AUDIT_PRIMARY_CONTENT_TARGET_BYTES",
     "CONTRACT_MAP_SCHEMA",
     "INTERFACE_LABELS",
     "INTERFACE_REGISTRY",
@@ -254,6 +254,7 @@ def build_atlas(
         identities,
         discovery,
         component_descriptions,
+        projection_integer_paths=projection_integer_paths,
     )
     for document in documents:
         GeneratedDocument(

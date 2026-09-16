@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f43be24d3d"></a>
-- Table: `app_key_access_grants`
 
-### Columns
+### Table: `app_key_access_grants`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -26,7 +27,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-d6b73a2206"></a>`created_at` | `VARCHAR` | no | `—` | — |
 | <a id="s-130a9f5caf"></a>`search_text` | `VARCHAR` | no | `—` | {"generated":"GENERATED ALWAYS AS (lower(permission \|\| ' ' \|\| resource)) STORED"} |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -60,6 +61,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/0/structure/tables/16`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -128,3 +132,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "app_key_access_grants"
 }
 ```
+
+</details>

@@ -14,16 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-14ed6c3d0b"></a>
-- <a id="s-fbde03adef"></a>`title`: PendingArchiveRootPublicationOut
-- <a id="s-a54c9801ab"></a>`type`: object
+
+- <a id="s-a54c9801ab"></a>`type`: `"object"`
+- <a id="s-f1e935d4dc"></a>`additionalProperties`: `false`
+- <a id="s-fbde03adef"></a>`title`: `"PendingArchiveRootPublicationOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b2ae1a2f85"></a>`object_path` | no | anyOf=type="string"; minLength=1 \| type="null" |  |
-| <a id="s-094900fe7d"></a>`sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-f04bdd7143"></a>`state` | no | type="string"; const="pending" |  |
+| <a id="s-b2ae1a2f85"></a>`object_path` | no | anyOf=(type="string"; minLength=1) \| (type="null") |  |
+| <a id="s-094900fe7d"></a>`sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
+| <a id="s-f04bdd7143"></a>`state` | no | type="string"; const="pending"; default="pending" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -57,6 +59,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/riverhog/components/schemas/PendingArchiveRootPublicationOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -101,3 +106,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

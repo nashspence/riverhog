@@ -14,19 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-120961c294"></a>
-- <a id="s-ac54d472d8"></a>`title`: CollectionDeletedEvent
-- <a id="s-8e56cefa42"></a>`type`: object
+
+- <a id="s-8e56cefa42"></a>`type`: `"object"`
+- <a id="s-ceb9afa059"></a>`additionalProperties`: `false`
+- <a id="s-a919cd0e30"></a>`required`: `["id","source","type","time","data"]`
+- <a id="s-ac54d472d8"></a>`title`: `"CollectionDeletedEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-a7568f9e4d"></a>`data` | yes | #/components/schemas/CollectionDeletedData |  |
-| <a id="s-7b787e5d73"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-7b787e5d73"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-7dff09b524"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-07382a91d5"></a>`source` | yes | type="string"; minLength=1 |  |
-| <a id="s-8920c76575"></a>`specversion` | no | type="string"; const="1.0" |  |
-| <a id="s-30bba64930"></a>`subject` | no | anyOf=type="string"; minLength=1 \| type="null" |  |
+| <a id="s-8920c76575"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-30bba64930"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null") |  |
 | <a id="s-8c66565c5c"></a>`time` | yes | type="string" |  |
 | <a id="s-2f5c894029"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.collection.deleted" |  |
 
@@ -57,6 +60,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionDeletedEvent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -124,3 +130,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

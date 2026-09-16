@@ -14,8 +14,12 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-401d4b1864"></a>
-- <a id="s-3f410425c2"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-reparse-point.json
-- <a id="s-4873d9739c"></a>`type`: object
+
+- <a id="s-4873d9739c"></a>`type`: `"object"`
+- <a id="s-3f410425c2"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-reparse-point.json"`
+- <a id="s-f56d82ead3"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-168f450c8c"></a>`additionalProperties`: `false`
+- <a id="s-fbd9da9acf"></a>`required`: `["reparse_tag","reparse_tag_hex","name_surrogate","followed_for_primary_content"]`
 
 ### Fields
 
@@ -47,6 +51,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-reparse-point.json`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -82,3 +89,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

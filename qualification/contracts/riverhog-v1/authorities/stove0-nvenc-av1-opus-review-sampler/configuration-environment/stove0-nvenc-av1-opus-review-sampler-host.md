@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-cfbaea4326"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-5fc0320eea"></a>`consumers` | ["stove0-nvenc-av1-opus-review-sampler"] |
-| <a id="s-16cbc0bf7b"></a>`default_expressions` | ["'127.0.0.1'"] |
-| <a id="s-4fbc0b16b3"></a>`id` | "stove0-nvenc-av1-opus-review-sampler:environment:STOVE0_NVENC_AV1_OPUS_REVIEW_SAMPLER_HOST" |
-| <a id="s-25498719da"></a>`input_shape` | "environment-string" |
-| <a id="s-4a5e648bd1"></a>`name` | "STOVE0_NVENC_AV1_OPUS_REVIEW_SAMPLER_HOST" |
-| <a id="s-e1b146d1e8"></a>`owner` | "stove0-nvenc-av1-opus-review-sampler" |
+| <a id="s-5fc0320eea"></a>`consumers` | `["stove0-nvenc-av1-opus-review-sampler"]` |
+| <a id="s-16cbc0bf7b"></a>`default_expressions` | `["'127.0.0.1'"]` |
+| <a id="s-4fbc0b16b3"></a>`id` | `"stove0-nvenc-av1-opus-review-sampler:environment:STOVE0_NVENC_AV1_OPUS_REVIEW_SAMPLER_HOST"` |
+| <a id="s-25498719da"></a>`input_shape` | `"environment-string"` |
+| <a id="s-4a5e648bd1"></a>`name` | `"STOVE0_NVENC_AV1_OPUS_REVIEW_SAMPLER_HOST"` |
+| <a id="s-e1b146d1e8"></a>`owner` | `"stove0-nvenc-av1-opus-review-sampler"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 3296bb5d479be9cb6c172c6c215f554e6feaf40690503d2f3167b17dacbea2fd -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "stove0-nvenc-av1-opus-review-sampler"
 }
 ```
+
+</details>

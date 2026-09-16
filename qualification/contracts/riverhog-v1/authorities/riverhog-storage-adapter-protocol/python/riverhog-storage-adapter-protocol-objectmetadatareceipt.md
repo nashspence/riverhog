@@ -27,20 +27,23 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-fc35800db0"></a>
-- <a id="s-c5b1d384c5"></a>`type`: object
 
-### Fields
+- <a id="s-c5b1d384c5"></a>`type`: `"object"`
+- <a id="s-f03025a7b6"></a>`additionalProperties`: `false`
+- <a id="s-ee522613f9"></a>`required`: `["object_path","stored_bytes","observed_identity_assertions","verified_placement","completed_at"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-00acfbcadc"></a>`completed_at` | yes | type="string"; minLength=1; maxLength=100 |  |
-| <a id="s-cde06a44fe"></a>`content_type` | no | anyOf=type="string"; minLength=1; maxLength=255 \| type="null" |  |
-| <a id="s-9677d60952"></a>`entity_token` | no | anyOf=type="string"; minLength=1; maxLength=4000 \| type="null" |  |
-| <a id="s-c3f8823a41"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-cd09a53850"></a>`observed_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
-| <a id="s-066c38dc7c"></a>`revision` | no | anyOf=type="string"; minLength=1; maxLength=2000 \| type="null" |  |
+| <a id="s-00acfbcadc"></a>`completed_at` | yes | type="string"; maxLength=100; minLength=1 |  |
+| <a id="s-cde06a44fe"></a>`content_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-9677d60952"></a>`entity_token` | no | anyOf=(type="string"; maxLength=4000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-c3f8823a41"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-cd09a53850"></a>`observed_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} |  |
+| <a id="s-066c38dc7c"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
 | <a id="s-e2d56684bf"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-c7938f3880"></a>`stored_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-c7938f3880"></a>`stored_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
 | <a id="s-749f31ee61"></a>`verified_placement` | yes | type="string"; enum=["archive","immediate"] |  |
 
 ## Maintained corroboration
@@ -72,6 +75,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.ObjectMetadataReceipt`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -186,3 +192,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

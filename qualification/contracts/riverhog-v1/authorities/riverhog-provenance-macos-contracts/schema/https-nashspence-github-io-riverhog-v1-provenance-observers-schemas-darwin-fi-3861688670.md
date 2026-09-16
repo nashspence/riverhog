@@ -14,15 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4af24baace"></a>
-- <a id="s-9be392290a"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-flags.json
-- <a id="s-745234cda4"></a>`type`: object
+
+- <a id="s-745234cda4"></a>`type`: `"object"`
+- <a id="s-9be392290a"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-flags.json"`
+- <a id="s-9c07e79c52"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-94feb1976f"></a>`additionalProperties`: `false`
+- <a id="s-fd659b8bfd"></a>`required`: `["raw","set_names"]`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-7dd8ca929b"></a>`raw` | yes | type="integer"; minimum=0 |  |
-| <a id="s-b74eae877a"></a>`set_names` | yes | type="array"; items=(type="string"); additional keys=`uniqueItems` |  |
+| <a id="s-b74eae877a"></a>`set_names` | yes | type="array"; items=(type="string"); uniqueItems=true |  |
 
 ### Progression, limits, and lifecycle
 
@@ -57,6 +61,9 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: f22a6bd3462e45de8aecc3e1955bf8e092460c78fbaa84e9aec700b5632800eb -->
@@ -86,3 +93,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

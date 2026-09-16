@@ -27,27 +27,81 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ccdb5bd0b5"></a>
-- <a id="s-253a1cc132"></a>`type`: object
 
-### Fields
+- <a id="s-253a1cc132"></a>`type`: `"object"`
+- <a id="s-c67705b326"></a>`additionalProperties`: `false`
+- <a id="s-f47c5e9a8d"></a>`required`: `["implementation_id","implementation_version","source_revision","image_digest","contracts"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-95302954e6"></a>`contracts` | yes | type="array"; minItems=1; items=(#/$defs/ObserverContractSupport) |  |
+| <a id="s-95302954e6"></a>`contracts` | yes | type="array"; items=([ObserverContractSupport](#s-df3a202597)); minItems=1 |  |
 | <a id="s-d543b03b28"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-9ea38094e5"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-97f73c491e"></a>`implementation_version` | yes | type="string"; minLength=1; maxLength=120 |  |
-| <a id="s-a414c1ddb9"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1" |  |
-| <a id="s-64cf842729"></a>`source_revision` | yes | type="string"; minLength=1; maxLength=200 |  |
+| <a id="s-97f73c491e"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1 |  |
+| <a id="s-a414c1ddb9"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1"; default="stove0-content-observer/v1" |  |
+| <a id="s-64cf842729"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-1a236a0ddd"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-469b54f0f5"></a>`JsonValue` | empty object |
-| <a id="s-df3a202597"></a>`ObserverContractSupport` | type="object"; fields=`contract_id`, `contract_sha256`, `facts_schema`, `facts_semantics`, `maximum_result_bytes`, `options_schema`, `preferred_subject_batch_size`; additional keys=`additionalProperties`, `required` |
-| <a id="s-94db257f5b"></a>`SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
+- [JsonSchemaDocument](#s-1a236a0ddd)
+- [JsonValue](#s-469b54f0f5)
+- [ObserverContractSupport](#s-df3a202597)
+- [SemanticValidationProfile](#s-94db257f5b)
+
+##### <a id="s-1a236a0ddd"></a>definition `JsonSchemaDocument`
+
+- <a id="s-a56bfbce4b"></a>`type`: `"object"`
+- <a id="s-d1af2bf3d4"></a>`additionalProperties`: `false`
+- <a id="s-c1e80178db"></a>`required`: `["id","sha256","schema"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-46989e7829"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-cdbc134652"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-0daf4b9f98"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-a2657ce0bf"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-469b54f0f5)) |  |
+| <a id="s-c3615f1480"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-469b54f0f5"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-df3a202597"></a>definition `ObserverContractSupport`
+
+- <a id="s-3bc0b24885"></a>`type`: `"object"`
+- <a id="s-42c88b4bab"></a>`additionalProperties`: `false`
+- <a id="s-e85d3575f3"></a>`required`: `["contract_id","contract_sha256","options_schema","facts_schema","facts_semantics","maximum_result_bytes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a941d2d8fc"></a>`contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-b87a887aa0"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-91ff24e641"></a>`facts_schema` | yes | [JsonSchemaDocument](#s-1a236a0ddd) |  |
+| <a id="s-7cc8645ce6"></a>`facts_semantics` | yes | [SemanticValidationProfile](#s-94db257f5b) |  |
+| <a id="s-7aebb17b65"></a>`maximum_result_bytes` | yes | type="integer"; minimum=1; maximum=67108864 |  |
+| <a id="s-c02ece24b6"></a>`options_schema` | yes | [JsonSchemaDocument](#s-1a236a0ddd) |  |
+| <a id="s-e00d97c368"></a>`preferred_subject_batch_size` | no | type="integer"; minimum=1; default=128 |  |
+
+##### <a id="s-94db257f5b"></a>definition `SemanticValidationProfile`
+
+- <a id="s-e89b6f3c88"></a>`type`: `"object"`
+- <a id="s-8361cae0c6"></a>`additionalProperties`: `false`
+- <a id="s-29b77fed58"></a>`required`: `["id","rules","profile_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-34800abe87"></a>`conformance_vectors_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-f1fc10b3d3"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-d1d664e0df"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d23ffb8dd9"></a>`rules` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
 
 ## Maintained corroboration
 
@@ -76,6 +130,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_observer_protocol.ObserverDescriptorPayload`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -254,3 +311,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

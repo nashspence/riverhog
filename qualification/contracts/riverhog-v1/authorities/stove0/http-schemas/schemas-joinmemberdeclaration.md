@@ -14,16 +14,19 @@ Exact named branch and opaque output roles required by the join.
 ## External contract
 
 <a id="s-1fcec863de"></a>
-- <a id="s-1bfc0751bb"></a>`title`: JoinMemberDeclaration
-- <a id="s-acd5756001"></a>`description`: Exact named branch and opaque output roles required by the join.
-- <a id="s-0e833bfd3e"></a>`type`: object
+
+- <a id="s-0e833bfd3e"></a>`type`: `"object"`
+- <a id="s-a4722b4040"></a>`additionalProperties`: `false`
+- <a id="s-acd5756001"></a>`description`: `"Exact named branch and opaque output roles required by the join."`
+- <a id="s-3323972c1f"></a>`required`: `["branch_id","output_roles"]`
+- <a id="s-1bfc0751bb"></a>`title`: `"JoinMemberDeclaration"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-966acc4a4b"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-3a68a48782"></a>`output_roles` | yes | type="array"; minItems=1; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| <a id="s-3a68a48782"></a>`output_roles` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -58,6 +61,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: f1b1441297c6334a7eeb79e0a05030fe3b536cc2d6ee09a2aa316a623e74c389 -->
@@ -90,3 +96,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

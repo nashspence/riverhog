@@ -27,24 +27,39 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-4ca26ad7c9"></a>
-- <a id="s-baf248ccc8"></a>`type`: object
 
-### Fields
+- <a id="s-baf248ccc8"></a>`type`: `"object"`
+- <a id="s-cef6dc8ba2"></a>`additionalProperties`: `false`
+- <a id="s-40bef007e4"></a>`required`: `["samples_per_artifact","window_duration_ms","windows","sample_plan_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-9abb9e9a13"></a>`format` | no | type="string"; const="stove0-review-sample-plan/v1" |  |
+| <a id="s-9abb9e9a13"></a>`format` | no | type="string"; const="stove0-review-sample-plan/v1"; default="stove0-review-sample-plan/v1" |  |
 | <a id="s-6a67a5c239"></a>`sample_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-dfaacf6e89"></a>`samples_per_artifact` | yes | type="integer"; minimum=1 |  |
-| <a id="s-ee4855cb3b"></a>`selection_method` | no | type="string"; const="evenly-spaced/v1" |  |
+| <a id="s-ee4855cb3b"></a>`selection_method` | no | type="string"; const="evenly-spaced/v1"; default="evenly-spaced/v1" |  |
 | <a id="s-4e3b1e1c7f"></a>`window_duration_ms` | yes | type="integer"; minimum=1 |  |
-| <a id="s-efc1933cc1"></a>`windows` | yes | type="array"; minItems=1; items=(#/$defs/ReviewSampleWindow) |  |
+| <a id="s-efc1933cc1"></a>`windows` | yes | type="array"; items=([ReviewSampleWindow](#s-28f5912f52)); minItems=1 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-28f5912f52"></a>`ReviewSampleWindow` | type="object"; fields=`artifact_id`, `duration_ms`, `start_ms`; additional keys=`additionalProperties`, `required` |
+- [ReviewSampleWindow](#s-28f5912f52)
+
+##### <a id="s-28f5912f52"></a>definition `ReviewSampleWindow`
+
+- <a id="s-39d196cab6"></a>`type`: `"object"`
+- <a id="s-45ebcb5f18"></a>`additionalProperties`: `false`
+- <a id="s-ffbd8259ab"></a>`required`: `["artifact_id","start_ms","duration_ms"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-1680b4c73b"></a>`artifact_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-2b1796f89f"></a>`duration_ms` | yes | type="integer"; minimum=1 |  |
+| <a id="s-103726d3a9"></a>`start_ms` | yes | type="integer"; minimum=0 |  |
 
 ## Maintained corroboration
 
@@ -76,6 +91,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_review_target_contracts.ReviewSamplePlan`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -160,3 +178,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

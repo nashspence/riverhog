@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1f62fc72ee"></a>
-- Table: `collection_processing_claim_inputs`
 
-### Columns
+### Table: `collection_processing_claim_inputs`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -26,7 +27,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-de16698aaa"></a>`archive_root_sha256` | `VARCHAR(64)` | no | `—` | — |
 | <a id="s-494ceb87dc"></a>`content_identity` | `VARCHAR(64)` | no | `—` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -67,6 +68,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/0/structure/tables/45`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -178,3 +182,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "collection_processing_claim_inputs"
 }
 ```
+
+</details>

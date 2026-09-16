@@ -58,6 +58,9 @@ Publication preserves these existing component authorities; it does not reclassi
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 3f3b24895afbe6e53be808259632aaa1bc90ab53aac3e83bb181973e5a9817d0 -->
@@ -87,3 +90,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "source": "reference/stove0/targets/nvenc-av1-opus/review-sampler/pyproject.toml"
 }
 ```
+
+</details>

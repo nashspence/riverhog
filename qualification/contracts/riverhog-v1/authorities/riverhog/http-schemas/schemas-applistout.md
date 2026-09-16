@@ -14,19 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-80f6c42475"></a>
-- <a id="s-a9f201503c"></a>`title`: AppListOut
-- <a id="s-4fe169554c"></a>`type`: object
+
+- <a id="s-4fe169554c"></a>`type`: `"object"`
+- <a id="s-d3612bc3dc"></a>`additionalProperties`: `false`
+- <a id="s-8af3ed08da"></a>`required`: `["page_size","next_page_token","sort","order","query","active","apps"]`
+- <a id="s-a9f201503c"></a>`title`: `"AppListOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0ea75186b8"></a>`active` | yes | anyOf=type="boolean" \| type="null" |  |
+| <a id="s-0ea75186b8"></a>`active` | yes | anyOf=(type="boolean") \| (type="null") |  |
 | <a id="s-3150fae7ba"></a>`apps` | yes | type="array"; items=(#/components/schemas/AppSummaryOut) |  |
-| <a id="s-32d47ef58a"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-32d47ef58a"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-185f629968"></a>`order` | yes | #/components/schemas/SortOrder |  |
 | <a id="s-ba79b45d65"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-0dab9e8171"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-0dab9e8171"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-99665b4ee9"></a>`sort` | yes | #/components/schemas/ApplicationSort |  |
 
 ### Progression, limits, and lifecycle
@@ -85,6 +88,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/AppListOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -159,3 +165,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

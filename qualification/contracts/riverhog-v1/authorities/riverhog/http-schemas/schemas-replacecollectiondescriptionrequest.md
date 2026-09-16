@@ -14,14 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-eb28174c7c"></a>
-- <a id="s-ca4d2ff11d"></a>`title`: ReplaceCollectionDescriptionRequest
-- <a id="s-21e4068b3a"></a>`type`: object
+
+- <a id="s-21e4068b3a"></a>`type`: `"object"`
+- <a id="s-044971e443"></a>`additionalProperties`: `false`
+- <a id="s-3ec230b0ba"></a>`required`: `["description"]`
+- <a id="s-ca4d2ff11d"></a>`title`: `"ReplaceCollectionDescriptionRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4e86da8103"></a>`description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
+| <a id="s-4e86da8103"></a>`description` | yes | anyOf=(#/components/schemas/CollectionDescription) \| (type="null") |  |
 
 ## Maintained corroboration
 
@@ -51,6 +54,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: d4ad12a4df50fa39cb8315778965953000c4534f6e8a07749fb3d3fe84e2ad95 -->
@@ -77,3 +83,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

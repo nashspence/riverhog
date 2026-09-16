@@ -14,36 +14,219 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-91458a90af"></a>
-- <a id="s-155f99f675"></a>`title`: SamplerConformanceResult
-- <a id="s-3824ed0f76"></a>`type`: object
+
+- <a id="s-3824ed0f76"></a>`type`: `"object"`
+- <a id="s-960228e395"></a>`additionalProperties`: `false`
+- <a id="s-e3566e1b33"></a>`required`: `["status","sampler","coverage","sampling"]`
+- <a id="s-155f99f675"></a>`title`: `"SamplerConformanceResult"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f5926c5386"></a>`coverage` | yes | #/$defs/SamplerConformanceCoverage |  |
-| <a id="s-0c55a65141"></a>`format` | no | type="string"; const="stove0-review-sampler-conformance-result/v1" |  |
-| <a id="s-ccd482d298"></a>`request` | no | anyOf=#/$defs/SamplerRequest \| type="null" |  |
-| <a id="s-d731a26fe4"></a>`sample` | no | anyOf=#/$defs/SamplerResult \| type="null" |  |
-| <a id="s-27f28a3590"></a>`sampler` | yes | #/$defs/SamplerDescriptor |  |
+| <a id="s-f5926c5386"></a>`coverage` | yes | [SamplerConformanceCoverage](#s-94518c8e12) |  |
+| <a id="s-0c55a65141"></a>`format` | no | type="string"; const="stove0-review-sampler-conformance-result/v1"; default="stove0-review-sampler-conformance-result/v1" |  |
+| <a id="s-ccd482d298"></a>`request` | no | anyOf=([SamplerRequest](#s-31a33a19b5)) \| (type="null"); default=null |  |
+| <a id="s-d731a26fe4"></a>`sample` | no | anyOf=([SamplerResult](#s-36154d3941)) \| (type="null"); default=null |  |
+| <a id="s-27f28a3590"></a>`sampler` | yes | [SamplerDescriptor](#s-3cbd950f9c) |  |
 | <a id="s-e308775b66"></a>`sampling` | yes | type="string"; enum=["exercised","not-exercised"] |  |
 | <a id="s-3a0ae02679"></a>`status` | yes | type="string"; enum=["conformant","inspected"] |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-70c0e8bf4a"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-859721ca5f"></a>`JsonValue` | empty object |
-| <a id="s-94518c8e12"></a>`SamplerConformanceCoverage` | type="object"; fields=`advertised`, `complete`, `exercised`; additional keys=`additionalProperties`, `required` |
-| <a id="s-3cbd950f9c"></a>`SamplerDescriptor` | type="object"; fields=`descriptor_sha256`, `image_digest`, `implementation_id`, `implementation_version`, `output_role`, `portable_intent_schema`, `primary_operation_contract_sha256`, `primary_operation_id`, `protocol`, `source_revision`; additional keys=`additionalProperties`, `required` |
-| <a id="s-86fc0a8ec0"></a>`SamplerFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
-| <a id="s-9293e5a127"></a>`SamplerInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
-| <a id="s-657bf3ad58"></a>`SamplerInput` | type="object"; fields=`bytes`, `id`, `media_type`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-3bdca52814"></a>`SamplerOutput` | type="object"; fields=`bytes`, `derived_from`, `id`, `media_type`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-31a33a19b5"></a>`SamplerRequest` | type="object"; fields=`cancellation_path`, `format`, `inputs`, `maximum_output_bytes`, `portable_intent`, `request_sha256`, `sampler_descriptor_sha256`, `timeout_seconds`, `windows`, `workspace_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-36154d3941"></a>`SamplerResult` | type="object"; fields=`execution_evidence`, `failure`, `format`, `inapplicable`, `outputs`, `request_sha256`, `result_sha256`, `sampler_descriptor_sha256`, `state`; additional keys=`additionalProperties`, `required` |
-| <a id="s-0f82a2deb8"></a>`SamplerWindow` | type="object"; fields=`duration_ms`, `id`, `input_id`, `output_path`, `start_ms`; additional keys=`additionalProperties`, `required` |
+- [JsonSchemaDocument](#s-70c0e8bf4a)
+- [JsonValue](#s-859721ca5f)
+- [SamplerConformanceCoverage](#s-94518c8e12)
+- [SamplerDescriptor](#s-3cbd950f9c)
+- [SamplerFailure](#s-86fc0a8ec0)
+- [SamplerInapplicable](#s-9293e5a127)
+- [SamplerInput](#s-657bf3ad58)
+- [SamplerOutput](#s-3bdca52814)
+- [SamplerRequest](#s-31a33a19b5)
+- [SamplerResult](#s-36154d3941)
+- [SamplerWindow](#s-0f82a2deb8)
+
+### <a id="s-70c0e8bf4a"></a>definition `JsonSchemaDocument`
+
+- <a id="s-f7e146fb8a"></a>`type`: `"object"`
+- <a id="s-f748b5a706"></a>`additionalProperties`: `false`
+- <a id="s-4ca89fe391"></a>`required`: `["id","sha256","schema"]`
+- <a id="s-1e5ad4ce6f"></a>`title`: `"JsonSchemaDocument"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a5da406dd8"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-61dba31662"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-dbdd3ef851"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-3ec7a155f9"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-859721ca5f)) |  |
+| <a id="s-bbb1edec18"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### <a id="s-859721ca5f"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+### <a id="s-94518c8e12"></a>definition `SamplerConformanceCoverage`
+
+- <a id="s-eb30fbe273"></a>`type`: `"object"`
+- <a id="s-c98b0532c3"></a>`additionalProperties`: `false`
+- <a id="s-376e51f96d"></a>`required`: `["exercised","complete"]`
+- <a id="s-4f11d1eaa0"></a>`title`: `"SamplerConformanceCoverage"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-58137fa3d2"></a>`advertised` | no | type="integer"; const=1; default=1 |  |
+| <a id="s-1498f3f440"></a>`complete` | yes | type="boolean" |  |
+| <a id="s-52bf1095a1"></a>`exercised` | yes | type="integer"; minimum=0; maximum=1 |  |
+
+### <a id="s-3cbd950f9c"></a>definition `SamplerDescriptor`
+
+- <a id="s-02c88e13ed"></a>`type`: `"object"`
+- <a id="s-44f5989caa"></a>`additionalProperties`: `false`
+- <a id="s-256273580e"></a>`required`: `["implementation_id","implementation_version","source_revision","image_digest","primary_operation_id","primary_operation_contract_sha256","portable_intent_schema","output_role","descriptor_sha256"]`
+- <a id="s-6a795d2729"></a>`title`: `"SamplerDescriptor"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-d4183e9ecd"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-3555292979"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-73ffea13b0"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-1dfc403081"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1 |  |
+| <a id="s-0f1741a749"></a>`output_role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-3d36acd0c1"></a>`portable_intent_schema` | yes | [JsonSchemaDocument](#s-70c0e8bf4a) |  |
+| <a id="s-20b5af8d04"></a>`primary_operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-4cb03d8b2c"></a>`primary_operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-116bbaa07b"></a>`protocol` | no | type="string"; const="stove0-review-sampler/v1"; default="stove0-review-sampler/v1" |  |
+| <a id="s-f8b6cb1c7a"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
+
+### <a id="s-86fc0a8ec0"></a>definition `SamplerFailure`
+
+- <a id="s-08af4c8424"></a>`type`: `"object"`
+- <a id="s-b995dfe554"></a>`additionalProperties`: `false`
+- <a id="s-d1e734adde"></a>`required`: `["code","message","retryable"]`
+- <a id="s-d671715dbf"></a>`title`: `"SamplerFailure"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ce33e4109c"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-3614157752"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-804edefd2e"></a>`retryable` | yes | type="boolean" |  |
+
+### <a id="s-9293e5a127"></a>definition `SamplerInapplicable`
+
+- <a id="s-30694e3e63"></a>`type`: `"object"`
+- <a id="s-22feedf8a6"></a>`additionalProperties`: `false`
+- <a id="s-320ce3ab2a"></a>`required`: `["code","message"]`
+- <a id="s-579dcd5115"></a>`title`: `"SamplerInapplicable"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-42cd785837"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-7450a8b3c0"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+
+### <a id="s-657bf3ad58"></a>definition `SamplerInput`
+
+- <a id="s-f137254ca0"></a>`type`: `"object"`
+- <a id="s-c1775ddb68"></a>`additionalProperties`: `false`
+- <a id="s-9707ce14fa"></a>`required`: `["id","path","bytes","sha256"]`
+- <a id="s-4d8e856bc3"></a>`title`: `"SamplerInput"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-06a13f5f97"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-6de7508f99"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-d504bcc1a5"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-37db911b0a"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-59e0c99219"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### <a id="s-3bdca52814"></a>definition `SamplerOutput`
+
+- <a id="s-2bc26a5696"></a>`type`: `"object"`
+- <a id="s-7932bf1158"></a>`additionalProperties`: `false`
+- <a id="s-020b4fa113"></a>`required`: `["id","path","bytes","sha256","media_type","derived_from"]`
+- <a id="s-97b11c1b3f"></a>`title`: `"SamplerOutput"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6432d25c7a"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-ad304a6152"></a>`derived_from` | yes | type="array"; items=(type="string"); minItems=1 |  |
+| <a id="s-de0e2b3d47"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-5e84a610c9"></a>`media_type` | yes | type="string"; maxLength=255; minLength=1 |  |
+| <a id="s-fb0c811393"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-e595347167"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### <a id="s-31a33a19b5"></a>definition `SamplerRequest`
+
+- <a id="s-8706cd87fd"></a>`type`: `"object"`
+- <a id="s-9a1285c093"></a>`additionalProperties`: `false`
+- <a id="s-ed6bac3cbd"></a>`required`: `["sampler_descriptor_sha256","workspace_id","inputs","windows","portable_intent","maximum_output_bytes","timeout_seconds","cancellation_path","request_sha256"]`
+- <a id="s-c68d90d925"></a>`title`: `"SamplerRequest"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e973289435"></a>`cancellation_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-1a5043d87d"></a>`format` | no | type="string"; const="stove0-review-sampler-request/v1"; default="stove0-review-sampler-request/v1" |  |
+| <a id="s-8e9bf2a4dc"></a>`inputs` | yes | type="array"; items=([SamplerInput](#s-657bf3ad58)); minItems=1 |  |
+| <a id="s-5cc372c030"></a>`maximum_output_bytes` | yes | type="integer"; minimum=1; maximum=1099511627776 |  |
+| <a id="s-0f61fa8233"></a>`portable_intent` | yes | type="object"; additionalProperties=([JsonValue](#s-859721ca5f)) |  |
+| <a id="s-ce4e43ab77"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-e75aab889c"></a>`sampler_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-5f20545494"></a>`timeout_seconds` | yes | type="integer"; minimum=1; maximum=86400 |  |
+| <a id="s-ba92fcfa2d"></a>`windows` | yes | type="array"; items=([SamplerWindow](#s-0f82a2deb8)); minItems=1 |  |
+| <a id="s-8e4c8d92b1"></a>`workspace_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### <a id="s-36154d3941"></a>definition `SamplerResult`
+
+- <a id="s-084bcac5c0"></a>`type`: `"object"`
+- <a id="s-4b690c6cdb"></a>`additionalProperties`: `false`
+- <a id="s-c1ec15556a"></a>`required`: `["request_sha256","sampler_descriptor_sha256","state","result_sha256"]`
+- <a id="s-49f31bbd7d"></a>`title`: `"SamplerResult"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ba880d4448"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-859721ca5f)) |  |
+| <a id="s-b674c53edf"></a>`failure` | no | anyOf=([SamplerFailure](#s-86fc0a8ec0)) \| (type="null"); default=null |  |
+| <a id="s-9bb36df30c"></a>`format` | no | type="string"; const="stove0-review-sampler-result/v1"; default="stove0-review-sampler-result/v1" |  |
+| <a id="s-e77252b417"></a>`inapplicable` | no | anyOf=([SamplerInapplicable](#s-9293e5a127)) \| (type="null"); default=null |  |
+| <a id="s-8b6287177a"></a>`outputs` | no | type="array"; default=[]; items=([SamplerOutput](#s-3bdca52814)) |  |
+| <a id="s-fad6aae132"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-7e3a4328e7"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c913fa2c60"></a>`sampler_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1c356d279e"></a>`state` | yes | type="string"; enum=["succeeded","inapplicable","failed","canceled"] |  |
+
+### <a id="s-0f82a2deb8"></a>definition `SamplerWindow`
+
+- <a id="s-25e47652cc"></a>`type`: `"object"`
+- <a id="s-3d26d5101f"></a>`additionalProperties`: `false`
+- <a id="s-d57a6331e4"></a>`required`: `["id","input_id","start_ms","duration_ms","output_path"]`
+- <a id="s-ffbc0b9d11"></a>`title`: `"SamplerWindow"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-5251028025"></a>`duration_ms` | yes | type="integer"; minimum=1 |  |
+| <a id="s-00934f1415"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-d6d4abb04b"></a>`input_id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-97704c5295"></a>`output_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-b24ae7ee3b"></a>`start_ms` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -53,45 +236,45 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-3ec7a155f9"></a>[definition JsonSchemaDocument · field schema](#s-70c0e8bf4a) | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-06a13f5f97"></a>[definition SamplerInput · field bytes](#s-657bf3ad58) | `value · schema-value · operational_policy` | shared above |
-| <a id="s-6432d25c7a"></a>[definition SamplerOutput · field bytes](#s-3bdca52814) | `value · schema-value · operational_policy` | shared above |
-| <a id="s-ad304a6152"></a>[definition SamplerOutput · field derived_from](#s-3bdca52814) | `cardinality · items · operational_policy` | shared above |
-| <a id="s-8e9bf2a4dc"></a>[definition SamplerRequest · field inputs](#s-31a33a19b5) | `cardinality · items · operational_policy` | shared above |
-| <a id="s-0f61fa8233"></a>[definition SamplerRequest · field portable_intent](#s-31a33a19b5) | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-ba92fcfa2d"></a>[definition SamplerRequest · field windows](#s-31a33a19b5) | `cardinality · items · operational_policy` | shared above |
-| <a id="s-ba880d4448"></a>[definition SamplerResult · field execution_evidence](#s-36154d3941) | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-8b6287177a"></a>[definition SamplerResult · field outputs](#s-36154d3941) | `cardinality · items · operational_policy` | shared above |
+| [definition JsonSchemaDocument · field schema](#s-3ec7a155f9) | `cardinality · entries · operational_policy` | shared above |
+| [definition SamplerInput · field bytes](#s-06a13f5f97) | `value · schema-value · operational_policy` | shared above |
+| [definition SamplerOutput · field bytes](#s-6432d25c7a) | `value · schema-value · operational_policy` | shared above |
+| [definition SamplerOutput · field derived_from](#s-ad304a6152) | `cardinality · items · operational_policy` | shared above |
+| [definition SamplerRequest · field inputs](#s-8e9bf2a4dc) | `cardinality · items · operational_policy` | shared above |
+| [definition SamplerRequest · field portable_intent](#s-0f61fa8233) | `cardinality · entries · operational_policy` | shared above |
+| [definition SamplerRequest · field windows](#s-ba92fcfa2d) | `cardinality · items · operational_policy` | shared above |
+| [definition SamplerResult · field execution_evidence](#s-ba880d4448) | `cardinality · entries · operational_policy` | shared above |
+| [definition SamplerResult · field outputs](#s-8b6287177a) | `cardinality · items · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-bbb1edec18"></a>[definition JsonSchemaDocument · field sha256](#s-70c0e8bf4a) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-52bf1095a1"></a>[definition SamplerConformanceCoverage · field exercised](#s-94518c8e12) | `value · schema-value · contract_max` | maximum=1; minimum=0; reason="schema-maximum" |
-| <a id="s-d4183e9ecd"></a>[definition SamplerDescriptor · field descriptor_sha256](#s-3cbd950f9c) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-3555292979"></a>[definition SamplerDescriptor · field image_digest](#s-3cbd950f9c) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-1dfc403081"></a>[definition SamplerDescriptor · field implementation_version](#s-3cbd950f9c) | `length · characters · contract_max` | maximum=120; minimum=1; reason="schema-maximum" |
-| <a id="s-20b5af8d04"></a>[definition SamplerDescriptor · field primary_operation_contract_sha256](#s-3cbd950f9c) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-f8b6cb1c7a"></a>[definition SamplerDescriptor · field source_revision](#s-3cbd950f9c) | `length · characters · contract_max` | maximum=200; minimum=1; reason="schema-maximum" |
-| <a id="s-3614157752"></a>[definition SamplerFailure · field message](#s-86fc0a8ec0) | `length · characters · contract_max` | maximum=1000; minimum=1; reason="schema-maximum" |
-| <a id="s-7450a8b3c0"></a>[definition SamplerInapplicable · field message](#s-9293e5a127) | `length · characters · contract_max` | maximum=1000; minimum=1; reason="schema-maximum" |
-| <a id="s-e7e4f045ed"></a>[definition SamplerInput · field media_type · string value](#s-657bf3ad58) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
-| <a id="s-37db911b0a"></a>[definition SamplerInput · field path](#s-657bf3ad58) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
-| <a id="s-59e0c99219"></a>[definition SamplerInput · field sha256](#s-657bf3ad58) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-5e84a610c9"></a>[definition SamplerOutput · field media_type](#s-3bdca52814) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
-| <a id="s-fb0c811393"></a>[definition SamplerOutput · field path](#s-3bdca52814) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
-| <a id="s-e595347167"></a>[definition SamplerOutput · field sha256](#s-3bdca52814) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-e973289435"></a>[definition SamplerRequest · field cancellation_path](#s-31a33a19b5) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
-| <a id="s-5cc372c030"></a>[definition SamplerRequest · field maximum_output_bytes](#s-31a33a19b5) | `value · schema-value · contract_max` | maximum=1099511627776; minimum=1; reason="schema-maximum" |
-| <a id="s-ce4e43ab77"></a>[definition SamplerRequest · field request_sha256](#s-31a33a19b5) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-e75aab889c"></a>[definition SamplerRequest · field sampler_descriptor_sha256](#s-31a33a19b5) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-5f20545494"></a>[definition SamplerRequest · field timeout_seconds](#s-31a33a19b5) | `value · schema-value · contract_max` | maximum=86400; minimum=1; reason="schema-maximum" |
-| <a id="s-8e4c8d92b1"></a>[definition SamplerRequest · field workspace_id](#s-31a33a19b5) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-fad6aae132"></a>[definition SamplerResult · field request_sha256](#s-36154d3941) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-7e3a4328e7"></a>[definition SamplerResult · field result_sha256](#s-36154d3941) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-c913fa2c60"></a>[definition SamplerResult · field sampler_descriptor_sha256](#s-36154d3941) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-97704c5295"></a>[definition SamplerWindow · field output_path](#s-0f82a2deb8) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| [definition JsonSchemaDocument · field sha256](#s-bbb1edec18) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition SamplerConformanceCoverage · field exercised](#s-52bf1095a1) | `value · schema-value · contract_max` | maximum=1; minimum=0; reason="schema-maximum" |
+| [definition SamplerDescriptor · field descriptor_sha256](#s-d4183e9ecd) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition SamplerDescriptor · field image_digest](#s-3555292979) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition SamplerDescriptor · field implementation_version](#s-1dfc403081) | `length · characters · contract_max` | maximum=120; minimum=1; reason="schema-maximum" |
+| [definition SamplerDescriptor · field primary_operation_contract_sha256](#s-20b5af8d04) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition SamplerDescriptor · field source_revision](#s-f8b6cb1c7a) | `length · characters · contract_max` | maximum=200; minimum=1; reason="schema-maximum" |
+| [definition SamplerFailure · field message](#s-3614157752) | `length · characters · contract_max` | maximum=1000; minimum=1; reason="schema-maximum" |
+| [definition SamplerInapplicable · field message](#s-7450a8b3c0) | `length · characters · contract_max` | maximum=1000; minimum=1; reason="schema-maximum" |
+| <a id="s-e7e4f045ed"></a>[definition SamplerInput · field media_type · string value](#s-d504bcc1a5) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
+| [definition SamplerInput · field path](#s-37db911b0a) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| [definition SamplerInput · field sha256](#s-59e0c99219) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition SamplerOutput · field media_type](#s-5e84a610c9) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
+| [definition SamplerOutput · field path](#s-fb0c811393) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| [definition SamplerOutput · field sha256](#s-e595347167) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition SamplerRequest · field cancellation_path](#s-e973289435) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| [definition SamplerRequest · field maximum_output_bytes](#s-5cc372c030) | `value · schema-value · contract_max` | maximum=1099511627776; minimum=1; reason="schema-maximum" |
+| [definition SamplerRequest · field request_sha256](#s-ce4e43ab77) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition SamplerRequest · field sampler_descriptor_sha256](#s-e75aab889c) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition SamplerRequest · field timeout_seconds](#s-5f20545494) | `value · schema-value · contract_max` | maximum=86400; minimum=1; reason="schema-maximum" |
+| [definition SamplerRequest · field workspace_id](#s-8e4c8d92b1) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition SamplerResult · field request_sha256](#s-fad6aae132) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition SamplerResult · field result_sha256](#s-7e3a4328e7) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition SamplerResult · field sampler_descriptor_sha256](#s-c913fa2c60) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition SamplerWindow · field output_path](#s-97704c5295) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
 
 ## Maintained corroboration
 
@@ -122,6 +305,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/protocol_schemas/generated:stove0-review-sampler/schemas/SamplerConformanceResult`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -680,3 +866,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

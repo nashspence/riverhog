@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-80acbe8bb3"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-63d41d35b6"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-698b9afc79"></a>`default_expressions` | ["'48h'"] |
-| <a id="s-6991f7b9b9"></a>`id` | "riverhog-server:environment:RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY" |
-| <a id="s-0783a8b801"></a>`input_shape` | "environment-string" |
-| <a id="s-8091a081fc"></a>`name` | "RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY" |
-| <a id="s-cc5e961af0"></a>`owner` | "riverhog-server" |
+| <a id="s-63d41d35b6"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-698b9afc79"></a>`default_expressions` | `["'48h'"]` |
+| <a id="s-6991f7b9b9"></a>`id` | `"riverhog-server:environment:RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY"` |
+| <a id="s-0783a8b801"></a>`input_shape` | `"environment-string"` |
+| <a id="s-8091a081fc"></a>`name` | `"RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY"` |
+| <a id="s-cc5e961af0"></a>`owner` | `"riverhog-server"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 5c15b27ca1c8d6f3f14933e08353cbeeeb2e0d21c9291149054a6a11a7b348ec -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "riverhog-server"
 }
 ```
+
+</details>

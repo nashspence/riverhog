@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ec21417e93"></a>
-- <a id="s-9c10b29a9c"></a>`title`: CollectionSummaryOut
-- <a id="s-0497c24fb4"></a>`type`: object
+
+- <a id="s-0497c24fb4"></a>`type`: `"object"`
+- <a id="s-a88d3dc252"></a>`additionalProperties`: `false`
+- <a id="s-1eae68b762"></a>`required`: `["id","created_at","description","description_revision","description_identity","description_publication","tag_revision","tag_set_identity","tag_publication","content_identity","archive_root_sha256","encryption_format","passphrase_id","files","bytes","remote_storage_bytes","archive_copy_count"]`
+- <a id="s-9c10b29a9c"></a>`title`: `"CollectionSummaryOut"`
 
 ### Fields
 
@@ -26,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-96e1750701"></a>`bytes` | yes | type="integer" |  |
 | <a id="s-4a2c71fa69"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-f767b31dab"></a>`created_at` | yes | type="string" |  |
-| <a id="s-4233142e27"></a>`description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
+| <a id="s-4233142e27"></a>`description` | yes | anyOf=(#/components/schemas/CollectionDescription) \| (type="null") |  |
 | <a id="s-f7df86a094"></a>`description_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-453cf07a7d"></a>`description_publication` | yes | type="string"; enum=["not_required","current","reconciling"] |  |
 | <a id="s-f993f04535"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
@@ -91,6 +94,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionSummaryOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -216,3 +222,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

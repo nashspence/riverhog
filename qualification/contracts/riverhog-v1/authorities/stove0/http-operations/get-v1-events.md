@@ -21,7 +21,7 @@ List Events
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-31c522de73"></a>`after` | query | no | not declared | anyOf=type="string" \| type="null" |
+| <a id="s-31c522de73"></a>`after` | query | no | not declared | anyOf=(type="string") \| (type="null") |
 | <a id="s-f727189551"></a>`limit` | query | no | `100` | type="integer"; minimum=1; maximum=100 |
 
 ### Responses
@@ -148,6 +148,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: b16c205819131f9c709f1256490ee0e5b303f3726ce52542d0604a3b08454bc3 -->
@@ -260,3 +263,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

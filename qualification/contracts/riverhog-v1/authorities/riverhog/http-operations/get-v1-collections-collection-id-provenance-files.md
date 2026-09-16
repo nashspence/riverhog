@@ -24,9 +24,9 @@ List Collection Provenance
 |---|---|---:|---|---|
 | <a id="s-4334a88c2f"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
 | <a id="s-6bd3c9f5e2"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-b30ca9f421"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
-| <a id="s-c72e496235"></a>`q` | query | no | not declared | anyOf=[BrowseQuery](../http-schemas/schemas-browsequery.md) \| type="null" |
-| <a id="s-dfc511ab78"></a>`status` | query | no | not declared | anyOf=[ProvenanceStatus](../http-schemas/schemas-provenancestatus.md) \| type="null" |
+| <a id="s-b30ca9f421"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
+| <a id="s-c72e496235"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
+| <a id="s-dfc511ab78"></a>`status` | query | no | not declared | anyOf=([ProvenanceStatus](../http-schemas/schemas-provenancestatus.md)) \| (type="null") |
 | <a id="s-f7af5892e7"></a>`sort` | query | no | `"path"` | type="string"; enum=["path","bytes","status"] |
 | <a id="s-3e97c26cbe"></a>`order` | query | no | `"asc"` | type="string"; enum=["asc","desc"] |
 
@@ -161,6 +161,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1files/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -386,3 +389,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

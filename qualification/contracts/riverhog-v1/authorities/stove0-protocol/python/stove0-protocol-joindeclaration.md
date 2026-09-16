@@ -27,28 +27,93 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-5fb9c36efa"></a>
-- <a id="s-97c387fe33"></a>`type`: object
 
-### Fields
+- <a id="s-97c387fe33"></a>`type`: `"object"`
+- <a id="s-9af88790fd"></a>`additionalProperties`: `false`
+- <a id="s-a9e2cbc7cd"></a>`required`: `["members","recipe","workflow_intent","join_declaration_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-58eb35b67f"></a>`effective_intent` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-2e664fb177"></a>`format` | no | type="string"; const="stove0-join-declaration/v1" |  |
+| <a id="s-58eb35b67f"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](#s-3c52221150)) |  |
+| <a id="s-2e664fb177"></a>`format` | no | type="string"; const="stove0-join-declaration/v1"; default="stove0-join-declaration/v1" |  |
 | <a id="s-efd68c962f"></a>`join_declaration_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ae30d7711c"></a>`members` | yes | type="array"; minItems=2; items=(#/$defs/JoinMemberDeclaration) |  |
-| <a id="s-904fa8d437"></a>`recipe` | yes | #/$defs/RecipeRef |  |
-| <a id="s-5850f02fef"></a>`workflow_intent` | yes | #/$defs/WorkflowPlanIntent |  |
+| <a id="s-ae30d7711c"></a>`members` | yes | type="array"; items=([JoinMemberDeclaration](#s-5300c97a15)); minItems=2 |  |
+| <a id="s-904fa8d437"></a>`recipe` | yes | [RecipeRef](#s-659c9b0200) |  |
+| <a id="s-5850f02fef"></a>`workflow_intent` | yes | [WorkflowPlanIntent](#s-8705882e44) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-5300c97a15"></a>`JoinMemberDeclaration` | type="object"; fields=`branch_id`, `output_roles`; additional keys=`additionalProperties`, `required` |
-| <a id="s-3c52221150"></a>`JsonValue` | empty object |
-| <a id="s-75a94902c0"></a>`OperationRef` | type="object"; fields=`id`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-659c9b0200"></a>`RecipeRef` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-8705882e44"></a>`WorkflowPlanIntent` | type="object"; fields=`input_retrieval_policy`, `operation`, `output_policy`, `requested_target_options`, `result_kind`, `retirement_grace_seconds`, `retirement_policy`, `target_contract_sha256`, `target_registration_id`; additional keys=`additionalProperties`, `required` |
+- [JoinMemberDeclaration](#s-5300c97a15)
+- [JsonValue](#s-3c52221150)
+- [OperationRef](#s-75a94902c0)
+- [RecipeRef](#s-659c9b0200)
+- [WorkflowPlanIntent](#s-8705882e44)
+
+##### <a id="s-5300c97a15"></a>definition `JoinMemberDeclaration`
+
+- <a id="s-169eaadd8b"></a>`type`: `"object"`
+- <a id="s-8edf453718"></a>`additionalProperties`: `false`
+- <a id="s-79d345b1bf"></a>`required`: `["branch_id","output_roles"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-8a1bc774d9"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-4eedb9a569"></a>`output_roles` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
+
+##### <a id="s-3c52221150"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-75a94902c0"></a>definition `OperationRef`
+
+- <a id="s-0677662619"></a>`type`: `"object"`
+- <a id="s-d3a3ef28de"></a>`additionalProperties`: `false`
+- <a id="s-efed4252fd"></a>`required`: `["id","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-70ba042203"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-b0cc77cdee"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-659c9b0200"></a>definition `RecipeRef`
+
+- <a id="s-7f528ede2c"></a>`type`: `"object"`
+- <a id="s-8e541f4c41"></a>`additionalProperties`: `false`
+- <a id="s-7788118628"></a>`required`: `["id","revision","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-075fba364e"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-6e68457ccc"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-1e45b41794"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-8705882e44"></a>definition `WorkflowPlanIntent`
+
+- <a id="s-e8e30226d9"></a>`type`: `"object"`
+- <a id="s-716c9e864b"></a>`additionalProperties`: `false`
+- <a id="s-9e9a5a8ded"></a>`required`: `["operation","target_registration_id","target_contract_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0a69e0e6f9"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-7a8d666867"></a>`operation` | yes | [OperationRef](#s-75a94902c0) |  |
+| <a id="s-e4882b0236"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](#s-3c52221150)) |  |
+| <a id="s-de64dbd8be"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](#s-3c52221150)) |  |
+| <a id="s-664b25d4aa"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
+| <a id="s-9b1c8fb986"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-4b20943d92"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
+| <a id="s-bc2362b70a"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-e46608b220"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
 
 ## Maintained corroboration
 
@@ -79,6 +144,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_protocol.JoinDeclaration`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -265,3 +333,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

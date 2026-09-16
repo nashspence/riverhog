@@ -27,18 +27,21 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-1b227bba88"></a>
-- <a id="s-a1faf51260"></a>`type`: object
 
-### Fields
+- <a id="s-a1faf51260"></a>`type`: `"object"`
+- <a id="s-e11e44fecc"></a>`additionalProperties`: `false`
+- <a id="s-8446f2be64"></a>`required`: `["id","source","type","time"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-bdab0ff150"></a>`data` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-ce18951641"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-bdab0ff150"></a>`data` | no | type="object"; additionalProperties=true |  |
+| <a id="s-ce18951641"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-fe5b598876"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-ffcf800cd2"></a>`source` | yes | type="string"; minLength=1 |  |
-| <a id="s-6194936dee"></a>`specversion` | no | type="string"; const="1.0" |  |
-| <a id="s-722293f09c"></a>`subject` | no | anyOf=type="string"; minLength=1 \| type="null" |  |
+| <a id="s-6194936dee"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-722293f09c"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null"); default=null |  |
 | <a id="s-687ecd37d4"></a>`time` | yes | type="string" |  |
 | <a id="s-45e923bd2e"></a>`type` | yes | type="string"; minLength=1 |  |
 
@@ -69,6 +72,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/lifecycle_events.CloudEvent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -139,3 +145,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

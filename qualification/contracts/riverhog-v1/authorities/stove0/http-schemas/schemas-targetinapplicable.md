@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-804f4118a3"></a>
-- <a id="s-01a661a990"></a>`title`: TargetInapplicable
-- <a id="s-9c2f9fcf38"></a>`type`: object
+
+- <a id="s-9c2f9fcf38"></a>`type`: `"object"`
+- <a id="s-34d4e3e250"></a>`additionalProperties`: `false`
+- <a id="s-58b4939248"></a>`required`: `["code","message"]`
+- <a id="s-01a661a990"></a>`title`: `"TargetInapplicable"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-b21f85ed85"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-c4a2407994"></a>`message` | yes | type="string"; minLength=1; maxLength=1000 |  |
+| <a id="s-c4a2407994"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -57,6 +60,9 @@ Shared facts for every subject below: maximum=1000; minimum=1; reason="schema-ma
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: e6e7b7f0a6d88757ed930e374dc9c6877fd96d32d1a689c2d8fbc8e6a3838457 -->
@@ -85,3 +91,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

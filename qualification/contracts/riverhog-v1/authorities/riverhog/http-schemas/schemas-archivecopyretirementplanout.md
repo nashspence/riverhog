@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-05bde79c4b"></a>
-- <a id="s-77e7f36434"></a>`title`: ArchiveCopyRetirementPlanOut
-- <a id="s-86305dce22"></a>`type`: object
+
+- <a id="s-86305dce22"></a>`type`: `"object"`
+- <a id="s-b920650ee4"></a>`additionalProperties`: `false`
+- <a id="s-2e90ad56f9"></a>`required`: `["status","collection_id","store","warning","expires_at","challenge","target_copy","retained_copies","retired_retrieval_job_count","blockers","verification_note","billing_note"]`
+- <a id="s-77e7f36434"></a>`title`: `"ArchiveCopyRetirementPlanOut"`
 
 ### Fields
 
@@ -23,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-662b46ed5a"></a>`billing_note` | yes | type="string" |  |
 | <a id="s-3bb1c53f61"></a>`blockers` | yes | type="array"; items=(type="string") |  |
-| <a id="s-a8bf1cfd6c"></a>`challenge` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-a8bf1cfd6c"></a>`challenge` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-b3e346a57e"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
 | <a id="s-22bb7f1875"></a>`expires_at` | yes | type="string" |  |
 | <a id="s-3b329cb5f9"></a>`retained_copies` | yes | type="array"; items=(#/components/schemas/ArchiveCopyRetirementRetainedOut) |  |
@@ -34,6 +37,35 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-0e9fe4a515"></a>`verification_note` | yes | type="string" |  |
 | <a id="s-3902eea4d7"></a>`warning` | yes | type="string" |  |
 
+### Exactly one must match (`oneOf`)
+
+| Alternative | Schema |
+|---|---|
+| 1 | [See `oneOf` alternative 1](#s-178cb4c49f) |
+| 2 | [See `oneOf` alternative 2](#s-bfe171a84c) |
+
+### <a id="s-178cb4c49f"></a>`oneOf` alternative 1
+
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-191e6ff8d3"></a>`blockers` | no | minItems=1 |  |
+| <a id="s-f234572c77"></a>`challenge` | no | type="null" |  |
+| <a id="s-58ffc09adb"></a>`status` | no | const="blocked" |  |
+
+### <a id="s-bfe171a84c"></a>`oneOf` alternative 2
+
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-82a7ddf46a"></a>`blockers` | no | maxItems=0 |  |
+| <a id="s-453077a665"></a>`challenge` | no | type="string"; minLength=1 |  |
+| <a id="s-9d526db619"></a>`status` | no | enum=["ready","retiring"] |  |
+
 ### Progression, limits, and lifecycle
 
 #### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
@@ -42,7 +74,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-191e6ff8d3"></a>[oneOf alternative 1 · field blockers](#s-05bde79c4b) | `cardinality · items · operational_policy` | shared above |
+| [oneOf alternative 1 · field blockers](#s-191e6ff8d3) | `cardinality · items · operational_policy` | shared above |
 | [field blockers](#s-3bb1c53f61) | `cardinality · items · operational_policy` | shared above |
 | [field retained_copies](#s-3b329cb5f9) | `cardinality · items · operational_policy` | shared above |
 
@@ -52,7 +84,7 @@ Shared facts for every subject below: maximum=0; reason="state-conditioned-empty
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-82a7ddf46a"></a>[oneOf alternative 2 · field blockers](#s-05bde79c4b) | `cardinality · items · contract_max` | shared above |
+| [oneOf alternative 2 · field blockers](#s-82a7ddf46a) | `cardinality · items · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -86,6 +118,9 @@ Shared facts for every subject below: maximum=0; reason="state-conditioned-empty
 - `/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyRetirementPlanOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -209,3 +244,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

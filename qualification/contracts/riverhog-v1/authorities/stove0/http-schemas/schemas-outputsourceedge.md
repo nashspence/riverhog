@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-899c649fd5"></a>
-- <a id="s-ac563c5a8c"></a>`title`: OutputSourceEdge
-- <a id="s-176e844f07"></a>`type`: object
+
+- <a id="s-176e844f07"></a>`type`: `"object"`
+- <a id="s-f722a43250"></a>`additionalProperties`: `false`
+- <a id="s-8b17613715"></a>`required`: `["output_id","input_id"]`
+- <a id="s-ac563c5a8c"></a>`title`: `"OutputSourceEdge"`
 
 ### Fields
 
@@ -46,6 +49,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 972b082324ce99560dcf290aaa2190dca0d8d4ad38ed3ae820655588e94db2f4 -->
@@ -73,3 +79,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

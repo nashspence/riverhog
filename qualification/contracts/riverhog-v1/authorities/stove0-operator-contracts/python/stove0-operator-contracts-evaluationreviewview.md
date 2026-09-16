@@ -27,17 +27,20 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-877f26a17d"></a>
-- <a id="s-8e628a747d"></a>`type`: object
 
-### Fields
+- <a id="s-8e628a747d"></a>`type`: `"object"`
+- <a id="s-f204e54675"></a>`additionalProperties`: `false`
+- <a id="s-2d65269362"></a>`required`: `["variant_id","updated_by","updated_at"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f6d9d0031c"></a>`note` | no | anyOf=type="string"; minLength=1; maxLength=4000; pattern="^\\S(?:[\\s\\S]*\\S)?$" \| type="null" |  |
-| <a id="s-ed84e9cb19"></a>`rating` | no | anyOf=type="integer"; minimum=1; maximum=5 \| type="null" |  |
-| <a id="s-c41a0a10fd"></a>`updated_at` | yes | type="string"; minLength=1; maxLength=40 |  |
-| <a id="s-6d39e7707e"></a>`updated_by` | yes | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-337d3906a1"></a>`variant_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-f6d9d0031c"></a>`note` | no | anyOf=(type="string"; maxLength=4000; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$") \| (type="null"); default=null |  |
+| <a id="s-ed84e9cb19"></a>`rating` | no | anyOf=(type="integer"; minimum=1; maximum=5) \| (type="null"); default=null |  |
+| <a id="s-c41a0a10fd"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
+| <a id="s-6d39e7707e"></a>`updated_by` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-337d3906a1"></a>`variant_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 
 ## Maintained corroboration
 
@@ -66,6 +69,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.EvaluationReviewView`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -136,3 +142,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

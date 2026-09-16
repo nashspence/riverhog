@@ -14,21 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-16593928e7"></a>
-- <a id="s-740cf6e4bf"></a>`title`: ExternalEffectReceipt
-- <a id="s-fc576a4deb"></a>`type`: object
+
+- <a id="s-fc576a4deb"></a>`type`: `"object"`
+- <a id="s-05116e9e9a"></a>`additionalProperties`: `false`
+- <a id="s-76e8050283"></a>`required`: `["job_id","request_sha256","target_contract_sha256","operation_contract_sha256","plan_sha256","execution_sha256","result","receipt_sha256"]`
+- <a id="s-740cf6e4bf"></a>`title`: `"ExternalEffectReceipt"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-d2aaff7b04"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-aae5192c57"></a>`format` | no | type="string"; const="stove0-external-effect-receipt/v1" |  |
+| <a id="s-aae5192c57"></a>`format` | no | type="string"; const="stove0-external-effect-receipt/v1"; default="stove0-external-effect-receipt/v1" |  |
 | <a id="s-e9bbf6f1ac"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-7b9d012ea6"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-de82bc172b"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-25cc4872ef"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-b860ac21ac"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-fdcf8150cf"></a>`result` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| <a id="s-fdcf8150cf"></a>`result` | yes | type="object"; additionalProperties=(#/components/schemas/JsonValue); x-riverhog-encoded-bytes-max=65536; x-riverhog-extent={"policy":"contract_max","reason":"bounded-external-effect-receipt"} |  |
 | <a id="s-9fa3a05b4e"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
@@ -83,6 +86,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/stove0/components/schemas/ExternalEffectReceipt`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -160,3 +166,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

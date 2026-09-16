@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-21ec1b261e"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-46a0052dda"></a>`authority` | "the owning validated deployment configuration document" |
-| <a id="s-1c5407e795"></a>`declared_operational_maximum` | null |
-| <a id="s-2136bd6100"></a>`hidden_maximum` | "forbidden" |
-| <a id="s-2cc9c2e451"></a>`policy` | "operational_policy" |
-| <a id="s-0b439cb781"></a>`semantic_maximum` | null |
-| <a id="s-450d61181b"></a>`silent_truncation` | "forbidden" |
+| <a id="s-46a0052dda"></a>`authority` | `"the owning validated deployment configuration document"` |
+| <a id="s-1c5407e795"></a>`declared_operational_maximum` | `null` |
+| <a id="s-2136bd6100"></a>`hidden_maximum` | `"forbidden"` |
+| <a id="s-2cc9c2e451"></a>`policy` | `"operational_policy"` |
+| <a id="s-0b439cb781"></a>`semantic_maximum` | `null` |
+| <a id="s-450d61181b"></a>`silent_truncation` | `"forbidden"` |
 
 ## Governing policies
 
@@ -45,6 +46,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 3ba1d5cdf00d6737eee66c195f42c64dcb0914af7bd8fd8bc1bbc7102b560420 -->
@@ -59,3 +63,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "silent_truncation": "forbidden"
 }
 ```
+
+</details>

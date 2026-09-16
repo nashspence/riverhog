@@ -75,6 +75,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 ### `/external_contract/cli/riverhog-ftp-adapter/commands/run/allow_abbrev`
@@ -178,3 +181,5 @@ true
   }
 ]
 ```
+
+</details>

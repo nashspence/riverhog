@@ -27,22 +27,40 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-1ea8c031f9"></a>
-- <a id="s-c50044e3ec"></a>`type`: object
 
-### Fields
+- <a id="s-c50044e3ec"></a>`type`: `"object"`
+- <a id="s-56ed90497a"></a>`additionalProperties`: `false`
+- <a id="s-6f5996d646"></a>`required`: `["name","value","evidence"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-85da213ab6"></a>`evidence` | yes | #/$defs/MediaFactEvidence |  |
+| <a id="s-85da213ab6"></a>`evidence` | yes | [MediaFactEvidence](#s-c2f402a43a) |  |
 | <a id="s-aff70022ce"></a>`name` | yes | type="string"; enum=["capture-time","container-format","creator","device-make","device-model","gps-latitude","gps-longitude"] |  |
-| <a id="s-a6a962ed5c"></a>`value` | yes | #/$defs/JsonValue |  |
+| <a id="s-a6a962ed5c"></a>`value` | yes | [JsonValue](#s-62e920a617) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-62e920a617"></a>`JsonValue` | empty object |
-| <a id="s-c2f402a43a"></a>`MediaFactEvidence` | type="object"; fields=`artifact_id`, `field`; additional keys=`additionalProperties`, `required` |
+- [JsonValue](#s-62e920a617)
+- [MediaFactEvidence](#s-c2f402a43a)
+
+##### <a id="s-62e920a617"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-c2f402a43a"></a>definition `MediaFactEvidence`
+
+- <a id="s-b51d680181"></a>`type`: `"object"`
+- <a id="s-2d19957ed7"></a>`additionalProperties`: `false`
+- <a id="s-71c89a96c1"></a>`required`: `["artifact_id","field"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cf0946a057"></a>`artifact_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-67f058134c"></a>`field` | yes | type="string"; maxLength=240; minLength=1 |  |
 
 ## Governing policies
 
@@ -65,6 +83,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_media_metadata_observer_contracts.MediaMetadataFact`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -134,3 +155,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

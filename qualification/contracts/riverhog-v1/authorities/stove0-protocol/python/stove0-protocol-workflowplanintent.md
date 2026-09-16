@@ -27,28 +27,46 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-5c455d3d8b"></a>
-- <a id="s-e4f76395f2"></a>`type`: object
 
-### Fields
+- <a id="s-e4f76395f2"></a>`type`: `"object"`
+- <a id="s-317ea20463"></a>`additionalProperties`: `false`
+- <a id="s-acdb2b0202"></a>`required`: `["operation","target_registration_id","target_contract_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f68ba11817"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
-| <a id="s-e739133219"></a>`operation` | yes | #/$defs/OperationRef |  |
-| <a id="s-4110fe6ff5"></a>`output_policy` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-f9b8ce04e4"></a>`requested_target_options` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-9e24211777"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"] |  |
-| <a id="s-67d7f743ca"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0 |  |
-| <a id="s-eb4cc9eb3f"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"] |  |
+| <a id="s-f68ba11817"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-e739133219"></a>`operation` | yes | [OperationRef](#s-429ed7f27c) |  |
+| <a id="s-4110fe6ff5"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](#s-7ed2d99a03)) |  |
+| <a id="s-f9b8ce04e4"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](#s-7ed2d99a03)) |  |
+| <a id="s-9e24211777"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
+| <a id="s-67d7f743ca"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-eb4cc9eb3f"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
 | <a id="s-e95da0ad87"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-503dea0230"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-7ed2d99a03"></a>`JsonValue` | empty object |
-| <a id="s-429ed7f27c"></a>`OperationRef` | type="object"; fields=`id`, `sha256`; additional keys=`additionalProperties`, `required` |
+- [JsonValue](#s-7ed2d99a03)
+- [OperationRef](#s-429ed7f27c)
+
+##### <a id="s-7ed2d99a03"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-429ed7f27c"></a>definition `OperationRef`
+
+- <a id="s-ececb7d2f0"></a>`type`: `"object"`
+- <a id="s-951ccc997a"></a>`additionalProperties`: `false`
+- <a id="s-0f4c137e81"></a>`required`: `["id","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-eaa5f8a918"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-caa7dfd9c3"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -79,6 +97,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_protocol.WorkflowPlanIntent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -180,3 +201,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

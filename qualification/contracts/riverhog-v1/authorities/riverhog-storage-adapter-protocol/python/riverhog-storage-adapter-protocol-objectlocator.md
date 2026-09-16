@@ -27,14 +27,17 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d5b5deaef9"></a>
-- <a id="s-7c1e8986f2"></a>`type`: object
 
-### Fields
+- <a id="s-7c1e8986f2"></a>`type`: `"object"`
+- <a id="s-e340ff5ac9"></a>`additionalProperties`: `false`
+- <a id="s-e4b57abe4b"></a>`required`: `["object_path"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4623f87320"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-7ef7be1c5b"></a>`revision` | no | anyOf=type="string"; minLength=1; maxLength=2000 \| type="null" |  |
+| <a id="s-4623f87320"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-7ef7be1c5b"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
 
 ## Maintained corroboration
 
@@ -63,6 +66,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.ObjectLocator`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -107,3 +113,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

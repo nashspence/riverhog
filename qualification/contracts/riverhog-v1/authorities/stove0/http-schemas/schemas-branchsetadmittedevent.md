@@ -14,18 +14,21 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-751c9ba6ad"></a>
-- <a id="s-81b45141f4"></a>`title`: BranchSetAdmittedEvent
-- <a id="s-90f8fe8621"></a>`type`: object
+
+- <a id="s-90f8fe8621"></a>`type`: `"object"`
+- <a id="s-9271a5b14f"></a>`additionalProperties`: `false`
+- <a id="s-2a5f25323f"></a>`required`: `["id","source","type","subject","time","data"]`
+- <a id="s-81b45141f4"></a>`title`: `"BranchSetAdmittedEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-99cbec3f8b"></a>`data` | yes | #/components/schemas/BranchSetAdmittedEventData |  |
-| <a id="s-0c20775d0b"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-0c20775d0b"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-db8b0a166a"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-2731606c32"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
-| <a id="s-f66f2438fe"></a>`specversion` | no | type="string"; const="1.0" |  |
+| <a id="s-f66f2438fe"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-5021293ee9"></a>`subject` | yes | type="string"; minLength=1 |  |
 | <a id="s-a9160be71a"></a>`time` | yes | type="string" |  |
 | <a id="s-c424b8e8e3"></a>`type` | yes | type="string"; const="io.riverhog.stove0.branch-set.admitted" |  |
@@ -57,6 +60,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/stove0/components/schemas/BranchSetAdmittedEvent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -118,3 +124,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -27,21 +27,27 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-9e39aea4c3"></a>
-- <a id="s-6a9c1d36d4"></a>`type`: object
 
-### Fields
+- <a id="s-6a9c1d36d4"></a>`type`: `"object"`
+- <a id="s-db3d5e6105"></a>`additionalProperties`: `false`
+- <a id="s-ca426c691d"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-092c9b7dae"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-5044a4d3bc"></a>`collection_id` | yes | #/$defs/CollectionId |  |
+| <a id="s-5044a4d3bc"></a>`collection_id` | yes | [CollectionId](#s-a0dd024c6d) |  |
 | <a id="s-bb3ed71587"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-a0dd024c6d"></a>`CollectionId` | type="integer"; minimum=1 |
+- [CollectionId](#s-a0dd024c6d)
+
+##### <a id="s-a0dd024c6d"></a>definition `CollectionId`
+
+- <a id="s-fe67a67168"></a>`type`: `"integer"`
+- <a id="s-af909101f4"></a>`minimum`: `1`
 
 ## Maintained corroboration
 
@@ -71,6 +77,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_protocol.CollectionRootRef`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -116,3 +125,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

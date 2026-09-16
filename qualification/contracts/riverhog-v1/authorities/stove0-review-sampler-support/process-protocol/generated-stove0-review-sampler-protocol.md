@@ -13,13 +13,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-| Subject | Shape |
+<a id="s-aacaa6d4b2"></a>
+<a id="s-1c9b12a3fd"></a>
+
+| Field | Value |
 |---|---|
-| <a id="s-1c9b12a3fd"></a>`authorities` | additional keys=`http_operations`, `semantic_acceptance`, `structural_models` |
-| <a id="s-0bdd9b0af3"></a>`bundle_sha256` | "dbbc9320e223fb591a30981339ba8c7a7f8b7de2358ce3a3cc38c2c7fbf78119" |
-| <a id="s-70d47dd5f8"></a>`format` | "stove0-review-sampler-schema-bundle/v1" |
-| <a id="s-835f094545"></a>`protocol` | "stove0-review-sampler/v1" |
-| <a id="s-aacaa6d4b2"></a>`semantic_acceptance` | additional keys=`kind`, `validator` |
+| <a id="s-a47a617b1d"></a>`authorities · http_operations` | `"http_binding.operations"` |
+| <a id="s-86ee5506af"></a>`authorities · semantic_acceptance` | `"semantic_acceptance"` |
+| <a id="s-ac2d9ba033"></a>`authorities · structural_models` | `"schemas"` |
+| <a id="s-0bdd9b0af3"></a>`bundle_sha256` | `"dbbc9320e223fb591a30981339ba8c7a7f8b7de2358ce3a3cc38c2c7fbf78119"` |
+| <a id="s-70d47dd5f8"></a>`format` | `"stove0-review-sampler-schema-bundle/v1"` |
+| <a id="s-835f094545"></a>`protocol` | `"stove0-review-sampler/v1"` |
+| <a id="s-ccbb501261"></a>`semantic_acceptance · kind` | `"request-bound-result"` |
+| <a id="s-554cd42af9"></a>`semantic_acceptance · validator` | `"validate_result"` |
 
 ## Maintained corroboration
 
@@ -58,6 +64,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/protocol_schemas/generated:stove0-review-sampler/semantic_acceptance`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -107,3 +116,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "validator": "validate_result"
 }
 ```
+
+</details>

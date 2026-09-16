@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0e24eaf1b1"></a>
-- <a id="s-d17a225c74"></a>`title`: PreviewOutcome
-- <a id="s-daadc86e25"></a>`type`: object
+
+- <a id="s-daadc86e25"></a>`type`: `"object"`
+- <a id="s-862dd8948e"></a>`additionalProperties`: `false`
+- <a id="s-cb14171513"></a>`required`: `["code","message"]`
+- <a id="s-d17a225c74"></a>`title`: `"PreviewOutcome"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-22b7766e69"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-ba9e0e963b"></a>`message` | yes | type="string"; minLength=1; maxLength=1000 |  |
-| <a id="s-9b87a0448c"></a>`retryable` | no | anyOf=type="boolean" \| type="null" |  |
+| <a id="s-ba9e0e963b"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-9b87a0448c"></a>`retryable` | no | anyOf=(type="boolean") \| (type="null") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -57,6 +60,9 @@ Shared facts for every subject below: maximum=1000; minimum=1; reason="schema-ma
 - `/external_contract/http_openapi/stove0/components/schemas/PreviewOutcome`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -97,3 +103,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

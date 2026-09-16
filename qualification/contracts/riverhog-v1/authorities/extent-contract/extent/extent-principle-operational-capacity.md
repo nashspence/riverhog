@@ -13,8 +13,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-ab1da78674"></a>
-- Shape: "Capacity policy may explicitly reject, defer, or throttle work, but must not silently truncate it or become an undocumented semantic ceiling."
+
+| Field | Value |
+|---|---|
+| <a id="s-ab1da78674"></a>`operational_capacity` | `"Capacity policy may explicitly reject, defer, or throttle work, but must not silently truncate it or become an undocumented semantic ceiling."` |
 
 ## Governing policies
 
@@ -38,6 +40,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 2ad1c9610f6e7e1b6b5604827016cf80d9082d86ff2cc104d767d7b77a3acd5c -->
@@ -45,3 +50,5 @@ The following JSON is the complete value owned at each machine-authority pointer
 ```json
 "Capacity policy may explicitly reject, defer, or throttle work, but must not silently truncate it or become an undocumented semantic ceiling."
 ```
+
+</details>

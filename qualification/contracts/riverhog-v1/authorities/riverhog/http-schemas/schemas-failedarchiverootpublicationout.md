@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c27099525c"></a>
-- <a id="s-a0e332b63f"></a>`title`: FailedArchiveRootPublicationOut
-- <a id="s-80d3054b16"></a>`type`: object
+
+- <a id="s-80d3054b16"></a>`type`: `"object"`
+- <a id="s-e5e2631606"></a>`additionalProperties`: `false`
+- <a id="s-321597d5b9"></a>`required`: `["state"]`
+- <a id="s-a0e332b63f"></a>`title`: `"FailedArchiveRootPublicationOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-46b1e12b22"></a>`object_path` | no | anyOf=type="string"; minLength=1 \| type="null" |  |
-| <a id="s-f70b18df4c"></a>`sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-46b1e12b22"></a>`object_path` | no | anyOf=(type="string"; minLength=1) \| (type="null") |  |
+| <a id="s-f70b18df4c"></a>`sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 | <a id="s-b9cfcea2e8"></a>`state` | yes | type="string"; const="failed" |  |
 
 ### Progression, limits, and lifecycle
@@ -57,6 +60,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/riverhog/components/schemas/FailedArchiveRootPublicationOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -103,3 +109,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

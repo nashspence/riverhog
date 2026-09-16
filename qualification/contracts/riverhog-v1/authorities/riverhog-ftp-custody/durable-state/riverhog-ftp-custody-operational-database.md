@@ -15,14 +15,67 @@ Exact externally visible contract owned by this semantic dossier.
 
 <a id="s-992b75bfec"></a>
 
-| Field | Shape |
+
+
+| Field | Value |
 |---|---|
-| <a id="s-9c6dbe1166"></a>`dialect` | "sqlite" |
-| <a id="s-a30d878c25"></a>`id` | "operational-database" |
-| <a id="s-41e1afd5b1"></a>`kind` | "relational-schema" |
-| <a id="s-79aa9488de"></a>`tables` | items=additional keys=`columns`, `constraints`, `name` \| additional keys=`columns`, `constraints`, `name` \| additional keys=`columns`, `constraints`, `name` \| additional keys=`columns`, `constraints`, `name` |
-| <a id="s-bc4deff50d"></a>`unique_indexes` | [] |
-| <a id="s-0d88293dad"></a>`user_version` | 2 |
+| <a id="s-9c6dbe1166"></a>`dialect` | `"sqlite"` |
+| <a id="s-a30d878c25"></a>`id` | `"operational-database"` |
+| <a id="s-41e1afd5b1"></a>`kind` | `"relational-schema"` |
+| <a id="s-bc4deff50d"></a>`unique_indexes` | `[]` |
+| <a id="s-0d88293dad"></a>`user_version` | `2` |
+
+<a id="s-9d10de3bf6"></a>
+
+### Table: `claims`
+
+#### Columns
+
+| Column | Type | Nullable | Default | Other constraints |
+|---|---|---:|---|---|
+| <a id="s-c2d025d372"></a>`ordinal` | `INTEGER` | no | `—` | {"primary_key":true} |
+| <a id="s-f05d73dc5b"></a>`claim_id` | `TEXT` | no | `—` | {"unique":true} |
+| <a id="s-bc267481ba"></a>`manifest_json` | `TEXT` | no | `—` | — |
+| <a id="s-a74c0b238b"></a>`claim_bytes` | `INTEGER` | no | `—` | {"checks":["(claim_bytes >= 0)"]} |
+
+<a id="s-af955cbda3"></a>
+
+### Table: `adapter_state`
+
+#### Columns
+
+| Column | Type | Nullable | Default | Other constraints |
+|---|---|---:|---|---|
+| <a id="s-8e6cc5f51d"></a>`key` | `TEXT` | yes | `—` | {"primary_key":true} |
+| <a id="s-3e385f1523"></a>`value` | `TEXT` | no | `—` | — |
+
+<a id="s-2364ff26c0"></a>
+
+### Table: `completion_events`
+
+#### Columns
+
+| Column | Type | Nullable | Default | Other constraints |
+|---|---|---:|---|---|
+| <a id="s-cdbbd2f9e5"></a>`event_id` | `TEXT` | yes | `—` | {"primary_key":true} |
+| <a id="s-9b5453ce77"></a>`claim_id` | `TEXT` | no | `—` | — |
+
+<a id="s-e2331c1394"></a>
+
+### Table: `completion_failures`
+
+#### Columns
+
+| Column | Type | Nullable | Default | Other constraints |
+|---|---|---:|---|---|
+| <a id="s-7ffa6be99d"></a>`ordinal` | `INTEGER` | no | `—` | {"primary_key":true} |
+| <a id="s-7eba67e027"></a>`failure_id` | `TEXT` | no | `—` | {"unique":true} |
+| <a id="s-30c0c26ff5"></a>`generation` | `TEXT` | no | `—` | — |
+| <a id="s-6a29c38391"></a>`record_offset` | `INTEGER` | no | `—` | {"checks":["(record_offset >= 0)"]} |
+| <a id="s-edbc45528f"></a>`raw` | `BLOB` | no | `—` | — |
+| <a id="s-5965aeadd4"></a>`reason` | `TEXT` | no | `—` | — |
+| <a id="s-0b8258b646"></a>`retryable` | `INTEGER` | no | `—` | {"checks":["(retryable IN (0, 1))"]} |
+| <a id="s-edc8fa5a3a"></a>`attempts` | `INTEGER` | no | `0` | {"checks":["(attempts >= 0)"]} |
 
 ## Maintained corroboration
 
@@ -51,6 +104,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/6/structure/units/0`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -206,3 +262,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "user_version": 2
 }
 ```
+
+</details>

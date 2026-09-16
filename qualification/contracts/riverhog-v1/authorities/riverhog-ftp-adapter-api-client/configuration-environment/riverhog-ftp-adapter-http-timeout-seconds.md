@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2d908ff8df"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-c799298a70"></a>`consumers` | ["riverhog-ftp-adapter-api-client"] |
-| <a id="s-539ad8b835"></a>`default_expressions` | ["unset"] |
-| <a id="s-69dffd9a14"></a>`id` | "riverhog-ftp-adapter-api-client:environment:RIVERHOG_FTP_ADAPTER_HTTP_TIMEOUT_SECONDS" |
-| <a id="s-f8a11ba5cc"></a>`input_shape` | "environment-string" |
-| <a id="s-c530fa2f45"></a>`name` | "RIVERHOG_FTP_ADAPTER_HTTP_TIMEOUT_SECONDS" |
-| <a id="s-c6f518f261"></a>`owner` | "riverhog-ftp-adapter-api-client" |
+| <a id="s-c799298a70"></a>`consumers` | `["riverhog-ftp-adapter-api-client"]` |
+| <a id="s-539ad8b835"></a>`default_expressions` | `["unset"]` |
+| <a id="s-69dffd9a14"></a>`id` | `"riverhog-ftp-adapter-api-client:environment:RIVERHOG_FTP_ADAPTER_HTTP_TIMEOUT_SECONDS"` |
+| <a id="s-f8a11ba5cc"></a>`input_shape` | `"environment-string"` |
+| <a id="s-c530fa2f45"></a>`name` | `"RIVERHOG_FTP_ADAPTER_HTTP_TIMEOUT_SECONDS"` |
+| <a id="s-c6f518f261"></a>`owner` | `"riverhog-ftp-adapter-api-client"` |
 
 ### Progression, limits, and lifecycle
 
@@ -64,6 +65,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 1b6185fa5ceb7164076a6578a363f3c3a0a518deda40092b240af9bf1faad3cc -->
@@ -82,3 +86,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "riverhog-ftp-adapter-api-client"
 }
 ```
+
+</details>

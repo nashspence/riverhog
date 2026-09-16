@@ -14,20 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ddd44c6b0a"></a>
-- <a id="s-878643edf9"></a>`title`: CatalogSyncChangePage
-- <a id="s-5b72cd0e42"></a>`type`: object
+
+- <a id="s-5b72cd0e42"></a>`type`: `"object"`
+- <a id="s-3e646cb13d"></a>`additionalProperties`: `false`
+- <a id="s-de3f59d8de"></a>`required`: `["source_identity","authorization_view_identity","changes","next_cursor","caught_up","through_revision"]`
+- <a id="s-878643edf9"></a>`title`: `"CatalogSyncChangePage"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8871b88c1f"></a>`authorization_view_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-8871b88c1f"></a>`authorization_view_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-432e1a3267"></a>`caught_up` | yes | type="boolean" |  |
-| <a id="s-6ab6578eda"></a>`changes` | yes | type="array"; maxItems=100; items=(oneOf=#/components/schemas/CatalogSyncUpsert \| #/components/schemas/CatalogSyncDelete; additional keys=`discriminator`) |  |
-| <a id="s-7b7de7e14d"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1" |  |
-| <a id="s-e059c8b7fc"></a>`next_cursor` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-aad3b69d89"></a>`source_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-7679cb53ca"></a>`through_revision` | yes | type="string"; minLength=1; maxLength=19; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+| <a id="s-6ab6578eda"></a>`changes` | yes | type="array"; items=(discriminator={"mapping":{"delete":"#/components/schemas/CatalogSyncDelete","upsert":"#/components/schemas/CatalogSyncUpsert"},"propertyName":"operation"}; oneOf=(#/components/schemas/CatalogSyncUpsert) \| (#/components/schemas/CatalogSyncDelete)); maxItems=100 |  |
+| <a id="s-7b7de7e14d"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1"; default="riverhog-catalog-sync/v1" |  |
+| <a id="s-e059c8b7fc"></a>`next_cursor` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-aad3b69d89"></a>`source_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-7679cb53ca"></a>`through_revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -84,6 +87,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncChangePage`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -165,3 +171,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

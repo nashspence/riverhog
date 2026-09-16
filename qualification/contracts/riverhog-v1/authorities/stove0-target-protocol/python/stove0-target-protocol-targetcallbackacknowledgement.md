@@ -27,13 +27,15 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-efa050e563"></a>
-- <a id="s-869849d3f0"></a>`type`: object
 
-### Fields
+- <a id="s-869849d3f0"></a>`type`: `"object"`
+- <a id="s-61388af1d8"></a>`additionalProperties`: `false`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-9052757ae9"></a>`accepted` | no | type="boolean"; const=true |  |
+| <a id="s-9052757ae9"></a>`accepted` | no | type="boolean"; const=true; default=true |  |
 
 ## Governing policies
 
@@ -56,6 +58,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_protocol.TargetCallbackAcknowledgement`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -84,3 +89,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

@@ -14,20 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f599d8e707"></a>
-- <a id="s-db307cfd05"></a>`title`: AppKeyListOut
-- <a id="s-af7fa155ca"></a>`type`: object
+
+- <a id="s-af7fa155ca"></a>`type`: `"object"`
+- <a id="s-a92999b0f9"></a>`additionalProperties`: `false`
+- <a id="s-3424a235cd"></a>`required`: `["page_size","next_page_token","sort","order","query","active","app","keys"]`
+- <a id="s-db307cfd05"></a>`title`: `"AppKeyListOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0abf40b30c"></a>`active` | yes | anyOf=type="boolean" \| type="null" |  |
+| <a id="s-0abf40b30c"></a>`active` | yes | anyOf=(type="boolean") \| (type="null") |  |
 | <a id="s-7c7507b662"></a>`app` | yes | #/components/schemas/ApplicationName |  |
 | <a id="s-5f3fe1ebaf"></a>`keys` | yes | type="array"; items=(#/components/schemas/AppKeyOut) |  |
-| <a id="s-9101fa3350"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-9101fa3350"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-98ec6db189"></a>`order` | yes | #/components/schemas/SortOrder |  |
 | <a id="s-7f4f8c329b"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-9a1536a391"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-9a1536a391"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-d0d9fa0407"></a>`sort` | yes | #/components/schemas/ApplicationKeySort |  |
 
 ### Progression, limits, and lifecycle
@@ -87,6 +90,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/AppKeyListOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -165,3 +171,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

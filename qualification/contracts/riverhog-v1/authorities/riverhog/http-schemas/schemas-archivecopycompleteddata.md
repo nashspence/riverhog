@@ -14,18 +14,21 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4269978bc1"></a>
-- <a id="s-235f689bf6"></a>`title`: ArchiveCopyCompletedData
-- <a id="s-47b2793eea"></a>`type`: object
+
+- <a id="s-47b2793eea"></a>`type`: `"object"`
+- <a id="s-d89a102e6a"></a>`additionalProperties`: `false`
+- <a id="s-885cf39266"></a>`required`: `["actor","initiator","collection_id","collection_created_at","source_store","destination_store","state"]`
+- <a id="s-235f689bf6"></a>`title`: `"ArchiveCopyCompletedData"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-b13aa2938a"></a>`actor` | yes | #/components/schemas/RiverhogActor |  |
-| <a id="s-2e399c0e6f"></a>`cause` | no | anyOf=#/components/schemas/RiverhogEventCause \| type="null" |  |
-| <a id="s-bd516d31f0"></a>`collection_created_at` | yes | type="string"; minLength=1; maxLength=64 |  |
+| <a id="s-2e399c0e6f"></a>`cause` | no | anyOf=(#/components/schemas/RiverhogEventCause) \| (type="null") |  |
+| <a id="s-bd516d31f0"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
 | <a id="s-cfbbdf2555"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-2e00e9606c"></a>`context` | no | anyOf=type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` \| type="null" |  |
+| <a id="s-2e00e9606c"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null") |  |
 | <a id="s-0d8004f20b"></a>`destination_store` | yes | #/components/schemas/ArchiveStoreName |  |
 | <a id="s-b2223376c6"></a>`initiator` | yes | #/components/schemas/RiverhogActor |  |
 | <a id="s-2fbb3cf7da"></a>`source_store` | yes | #/components/schemas/ArchiveStoreName |  |
@@ -80,6 +83,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyCompletedData`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -156,3 +162,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -565,6 +565,7 @@ def test_navigation_is_representation_only(
         checked.root["identities"],
         checked.root["discovery"],
         component_descriptions,
+        projection_integer_paths=checked.root["projection_unsafe_integer_paths"],
     )
 
     changed_representation = {

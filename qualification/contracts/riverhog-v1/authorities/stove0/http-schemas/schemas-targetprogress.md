@@ -14,17 +14,20 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8286fd2437"></a>
-- <a id="s-b3591114ae"></a>`title`: TargetProgress
-- <a id="s-34d45a8485"></a>`type`: object
+
+- <a id="s-34d45a8485"></a>`type`: `"object"`
+- <a id="s-7d0513dd37"></a>`additionalProperties`: `false`
+- <a id="s-a04ab81aba"></a>`required`: `["phase","completed"]`
+- <a id="s-b3591114ae"></a>`title`: `"TargetProgress"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-76d78c2b9f"></a>`completed` | yes | type="integer"; minimum=0 |  |
-| <a id="s-ded255a1ab"></a>`phase` | yes | type="string"; minLength=1; maxLength=120 |  |
-| <a id="s-edfb3f4d44"></a>`total` | no | anyOf=type="integer"; minimum=0 \| type="null" |  |
-| <a id="s-5abc9e6e1c"></a>`unit` | no | anyOf=type="string"; minLength=1; maxLength=40 \| type="null" |  |
+| <a id="s-ded255a1ab"></a>`phase` | yes | type="string"; maxLength=120; minLength=1 |  |
+| <a id="s-edfb3f4d44"></a>`total` | no | anyOf=(type="integer"; minimum=0) \| (type="null") |  |
+| <a id="s-5abc9e6e1c"></a>`unit` | no | anyOf=(type="string"; maxLength=40; minLength=1) \| (type="null") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -59,6 +62,9 @@ Shared facts for every subject below: minimum=1; reason="schema-maximum"
 - `/external_contract/http_openapi/stove0/components/schemas/TargetProgress`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -113,3 +119,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

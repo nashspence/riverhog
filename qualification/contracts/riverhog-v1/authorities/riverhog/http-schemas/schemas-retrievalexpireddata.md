@@ -14,21 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d0c7f0f311"></a>
-- <a id="s-bc8955f71d"></a>`title`: RetrievalExpiredData
-- <a id="s-3a775b41e7"></a>`type`: object
+
+- <a id="s-3a775b41e7"></a>`type`: `"object"`
+- <a id="s-97fd781ed5"></a>`additionalProperties`: `false`
+- <a id="s-31a8c93fd5"></a>`required`: `["actor","initiator","retrieval_id","collection_ids","state"]`
+- <a id="s-bc8955f71d"></a>`title`: `"RetrievalExpiredData"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-f96d693e0b"></a>`actor` | yes | #/components/schemas/RiverhogActor |  |
-| <a id="s-9acb33c6eb"></a>`cause` | no | anyOf=#/components/schemas/RiverhogEventCause \| type="null" |  |
-| <a id="s-f05d979290"></a>`collection_created_at` | no | anyOf=type="string"; minLength=1; maxLength=64 \| type="null" |  |
-| <a id="s-96ce8c50d7"></a>`collection_id` | no | anyOf=#/components/schemas/CollectionId \| type="null" |  |
-| <a id="s-8293ea4fc4"></a>`collection_ids` | yes | type="array"; minItems=1; items=(#/components/schemas/CollectionId) |  |
-| <a id="s-9f47ac3a10"></a>`context` | no | anyOf=type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` \| type="null" |  |
+| <a id="s-9acb33c6eb"></a>`cause` | no | anyOf=(#/components/schemas/RiverhogEventCause) \| (type="null") |  |
+| <a id="s-f05d979290"></a>`collection_created_at` | no | anyOf=(type="string"; maxLength=64; minLength=1) \| (type="null") |  |
+| <a id="s-96ce8c50d7"></a>`collection_id` | no | anyOf=(#/components/schemas/CollectionId) \| (type="null") |  |
+| <a id="s-8293ea4fc4"></a>`collection_ids` | yes | type="array"; items=(#/components/schemas/CollectionId); minItems=1 |  |
+| <a id="s-9f47ac3a10"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null") |  |
 | <a id="s-16ccbf7672"></a>`initiator` | yes | #/components/schemas/RiverhogActor |  |
-| <a id="s-d49f1927ea"></a>`retrieval_id` | yes | type="string"; minLength=1; maxLength=300 |  |
+| <a id="s-d49f1927ea"></a>`retrieval_id` | yes | type="string"; maxLength=300; minLength=1 |  |
 | <a id="s-658d75677c"></a>`state` | yes | type="string"; const="expired" |  |
 
 ### Progression, limits, and lifecycle
@@ -81,6 +84,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -177,3 +183,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

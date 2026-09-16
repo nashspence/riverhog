@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-16d5f32e93"></a>
-- <a id="s-a1cabb9566"></a>`title`: BranchSetAdmittedEventData
-- <a id="s-5dfeea34ed"></a>`type`: object
+
+- <a id="s-5dfeea34ed"></a>`type`: `"object"`
+- <a id="s-e3f41df5d7"></a>`additionalProperties`: `false`
+- <a id="s-b56eb13f7e"></a>`required`: `["work_id","phase","revision","branch_set_sha256","branch_count","admitted_work_count"]`
+- <a id="s-a1cabb9566"></a>`title`: `"BranchSetAdmittedEventData"`
 
 ### Fields
 
@@ -61,6 +64,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/BranchSetAdmittedEventData`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -113,3 +119,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

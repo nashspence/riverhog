@@ -14,13 +14,14 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-cc8243a831"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-1b0d1b06e8"></a>`authority` | "the owning schema's x-riverhog-extent declaration" |
-| <a id="s-2eb60cfe1e"></a>`completion` | "the owner-declared progression or repeated-work contract" |
-| <a id="s-909f18b8d2"></a>`exceeded` | "bounded-carrier-validation-error" |
-| <a id="s-ca689f64fa"></a>`policy` | "segmented_no_total_max" |
-| <a id="s-04349db30a"></a>`semantic_maximum` | null |
+| <a id="s-1b0d1b06e8"></a>`authority` | `"the owning schema's x-riverhog-extent declaration"` |
+| <a id="s-2eb60cfe1e"></a>`completion` | `"the owner-declared progression or repeated-work contract"` |
+| <a id="s-909f18b8d2"></a>`exceeded` | `"bounded-carrier-validation-error"` |
+| <a id="s-ca689f64fa"></a>`policy` | `"segmented_no_total_max"` |
+| <a id="s-04349db30a"></a>`semantic_maximum` | `null` |
 
 ## Governing policies
 
@@ -44,6 +45,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 42485f405b18cf5471144b12f8e6a7bd05c78bba9e4f67d614f9e5725612ec6e -->
@@ -57,3 +61,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "semantic_maximum": null
 }
 ```
+
+</details>

@@ -27,26 +27,61 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d59596236e"></a>
-- <a id="s-3416372493"></a>`type`: object
 
-### Fields
+- <a id="s-3416372493"></a>`type`: `"object"`
+- <a id="s-f6e81f774e"></a>`additionalProperties`: `false`
+- <a id="s-82731c193d"></a>`required`: `["job_id","production_sha256","output_collection","output_bindings","settlement_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3b5e1f8f22"></a>`format` | no | type="string"; const="stove0-target-settlement/v1" |  |
+| <a id="s-3b5e1f8f22"></a>`format` | no | type="string"; const="stove0-target-settlement/v1"; default="stove0-target-settlement/v1" |  |
 | <a id="s-3a5cb0c379"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-8112ee66f8"></a>`output_bindings` | yes | #/$defs/TargetOutputBindingSetIdentity |  |
-| <a id="s-ae05f04ff3"></a>`output_collection` | yes | #/$defs/OutputCollectionRef |  |
+| <a id="s-8112ee66f8"></a>`output_bindings` | yes | [TargetOutputBindingSetIdentity](#s-dba58e77b2) |  |
+| <a id="s-ae05f04ff3"></a>`output_collection` | yes | [OutputCollectionRef](#s-41ab79e924) |  |
 | <a id="s-769b87df8c"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-5f8d947e62"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-9bdbe25a31"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-41ab79e924"></a>`OutputCollectionRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`, `derivation_sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-dba58e77b2"></a>`TargetOutputBindingSetIdentity` | type="object"; fields=`artifact_count`, `sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
+- [CollectionId](#s-9bdbe25a31)
+- [OutputCollectionRef](#s-41ab79e924)
+- [TargetOutputBindingSetIdentity](#s-dba58e77b2)
+
+##### <a id="s-9bdbe25a31"></a>definition `CollectionId`
+
+- <a id="s-8eb94c1b58"></a>`type`: `"integer"`
+- <a id="s-349158864a"></a>`minimum`: `1`
+
+##### <a id="s-41ab79e924"></a>definition `OutputCollectionRef`
+
+- <a id="s-ae081b5a51"></a>`type`: `"object"`
+- <a id="s-d5aff07c63"></a>`additionalProperties`: `false`
+- <a id="s-a5d2e9e773"></a>`required`: `["collection_id","archive_root_sha256","content_identity","derivation_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0b8b5955eb"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c4ebbe4701"></a>`collection_id` | yes | [CollectionId](#s-9bdbe25a31) |  |
+| <a id="s-7cf17ae28d"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-14dfbc72f2"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-dba58e77b2"></a>definition `TargetOutputBindingSetIdentity`
+
+- <a id="s-c0babe7b0e"></a>`type`: `"object"`
+- <a id="s-fd001afba7"></a>`additionalProperties`: `false`
+- <a id="s-008288fc86"></a>`required`: `["artifact_count","total_bytes","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3d61164193"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-d119557e8d"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-bb19dc7dfa"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
 
 ## Maintained corroboration
 
@@ -76,6 +111,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_protocol.TargetSettlementAuthority`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -185,3 +223,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

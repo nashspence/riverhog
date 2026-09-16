@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-adaba01f67"></a>
-- <a id="s-2ac9b854b4"></a>`title`: CollectionArtifactPageDocument
-- <a id="s-3e75f6b0b5"></a>`type`: object
+
+- <a id="s-3e75f6b0b5"></a>`type`: `"object"`
+- <a id="s-63ce487000"></a>`additionalProperties`: `false`
+- <a id="s-d0ea3058a0"></a>`required`: `["authority","start_ordinal","artifacts"]`
+- <a id="s-2ac9b854b4"></a>`title`: `"CollectionArtifactPageDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-dec7134215"></a>`artifacts` | yes | type="array"; maxItems=128; items=(#/components/schemas/CollectionArtifactIdentityDocument); additional keys=`x-riverhog-extent` |  |
+| <a id="s-dec7134215"></a>`artifacts` | yes | type="array"; items=(#/components/schemas/CollectionArtifactIdentityDocument); maxItems=128; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
 | <a id="s-75ddf70b2d"></a>`authority` | yes | #/components/schemas/ArtifactSetAuthorityDocument |  |
-| <a id="s-5bea015a1e"></a>`next_ordinal` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| <a id="s-5bea015a1e"></a>`next_ordinal` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
 | <a id="s-cc8bfd36cb"></a>`start_ordinal` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
@@ -71,6 +74,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionArtifactPageDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -123,3 +129,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

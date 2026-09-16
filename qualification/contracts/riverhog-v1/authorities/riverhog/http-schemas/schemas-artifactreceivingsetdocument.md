@@ -14,14 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2d2b977e07"></a>
-- <a id="s-8991498bb9"></a>`title`: ArtifactReceivingSetDocument
-- <a id="s-fd8f3baad6"></a>`type`: object
+
+- <a id="s-fd8f3baad6"></a>`type`: `"object"`
+- <a id="s-12706c8a99"></a>`additionalProperties`: `false`
+- <a id="s-eaf6966854"></a>`required`: `["state","count","total_bytes"]`
+- <a id="s-8991498bb9"></a>`title`: `"ArtifactReceivingSetDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b4c4f8d76c"></a>`authority` | no | anyOf=#/components/schemas/ArtifactSetAuthorityDocument \| type="null" |  |
+| <a id="s-b4c4f8d76c"></a>`authority` | no | anyOf=(#/components/schemas/ArtifactSetAuthorityDocument) \| (type="null") |  |
 | <a id="s-9eed34922f"></a>`count` | yes | type="integer"; minimum=0 |  |
 | <a id="s-69a169072e"></a>`state` | yes | type="string"; enum=["receiving","sealed"] |  |
 | <a id="s-97ef4d673d"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
@@ -64,6 +67,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/ArtifactReceivingSetDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -111,3 +117,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

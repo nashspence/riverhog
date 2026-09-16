@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bd353547c1"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-99a088c360"></a>`consumers` | ["riverhog-storage-adapter-backblaze"] |
-| <a id="s-82eb3d9be1"></a>`default_expressions` | ["''"] |
-| <a id="s-ba76881dc9"></a>`id` | "riverhog-storage-adapter-backblaze:environment:RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_TCP_KEEPALIVE" |
-| <a id="s-217d52381b"></a>`input_shape` | "environment-string" |
-| <a id="s-4c310f1da8"></a>`name` | "RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_TCP_KEEPALIVE" |
-| <a id="s-da6797fecf"></a>`owner` | "riverhog-storage-adapter-backblaze" |
+| <a id="s-99a088c360"></a>`consumers` | `["riverhog-storage-adapter-backblaze"]` |
+| <a id="s-82eb3d9be1"></a>`default_expressions` | `["''"]` |
+| <a id="s-ba76881dc9"></a>`id` | `"riverhog-storage-adapter-backblaze:environment:RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_TCP_KEEPALIVE"` |
+| <a id="s-217d52381b"></a>`input_shape` | `"environment-string"` |
+| <a id="s-4c310f1da8"></a>`name` | `"RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_TCP_KEEPALIVE"` |
+| <a id="s-da6797fecf"></a>`owner` | `"riverhog-storage-adapter-backblaze"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 4848ca092b890aac6dffd3d7b57fdc8ec6cb50e7bc712a6592cce8001c0d7cfe -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "riverhog-storage-adapter-backblaze"
 }
 ```
+
+</details>

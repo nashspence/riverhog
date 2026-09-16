@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b4c1019291"></a>
-- <a id="s-7c61c1615e"></a>`title`: CollectionTagMutationRequest
-- <a id="s-e89d2a5221"></a>`type`: object
+
+- <a id="s-e89d2a5221"></a>`type`: `"object"`
+- <a id="s-5b4847e74f"></a>`additionalProperties`: `false`
+- <a id="s-b45552d5a0"></a>`required`: `["operation_id","tag","expected_revision","expected_tag_set_identity"]`
+- <a id="s-7c61c1615e"></a>`title`: `"CollectionTagMutationRequest"`
 
 ### Fields
 
@@ -23,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-8fd34b59f5"></a>`expected_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
 | <a id="s-a799f22e27"></a>`expected_tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-6dd84f6a27"></a>`operation_id` | yes | type="string"; minLength=1; maxLength=256; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
+| <a id="s-6dd84f6a27"></a>`operation_id` | yes | type="string"; maxLength=256; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
 | <a id="s-39c36b2555"></a>`tag` | yes | #/components/schemas/CollectionTag |  |
 
 ### Progression, limits, and lifecycle
@@ -65,6 +68,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 8c1ccadd087c4e2e2878336b5365711d11b7682d9cd606b8574e8b6c4bfbe27b -->
@@ -105,3 +111,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

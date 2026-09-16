@@ -27,28 +27,62 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-3203bf160f"></a>
-- <a id="s-7c331f0fe3"></a>`type`: object
 
-### Fields
+- <a id="s-7c331f0fe3"></a>`type`: `"object"`
+- <a id="s-4bf03473de"></a>`additionalProperties`: `false`
+- <a id="s-7f17fe73ea"></a>`required`: `["policy","policy_sha256","phase","baseline_mode","through_revision","updated_at"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-61e92577bf"></a>`authorization_view_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-61e92577bf"></a>`authorization_view_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
 | <a id="s-14107432f2"></a>`baseline_mode` | yes | type="string"; enum=["observe","backfill"] |  |
 | <a id="s-b089560ded"></a>`phase` | yes | type="string"; enum=["new","baseline","following","reset_required"] |  |
-| <a id="s-2df79306d7"></a>`policy` | yes | #/$defs/AdmissionPolicy |  |
+| <a id="s-2df79306d7"></a>`policy` | yes | [AdmissionPolicy](#s-e72ad30da5) |  |
 | <a id="s-aee0f3b523"></a>`policy_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-579dc64d48"></a>`source_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-579dc64d48"></a>`source_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
 | <a id="s-600e42a725"></a>`through_revision` | yes | type="string"; pattern="^(?:0\|[1-9][0-9]*)$" |  |
-| <a id="s-3c47e8b3e9"></a>`updated_at` | yes | type="string"; minLength=1; maxLength=40 |  |
+| <a id="s-3c47e8b3e9"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-e72ad30da5"></a>`AdmissionPolicy` | type="object"; fields=`automatic_preview`, `effective_intent`, `format`, `id`, `recipe_id`, `recipe_revision`, `recipe_sha256`, `required_tags`, `revision`; additional keys=`additionalProperties`, `required` |
-| <a id="s-0c9cd7d2a9"></a>`CollectionTag` | type="string"; minLength=1; maxLength=65536; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
-| <a id="s-9f78c43b46"></a>`JsonValue` | empty object |
+- [AdmissionPolicy](#s-e72ad30da5)
+- [CollectionTag](#s-0c9cd7d2a9)
+- [JsonValue](#s-9f78c43b46)
+
+##### <a id="s-e72ad30da5"></a>definition `AdmissionPolicy`
+
+- <a id="s-0ab03be3e3"></a>`type`: `"object"`
+- <a id="s-453661baa3"></a>`additionalProperties`: `false`
+- <a id="s-c75bbb9457"></a>`required`: `["id","revision","required_tags","recipe_id","recipe_revision","recipe_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-93f67cc858"></a>`automatic_preview` | no | type="string"; const="accept-ready"; default="accept-ready" |  |
+| <a id="s-c44d23e313"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](#s-9f78c43b46)) |  |
+| <a id="s-ba4485ef68"></a>`format` | no | type="string"; const="stove0-admission-policy/v1"; default="stove0-admission-policy/v1" |  |
+| <a id="s-c0bfde817a"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-a3497eebd6"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-c1d6be1b7a"></a>`recipe_revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-4c72733695"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ccdc9bb862"></a>`required_tags` | yes | type="array"; items=([CollectionTag](#s-0c9cd7d2a9)); maxItems=100; minItems=1; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-classification-admission-predicate"} |  |
+| <a id="s-4b4241829d"></a>`revision` | yes | type="integer"; minimum=1 |  |
+
+##### <a id="s-0c9cd7d2a9"></a>definition `CollectionTag`
+
+- <a id="s-9d19f13776"></a>`type`: `"string"`
+- <a id="s-9724c6370f"></a>`maxLength`: `65536`
+- <a id="s-fe4030bbcf"></a>`minLength`: `1`
+- <a id="s-3142ada5b5"></a>`x-riverhog-encoded-bytes-max`: `65536`
+- <a id="s-00e281acc8"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-collection-tag"}`
+- <a id="s-618add1af3"></a>`x-unicode-normalization`: `"NFC"`
+
+##### <a id="s-9f78c43b46"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Maintained corroboration
 
@@ -77,6 +111,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.AdmissionPolicyStatus`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -241,3 +278,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

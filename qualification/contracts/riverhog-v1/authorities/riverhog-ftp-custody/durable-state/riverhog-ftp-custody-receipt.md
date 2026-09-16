@@ -14,15 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e5f2534f2d"></a>
+
 - Document: `receipt`
 
 ### Document schema
 
 <a id="s-17735bcaf1"></a>
-- <a id="s-35b8fede2a"></a>`title`: FtpReceiptState
-- <a id="s-ff823cb7b9"></a>`type`: object
 
-### Fields
+- <a id="s-ff823cb7b9"></a>`type`: `"object"`
+- <a id="s-29ba16c9b6"></a>`additionalProperties`: `false`
+- <a id="s-cdfb368732"></a>`required`: `["format","claim_id","source_event_id","collection_id","archive_root_sha256","content_identity","riverhog_receipt"]`
+- <a id="s-35b8fede2a"></a>`title`: `"FtpReceiptState"`
+
+#### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
@@ -31,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-26fb5dc079"></a>`collection_id` | yes | type="integer"; minimum=1 |  |
 | <a id="s-02b9d25461"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-fb0e5e377d"></a>`format` | yes | type="string"; const="riverhog-ftp-adapter-receipt/v1" |  |
-| <a id="s-085dd88286"></a>`riverhog_receipt` | yes | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-085dd88286"></a>`riverhog_receipt` | yes | type="object"; additionalProperties=true |  |
 | <a id="s-a6edc25a15"></a>`source_event_id` | yes | type="string"; minLength=1 |  |
 
 ## Maintained corroboration
@@ -61,6 +65,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/6/structure/units/3`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -123,3 +130,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

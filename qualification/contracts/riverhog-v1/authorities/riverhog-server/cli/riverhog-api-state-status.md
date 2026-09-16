@@ -41,7 +41,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-b4d8e29365"></a>`completed` | <a id="s-42d82e28d8"></a>`{"kind":"command-completed"}` | <a id="s-6aa0bc58c3"></a>`0` | <a id="s-4a6c09e422"></a>human: `noncontractual-presentation-of-command-result`; json: [riverhog-api-state-status/v1](#s-4a6c09e422) | <a id="s-ad4db1246f"></a>all: `empty` |
+| <a id="s-b4d8e29365"></a>`completed` | <a id="s-42d82e28d8"></a>`{"kind":"command-completed"}` | <a id="s-6aa0bc58c3"></a>`0` | <a id="s-4a6c09e422"></a>human: `noncontractual-presentation-of-command-result`; json: [riverhog-api-state-status/v1](#s-23a467fb0e) | <a id="s-ad4db1246f"></a>all: `empty` |
 
 #### Failure outcomes
 
@@ -49,6 +49,28 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|---|
 | <a id="s-9249c155de"></a>`usage` | <a id="s-1caf89c127"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-6146d74626"></a>`2` | <a id="s-528a738c2b"></a>all: `empty` | <a id="s-23ffb16c77"></a>all: `noncontractual-usage-diagnostic` |
 | <a id="s-afcdf121e7"></a>`state-error` | <a id="s-a778fa59d6"></a>`{"kind":"application-error"}` | <a id="s-117461caee"></a>`1` | <a id="s-6e0d2062da"></a>all: `empty` | <a id="s-55537fe0ce"></a>all: `noncontractual-diagnostic` |
+
+### Local structured outputs
+
+
+#### <a id="s-23a467fb0e"></a>`riverhog-api-state-status/v1`
+
+Applies to: completed · stdout (json).
+
+<a id="s-650a988395"></a>
+
+- <a id="s-38e05d1b87"></a>`type`: `"object"`
+- <a id="s-999ca5432d"></a>`required`: `["name","condition","current_revision","head_revision"]`
+- <a id="s-5745ab947b"></a>`title`: `"StateStatus"`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-1e38e3c8c2"></a>`condition` | yes | type="string"; enum=["empty","current","upgrade_required","unversioned","incompatible"] |  |
+| <a id="s-ce9cb00d0b"></a>`current_revision` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-f8f6cd06bb"></a>`head_revision` | yes | type="string" |  |
+| <a id="s-7aa048ef76"></a>`name` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -86,6 +108,9 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 - `/external_contract/cli/riverhog-api/commands/state/commands/status/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -247,3 +272,5 @@ true
   }
 ]
 ```
+
+</details>

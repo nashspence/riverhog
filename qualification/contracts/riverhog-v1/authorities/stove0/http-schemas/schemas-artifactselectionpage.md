@@ -14,19 +14,22 @@ One bounded continuation step through an immutable artifact selection.
 ## External contract
 
 <a id="s-1f953a503d"></a>
-- <a id="s-6e688cb964"></a>`title`: ArtifactSelectionPage
-- <a id="s-e4d5c0e676"></a>`description`: One bounded continuation step through an immutable artifact selection.
-- <a id="s-09d033a673"></a>`type`: object
+
+- <a id="s-09d033a673"></a>`type`: `"object"`
+- <a id="s-47e3d02aba"></a>`additionalProperties`: `false`
+- <a id="s-e4d5c0e676"></a>`description`: `"One bounded continuation step through an immutable artifact selection."`
+- <a id="s-daf13e6b59"></a>`required`: `["authority","complete","artifacts"]`
+- <a id="s-6e688cb964"></a>`title`: `"ArtifactSelectionPage"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4fcf66d85f"></a>`artifacts` | yes | type="array"; maxItems=256; items=(#/components/schemas/ArtifactSubject); additional keys=`x-riverhog-extent` |  |
+| <a id="s-4fcf66d85f"></a>`artifacts` | yes | type="array"; items=(#/components/schemas/ArtifactSubject); maxItems=256; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"selection-bound-start_ordinal","reason":"bounded-artifact-selection-page"} |  |
 | <a id="s-bb912bc81c"></a>`authority` | yes | #/components/schemas/ArtifactSelectionRef |  |
 | <a id="s-53df9f7d4c"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-dbf38f6d33"></a>`continuation` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-b2798753b1"></a>`next_continuation` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-dbf38f6d33"></a>`continuation` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
+| <a id="s-b2798753b1"></a>`next_continuation` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -83,6 +86,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/stove0/components/schemas/ArtifactSelectionPage`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -147,3 +153,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

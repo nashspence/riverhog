@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-18b7660b76"></a>
-- <a id="s-5b1d2cf515"></a>`title`: ErrorBody
-- <a id="s-6866a946b7"></a>`type`: object
+
+- <a id="s-6866a946b7"></a>`type`: `"object"`
+- <a id="s-42dae03fb7"></a>`additionalProperties`: `false`
+- <a id="s-7d37cc2cb5"></a>`required`: `["code","message"]`
+- <a id="s-5b1d2cf515"></a>`title`: `"ErrorBody"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-cd03e78d13"></a>`code` | yes | type="string"; minLength=1 |  |
-| <a id="s-d62f0c60eb"></a>`details` | no | anyOf=type="object"; additional keys=`additionalProperties` \| type="null" |  |
+| <a id="s-d62f0c60eb"></a>`details` | no | anyOf=(type="object"; additionalProperties=true) \| (type="null"); default=null |  |
 | <a id="s-47d4490529"></a>`message` | yes | type="string"; minLength=1 |  |
 
 ### Progression, limits, and lifecycle
@@ -57,6 +60,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog-ftp-adapter/components/schemas/ErrorBody`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -98,3 +104,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

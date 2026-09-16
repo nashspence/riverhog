@@ -14,21 +14,24 @@ Work-independent fields that deterministically materialize a workflow plan.
 ## External contract
 
 <a id="s-7e51d1430d"></a>
-- <a id="s-23c8e189de"></a>`title`: WorkflowPlanIntent
-- <a id="s-d32c77c568"></a>`description`: Work-independent fields that deterministically materialize a workflow plan.
-- <a id="s-642b2b2763"></a>`type`: object
+
+- <a id="s-642b2b2763"></a>`type`: `"object"`
+- <a id="s-eb3f8e8eb0"></a>`additionalProperties`: `false`
+- <a id="s-d32c77c568"></a>`description`: `"Work-independent fields that deterministically materialize a workflow plan."`
+- <a id="s-a43fe15478"></a>`required`: `["operation","target_registration_id","target_contract_sha256"]`
+- <a id="s-23c8e189de"></a>`title`: `"WorkflowPlanIntent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-fc12db4ac7"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
+| <a id="s-fc12db4ac7"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
 | <a id="s-dec7652768"></a>`operation` | yes | #/components/schemas/OperationRef |  |
-| <a id="s-99bb65af48"></a>`output_policy` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-0bb17d7fff"></a>`requested_target_options` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-37b4b89175"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"] |  |
-| <a id="s-e519a84612"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0 |  |
-| <a id="s-70ece6e07d"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"] |  |
+| <a id="s-99bb65af48"></a>`output_policy` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-0bb17d7fff"></a>`requested_target_options` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-37b4b89175"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
+| <a id="s-e519a84612"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-70ece6e07d"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
 | <a id="s-299b5608b2"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-cabd6d9c4e"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
 
@@ -81,6 +84,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -161,3 +167,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

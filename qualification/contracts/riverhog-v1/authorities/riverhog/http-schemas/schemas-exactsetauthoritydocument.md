@@ -14,9 +14,12 @@ Small immutable identity for an exact canonically ordered logical set.
 ## External contract
 
 <a id="s-fe161ba236"></a>
-- <a id="s-044c8a5ab0"></a>`title`: ExactSetAuthorityDocument
-- <a id="s-0df13433b0"></a>`description`: Small immutable identity for an exact canonically ordered logical set.
-- <a id="s-7e69e5db62"></a>`type`: object
+
+- <a id="s-7e69e5db62"></a>`type`: `"object"`
+- <a id="s-446126c9d1"></a>`additionalProperties`: `false`
+- <a id="s-0df13433b0"></a>`description`: `"Small immutable identity for an exact canonically ordered logical set."`
+- <a id="s-b977b9a19e"></a>`required`: `["count","sha256"]`
+- <a id="s-044c8a5ab0"></a>`title`: `"ExactSetAuthorityDocument"`
 
 ### Fields
 
@@ -67,6 +70,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 0e76c36b1c505c66210c9cf901dd3efa34b370a4bd6f585964942ba8d834c3db -->
@@ -95,3 +101,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

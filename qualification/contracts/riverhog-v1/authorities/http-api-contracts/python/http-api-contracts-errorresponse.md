@@ -27,19 +27,34 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-5b3e1a093f"></a>
-- <a id="s-e6222fce40"></a>`type`: object
 
-### Fields
+- <a id="s-e6222fce40"></a>`type`: `"object"`
+- <a id="s-66b5404d40"></a>`additionalProperties`: `false`
+- <a id="s-7db20a0c08"></a>`required`: `["error"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d48d2b6fd4"></a>`error` | yes | #/$defs/ErrorBody |  |
+| <a id="s-d48d2b6fd4"></a>`error` | yes | [ErrorBody](#s-7a9b318d90) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-7a9b318d90"></a>`ErrorBody` | type="object"; fields=`code`, `details`, `message`; additional keys=`additionalProperties`, `required` |
+- [ErrorBody](#s-7a9b318d90)
+
+##### <a id="s-7a9b318d90"></a>definition `ErrorBody`
+
+- <a id="s-27ac534476"></a>`type`: `"object"`
+- <a id="s-4a91ea0a4d"></a>`additionalProperties`: `false`
+- <a id="s-a420b51f74"></a>`required`: `["code","message"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0df8581b0d"></a>`code` | yes | type="string"; minLength=1 |  |
+| <a id="s-d762482e72"></a>`details` | no | anyOf=(type="object"; additionalProperties=true) \| (type="null"); default=null |  |
+| <a id="s-433887962b"></a>`message` | yes | type="string"; minLength=1 |  |
 
 ## Governing policies
 
@@ -62,6 +77,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/http_api_contracts.ErrorResponse`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -123,3 +141,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

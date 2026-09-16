@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c29b83c623"></a>
-- Table: `lifecycle_events`
 
-### Columns
+### Table: `lifecycle_events`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -28,7 +29,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-cefb50b33c"></a>`context_json` | `TEXT` | yes | `—` | — |
 | <a id="s-15ca3fce71"></a>`context_expires_at` | `VARCHAR` | yes | `—` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -62,6 +63,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/0/structure/tables/12`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -132,3 +136,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "lifecycle_events"
 }
 ```
+
+</details>

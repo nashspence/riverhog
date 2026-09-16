@@ -27,32 +27,163 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-9442ae13d1"></a>
-- <a id="s-5de6dc67a5"></a>`type`: object
 
-### Fields
+- <a id="s-5de6dc67a5"></a>`type`: `"object"`
+- <a id="s-23c478f981"></a>`additionalProperties`: `false`
+- <a id="s-234c78f788"></a>`required`: `["branch_id","artifact_selection","work","branch_set_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-812aa243a6"></a>`artifact_selection` | yes | #/$defs/ArtifactSelectionRef |  |
+| <a id="s-812aa243a6"></a>`artifact_selection` | yes | [ArtifactSelectionRef](#s-b33c09e2a3) |  |
 | <a id="s-b55c7b6037"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-3851095f44"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-df320202b1"></a>`kind` | no | type="string"; const="coordination" |  |
-| <a id="s-b4ad8e3b45"></a>`work` | yes | #/$defs/WorkIdentity |  |
+| <a id="s-df320202b1"></a>`kind` | no | type="string"; const="coordination"; default="coordination" |  |
+| <a id="s-b4ad8e3b45"></a>`work` | yes | [WorkIdentity](#s-53618e1cd2) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-b33c09e2a3"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-82983e92f5"></a>`BranchWorkBinding` | type="object"; fields=`artifact_selection_sha256`, `branch_id`, `decision_sha256`, `kind`, `parent_work_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-c0da401907"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-a0390c77aa"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
-| <a id="s-d3bc9a7c09"></a>`EvaluationBinding` | type="object"; fields=`evaluation_id`, `matrix_sha256`, `parameters`, `variant_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-5f78a1f478"></a>`JoinWorkBinding` | type="object"; fields=`branch_set_sha256`, `kind`, `members`, `parent_work_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-50f9632db8"></a>`JoinWorkMemberBinding` | type="object"; fields=`artifact_selection_sha256`, `branch_id`, `producer_settlement_sha256`, `settlement_sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-0537c3bf06"></a>`JsonValue` | empty object |
-| <a id="s-f7ccd9433e"></a>`RecipeRef` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-53618e1cd2"></a>`WorkIdentity` | type="object"; fields=`effective_intent`, `evaluation`, `fork_join`, `format`, `inputs`, `recipe`, `work_id`; additional keys=`additionalProperties`, `required` |
+- [ArtifactSelectionRef](#s-b33c09e2a3)
+- [BranchWorkBinding](#s-82983e92f5)
+- [CollectionId](#s-c0da401907)
+- [CollectionRootRef](#s-a0390c77aa)
+- [EvaluationBinding](#s-d3bc9a7c09)
+- [JoinWorkBinding](#s-5f78a1f478)
+- [JoinWorkMemberBinding](#s-50f9632db8)
+- [JsonValue](#s-0537c3bf06)
+- [RecipeRef](#s-f7ccd9433e)
+- [WorkIdentity](#s-53618e1cd2)
+
+##### <a id="s-b33c09e2a3"></a>definition `ArtifactSelectionRef`
+
+- <a id="s-54535fc9c6"></a>`type`: `"object"`
+- <a id="s-ebe6580fd7"></a>`additionalProperties`: `false`
+- <a id="s-248b035e3c"></a>`required`: `["selection_sha256","artifact_count","total_bytes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-89d087c472"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-77b8189be9"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-967f011017"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+
+##### <a id="s-82983e92f5"></a>definition `BranchWorkBinding`
+
+- <a id="s-5edd0e6db1"></a>`type`: `"object"`
+- <a id="s-890658f093"></a>`additionalProperties`: `false`
+- <a id="s-fb02f2bb1c"></a>`required`: `["parent_work_id","branch_id","decision_sha256","artifact_selection_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-8e4f761ffc"></a>`artifact_selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f03858d6c9"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-d391090fc8"></a>`decision_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d4e467d60c"></a>`kind` | no | type="string"; const="branch"; default="branch" |  |
+| <a id="s-70b11a3c65"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-c0da401907"></a>definition `CollectionId`
+
+- <a id="s-20c712dc6d"></a>`type`: `"integer"`
+- <a id="s-4e047d9b2a"></a>`minimum`: `1`
+
+##### <a id="s-a0390c77aa"></a>definition `CollectionRootRef`
+
+- <a id="s-94f81b3a53"></a>`type`: `"object"`
+- <a id="s-5eadf87148"></a>`additionalProperties`: `false`
+- <a id="s-ba1a204051"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-8fa9f8dda3"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-db18e1a84d"></a>`collection_id` | yes | [CollectionId](#s-c0da401907) |  |
+| <a id="s-058d62e750"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-d3bc9a7c09"></a>definition `EvaluationBinding`
+
+- <a id="s-394936a60c"></a>`type`: `"object"`
+- <a id="s-1b61f57834"></a>`additionalProperties`: `false`
+- <a id="s-cbd3e1a165"></a>`required`: `["evaluation_id","matrix_sha256","variant_id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-40630deff9"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-92c7ec06ed"></a>`matrix_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1bbd67b43c"></a>`parameters` | no | type="object"; additionalProperties=([JsonValue](#s-0537c3bf06)) |  |
+| <a id="s-47218c8246"></a>`variant_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+
+##### <a id="s-5f78a1f478"></a>definition `JoinWorkBinding`
+
+- <a id="s-4939c44b7b"></a>`type`: `"object"`
+- <a id="s-83fb95438a"></a>`additionalProperties`: `false`
+- <a id="s-86c0a62143"></a>`required`: `["parent_work_id","branch_set_sha256","members"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-83da661a7b"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-67e6c270a8"></a>`kind` | no | type="string"; const="join"; default="join" |  |
+| <a id="s-365101f7dc"></a>`members` | yes | type="array"; items=([JoinWorkMemberBinding](#s-50f9632db8)); minItems=2 |  |
+| <a id="s-bdcb0abd79"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-50f9632db8"></a>definition `JoinWorkMemberBinding`
+
+- <a id="s-f491b45bb0"></a>`type`: `"object"`
+- <a id="s-71ecaee7c8"></a>`additionalProperties`: `false`
+- <a id="s-5a36f37272"></a>`required`: `["branch_id","settlement_sha256","artifact_selection_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0966922652"></a>`artifact_selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-0b4ac44c89"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-4d2906867a"></a>`producer_settlement_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-a15975e671"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-0537c3bf06"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-f7ccd9433e"></a>definition `RecipeRef`
+
+- <a id="s-fd4a41e137"></a>`type`: `"object"`
+- <a id="s-8ef7c02363"></a>`additionalProperties`: `false`
+- <a id="s-35951fc217"></a>`required`: `["id","revision","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f69c8d7c56"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-d54dfb5ddd"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-1048168f81"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-53618e1cd2"></a>definition `WorkIdentity`
+
+- <a id="s-edd3145e18"></a>`type`: `"object"`
+- <a id="s-b79b465c66"></a>`additionalProperties`: `false`
+- <a id="s-9053bc6ac4"></a>`required`: `["recipe","inputs","work_id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-905407c860"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](#s-0537c3bf06)) |  |
+| <a id="s-fda109ffae"></a>`evaluation` | no | anyOf=([EvaluationBinding](#s-d3bc9a7c09)) \| (type="null"); default=null |  |
+| <a id="s-cb3bc75fb5"></a>`fork_join` | no | anyOf=(discriminator={"mapping":{"branch":"[BranchWorkBinding](#s-82983e92f5)","join":"[JoinWorkBinding](#s-5f78a1f478)"},"propertyName":"kind"}; oneOf=([BranchWorkBinding](#s-82983e92f5)) \| ([JoinWorkBinding](#s-5f78a1f478))) \| (type="null"); default=null |  |
+| <a id="s-df5eac0440"></a>`format` | no | type="string"; const="stove0-work/v1"; default="stove0-work/v1" |  |
+| <a id="s-3f0333a677"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](#s-a0390c77aa)); minItems=1 |  |
+| <a id="s-0c0a9cadf8"></a>`recipe` | yes | [RecipeRef](#s-f7ccd9433e) |  |
+| <a id="s-255414fa56"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -83,6 +214,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_protocol.CoordinationBranchPlan`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -406,3 +540,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

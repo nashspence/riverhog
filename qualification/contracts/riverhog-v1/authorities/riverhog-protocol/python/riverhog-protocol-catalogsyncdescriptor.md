@@ -27,28 +27,43 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-6d0b0279c0"></a>
-- <a id="s-36a77fb506"></a>`type`: object
 
-### Fields
+- <a id="s-36a77fb506"></a>`type`: `"object"`
+- <a id="s-ccc76d83db"></a>`additionalProperties`: `false`
+- <a id="s-23197de41b"></a>`required`: `["collection_id","archive_root_sha256","content_identity","description","description_revision","description_identity","tag_revision","tag_set_identity","revision"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2cad3114a7"></a>`archive_root_sha256` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-83b72884f7"></a>`collection_id` | yes | #/$defs/CollectionId |  |
-| <a id="s-8c83d805d7"></a>`content_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-f896fc541c"></a>`description` | yes | anyOf=#/$defs/CollectionDescription \| type="null" |  |
-| <a id="s-d0a0d83002"></a>`description_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2cad3114a7"></a>`archive_root_sha256` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-83b72884f7"></a>`collection_id` | yes | [CollectionId](#s-45d9f823fc) |  |
+| <a id="s-8c83d805d7"></a>`content_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f896fc541c"></a>`description` | yes | anyOf=([CollectionDescription](#s-a0be6916ca)) \| (type="null") |  |
+| <a id="s-d0a0d83002"></a>`description_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-a75af70b7e"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
-| <a id="s-de58e57e97"></a>`revision` | yes | type="string"; minLength=1; maxLength=19; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+| <a id="s-de58e57e97"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
 | <a id="s-291e046f33"></a>`tag_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
-| <a id="s-6584252cae"></a>`tag_set_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6584252cae"></a>`tag_set_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-a0be6916ca"></a>`CollectionDescription` | type="string"; minLength=1; maxLength=32768; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
-| <a id="s-45d9f823fc"></a>`CollectionId` | type="integer"; minimum=1 |
+- [CollectionDescription](#s-a0be6916ca)
+- [CollectionId](#s-45d9f823fc)
+
+##### <a id="s-a0be6916ca"></a>definition `CollectionDescription`
+
+- <a id="s-94041b9f92"></a>`type`: `"string"`
+- <a id="s-02e29cbc80"></a>`maxLength`: `32768`
+- <a id="s-e4e502d1ec"></a>`minLength`: `1`
+- <a id="s-c8a5a04cfa"></a>`x-riverhog-encoded-bytes-max`: `32768`
+- <a id="s-c7c5b3fe19"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-catalog-description"}`
+- <a id="s-96e8398251"></a>`x-unicode-normalization`: `"NFC"`
+
+##### <a id="s-45d9f823fc"></a>definition `CollectionId`
+
+- <a id="s-0f445ff36e"></a>`type`: `"integer"`
+- <a id="s-a635191fd1"></a>`minimum`: `1`
 
 ## Governing policies
 
@@ -71,6 +86,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.CatalogSyncDescriptor`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -175,3 +193,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

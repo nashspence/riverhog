@@ -27,22 +27,38 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-3564faa66a"></a>
-- <a id="s-b758093e43"></a>`type`: object
 
-### Fields
+- <a id="s-b758093e43"></a>`type`: `"object"`
+- <a id="s-b4e43e69b3"></a>`additionalProperties`: `false`
+- <a id="s-976b0355c3"></a>`required`: `["parent_work_id","branch_set_sha256","members"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-e4301a2336"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-84d3afc9f6"></a>`kind` | no | type="string"; const="join" |  |
-| <a id="s-00c0487b12"></a>`members` | yes | type="array"; minItems=2; items=(#/$defs/JoinWorkMemberBinding) |  |
+| <a id="s-84d3afc9f6"></a>`kind` | no | type="string"; const="join"; default="join" |  |
+| <a id="s-00c0487b12"></a>`members` | yes | type="array"; items=([JoinWorkMemberBinding](#s-480f0cfabe)); minItems=2 |  |
 | <a id="s-7d970213a6"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-480f0cfabe"></a>`JoinWorkMemberBinding` | type="object"; fields=`artifact_selection_sha256`, `branch_id`, `producer_settlement_sha256`, `settlement_sha256`; additional keys=`additionalProperties`, `required` |
+- [JoinWorkMemberBinding](#s-480f0cfabe)
+
+##### <a id="s-480f0cfabe"></a>definition `JoinWorkMemberBinding`
+
+- <a id="s-97bbab4a0a"></a>`type`: `"object"`
+- <a id="s-b2709f8a29"></a>`additionalProperties`: `false`
+- <a id="s-645ae4072e"></a>`required`: `["branch_id","settlement_sha256","artifact_selection_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f37eb16b92"></a>`artifact_selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-9760eb82e6"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-f190cf6444"></a>`producer_settlement_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-a0ca57e696"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -71,6 +87,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_protocol.JoinWorkBinding`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -156,3 +175,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

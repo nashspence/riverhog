@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a4aeb9a49e"></a>
-- <a id="s-15f608b10a"></a>`title`: OmittedCollectionProvenanceVerification
-- <a id="s-6b4f9d322f"></a>`type`: object
+
+- <a id="s-6b4f9d322f"></a>`type`: `"object"`
+- <a id="s-81236190bd"></a>`additionalProperties`: `false`
+- <a id="s-d57c4cba3e"></a>`required`: `["collection_id","valid","files","entities","provenance_mode","provenance_identity","journals"]`
+- <a id="s-15f608b10a"></a>`title`: `"OmittedCollectionProvenanceVerification"`
 
 ### Fields
 
@@ -67,6 +70,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/OmittedCollectionProvenanceVerification`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -122,3 +128,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

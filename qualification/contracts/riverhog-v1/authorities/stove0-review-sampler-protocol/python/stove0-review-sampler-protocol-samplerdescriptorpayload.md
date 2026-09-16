@@ -27,28 +27,49 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-c0efceaa62"></a>
-- <a id="s-3a57a2f7fc"></a>`type`: object
 
-### Fields
+- <a id="s-3a57a2f7fc"></a>`type`: `"object"`
+- <a id="s-ce0355f4c6"></a>`additionalProperties`: `false`
+- <a id="s-53ebc92465"></a>`required`: `["implementation_id","implementation_version","source_revision","image_digest","primary_operation_id","primary_operation_contract_sha256","portable_intent_schema","output_role"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-152ea9bf08"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-8eee09da6b"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-5e835e1a2a"></a>`implementation_version` | yes | type="string"; minLength=1; maxLength=120 |  |
+| <a id="s-5e835e1a2a"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1 |  |
 | <a id="s-15d8b40cd2"></a>`output_role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-d6ef8863f9"></a>`portable_intent_schema` | yes | #/$defs/JsonSchemaDocument |  |
+| <a id="s-d6ef8863f9"></a>`portable_intent_schema` | yes | [JsonSchemaDocument](#s-431124c079) |  |
 | <a id="s-4358dcee2a"></a>`primary_operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-7a44c4f6ae"></a>`primary_operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-e440ee6d41"></a>`protocol` | no | type="string"; const="stove0-review-sampler/v1" |  |
-| <a id="s-bb34d4bb28"></a>`source_revision` | yes | type="string"; minLength=1; maxLength=200 |  |
+| <a id="s-e440ee6d41"></a>`protocol` | no | type="string"; const="stove0-review-sampler/v1"; default="stove0-review-sampler/v1" |  |
+| <a id="s-bb34d4bb28"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-431124c079"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-5f90097102"></a>`JsonValue` | empty object |
+- [JsonSchemaDocument](#s-431124c079)
+- [JsonValue](#s-5f90097102)
+
+##### <a id="s-431124c079"></a>definition `JsonSchemaDocument`
+
+- <a id="s-0eb953aeb8"></a>`type`: `"object"`
+- <a id="s-4a06eff85d"></a>`additionalProperties`: `false`
+- <a id="s-f183631923"></a>`required`: `["id","sha256","schema"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7aa6a0bd75"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-f80ac1a30f"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-ea460c0802"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-e591d944c9"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-5f90097102)) |  |
+| <a id="s-5f35f9610a"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-5f90097102"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Governing policies
 
@@ -71,6 +92,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_review_sampler_protocol.SamplerDescriptorPayload`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -180,3 +204,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

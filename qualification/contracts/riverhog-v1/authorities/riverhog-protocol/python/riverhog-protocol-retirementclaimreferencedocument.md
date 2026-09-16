@@ -27,25 +27,75 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-83a11ebd8e"></a>
-- <a id="s-42858d1624"></a>`type`: object
 
-### Fields
+- <a id="s-42858d1624"></a>`type`: `"object"`
+- <a id="s-cd95ec7059"></a>`additionalProperties`: `false`
+- <a id="s-3e370fcd50"></a>`required`: `["claim_id","fence","work_id"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-4040051f30"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ebb211919a"></a>`execution_id` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-ebb211919a"></a>`execution_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
 | <a id="s-25792bb28a"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-8aa807b6bd"></a>`outcomes` | no | anyOf=#/$defs/ExactSetAuthorityDocument \| type="null" |  |
-| <a id="s-5b8d5d0a4e"></a>`output_collection_id` | no | anyOf=#/$defs/CollectionId \| type="null" |  |
+| <a id="s-8aa807b6bd"></a>`outcomes` | no | anyOf=([ExactSetAuthorityDocument](#s-6c83c9bf2b)) \| (type="null"); default=null |  |
+| <a id="s-5b8d5d0a4e"></a>`output_collection_id` | no | anyOf=([CollectionId](#s-c5d15daa23)) \| (type="null"); default=null |  |
 | <a id="s-5178cf253f"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Exactly one must match (`oneOf`)
 
-| Definition | Shape |
+| Alternative | Schema |
 |---|---|
-| <a id="s-c5d15daa23"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-6c83c9bf2b"></a>`ExactSetAuthorityDocument` | type="object"; fields=`count`, `sha256`; additional keys=`additionalProperties`, `required` |
+| 1 | [See `oneOf` alternative 1](#s-bf0ba16d67) |
+| 2 | [See `oneOf` alternative 2](#s-e9d70d2c3c) |
+
+##### Definitions
+
+- [CollectionId](#s-c5d15daa23)
+- [ExactSetAuthorityDocument](#s-6c83c9bf2b)
+
+##### <a id="s-bf0ba16d67"></a>`oneOf` alternative 1
+
+- <a id="s-1d4b281732"></a>`required`: `["execution_id","output_collection_id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-412ece3957"></a>`execution_id` | yes | type="string" |  |
+| <a id="s-cc5632f835"></a>`outcomes` | no | type="null" |  |
+| <a id="s-dd5a2f007c"></a>`output_collection_id` | yes | type="integer" |  |
+
+##### <a id="s-e9d70d2c3c"></a>`oneOf` alternative 2
+
+- <a id="s-79b870a8cf"></a>`required`: `["outcomes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2403cc13ee"></a>`execution_id` | no | type="null" |  |
+| <a id="s-e1925cf638"></a>`outcomes` | yes | type="object" |  |
+| <a id="s-b30f4283a0"></a>`output_collection_id` | no | type="null" |  |
+
+##### <a id="s-c5d15daa23"></a>definition `CollectionId`
+
+- <a id="s-aa72ce2de8"></a>`type`: `"integer"`
+- <a id="s-7c8e417883"></a>`minimum`: `1`
+
+##### <a id="s-6c83c9bf2b"></a>definition `ExactSetAuthorityDocument`
+
+- <a id="s-00a9133b54"></a>`type`: `"object"`
+- <a id="s-1d3d20b824"></a>`additionalProperties`: `false`
+- <a id="s-908ee70733"></a>`required`: `["count","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-28db1d9da4"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-a8e5ee4523"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -76,6 +126,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.RetirementClaimReferenceDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -209,3 +262,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

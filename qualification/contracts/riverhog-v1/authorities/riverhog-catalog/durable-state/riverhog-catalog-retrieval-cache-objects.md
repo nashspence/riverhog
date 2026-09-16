@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4180ec7daa"></a>
-- Table: `retrieval_cache_objects`
 
-### Columns
+### Table: `retrieval_cache_objects`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -33,7 +34,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-d11b2a4548"></a>`state` | `VARCHAR` | no | `—` | — |
 | <a id="s-3a6f9495a6"></a>`search_text` | `VARCHAR` | no | `—` | {"generated":"GENERATED ALWAYS AS (lower(source_store \|\| ' ' \|\| cache_store \|\| ' ' \|\| object_id)) STORED"} |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -71,6 +72,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/0/structure/tables/74`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -209,3 +213,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "retrieval_cache_objects"
 }
 ```
+
+</details>

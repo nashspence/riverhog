@@ -14,8 +14,12 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7513fa2e7c"></a>
-- <a id="s-6994147f35"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-attributes.json
-- <a id="s-f2bbe7939f"></a>`type`: object
+
+- <a id="s-f2bbe7939f"></a>`type`: `"object"`
+- <a id="s-6994147f35"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-attributes.json"`
+- <a id="s-ac9c805477"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-6db6f21867"></a>`additionalProperties`: `false`
+- <a id="s-0fc2fe8fcf"></a>`required`: `["bitmask","hex","names","reparse_tag"]`
 
 ### Fields
 
@@ -23,7 +27,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-50e5a25871"></a>`bitmask` | yes | type="integer"; minimum=0 |  |
 | <a id="s-92b94d461f"></a>`hex` | yes | type="string"; pattern="^0x[0-9a-f]{8}$" |  |
-| <a id="s-1bf4b3809a"></a>`names` | yes | type="array"; items=(type="string"; minLength=1); additional keys=`uniqueItems` |  |
+| <a id="s-1bf4b3809a"></a>`names` | yes | type="array"; items=(type="string"; minLength=1); uniqueItems=true |  |
 | <a id="s-65fcdf5afe"></a>`reparse_tag` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
@@ -58,6 +62,9 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 - `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-attributes.json`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -99,3 +106,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

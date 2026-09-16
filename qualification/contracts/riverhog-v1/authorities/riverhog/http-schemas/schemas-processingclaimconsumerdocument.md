@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c9eaaa92fe"></a>
-- <a id="s-a4f4a7835e"></a>`title`: ProcessingClaimConsumerDocument
-- <a id="s-27e1e6899e"></a>`type`: object
+
+- <a id="s-27e1e6899e"></a>`type`: `"object"`
+- <a id="s-4b23246723"></a>`additionalProperties`: `false`
+- <a id="s-568f7b2a1b"></a>`required`: `["app"]`
+- <a id="s-a4f4a7835e"></a>`title`: `"ProcessingClaimConsumerDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-e3e65ac8a5"></a>`app` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-560dbaafaf"></a>`key_id` | no | anyOf=type="string"; minLength=1; maxLength=300 \| type="null" |  |
+| <a id="s-560dbaafaf"></a>`key_id` | no | anyOf=(type="string"; maxLength=300; minLength=1) \| (type="null") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -56,6 +59,9 @@ Shared facts for every subject below: maximum=300; minimum=1; reason="schema-max
 - `/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimConsumerDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -91,3 +97,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,16 +14,19 @@ Associate classified artifacts without assigning device meaning to Stove0.
 ## External contract
 
 <a id="s-52c5a88ad0"></a>
-- <a id="s-9b5d4ccabe"></a>`title`: ArtifactAssociation
-- <a id="s-1d1d09ce99"></a>`description`: Associate classified artifacts without assigning device meaning to Stove0.
-- <a id="s-53cb845b33"></a>`type`: object
+
+- <a id="s-53cb845b33"></a>`type`: `"object"`
+- <a id="s-d47e7616af"></a>`additionalProperties`: `false`
+- <a id="s-1d1d09ce99"></a>`description`: `"Associate classified artifacts without assigning device meaning to Stove0."`
+- <a id="s-3208fb2925"></a>`required`: `["primary_role","associated_roles"]`
+- <a id="s-9b5d4ccabe"></a>`title`: `"ArtifactAssociation"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-bcfb55c83b"></a>`associated_roles` | yes | type="array"; minItems=1; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
-| <a id="s-9bb2b2a360"></a>`path_identity` | no | type="string"; const="same-parent-stem" |  |
+| <a id="s-bcfb55c83b"></a>`associated_roles` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
+| <a id="s-9bb2b2a360"></a>`path_identity` | no | type="string"; const="same-parent-stem"; default="same-parent-stem" |  |
 | <a id="s-dbc2f02857"></a>`primary_role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ### Progression, limits, and lifecycle
@@ -58,6 +61,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -97,3 +103,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -27,26 +27,62 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2009529b23"></a>
-- <a id="s-2d3dce9162"></a>`type`: object
 
-### Fields
+- <a id="s-2d3dce9162"></a>`type`: `"object"`
+- <a id="s-56911f8456"></a>`additionalProperties`: `false`
+- <a id="s-85e23c11ec"></a>`required`: `["id","options_schema","facts_schema","facts_semantics","contract_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-ffb388d74b"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-79265b7bba"></a>`facts_schema` | yes | #/$defs/JsonSchemaDocument |  |
-| <a id="s-0c0d2b0f9d"></a>`facts_semantics` | yes | #/$defs/SemanticValidationProfile |  |
+| <a id="s-79265b7bba"></a>`facts_schema` | yes | [JsonSchemaDocument](#s-80f7422792) |  |
+| <a id="s-0c0d2b0f9d"></a>`facts_semantics` | yes | [SemanticValidationProfile](#s-f92abed4ae) |  |
 | <a id="s-57f9615963"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-22b0547d5b"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864 |  |
-| <a id="s-135a1e34f9"></a>`options_schema` | yes | #/$defs/JsonSchemaDocument |  |
+| <a id="s-22b0547d5b"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
+| <a id="s-135a1e34f9"></a>`options_schema` | yes | [JsonSchemaDocument](#s-80f7422792) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-80f7422792"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-7449c72b12"></a>`JsonValue` | empty object |
-| <a id="s-f92abed4ae"></a>`SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
+- [JsonSchemaDocument](#s-80f7422792)
+- [JsonValue](#s-7449c72b12)
+- [SemanticValidationProfile](#s-f92abed4ae)
+
+##### <a id="s-80f7422792"></a>definition `JsonSchemaDocument`
+
+- <a id="s-885d3faceb"></a>`type`: `"object"`
+- <a id="s-71813fa7ed"></a>`additionalProperties`: `false`
+- <a id="s-def4f41fb6"></a>`required`: `["id","sha256","schema"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c0135546d9"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-384a56a38b"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-cbb831b552"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-58607a0e0b"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-7449c72b12)) |  |
+| <a id="s-3ecb285c1d"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-7449c72b12"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-f92abed4ae"></a>definition `SemanticValidationProfile`
+
+- <a id="s-fd5705c138"></a>`type`: `"object"`
+- <a id="s-f653ac5d86"></a>`additionalProperties`: `false`
+- <a id="s-64118c5a3d"></a>`required`: `["id","rules","profile_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c702e1b40f"></a>`conformance_vectors_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-d53d4be94a"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-614b7c9012"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-cdece9f918"></a>`rules` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
 
 ## Maintained corroboration
 
@@ -77,6 +113,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_observer_protocol.ObserverContract`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -207,3 +246,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f5df070c91"></a>
-- <a id="s-31608481e3"></a>`title`: EvaluationCreatedEventData
-- <a id="s-f0522c80d4"></a>`type`: object
+
+- <a id="s-f0522c80d4"></a>`type`: `"object"`
+- <a id="s-9a3f0ecf9a"></a>`additionalProperties`: `false`
+- <a id="s-dc5132732c"></a>`required`: `["evaluation_id","phase"]`
+- <a id="s-31608481e3"></a>`title`: `"EvaluationCreatedEventData"`
 
 ### Fields
 
@@ -57,6 +60,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 8a95a196acf8a76a51c6b3ef5fe4f5abffb52508d5830fac6aac0ff2138ae10a -->
@@ -91,3 +97,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-34fdfcb936"></a>
-- <a id="s-8f3c5df021"></a>`title`: CapturedCollectionFileProvenanceDetailOut
-- <a id="s-065275a858"></a>`type`: object
+
+- <a id="s-065275a858"></a>`type`: `"object"`
+- <a id="s-db3be3aa81"></a>`additionalProperties`: `false`
+- <a id="s-380515c4d0"></a>`required`: `["path","bytes","sha256","collection_id","provenance","journal"]`
+- <a id="s-8f3c5df021"></a>`title`: `"CapturedCollectionFileProvenanceDetailOut"`
 
 ### Fields
 
@@ -79,6 +82,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 5b19ce109f17b497a6ffbc145afe5e5fa5db7499aa80215a3f4d2c93f72c0370 -->
@@ -122,3 +128,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

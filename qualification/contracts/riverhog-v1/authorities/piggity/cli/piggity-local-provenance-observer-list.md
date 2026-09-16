@@ -44,7 +44,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-4d07387287"></a>`completed` | <a id="s-566a58311b"></a>`{"kind":"command-completed"}` | <a id="s-d0dcda5f7f"></a>`0` | <a id="s-5cfdf77121"></a>human: `noncontractual-presentation-of-command-result`; json: [riverhog-provenance-observer-provider-list/v1](#s-5cfdf77121) | <a id="s-0a9752937a"></a>all: `empty` |
+| <a id="s-4d07387287"></a>`completed` | <a id="s-566a58311b"></a>`{"kind":"command-completed"}` | <a id="s-d0dcda5f7f"></a>`0` | <a id="s-5cfdf77121"></a>human: `noncontractual-presentation-of-command-result`; json: [riverhog-provenance-observer-provider-list/v1](#s-b1d44e852b) | <a id="s-0a9752937a"></a>all: `empty` |
 
 #### Failure outcomes
 
@@ -52,6 +52,26 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|---|
 | <a id="s-ae0364b0be"></a>`usage` | <a id="s-0abcda50e3"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-2ccb977fb1"></a>`2` | <a id="s-c7ec820b01"></a>all: `empty` | <a id="s-b04a1bfbd5"></a>all: `noncontractual-usage-diagnostic` |
 | <a id="s-ef9729a98e"></a>`operational` | <a id="s-4ed4f8d5ab"></a>`{"kind":"application-error"}` | <a id="s-c78945c76a"></a>`1` | <a id="s-e553251cd3"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-6e928d10a6"></a>human: `noncontractual-diagnostic`; json: `empty` |
+
+### Local structured outputs
+
+
+#### <a id="s-b1d44e852b"></a>`riverhog-provenance-observer-provider-list/v1`
+
+Applies to: completed · stdout (json).
+
+<a id="s-d8f77131f0"></a>
+
+- <a id="s-aa15f5ec71"></a>`type`: `"object"`
+- <a id="s-ccb7b99bfb"></a>`additionalProperties`: `false`
+- <a id="s-d1dfb0a720"></a>`required`: `["format","providers"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-fe036f3cf5"></a>`format` | yes | const="riverhog-provenance-observer-provider-list/v1" |  |
+| <a id="s-096bce1333"></a>`providers` | yes | type="array"; items=(type="object") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -92,6 +112,9 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 - `/external_contract/cli/piggity/commands/local/commands/provenance-observer/commands/list/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -327,3 +350,5 @@ false
   }
 ]
 ```
+
+</details>

@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e9ff2ea405"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-b6356ce043"></a>`consumers` | ["stove0-ffprobe-sampling-observer"] |
-| <a id="s-8c154d027c"></a>`default_expressions` | ["'/run/stove0-ffprobe-sampling-observer'"] |
-| <a id="s-da0d41e3d2"></a>`id` | "stove0-ffprobe-sampling-observer:environment:STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE" |
-| <a id="s-36e9d60abf"></a>`input_shape` | "environment-string" |
-| <a id="s-fd9ccf6d49"></a>`name` | "STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE" |
-| <a id="s-29fdfb5587"></a>`owner` | "stove0-ffprobe-sampling-observer" |
+| <a id="s-b6356ce043"></a>`consumers` | `["stove0-ffprobe-sampling-observer"]` |
+| <a id="s-8c154d027c"></a>`default_expressions` | `["'/run/stove0-ffprobe-sampling-observer'"]` |
+| <a id="s-da0d41e3d2"></a>`id` | `"stove0-ffprobe-sampling-observer:environment:STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE"` |
+| <a id="s-36e9d60abf"></a>`input_shape` | `"environment-string"` |
+| <a id="s-fd9ccf6d49"></a>`name` | `"STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE"` |
+| <a id="s-29fdfb5587"></a>`owner` | `"stove0-ffprobe-sampling-observer"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 0d9de19dbb84e7b914f60ff5f939f276c04d94fcec490eb046f56381e4f5b0ed -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "stove0-ffprobe-sampling-observer"
 }
 ```
+
+</details>

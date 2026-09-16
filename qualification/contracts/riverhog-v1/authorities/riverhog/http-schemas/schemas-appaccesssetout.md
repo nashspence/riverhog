@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-cc50975939"></a>
-- <a id="s-c8eb7eeab2"></a>`title`: AppAccessSetOut
-- <a id="s-d7ff4023f1"></a>`type`: object
+
+- <a id="s-d7ff4023f1"></a>`type`: `"object"`
+- <a id="s-0dfae59ebc"></a>`additionalProperties`: `false`
+- <a id="s-55d2355d67"></a>`required`: `["app","key_id","access"]`
+- <a id="s-c8eb7eeab2"></a>`title`: `"AppAccessSetOut"`
 
 ### Fields
 
@@ -55,6 +58,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 8a2fe582b3f2d8be4000b822c697d94e382f3620ce1c2e6f75bafe2848bc27d9 -->
@@ -82,3 +88,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-811bf04556"></a>
-- <a id="s-cee17c133a"></a>`title`: CollectionUploadSessionFilesRegistrationOut
-- <a id="s-8dcfe4dc34"></a>`type`: object
+
+- <a id="s-8dcfe4dc34"></a>`type`: `"object"`
+- <a id="s-05a29b93d8"></a>`additionalProperties`: `false`
+- <a id="s-3eb13a66ff"></a>`required`: `["collection_id","ingest_source","archive_store","encryption_format","passphrase_id","state","files","volumes"]`
+- <a id="s-cee17c133a"></a>`title`: `"CollectionUploadSessionFilesRegistrationOut"`
 
 ### Fields
 
@@ -25,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-706f44817b"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
 | <a id="s-ea443b1f02"></a>`encryption_format` | yes | type="string" |  |
 | <a id="s-c35c83ee48"></a>`files` | yes | type="array"; items=(#/components/schemas/CollectionUploadFileOut) |  |
-| <a id="s-d8b867d200"></a>`ingest_source` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-d8b867d200"></a>`ingest_source` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-a22c58005a"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
 | <a id="s-c9c25cce1c"></a>`state` | yes | type="string"; const="open" |  |
 | <a id="s-c488bbdba5"></a>`volumes` | yes | type="array"; items=(#/components/schemas/CollectionUploadVolumeSummaryDocument) |  |
@@ -72,6 +75,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionFilesRegistrationOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -141,3 +147,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

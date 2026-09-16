@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b8e9029e16"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-6389ef5704"></a>`consumers` | ["stove0-target-support"] |
-| <a id="s-e5e91bdd9c"></a>`default_expressions` | ["str(DEFAULT_TERMINAL_STATE_RETENTION_SECONDS)"] |
-| <a id="s-9ef9b8dc24"></a>`id` | "stove0-target-support:environment:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS" |
-| <a id="s-163925c5a6"></a>`input_shape` | "environment-string" |
-| <a id="s-f93b3cfeb9"></a>`name` | "STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS" |
-| <a id="s-338261e172"></a>`owner` | "stove0-target-support" |
+| <a id="s-6389ef5704"></a>`consumers` | `["stove0-target-support"]` |
+| <a id="s-e5e91bdd9c"></a>`default_expressions` | `["str(DEFAULT_TERMINAL_STATE_RETENTION_SECONDS)"]` |
+| <a id="s-9ef9b8dc24"></a>`id` | `"stove0-target-support:environment:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS"` |
+| <a id="s-163925c5a6"></a>`input_shape` | `"environment-string"` |
+| <a id="s-f93b3cfeb9"></a>`name` | `"STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS"` |
+| <a id="s-338261e172"></a>`owner` | `"stove0-target-support"` |
 
 ### Progression, limits, and lifecycle
 
@@ -64,6 +65,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 41082d40385d615f41b20ba8d9bacf238223435ad195d3ed49653068c68d2317 -->
@@ -82,3 +86,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "stove0-target-support"
 }
 ```
+
+</details>

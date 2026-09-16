@@ -27,9 +27,12 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-79182f253c"></a>
-- <a id="s-e838297b11"></a>`type`: object
 
-### Fields
+- <a id="s-e838297b11"></a>`type`: `"object"`
+- <a id="s-434a0236a8"></a>`additionalProperties`: `false`
+- <a id="s-b9ce4aad9e"></a>`required`: `["fence"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
@@ -64,6 +67,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: b602a87fd9041146a8dbc6a4cd27ae3a284f144a7a825974150f7a4a67a48041 -->
@@ -93,3 +99,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

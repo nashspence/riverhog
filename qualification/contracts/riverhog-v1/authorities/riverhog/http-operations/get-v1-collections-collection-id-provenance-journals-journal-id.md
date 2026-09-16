@@ -24,8 +24,8 @@ Stream Collection Provenance Journal
 |---|---|---:|---|---|
 | <a id="s-a4ef2bea49"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
 | <a id="s-c5835bbcc5"></a>`journal_id` | path | yes | not declared | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
-| <a id="s-4fba5c2893"></a>`Range` | header | no | not declared | anyOf=type="string" \| type="null" |
-| <a id="s-c8fe3179f9"></a>`If-Match` | header | no | not declared | anyOf=type="string" \| type="null" |
+| <a id="s-4fba5c2893"></a>`Range` | header | no | not declared | anyOf=(type="string") \| (type="null") |
+| <a id="s-c8fe3179f9"></a>`If-Match` | header | no | not declared | anyOf=(type="string") \| (type="null") |
 
 ### Responses
 
@@ -40,6 +40,18 @@ Stream Collection Provenance Journal
 | <a id="s-b74cf514a8"></a>`412` | Precondition Failed | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `precondition_failed` |
 | <a id="s-2fff5173f2"></a>`428` | Precondition Required | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `precondition_required` |
 | <a id="s-2339147e1d"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
+
+#### Response headers
+
+| Status | Header | Required | Schema | Description |
+|---|---|---|---|---|
+| `200` | <a id="s-659a7f71f5"></a>`Accept-Ranges` | yes | type="string"; const="bytes" |  |
+| `200` | <a id="s-0f06d80d5e"></a>`Content-Length` | yes | type="integer"; minimum=0 | Exact response-body length in bytes. |
+| `200` | <a id="s-3374d97df8"></a>`ETag` | yes | type="string"; pattern="^\"[0-9a-f]{64}\"$" | Quoted SHA-256 identity of the journal bytes. |
+| `206` | <a id="s-e11e9623c4"></a>`Accept-Ranges` | yes | type="string"; const="bytes" |  |
+| `206` | <a id="s-27c91048f3"></a>`Content-Length` | yes | type="integer" |  |
+| `206` | <a id="s-7c6a669207"></a>`Content-Range` | yes | type="string" |  |
+| `206` | <a id="s-dbb4efa7e0"></a>`ETag` | yes | type="string" |  |
 
 ## Maintained corroboration
 
@@ -123,6 +135,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -371,3 +386,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   ]
 }
 ```
+
+</details>

@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-77a4d0e1e5"></a>
-- <a id="s-1d4fc7bd0f"></a>`title`: ProcessingClaimAbandonDocument
-- <a id="s-f5816b0081"></a>`type`: object
+
+- <a id="s-f5816b0081"></a>`type`: `"object"`
+- <a id="s-87ee6cf4ed"></a>`additionalProperties`: `false`
+- <a id="s-5b5b16a803"></a>`required`: `["fence","reason"]`
+- <a id="s-1d4fc7bd0f"></a>`title`: `"ProcessingClaimAbandonDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-eb811339a3"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-334fdcb37c"></a>`reason` | yes | type="string"; minLength=1; maxLength=1000 |  |
+| <a id="s-334fdcb37c"></a>`reason` | yes | type="string"; maxLength=1000; minLength=1 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -57,6 +60,9 @@ Shared facts for every subject below: maximum=1000; minimum=1; reason="schema-ma
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: db2136a2c3b36883b975822f17c927e5ac2386f19c8c8c8fa80ac47af99be5f0 -->
@@ -85,3 +91,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

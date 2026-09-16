@@ -27,23 +27,72 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d40a7ea33e"></a>
-- <a id="s-b80a47717f"></a>`type`: object
 
-### Fields
+- <a id="s-b80a47717f"></a>`type`: `"object"`
+- <a id="s-a261d21f6d"></a>`additionalProperties`: `false`
+- <a id="s-5840f1fa90"></a>`required`: `["objects","readiness"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0cf2e8a02f"></a>`objects` | yes | type="array"; minItems=1; items=(#/$defs/ObjectLocator) |  |
-| <a id="s-126151cd38"></a>`readiness` | yes | oneOf=#/$defs/ReadRequested \| #/$defs/ReadReady \| #/$defs/ReadExpired; additional keys=`discriminator` |  |
+| <a id="s-0cf2e8a02f"></a>`objects` | yes | type="array"; items=([ObjectLocator](#s-f5cb8a00e4)); minItems=1 |  |
+| <a id="s-126151cd38"></a>`readiness` | yes | discriminator={"mapping":{"expired":"[ReadExpired](#s-89cf76aaa6)","ready":"[ReadReady](#s-eb22b97e33)","requested":"[ReadRequested](#s-8fc985c6ca)"},"propertyName":"state"}; oneOf=([ReadRequested](#s-8fc985c6ca)) \| ([ReadReady](#s-eb22b97e33)) \| ([ReadExpired](#s-89cf76aaa6)) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-f5cb8a00e4"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
-| <a id="s-89cf76aaa6"></a>`ReadExpired` | type="object"; fields=`state`; additional keys=`additionalProperties` |
-| <a id="s-eb22b97e33"></a>`ReadReady` | type="object"; fields=`available_until`, `state`; additional keys=`additionalProperties` |
-| <a id="s-8fc985c6ca"></a>`ReadRequested` | type="object"; fields=`estimated_ready_at`, `state`; additional keys=`additionalProperties` |
+- [ObjectLocator](#s-f5cb8a00e4)
+- [ReadExpired](#s-89cf76aaa6)
+- [ReadReady](#s-eb22b97e33)
+- [ReadRequested](#s-8fc985c6ca)
+
+##### <a id="s-f5cb8a00e4"></a>definition `ObjectLocator`
+
+- <a id="s-7420492f0f"></a>`type`: `"object"`
+- <a id="s-94dda0550c"></a>`additionalProperties`: `false`
+- <a id="s-6168882348"></a>`required`: `["object_path"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6e85852882"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-0d1aff8a0c"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
+
+##### <a id="s-89cf76aaa6"></a>definition `ReadExpired`
+
+- <a id="s-574311949c"></a>`type`: `"object"`
+- <a id="s-0a33f7e734"></a>`additionalProperties`: `false`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-5de65d8b06"></a>`state` | no | type="string"; const="expired"; default="expired" |  |
+
+##### <a id="s-eb22b97e33"></a>definition `ReadReady`
+
+- <a id="s-2ab005545d"></a>`type`: `"object"`
+- <a id="s-adcde2cbca"></a>`additionalProperties`: `false`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-93905fe13a"></a>`available_until` | no | anyOf=(type="string"; maxLength=100; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-f15fd3367c"></a>`state` | no | type="string"; const="ready"; default="ready" |  |
+
+##### <a id="s-8fc985c6ca"></a>definition `ReadRequested`
+
+- <a id="s-9e52905660"></a>`type`: `"object"`
+- <a id="s-c2c66efcda"></a>`additionalProperties`: `false`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-998c2d9989"></a>`estimated_ready_at` | no | anyOf=(type="string"; maxLength=100; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-ef4920cf1d"></a>`state` | no | type="string"; const="requested"; default="requested" |  |
 
 ## Maintained corroboration
 
@@ -72,6 +121,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.ReadStatus`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -215,3 +267,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

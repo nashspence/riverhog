@@ -14,15 +14,16 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7ac3159837"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-9ed4171447"></a>`authority` | "the owning schema's deliberate absence of a semantic maximum" |
-| <a id="s-90128b405f"></a>`declared_operational_maximum` | null |
-| <a id="s-cd86a2fc86"></a>`future_capacity_behavior` | "explicit-configured-reject-defer-or-throttle" |
-| <a id="s-4bea6ab41f"></a>`hidden_maximum` | "forbidden" |
-| <a id="s-2c27f63017"></a>`policy` | "operational_policy" |
-| <a id="s-c7fdc07b8a"></a>`semantic_maximum` | null |
-| <a id="s-0f1c9f201f"></a>`silent_truncation` | "forbidden" |
+| <a id="s-9ed4171447"></a>`authority` | `"the owning schema's deliberate absence of a semantic maximum"` |
+| <a id="s-90128b405f"></a>`declared_operational_maximum` | `null` |
+| <a id="s-cd86a2fc86"></a>`future_capacity_behavior` | `"explicit-configured-reject-defer-or-throttle"` |
+| <a id="s-4bea6ab41f"></a>`hidden_maximum` | `"forbidden"` |
+| <a id="s-2c27f63017"></a>`policy` | `"operational_policy"` |
+| <a id="s-c7fdc07b8a"></a>`semantic_maximum` | `null` |
+| <a id="s-0f1c9f201f"></a>`silent_truncation` | `"forbidden"` |
 
 ## Governing policies
 
@@ -46,6 +47,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 74ed836834648a8834851fe68e382be2989d41657f840c93889a7817b65f8f32 -->
@@ -61,3 +65,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "silent_truncation": "forbidden"
 }
 ```
+
+</details>

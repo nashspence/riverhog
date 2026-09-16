@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b3dd8d4481"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-a5828c1b01"></a>`consumers` | ["stove0-review-materialize-target"] |
-| <a id="s-24c34751f1"></a>`default_expressions` | ["''"] |
-| <a id="s-7eb7d89410"></a>`id` | "stove0-review-materialize-target:environment:STOVE0_REVIEW_MATERIALIZE_TARGET_IMAGE_DIGEST" |
-| <a id="s-1dc905d619"></a>`input_shape` | "environment-string" |
-| <a id="s-6a00ac0a51"></a>`name` | "STOVE0_REVIEW_MATERIALIZE_TARGET_IMAGE_DIGEST" |
-| <a id="s-c913657c03"></a>`owner` | "stove0-review-materialize-target" |
+| <a id="s-a5828c1b01"></a>`consumers` | `["stove0-review-materialize-target"]` |
+| <a id="s-24c34751f1"></a>`default_expressions` | `["''"]` |
+| <a id="s-7eb7d89410"></a>`id` | `"stove0-review-materialize-target:environment:STOVE0_REVIEW_MATERIALIZE_TARGET_IMAGE_DIGEST"` |
+| <a id="s-1dc905d619"></a>`input_shape` | `"environment-string"` |
+| <a id="s-6a00ac0a51"></a>`name` | `"STOVE0_REVIEW_MATERIALIZE_TARGET_IMAGE_DIGEST"` |
+| <a id="s-c913657c03"></a>`owner` | `"stove0-review-materialize-target"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 786096b00854ff697b0e212b49ab2ef42bf07e4c517301a7a0a3ffb58ca34893 -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "stove0-review-materialize-target"
 }
 ```
+
+</details>

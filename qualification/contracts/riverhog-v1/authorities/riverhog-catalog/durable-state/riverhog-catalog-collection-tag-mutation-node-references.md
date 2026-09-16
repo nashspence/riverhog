@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-458329dbd9"></a>
-- Table: `collection_tag_mutation_node_references`
 
-### Columns
+### Table: `collection_tag_mutation_node_references`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -24,7 +25,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-fc9a3dce28"></a>`operation_id` | `VARCHAR` | no | `—` | — |
 | <a id="s-6c19550b0f"></a>`node_digest` | `VARCHAR(64)` | no | `—` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -61,6 +62,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/0/structure/tables/26`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -143,3 +147,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "collection_tag_mutation_node_references"
 }
 ```
+
+</details>

@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c2a1c67037"></a>
-- <a id="s-16b20e38f4"></a>`title`: OperationIdentityDocument
-- <a id="s-facfe3a12f"></a>`type`: object
+
+- <a id="s-facfe3a12f"></a>`type`: `"object"`
+- <a id="s-a5a3e41edc"></a>`additionalProperties`: `false`
+- <a id="s-71bb22729f"></a>`required`: `["id","sha256"]`
+- <a id="s-16b20e38f4"></a>`title`: `"OperationIdentityDocument"`
 
 ### Fields
 
@@ -57,6 +60,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 8edceb5ac10853866a052a46257f6386a34c5bd639e7416a8eabfdb516ec77a0 -->
@@ -84,3 +90,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,18 +14,21 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4c057c9530"></a>
-- <a id="s-558de7a97d"></a>`title`: WorkCreateIn
-- <a id="s-4d3821068e"></a>`type`: object
+
+- <a id="s-4d3821068e"></a>`type`: `"object"`
+- <a id="s-c22fac1be1"></a>`additionalProperties`: `false`
+- <a id="s-0b411787dd"></a>`required`: `["recipe_id","inputs","preview_sha256"]`
+- <a id="s-558de7a97d"></a>`title`: `"WorkCreateIn"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ad0ebd2307"></a>`effective_intent` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-73fa49c400"></a>`inputs` | yes | type="array"; minItems=1; items=(#/components/schemas/CollectionRootRef) |  |
+| <a id="s-ad0ebd2307"></a>`effective_intent` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-73fa49c400"></a>`inputs` | yes | type="array"; items=(#/components/schemas/CollectionRootRef); minItems=1 |  |
 | <a id="s-6883763dc1"></a>`preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1e56ede547"></a>`recipe_id` | yes | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-cc2aeb54a6"></a>`recipe_revision` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| <a id="s-1e56ede547"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-cc2aeb54a6"></a>`recipe_revision` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -75,6 +78,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/stove0/components/schemas/WorkCreateIn`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -132,3 +138,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

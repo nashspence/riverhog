@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1b7215e251"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-84c48e5200"></a>`consumers` | ["riverhog-ftp-adapter"] |
-| <a id="s-4f7fd18cab"></a>`default_expressions` | ["''"] |
-| <a id="s-11b04fc0e6"></a>`id` | "riverhog-ftp-adapter:environment:RIVERHOG_BASE_URL" |
-| <a id="s-503bc11db4"></a>`input_shape` | "environment-string" |
-| <a id="s-399d989cc4"></a>`name` | "RIVERHOG_BASE_URL" |
-| <a id="s-03a4e23000"></a>`owner` | "riverhog-ftp-adapter" |
+| <a id="s-84c48e5200"></a>`consumers` | `["riverhog-ftp-adapter"]` |
+| <a id="s-4f7fd18cab"></a>`default_expressions` | `["''"]` |
+| <a id="s-11b04fc0e6"></a>`id` | `"riverhog-ftp-adapter:environment:RIVERHOG_BASE_URL"` |
+| <a id="s-503bc11db4"></a>`input_shape` | `"environment-string"` |
+| <a id="s-399d989cc4"></a>`name` | `"RIVERHOG_BASE_URL"` |
+| <a id="s-03a4e23000"></a>`owner` | `"riverhog-ftp-adapter"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: f783c60e0caf78160b1417a36052c6d664d71e176169517536965319aa5da4cf -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "riverhog-ftp-adapter"
 }
 ```
+
+</details>

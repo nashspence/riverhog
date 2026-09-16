@@ -22,9 +22,9 @@ List Evaluations
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-625d3cc50a"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-88b28d2b89"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
-| <a id="s-7af6efcb9f"></a>`phase` | query | no | not declared | anyOf=type="string"; enum=["planning","running","partially_complete","complete","failed","canceled"] \| type="null" |
-| <a id="s-976d157f93"></a>`q` | query | no | not declared | anyOf=[BrowseQuery](../http-schemas/schemas-browsequery.md) \| type="null" |
+| <a id="s-88b28d2b89"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
+| <a id="s-7af6efcb9f"></a>`phase` | query | no | not declared | anyOf=(type="string"; enum=["planning","running","partially_complete","complete","failed","canceled"]) \| (type="null") |
+| <a id="s-976d157f93"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
 | <a id="s-6e6ff27ba8"></a>`sort` | query | no | `"updated_at"` | type="string"; enum=["updated_at","phase","evaluation_id"] |
 | <a id="s-97dc8ae11c"></a>`order` | query | no | `"desc"` | type="string"; enum=["asc","desc"] |
 
@@ -156,6 +156,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -341,3 +344,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

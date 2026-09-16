@@ -27,13 +27,16 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-f54796f926"></a>
-- <a id="s-7a176a771b"></a>`type`: object
 
-### Fields
+- <a id="s-7a176a771b"></a>`type`: `"object"`
+- <a id="s-2c376bbec2"></a>`additionalProperties`: `false`
+- <a id="s-36ea8913a5"></a>`required`: `["branch_id","work_id","plan_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1ecf460c34"></a>`branch_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-1ecf460c34"></a>`branch_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-17c523724d"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-497f7bb404"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
@@ -58,6 +61,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_core.PreviewTargetExpectation`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -99,3 +105,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

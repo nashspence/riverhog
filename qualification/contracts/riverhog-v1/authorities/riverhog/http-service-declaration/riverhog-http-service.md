@@ -13,10 +13,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-| Subject | Shape |
+<a id="s-5a7411c0c7"></a>
+
+| Field | Value |
 |---|---|
-| <a id="s-5a7411c0c7"></a>`info` | additional keys=`version` |
-| <a id="s-2e1f916040"></a>`openapi` | "3.1.0" |
+| <a id="s-75a2539115"></a>`info · title` | `"riverhog API"` |
+| <a id="s-c078620f1f"></a>`info · version` | `"0.1.0"` |
+| <a id="s-2e1f916040"></a>`openapi` | `"3.1.0"` |
 
 ## Governing policies
 
@@ -41,6 +44,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 ### `/external_contract/http_openapi/riverhog/info`
@@ -61,3 +67,5 @@ The following JSON is the complete value owned at each machine-authority pointer
 ```json
 "3.1.0"
 ```
+
+</details>

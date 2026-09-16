@@ -27,21 +27,35 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-055aabb9f1"></a>
-- <a id="s-210fa9b30f"></a>`type`: object
 
-### Fields
+- <a id="s-210fa9b30f"></a>`type`: `"object"`
+- <a id="s-be8c626844"></a>`additionalProperties`: `false`
+- <a id="s-0b7fd6b0d4"></a>`required`: `["artifact_id","duration_ms","sampleable_ranges"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f7db6f3212"></a>`artifact_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-f7db6f3212"></a>`artifact_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-946d98127a"></a>`duration_ms` | yes | type="integer"; minimum=1 |  |
-| <a id="s-1353a5afe9"></a>`sampleable_ranges` | yes | type="array"; minItems=1; items=(#/$defs/SampleableRange) |  |
+| <a id="s-1353a5afe9"></a>`sampleable_ranges` | yes | type="array"; items=([SampleableRange](#s-01429a538a)); minItems=1 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-01429a538a"></a>`SampleableRange` | type="object"; fields=`duration_ms`, `start_ms`; additional keys=`additionalProperties`, `required` |
+- [SampleableRange](#s-01429a538a)
+
+##### <a id="s-01429a538a"></a>definition `SampleableRange`
+
+- <a id="s-c448a4043b"></a>`type`: `"object"`
+- <a id="s-8de3b353fd"></a>`additionalProperties`: `false`
+- <a id="s-512d5823c6"></a>`required`: `["start_ms","duration_ms"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4d8e770103"></a>`duration_ms` | yes | type="integer"; minimum=1 |  |
+| <a id="s-4792d95748"></a>`start_ms` | yes | type="integer"; minimum=0 |  |
 
 ## Maintained corroboration
 
@@ -70,6 +84,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_media_sampling_observer_contracts.MediaSamplingArtifactFacts`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -134,3 +151,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

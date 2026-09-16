@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-59f1faef3f"></a>
-- <a id="s-2570264d92"></a>`title`: OutputArtifactRoleCount
-- <a id="s-d87f485f56"></a>`type`: object
+
+- <a id="s-d87f485f56"></a>`type`: `"object"`
+- <a id="s-48dcdf9f15"></a>`additionalProperties`: `false`
+- <a id="s-141f897e27"></a>`required`: `["role","count"]`
+- <a id="s-2570264d92"></a>`title`: `"OutputArtifactRoleCount"`
 
 ### Fields
 
@@ -57,6 +60,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 932e988623cd6631a9f8d0b64a0098cab1ac4a1f70d8609fa8b89676f3c82caf -->
@@ -84,3 +90,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

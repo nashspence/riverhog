@@ -22,7 +22,7 @@ List Catalog Sync Changes
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-3cd41b6792"></a>`cursor` | query | yes | not declared | type="string"; minLength=1; maxLength=4096 |
+| <a id="s-3cd41b6792"></a>`cursor` | query | yes | not declared | type="string"; maxLength=4096; minLength=1 |
 | <a id="s-4c554ae937"></a>`limit` | query | no | `100` | type="integer"; minimum=1; maximum=100 |
 
 ### Responses
@@ -151,6 +151,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/riverhog/paths/~1v1~1catalog-sync~1changes/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -299,3 +302,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

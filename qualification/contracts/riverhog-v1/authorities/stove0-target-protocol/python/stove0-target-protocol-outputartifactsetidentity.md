@@ -27,22 +27,36 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-c8e742d9c0"></a>
-- <a id="s-96f0d14a68"></a>`type`: object
 
-### Fields
+- <a id="s-96f0d14a68"></a>`type`: `"object"`
+- <a id="s-01d64e13cb"></a>`additionalProperties`: `false`
+- <a id="s-d790cc52fa"></a>`required`: `["artifact_count","total_bytes","roles","sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-7e7b5a02d8"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-a7e23628d4"></a>`roles` | yes | type="array"; minItems=1; items=(#/$defs/OutputArtifactRoleCount) |  |
+| <a id="s-a7e23628d4"></a>`roles` | yes | type="array"; items=([OutputArtifactRoleCount](#s-96c477b04f)); minItems=1 |  |
 | <a id="s-bc1d77585e"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-a0c27ad3b5"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-96c477b04f"></a>`OutputArtifactRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
+- [OutputArtifactRoleCount](#s-96c477b04f)
+
+##### <a id="s-96c477b04f"></a>definition `OutputArtifactRoleCount`
+
+- <a id="s-921aee68af"></a>`type`: `"object"`
+- <a id="s-7cea002f19"></a>`additionalProperties`: `false`
+- <a id="s-4ac3f1fd4d"></a>`required`: `["role","count"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-eef1db6f60"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-1afd894e83"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ## Maintained corroboration
 
@@ -73,6 +87,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -141,3 +158,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

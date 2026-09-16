@@ -27,23 +27,44 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ad894bceda"></a>
-- <a id="s-e7f9c347b6"></a>`type`: object
 
-### Fields
+- <a id="s-e7f9c347b6"></a>`type`: `"object"`
+- <a id="s-d7ed91346f"></a>`additionalProperties`: `false`
+- <a id="s-3f096b5045"></a>`required`: `["variant_id","work_id","state"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-bbb6bdbc91"></a>`output` | no | anyOf=#/$defs/OutputCollectionRef \| type="null" |  |
+| <a id="s-bbb6bdbc91"></a>`output` | no | anyOf=([OutputCollectionRef](#s-f5c2ca9269)) \| (type="null"); default=null |  |
 | <a id="s-99c18a12e1"></a>`state` | yes | type="string"; enum=["pending","active","complete","inapplicable","failed","canceled"] |  |
-| <a id="s-f6ec53c14a"></a>`variant_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-f6ec53c14a"></a>`variant_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-e92ac32514"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-89e22d4b9d"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-f5c2ca9269"></a>`OutputCollectionRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`, `derivation_sha256`; additional keys=`additionalProperties`, `required` |
+- [CollectionId](#s-89e22d4b9d)
+- [OutputCollectionRef](#s-f5c2ca9269)
+
+##### <a id="s-89e22d4b9d"></a>definition `CollectionId`
+
+- <a id="s-20a5976787"></a>`type`: `"integer"`
+- <a id="s-a596e89c1d"></a>`minimum`: `1`
+
+##### <a id="s-f5c2ca9269"></a>definition `OutputCollectionRef`
+
+- <a id="s-36193562ad"></a>`type`: `"object"`
+- <a id="s-0c787038a9"></a>`additionalProperties`: `false`
+- <a id="s-99615327f2"></a>`required`: `["collection_id","archive_root_sha256","content_identity","derivation_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-fc8986c79c"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-e4c8308218"></a>`collection_id` | yes | [CollectionId](#s-89e22d4b9d) |  |
+| <a id="s-4c000aee11"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-fdba2694db"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -72,6 +93,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.EvaluationChildView`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -164,3 +188,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

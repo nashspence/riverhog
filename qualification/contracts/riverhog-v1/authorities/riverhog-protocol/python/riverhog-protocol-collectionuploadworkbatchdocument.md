@@ -27,27 +27,92 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d72207d86e"></a>
-- <a id="s-89745f6d35"></a>`type`: object
 
-### Fields
+- <a id="s-89745f6d35"></a>`type`: `"object"`
+- <a id="s-87102a1ce9"></a>`additionalProperties`: `false`
+- <a id="s-f26708c7a2"></a>`required`: `["collection_id","planning_complete","complete","committed_payload_bytes","work"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-41a305ac0a"></a>`collection_id` | yes | #/$defs/CollectionId |  |
+| <a id="s-41a305ac0a"></a>`collection_id` | yes | [CollectionId](#s-d86841f214) |  |
 | <a id="s-ed3a22dcbb"></a>`committed_payload_bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-0f5815a1c3"></a>`complete` | yes | type="boolean" |  |
 | <a id="s-220f81bee5"></a>`planning_complete` | yes | type="boolean" |  |
-| <a id="s-2cba5e289e"></a>`work` | yes | type="array"; maxItems=64; items=(#/$defs/CollectionUploadUnitAssignmentDocument); additional keys=`x-riverhog-extent` |  |
+| <a id="s-2cba5e289e"></a>`work` | yes | type="array"; items=([CollectionUploadUnitAssignmentDocument](#s-00441e0036)); maxItems=64; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"repeated-acquisition-until-complete","reason":"bounded-actionable-work-acquisition"} |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-d86841f214"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-00441e0036"></a>`CollectionUploadUnitAssignmentDocument` | type="object"; fields=`plan_sha256`, `unit`, `volume`; additional keys=`additionalProperties`, `required` |
-| <a id="s-a34c9f424a"></a>`CollectionUploadUnitSourceDocument` | type="object"; fields=`artifact_sha256`, `bytes`, `offset`, `path`; additional keys=`additionalProperties`, `required` |
-| <a id="s-17b7bfe8b3"></a>`CollectionUploadUnitWorkDocument` | type="object"; fields=`payload_bytes`, `plaintext_bytes`, `sources`, `state`, `unit`; additional keys=`additionalProperties`, `required` |
-| <a id="s-c2f07785ba"></a>`CollectionUploadVolumeSummaryDocument` | type="object"; fields=`kind`, `sequence`, `volume_id`; additional keys=`additionalProperties`, `required` |
+- [CollectionId](#s-d86841f214)
+- [CollectionUploadUnitAssignmentDocument](#s-00441e0036)
+- [CollectionUploadUnitSourceDocument](#s-a34c9f424a)
+- [CollectionUploadUnitWorkDocument](#s-17b7bfe8b3)
+- [CollectionUploadVolumeSummaryDocument](#s-c2f07785ba)
+
+##### <a id="s-d86841f214"></a>definition `CollectionId`
+
+- <a id="s-c564717568"></a>`type`: `"integer"`
+- <a id="s-7b034f93a5"></a>`minimum`: `1`
+
+##### <a id="s-00441e0036"></a>definition `CollectionUploadUnitAssignmentDocument`
+
+- <a id="s-4cc2666eb2"></a>`type`: `"object"`
+- <a id="s-caacb32e33"></a>`additionalProperties`: `false`
+- <a id="s-db95dc7b7a"></a>`required`: `["volume","plan_sha256","unit"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-d5e4ce8002"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-de22a52018"></a>`unit` | yes | [CollectionUploadUnitWorkDocument](#s-17b7bfe8b3) |  |
+| <a id="s-020836a32a"></a>`volume` | yes | [CollectionUploadVolumeSummaryDocument](#s-c2f07785ba) |  |
+
+##### <a id="s-a34c9f424a"></a>definition `CollectionUploadUnitSourceDocument`
+
+- <a id="s-bb0ffcc5e9"></a>`type`: `"object"`
+- <a id="s-0387f76605"></a>`additionalProperties`: `false`
+- <a id="s-0a85fd8c4b"></a>`required`: `["path","offset","bytes","artifact_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4be82078e2"></a>`artifact_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-bab257a1ac"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-c459d006a6"></a>`offset` | yes | type="integer"; minimum=0 |  |
+| <a id="s-7102e1e469"></a>`path` | yes | type="string" |  |
+
+##### <a id="s-17b7bfe8b3"></a>definition `CollectionUploadUnitWorkDocument`
+
+- <a id="s-82331da9e0"></a>`type`: `"object"`
+- <a id="s-8c76322a33"></a>`additionalProperties`: `false`
+- <a id="s-660f7cce16"></a>`required`: `["unit","payload_bytes","plaintext_bytes","sources","state"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7da52b9bd3"></a>`payload_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-275a2ecbbe"></a>`plaintext_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-a41f520f9e"></a>`sources` | yes | type="array"; items=([CollectionUploadUnitSourceDocument](#s-a34c9f424a)); maxItems=1000; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"collection-volume-sequence","reason":"bounded-upload-unit-source-map"} |  |
+| <a id="s-d589f94e2f"></a>`state` | yes | type="string"; enum=["pending","committed"] |  |
+| <a id="s-87178b36cc"></a>`unit` | yes | type="integer"; minimum=0 |  |
+
+##### <a id="s-c2f07785ba"></a>definition `CollectionUploadVolumeSummaryDocument`
+
+- <a id="s-9e877ed290"></a>`type`: `"object"`
+- <a id="s-931c3ba6cf"></a>`additionalProperties`: `false`
+- <a id="s-6196d108ea"></a>`required`: `["volume_id","sequence","kind"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b391c57378"></a>`kind` | yes | type="string"; enum=["pack","segment"] |  |
+| <a id="s-f57e9f7cce"></a>`sequence` | yes | type="integer"; minimum=0 |  |
+| <a id="s-f53d35c8aa"></a>`volume_id` | yes | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -77,6 +142,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.CollectionUploadWorkBatchDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -256,3 +324,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

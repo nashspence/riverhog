@@ -14,22 +14,45 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-834a2c4308"></a>
-- <a id="s-f8ed83976a"></a>`title`: ProcessingClaimPlanDocument
-- <a id="s-90ca763aba"></a>`type`: object
+
+- <a id="s-90ca763aba"></a>`type`: `"object"`
+- <a id="s-3f6811f473"></a>`additionalProperties`: `false`
+- `if`: [See `if`](#s-1114014bd6)
+- <a id="s-c34a098626"></a>`required`: `["execution_id","controller_evidence","controller_evidence_sha256","operation","inputs","artifacts","retirement_policy","retirement_grace_seconds","sealed_at"]`
+- `then`: [See `then`](#s-00a7ae18fe)
+- <a id="s-f8ed83976a"></a>`title`: `"ProcessingClaimPlanDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-a2e1e51a8f"></a>`artifacts` | yes | #/components/schemas/ArtifactSetAuthorityDocument |  |
-| <a id="s-c31b744472"></a>`controller_evidence` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| <a id="s-c31b744472"></a>`controller_evidence` | yes | type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
 | <a id="s-827ae4b73c"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-68f89f7550"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-6449700174"></a>`inputs` | yes | #/components/schemas/ExactSetAuthorityDocument |  |
 | <a id="s-b014f9416d"></a>`operation` | yes | #/components/schemas/OperationIdentityDocument |  |
 | <a id="s-6904c65b63"></a>`retirement_grace_seconds` | yes | type="integer"; minimum=0 |  |
 | <a id="s-d49cde6da8"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"] |  |
-| <a id="s-0c58a348ae"></a>`sealed_at` | yes | type="string"; minLength=1; maxLength=64 |  |
+| <a id="s-0c58a348ae"></a>`sealed_at` | yes | type="string"; maxLength=64; minLength=1 |  |
+
+### <a id="s-1114014bd6"></a>`if`
+
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-53ccaf830c"></a>`retirement_policy` | no | const="retain" |  |
+
+### <a id="s-00a7ae18fe"></a>`then`
+
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6486c94aa7"></a>`retirement_grace_seconds` | no | const=0 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -81,6 +104,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -168,3 +194,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

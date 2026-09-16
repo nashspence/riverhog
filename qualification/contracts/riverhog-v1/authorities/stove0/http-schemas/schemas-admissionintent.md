@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ba0530c236"></a>
-- <a id="s-0aec38de14"></a>`title`: AdmissionIntent
-- <a id="s-50460f4d51"></a>`type`: object
+
+- <a id="s-50460f4d51"></a>`type`: `"object"`
+- <a id="s-5dd1a94947"></a>`additionalProperties`: `false`
+- <a id="s-1b356cffeb"></a>`required`: `["admission_id","policy_id","policy_revision","policy_sha256","required_tags","collection","recipe_id","recipe_revision","recipe_sha256","effective_intent"]`
+- <a id="s-0aec38de14"></a>`title`: `"AdmissionIntent"`
 
 ### Fields
 
@@ -23,12 +26,12 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-edd0a3adb5"></a>`admission_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-0bad523de4"></a>`collection` | yes | #/components/schemas/CatalogSyncDescriptor |  |
-| <a id="s-4b7ce35bca"></a>`effective_intent` | yes | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-ec404034ae"></a>`format` | no | type="string"; const="stove0-admission-intent/v1" |  |
-| <a id="s-33c67405d9"></a>`policy_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-4b7ce35bca"></a>`effective_intent` | yes | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-ec404034ae"></a>`format` | no | type="string"; const="stove0-admission-intent/v1"; default="stove0-admission-intent/v1" |  |
+| <a id="s-33c67405d9"></a>`policy_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-f4f9002e65"></a>`policy_revision` | yes | type="integer"; minimum=1 |  |
 | <a id="s-75bb897925"></a>`policy_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-4ff09b93ec"></a>`recipe_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-4ff09b93ec"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-b4e40a831d"></a>`recipe_revision` | yes | type="integer"; minimum=1 |  |
 | <a id="s-17ec6189a3"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-81dfbfb6bf"></a>`required_tags` | yes | type="array"; items=(#/components/schemas/CollectionTag) |  |
@@ -85,6 +88,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/stove0/components/schemas/AdmissionIntent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -171,3 +177,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

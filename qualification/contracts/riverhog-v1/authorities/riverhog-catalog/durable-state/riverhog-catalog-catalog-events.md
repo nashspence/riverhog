@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fa8f69a215"></a>
-- Table: `catalog_events`
 
-### Columns
+### Table: `catalog_events`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -38,7 +39,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-21693ef0fc"></a>`committed_at` | `VARCHAR` | yes | `—` | — |
 | <a id="s-2015fd2fd9"></a>`published` | `BOOLEAN` | no | `true` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -84,6 +85,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/0/structure/tables/2`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -287,3 +291,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "catalog_events"
 }
 ```
+
+</details>

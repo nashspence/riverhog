@@ -14,9 +14,12 @@ One bounded, canonically ordered slice of an immutable inventory.
 ## External contract
 
 <a id="s-bf924c1cdf"></a>
-- <a id="s-3d12d079b3"></a>`title`: PortableCollectionInventoryPage
-- <a id="s-f6a715c2a9"></a>`description`: One bounded, canonically ordered slice of an immutable inventory.
-- <a id="s-fee778a134"></a>`type`: object
+
+- <a id="s-fee778a134"></a>`type`: `"object"`
+- <a id="s-cab2c2f370"></a>`additionalProperties`: `false`
+- <a id="s-f6a715c2a9"></a>`description`: `"One bounded, canonically ordered slice of an immutable inventory."`
+- <a id="s-22e24e868d"></a>`required`: `["authority","files","complete"]`
+- <a id="s-3d12d079b3"></a>`title`: `"PortableCollectionInventoryPage"`
 
 ### Fields
 
@@ -24,9 +27,9 @@ One bounded, canonically ordered slice of an immutable inventory.
 |---|---:|---|---|
 | <a id="s-fda883ea0a"></a>`authority` | yes | #/components/schemas/PortableCollectionInventoryAuthority |  |
 | <a id="s-88b00618b6"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-6b5d814482"></a>`files` | yes | type="array"; maxItems=1000; items=(#/components/schemas/ImmutableFileIdentityDocument); additional keys=`x-riverhog-extent` |  |
-| <a id="s-15a2db977b"></a>`format` | no | type="string"; const="riverhog-collection-inventory-page/v1" |  |
-| <a id="s-b6881aa3a4"></a>`next_cursor` | no | anyOf=type="string"; minLength=1; maxLength=8192 \| type="null" |  |
+| <a id="s-6b5d814482"></a>`files` | yes | type="array"; items=(#/components/schemas/ImmutableFileIdentityDocument); maxItems=1000; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-cursor","reason":"bounded-portable-inventory-page"} |  |
+| <a id="s-15a2db977b"></a>`format` | no | type="string"; const="riverhog-collection-inventory-page/v1"; default="riverhog-collection-inventory-page/v1" |  |
+| <a id="s-b6881aa3a4"></a>`next_cursor` | no | anyOf=(type="string"; maxLength=8192; minLength=1) \| (type="null") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -82,6 +85,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryPage`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -141,3 +147,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

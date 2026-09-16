@@ -27,22 +27,38 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2718db9f9d"></a>
-- <a id="s-b2ba19c19e"></a>`type`: object
 
-### Fields
+- <a id="s-b2ba19c19e"></a>`type`: `"object"`
+- <a id="s-c45aa5ade3"></a>`additionalProperties`: `false`
+- <a id="s-7a588728d9"></a>`required`: `["unit","payload_bytes","plaintext_bytes","sources"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-e4325beb51"></a>`payload_bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-ec15f49a7a"></a>`plaintext_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-951531c70a"></a>`sources` | yes | type="array"; maxItems=1000; items=(#/$defs/CollectionUploadUnitSourceDocument); additional keys=`x-riverhog-extent` |  |
+| <a id="s-951531c70a"></a>`sources` | yes | type="array"; items=([CollectionUploadUnitSourceDocument](#s-802970dc2d)); maxItems=1000; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"collection-volume-sequence","reason":"bounded-upload-unit-source-map"} |  |
 | <a id="s-b5b9e2d464"></a>`unit` | yes | type="integer"; minimum=0 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-802970dc2d"></a>`CollectionUploadUnitSourceDocument` | type="object"; fields=`artifact_sha256`, `bytes`, `offset`, `path`; additional keys=`additionalProperties`, `required` |
+- [CollectionUploadUnitSourceDocument](#s-802970dc2d)
+
+##### <a id="s-802970dc2d"></a>definition `CollectionUploadUnitSourceDocument`
+
+- <a id="s-7f441f188f"></a>`type`: `"object"`
+- <a id="s-01c56abe08"></a>`additionalProperties`: `false`
+- <a id="s-8801886174"></a>`required`: `["path","offset","bytes","artifact_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-483ca02092"></a>`artifact_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-5ac170fc6a"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-71b2049afc"></a>`offset` | yes | type="integer"; minimum=0 |  |
+| <a id="s-58fdb81180"></a>`path` | yes | type="string" |  |
 
 ## Maintained corroboration
 
@@ -71,6 +87,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.CollectionUploadUnitDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -153,3 +172,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

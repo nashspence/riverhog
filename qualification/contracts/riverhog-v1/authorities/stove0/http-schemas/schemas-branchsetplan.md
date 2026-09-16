@@ -14,23 +14,26 @@ One immutable set of required branches and one optional exact join.
 ## External contract
 
 <a id="s-df3b3ca9c2"></a>
-- <a id="s-9669fa3e5c"></a>`title`: BranchSetPlan
-- <a id="s-d18dd59d55"></a>`description`: One immutable set of required branches and one optional exact join.
-- <a id="s-6d1665c52c"></a>`type`: object
+
+- <a id="s-6d1665c52c"></a>`type`: `"object"`
+- <a id="s-de877f1e4e"></a>`additionalProperties`: `false`
+- <a id="s-d18dd59d55"></a>`description`: `"One immutable set of required branches and one optional exact join."`
+- <a id="s-3e1eb8b0ee"></a>`required`: `["parent_work","decision_sha256","branches","branch_set_sha256"]`
+- <a id="s-9669fa3e5c"></a>`title`: `"BranchSetPlan"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-fb4dbc4b31"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-dfc8667881"></a>`branches` | yes | type="array"; minItems=1; items=(oneOf=#/components/schemas/BranchPlan \| #/components/schemas/CoordinationBranchPlan; additional keys=`discriminator`) |  |
+| <a id="s-dfc8667881"></a>`branches` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"#/components/schemas/CoordinationBranchPlan","leaf":"#/components/schemas/BranchPlan"},"propertyName":"kind"}; oneOf=(#/components/schemas/BranchPlan) \| (#/components/schemas/CoordinationBranchPlan)); minItems=1 |  |
 | <a id="s-32fa6f6e6c"></a>`decision_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-80f9b8d777"></a>`evidence_sha256s` | no | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
-| <a id="s-3b5284256e"></a>`format` | no | type="string"; const="stove0-branch-set/v1" |  |
-| <a id="s-debaf9ead5"></a>`join` | no | anyOf=#/components/schemas/JoinDeclaration \| type="null" |  |
+| <a id="s-80f9b8d777"></a>`evidence_sha256s` | no | type="array"; default=[]; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
+| <a id="s-3b5284256e"></a>`format` | no | type="string"; const="stove0-branch-set/v1"; default="stove0-branch-set/v1" |  |
+| <a id="s-debaf9ead5"></a>`join` | no | anyOf=(#/components/schemas/JoinDeclaration) \| (type="null") |  |
 | <a id="s-254366e7ed"></a>`parent_work` | yes | #/components/schemas/WorkIdentity |  |
-| <a id="s-347ef767d1"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0 |  |
-| <a id="s-6ba67858d5"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"] |  |
+| <a id="s-347ef767d1"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-6ba67858d5"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -85,6 +88,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -181,3 +187,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

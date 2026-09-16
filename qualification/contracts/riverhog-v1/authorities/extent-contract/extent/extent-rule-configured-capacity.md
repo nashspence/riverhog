@@ -14,12 +14,13 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-173098820a"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-715ac4a65c"></a>`authority` | "the source-linked operator configuration field" |
-| <a id="s-9fbe47966c"></a>`capacity_behavior` | "explicit-reject-defer-or-throttle" |
-| <a id="s-c550723871"></a>`policy` | "operational_policy" |
-| <a id="s-c0abbd1353"></a>`silent_truncation` | "forbidden" |
+| <a id="s-715ac4a65c"></a>`authority` | `"the source-linked operator configuration field"` |
+| <a id="s-9fbe47966c"></a>`capacity_behavior` | `"explicit-reject-defer-or-throttle"` |
+| <a id="s-c550723871"></a>`policy` | `"operational_policy"` |
+| <a id="s-c0abbd1353"></a>`silent_truncation` | `"forbidden"` |
 
 ## Governing policies
 
@@ -43,6 +44,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: d22ade33fd6b9425ca71fc8bcf777549db5a17856ba18d64838679ec8d004742 -->
@@ -55,3 +59,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "silent_truncation": "forbidden"
 }
 ```
+
+</details>

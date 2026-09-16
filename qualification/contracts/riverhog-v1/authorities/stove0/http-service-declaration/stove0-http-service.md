@@ -13,10 +13,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-| Subject | Shape |
+<a id="s-3c2909ec70"></a>
+
+| Field | Value |
 |---|---|
-| <a id="s-3c2909ec70"></a>`info` | additional keys=`version` |
-| <a id="s-0a3fa476e6"></a>`openapi` | "3.1.0" |
+| <a id="s-572009ad8a"></a>`info · title` | `"stove0"` |
+| <a id="s-c761e20736"></a>`info · version` | `"1"` |
+| <a id="s-0a3fa476e6"></a>`openapi` | `"3.1.0"` |
 
 ## Governing policies
 
@@ -41,6 +44,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 ### `/external_contract/http_openapi/stove0/info`
@@ -61,3 +67,5 @@ The following JSON is the complete value owned at each machine-authority pointer
 ```json
 "3.1.0"
 ```
+
+</details>

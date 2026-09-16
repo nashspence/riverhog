@@ -22,9 +22,9 @@ List Work
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-f757afb8e1"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-eb23c506e0"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
-| <a id="s-3c013fe019"></a>`phase` | query | no | not declared | anyOf=type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] \| type="null" |
-| <a id="s-5f521e9cb3"></a>`q` | query | no | not declared | anyOf=[BrowseQuery](../http-schemas/schemas-browsequery.md) \| type="null" |
+| <a id="s-eb23c506e0"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
+| <a id="s-3c013fe019"></a>`phase` | query | no | not declared | anyOf=(type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"]) \| (type="null") |
+| <a id="s-5f521e9cb3"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
 | <a id="s-24e7c1f77e"></a>`sort` | query | no | `"updated_at"` | type="string"; enum=["updated_at","phase","work_id"] |
 | <a id="s-781a235d35"></a>`order` | query | no | `"desc"` | type="string"; enum=["asc","desc"] |
 
@@ -156,6 +156,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/stove0/paths/~1v1~1work/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -352,3 +355,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

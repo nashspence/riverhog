@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1c0897aa29"></a>
-- <a id="s-7364b55735"></a>`title`: CatalogSyncDelete
-- <a id="s-121661ebff"></a>`type`: object
+
+- <a id="s-121661ebff"></a>`type`: `"object"`
+- <a id="s-e3aadff647"></a>`additionalProperties`: `false`
+- <a id="s-eced79cb93"></a>`required`: `["collection_id","revision"]`
+- <a id="s-7364b55735"></a>`title`: `"CatalogSyncDelete"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-ba3c39e6c8"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-ca1b3b01b0"></a>`operation` | no | type="string"; const="delete" |  |
-| <a id="s-8a05c66a42"></a>`revision` | yes | type="string"; minLength=1; maxLength=19; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+| <a id="s-ca1b3b01b0"></a>`operation` | no | type="string"; const="delete"; default="delete" |  |
+| <a id="s-8a05c66a42"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -64,6 +67,9 @@ Shared facts for every subject below: maximum=19; minimum=1; reason="schema-maxi
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 6f3fb51bea4d0b80c512399c325902293c78eb4ff2a0040187f78eff54653eb0 -->
@@ -97,3 +103,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

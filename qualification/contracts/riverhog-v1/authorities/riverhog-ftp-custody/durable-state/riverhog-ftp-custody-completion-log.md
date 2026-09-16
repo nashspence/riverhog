@@ -15,12 +15,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 <a id="s-b65835b959"></a>
 
-| Field | Shape |
+
+
+| Field | Value |
 |---|---|
-| <a id="s-7ffe049967"></a>`header` | "riverhog-ftp-completion-log/v1 <canonical-uuid>" |
-| <a id="s-8eb9c6fee5"></a>`id` | "completion-log" |
-| <a id="s-d12290b797"></a>`kind` | "append-only-json-sequence" |
-| <a id="s-343bf7cb65"></a>`record_schema` | type="object"; fields=`bytes`, `custody`, `device`, `event_id`, `format`, `inode`, `path`, `source_id`; additional keys=`additionalProperties`, `required` |
+| <a id="s-7ffe049967"></a>`header` | `"riverhog-ftp-completion-log/v1 <canonical-uuid>"` |
+| <a id="s-8eb9c6fee5"></a>`id` | `"completion-log"` |
+| <a id="s-d12290b797"></a>`kind` | `"append-only-json-sequence"` |
+
+### Record schema
+
+<a id="s-343bf7cb65"></a>
+
+- <a id="s-6a33552b85"></a>`type`: `"object"`
+- <a id="s-6d380fc0be"></a>`additionalProperties`: `false`
+- <a id="s-e40f88665e"></a>`required`: `["format","event_id","source_id","path","custody","bytes","device","inode"]`
+- <a id="s-9671c143a0"></a>`title`: `"CompletionRecordState"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4dd43b05e3"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-c397d4f500"></a>`custody` | yes | type="string"; minLength=1 |  |
+| <a id="s-c5c5a0d551"></a>`device` | yes | type="integer"; minimum=0 |  |
+| <a id="s-cd3d8c2278"></a>`event_id` | yes | type="string"; minLength=1 |  |
+| <a id="s-1123dbdc3b"></a>`format` | yes | type="string"; const="riverhog-ftp-completion-record/v1" |  |
+| <a id="s-0ac116f9e2"></a>`inode` | yes | type="integer"; minimum=0 |  |
+| <a id="s-57ea26efac"></a>`path` | yes | type="string"; minLength=1 |  |
+| <a id="s-4e1045d512"></a>`source_id` | yes | type="string"; minLength=1 |  |
 
 ## Maintained corroboration
 
@@ -49,6 +72,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/6/structure/units/1`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -118,3 +144,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

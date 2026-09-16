@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4f66667ef9"></a>
+
 | Index fact | Value |
 |---|---|
 | `columns` | `["initiated_by_app","idempotency_key"]` |
@@ -49,6 +50,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 69116ecb915317deb428a18b53a67e58072e7c309b1dca3ed36a675126f567fe -->
@@ -64,3 +68,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "table": "collection_uploads"
 }
 ```
+
+</details>

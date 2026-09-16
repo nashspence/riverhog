@@ -27,30 +27,73 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-f5ebeab6a0"></a>
-- <a id="s-1ffcb617c3"></a>`type`: object
 
-### Fields
+- <a id="s-1ffcb617c3"></a>`type`: `"object"`
+- <a id="s-f0596f3688"></a>`additionalProperties`: `false`
+- <a id="s-3eb0f65bd6"></a>`required`: `["job_id","plan_sha256","outputs","disposition_count","disposition_sha256","source_edge_count","source_edge_sha256","riverhog_disposition_set","production_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-f92593ed06"></a>`disposition_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-68ce05550c"></a>`disposition_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1e4d7d8e91"></a>`format` | no | type="string"; const="stove0-target-production/v1" |  |
+| <a id="s-1e4d7d8e91"></a>`format` | no | type="string"; const="stove0-target-production/v1"; default="stove0-target-production/v1" |  |
 | <a id="s-396e979e8a"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-0498c0b75a"></a>`outputs` | yes | #/$defs/OutputArtifactSetIdentity |  |
+| <a id="s-0498c0b75a"></a>`outputs` | yes | [OutputArtifactSetIdentity](#s-e500020a28) |  |
 | <a id="s-b044cb5bfe"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-1537270c7d"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-79a13546f8"></a>`riverhog_disposition_set` | yes | #/$defs/ArtifactDispositionSetIdentity |  |
+| <a id="s-79a13546f8"></a>`riverhog_disposition_set` | yes | [ArtifactDispositionSetIdentity](#s-d6279287da) |  |
 | <a id="s-6572928216"></a>`source_edge_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-a963d7e7ac"></a>`source_edge_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-d6279287da"></a>`ArtifactDispositionSetIdentity` | type="object"; fields=`disposition_count`, `output_artifact_count`, `output_edge_count`, `sha256`; additional keys=`required` |
-| <a id="s-7fea261e65"></a>`OutputArtifactRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e500020a28"></a>`OutputArtifactSetIdentity` | type="object"; fields=`artifact_count`, `roles`, `sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
+- [ArtifactDispositionSetIdentity](#s-d6279287da)
+- [OutputArtifactRoleCount](#s-7fea261e65)
+- [OutputArtifactSetIdentity](#s-e500020a28)
+
+##### <a id="s-d6279287da"></a>definition `ArtifactDispositionSetIdentity`
+
+- <a id="s-040d039ee7"></a>`type`: `"object"`
+- <a id="s-204272dc5e"></a>`required`: `["disposition_count","output_edge_count","output_artifact_count","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-1922295718"></a>`disposition_count` | yes | type="integer" |  |
+| <a id="s-889aba54be"></a>`output_artifact_count` | yes | type="integer" |  |
+| <a id="s-144223f8d8"></a>`output_edge_count` | yes | type="integer" |  |
+| <a id="s-25b2b89886"></a>`sha256` | yes | type="string" |  |
+
+##### <a id="s-7fea261e65"></a>definition `OutputArtifactRoleCount`
+
+- <a id="s-c647c1855d"></a>`type`: `"object"`
+- <a id="s-5bb8a0e0ec"></a>`additionalProperties`: `false`
+- <a id="s-ab88c08807"></a>`required`: `["role","count"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4287a22c4b"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-72602c21d7"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+
+##### <a id="s-e500020a28"></a>definition `OutputArtifactSetIdentity`
+
+- <a id="s-870f1b4a08"></a>`type`: `"object"`
+- <a id="s-9801f29d6b"></a>`additionalProperties`: `false`
+- <a id="s-bf6c2dc948"></a>`required`: `["artifact_count","total_bytes","roles","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a257bde9d6"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-296156a472"></a>`roles` | yes | type="array"; items=([OutputArtifactRoleCount](#s-7fea261e65)); minItems=1 |  |
+| <a id="s-2c5bb14fab"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-64a5feb387"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
 
 ## Maintained corroboration
 
@@ -80,6 +123,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_protocol.TargetProductionAuthority`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -227,3 +273,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

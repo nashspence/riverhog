@@ -14,9 +14,13 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-73d5738dc1"></a>
-- <a id="s-8d35beac79"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/observation-policy.json
-- <a id="s-bc53812e0c"></a>`title`: Riverhog provenance observer capture policy
-- <a id="s-e6dc5b0285"></a>`type`: object
+
+- <a id="s-e6dc5b0285"></a>`type`: `"object"`
+- <a id="s-8d35beac79"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/observation-policy.json"`
+- <a id="s-b74ccd9dab"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-348ca82880"></a>`additionalProperties`: `false`
+- <a id="s-2f1d06f3aa"></a>`required`: `["strict_consistency","attempt_noatime","verify_path_binding","second_content_hash","hash_chunk_bytes","inline_native_value_bytes","maximum_native_value_bytes","large_value_disposition","capture_xattrs","capture_acl","capture_file_flags","capture_sparse_map","capture_special_features","capture_native_stat","resolve_principals","include_access_time","include_hostname","include_effective_principal","maximum_sparse_extents","resource_fork_chunk_bytes","native_stream_chunk_bytes","maximum_native_streams","capture_system_acl","windows_allow_shared_write","windows_allow_shared_delete","windows_follow_non_name_surrogate_reparse_points","windows_capture_usn","windows_capture_object_id"]`
+- <a id="s-bc53812e0c"></a>`title`: `"Riverhog provenance observer capture policy"`
 
 ### Fields
 
@@ -87,6 +91,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1observation-policy.json`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -228,3 +235,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

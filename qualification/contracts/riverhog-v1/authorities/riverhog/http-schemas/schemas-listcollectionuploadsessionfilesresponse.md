@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bb7532ef67"></a>
-- <a id="s-2b167517c9"></a>`title`: ListCollectionUploadSessionFilesResponse
-- <a id="s-266f4242ee"></a>`type`: object
+
+- <a id="s-266f4242ee"></a>`type`: `"object"`
+- <a id="s-229e3ee5ea"></a>`additionalProperties`: `false`
+- <a id="s-c896b7d9b9"></a>`required`: `["collection_id","page_size","next_page_token","files"]`
+- <a id="s-2b167517c9"></a>`title`: `"ListCollectionUploadSessionFilesResponse"`
 
 ### Fields
 
@@ -23,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-92b5d4df83"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
 | <a id="s-b0788847ab"></a>`files` | yes | type="array"; items=(#/components/schemas/CollectionUploadFileOut) |  |
-| <a id="s-13e8266f55"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-13e8266f55"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-5d2c3734cd"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
 
 ### Progression, limits, and lifecycle
@@ -82,6 +85,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: e89541d5cbf7f7a0a8e2feaa403f3c83357fdb6beabcc85d398d7d7c90eeb2df -->
@@ -127,3 +133,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

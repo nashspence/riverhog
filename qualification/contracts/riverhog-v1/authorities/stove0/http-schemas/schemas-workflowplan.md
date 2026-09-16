@@ -14,22 +14,25 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5da2fc6710"></a>
-- <a id="s-d1846f1c20"></a>`title`: WorkflowPlan
-- <a id="s-c51e7ceed0"></a>`type`: object
+
+- <a id="s-c51e7ceed0"></a>`type`: `"object"`
+- <a id="s-26ff74a165"></a>`additionalProperties`: `false`
+- <a id="s-c34ef6a5be"></a>`required`: `["work","operation","target_registration_id","target_contract_sha256","workflow_plan_sha256"]`
+- <a id="s-d1846f1c20"></a>`title`: `"WorkflowPlan"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6b03446110"></a>`format` | no | type="string"; const="stove0-workflow-plan/v1" |  |
-| <a id="s-6ad1a7b068"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
-| <a id="s-6ef6cec03d"></a>`observations` | no | type="array"; items=(#/components/schemas/ObservationEvidence) |  |
+| <a id="s-6b03446110"></a>`format` | no | type="string"; const="stove0-workflow-plan/v1"; default="stove0-workflow-plan/v1" |  |
+| <a id="s-6ad1a7b068"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-6ef6cec03d"></a>`observations` | no | type="array"; default=[]; items=(#/components/schemas/ObservationEvidence) |  |
 | <a id="s-5cabb9dd3b"></a>`operation` | yes | #/components/schemas/OperationRef |  |
-| <a id="s-bf4f29710f"></a>`output_policy` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-a5d912ee09"></a>`requested_target_options` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-f570ec6b98"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"] |  |
-| <a id="s-dd4a7b6bed"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0 |  |
-| <a id="s-d77e807897"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"] |  |
+| <a id="s-bf4f29710f"></a>`output_policy` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-a5d912ee09"></a>`requested_target_options` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-f570ec6b98"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
+| <a id="s-dd4a7b6bed"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-d77e807897"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
 | <a id="s-d12146eea6"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-8e91339dcf"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
 | <a id="s-28aa8c8fac"></a>`work` | yes | #/components/schemas/WorkIdentity |  |
@@ -88,6 +91,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -191,3 +197,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

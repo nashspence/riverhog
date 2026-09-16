@@ -14,16 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9454377b33"></a>
-- Table: `settings`
 
-### Columns
+### Table: `settings`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
 | <a id="s-f6e4339d0d"></a>`key` | `TEXT` | no | `—` | — |
 | <a id="s-87f15fe289"></a>`value` | `TEXT` | no | `—` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -57,6 +58,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 40f8d1fe005839fcbeef6920cb00f89f62e6dd5f313448ed8f4b4d7e04e1dca2 -->
@@ -89,3 +93,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "settings"
 }
 ```
+
+</details>

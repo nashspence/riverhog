@@ -14,23 +14,26 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5d4f1f1b92"></a>
-- <a id="s-dab0766067"></a>`title`: RecipeDefinition
-- <a id="s-43a28d388e"></a>`type`: object
+
+- <a id="s-43a28d388e"></a>`type`: `"object"`
+- <a id="s-a1a4bf0364"></a>`additionalProperties`: `false`
+- <a id="s-f8a8855661"></a>`required`: `["id","revision","routes","unmatched_artifact_disposition"]`
+- <a id="s-dab0766067"></a>`title`: `"RecipeDefinition"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f105baa7b8"></a>`allow_derived_inputs` | no | type="boolean" |  |
-| <a id="s-d591b26ad6"></a>`artifact_associations` | no | type="array"; items=(#/components/schemas/ArtifactAssociation) |  |
-| <a id="s-57bdc94a63"></a>`event_input_closure` | no | type="string"; const="single-finalized-collection" |  |
+| <a id="s-f105baa7b8"></a>`allow_derived_inputs` | no | type="boolean"; default=false |  |
+| <a id="s-d591b26ad6"></a>`artifact_associations` | no | type="array"; default=[]; items=(#/components/schemas/ArtifactAssociation) |  |
+| <a id="s-57bdc94a63"></a>`event_input_closure` | no | type="string"; const="single-finalized-collection"; default="single-finalized-collection" |  |
 | <a id="s-f2fcf3466b"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-2211dbf2b8"></a>`join` | no | anyOf=#/components/schemas/RecipeJoin \| type="null" |  |
-| <a id="s-095b4c1e00"></a>`observers` | no | type="array"; items=(#/components/schemas/ObserverUse) |  |
-| <a id="s-ef8d6c456f"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0 |  |
+| <a id="s-2211dbf2b8"></a>`join` | no | anyOf=(#/components/schemas/RecipeJoin) \| (type="null") |  |
+| <a id="s-095b4c1e00"></a>`observers` | no | type="array"; default=[]; items=(#/components/schemas/ObserverUse) |  |
+| <a id="s-ef8d6c456f"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
 | <a id="s-8ae96a9025"></a>`revision` | yes | type="integer"; minimum=1 |  |
-| <a id="s-823b3b9b9f"></a>`routes` | yes | type="array"; minItems=1; items=(oneOf=#/components/schemas/RecipeRoute \| #/components/schemas/RecipeCoordinationRoute; additional keys=`discriminator`) |  |
-| <a id="s-f280110403"></a>`source_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"] |  |
+| <a id="s-823b3b9b9f"></a>`routes` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"#/components/schemas/RecipeCoordinationRoute","operation":"#/components/schemas/RecipeRoute"},"propertyName":"kind"}; oneOf=(#/components/schemas/RecipeRoute) \| (#/components/schemas/RecipeCoordinationRoute)); minItems=1 |  |
+| <a id="s-f280110403"></a>`source_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
 | <a id="s-28b7accac5"></a>`unmatched_artifact_disposition` | yes | type="string"; enum=["retain-in-source","reject-work"] |  |
 
 ### Progression, limits, and lifecycle
@@ -77,6 +80,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -189,3 +195,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

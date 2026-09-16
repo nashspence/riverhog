@@ -14,18 +14,21 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-760a5c5306"></a>
-- <a id="s-bc26bbec89"></a>`title`: TargetJobDeclaration
-- <a id="s-bf09248a14"></a>`type`: object
+
+- <a id="s-bf09248a14"></a>`type`: `"object"`
+- <a id="s-57a41e0e2a"></a>`additionalProperties`: `false`
+- <a id="s-de75b6bdaf"></a>`required`: `["job_id","claim_id","fence","controller_evidence","plan","workspace_assurance"]`
+- <a id="s-bc26bbec89"></a>`title`: `"TargetJobDeclaration"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6237b2a272"></a>`claim_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-6237b2a272"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-06c9d16d27"></a>`controller_evidence` | yes | #/components/schemas/ControllerEvidence |  |
 | <a id="s-8d3f7e4ac2"></a>`fence` | yes | type="integer"; minimum=1 |  |
 | <a id="s-6d4cfafa98"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-4db92bdd23"></a>`plan` | yes | oneOf=#/components/schemas/TransformPlan \| #/components/schemas/EffectPlan; additional keys=`discriminator` |  |
+| <a id="s-4db92bdd23"></a>`plan` | yes | discriminator={"mapping":{"stove0-effect-target/v1":"#/components/schemas/EffectPlan","stove0-transform-target/v1":"#/components/schemas/TransformPlan"},"propertyName":"protocol"}; oneOf=(#/components/schemas/TransformPlan) \| (#/components/schemas/EffectPlan) |  |
 | <a id="s-c03dc9589f"></a>`workspace_assurance` | yes | type="string"; enum=["encrypted","ephemeral"] |  |
 
 ### Progression, limits, and lifecycle
@@ -67,6 +70,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/stove0/components/schemas/TargetJobDeclaration`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -134,3 +140,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

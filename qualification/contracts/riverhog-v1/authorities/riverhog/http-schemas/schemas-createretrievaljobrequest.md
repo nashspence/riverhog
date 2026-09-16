@@ -14,14 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2ae82e7b3a"></a>
-- <a id="s-8c6846117d"></a>`title`: CreateRetrievalJobRequest
-- <a id="s-127793fd4d"></a>`type`: object
+
+- <a id="s-127793fd4d"></a>`type`: `"object"`
+- <a id="s-d73f722c07"></a>`additionalProperties`: `false`
+- <a id="s-91cb295276"></a>`required`: `["plan_id"]`
+- <a id="s-8c6846117d"></a>`title`: `"CreateRetrievalJobRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7437f6cbd1"></a>`event_context` | no | anyOf=type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` \| type="null" |  |
+| <a id="s-7437f6cbd1"></a>`event_context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null") |  |
 | <a id="s-56cc2e0453"></a>`plan_id` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
@@ -66,6 +69,9 @@ Shared facts for every subject below: maximum=4096; reason="bounded-lifecycle-ev
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: a8be23595a98af525a48d70ccd78c62c429aef2a8b7e0676da7c4ab1a2ddca0b -->
@@ -103,3 +109,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

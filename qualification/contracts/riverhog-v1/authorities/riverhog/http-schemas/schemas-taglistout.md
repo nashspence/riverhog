@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-61dc891bb3"></a>
-- <a id="s-7c571f014d"></a>`title`: TagListOut
-- <a id="s-c9efef49ec"></a>`type`: object
+
+- <a id="s-c9efef49ec"></a>`type`: `"object"`
+- <a id="s-1033e02832"></a>`additionalProperties`: `false`
+- <a id="s-78c1ca2af6"></a>`required`: `["page_size","next_page_token","query","tags"]`
+- <a id="s-7c571f014d"></a>`title`: `"TagListOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a9ccb39ced"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-a9ccb39ced"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-c4cd924e40"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-25d39cd861"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-25d39cd861"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-6c97d02861"></a>`tags` | yes | type="array"; items=(#/components/schemas/TagSummaryOut) |  |
 
 ### Progression, limits, and lifecycle
@@ -81,6 +84,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 939d1f07d67acf99140fd82462c289bbe3473988518f11d27aee4746fa9e9c43 -->
@@ -134,3 +140,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

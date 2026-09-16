@@ -27,19 +27,33 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-f734e423ba"></a>
-- <a id="s-6cdd10672d"></a>`type`: object
 
-### Fields
+- <a id="s-6cdd10672d"></a>`type`: `"object"`
+- <a id="s-d8299ccc89"></a>`additionalProperties`: `false`
+- <a id="s-dfbda94e5c"></a>`required`: `["objects"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-17287bf84c"></a>`objects` | yes | type="array"; minItems=1; items=(#/$defs/ObjectLocator) |  |
+| <a id="s-17287bf84c"></a>`objects` | yes | type="array"; items=([ObjectLocator](#s-e6685bce6c)); minItems=1 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-e6685bce6c"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
+- [ObjectLocator](#s-e6685bce6c)
+
+##### <a id="s-e6685bce6c"></a>definition `ObjectLocator`
+
+- <a id="s-50c128fa53"></a>`type`: `"object"`
+- <a id="s-3c3699580f"></a>`additionalProperties`: `false`
+- <a id="s-e63bb9f186"></a>`required`: `["object_path"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c517db2ff3"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-b0aa2766b7"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
 
 ## Maintained corroboration
 
@@ -68,6 +82,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.ReadPreparationRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -130,3 +147,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

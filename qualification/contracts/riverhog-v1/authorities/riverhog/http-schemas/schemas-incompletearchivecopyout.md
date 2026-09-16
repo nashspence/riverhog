@@ -14,20 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f610daf7ae"></a>
-- <a id="s-510f8e5de4"></a>`title`: IncompleteArchiveCopyOut
-- <a id="s-b5c898e071"></a>`type`: object
+
+- <a id="s-b5c898e071"></a>`type`: `"object"`
+- <a id="s-6fa117b206"></a>`additionalProperties`: `false`
+- <a id="s-b98a550363"></a>`required`: `["store","storage_prefix","object_count","stored_bytes","last_uploaded_at","last_verified_at","archive_root","state","failure"]`
+- <a id="s-510f8e5de4"></a>`title`: `"IncompleteArchiveCopyOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-465b66cfb2"></a>`archive_root` | yes | anyOf=#/components/schemas/PendingArchiveRootPublicationOut \| #/components/schemas/UploadedArchiveRootPublicationOut |  |
+| <a id="s-465b66cfb2"></a>`archive_root` | yes | anyOf=(#/components/schemas/PendingArchiveRootPublicationOut) \| (#/components/schemas/UploadedArchiveRootPublicationOut) |  |
 | <a id="s-461f9bfdc3"></a>`failure` | yes | type="null" |  |
-| <a id="s-91c7e1fec3"></a>`last_uploaded_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-21e4a90300"></a>`last_verified_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-91c7e1fec3"></a>`last_uploaded_at` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-21e4a90300"></a>`last_verified_at` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-c956ecabd4"></a>`object_count` | yes | type="integer"; minimum=0 |  |
 | <a id="s-126da85264"></a>`state` | yes | type="string"; enum=["pending","uploading","retrying"] |  |
-| <a id="s-2c41fde9f8"></a>`storage_prefix` | yes | anyOf=type="string"; minLength=1 \| type="null" |  |
+| <a id="s-2c41fde9f8"></a>`storage_prefix` | yes | anyOf=(type="string"; minLength=1) \| (type="null") |  |
 | <a id="s-624ee4c956"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
 | <a id="s-2e70f18438"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
 
@@ -60,6 +63,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/IncompleteArchiveCopyOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -156,3 +162,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

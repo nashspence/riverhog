@@ -14,21 +14,24 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6f7e6eda6d"></a>
-- <a id="s-450662ebf5"></a>`title`: AdmissionPolicyStatus
-- <a id="s-5d10ddd2ec"></a>`type`: object
+
+- <a id="s-5d10ddd2ec"></a>`type`: `"object"`
+- <a id="s-ed97910e07"></a>`additionalProperties`: `false`
+- <a id="s-ca6bf7a882"></a>`required`: `["policy","policy_sha256","phase","baseline_mode","through_revision","updated_at"]`
+- <a id="s-450662ebf5"></a>`title`: `"AdmissionPolicyStatus"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7abab665da"></a>`authorization_view_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-7abab665da"></a>`authorization_view_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 | <a id="s-90608235c3"></a>`baseline_mode` | yes | type="string"; enum=["observe","backfill"] |  |
 | <a id="s-9fbfaae5b4"></a>`phase` | yes | type="string"; enum=["new","baseline","following","reset_required"] |  |
 | <a id="s-320c09e9e8"></a>`policy` | yes | #/components/schemas/AdmissionPolicy |  |
 | <a id="s-bc8436892e"></a>`policy_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-8a42f28aef"></a>`source_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-8a42f28aef"></a>`source_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 | <a id="s-81ea7bf804"></a>`through_revision` | yes | type="string"; pattern="^(?:0\|[1-9][0-9]*)$" |  |
-| <a id="s-ded9b01a7b"></a>`updated_at` | yes | type="string"; minLength=1; maxLength=40 |  |
+| <a id="s-ded9b01a7b"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -69,6 +72,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -152,3 +158,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

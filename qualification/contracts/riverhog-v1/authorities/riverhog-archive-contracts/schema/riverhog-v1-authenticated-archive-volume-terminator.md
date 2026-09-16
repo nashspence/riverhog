@@ -14,25 +14,33 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ff6135e233"></a>
-- <a id="s-edab20a12b"></a>`$id`: https://nashspence.github.io/riverhog/v1/schemas/collection-archive-terminal-v1.schema.json
-- <a id="s-c5d4fb8739"></a>`title`: Riverhog v1 authenticated archive-volume terminator
-- <a id="s-1c6f4770a5"></a>`type`: object
+
+- <a id="s-1c6f4770a5"></a>`type`: `"object"`
+- <a id="s-531b070066"></a>`$comment`: `"This schema is the structural projection. riverhog_archive_contracts.CollectionArchiveTerminalDocument is the canonical semantic, identity, and canonical-JSON authority."`
+- <a id="s-edab20a12b"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/schemas/collection-archive-terminal-v1.schema.json"`
+- <a id="s-93bda210a2"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-b2fe1e65e6"></a>`additionalProperties`: `false`
+- <a id="s-71849fbcf8"></a>`required`: `["schema","archive_generation","archive_tree_sha256","sequence","kind"]`
+- <a id="s-c5d4fb8739"></a>`title`: `"Riverhog v1 authenticated archive-volume terminator"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0cad81e76e"></a>`archive_generation` | yes | #/$defs/sha256 |  |
-| <a id="s-6108f7d82d"></a>`archive_tree_sha256` | yes | #/$defs/sha256 |  |
+| <a id="s-0cad81e76e"></a>`archive_generation` | yes | [sha256](#s-58fcc75c8a) |  |
+| <a id="s-6108f7d82d"></a>`archive_tree_sha256` | yes | [sha256](#s-58fcc75c8a) |  |
 | <a id="s-814acfeac2"></a>`kind` | yes | const="terminal" |  |
 | <a id="s-7a9a2071e4"></a>`schema` | yes | const="collection-archive-terminal/v1" |  |
-| <a id="s-c9a5588471"></a>`sequence` | yes | type="string"; pattern="^[0-9a-f]{64}$"; additional keys=`not` |  |
+| <a id="s-c9a5588471"></a>`sequence` | yes | type="string"; not=(const="0000000000000000000000000000000000000000000000000000000000000000"); pattern="^[0-9a-f]{64}$" |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-58fcc75c8a"></a>`sha256` | type="string"; pattern="^[0-9a-f]{64}$" |
+- [sha256](#s-58fcc75c8a)
+
+### <a id="s-58fcc75c8a"></a>definition `sha256`
+
+- <a id="s-01d9b5e600"></a>`type`: `"string"`
+- <a id="s-4c2ea1cd7d"></a>`pattern`: `"^[0-9a-f]{64}$"`
 
 ### Progression, limits, and lifecycle
 
@@ -67,6 +75,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-terminal-v1.schema.json`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -116,3 +127,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

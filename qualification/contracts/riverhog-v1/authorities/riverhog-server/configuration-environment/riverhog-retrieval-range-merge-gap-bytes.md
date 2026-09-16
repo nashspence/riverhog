@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-205dff964b"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-668719968c"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-c78f34962b"></a>`default_expressions` | ["unset"] |
-| <a id="s-8a0133ded5"></a>`id` | "riverhog-server:environment:RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES" |
-| <a id="s-aa83bf285f"></a>`input_shape` | "environment-string" |
-| <a id="s-663968b1c7"></a>`name` | "RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES" |
-| <a id="s-d6a05173f7"></a>`owner` | "riverhog-server" |
+| <a id="s-668719968c"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-c78f34962b"></a>`default_expressions` | `["unset"]` |
+| <a id="s-8a0133ded5"></a>`id` | `"riverhog-server:environment:RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES"` |
+| <a id="s-aa83bf285f"></a>`input_shape` | `"environment-string"` |
+| <a id="s-663968b1c7"></a>`name` | `"RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES"` |
+| <a id="s-d6a05173f7"></a>`owner` | `"riverhog-server"` |
 
 ### Progression, limits, and lifecycle
 
@@ -64,6 +65,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 92cc1129724964339d878b0c21357d2efbebb7f8259c9d78b10f19bc340df17b -->
@@ -82,3 +86,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "riverhog-server"
 }
 ```
+
+</details>

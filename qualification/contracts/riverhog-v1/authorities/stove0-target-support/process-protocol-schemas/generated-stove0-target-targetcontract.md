@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f55c3c2305"></a>
-- <a id="s-a9f5e1dd71"></a>`title`: TargetContract
-- <a id="s-7cc62d6baf"></a>`type`: object
+
+- <a id="s-7cc62d6baf"></a>`type`: `"object"`
+- <a id="s-fe5042e887"></a>`additionalProperties`: `false`
+- <a id="s-6cbf1e578a"></a>`required`: `["implementation_id","implementation_version","source_revision","image_digest","operations","contract_sha256"]`
+- <a id="s-a9f5e1dd71"></a>`title`: `"TargetContract"`
 
 ### Fields
 
@@ -24,19 +27,54 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-ce89526554"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-3d5d4b0d05"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-7cea71058d"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-701a84b78a"></a>`implementation_version` | yes | type="string"; minLength=1; maxLength=120 |  |
-| <a id="s-2211625ddb"></a>`operations` | yes | type="array"; minItems=1; items=(#/$defs/TargetOperationSupport) |  |
-| <a id="s-cbff81d92c"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"] |  |
-| <a id="s-a7e1a14aeb"></a>`source_revision` | yes | type="string"; minLength=1; maxLength=200 |  |
-| <a id="s-6431073394"></a>`transport` | no | type="string"; const="riverhog-capability/v1" |  |
+| <a id="s-701a84b78a"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1 |  |
+| <a id="s-2211625ddb"></a>`operations` | yes | type="array"; items=([TargetOperationSupport](#s-daec20e2d6)); minItems=1 |  |
+| <a id="s-cbff81d92c"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1" |  |
+| <a id="s-a7e1a14aeb"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
+| <a id="s-6431073394"></a>`transport` | no | type="string"; const="riverhog-capability/v1"; default="riverhog-capability/v1" |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-aeffe3dc52"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-b290de24fa"></a>`JsonValue` | empty object |
-| <a id="s-daec20e2d6"></a>`TargetOperationSupport` | type="object"; fields=`operation_contract_sha256`, `operation_id`, `options_schema`, `result_kind`; additional keys=`additionalProperties`, `required` |
+- [JsonSchemaDocument](#s-aeffe3dc52)
+- [JsonValue](#s-b290de24fa)
+- [TargetOperationSupport](#s-daec20e2d6)
+
+### <a id="s-aeffe3dc52"></a>definition `JsonSchemaDocument`
+
+- <a id="s-4290471eb7"></a>`type`: `"object"`
+- <a id="s-f4f951a6a0"></a>`additionalProperties`: `false`
+- <a id="s-eaad855815"></a>`required`: `["id","sha256","schema"]`
+- <a id="s-350da25a62"></a>`title`: `"JsonSchemaDocument"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-72fca6c6ad"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-1fefb47f65"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-33752d8cc4"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-a330577b00"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-b290de24fa)) |  |
+| <a id="s-07d784ffcc"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### <a id="s-b290de24fa"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+### <a id="s-daec20e2d6"></a>definition `TargetOperationSupport`
+
+- <a id="s-1019490372"></a>`type`: `"object"`
+- <a id="s-9cb805cf4a"></a>`additionalProperties`: `false`
+- <a id="s-cfe59ac913"></a>`required`: `["operation_id","operation_contract_sha256","options_schema"]`
+- <a id="s-6601143406"></a>`title`: `"TargetOperationSupport"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-454f466e2c"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-4e03a2273e"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-ad9f4c1e3f"></a>`options_schema` | yes | [JsonSchemaDocument](#s-aeffe3dc52) |  |
+| <a id="s-f6ae357d74"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -86,6 +124,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetContract`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -236,3 +277,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

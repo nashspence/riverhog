@@ -110,6 +110,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: fd8022168ec6cf2ef70de7af26319d173e589ad80262dc4e8b61c2044ae714f7 -->
@@ -218,3 +221,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "x-riverhog-interface": "client-only-primitive"
 }
 ```
+
+</details>

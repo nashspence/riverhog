@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8f9926b885"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-9172f4f7f0"></a>`consumers` | ["piggity"] |
-| <a id="s-0f0e40311d"></a>`default_expressions` | ["unset"] |
-| <a id="s-4e688baa7f"></a>`id` | "piggity:environment:TERM" |
-| <a id="s-25ca4126b5"></a>`input_shape` | "environment-string" |
-| <a id="s-1fd2f143d5"></a>`name` | "TERM" |
-| <a id="s-42b278dcfa"></a>`owner` | "piggity" |
+| <a id="s-9172f4f7f0"></a>`consumers` | `["piggity"]` |
+| <a id="s-0f0e40311d"></a>`default_expressions` | `["unset"]` |
+| <a id="s-4e688baa7f"></a>`id` | `"piggity:environment:TERM"` |
+| <a id="s-25ca4126b5"></a>`input_shape` | `"environment-string"` |
+| <a id="s-1fd2f143d5"></a>`name` | `"TERM"` |
+| <a id="s-42b278dcfa"></a>`owner` | `"piggity"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: c0dff8b8cea82475d08ec6752f37663035dc1cd5272b5d094a4c341dfcb5185a -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "piggity"
 }
 ```
+
+</details>

@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b7d5d741d5"></a>
-- <a id="s-04be4a51f2"></a>`title`: SchedulerFailure
-- <a id="s-6e8c04af5b"></a>`type`: object
+
+- <a id="s-6e8c04af5b"></a>`type`: `"object"`
+- <a id="s-720455cfed"></a>`additionalProperties`: `false`
+- <a id="s-4c683d2236"></a>`required`: `["error"]`
+- <a id="s-04be4a51f2"></a>`title`: `"SchedulerFailure"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e5c1cf746f"></a>`error` | yes | type="string"; minLength=1; maxLength=1000 |  |
-| <a id="s-4d3a6ac855"></a>`event_id` | no | anyOf=type="string" \| type="null" |  |
-| <a id="s-6d2bcc8b25"></a>`work_id` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-e5c1cf746f"></a>`error` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-4d3a6ac855"></a>`event_id` | no | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-6d2bcc8b25"></a>`work_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -56,6 +59,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -102,3 +108,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

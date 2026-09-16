@@ -27,38 +27,326 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-7eab2c5d80"></a>
-- <a id="s-b6f14aa630"></a>`type`: object
 
-### Fields
+- <a id="s-b6f14aa630"></a>`type`: `"object"`
+- <a id="s-1aa54382f6"></a>`additionalProperties`: `false`
+- <a id="s-72495cd0d1"></a>`required`: `["operations","recipes"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4c73cd4611"></a>`format` | no | type="string"; const="stove0-recipes/v1" |  |
-| <a id="s-e8c4db3c48"></a>`operations` | yes | type="array"; items=(#/$defs/OperationContract) |  |
-| <a id="s-d2dd1a7761"></a>`recipes` | yes | type="array"; items=(#/$defs/RecipeDefinition) |  |
+| <a id="s-4c73cd4611"></a>`format` | no | type="string"; const="stove0-recipes/v1"; default="stove0-recipes/v1" |  |
+| <a id="s-e8c4db3c48"></a>`operations` | yes | type="array"; items=([OperationContract](#s-42d3f33c91)) |  |
+| <a id="s-d2dd1a7761"></a>`recipes` | yes | type="array"; items=([RecipeDefinition](#s-d7a456910c)) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-4ea94d6958"></a>`ArtifactAssociation` | type="object"; fields=`associated_roles`, `path_identity`, `primary_role`; additional keys=`additionalProperties`, `required` |
-| <a id="s-f35ed8e977"></a>`ArtifactFactBinding` | type="object"; fields=`artifact_id_pointer`, `records_pointer`; additional keys=`additionalProperties`, `required` |
-| <a id="s-321bcd0181"></a>`ArtifactRule` | type="object"; fields=`glob`, `media_type`, `role`; additional keys=`additionalProperties` |
-| <a id="s-faa5d4d6cc"></a>`FactPredicate` | type="object"; fields=`artifact_facts`, `artifact_roles`, `observation_contract_id`, `operator`, `pointer`, `value`; additional keys=`additionalProperties`, `required` |
-| <a id="s-893e7a1885"></a>`InputArtifactContract` | type="object"; fields=`allowed_dispositions`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
-| <a id="s-0b52936ac5"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-655fdbe95a"></a>`JsonValue` | empty object |
-| <a id="s-ead92c6441"></a>`ObserverUse` | type="object"; fields=`artifact_rules`, `contract_id`, `contract_sha256`, `maximum_result_bytes`, `options`, `registration_id`, `retrieval_policy`, `timeout_seconds`; additional keys=`additionalProperties`, `required` |
-| <a id="s-42d3f33c91"></a>`OperationContract` | type="object"; fields=`contract_sha256`, `effect_receipt_schema`, `id`, `inputs`, `intent_schema`, `intent_semantics`, `outputs`, `result_kind`, `source_retirement_permitted`; additional keys=`additionalProperties`, `required` |
-| <a id="s-bd29d8e8f0"></a>`OperationProjection` | type="object"; fields=`destination`, `destination_pointer`, `source`, `source_pointer`; additional keys=`additionalProperties`, `required` |
-| <a id="s-4ebe2c544b"></a>`OutputArtifactContract` | type="object"; fields=`derived_from_roles`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
-| <a id="s-0e7e1d3689"></a>`RecipeCoordinationRoute` | type="object"; fields=`artifact_rules`, `associated_roles`, `id`, `intent`, `kind`, `primary_role`, `projections`, `recipe`, `when`; additional keys=`additionalProperties`, `required` |
-| <a id="s-d7a456910c"></a>`RecipeDefinition` | type="object"; fields=`allow_derived_inputs`, `artifact_associations`, `event_input_closure`, `id`, `join`, `observers`, `retirement_grace_seconds`, `revision`, `routes`, `source_retirement_policy`, `unmatched_artifact_disposition`; additional keys=`additionalProperties`, `required` |
-| <a id="s-ffedb1726b"></a>`RecipeJoin` | type="object"; fields=`id`, `input_retrieval_policy`, `intent`, `members`, `operation_id`, `projections`, `target_options`, `target_registration_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-33c0aa00c7"></a>`RecipeJoinMember` | type="object"; fields=`branch_id`, `output_roles`; additional keys=`additionalProperties`, `required` |
-| <a id="s-968cd63522"></a>`RecipeRef` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e0a2848845"></a>`RecipeRoute` | type="object"; fields=`artifact_rules`, `associated_roles`, `id`, `input_retrieval_policy`, `intent`, `kind`, `operation_id`, `primary_role`, `projections`, `target_options`, `target_registration_id`, `when`; additional keys=`additionalProperties`, `required` |
-| <a id="s-467a54d056"></a>`SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
+- [ArtifactAssociation](#s-4ea94d6958)
+- [ArtifactFactBinding](#s-f35ed8e977)
+- [ArtifactRule](#s-321bcd0181)
+- [FactPredicate](#s-faa5d4d6cc)
+- [InputArtifactContract](#s-893e7a1885)
+- [JsonSchemaDocument](#s-0b52936ac5)
+- [JsonValue](#s-655fdbe95a)
+- [ObserverUse](#s-ead92c6441)
+- [OperationContract](#s-42d3f33c91)
+- [OperationProjection](#s-bd29d8e8f0)
+- [OutputArtifactContract](#s-4ebe2c544b)
+- [RecipeCoordinationRoute](#s-0e7e1d3689)
+- [RecipeDefinition](#s-d7a456910c)
+- [RecipeJoin](#s-ffedb1726b)
+- [RecipeJoinMember](#s-33c0aa00c7)
+- [RecipeRef](#s-968cd63522)
+- [RecipeRoute](#s-e0a2848845)
+- [SemanticValidationProfile](#s-467a54d056)
+
+##### <a id="s-4ea94d6958"></a>definition `ArtifactAssociation`
+
+- <a id="s-1c496a2b54"></a>`type`: `"object"`
+- <a id="s-2a480b162d"></a>`additionalProperties`: `false`
+- <a id="s-032b536606"></a>`required`: `["primary_role","associated_roles"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2a54a855b3"></a>`associated_roles` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
+| <a id="s-52d9e08419"></a>`path_identity` | no | type="string"; const="same-parent-stem"; default="same-parent-stem" |  |
+| <a id="s-f8820f7653"></a>`primary_role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+
+##### <a id="s-f35ed8e977"></a>definition `ArtifactFactBinding`
+
+- <a id="s-05de6157c8"></a>`type`: `"object"`
+- <a id="s-c22010a26a"></a>`additionalProperties`: `false`
+- <a id="s-5f5208eeca"></a>`required`: `["records_pointer"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-df5f2151b9"></a>`artifact_id_pointer` | no | type="string"; default="/artifact_id"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
+| <a id="s-1faa5ec7f0"></a>`records_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
+
+##### <a id="s-321bcd0181"></a>definition `ArtifactRule`
+
+- <a id="s-6bdc28415e"></a>`type`: `"object"`
+- <a id="s-1bd1d66fb0"></a>`additionalProperties`: `false`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b71e9f7554"></a>`glob` | no | type="string"; default="*" |  |
+| <a id="s-5976115f87"></a>`media_type` | no | anyOf=(type="string") \| (type="null"); default=null |  |
+| <a id="s-6b9ee6c6d7"></a>`role` | no | type="string"; default="stove0.source/v1"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+
+##### <a id="s-faa5d4d6cc"></a>definition `FactPredicate`
+
+- <a id="s-cadb9b4f08"></a>`type`: `"object"`
+- <a id="s-7d6bfaf7e7"></a>`additionalProperties`: `false`
+- <a id="s-2aa9986485"></a>`required`: `["observation_contract_id","pointer"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-38c4e17d27"></a>`artifact_facts` | no | anyOf=([ArtifactFactBinding](#s-f35ed8e977)) \| (type="null"); default=null |  |
+| <a id="s-dc2e7337db"></a>`artifact_roles` | no | type="array"; default=[]; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| <a id="s-afd2363b60"></a>`observation_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-37e1788109"></a>`operator` | no | type="string"; enum=["equals","not-equals","contains","exists"]; default="equals" |  |
+| <a id="s-7ae3fe0408"></a>`pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
+| <a id="s-6ddcfe2337"></a>`value` | no | [JsonValue](#s-655fdbe95a); default=null |  |
+
+##### <a id="s-893e7a1885"></a>definition `InputArtifactContract`
+
+- <a id="s-def7db480f"></a>`type`: `"object"`
+- <a id="s-0f3292cbb5"></a>`additionalProperties`: `false`
+- <a id="s-54a938d562"></a>`required`: `["role"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-feac620b6f"></a>`allowed_dispositions` | no | anyOf=(type="array"; items=(type="string"; enum=["transformed","preserved","omitted","rejected"])) \| (type="null"); default=null |  |
+| <a id="s-57da827557"></a>`maximum` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
+| <a id="s-e0c3ac6573"></a>`minimum` | no | type="integer"; minimum=0; default=1 |  |
+| <a id="s-80105dd786"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+
+##### <a id="s-0b52936ac5"></a>definition `JsonSchemaDocument`
+
+- <a id="s-f623a78d39"></a>`type`: `"object"`
+- <a id="s-7f26c576b5"></a>`additionalProperties`: `false`
+- <a id="s-75c157cf5d"></a>`required`: `["id","sha256","schema"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-dda74400ac"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-c3ca28ccfe"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-cd66b88bca"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-f726443f93"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-655fdbe95a)) |  |
+| <a id="s-274976be71"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-655fdbe95a"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-ead92c6441"></a>definition `ObserverUse`
+
+- <a id="s-a73c7d537c"></a>`type`: `"object"`
+- <a id="s-230d29f665"></a>`additionalProperties`: `false`
+- <a id="s-5259367846"></a>`required`: `["registration_id","contract_id","contract_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2912a35e65"></a>`artifact_rules` | no | type="array"; default=[{"glob":"*","media_type":null,"role":"stove0.source/v1"}]; items=([ArtifactRule](#s-321bcd0181)) |  |
+| <a id="s-c867e6e905"></a>`contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-7b85404302"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ef3cc259b3"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
+| <a id="s-5f6bc3b493"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-655fdbe95a)) |  |
+| <a id="s-71012c5997"></a>`registration_id` | yes | type="string" |  |
+| <a id="s-ad835fb649"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-3661a19a33"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300 |  |
+
+##### <a id="s-42d3f33c91"></a>definition `OperationContract`
+
+- <a id="s-e28b4812bf"></a>`type`: `"object"`
+- <a id="s-5d8d0790df"></a>`additionalProperties`: `false`
+- <a id="s-f99cfd4c9e"></a>`required`: `["id","intent_schema","intent_semantics","inputs","contract_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-65cbffa857"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a75ce4856f"></a>`effect_receipt_schema` | no | anyOf=([JsonSchemaDocument](#s-0b52936ac5)) \| (type="null"); default=null |  |
+| <a id="s-37654f4f87"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-fe1578028d"></a>`inputs` | yes | type="array"; items=([InputArtifactContract](#s-893e7a1885)); minItems=1 |  |
+| <a id="s-fc7522a438"></a>`intent_schema` | yes | [JsonSchemaDocument](#s-0b52936ac5) |  |
+| <a id="s-249f692d35"></a>`intent_semantics` | yes | [SemanticValidationProfile](#s-467a54d056) |  |
+| <a id="s-fde0449546"></a>`outputs` | no | type="array"; default=[]; items=([OutputArtifactContract](#s-4ebe2c544b)) |  |
+| <a id="s-70a075cf49"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
+| <a id="s-19847d4bca"></a>`source_retirement_permitted` | no | type="boolean"; default=false |  |
+
+##### <a id="s-bd29d8e8f0"></a>definition `OperationProjection`
+
+- <a id="s-442bc55b70"></a>`type`: `"object"`
+- <a id="s-6c4ae4b6d8"></a>`additionalProperties`: `false`
+- <a id="s-10c99afdfd"></a>`required`: `["source","source_pointer","destination","destination_pointer"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-616c4172f2"></a>`destination` | yes | type="string"; enum=["intent","target-options"] |  |
+| <a id="s-f1bd03dc96"></a>`destination_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
+| <a id="s-8cd8e9d6f0"></a>`source` | yes | type="string"; enum=["work-effective-intent","work-evaluation"] |  |
+| <a id="s-1c0d7d0e00"></a>`source_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
+
+##### <a id="s-4ebe2c544b"></a>definition `OutputArtifactContract`
+
+- <a id="s-e749847a59"></a>`type`: `"object"`
+- <a id="s-ff795babbc"></a>`additionalProperties`: `false`
+- <a id="s-539e5f68d8"></a>`required`: `["role","derived_from_roles"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-20259edb5c"></a>`derived_from_roles` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
+| <a id="s-f6400a52fe"></a>`maximum` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
+| <a id="s-3f2b668258"></a>`minimum` | no | type="integer"; minimum=0; default=1 |  |
+| <a id="s-e56480d27b"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+
+##### <a id="s-0e7e1d3689"></a>definition `RecipeCoordinationRoute`
+
+- <a id="s-e739b635cd"></a>`type`: `"object"`
+- <a id="s-8119382c97"></a>`additionalProperties`: `false`
+- <a id="s-3f3ca6c3f4"></a>`required`: `["id","recipe"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b279e9b936"></a>`artifact_rules` | no | type="array"; default=[{"glob":"*","media_type":null,"role":"stove0.source/v1"}]; items=([ArtifactRule](#s-321bcd0181)) |  |
+| <a id="s-d36cc8ed49"></a>`associated_roles` | no | type="array"; default=[]; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| <a id="s-f902f4af2c"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-99fd8ad45e"></a>`intent` | no | type="object"; additionalProperties=([JsonValue](#s-655fdbe95a)) |  |
+| <a id="s-25a8ca70d9"></a>`kind` | no | type="string"; const="coordination"; default="coordination" |  |
+| <a id="s-ba1aa0ba3d"></a>`primary_role` | no | anyOf=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") \| (type="null"); default=null |  |
+| <a id="s-60b49858f4"></a>`projections` | no | type="array"; default=[]; items=([OperationProjection](#s-bd29d8e8f0)) |  |
+| <a id="s-1e2cfb4802"></a>`recipe` | yes | [RecipeRef](#s-968cd63522) |  |
+| <a id="s-88a0355e0e"></a>`when` | no | type="array"; default=[]; items=([FactPredicate](#s-faa5d4d6cc)) |  |
+
+##### <a id="s-d7a456910c"></a>definition `RecipeDefinition`
+
+- <a id="s-e5b2dafcf6"></a>`type`: `"object"`
+- <a id="s-7194194354"></a>`additionalProperties`: `false`
+- <a id="s-5f300dd0d1"></a>`required`: `["id","revision","routes","unmatched_artifact_disposition"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-33934f5939"></a>`allow_derived_inputs` | no | type="boolean"; default=false |  |
+| <a id="s-65623ccf07"></a>`artifact_associations` | no | type="array"; default=[]; items=([ArtifactAssociation](#s-4ea94d6958)) |  |
+| <a id="s-7ae6d978c6"></a>`event_input_closure` | no | type="string"; const="single-finalized-collection"; default="single-finalized-collection" |  |
+| <a id="s-8b7c8a0bd6"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-89f735570e"></a>`join` | no | anyOf=([RecipeJoin](#s-ffedb1726b)) \| (type="null"); default=null |  |
+| <a id="s-dc666d1ddd"></a>`observers` | no | type="array"; default=[]; items=([ObserverUse](#s-ead92c6441)) |  |
+| <a id="s-9895a15607"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-b91532e55d"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-3e17379ac4"></a>`routes` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"[RecipeCoordinationRoute](#s-0e7e1d3689)","operation":"[RecipeRoute](#s-e0a2848845)"},"propertyName":"kind"}; oneOf=([RecipeRoute](#s-e0a2848845)) \| ([RecipeCoordinationRoute](#s-0e7e1d3689))); minItems=1 |  |
+| <a id="s-683a1f7dfd"></a>`source_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
+| <a id="s-7f714f0108"></a>`unmatched_artifact_disposition` | yes | type="string"; enum=["retain-in-source","reject-work"] |  |
+
+##### <a id="s-ffedb1726b"></a>definition `RecipeJoin`
+
+- <a id="s-163f4cc2af"></a>`type`: `"object"`
+- <a id="s-f3a27c108f"></a>`additionalProperties`: `false`
+- <a id="s-bf53875a72"></a>`required`: `["id","members","operation_id","target_registration_id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-28a9ff7668"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-a153b2f717"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-08b03466f3"></a>`intent` | no | type="object"; additionalProperties=([JsonValue](#s-655fdbe95a)) |  |
+| <a id="s-4fd77e151a"></a>`members` | yes | type="array"; items=([RecipeJoinMember](#s-33c0aa00c7)); minItems=2 |  |
+| <a id="s-b69fc30ff8"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-010de498d8"></a>`projections` | no | type="array"; default=[]; items=([OperationProjection](#s-bd29d8e8f0)) |  |
+| <a id="s-3d7fc994fa"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-655fdbe95a)) |  |
+| <a id="s-f152e3be83"></a>`target_registration_id` | yes | type="string" |  |
+
+##### <a id="s-33c0aa00c7"></a>definition `RecipeJoinMember`
+
+- <a id="s-f60fa18721"></a>`type`: `"object"`
+- <a id="s-f36cb8cc0e"></a>`additionalProperties`: `false`
+- <a id="s-44ce7d3169"></a>`required`: `["branch_id","output_roles"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-8f9cae0ecd"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-f68f27a2a4"></a>`output_roles` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
+
+##### <a id="s-968cd63522"></a>definition `RecipeRef`
+
+- <a id="s-0807f870e4"></a>`type`: `"object"`
+- <a id="s-ef7b39e4e5"></a>`additionalProperties`: `false`
+- <a id="s-52cea32348"></a>`required`: `["id","revision","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-40f52e1b3d"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-49fe8fdcd8"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-74672470ac"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-e0a2848845"></a>definition `RecipeRoute`
+
+- <a id="s-3d00f1299b"></a>`type`: `"object"`
+- <a id="s-45acb7f120"></a>`additionalProperties`: `false`
+- <a id="s-2886b1d246"></a>`required`: `["id","operation_id","target_registration_id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0c43da5ed4"></a>`artifact_rules` | no | type="array"; default=[{"glob":"*","media_type":null,"role":"stove0.source/v1"}]; items=([ArtifactRule](#s-321bcd0181)) |  |
+| <a id="s-504400fb31"></a>`associated_roles` | no | type="array"; default=[]; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| <a id="s-608b94d18a"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-21089d313d"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-cdd0082ecb"></a>`intent` | no | type="object"; additionalProperties=([JsonValue](#s-655fdbe95a)) |  |
+| <a id="s-f9899b24b7"></a>`kind` | no | type="string"; const="operation"; default="operation" |  |
+| <a id="s-4f73dc96ce"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-fbc54fb191"></a>`primary_role` | no | anyOf=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") \| (type="null"); default=null |  |
+| <a id="s-984029fbc3"></a>`projections` | no | type="array"; default=[]; items=([OperationProjection](#s-bd29d8e8f0)) |  |
+| <a id="s-f3684b5aa6"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-655fdbe95a)) |  |
+| <a id="s-546a2e17d5"></a>`target_registration_id` | yes | type="string" |  |
+| <a id="s-e4e093f3bc"></a>`when` | no | type="array"; default=[]; items=([FactPredicate](#s-faa5d4d6cc)) |  |
+
+##### <a id="s-467a54d056"></a>definition `SemanticValidationProfile`
+
+- <a id="s-493f352f77"></a>`type`: `"object"`
+- <a id="s-8c770e8eb0"></a>`additionalProperties`: `false`
+- <a id="s-c1d7de8e8f"></a>`required`: `["id","rules","profile_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3874a76fdb"></a>`conformance_vectors_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-a262f66ffa"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-e58dd09b39"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-54b05c56e9"></a>`rules` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
 
 ## Maintained corroboration
 
@@ -92,6 +380,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_core.RecipeCatalog`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -949,3 +1240,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

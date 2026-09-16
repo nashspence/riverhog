@@ -27,38 +27,240 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-5c87ff72e1"></a>
-- <a id="s-943f4b19de"></a>`type`: object
 
-### Fields
+- <a id="s-943f4b19de"></a>`type`: `"object"`
+- <a id="s-f256e0d976"></a>`additionalProperties`: `false`
+- <a id="s-03f0b767a4"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7c26093bbf"></a>`inputs` | yes | #/$defs/TargetInputAuthority |  |
-| <a id="s-54f20c0f57"></a>`intent` | yes | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-605db37c31"></a>`observations` | no | type="array"; items=(#/$defs/ObservationEvidence) |  |
+| <a id="s-7c26093bbf"></a>`inputs` | yes | [TargetInputAuthority](#s-60a5d6ef7e) |  |
+| <a id="s-54f20c0f57"></a>`intent` | yes | type="object"; additionalProperties=([JsonValue](#s-d95af0d2da)) |  |
+| <a id="s-605db37c31"></a>`observations` | no | type="array"; default=[]; items=([ObservationEvidence](#s-54fec26db4)) |  |
 | <a id="s-c388713b52"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-e72f9aca93"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-8119716746"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"] |  |
-| <a id="s-55e1c184fb"></a>`target_options` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-8119716746"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1" |  |
+| <a id="s-55e1c184fb"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-d95af0d2da)) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-39ad60087b"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-f072295446"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e027a9025e"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-8191dbc46c"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
-| <a id="s-87e64342b7"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-d95af0d2da"></a>`JsonValue` | empty object |
-| <a id="s-54fec26db4"></a>`ObservationEvidence` | type="object"; fields=`request`, `result`; additional keys=`additionalProperties`, `required` |
-| <a id="s-7b3261407b"></a>`ObservationFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
-| <a id="s-dd71a88a10"></a>`ObservationInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
-| <a id="s-46662bba44"></a>`ObservationRequest` | type="object"; fields=`format`, `maximum_result_bytes`, `observer_contract_id`, `observer_contract_sha256`, `observer_descriptor_sha256`, `observer_registration_id`, `options`, `request_id`, `retrieval_policy`, `subjects`, `timeout_seconds`, `work_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-07f8b4ea0f"></a>`ObservationResult` | type="object"; fields=`execution_evidence`, `facts`, `facts_schema`, `facts_sha256`, `failure`, `format`, `inapplicable`, `observer`, `observer_contract_id`, `observer_contract_sha256`, `request_id`, `result_sha256`, `state`, `subjects`; additional keys=`additionalProperties`, `required` |
-| <a id="s-78ed3d8bbb"></a>`ObserverImplementation` | type="object"; fields=`descriptor_sha256`, `id`, `protocol`, `source_revision`, `version`; additional keys=`additionalProperties`, `required` |
-| <a id="s-60a5d6ef7e"></a>`TargetInputAuthority` | type="object"; fields=`roles`, `selection`; additional keys=`additionalProperties`, `required` |
-| <a id="s-769600fdb9"></a>`TargetInputRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
+- [ArtifactSelectionRef](#s-39ad60087b)
+- [ArtifactSubject](#s-f072295446)
+- [CollectionId](#s-e027a9025e)
+- [CollectionRootRef](#s-8191dbc46c)
+- [JsonSchemaDocument](#s-87e64342b7)
+- [JsonValue](#s-d95af0d2da)
+- [ObservationEvidence](#s-54fec26db4)
+- [ObservationFailure](#s-7b3261407b)
+- [ObservationInapplicable](#s-dd71a88a10)
+- [ObservationRequest](#s-46662bba44)
+- [ObservationResult](#s-07f8b4ea0f)
+- [ObserverImplementation](#s-78ed3d8bbb)
+- [TargetInputAuthority](#s-60a5d6ef7e)
+- [TargetInputRoleCount](#s-769600fdb9)
+
+##### <a id="s-39ad60087b"></a>definition `ArtifactSelectionRef`
+
+- <a id="s-c681e325e2"></a>`type`: `"object"`
+- <a id="s-b7dd6b86ee"></a>`additionalProperties`: `false`
+- <a id="s-aa5fb3b8f4"></a>`required`: `["selection_sha256","artifact_count","total_bytes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-716544fe32"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-3aab4adfd3"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-44ef421401"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+
+##### <a id="s-f072295446"></a>definition `ArtifactSubject`
+
+- <a id="s-1df0087a74"></a>`type`: `"object"`
+- <a id="s-0e34d1507c"></a>`additionalProperties`: `false`
+- <a id="s-da454ac718"></a>`required`: `["id","role","collection","path","bytes","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-9e81e626cf"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-6c3c610190"></a>`collection` | yes | [CollectionRootRef](#s-8191dbc46c) |  |
+| <a id="s-5078849c51"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-5f806c319f"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-3403f3a526"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-1e1b421301"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-2bd6acfb9c"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-e027a9025e"></a>definition `CollectionId`
+
+- <a id="s-8f8fab89d0"></a>`type`: `"integer"`
+- <a id="s-e535399051"></a>`minimum`: `1`
+
+##### <a id="s-8191dbc46c"></a>definition `CollectionRootRef`
+
+- <a id="s-dec5b5a88c"></a>`type`: `"object"`
+- <a id="s-5f3d230056"></a>`additionalProperties`: `false`
+- <a id="s-8e4d37763c"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ed0e6548df"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-99e160ddce"></a>`collection_id` | yes | [CollectionId](#s-e027a9025e) |  |
+| <a id="s-9157d45b6b"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-87e64342b7"></a>definition `JsonSchemaDocument`
+
+- <a id="s-67a5f7f20f"></a>`type`: `"object"`
+- <a id="s-34bac52dab"></a>`additionalProperties`: `false`
+- <a id="s-dd9a1a452c"></a>`required`: `["id","sha256","schema"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0dbaa6c620"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-8d86f296c4"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-e9573d2288"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-9f9f4eb5a1"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-d95af0d2da)) |  |
+| <a id="s-980c491f44"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-d95af0d2da"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-54fec26db4"></a>definition `ObservationEvidence`
+
+- <a id="s-31a5da7602"></a>`type`: `"object"`
+- <a id="s-590e430c5c"></a>`additionalProperties`: `false`
+- <a id="s-fb740bfdbf"></a>`required`: `["request","result"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6a829b53a2"></a>`request` | yes | [ObservationRequest](#s-46662bba44) |  |
+| <a id="s-c2f11b6152"></a>`result` | yes | [ObservationResult](#s-07f8b4ea0f) |  |
+
+##### <a id="s-7b3261407b"></a>definition `ObservationFailure`
+
+- <a id="s-1d8a5c1938"></a>`type`: `"object"`
+- <a id="s-6d649bdd67"></a>`additionalProperties`: `false`
+- <a id="s-672396781b"></a>`required`: `["code","message","retryable"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-59a41d56fd"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-f28f8ff79a"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-91b954dc85"></a>`retryable` | yes | type="boolean" |  |
+
+##### <a id="s-dd71a88a10"></a>definition `ObservationInapplicable`
+
+- <a id="s-c304ad841b"></a>`type`: `"object"`
+- <a id="s-6b8c22c458"></a>`additionalProperties`: `false`
+- <a id="s-b6f920355b"></a>`required`: `["code","message"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e56ff48357"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-ffc476b31a"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+
+##### <a id="s-46662bba44"></a>definition `ObservationRequest`
+
+- <a id="s-c6c212e838"></a>`type`: `"object"`
+- <a id="s-223bff7d99"></a>`additionalProperties`: `false`
+- <a id="s-41d4d5c5ea"></a>`required`: `["work_id","observer_registration_id","observer_descriptor_sha256","observer_contract_id","observer_contract_sha256","subjects","request_id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7912155451"></a>`format` | no | type="string"; const="stove0-observation-request/v1"; default="stove0-observation-request/v1" |  |
+| <a id="s-cea4ea0f6e"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
+| <a id="s-79c82b5b15"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-e808e5a2fb"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-087faa60d1"></a>`observer_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-846fa4c119"></a>`observer_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
+| <a id="s-6579935f16"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-d95af0d2da)) |  |
+| <a id="s-81d5dcd2fc"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b3bf1d53fe"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-f3ff7209aa"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-f072295446)); minItems=1 |  |
+| <a id="s-ccafda1b7f"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300 |  |
+| <a id="s-87f04bf3cb"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-07f8b4ea0f"></a>definition `ObservationResult`
+
+- <a id="s-b6afb6a70b"></a>`type`: `"object"`
+- <a id="s-b9b995a4e2"></a>`additionalProperties`: `false`
+- <a id="s-6e9e5ed063"></a>`required`: `["request_id","state","observer","observer_contract_id","observer_contract_sha256","subjects","result_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-531ccc2722"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-d95af0d2da)) |  |
+| <a id="s-fe49470f10"></a>`facts` | no | anyOf=(type="object"; additionalProperties=([JsonValue](#s-d95af0d2da))) \| (type="null"); default=null |  |
+| <a id="s-74e0f662b2"></a>`facts_schema` | no | anyOf=([JsonSchemaDocument](#s-87e64342b7)) \| (type="null"); default=null |  |
+| <a id="s-98d311e69c"></a>`facts_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-6461790541"></a>`failure` | no | anyOf=([ObservationFailure](#s-7b3261407b)) \| (type="null"); default=null |  |
+| <a id="s-b841b1dc99"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1" |  |
+| <a id="s-16955be89e"></a>`inapplicable` | no | anyOf=([ObservationInapplicable](#s-dd71a88a10)) \| (type="null"); default=null |  |
+| <a id="s-39c8eff626"></a>`observer` | yes | [ObserverImplementation](#s-78ed3d8bbb) |  |
+| <a id="s-e77ea25c7a"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-ca722d037c"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-8d582dbd24"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-21993bf60d"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-510d18e25c"></a>`state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"] |  |
+| <a id="s-1d9a2434d0"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-f072295446)); minItems=1 |  |
+
+##### <a id="s-78ed3d8bbb"></a>definition `ObserverImplementation`
+
+- <a id="s-01fa96f66a"></a>`type`: `"object"`
+- <a id="s-066da2f48c"></a>`additionalProperties`: `false`
+- <a id="s-cc1134579b"></a>`required`: `["id","version","source_revision","descriptor_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-eeb6eb4aca"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b669abbf29"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-ea43677312"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1"; default="stove0-content-observer/v1" |  |
+| <a id="s-e462f5d3ae"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
+| <a id="s-6421cfbffe"></a>`version` | yes | type="string"; maxLength=120; minLength=1 |  |
+
+##### <a id="s-60a5d6ef7e"></a>definition `TargetInputAuthority`
+
+- <a id="s-92e014c41c"></a>`type`: `"object"`
+- <a id="s-5341ca8a52"></a>`additionalProperties`: `false`
+- <a id="s-c1869947f8"></a>`required`: `["selection","roles"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c3f519ad3c"></a>`roles` | yes | type="array"; items=([TargetInputRoleCount](#s-769600fdb9)); minItems=1 |  |
+| <a id="s-1afc0ffe52"></a>`selection` | yes | [ArtifactSelectionRef](#s-39ad60087b) |  |
+
+##### <a id="s-769600fdb9"></a>definition `TargetInputRoleCount`
+
+- <a id="s-9bf08cd9d0"></a>`type`: `"object"`
+- <a id="s-21cb8dbedd"></a>`additionalProperties`: `false`
+- <a id="s-0fc6ce6629"></a>`required`: `["role","count"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-faa1fd20ec"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-753f62b9be"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ## Maintained corroboration
 
@@ -87,6 +289,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_support.TargetPreflightRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -620,3 +825,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

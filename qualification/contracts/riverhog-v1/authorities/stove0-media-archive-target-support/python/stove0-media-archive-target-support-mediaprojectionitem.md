@@ -27,27 +27,74 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-06ef93095f"></a>
-- <a id="s-7197e20472"></a>`type`: object
 
-### Fields
+- <a id="s-7197e20472"></a>`type`: `"object"`
+- <a id="s-c6f80459f2"></a>`additionalProperties`: `false`
+- <a id="s-5ce0d26045"></a>`required`: `["input_artifact_id","archive_path","xmp_path"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-313a118932"></a>`archive_path` | yes | type="string" |  |
-| <a id="s-40432666e3"></a>`assertions` | no | type="array"; items=(#/$defs/MediaMetadataFact) |  |
-| <a id="s-2c7c592359"></a>`associated_sidecar_artifact_ids` | no | type="array"; items=(type="string") |  |
+| <a id="s-40432666e3"></a>`assertions` | no | type="array"; default=[]; items=([MediaMetadataFact](#s-e33b4f41af)) |  |
+| <a id="s-2c7c592359"></a>`associated_sidecar_artifact_ids` | no | type="array"; default=[]; items=(type="string") |  |
 | <a id="s-790b4a5584"></a>`input_artifact_id` | yes | type="string" |  |
-| <a id="s-3ac59195a2"></a>`selected` | no | type="array"; items=(#/$defs/MediaProjectedValue) |  |
+| <a id="s-3ac59195a2"></a>`selected` | no | type="array"; default=[]; items=([MediaProjectedValue](#s-5797d39559)) |  |
 | <a id="s-3730378d5c"></a>`xmp_path` | yes | type="string" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-08ff9de5de"></a>`JsonValue` | empty object |
-| <a id="s-3786098b71"></a>`MediaFactEvidence` | type="object"; fields=`artifact_id`, `field`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e33b4f41af"></a>`MediaMetadataFact` | type="object"; fields=`evidence`, `name`, `value`; additional keys=`additionalProperties`, `required` |
-| <a id="s-5797d39559"></a>`MediaProjectedValue` | type="object"; fields=`evidence`, `name`, `source`, `value`; additional keys=`additionalProperties`, `required` |
+- [JsonValue](#s-08ff9de5de)
+- [MediaFactEvidence](#s-3786098b71)
+- [MediaMetadataFact](#s-e33b4f41af)
+- [MediaProjectedValue](#s-5797d39559)
+
+##### <a id="s-08ff9de5de"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-3786098b71"></a>definition `MediaFactEvidence`
+
+- <a id="s-8aab802dc7"></a>`type`: `"object"`
+- <a id="s-4d0e5bd569"></a>`additionalProperties`: `false`
+- <a id="s-bee58e7865"></a>`required`: `["artifact_id","field"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3de757f664"></a>`artifact_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-17d17e56dc"></a>`field` | yes | type="string"; maxLength=240; minLength=1 |  |
+
+##### <a id="s-e33b4f41af"></a>definition `MediaMetadataFact`
+
+- <a id="s-677c27866f"></a>`type`: `"object"`
+- <a id="s-c1e1acbaee"></a>`additionalProperties`: `false`
+- <a id="s-3fc23ef600"></a>`required`: `["name","value","evidence"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c3dbcf7e9b"></a>`evidence` | yes | [MediaFactEvidence](#s-3786098b71) |  |
+| <a id="s-04a0bedb7e"></a>`name` | yes | type="string"; enum=["capture-time","container-format","creator","device-make","device-model","gps-latitude","gps-longitude"] |  |
+| <a id="s-8dd4711216"></a>`value` | yes | [JsonValue](#s-08ff9de5de) |  |
+
+##### <a id="s-5797d39559"></a>definition `MediaProjectedValue`
+
+- <a id="s-561bcec170"></a>`type`: `"object"`
+- <a id="s-534b4094fb"></a>`additionalProperties`: `false`
+- <a id="s-b9cafbcd18"></a>`required`: `["name","value","source"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a5f4c843d5"></a>`evidence` | no | type="array"; default=[]; items=([MediaFactEvidence](#s-3786098b71)) |  |
+| <a id="s-88978f4066"></a>`name` | yes | type="string"; enum=["capture-time","creator","device-make","device-model","gps-latitude","gps-longitude"] |  |
+| <a id="s-104dbef2b0"></a>`source` | yes | type="string"; enum=["observation","recipe"] |  |
+| <a id="s-367cb87115"></a>`value` | yes | [JsonValue](#s-08ff9de5de) |  |
 
 ## Maintained corroboration
 
@@ -79,6 +126,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_media_archive_target_support.MediaProjectionItem`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -228,3 +278,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

@@ -27,25 +27,43 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-a5ac0fd8fb"></a>
-- <a id="s-59f1afc9f5"></a>`type`: object
 
-### Fields
+- <a id="s-59f1afc9f5"></a>`type`: `"object"`
+- <a id="s-d5c000c7cc"></a>`additionalProperties`: `false`
+- <a id="s-c9ee68895e"></a>`required`: `["observation_contract_id","pointer"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-367d96c609"></a>`artifact_facts` | no | anyOf=#/$defs/ArtifactFactBinding \| type="null" |  |
-| <a id="s-6e947f2410"></a>`artifact_roles` | no | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| <a id="s-367d96c609"></a>`artifact_facts` | no | anyOf=([ArtifactFactBinding](#s-48aaf43fde)) \| (type="null"); default=null |  |
+| <a id="s-6e947f2410"></a>`artifact_roles` | no | type="array"; default=[]; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
 | <a id="s-ba4b9c8c2f"></a>`observation_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-2699482742"></a>`operator` | no | type="string"; enum=["equals","not-equals","contains","exists"] |  |
+| <a id="s-2699482742"></a>`operator` | no | type="string"; enum=["equals","not-equals","contains","exists"]; default="equals" |  |
 | <a id="s-ed01adb3ef"></a>`pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
-| <a id="s-8547d3377b"></a>`value` | no | $ref="#/$defs/JsonValue" |  |
+| <a id="s-8547d3377b"></a>`value` | no | [JsonValue](#s-8d3fc6fcd3); default=null |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-48aaf43fde"></a>`ArtifactFactBinding` | type="object"; fields=`artifact_id_pointer`, `records_pointer`; additional keys=`additionalProperties`, `required` |
-| <a id="s-8d3fc6fcd3"></a>`JsonValue` | empty object |
+- [ArtifactFactBinding](#s-48aaf43fde)
+- [JsonValue](#s-8d3fc6fcd3)
+
+##### <a id="s-48aaf43fde"></a>definition `ArtifactFactBinding`
+
+- <a id="s-2f919cd848"></a>`type`: `"object"`
+- <a id="s-2d6eed4ec9"></a>`additionalProperties`: `false`
+- <a id="s-f78d5ba259"></a>`required`: `["records_pointer"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b6fb4a2028"></a>`artifact_id_pointer` | no | type="string"; default="/artifact_id"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
+| <a id="s-f9c19f23fc"></a>`records_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
+
+##### <a id="s-8d3fc6fcd3"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Maintained corroboration
 
@@ -74,6 +92,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_recipe_config.FactPredicate`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -163,3 +184,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

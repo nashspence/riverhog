@@ -23,9 +23,9 @@ Trace Collection File Provenance
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-a876758119"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-908b33e7a9"></a>`path` | path | yes | not declared | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
+| <a id="s-908b33e7a9"></a>`path` | path | yes | not declared | type="string"; format="riverhog-canonical-relpath-v1"; allOf=(not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)")) \| (not=(pattern="^\\s\|\\s$")); maxLength=4096; minLength=1; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; x-unicode-normalization="NFC" |
 | <a id="s-11242a91f3"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-23428b14d3"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
+| <a id="s-23428b14d3"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
 
 ### Responses
 
@@ -157,6 +157,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1trace~1{path}/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -347,3 +350,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

@@ -14,18 +14,21 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-cb3d2c41a9"></a>
-- <a id="s-74d14fa1d0"></a>`title`: ListCollectionUploadSessionsResponse
-- <a id="s-f3d9d94506"></a>`type`: object
+
+- <a id="s-f3d9d94506"></a>`type`: `"object"`
+- <a id="s-02eb6798bd"></a>`additionalProperties`: `false`
+- <a id="s-8ebdfdad22"></a>`required`: `["page_size","next_page_token","sort","order","query","filters","uploads"]`
+- <a id="s-74d14fa1d0"></a>`title`: `"ListCollectionUploadSessionsResponse"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-d2ea9c3cc3"></a>`filters` | yes | #/components/schemas/CollectionUploadListFiltersOut |  |
-| <a id="s-849c5a09ca"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-849c5a09ca"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-3c8c0c69e9"></a>`order` | yes | #/components/schemas/SortOrder |  |
 | <a id="s-5f8d2ec911"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-80d2dee606"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-80d2dee606"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-61648fd94b"></a>`sort` | yes | #/components/schemas/CollectionUploadSort |  |
 | <a id="s-b2370a9c91"></a>`uploads` | yes | type="array"; items=(#/components/schemas/CollectionUploadListItemOut) |  |
 
@@ -86,6 +89,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/ListCollectionUploadSessionsResponse`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -152,3 +158,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

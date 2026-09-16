@@ -27,14 +27,17 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-0796b14e91"></a>
-- <a id="s-c5285e142b"></a>`type`: object
 
-### Fields
+- <a id="s-c5285e142b"></a>`type`: `"object"`
+- <a id="s-578d862395"></a>`additionalProperties`: `false`
+- <a id="s-92dc5cc679"></a>`required`: `["code","message","retryable"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-adb56d0389"></a>`code` | yes | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-fa7d1c534e"></a>`message` | yes | type="string"; minLength=1; maxLength=1000 |  |
+| <a id="s-adb56d0389"></a>`code` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-fa7d1c534e"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
 | <a id="s-c51f03aaba"></a>`retryable` | yes | type="boolean" |  |
 
 ## Governing policies
@@ -58,6 +61,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_core.WorkFailure`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -99,3 +105,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

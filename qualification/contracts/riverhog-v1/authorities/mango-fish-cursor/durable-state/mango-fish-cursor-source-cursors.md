@@ -14,16 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e3615ea9f9"></a>
-- Table: `source_cursors`
 
-### Columns
+### Table: `source_cursors`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
 | <a id="s-012ecf2384"></a>`source` | `TEXT` | no | `—` | — |
 | <a id="s-1fc0f931e2"></a>`cursor` | `TEXT` | no | `—` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -57,6 +58,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 08325ca3ab30c38070d17ec9c1d41487aff277f3bec419aabe8dd85f11baa1f0 -->
@@ -89,3 +93,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "source_cursors"
 }
 ```
+
+</details>

@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1a1faf1167"></a>
-- <a id="s-d83976a582"></a>`title`: CollectionUploadListItemOut
-- <a id="s-843a25a51a"></a>`type`: object
+
+- <a id="s-843a25a51a"></a>`type`: `"object"`
+- <a id="s-65c949c64f"></a>`additionalProperties`: `false`
+- <a id="s-6b8349d0a5"></a>`required`: `["collection_id","created_at","ingest_source","description","description_revision","description_identity","description_publication","tag_publication","tag_count","archive_store","encryption_format","passphrase_id","state","custody_mode","files","bytes","custody","upload_state_expires_at","orphaned_at"]`
+- <a id="s-d83976a582"></a>`title`: `"CollectionUploadListItemOut"`
 
 ### Fields
 
@@ -24,24 +27,35 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-78f25613b2"></a>`archive_store` | yes | #/components/schemas/ArchiveStoreName |  |
 | <a id="s-9113192326"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-e11197cec6"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-79db77eddc"></a>`created_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-75d2cbd26a"></a>`custody` | yes | oneOf=#/components/schemas/PendingCollectionUploadCustodyOut \| #/components/schemas/CompleteCollectionUploadCustodyOut; additional keys=`discriminator` |  |
+| <a id="s-79db77eddc"></a>`created_at` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-75d2cbd26a"></a>`custody` | yes | discriminator={"mapping":{"complete":"#/components/schemas/CompleteCollectionUploadCustodyOut","pending":"#/components/schemas/PendingCollectionUploadCustodyOut"},"propertyName":"state"}; oneOf=(#/components/schemas/PendingCollectionUploadCustodyOut) \| (#/components/schemas/CompleteCollectionUploadCustodyOut) |  |
 | <a id="s-59666b97a0"></a>`custody_mode` | yes | type="string"; enum=["producer-retained","custody-transfer"] |  |
-| <a id="s-6e8cc7d8e3"></a>`description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
-| <a id="s-7e4747dfb6"></a>`description_identity` | yes | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-6e8cc7d8e3"></a>`description` | yes | anyOf=(#/components/schemas/CollectionDescription) \| (type="null") |  |
+| <a id="s-7e4747dfb6"></a>`description_identity` | yes | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 | <a id="s-0ad8095d20"></a>`description_publication` | yes | type="string"; enum=["pending","not_required","current"] |  |
-| <a id="s-63ebea617b"></a>`description_revision` | yes | anyOf=type="integer"; minimum=0; maximum=9007199254740991 \| type="null" |  |
+| <a id="s-63ebea617b"></a>`description_revision` | yes | anyOf=(type="integer"; minimum=0; maximum=9007199254740991) \| (type="null") |  |
 | <a id="s-3a8ce2a4f5"></a>`encryption_format` | yes | type="string" |  |
 | <a id="s-378db62166"></a>`files` | yes | type="integer"; minimum=0 |  |
-| <a id="s-74cdc20906"></a>`ingest_source` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-e51c2fae2e"></a>`orphaned_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-74cdc20906"></a>`ingest_source` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-e51c2fae2e"></a>`orphaned_at` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-335b427411"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
 | <a id="s-d2a06ec8ff"></a>`state` | yes | type="string"; enum=["open","closing","uploading","finalizing","orphaned","discarding"] |  |
 | <a id="s-96988dc3ef"></a>`tag_count` | yes | type="integer"; minimum=0 |  |
 | <a id="s-54f0ed2b7c"></a>`tag_publication` | yes | type="string"; enum=["pending","current"] |  |
-| <a id="s-3994972441"></a>`tag_revision` | no | anyOf=type="integer"; minimum=1; maximum=9007199254740991 \| type="null" |  |
-| <a id="s-6acc291515"></a>`tag_set_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-9142e69595"></a>`upload_state_expires_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-3994972441"></a>`tag_revision` | no | anyOf=(type="integer"; minimum=1; maximum=9007199254740991) \| (type="null") |  |
+| <a id="s-6acc291515"></a>`tag_set_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
+| <a id="s-9142e69595"></a>`upload_state_expires_at` | yes | anyOf=(type="string") \| (type="null") |  |
+
+### All must match (`allOf`)
+
+| Rule | If schema matches | Then must match | Otherwise must match |
+|---|---|---|---|
+| <a id="s-387ef16562"></a>1 | properties={custody_mode: (const="producer-retained")}; required=["custody_mode"] | properties={orphaned_at: (type="null"); state: (enum=["open","uploading","finalizing","canceled","finalized"]); upload_state_expires_at: (type="null")} | no additional constraint |
+| <a id="s-1b6a7a793e"></a>2 | properties={state: (enum=["orphaned","discarding"])}; required=["state"] | properties={custody_mode: (const="custody-transfer"); orphaned_at: (type="string"); upload_state_expires_at: (type="null")} | no additional constraint |
+| <a id="s-e2a303eb39"></a>3 | properties={custody_mode: (const="custody-transfer"); state: (enum=["open","closing"])}; required=["custody_mode","state"] | properties={orphaned_at: (type="null"); upload_state_expires_at: (type="string")} | no additional constraint |
+| <a id="s-5844fbddb4"></a>4 | properties={custody_mode: (const="custody-transfer"); state: (enum=["uploading","finalizing","canceled","finalized"])}; required=["custody_mode","state"] | properties={orphaned_at: (type="null"); upload_state_expires_at: (type="null")} | no additional constraint |
+| <a id="s-6af3f7c6bc"></a>5 | properties={state: (enum=["finalizing","finalized"])}; required=["state"] | properties={custody: (properties={state: (const="complete")}; required=["state"])} | no additional constraint |
+| <a id="s-e7dd30dec7"></a>6 | properties={custody_mode: (const="custody-transfer"); state: (const="uploading")}; required=["custody_mode","state"] | properties={custody: (properties={state: (const="complete")}; required=["state"])} | no additional constraint |
 
 ### Progression, limits, and lifecycle
 
@@ -96,6 +110,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadListItemOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -500,3 +517,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

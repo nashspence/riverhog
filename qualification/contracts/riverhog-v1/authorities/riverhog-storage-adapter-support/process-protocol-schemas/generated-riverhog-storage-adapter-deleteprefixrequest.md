@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-87eda5641d"></a>
-- <a id="s-744fd87910"></a>`title`: DeletePrefixRequest
-- <a id="s-c11f7cf1bf"></a>`type`: object
+
+- <a id="s-c11f7cf1bf"></a>`type`: `"object"`
+- <a id="s-333f7b98c5"></a>`additionalProperties`: `false`
+- <a id="s-8b20b43b1e"></a>`required`: `["object_prefix"]`
+- <a id="s-744fd87910"></a>`title`: `"DeletePrefixRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-fd2bba5510"></a>`mode` | no | type="string"; const="all_versions" |  |
-| <a id="s-96398ee657"></a>`object_prefix` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-fd2bba5510"></a>`mode` | no | type="string"; const="all_versions"; default="all_versions" |  |
+| <a id="s-96398ee657"></a>`object_prefix` | yes | type="string"; maxLength=4096; minLength=1 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -63,6 +66,9 @@ Shared facts for every subject below: maximum=4096; minimum=1; reason="schema-ma
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 26f1798a7e22e1a72e0c6932bfbe66dca3e80273a417c3e5c18fdc0e4bd59a3f -->
@@ -91,3 +97,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

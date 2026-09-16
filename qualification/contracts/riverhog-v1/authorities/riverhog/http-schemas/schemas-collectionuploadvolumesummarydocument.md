@@ -14,9 +14,12 @@ Protocol-owned identity of one immutable collection archive volume.
 ## External contract
 
 <a id="s-3e0a34057d"></a>
-- <a id="s-956f2b8a24"></a>`title`: CollectionUploadVolumeSummaryDocument
-- <a id="s-d366f075da"></a>`description`: Protocol-owned identity of one immutable collection archive volume.
-- <a id="s-c189994b3b"></a>`type`: object
+
+- <a id="s-c189994b3b"></a>`type`: `"object"`
+- <a id="s-59ea81ee4c"></a>`additionalProperties`: `false`
+- <a id="s-d366f075da"></a>`description`: `"Protocol-owned identity of one immutable collection archive volume."`
+- <a id="s-7504ebbc41"></a>`required`: `["volume_id","sequence","kind"]`
+- <a id="s-956f2b8a24"></a>`title`: `"CollectionUploadVolumeSummaryDocument"`
 
 ### Fields
 
@@ -47,6 +50,9 @@ Protocol-owned identity of one immutable collection archive volume.
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadVolumeSummaryDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -85,3 +91,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

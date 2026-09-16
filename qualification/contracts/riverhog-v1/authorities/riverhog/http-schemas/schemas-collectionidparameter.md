@@ -14,7 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1a3c158d23"></a>
-- <a id="s-1da0a3e7ac"></a>`type`: integer
+
+- <a id="s-1da0a3e7ac"></a>`type`: `"integer"`
+- <a id="s-4fd542431a"></a>`minimum`: `1`
 
 ## Governing policies
 
@@ -38,6 +40,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 2a1379ebe9f4b632fbdf3732d4b86b26e9fbf2aa92cf2449dde7bf4dc122060f -->
@@ -48,3 +53,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "integer"
 }
 ```
+
+</details>

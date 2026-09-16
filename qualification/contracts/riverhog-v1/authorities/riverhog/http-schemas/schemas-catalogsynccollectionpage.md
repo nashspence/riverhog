@@ -14,19 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5316dd1cc7"></a>
-- <a id="s-2745abeda4"></a>`title`: CatalogSyncCollectionPage
-- <a id="s-5d94d54247"></a>`type`: object
+
+- <a id="s-5d94d54247"></a>`type`: `"object"`
+- <a id="s-387df8c437"></a>`additionalProperties`: `false`
+- <a id="s-622f3d1259"></a>`required`: `["source_identity","authorization_view_identity","collections"]`
+- <a id="s-2745abeda4"></a>`title`: `"CatalogSyncCollectionPage"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-809ff09438"></a>`authorization_view_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1d9219fe71"></a>`changes_cursor` | no | anyOf=type="string"; minLength=1; maxLength=4096 \| type="null" |  |
-| <a id="s-4cd0865d3f"></a>`collections` | yes | type="array"; maxItems=100; items=(#/components/schemas/CatalogSyncDescriptor) |  |
-| <a id="s-43a0a9899d"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1" |  |
-| <a id="s-908ace0fa8"></a>`next_cursor` | no | anyOf=type="string"; minLength=1; maxLength=4096 \| type="null" |  |
-| <a id="s-c897f48ff8"></a>`source_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-809ff09438"></a>`authorization_view_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1d9219fe71"></a>`changes_cursor` | no | anyOf=(type="string"; maxLength=4096; minLength=1) \| (type="null") |  |
+| <a id="s-4cd0865d3f"></a>`collections` | yes | type="array"; items=(#/components/schemas/CatalogSyncDescriptor); maxItems=100 |  |
+| <a id="s-43a0a9899d"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1"; default="riverhog-catalog-sync/v1" |  |
+| <a id="s-908ace0fa8"></a>`next_cursor` | no | anyOf=(type="string"; maxLength=4096; minLength=1) \| (type="null") |  |
+| <a id="s-c897f48ff8"></a>`source_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -82,6 +85,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCollectionPage`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -155,3 +161,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

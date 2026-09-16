@@ -14,14 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-479bc23949"></a>
-- <a id="s-6d9ace4fb1"></a>`title`: RetrievalCacheStoreStatusOut
-- <a id="s-f44ab16afe"></a>`type`: object
+
+- <a id="s-f44ab16afe"></a>`type`: `"object"`
+- <a id="s-195e0d6ba5"></a>`additionalProperties`: `false`
+- <a id="s-1df12c36af"></a>`required`: `["cache_store","priority","admission_enabled","reserved_bytes","committed_bytes"]`
+- <a id="s-6d9ace4fb1"></a>`title`: `"RetrievalCacheStoreStatusOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e82fb50021"></a>`admission_budget_bytes` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| <a id="s-e82fb50021"></a>`admission_budget_bytes` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
 | <a id="s-b2a26342fc"></a>`admission_enabled` | yes | type="boolean" |  |
 | <a id="s-000e1f094b"></a>`cache_store` | yes | #/components/schemas/RetrievalCacheStoreName |  |
 | <a id="s-603f6ec2e8"></a>`committed_bytes` | yes | type="integer"; minimum=0 |  |
@@ -55,6 +58,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheStoreStatusOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -110,3 +116,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

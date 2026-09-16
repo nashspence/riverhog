@@ -27,16 +27,19 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-e858ee88a0"></a>
-- <a id="s-13a688ee83"></a>`type`: object
 
-### Fields
+- <a id="s-13a688ee83"></a>`type`: `"object"`
+- <a id="s-b8f3e330b8"></a>`additionalProperties`: `false`
+- <a id="s-caae8ce8a0"></a>`required`: `["phase","completed"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-5bf7647948"></a>`completed` | yes | type="integer"; minimum=0 |  |
-| <a id="s-3d99a15ede"></a>`phase` | yes | type="string"; minLength=1; maxLength=120 |  |
-| <a id="s-b02d483182"></a>`total` | no | anyOf=type="integer"; minimum=0 \| type="null" |  |
-| <a id="s-3ff3b017cf"></a>`unit` | no | anyOf=type="string"; minLength=1; maxLength=40 \| type="null" |  |
+| <a id="s-3d99a15ede"></a>`phase` | yes | type="string"; maxLength=120; minLength=1 |  |
+| <a id="s-b02d483182"></a>`total` | no | anyOf=(type="integer"; minimum=0) \| (type="null"); default=null |  |
+| <a id="s-3ff3b017cf"></a>`unit` | no | anyOf=(type="string"; maxLength=40; minLength=1) \| (type="null"); default=null |  |
 
 ## Maintained corroboration
 
@@ -65,6 +68,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_support.TargetProgress`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -126,3 +132,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

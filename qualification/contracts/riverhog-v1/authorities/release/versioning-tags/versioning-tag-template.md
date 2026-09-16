@@ -13,8 +13,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-ba9cdcb97c"></a>
-- Shape: "v{version}"
+
+| Field | Value |
+|---|---|
+| <a id="s-ba9cdcb97c"></a>`tag_template` | `"v{version}"` |
 
 ## Governing policies
 
@@ -40,6 +42,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 268982a6c7e0cdd99400f4c234214a775df3b3dc046efd372f71ad85d564ff3e -->
@@ -47,3 +52,5 @@ The following JSON is the complete value owned at each machine-authority pointer
 ```json
 "v{version}"
 ```
+
+</details>

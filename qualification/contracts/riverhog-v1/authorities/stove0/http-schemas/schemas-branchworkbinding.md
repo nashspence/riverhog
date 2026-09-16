@@ -14,9 +14,12 @@ Stable parent/branch lineage for one ordinary child work identity.
 ## External contract
 
 <a id="s-f7dcdb0c66"></a>
-- <a id="s-353bffec5d"></a>`title`: BranchWorkBinding
-- <a id="s-357ebc62a4"></a>`description`: Stable parent/branch lineage for one ordinary child work identity.
-- <a id="s-6505930055"></a>`type`: object
+
+- <a id="s-6505930055"></a>`type`: `"object"`
+- <a id="s-6958836cc8"></a>`additionalProperties`: `false`
+- <a id="s-357ebc62a4"></a>`description`: `"Stable parent/branch lineage for one ordinary child work identity."`
+- <a id="s-d93bca70c7"></a>`required`: `["parent_work_id","branch_id","decision_sha256","artifact_selection_sha256"]`
+- <a id="s-353bffec5d"></a>`title`: `"BranchWorkBinding"`
 
 ### Fields
 
@@ -25,7 +28,7 @@ Stable parent/branch lineage for one ordinary child work identity.
 | <a id="s-7218be4aaa"></a>`artifact_selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-c8d54a9890"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-7c7260eac9"></a>`decision_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1924d622ee"></a>`kind` | no | type="string"; const="branch" |  |
+| <a id="s-1924d622ee"></a>`kind` | no | type="string"; const="branch"; default="branch" |  |
 | <a id="s-7a56e70881"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
@@ -62,6 +65,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/BranchWorkBinding`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -109,3 +115,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

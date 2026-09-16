@@ -14,16 +14,19 @@ Small identity for target outputs already registered with Riverhog.
 ## External contract
 
 <a id="s-1680fd38ae"></a>
-- <a id="s-2069759423"></a>`title`: OutputArtifactSetIdentity
-- <a id="s-e13b763a35"></a>`description`: Small identity for target outputs already registered with Riverhog.
-- <a id="s-0edbb796f7"></a>`type`: object
+
+- <a id="s-0edbb796f7"></a>`type`: `"object"`
+- <a id="s-d78a9ffdf4"></a>`additionalProperties`: `false`
+- <a id="s-e13b763a35"></a>`description`: `"Small identity for target outputs already registered with Riverhog."`
+- <a id="s-3e1bd7aa4b"></a>`required`: `["artifact_count","total_bytes","roles","sha256"]`
+- <a id="s-2069759423"></a>`title`: `"OutputArtifactSetIdentity"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-5990b9f86c"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-e4d192a5f2"></a>`roles` | yes | type="array"; minItems=1; items=(#/components/schemas/OutputArtifactRoleCount) |  |
+| <a id="s-e4d192a5f2"></a>`roles` | yes | type="array"; items=(#/components/schemas/OutputArtifactRoleCount); minItems=1 |  |
 | <a id="s-a86f446c9b"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-d7f31811ef"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
 
@@ -75,6 +78,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 5b8358c7d637b9865f6fa839ce95492058b0b03b126cf898f334be2dd855020c -->
@@ -118,3 +124,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

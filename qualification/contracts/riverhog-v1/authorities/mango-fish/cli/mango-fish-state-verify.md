@@ -41,7 +41,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-cf072c036d"></a>`completed` | <a id="s-5ae8897388"></a>`{"kind":"state-schema-operation-completed"}` | <a id="s-71b34aab03"></a>`0` | <a id="s-114723fad1"></a>human: `noncontractual-presentation-of-command-result`; json: [state-schema-status/v1](#s-114723fad1) | <a id="s-fd16c3d55b"></a>all: `empty` |
+| <a id="s-cf072c036d"></a>`completed` | <a id="s-5ae8897388"></a>`{"kind":"state-schema-operation-completed"}` | <a id="s-71b34aab03"></a>`0` | <a id="s-114723fad1"></a>human: `noncontractual-presentation-of-command-result`; json: [state-schema-status/v1](#s-8d5852510b) | <a id="s-fd16c3d55b"></a>all: `empty` |
 
 #### Failure outcomes
 
@@ -49,6 +49,28 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|---|
 | <a id="s-cfb5d4af33"></a>`usage` | <a id="s-c8a5a3e692"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-081ff352f1"></a>`2` | <a id="s-0845615c84"></a>all: `empty` | <a id="s-9d889bd126"></a>all: `noncontractual-usage-diagnostic` |
 | <a id="s-103859e7e6"></a>`state-schema` | <a id="s-339b8275e1"></a>`{"kind":"state-schema-error"}` | <a id="s-f74b41fde2"></a>`1` | <a id="s-d87cb320b7"></a>all: `empty` | <a id="s-51dbf4baca"></a>all: `noncontractual-diagnostic` |
+
+### Local structured outputs
+
+
+#### <a id="s-8d5852510b"></a>`state-schema-status/v1`
+
+Applies to: completed · stdout (json).
+
+<a id="s-89175d01a7"></a>
+
+- <a id="s-03c6899307"></a>`type`: `"object"`
+- <a id="s-5c205dd177"></a>`additionalProperties`: `false`
+- <a id="s-e67a5d9484"></a>`required`: `["name","condition","current_revision","head_revision"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-aa90cbe8d8"></a>`condition` | yes | enum=["empty","current","upgrade_required","unversioned","incompatible"] |  |
+| <a id="s-a3de378e88"></a>`current_revision` | yes | type=["string","null"] |  |
+| <a id="s-3d5e090338"></a>`head_revision` | yes | type="string" |  |
+| <a id="s-651904d0a2"></a>`name` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -86,6 +108,9 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 - `/external_contract/cli/mango-fish/commands/state/commands/verify/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -238,3 +263,5 @@ true
   }
 ]
 ```
+
+</details>

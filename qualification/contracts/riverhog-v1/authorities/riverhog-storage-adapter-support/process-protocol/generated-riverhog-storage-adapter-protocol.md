@@ -13,14 +13,22 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-| Subject | Shape |
+<a id="s-da65a692e5"></a>
+<a id="s-85201da1d0"></a>
+<a id="s-4c3e2d1769"></a>
+
+| Field | Value |
 |---|---|
-| <a id="s-4c3e2d1769"></a>`authorities` | additional keys=`http_operations`, `semantic_acceptance`, `structural_models` |
-| <a id="s-73519fff77"></a>`bundle_sha256` | "ed6a7530471c36528ec0c944a389ae5b9f06bb3f643b45ff61c0f8bd47cc4ec6" |
-| <a id="s-85201da1d0"></a>`compatibility` | additional keys=`provider_ontology`, `unknown_fields` |
-| <a id="s-de29ee0e6e"></a>`format` | "riverhog-storage-adapter-schema-bundle/v1" |
-| <a id="s-8343e7f06b"></a>`protocol` | "riverhog-storage-adapter/v1" |
-| <a id="s-da65a692e5"></a>`semantic_acceptance` | additional keys=`conformance`, `kind` |
+| <a id="s-c742f07cf8"></a>`authorities · http_operations` | `"http_binding.operations"` |
+| <a id="s-e21b95b638"></a>`authorities · semantic_acceptance` | `"semantic_acceptance"` |
+| <a id="s-71e0aa3ad6"></a>`authorities · structural_models` | `"schemas"` |
+| <a id="s-73519fff77"></a>`bundle_sha256` | `"ed6a7530471c36528ec0c944a389ae5b9f06bb3f643b45ff61c0f8bd47cc4ec6"` |
+| <a id="s-c56a5e64c9"></a>`compatibility · provider_ontology` | `"private"` |
+| <a id="s-58a0866fa0"></a>`compatibility · unknown_fields` | `"reject"` |
+| <a id="s-de29ee0e6e"></a>`format` | `"riverhog-storage-adapter-schema-bundle/v1"` |
+| <a id="s-8343e7f06b"></a>`protocol` | `"riverhog-storage-adapter/v1"` |
+| <a id="s-c54383adf3"></a>`semantic_acceptance · conformance` | `"riverhog-storage-adapter-conformance-result/v1"` |
+| <a id="s-9e233b6f96"></a>`semantic_acceptance · kind` | `"session-and-object-relations"` |
 
 ## Maintained corroboration
 
@@ -92,6 +100,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 ### `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/authorities`
@@ -151,3 +162,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "kind": "session-and-object-relations"
 }
 ```
+
+</details>

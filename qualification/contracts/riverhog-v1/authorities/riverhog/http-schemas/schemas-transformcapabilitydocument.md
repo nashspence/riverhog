@@ -14,22 +14,25 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8356e4f64b"></a>
-- <a id="s-6e56e9ccbf"></a>`title`: TransformCapabilityDocument
-- <a id="s-8e0b731489"></a>`type`: object
+
+- <a id="s-8e0b731489"></a>`type`: `"object"`
+- <a id="s-cb3941b1b6"></a>`additionalProperties`: `false`
+- <a id="s-611b58a52a"></a>`required`: `["format","id","claim_id","fence","audience","actions","state","principal_app","expires_at","artifacts","token"]`
+- <a id="s-6e56e9ccbf"></a>`title`: `"TransformCapabilityDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6cf1b8ff58"></a>`actions` | yes | type="array"; minItems=1; items=(type="string"; enum=["read-inputs","write-output"]); oneOf=const=["read-inputs"] \| const=["read-inputs","write-output"] |  |
+| <a id="s-6cf1b8ff58"></a>`actions` | yes | type="array"; items=(type="string"; enum=["read-inputs","write-output"]); minItems=1; oneOf=(const=["read-inputs"]) \| (const=["read-inputs","write-output"]) |  |
 | <a id="s-82d9c315a0"></a>`artifacts` | yes | #/components/schemas/ArtifactReceivingSetDocument |  |
 | <a id="s-23e4e467a7"></a>`audience` | yes | type="string"; pattern="^[a-z0-9][a-z0-9._:/-]{0,299}$" |  |
 | <a id="s-efc30a4fa5"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-d17899e432"></a>`expires_at` | yes | type="string"; minLength=1; maxLength=64 |  |
+| <a id="s-d17899e432"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1 |  |
 | <a id="s-504b09c50c"></a>`fence` | yes | type="integer"; minimum=1 |  |
 | <a id="s-46d5a9e506"></a>`format` | yes | type="string"; const="riverhog-transform-capability/v1" |  |
-| <a id="s-359c369b8d"></a>`id` | yes | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-932409e908"></a>`principal_app` | yes | type="string"; minLength=1; maxLength=300 |  |
+| <a id="s-359c369b8d"></a>`id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-932409e908"></a>`principal_app` | yes | type="string"; maxLength=300; minLength=1 |  |
 | <a id="s-2f565ff4bc"></a>`state` | yes | type="string"; enum=["receiving","active"] |  |
 | <a id="s-d59acea44c"></a>`token` | yes | type="string"; pattern="^rhc_[A-Za-z0-9_-]+$" |  |
 
@@ -81,6 +84,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/TransformCapabilityDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -187,3 +193,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

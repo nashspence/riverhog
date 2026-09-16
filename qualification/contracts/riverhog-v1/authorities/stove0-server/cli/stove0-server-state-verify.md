@@ -41,7 +41,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-fcb29a0aca"></a>`completed` | <a id="s-20d1a7354f"></a>`{"kind":"command-completed"}` | <a id="s-3d1accc53b"></a>`0` | <a id="s-a021163408"></a>human: `noncontractual-presentation-of-command-result`; json: [stove0-server-state-status/v1](#s-a021163408) | <a id="s-52ddd296f1"></a>all: `empty` |
+| <a id="s-fcb29a0aca"></a>`completed` | <a id="s-20d1a7354f"></a>`{"kind":"command-completed"}` | <a id="s-3d1accc53b"></a>`0` | <a id="s-a021163408"></a>human: `noncontractual-presentation-of-command-result`; json: [stove0-server-state-status/v1](#s-343c17f088) | <a id="s-52ddd296f1"></a>all: `empty` |
 
 #### Failure outcomes
 
@@ -49,6 +49,28 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|---|
 | <a id="s-82940e40cc"></a>`usage` | <a id="s-3a49b36051"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-929ce8cab3"></a>`2` | <a id="s-968b0088f4"></a>all: `empty` | <a id="s-f9fe990ce5"></a>all: `noncontractual-usage-diagnostic` |
 | <a id="s-4d4aa6e9ae"></a>`state-error` | <a id="s-ae175e2be6"></a>`{"kind":"application-error"}` | <a id="s-e285418831"></a>`1` | <a id="s-9de75d8471"></a>all: `empty` | <a id="s-8b4d7a724e"></a>all: `noncontractual-diagnostic` |
+
+### Local structured outputs
+
+
+#### <a id="s-343c17f088"></a>`stove0-server-state-status/v1`
+
+Applies to: completed · stdout (json).
+
+<a id="s-bf8bb3ba10"></a>
+
+- <a id="s-061b65ba68"></a>`type`: `"object"`
+- <a id="s-2273ef710c"></a>`required`: `["name","condition","current_revision","head_revision"]`
+- <a id="s-c34a9ebedd"></a>`title`: `"StateStatus"`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-d8c48f97d8"></a>`condition` | yes | type="string"; enum=["empty","current","upgrade_required","unversioned","incompatible"] |  |
+| <a id="s-aad4b2dfe7"></a>`current_revision` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-e7a5082bad"></a>`head_revision` | yes | type="string" |  |
+| <a id="s-99114c5912"></a>`name` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -86,6 +108,9 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 - `/external_contract/cli/stove0-server/commands/state/commands/verify/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -247,3 +272,5 @@ true
   }
 ]
 ```
+
+</details>

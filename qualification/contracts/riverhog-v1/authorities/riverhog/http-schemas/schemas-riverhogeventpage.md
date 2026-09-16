@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2637f8f359"></a>
-- <a id="s-03bcc2ca62"></a>`title`: RiverhogEventPage
-- <a id="s-f47e5da2d3"></a>`type`: object
+
+- <a id="s-f47e5da2d3"></a>`type`: `"object"`
+- <a id="s-3ff8befa06"></a>`additionalProperties`: `false`
+- <a id="s-13e328c69d"></a>`required`: `["events","next_cursor","has_more"]`
+- <a id="s-03bcc2ca62"></a>`title`: `"RiverhogEventPage"`
 
 ### Fields
 
@@ -71,6 +74,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 208d1e3875fbbe12f9fc7bac4ed788355006eb1344dfe8490a86a725fb0cbc6b -->
@@ -103,3 +109,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

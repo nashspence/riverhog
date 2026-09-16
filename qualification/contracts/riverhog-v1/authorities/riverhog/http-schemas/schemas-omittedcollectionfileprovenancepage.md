@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7f7d0e9982"></a>
-- <a id="s-c53f04453f"></a>`title`: OmittedCollectionFileProvenancePage
-- <a id="s-3da2c7c5d8"></a>`type`: object
+
+- <a id="s-3da2c7c5d8"></a>`type`: `"object"`
+- <a id="s-589b4246cf"></a>`additionalProperties`: `false`
+- <a id="s-95ce8a1491"></a>`required`: `["page_size","next_page_token","sort","order","query","status","collection_id","provenance_mode","provenance_identity","files"]`
+- <a id="s-c53f04453f"></a>`title`: `"OmittedCollectionFileProvenancePage"`
 
 ### Fields
 
@@ -23,14 +26,14 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-cfc0052d4d"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
 | <a id="s-0f29aaf51f"></a>`files` | yes | type="array"; items=(#/components/schemas/OmittedCollectionFileProvenanceOut) |  |
-| <a id="s-815d243b32"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-815d243b32"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-9394ddb730"></a>`order` | yes | #/components/schemas/SortOrder |  |
 | <a id="s-13afc5c593"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
 | <a id="s-9f7c693e4f"></a>`provenance_identity` | yes | type="null" |  |
 | <a id="s-e2a2173982"></a>`provenance_mode` | yes | type="string"; const="omitted" |  |
-| <a id="s-62388817d0"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-62388817d0"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-6546da24d2"></a>`sort` | yes | #/components/schemas/ProvenanceSort |  |
-| <a id="s-b4216cdce6"></a>`status` | yes | anyOf=#/components/schemas/ProvenanceStatus \| type="null" |  |
+| <a id="s-b4216cdce6"></a>`status` | yes | anyOf=(#/components/schemas/ProvenanceStatus) \| (type="null") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -84,6 +87,9 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 - `/external_contract/http_openapi/riverhog/components/schemas/OmittedCollectionFileProvenancePage`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -172,3 +178,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -27,24 +27,60 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ab068bfb41"></a>
-- <a id="s-8bc12bb18d"></a>`type`: object
 
-### Fields
+- <a id="s-8bc12bb18d"></a>`type`: `"object"`
+- <a id="s-39558216d7"></a>`additionalProperties`: `false`
+- <a id="s-7424343afe"></a>`required`: `["collection","path","bytes","sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-57e3627403"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-8bc6c9ef5a"></a>`collection` | yes | #/$defs/CollectionRootIdentityDocument |  |
-| <a id="s-1e37004564"></a>`path` | yes | #/$defs/CanonicalRelPath |  |
+| <a id="s-8bc6c9ef5a"></a>`collection` | yes | [CollectionRootIdentityDocument](#s-6b0a0a299b) |  |
+| <a id="s-1e37004564"></a>`path` | yes | [CanonicalRelPath](#s-36e7ee4bca) |  |
 | <a id="s-bba78bc748"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
+- [CanonicalRelPath](#s-36e7ee4bca)
+- [CollectionId](#s-1dc1d018d5)
+- [CollectionRootIdentityDocument](#s-6b0a0a299b)
+
+##### <a id="s-36e7ee4bca"></a>definition `CanonicalRelPath`
+
+- <a id="s-65272da6fb"></a>`type`: `"string"`
+- <a id="s-78ef0d9bda"></a>`format`: `"riverhog-canonical-relpath-v1"`
+- <a id="s-0a7896c8fd"></a>`maxLength`: `4096`
+- <a id="s-e6577a27f8"></a>`minLength`: `1`
+- <a id="s-ef2d5f79e4"></a>`pattern`: `"^[^/\\\\]+(?:/[^/\\\\]+)*$"`
+- <a id="s-33caa0d8ee"></a>`x-unicode-normalization`: `"NFC"`
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
 |---|---|
-| <a id="s-36e7ee4bca"></a>`CanonicalRelPath` | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
-| <a id="s-1dc1d018d5"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-6b0a0a299b"></a>`CollectionRootIdentityDocument` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
+| <a id="s-527c13a876"></a>1 | not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)") |
+| <a id="s-260f497939"></a>2 | not=(pattern="^\\s\|\\s$") |
+
+##### <a id="s-1dc1d018d5"></a>definition `CollectionId`
+
+- <a id="s-4437a99e67"></a>`type`: `"integer"`
+- <a id="s-c5dc484541"></a>`minimum`: `1`
+
+##### <a id="s-6b0a0a299b"></a>definition `CollectionRootIdentityDocument`
+
+- <a id="s-974a81b844"></a>`type`: `"object"`
+- <a id="s-00dee2deb3"></a>`additionalProperties`: `false`
+- <a id="s-f8a494991a"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-939988ac85"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-05fb14f443"></a>`collection_id` | yes | [CollectionId](#s-1dc1d018d5) |  |
+| <a id="s-29a68e9f99"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -75,6 +111,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.CollectionArtifactIdentityDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -166,3 +205,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

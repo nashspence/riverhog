@@ -27,16 +27,19 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-013e1b52c8"></a>
-- <a id="s-64033b90ee"></a>`type`: object
 
-### Fields
+- <a id="s-64033b90ee"></a>`type`: `"object"`
+- <a id="s-c72c1e934d"></a>`additionalProperties`: `false`
+- <a id="s-b0d7ce36a1"></a>`required`: `["source_identity","authorization_view_identity","catalog_cursor"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-cdc54045ed"></a>`authorization_view_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-c6ec2def91"></a>`catalog_cursor` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-619001cf1f"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1" |  |
-| <a id="s-5a3c7515cb"></a>`source_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-cdc54045ed"></a>`authorization_view_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c6ec2def91"></a>`catalog_cursor` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-619001cf1f"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1"; default="riverhog-catalog-sync/v1" |  |
+| <a id="s-5a3c7515cb"></a>`source_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 
 ## Governing policies
 
@@ -59,6 +62,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -109,3 +115,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

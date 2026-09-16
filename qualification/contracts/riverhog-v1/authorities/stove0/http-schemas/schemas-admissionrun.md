@@ -14,14 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-95b5f12fb0"></a>
-- <a id="s-5aaab0f6da"></a>`title`: AdmissionRun
-- <a id="s-c423e97c0c"></a>`type`: object
+
+- <a id="s-c423e97c0c"></a>`type`: `"object"`
+- <a id="s-da45f32181"></a>`additionalProperties`: `false`
+- <a id="s-53bb43e936"></a>`required`: `["progressed"]`
+- <a id="s-5aaab0f6da"></a>`title`: `"AdmissionRun"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f31c640f47"></a>`failures` | no | type="array"; items=(#/components/schemas/SchedulerFailure) |  |
+| <a id="s-f31c640f47"></a>`failures` | no | type="array"; default=[]; items=(#/components/schemas/SchedulerFailure) |  |
 | <a id="s-3175a4de76"></a>`progressed` | yes | type="array"; items=(type="string") |  |
 
 ### Progression, limits, and lifecycle
@@ -64,6 +67,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 0bbd87e19c427d12cb899be4bfee0310f6a65555bc5c9dd350752e31f181080e -->
@@ -95,3 +101,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -44,14 +44,55 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-00a3f402c0"></a>`completed` | <a id="s-a2d1a3fccd"></a>`{"kind":"command-completed"}` | <a id="s-5890ba2bbd"></a>`0` | <a id="s-c57f9c0623"></a>human: `noncontractual-presentation-of-command-result`; json: [gogurt-mounted-root-list/v1](#s-c57f9c0623) | <a id="s-133e8dfafd"></a>all: `empty` |
+| <a id="s-00a3f402c0"></a>`completed` | <a id="s-a2d1a3fccd"></a>`{"kind":"command-completed"}` | <a id="s-5890ba2bbd"></a>`0` | <a id="s-c57f9c0623"></a>human: `noncontractual-presentation-of-command-result`; json: [gogurt-mounted-root-list/v1](#s-3be154750e) | <a id="s-133e8dfafd"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-c4c1416683"></a>`usage` | <a id="s-8709452a47"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-22a8a7f9c0"></a>`2` | <a id="s-b934d81bab"></a>all: `empty` | <a id="s-50d61a0459"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-39d0526896"></a>`operational` | <a id="s-edfe26e800"></a>`{"kind":"application-error"}` | <a id="s-dd58a8cb2b"></a>`1` | <a id="s-0f8b9a0013"></a>human: `empty`; json: [gogurt-cli-error/v1](#s-0f8b9a0013) | <a id="s-2f5f6ba1dc"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-39d0526896"></a>`operational` | <a id="s-edfe26e800"></a>`{"kind":"application-error"}` | <a id="s-dd58a8cb2b"></a>`1` | <a id="s-0f8b9a0013"></a>human: `empty`; json: [gogurt-cli-error/v1](#s-fed5e1cfbe) | <a id="s-2f5f6ba1dc"></a>human: `noncontractual-diagnostic`; json: `empty` |
+
+### Local structured outputs
+
+
+#### <a id="s-3be154750e"></a>`gogurt-mounted-root-list/v1`
+
+Applies to: completed · stdout (json).
+
+<a id="s-41341520da"></a>
+
+- <a id="s-ce6172f1a0"></a>`type`: `"array"`
+- <a id="s-67d55f54a3"></a>`items`: type="string"
+
+#### <a id="s-fed5e1cfbe"></a>`gogurt-cli-error/v1`
+
+Applies to: operational · stdout (json).
+
+<a id="s-985391c6fb"></a>
+
+- <a id="s-238485e543"></a>`type`: `"object"`
+- <a id="s-1742e0db56"></a>`additionalProperties`: `false`
+- <a id="s-44c952214c"></a>`required`: `["error"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `error` | yes | [See field `error`](#s-84c056ec80) |  |
+
+##### <a id="s-84c056ec80"></a>field `error`
+
+- <a id="s-1dddb0598e"></a>`type`: `"object"`
+- <a id="s-175ac531b3"></a>`additionalProperties`: `false`
+- <a id="s-76cb739c51"></a>`required`: `["code","message"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-02d4fe5827"></a>`code` | yes | enum=["config_error","listener_error"] |  |
+| <a id="s-146679926a"></a>`message` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -92,6 +133,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 - `/external_contract/cli/gogurt/commands/mounts/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -292,3 +336,5 @@ false
   }
 ]
 ```
+
+</details>

@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-99b0948ee4"></a>
-- <a id="s-9d44dee5db"></a>`title`: CollectionFinalizedData
-- <a id="s-0b32ac852c"></a>`type`: object
+
+- <a id="s-0b32ac852c"></a>`type`: `"object"`
+- <a id="s-08da378d20"></a>`additionalProperties`: `false`
+- <a id="s-3354223e62"></a>`required`: `["actor","initiator","collection_id","collection_created_at","files_total","bytes_total","archive_root_sha256"]`
+- <a id="s-9d44dee5db"></a>`title`: `"CollectionFinalizedData"`
 
 ### Fields
 
@@ -24,10 +27,10 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-10253e13a4"></a>`actor` | yes | #/components/schemas/RiverhogActor |  |
 | <a id="s-943808cecb"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-0f4ed7f415"></a>`bytes_total` | yes | type="integer"; minimum=0 |  |
-| <a id="s-036a4cbcd9"></a>`cause` | no | anyOf=#/components/schemas/RiverhogEventCause \| type="null" |  |
-| <a id="s-072c25f017"></a>`collection_created_at` | yes | type="string"; minLength=1; maxLength=64 |  |
+| <a id="s-036a4cbcd9"></a>`cause` | no | anyOf=(#/components/schemas/RiverhogEventCause) \| (type="null") |  |
+| <a id="s-072c25f017"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
 | <a id="s-b9b9559b23"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-634b16fda5"></a>`context` | no | anyOf=type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` \| type="null" |  |
+| <a id="s-634b16fda5"></a>`context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null") |  |
 | <a id="s-1b21fd8bfc"></a>`files_total` | yes | type="integer"; minimum=0 |  |
 | <a id="s-881387cb45"></a>`initiator` | yes | #/components/schemas/RiverhogActor |  |
 
@@ -80,6 +83,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -160,3 +166,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

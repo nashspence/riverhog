@@ -13,8 +13,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-67fedf3b3b"></a>
-- Shape: "Published v1 tags are never moved or deleted."
+
+| Field | Value |
+|---|---|
+| <a id="s-67fedf3b3b"></a>`tag_immutability` | `"Published v1 tags are never moved or deleted."` |
 
 ## Governing policies
 
@@ -40,6 +42,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: f036a7c780d6dd0307a17f3c386fc3d3a31bc6f41c5f19c14957121e7bc40a50 -->
@@ -47,3 +52,5 @@ The following JSON is the complete value owned at each machine-authority pointer
 ```json
 "Published v1 tags are never moved or deleted."
 ```
+
+</details>

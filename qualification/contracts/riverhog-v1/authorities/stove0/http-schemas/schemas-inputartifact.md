@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6d70b97218"></a>
-- <a id="s-5522727766"></a>`title`: InputArtifact
-- <a id="s-dc1722292e"></a>`type`: object
+
+- <a id="s-dc1722292e"></a>`type`: `"object"`
+- <a id="s-afd7794758"></a>`additionalProperties`: `false`
+- <a id="s-aeeee36e47"></a>`required`: `["id","role","collection","path","bytes","sha256"]`
+- <a id="s-5522727766"></a>`title`: `"InputArtifact"`
 
 ### Fields
 
@@ -24,8 +27,8 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-993c7b572e"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-2184fb8f86"></a>`collection` | yes | #/components/schemas/CollectionRootRef |  |
 | <a id="s-0eebf2992b"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-441beb6169"></a>`media_type` | no | anyOf=type="string"; minLength=1; maxLength=255 \| type="null" |  |
-| <a id="s-b428e392ba"></a>`path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-441beb6169"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null") |  |
+| <a id="s-b428e392ba"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-362483e0d8"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-9ed0ecdbca"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
@@ -76,6 +79,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/stove0/components/schemas/InputArtifact`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -140,3 +146,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

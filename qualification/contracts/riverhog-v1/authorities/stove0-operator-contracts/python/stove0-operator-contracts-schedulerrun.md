@@ -27,24 +27,87 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-bea95f16ce"></a>
-- <a id="s-c7db1dc77d"></a>`type`: object
 
-### Fields
+- <a id="s-c7db1dc77d"></a>`type`: `"object"`
+- <a id="s-ccf4a0a0bd"></a>`additionalProperties`: `false`
+- <a id="s-ed13546b9e"></a>`required`: `["pruning","work"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4529d53325"></a>`admission` | no | anyOf=#/$defs/AdmissionRun \| type="null" |  |
-| <a id="s-d0ff3529cf"></a>`pruning` | yes | anyOf=#/$defs/SchedulerPruning \| type="null" |  |
-| <a id="s-557354c3af"></a>`work` | yes | #/$defs/SchedulerWorkBatch |  |
+| <a id="s-4529d53325"></a>`admission` | no | anyOf=([AdmissionRun](#s-bba32c184c)) \| (type="null"); default=null |  |
+| <a id="s-d0ff3529cf"></a>`pruning` | yes | anyOf=([SchedulerPruning](#s-bc7006be46)) \| (type="null") |  |
+| <a id="s-557354c3af"></a>`work` | yes | [SchedulerWorkBatch](#s-85f50ba4ce) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-bba32c184c"></a>`AdmissionRun` | type="object"; fields=`failures`, `progressed`; additional keys=`additionalProperties`, `required` |
-| <a id="s-f931be92db"></a>`SchedulerFailure` | type="object"; fields=`error`, `event_id`, `work_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-bc7006be46"></a>`SchedulerPruning` | type="object"; fields=`evaluation_bytes`, `evaluations`, `event_bytes`, `events`, `selection_bytes`, `selections`, `work`, `work_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-85f50ba4ce"></a>`SchedulerWorkBatch` | type="object"; fields=`cursor`, `failures`, `next_cursor`, `progressed`, `role`; additional keys=`additionalProperties`, `required` |
+- [AdmissionRun](#s-bba32c184c)
+- [SchedulerFailure](#s-f931be92db)
+- [SchedulerPruning](#s-bc7006be46)
+- [SchedulerWorkBatch](#s-85f50ba4ce)
+
+##### <a id="s-bba32c184c"></a>definition `AdmissionRun`
+
+- <a id="s-43fd4a0103"></a>`type`: `"object"`
+- <a id="s-752b8dc46d"></a>`additionalProperties`: `false`
+- <a id="s-9353c60274"></a>`required`: `["progressed"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-dcac46254d"></a>`failures` | no | type="array"; default=[]; items=([SchedulerFailure](#s-f931be92db)) |  |
+| <a id="s-5720136508"></a>`progressed` | yes | type="array"; items=(type="string") |  |
+
+##### <a id="s-f931be92db"></a>definition `SchedulerFailure`
+
+- <a id="s-a2b7b3701d"></a>`type`: `"object"`
+- <a id="s-f351027049"></a>`additionalProperties`: `false`
+- <a id="s-23b1103e41"></a>`required`: `["error"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-512d9ab40f"></a>`error` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-13280c6b71"></a>`event_id` | no | anyOf=(type="string") \| (type="null"); default=null |  |
+| <a id="s-75e71774bf"></a>`work_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+
+##### <a id="s-bc7006be46"></a>definition `SchedulerPruning`
+
+- <a id="s-557c53c486"></a>`type`: `"object"`
+- <a id="s-dfed785bee"></a>`additionalProperties`: `false`
+- <a id="s-861def0134"></a>`required`: `["work","work_bytes","evaluations","evaluation_bytes","selections","selection_bytes","events","event_bytes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c49ada348c"></a>`evaluation_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-1d33d965d7"></a>`evaluations` | yes | type="integer"; minimum=0 |  |
+| <a id="s-169eacceb3"></a>`event_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-283e0cec4a"></a>`events` | yes | type="integer"; minimum=0 |  |
+| <a id="s-ed7b295716"></a>`selection_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-99367b5ff3"></a>`selections` | yes | type="integer"; minimum=0 |  |
+| <a id="s-96c5fc98bd"></a>`work` | yes | type="integer"; minimum=0 |  |
+| <a id="s-a763f69d36"></a>`work_bytes` | yes | type="integer"; minimum=0 |  |
+
+##### <a id="s-85f50ba4ce"></a>definition `SchedulerWorkBatch`
+
+- <a id="s-d46866def3"></a>`type`: `"object"`
+- <a id="s-6b95ba490b"></a>`additionalProperties`: `false`
+- <a id="s-461dbd2a8f"></a>`required`: `["role","cursor","next_cursor","progressed","failures"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-febaa7cdbe"></a>`cursor` | yes | type="string" |  |
+| <a id="s-83204bb86d"></a>`failures` | yes | type="array"; items=([SchedulerFailure](#s-f931be92db)) |  |
+| <a id="s-71bf1bf982"></a>`next_cursor` | yes | type="string" |  |
+| <a id="s-491358acb9"></a>`progressed` | yes | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
+| <a id="s-d2bfd7f1c2"></a>`role` | yes | type="string"; enum=["controller","worker","combined"] |  |
 
 ## Governing policies
 
@@ -67,6 +130,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.SchedulerRun`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -267,3 +333,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

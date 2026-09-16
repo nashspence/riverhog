@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-0d1f6f2eed"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-1351b3e99a"></a>`consumers` | ["gogurt-linux-listener-host"] |
-| <a id="s-6441796b18"></a>`default_expressions` | ["user_home / '.local' / 'state'"] |
-| <a id="s-8efd3e0ae2"></a>`id` | "gogurt-linux-listener-host:environment:XDG_STATE_HOME" |
-| <a id="s-aa9de88a18"></a>`input_shape` | "environment-string" |
-| <a id="s-4e078e6d98"></a>`name` | "XDG_STATE_HOME" |
-| <a id="s-5f4b8348df"></a>`owner` | "gogurt-linux-listener-host" |
+| <a id="s-1351b3e99a"></a>`consumers` | `["gogurt-linux-listener-host"]` |
+| <a id="s-6441796b18"></a>`default_expressions` | `["user_home / '.local' / 'state'"]` |
+| <a id="s-8efd3e0ae2"></a>`id` | `"gogurt-linux-listener-host:environment:XDG_STATE_HOME"` |
+| <a id="s-aa9de88a18"></a>`input_shape` | `"environment-string"` |
+| <a id="s-4e078e6d98"></a>`name` | `"XDG_STATE_HOME"` |
+| <a id="s-5f4b8348df"></a>`owner` | `"gogurt-linux-listener-host"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: fc2f8139149b1fe7a901513efdcaa7bee64d3a16406dc63503c9a130323490cd -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "gogurt-linux-listener-host"
 }
 ```
+
+</details>

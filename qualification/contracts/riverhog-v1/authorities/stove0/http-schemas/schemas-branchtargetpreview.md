@@ -14,9 +14,12 @@ Target-owned preflight evidence for one exact previewed branch.
 ## External contract
 
 <a id="s-8bf7127c83"></a>
-- <a id="s-8929193df9"></a>`title`: BranchTargetPreview
-- <a id="s-6b5674eb99"></a>`description`: Target-owned preflight evidence for one exact previewed branch.
-- <a id="s-6aea1f924b"></a>`type`: object
+
+- <a id="s-6aea1f924b"></a>`type`: `"object"`
+- <a id="s-b749f5aef1"></a>`additionalProperties`: `false`
+- <a id="s-6b5674eb99"></a>`description`: `"Target-owned preflight evidence for one exact previewed branch."`
+- <a id="s-2f76ae0dba"></a>`required`: `["branch_id","work_id","workflow_plan_sha256","target_plan"]`
+- <a id="s-8929193df9"></a>`title`: `"BranchTargetPreview"`
 
 ### Fields
 
@@ -67,6 +70,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 686f82e61ce31a8aa926d3ad139cbed42da92032d71f25ec0f781c9d7c6cc206 -->
@@ -105,3 +111,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

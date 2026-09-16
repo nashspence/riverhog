@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-25a6d1b785"></a>
-- <a id="s-2a1a030eee"></a>`title`: CollectionTagListOut
-- <a id="s-b805b67926"></a>`type`: object
+
+- <a id="s-b805b67926"></a>`type`: `"object"`
+- <a id="s-7ea6bd4451"></a>`additionalProperties`: `false`
+- <a id="s-30279db14d"></a>`required`: `["collection_id","revision","tag_set_identity","page_size","next_page_token","tags"]`
+- <a id="s-2a1a030eee"></a>`title`: `"CollectionTagListOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-44e9b6604c"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-21b67b2b68"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-21b67b2b68"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-ba445df547"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
 | <a id="s-e903eeee44"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
 | <a id="s-8ce7664492"></a>`tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -84,6 +87,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 9842f4b5487bf8be7af46821a59efdf08f93bd5ad6368a3470be8094cac56011 -->
@@ -142,3 +148,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

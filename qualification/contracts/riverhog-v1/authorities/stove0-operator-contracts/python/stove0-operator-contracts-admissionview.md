@@ -27,32 +27,102 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-bebd933f68"></a>
-- <a id="s-a19015f9c4"></a>`type`: object
 
-### Fields
+- <a id="s-a19015f9c4"></a>`type`: `"object"`
+- <a id="s-edede9e696"></a>`additionalProperties`: `false`
+- <a id="s-a0b03e3514"></a>`required`: `["intent","state","attempt_count","created_at","updated_at"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-39f4aa867f"></a>`attempt_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-ec2e41e1e4"></a>`created_at` | yes | type="string"; minLength=1; maxLength=40 |  |
-| <a id="s-cc2e78584a"></a>`failure` | no | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
-| <a id="s-24dc183dec"></a>`intent` | yes | #/$defs/AdmissionIntent |  |
-| <a id="s-771f563f31"></a>`next_attempt_at` | no | anyOf=type="string"; minLength=1; maxLength=40 \| type="null" |  |
-| <a id="s-6fdb4daaf7"></a>`preview_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-ec2e41e1e4"></a>`created_at` | yes | type="string"; maxLength=40; minLength=1 |  |
+| <a id="s-cc2e78584a"></a>`failure` | no | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-24dc183dec"></a>`intent` | yes | [AdmissionIntent](#s-990313fa6e) |  |
+| <a id="s-771f563f31"></a>`next_attempt_at` | no | anyOf=(type="string"; maxLength=40; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-6fdb4daaf7"></a>`preview_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
 | <a id="s-e916cc4872"></a>`state` | yes | type="string"; enum=["intent","previewed","work_bound"] |  |
-| <a id="s-918983d3cd"></a>`updated_at` | yes | type="string"; minLength=1; maxLength=40 |  |
-| <a id="s-280f1abd95"></a>`work_id` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-918983d3cd"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
+| <a id="s-280f1abd95"></a>`work_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-990313fa6e"></a>`AdmissionIntent` | type="object"; fields=`admission_id`, `collection`, `effective_intent`, `format`, `policy_id`, `policy_revision`, `policy_sha256`, `recipe_id`, `recipe_revision`, `recipe_sha256`, `required_tags`; additional keys=`additionalProperties`, `required` |
-| <a id="s-227a918078"></a>`CatalogSyncDescriptor` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`, `description`, `description_identity`, `description_revision`, `revision`, `tag_revision`, `tag_set_identity`; additional keys=`additionalProperties`, `required` |
-| <a id="s-c7eddb0819"></a>`CollectionDescription` | type="string"; minLength=1; maxLength=32768; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
-| <a id="s-8c5a60017f"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-7119e58bd0"></a>`CollectionTag` | type="string"; minLength=1; maxLength=65536; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
-| <a id="s-1179c21027"></a>`JsonValue` | empty object |
+- [AdmissionIntent](#s-990313fa6e)
+- [CatalogSyncDescriptor](#s-227a918078)
+- [CollectionDescription](#s-c7eddb0819)
+- [CollectionId](#s-8c5a60017f)
+- [CollectionTag](#s-7119e58bd0)
+- [JsonValue](#s-1179c21027)
+
+##### <a id="s-990313fa6e"></a>definition `AdmissionIntent`
+
+- <a id="s-bf5e8e4c58"></a>`type`: `"object"`
+- <a id="s-a5fbe8cd1a"></a>`additionalProperties`: `false`
+- <a id="s-ba834e2eab"></a>`required`: `["admission_id","policy_id","policy_revision","policy_sha256","required_tags","collection","recipe_id","recipe_revision","recipe_sha256","effective_intent"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b20df1840f"></a>`admission_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-3d8673135f"></a>`collection` | yes | [CatalogSyncDescriptor](#s-227a918078) |  |
+| <a id="s-1d0e47f6b1"></a>`effective_intent` | yes | type="object"; additionalProperties=([JsonValue](#s-1179c21027)) |  |
+| <a id="s-6462558fe0"></a>`format` | no | type="string"; const="stove0-admission-intent/v1"; default="stove0-admission-intent/v1" |  |
+| <a id="s-b8f0ac2ea2"></a>`policy_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-7e8bf505fe"></a>`policy_revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-0cdb0cd389"></a>`policy_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-55425f61f0"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-0c8c8de178"></a>`recipe_revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-fa9d66ea43"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-da89bdca80"></a>`required_tags` | yes | type="array"; items=([CollectionTag](#s-7119e58bd0)) |  |
+
+##### <a id="s-227a918078"></a>definition `CatalogSyncDescriptor`
+
+- <a id="s-9c54ec5858"></a>`type`: `"object"`
+- <a id="s-1abbe16f99"></a>`additionalProperties`: `false`
+- <a id="s-125323132e"></a>`required`: `["collection_id","archive_root_sha256","content_identity","description","description_revision","description_identity","tag_revision","tag_set_identity","revision"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-bdeebe9cd5"></a>`archive_root_sha256` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-dbe44beb2b"></a>`collection_id` | yes | [CollectionId](#s-8c5a60017f) |  |
+| <a id="s-eb6b0bdebb"></a>`content_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-989289d089"></a>`description` | yes | anyOf=([CollectionDescription](#s-c7eddb0819)) \| (type="null") |  |
+| <a id="s-8e1c472a59"></a>`description_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-69796ee4eb"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
+| <a id="s-c6593baf9d"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+| <a id="s-2cc2df7ecd"></a>`tag_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
+| <a id="s-767ba3ce65"></a>`tag_set_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-c7eddb0819"></a>definition `CollectionDescription`
+
+- <a id="s-d9032ec900"></a>`type`: `"string"`
+- <a id="s-50bd9b8ee1"></a>`maxLength`: `32768`
+- <a id="s-1e8ed05a17"></a>`minLength`: `1`
+- <a id="s-a03d48e048"></a>`x-riverhog-encoded-bytes-max`: `32768`
+- <a id="s-e2bf8addb9"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-catalog-description"}`
+- <a id="s-9112819a97"></a>`x-unicode-normalization`: `"NFC"`
+
+##### <a id="s-8c5a60017f"></a>definition `CollectionId`
+
+- <a id="s-b0450b2456"></a>`type`: `"integer"`
+- <a id="s-f80305300c"></a>`minimum`: `1`
+
+##### <a id="s-7119e58bd0"></a>definition `CollectionTag`
+
+- <a id="s-f7fd35e3fb"></a>`type`: `"string"`
+- <a id="s-05ef11ccb6"></a>`maxLength`: `65536`
+- <a id="s-5f6fdbd8ee"></a>`minLength`: `1`
+- <a id="s-6a427d87e1"></a>`x-riverhog-encoded-bytes-max`: `65536`
+- <a id="s-91c16a8e3e"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-collection-tag"}`
+- <a id="s-0a776e8fb8"></a>`x-unicode-normalization`: `"NFC"`
+
+##### <a id="s-1179c21027"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Maintained corroboration
 
@@ -81,6 +151,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.AdmissionView`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -353,3 +426,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

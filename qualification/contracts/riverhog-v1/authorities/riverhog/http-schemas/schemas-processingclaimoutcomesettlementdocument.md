@@ -14,8 +14,13 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b7a81be779"></a>
-- <a id="s-86326ca924"></a>`title`: ProcessingClaimOutcomeSettlementDocument
-- <a id="s-4aff1b04cd"></a>`type`: object
+
+- <a id="s-4aff1b04cd"></a>`type`: `"object"`
+- <a id="s-239b3010d8"></a>`additionalProperties`: `false`
+- `if`: [See `if`](#s-7bb79833a6)
+- <a id="s-d7ded02331"></a>`required`: `["outcomes","retirement_policy","retirement_grace_seconds"]`
+- `then`: [See `then`](#s-e46edf88b2)
+- <a id="s-86326ca924"></a>`title`: `"ProcessingClaimOutcomeSettlementDocument"`
 
 ### Fields
 
@@ -24,6 +29,24 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-66e7037bf1"></a>`outcomes` | yes | #/components/schemas/ExactSetAuthorityDocument |  |
 | <a id="s-c9a1869ba6"></a>`retirement_grace_seconds` | yes | type="integer"; minimum=0 |  |
 | <a id="s-ca68cd4ae2"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"] |  |
+
+### <a id="s-7bb79833a6"></a>`if`
+
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-022b350df7"></a>`retirement_policy` | no | const="retain" |  |
+
+### <a id="s-e46edf88b2"></a>`then`
+
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-8157a34385"></a>`retirement_grace_seconds` | no | const=0 |  |
 
 ## Maintained corroboration
 
@@ -52,6 +75,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomeSettlementDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -101,3 +127,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

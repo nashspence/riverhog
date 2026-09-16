@@ -27,15 +27,18 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-0909029cad"></a>
-- <a id="s-d47353300f"></a>`type`: object
 
-### Fields
+- <a id="s-d47353300f"></a>`type`: `"object"`
+- <a id="s-e0b2edbc0d"></a>`additionalProperties`: `false`
+- <a id="s-b9813bcb46"></a>`required`: `["stove0_base_url","token"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f83edb9700"></a>`allow_insecure_http` | no | type="boolean" |  |
-| <a id="s-f10ea78b70"></a>`stove0_base_url` | yes | type="string"; minLength=1; maxLength=2048 |  |
-| <a id="s-eceb86407c"></a>`token` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-f83edb9700"></a>`allow_insecure_http` | no | type="boolean"; default=false |  |
+| <a id="s-f10ea78b70"></a>`stove0_base_url` | yes | type="string"; maxLength=2048; minLength=1 |  |
+| <a id="s-eceb86407c"></a>`token` | yes | type="string"; maxLength=4096; minLength=1 |  |
 
 ## Governing policies
 
@@ -58,6 +61,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_protocol.TargetCallbackAccess`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -99,3 +105,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

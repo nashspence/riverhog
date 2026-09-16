@@ -27,21 +27,49 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-6bccd1f0d0"></a>
-- <a id="s-748fbaccba"></a>`type`: object
 
-### Fields
+- <a id="s-748fbaccba"></a>`type`: `"object"`
+- <a id="s-1fe3bc7063"></a>`additionalProperties`: `false`
+- <a id="s-88b77d328d"></a>`required`: `["selection","roles"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c0a9935e5a"></a>`roles` | yes | type="array"; minItems=1; items=(#/$defs/TargetInputRoleCount) |  |
-| <a id="s-096ed0cfbb"></a>`selection` | yes | #/$defs/ArtifactSelectionRef |  |
+| <a id="s-c0a9935e5a"></a>`roles` | yes | type="array"; items=([TargetInputRoleCount](#s-08566a1ea6)); minItems=1 |  |
+| <a id="s-096ed0cfbb"></a>`selection` | yes | [ArtifactSelectionRef](#s-7dc6a4ef18) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-7dc6a4ef18"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-08566a1ea6"></a>`TargetInputRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
+- [ArtifactSelectionRef](#s-7dc6a4ef18)
+- [TargetInputRoleCount](#s-08566a1ea6)
+
+##### <a id="s-7dc6a4ef18"></a>definition `ArtifactSelectionRef`
+
+- <a id="s-c7415149f0"></a>`type`: `"object"`
+- <a id="s-c5d3c42120"></a>`additionalProperties`: `false`
+- <a id="s-33a2655842"></a>`required`: `["selection_sha256","artifact_count","total_bytes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-1e77610fdf"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-bc5da194c7"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a9fab63d2a"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+
+##### <a id="s-08566a1ea6"></a>definition `TargetInputRoleCount`
+
+- <a id="s-46c97d9f40"></a>`type`: `"object"`
+- <a id="s-f64fdb41ca"></a>`additionalProperties`: `false`
+- <a id="s-f86eae8eee"></a>`required`: `["role","count"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-72fc27cb60"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-317339f725"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ## Maintained corroboration
 
@@ -71,6 +99,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_protocol.TargetInputAuthority`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -151,3 +182,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

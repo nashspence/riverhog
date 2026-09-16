@@ -14,9 +14,12 @@ A bounded acquisition step over currently actionable upload units.
 ## External contract
 
 <a id="s-7ff4df5056"></a>
-- <a id="s-846950f272"></a>`title`: CollectionUploadWorkBatchDocument
-- <a id="s-e3b8f0d45d"></a>`description`: A bounded acquisition step over currently actionable upload units.
-- <a id="s-cd8632738e"></a>`type`: object
+
+- <a id="s-cd8632738e"></a>`type`: `"object"`
+- <a id="s-a6cde8a9e3"></a>`additionalProperties`: `false`
+- <a id="s-e3b8f0d45d"></a>`description`: `"A bounded acquisition step over currently actionable upload units."`
+- <a id="s-4fe53b4041"></a>`required`: `["collection_id","planning_complete","complete","committed_payload_bytes","work"]`
+- <a id="s-846950f272"></a>`title`: `"CollectionUploadWorkBatchDocument"`
 
 ### Fields
 
@@ -26,7 +29,7 @@ A bounded acquisition step over currently actionable upload units.
 | <a id="s-86f4d750af"></a>`committed_payload_bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-9c4aca2092"></a>`complete` | yes | type="boolean" |  |
 | <a id="s-b5d3083403"></a>`planning_complete` | yes | type="boolean" |  |
-| <a id="s-4617d6f48d"></a>`work` | yes | type="array"; maxItems=64; items=(#/components/schemas/CollectionUploadUnitAssignmentDocument); additional keys=`x-riverhog-extent` |  |
+| <a id="s-4617d6f48d"></a>`work` | yes | type="array"; items=(#/components/schemas/CollectionUploadUnitAssignmentDocument); maxItems=64; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"repeated-acquisition-until-complete","reason":"bounded-actionable-work-acquisition"} |  |
 
 ### Progression, limits, and lifecycle
 
@@ -73,6 +76,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -124,3 +130,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

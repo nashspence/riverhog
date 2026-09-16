@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d8de960a53"></a>
-- <a id="s-71b5428fd5"></a>`title`: RetrievalCacheObjectOut
-- <a id="s-023b459ad5"></a>`type`: object
+
+- <a id="s-023b459ad5"></a>`type`: `"object"`
+- <a id="s-c0632852e7"></a>`additionalProperties`: `false`
+- <a id="s-26250218b5"></a>`required`: `["collection_id","source_store","cache_store","object_id","state","stored_bytes","stored_sha256","cached_at","verified_at","protected_until","new_archive_expires_at","lease_categories","retrieval_job_leases"]`
+- <a id="s-71b5428fd5"></a>`title`: `"RetrievalCacheObjectOut"`
 
 ### Fields
 
@@ -25,14 +28,14 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-3b10f667fb"></a>`cached_at` | yes | type="string" |  |
 | <a id="s-d3807612bf"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
 | <a id="s-627408e577"></a>`lease_categories` | yes | type="array"; items=(type="string"; enum=["new_archive","retrieval_job"]) |  |
-| <a id="s-5e4b6f164b"></a>`new_archive_expires_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-5e4b6f164b"></a>`new_archive_expires_at` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-51bc3513f0"></a>`object_id` | yes | type="string" |  |
-| <a id="s-d92ae72187"></a>`protected_until` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-d92ae72187"></a>`protected_until` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-47dbf3c6e5"></a>`retrieval_job_leases` | yes | type="integer" |  |
 | <a id="s-ae87dd0d79"></a>`source_store` | yes | #/components/schemas/ArchiveStoreName |  |
 | <a id="s-cbb7f490d3"></a>`state` | yes | #/components/schemas/RetrievalCacheState |  |
 | <a id="s-c95d53b4cf"></a>`stored_bytes` | yes | type="integer" |  |
-| <a id="s-a582abba72"></a>`stored_sha256` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-a582abba72"></a>`stored_sha256` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-e2697d058e"></a>`verified_at` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
@@ -76,6 +79,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheObjectOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -181,3 +187,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

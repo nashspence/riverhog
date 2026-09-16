@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-add94be491"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-d2bd3c7959"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-8b42e9e942"></a>`default_expressions` | ["'30d'"] |
-| <a id="s-b3a8cf981b"></a>`id` | "riverhog-server:environment:RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION" |
-| <a id="s-b7e92ef304"></a>`input_shape` | "environment-string" |
-| <a id="s-66e2078736"></a>`name` | "RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION" |
-| <a id="s-263bfe3ca9"></a>`owner` | "riverhog-server" |
+| <a id="s-d2bd3c7959"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-8b42e9e942"></a>`default_expressions` | `["'30d'"]` |
+| <a id="s-b3a8cf981b"></a>`id` | `"riverhog-server:environment:RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION"` |
+| <a id="s-b7e92ef304"></a>`input_shape` | `"environment-string"` |
+| <a id="s-66e2078736"></a>`name` | `"RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION"` |
+| <a id="s-263bfe3ca9"></a>`owner` | `"riverhog-server"` |
 
 ### Progression, limits, and lifecycle
 
@@ -64,6 +65,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: fb22db700f94d6046014e9211347cf95e9d649e757d5ad433e37bd2bbf701ba4 -->
@@ -82,3 +86,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "riverhog-server"
 }
 ```
+
+</details>

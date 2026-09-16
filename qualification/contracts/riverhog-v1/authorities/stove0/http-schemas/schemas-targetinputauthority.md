@@ -14,15 +14,18 @@ Small exact input authority retained by Stove0 and traversed in bounded pages.
 ## External contract
 
 <a id="s-c055730868"></a>
-- <a id="s-1c7e42741e"></a>`title`: TargetInputAuthority
-- <a id="s-984d982d2b"></a>`description`: Small exact input authority retained by Stove0 and traversed in bounded pages.
-- <a id="s-4382919497"></a>`type`: object
+
+- <a id="s-4382919497"></a>`type`: `"object"`
+- <a id="s-2bb9698db2"></a>`additionalProperties`: `false`
+- <a id="s-984d982d2b"></a>`description`: `"Small exact input authority retained by Stove0 and traversed in bounded pages."`
+- <a id="s-a018ba6868"></a>`required`: `["selection","roles"]`
+- <a id="s-1c7e42741e"></a>`title`: `"TargetInputAuthority"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-bdcbb7a5df"></a>`roles` | yes | type="array"; minItems=1; items=(#/components/schemas/TargetInputRoleCount) |  |
+| <a id="s-bdcbb7a5df"></a>`roles` | yes | type="array"; items=(#/components/schemas/TargetInputRoleCount); minItems=1 |  |
 | <a id="s-2b06eb28e8"></a>`selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
 
 ### Progression, limits, and lifecycle
@@ -65,6 +68,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 7657079845a0ca1d03a8be5b49bc8fed556926c933f440039ff04ced820a6598 -->
@@ -94,3 +100,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

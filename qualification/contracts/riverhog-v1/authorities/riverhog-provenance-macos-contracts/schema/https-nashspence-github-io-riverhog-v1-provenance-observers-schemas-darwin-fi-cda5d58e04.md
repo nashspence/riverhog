@@ -14,8 +14,12 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fa8175ab36"></a>
-- <a id="s-e76df1f7e2"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-attributes.json
-- <a id="s-a98e6c7a22"></a>`type`: object
+
+- <a id="s-a98e6c7a22"></a>`type`: `"object"`
+- <a id="s-e76df1f7e2"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-attributes.json"`
+- <a id="s-1fa97f6014"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-f39eae0b2d"></a>`additionalProperties`: `false`
+- <a id="s-830c680f91"></a>`minProperties`: `1`
 
 ### Fields
 
@@ -71,6 +75,9 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: d93ccd741dbce58c24079da050ac8396123467f74d0e749607ce56e379106d5c -->
@@ -122,3 +129,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

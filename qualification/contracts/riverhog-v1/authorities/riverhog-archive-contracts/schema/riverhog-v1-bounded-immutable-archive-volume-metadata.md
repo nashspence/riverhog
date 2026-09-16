@@ -14,30 +14,132 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ce2cf87e57"></a>
-- <a id="s-bc2f6d661f"></a>`$id`: https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json
-- <a id="s-2f76d289d3"></a>`title`: Riverhog v1 bounded immutable archive-volume metadata
-- <a id="s-60d42bdc3c"></a>`type`: object
+
+- <a id="s-60d42bdc3c"></a>`type`: `"object"`
+- <a id="s-a463467864"></a>`$comment`: `"This schema is the structural projection. riverhog_archive_contracts.CollectionArchiveVolumeDocument is the canonical semantic, identity, and canonical-JSON authority."`
+- <a id="s-bc2f6d661f"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json"`
+- <a id="s-b4f04bc7aa"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-80e67f1916"></a>`additionalProperties`: `false`
+- <a id="s-6681c0593b"></a>`required`: `["schema","archive_generation","archive_tree_sha256","volume"]`
+- <a id="s-2f76d289d3"></a>`title`: `"Riverhog v1 bounded immutable archive-volume metadata"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-de6b8071ef"></a>`archive_generation` | yes | #/$defs/sha256 |  |
-| <a id="s-2b2ac22425"></a>`archive_tree_sha256` | yes | #/$defs/sha256 |  |
+| <a id="s-de6b8071ef"></a>`archive_generation` | yes | [sha256](#s-ddfc70e987) |  |
+| <a id="s-2b2ac22425"></a>`archive_tree_sha256` | yes | [sha256](#s-ddfc70e987) |  |
 | <a id="s-d994a7bad5"></a>`schema` | yes | const="collection-archive-volume/v1" |  |
-| <a id="s-80ca732528"></a>`volume` | yes | oneOf=#/$defs/pack \| #/$defs/segment |  |
+| <a id="s-80ca732528"></a>`volume` | yes | oneOf=([pack](#s-c6222c661b)) \| ([segment](#s-ebbbf2c546)) |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-a24d2b35e2"></a>`age_state` | type="object"; fields=`format`, `header_b64`, `payload_nonce_b64`, `plaintext_size`; additional keys=`additionalProperties`, `required` |
-| <a id="s-c6222c661b"></a>`pack` | type="object"; fields=`age_state`, `files`, `id`, `index_sha256`, `kind`, `parts`, `path`, `plaintext_bytes`, `plan_sha256`, `sequence`, `source_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-014f1ca7cd"></a>`part` | type="object"; fields=`number`, `plaintext_bytes`, `plaintext_sha256`, `plaintext_start`, `stored_bytes`, `stored_sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-ebbbf2c546"></a>`segment` | type="object"; fields=`age_state`, `file`, `id`, `kind`, `parts`, `path`, `plaintext_bytes`, `sequence`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e6e7129d1b"></a>`segment_file` | type="object"; fields=`bytes`, `file_bytes`, `offset`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-b18c6e158b"></a>`sequence` | type="string"; pattern="^[0-9a-f]{64}$" |
-| <a id="s-ddfc70e987"></a>`sha256` | type="string"; pattern="^[0-9a-f]{64}$" |
+- [age_state](#s-a24d2b35e2)
+- [pack](#s-c6222c661b)
+- [part](#s-014f1ca7cd)
+- [segment](#s-ebbbf2c546)
+- [segment_file](#s-e6e7129d1b)
+- [sequence](#s-b18c6e158b)
+- [sha256](#s-ddfc70e987)
+
+### <a id="s-a24d2b35e2"></a>definition `age_state`
+
+- <a id="s-56166ac4db"></a>`type`: `"object"`
+- <a id="s-9bf2cbf4f2"></a>`additionalProperties`: `false`
+- <a id="s-4718b88609"></a>`required`: `["format","header_b64","payload_nonce_b64","plaintext_size"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0dc8d691c1"></a>`format` | yes | const="age-v1-scrypt-resumable" |  |
+| <a id="s-e0b7bf1db4"></a>`header_b64` | yes | type="string"; pattern="^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}\|[A-Za-z0-9+/]{3})$" |  |
+| <a id="s-d97100a2c2"></a>`payload_nonce_b64` | yes | type="string"; pattern="^[A-Za-z0-9+/]{21}[AQgw]$" |  |
+| <a id="s-b2649969b1"></a>`plaintext_size` | yes | type="integer"; minimum=0 |  |
+
+### <a id="s-c6222c661b"></a>definition `pack`
+
+- <a id="s-b01a7cdada"></a>`type`: `"object"`
+- <a id="s-2949a9b419"></a>`additionalProperties`: `false`
+- <a id="s-de56e4a329"></a>`required`: `["id","sequence","kind","path","files","source_bytes","plaintext_bytes","age_state","index_sha256","plan_sha256","parts"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-62a8734524"></a>`age_state` | yes | [age_state](#s-a24d2b35e2) |  |
+| <a id="s-a00b69b256"></a>`files` | yes | type="integer"; minimum=1; maximum=50000 |  |
+| <a id="s-b631d1dd5c"></a>`id` | yes | type="string"; pattern="^pack-[0-9a-f]{64}$" |  |
+| <a id="s-70c7682c12"></a>`index_sha256` | yes | [sha256](#s-ddfc70e987) |  |
+| <a id="s-166de2d721"></a>`kind` | yes | const="pack" |  |
+| <a id="s-441b6efdf7"></a>`parts` | yes | type="array"; items=([part](#s-014f1ca7cd)); maxItems=1024; minItems=1; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"ordered-archive-volume-sequence","reason":"bounded-archive-volume-parts"} |  |
+| <a id="s-490785bc32"></a>`path` | yes | type="string"; pattern="^volumes/pack-[0-9a-f]{64}\\.tar\\.age$" |  |
+| <a id="s-8ea2382826"></a>`plaintext_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-32da7b7d17"></a>`plan_sha256` | yes | [sha256](#s-ddfc70e987) |  |
+| <a id="s-1744385743"></a>`sequence` | yes | [sequence](#s-b18c6e158b) |  |
+| <a id="s-b77a5632ca"></a>`source_bytes` | yes | type="integer"; minimum=0 |  |
+
+### <a id="s-014f1ca7cd"></a>definition `part`
+
+- <a id="s-12530de252"></a>`type`: `"object"`
+- <a id="s-36d46b588f"></a>`additionalProperties`: `false`
+- <a id="s-3f71b4f56f"></a>`required`: `["number","plaintext_start","plaintext_bytes","plaintext_sha256","stored_bytes","stored_sha256"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-83390965df"></a>`number` | yes | type="integer"; minimum=1 |  |
+| <a id="s-42f53b0221"></a>`plaintext_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-f67630bc79"></a>`plaintext_sha256` | yes | [sha256](#s-ddfc70e987) |  |
+| <a id="s-fb9a0deae3"></a>`plaintext_start` | yes | type="integer"; minimum=0 |  |
+| <a id="s-b2f19d2656"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-8c4daa8978"></a>`stored_sha256` | yes | [sha256](#s-ddfc70e987) |  |
+
+### <a id="s-ebbbf2c546"></a>definition `segment`
+
+- <a id="s-892d3d77c4"></a>`type`: `"object"`
+- <a id="s-842ffb9e53"></a>`additionalProperties`: `false`
+- <a id="s-2902825e7a"></a>`required`: `["id","sequence","kind","path","plaintext_bytes","age_state","file","parts"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-53030700e8"></a>`age_state` | yes | [age_state](#s-a24d2b35e2) |  |
+| <a id="s-be6bf5af63"></a>`file` | yes | [segment_file](#s-e6e7129d1b) |  |
+| <a id="s-e13ae5b696"></a>`id` | yes | type="string"; pattern="^segment-[0-9a-f]{64}$" |  |
+| <a id="s-454da2ad8e"></a>`kind` | yes | const="segment" |  |
+| <a id="s-a600910b20"></a>`parts` | yes | type="array"; items=([part](#s-014f1ca7cd)); maxItems=1024; minItems=1; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"ordered-archive-volume-sequence","reason":"bounded-archive-volume-parts"} |  |
+| <a id="s-57e799246e"></a>`path` | yes | type="string"; pattern="^volumes/segment-[0-9a-f]{64}\\.bin\\.age$" |  |
+| <a id="s-bc57786779"></a>`plaintext_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-2d8923bce5"></a>`sequence` | yes | [sequence](#s-b18c6e158b) |  |
+
+### <a id="s-e6e7129d1b"></a>definition `segment_file`
+
+- <a id="s-615b559bc8"></a>`type`: `"object"`
+- <a id="s-3460a5c531"></a>`additionalProperties`: `false`
+- <a id="s-08eeb70537"></a>`required`: `["path","offset","bytes","file_bytes","sha256"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-bffb1edd6d"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-dd97b15ddc"></a>`file_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-bccb340a33"></a>`offset` | yes | type="integer"; minimum=0 |  |
+| <a id="s-ff0c8b1f52"></a>`path` | yes | type="string"; pattern="^(?!/)(?!\\.riverhog/)(?!.*\\\\)(?!.*(?:^\|/)\\.\\.?(?:/\|$))[^/]+(?:/[^/]+)*$" |  |
+| <a id="s-2862954f72"></a>`sha256` | yes | [sha256](#s-ddfc70e987) |  |
+
+### <a id="s-b18c6e158b"></a>definition `sequence`
+
+- <a id="s-b9cc90cffa"></a>`type`: `"string"`
+- <a id="s-81e41a8de5"></a>`pattern`: `"^[0-9a-f]{64}$"`
+
+### <a id="s-ddfc70e987"></a>definition `sha256`
+
+- <a id="s-961ad6d906"></a>`type`: `"string"`
+- <a id="s-10dff615fa"></a>`pattern`: `"^[0-9a-f]{64}$"`
 
 ### Progression, limits, and lifecycle
 
@@ -47,8 +149,8 @@ Shared facts for every subject below: maximum=1024; minimum=1; progression={"pro
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-441b6efdf7"></a>[definition pack · field parts](#s-c6222c661b) | `cardinality · items · segmented_no_total_max` | shared above |
-| <a id="s-a600910b20"></a>[definition segment · field parts](#s-ebbbf2c546) | `cardinality · items · segmented_no_total_max` | shared above |
+| [definition pack · field parts](#s-441b6efdf7) | `cardinality · items · segmented_no_total_max` | shared above |
+| [definition segment · field parts](#s-a600910b20) | `cardinality · items · segmented_no_total_max` | shared above |
 
 #### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
@@ -56,21 +158,21 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-b2649969b1"></a>[definition age_state · field plaintext_size](#s-a24d2b35e2) | `value · schema-value · operational_policy` | shared above |
-| <a id="s-8ea2382826"></a>[definition pack · field plaintext_bytes](#s-c6222c661b) | `value · schema-value · operational_policy` | shared above |
-| <a id="s-b77a5632ca"></a>[definition pack · field source_bytes](#s-c6222c661b) | `value · schema-value · operational_policy` | shared above |
-| <a id="s-42f53b0221"></a>[definition part · field plaintext_bytes](#s-014f1ca7cd) | `value · schema-value · operational_policy` | shared above |
-| <a id="s-b2f19d2656"></a>[definition part · field stored_bytes](#s-014f1ca7cd) | `value · schema-value · operational_policy` | shared above |
-| <a id="s-bc57786779"></a>[definition segment · field plaintext_bytes](#s-ebbbf2c546) | `value · schema-value · operational_policy` | shared above |
-| <a id="s-bffb1edd6d"></a>[definition segment_file · field bytes](#s-e6e7129d1b) | `value · schema-value · operational_policy` | shared above |
-| <a id="s-dd97b15ddc"></a>[definition segment_file · field file_bytes](#s-e6e7129d1b) | `value · schema-value · operational_policy` | shared above |
-| <a id="s-bccb340a33"></a>[definition segment_file · field offset](#s-e6e7129d1b) | `value · schema-value · operational_policy` | shared above |
+| [definition age_state · field plaintext_size](#s-b2649969b1) | `value · schema-value · operational_policy` | shared above |
+| [definition pack · field plaintext_bytes](#s-8ea2382826) | `value · schema-value · operational_policy` | shared above |
+| [definition pack · field source_bytes](#s-b77a5632ca) | `value · schema-value · operational_policy` | shared above |
+| [definition part · field plaintext_bytes](#s-42f53b0221) | `value · schema-value · operational_policy` | shared above |
+| [definition part · field stored_bytes](#s-b2f19d2656) | `value · schema-value · operational_policy` | shared above |
+| [definition segment · field plaintext_bytes](#s-bc57786779) | `value · schema-value · operational_policy` | shared above |
+| [definition segment_file · field bytes](#s-bffb1edd6d) | `value · schema-value · operational_policy` | shared above |
+| [definition segment_file · field file_bytes](#s-dd97b15ddc) | `value · schema-value · operational_policy` | shared above |
+| [definition segment_file · field offset](#s-bccb340a33) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-a00b69b256"></a>[definition pack · field files](#s-c6222c661b) | `value · schema-value · contract_max` | maximum=50000; minimum=1; reason="schema-maximum" |
+| [definition pack · field files](#s-a00b69b256) | `value · schema-value · contract_max` | maximum=50000; minimum=1; reason="schema-maximum" |
 | [definition sequence](#s-b18c6e158b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition sha256](#s-ddfc70e987) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
@@ -104,6 +206,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -372,3 +477,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

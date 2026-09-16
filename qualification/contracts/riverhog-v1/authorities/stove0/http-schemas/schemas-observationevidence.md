@@ -14,9 +14,12 @@ Complete routing evidence: immutable request plus accepted result.
 ## External contract
 
 <a id="s-3347a377a9"></a>
-- <a id="s-3b5c248e8e"></a>`title`: ObservationEvidence
-- <a id="s-798664f8c6"></a>`description`: Complete routing evidence: immutable request plus accepted result.
-- <a id="s-f4c15ef0ea"></a>`type`: object
+
+- <a id="s-f4c15ef0ea"></a>`type`: `"object"`
+- <a id="s-6ef6aa89be"></a>`additionalProperties`: `false`
+- <a id="s-798664f8c6"></a>`description`: `"Complete routing evidence: immutable request plus accepted result."`
+- <a id="s-8055eab617"></a>`required`: `["request","result"]`
+- <a id="s-3b5c248e8e"></a>`title`: `"ObservationEvidence"`
 
 ### Fields
 
@@ -54,6 +57,9 @@ Complete routing evidence: immutable request plus accepted result.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: a06d5d9e675fcc32ff369ef0d620be72d9a5f4c330e1025f97210e12985be6cc -->
@@ -78,3 +84,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -27,9 +27,12 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ac14e0db41"></a>
-- <a id="s-8724fd62cc"></a>`type`: object
 
-### Fields
+- <a id="s-8724fd62cc"></a>`type`: `"object"`
+- <a id="s-57dffc7a04"></a>`additionalProperties`: `false`
+- <a id="s-b1c5cfdccd"></a>`required`: `["affected"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
@@ -56,6 +59,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.MaintenanceResult`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -86,3 +92,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

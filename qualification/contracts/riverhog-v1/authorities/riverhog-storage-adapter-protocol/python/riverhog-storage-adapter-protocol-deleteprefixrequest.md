@@ -27,14 +27,17 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-4af80adaa0"></a>
-- <a id="s-f3aad3559f"></a>`type`: object
 
-### Fields
+- <a id="s-f3aad3559f"></a>`type`: `"object"`
+- <a id="s-96c28591cf"></a>`additionalProperties`: `false`
+- <a id="s-30eccd429e"></a>`required`: `["object_prefix"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-adc71a7522"></a>`mode` | no | type="string"; const="all_versions" |  |
-| <a id="s-e8c37cc1f2"></a>`object_prefix` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-adc71a7522"></a>`mode` | no | type="string"; const="all_versions"; default="all_versions" |  |
+| <a id="s-e8c37cc1f2"></a>`object_prefix` | yes | type="string"; maxLength=4096; minLength=1 |  |
 
 ## Maintained corroboration
 
@@ -63,6 +66,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.DeletePrefixRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -99,3 +105,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

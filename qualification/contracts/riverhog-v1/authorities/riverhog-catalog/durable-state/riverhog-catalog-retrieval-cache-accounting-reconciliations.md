@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b88b0fdc06"></a>
-- Table: `retrieval_cache_accounting_reconciliations`
 
-### Columns
+### Table: `retrieval_cache_accounting_reconciliations`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -29,7 +30,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-ebb79dc128"></a>`started_at` | `VARCHAR` | no | `—` | — |
 | <a id="s-dd60e6a558"></a>`updated_at` | `VARCHAR` | no | `—` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -65,6 +66,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/0/structure/tables/36`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -161,3 +165,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "retrieval_cache_accounting_reconciliations"
 }
 ```
+
+</details>

@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9af115887b"></a>
-- <a id="s-df8a9cdcd8"></a>`title`: WorkCreatedEventData
-- <a id="s-f8a826eb7c"></a>`type`: object
+
+- <a id="s-f8a826eb7c"></a>`type`: `"object"`
+- <a id="s-07e02b1b15"></a>`additionalProperties`: `false`
+- <a id="s-ffb5a18aea"></a>`required`: `["work_id","phase"]`
+- <a id="s-df8a9cdcd8"></a>`title`: `"WorkCreatedEventData"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6c02a77812"></a>`branch_set_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-bf555aadc7"></a>`join_plan_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-ede34ccc3c"></a>`parent_work_id` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-6c02a77812"></a>`branch_set_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
+| <a id="s-bf555aadc7"></a>`join_plan_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
+| <a id="s-ede34ccc3c"></a>`parent_work_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 | <a id="s-c800d03ab0"></a>`phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] |  |
 | <a id="s-b531fc61e2"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
@@ -62,6 +65,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEventData`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -144,3 +150,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

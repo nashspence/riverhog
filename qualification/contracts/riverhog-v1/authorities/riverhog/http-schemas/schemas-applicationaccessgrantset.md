@@ -14,9 +14,19 @@ A nonempty, duplicate-free public grant set with canonical wildcard use.
 ## External contract
 
 <a id="s-0f785b069a"></a>
-- <a id="s-5859614d27"></a>`title`: ApplicationAccessGrantSet
-- <a id="s-03ba28cdba"></a>`description`: A nonempty, duplicate-free public grant set with canonical wildcard use.
-- <a id="s-88edbaab8a"></a>`type`: array
+
+- <a id="s-88edbaab8a"></a>`type`: `"array"`
+- <a id="s-03ba28cdba"></a>`description`: `"A nonempty, duplicate-free public grant set with canonical wildcard use."`
+- <a id="s-69bbcb0017"></a>`items`: #/components/schemas/ApplicationAccessGrant
+- <a id="s-f9ff292365"></a>`minItems`: `1`
+- <a id="s-5859614d27"></a>`title`: `"ApplicationAccessGrantSet"`
+- <a id="s-5671036930"></a>`uniqueItems`: `true`
+
+### All must match (`allOf`)
+
+| Rule | If schema matches | Then must match | Otherwise must match |
+|---|---|---|---|
+| <a id="s-24d6a66d36"></a>1 | contains=(type="object"; properties={permission: (const="*")}; required=["permission"]) | maxItems=1; x-riverhog-extent={"policy":"contract_max","reason":"wildcard-access-grant-is-exclusive"} | no additional constraint |
 
 ### Progression, limits, and lifecycle
 
@@ -34,7 +44,7 @@ Shared facts for every subject below: maximum=1; reason="wildcard-access-grant-i
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-699746dac7"></a>[allOf alternative 1 · then](#s-0f785b069a) | `cardinality · items · contract_max` | shared above |
+| <a id="s-699746dac7"></a>[allOf alternative 1 · then](#s-24d6a66d36) | `cardinality · items · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -65,6 +75,9 @@ Shared facts for every subject below: maximum=1; reason="wildcard-access-grant-i
 - `/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -106,3 +119,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "uniqueItems": true
 }
 ```
+
+</details>

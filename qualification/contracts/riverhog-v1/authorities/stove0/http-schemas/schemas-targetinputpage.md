@@ -14,19 +14,22 @@ One bounded continuation step through the exact target input authority.
 ## External contract
 
 <a id="s-eef3cd75b1"></a>
-- <a id="s-5b44e4512a"></a>`title`: TargetInputPage
-- <a id="s-2707e581fa"></a>`description`: One bounded continuation step through the exact target input authority.
-- <a id="s-5f57432cbe"></a>`type`: object
+
+- <a id="s-5f57432cbe"></a>`type`: `"object"`
+- <a id="s-a749878f2a"></a>`additionalProperties`: `false`
+- <a id="s-2707e581fa"></a>`description`: `"One bounded continuation step through the exact target input authority."`
+- <a id="s-a21ebd4afe"></a>`required`: `["authority","complete","artifacts"]`
+- <a id="s-5b44e4512a"></a>`title`: `"TargetInputPage"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-594372c38b"></a>`artifacts` | yes | type="array"; maxItems=256; items=(#/components/schemas/InputArtifact); additional keys=`x-riverhog-extent` |  |
+| <a id="s-594372c38b"></a>`artifacts` | yes | type="array"; items=(#/components/schemas/InputArtifact); maxItems=256; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-target-input-page"} |  |
 | <a id="s-e670e38af3"></a>`authority` | yes | #/components/schemas/TargetInputAuthority |  |
 | <a id="s-999cc5b16e"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-e195a811d3"></a>`continuation` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-e35da8a356"></a>`next_continuation` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-e195a811d3"></a>`continuation` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
+| <a id="s-e35da8a356"></a>`next_continuation` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -83,6 +86,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/stove0/components/schemas/TargetInputPage`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -147,3 +153,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

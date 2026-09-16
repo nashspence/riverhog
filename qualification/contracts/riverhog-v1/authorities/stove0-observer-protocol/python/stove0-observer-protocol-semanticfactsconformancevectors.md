@@ -27,25 +27,83 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-4878de70d1"></a>
-- <a id="s-81d0487e81"></a>`type`: object
 
-### Fields
+- <a id="s-81d0487e81"></a>`type`: `"object"`
+- <a id="s-cd108065c6"></a>`additionalProperties`: `false`
+- <a id="s-5e460fd14c"></a>`required`: `["profile_id","vectors"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-9d369d8b37"></a>`format` | no | type="string"; const="stove0-semantic-facts-conformance/v1" |  |
+| <a id="s-9d369d8b37"></a>`format` | no | type="string"; const="stove0-semantic-facts-conformance/v1"; default="stove0-semantic-facts-conformance/v1" |  |
 | <a id="s-256cc2ad1e"></a>`profile_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-46d10403db"></a>`vectors` | yes | type="array"; minItems=2; items=(#/$defs/SemanticFactsConformanceVector) |  |
+| <a id="s-46d10403db"></a>`vectors` | yes | type="array"; items=([SemanticFactsConformanceVector](#s-ba3d4531de)); minItems=2 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-6d23ba4781"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-684234679b"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-a5f794652c"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
-| <a id="s-b251f751c9"></a>`JsonValue` | empty object |
-| <a id="s-ba3d4531de"></a>`SemanticFactsConformanceVector` | type="object"; fields=`accepted`, `facts`, `id`, `options`, `subjects`; additional keys=`additionalProperties`, `required` |
+- [ArtifactSubject](#s-6d23ba4781)
+- [CollectionId](#s-684234679b)
+- [CollectionRootRef](#s-a5f794652c)
+- [JsonValue](#s-b251f751c9)
+- [SemanticFactsConformanceVector](#s-ba3d4531de)
+
+##### <a id="s-6d23ba4781"></a>definition `ArtifactSubject`
+
+- <a id="s-34b6b860c4"></a>`type`: `"object"`
+- <a id="s-9a794ee27c"></a>`additionalProperties`: `false`
+- <a id="s-11d737c73e"></a>`required`: `["id","role","collection","path","bytes","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-964c6ed496"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-bfe341b697"></a>`collection` | yes | [CollectionRootRef](#s-a5f794652c) |  |
+| <a id="s-d019c064ea"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-aacc7d5609"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-fa142f8f17"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-637e57d40c"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-33e9174a0f"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-684234679b"></a>definition `CollectionId`
+
+- <a id="s-a8f4424f7f"></a>`type`: `"integer"`
+- <a id="s-6f77ba6d66"></a>`minimum`: `1`
+
+##### <a id="s-a5f794652c"></a>definition `CollectionRootRef`
+
+- <a id="s-802a6c3a97"></a>`type`: `"object"`
+- <a id="s-4026437c40"></a>`additionalProperties`: `false`
+- <a id="s-c225541ba8"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f03bf7e5ba"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-8a03a9b251"></a>`collection_id` | yes | [CollectionId](#s-684234679b) |  |
+| <a id="s-2ec15dc1dc"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-b251f751c9"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-ba3d4531de"></a>definition `SemanticFactsConformanceVector`
+
+- <a id="s-1167ec7cde"></a>`type`: `"object"`
+- <a id="s-be0ec6706e"></a>`additionalProperties`: `false`
+- <a id="s-f9d4b6fa1c"></a>`required`: `["id","accepted","subjects","facts"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ed80be656c"></a>`accepted` | yes | type="boolean" |  |
+| <a id="s-7209e8b0e5"></a>`facts` | yes | type="object"; additionalProperties=([JsonValue](#s-b251f751c9)) |  |
+| <a id="s-51d4047028"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-22bd0b0eeb"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-b251f751c9)) |  |
+| <a id="s-0086dd4e16"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-6d23ba4781)); minItems=1 |  |
 
 ## Maintained corroboration
 
@@ -76,6 +134,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -237,3 +298,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

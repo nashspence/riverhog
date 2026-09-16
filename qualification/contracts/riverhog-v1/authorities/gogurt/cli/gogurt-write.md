@@ -49,15 +49,88 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-c5cc1a53c6"></a>`marker-preview` | <a id="s-6c131d3c1d"></a>`{"kind":"option-equals","parameter":"dry_run","value":true}` | <a id="s-f85e137cbe"></a>`0` | <a id="s-2a98a7b465"></a>human: `noncontractual-presentation-of-command-result`; json: [gogurt-marker-write-plan/v1](#s-2a98a7b465) | <a id="s-d5c25e107a"></a>all: `empty` |
-| <a id="s-65376fa652"></a>`marker-published` | <a id="s-1ace6f4a30"></a>`{"kind":"option-equals","parameter":"dry_run","value":false}` | <a id="s-2bdaa45e78"></a>`0` | <a id="s-7ff22340dc"></a>human: `noncontractual-presentation-of-command-result`; json: [gogurt-marker-publication/v1](#s-7ff22340dc) | <a id="s-258261044f"></a>all: `empty` |
+| <a id="s-c5cc1a53c6"></a>`marker-preview` | <a id="s-6c131d3c1d"></a>`{"kind":"option-equals","parameter":"dry_run","value":true}` | <a id="s-f85e137cbe"></a>`0` | <a id="s-2a98a7b465"></a>human: `noncontractual-presentation-of-command-result`; json: [gogurt-marker-write-plan/v1](#s-5ddcbe9a95) | <a id="s-d5c25e107a"></a>all: `empty` |
+| <a id="s-65376fa652"></a>`marker-published` | <a id="s-1ace6f4a30"></a>`{"kind":"option-equals","parameter":"dry_run","value":false}` | <a id="s-2bdaa45e78"></a>`0` | <a id="s-7ff22340dc"></a>human: `noncontractual-presentation-of-command-result`; json: [gogurt-marker-publication/v1](#s-9674fbdc27) | <a id="s-258261044f"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-a116aaabaf"></a>`usage` | <a id="s-7f4e752285"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-eee78944c6"></a>`2` | <a id="s-759246dcbb"></a>all: `empty` | <a id="s-1ad8401f8f"></a>all: `noncontractual-usage-diagnostic` |
-| <a id="s-d95fc38e29"></a>`operational` | <a id="s-36d3949039"></a>`{"kind":"application-error"}` | <a id="s-8821274e2c"></a>`1` | <a id="s-d2bc22b47c"></a>human: `empty`; json: [gogurt-cli-error/v1](#s-d2bc22b47c) | <a id="s-86733215f2"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-d95fc38e29"></a>`operational` | <a id="s-36d3949039"></a>`{"kind":"application-error"}` | <a id="s-8821274e2c"></a>`1` | <a id="s-d2bc22b47c"></a>human: `empty`; json: [gogurt-cli-error/v1](#s-d298240ee3) | <a id="s-86733215f2"></a>human: `noncontractual-diagnostic`; json: `empty` |
+
+### Local structured outputs
+
+
+#### <a id="s-5ddcbe9a95"></a>`gogurt-marker-write-plan/v1`
+
+Applies to: marker-preview · stdout (json).
+
+<a id="s-b50c882c10"></a>
+
+- <a id="s-0322fc81ea"></a>`type`: `"object"`
+
+#### <a id="s-9674fbdc27"></a>`gogurt-marker-publication/v1`
+
+Applies to: marker-published · stdout (json).
+
+<a id="s-da927cbbcc"></a>
+
+- <a id="s-a0571e900d"></a>`type`: `"object"`
+- <a id="s-3413f59d71"></a>`additionalProperties`: `false`
+- <a id="s-058c0c17c5"></a>`required`: `["mount_point","mounted_volume_provider","marker","marker_identity"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-87472a337c"></a>`marker` | yes | type="object" |  |
+| <a id="s-3b1db70ac0"></a>`marker_identity` | yes | type="string" |  |
+| <a id="s-37bb0a4dc2"></a>`mount_point` | yes | type="string" |  |
+| `mounted_volume_provider` | yes | [See field `mounted_volume_provider`](#s-42ab024f71) |  |
+
+##### <a id="s-42ab024f71"></a>field `mounted_volume_provider`
+
+- <a id="s-a7a5c8026a"></a>`type`: `"object"`
+- <a id="s-14d9c774ea"></a>`additionalProperties`: `false`
+- <a id="s-1c801a30de"></a>`required`: `["kind","name","provider_id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6e07b57ff0"></a>`kind` | yes | enum=["mounted-volume","listener-host"] |  |
+| <a id="s-d56e789d32"></a>`name` | yes | type="string" |  |
+| <a id="s-d2d79af4b2"></a>`provider_id` | yes | type="string" |  |
+
+#### <a id="s-d298240ee3"></a>`gogurt-cli-error/v1`
+
+Applies to: operational · stdout (json).
+
+<a id="s-eae94fa5b9"></a>
+
+- <a id="s-64a1085765"></a>`type`: `"object"`
+- <a id="s-c69ce4408c"></a>`additionalProperties`: `false`
+- <a id="s-22ec9e0eee"></a>`required`: `["error"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `error` | yes | [See field `error`](#s-86aeb36596) |  |
+
+##### <a id="s-86aeb36596"></a>field `error`
+
+- <a id="s-cfb0172f04"></a>`type`: `"object"`
+- <a id="s-fb31126c80"></a>`additionalProperties`: `false`
+- <a id="s-37ef964c29"></a>`required`: `["code","message"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-af470c9f48"></a>`code` | yes | enum=["config_error","listener_error"] |  |
+| <a id="s-caa2a3dacd"></a>`message` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -103,6 +176,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 - `/external_contract/cli/gogurt/commands/write/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -467,3 +543,5 @@ false
   }
 ]
 ```
+
+</details>

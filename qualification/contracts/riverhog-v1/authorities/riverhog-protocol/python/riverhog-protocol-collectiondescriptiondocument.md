@@ -27,23 +27,33 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-de0ced1246"></a>
-- <a id="s-75427a3086"></a>`type`: object
 
-### Fields
+- <a id="s-75427a3086"></a>`type`: `"object"`
+- <a id="s-e5f81e5c36"></a>`additionalProperties`: `false`
+- <a id="s-3e2cecbe19"></a>`required`: `["archive_root_sha256","revision","description","description_identity"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-48822d277f"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-172774a064"></a>`description` | yes | anyOf=#/$defs/CollectionDescription \| type="null" |  |
+| <a id="s-172774a064"></a>`description` | yes | anyOf=([CollectionDescription](#s-fadeb35b68)) \| (type="null") |  |
 | <a id="s-239bd713b7"></a>`description_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-45d157bf54"></a>`format` | no | type="string"; const="riverhog-collection-description/v1" |  |
-| <a id="s-0e0fc4ee3d"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991; additional keys=`x-riverhog-extent` |  |
+| <a id="s-45d157bf54"></a>`format` | no | type="string"; const="riverhog-collection-description/v1"; default="riverhog-collection-description/v1" |  |
+| <a id="s-0e0fc4ee3d"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991; x-riverhog-extent={"policy":"fixed","reason":"exact-json-safe-monotonic-description-revision"} |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-fadeb35b68"></a>`CollectionDescription` | type="string"; minLength=1; maxLength=32768; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
+- [CollectionDescription](#s-fadeb35b68)
+
+##### <a id="s-fadeb35b68"></a>definition `CollectionDescription`
+
+- <a id="s-1d290346af"></a>`type`: `"string"`
+- <a id="s-967c032aac"></a>`maxLength`: `32768`
+- <a id="s-e0541c312c"></a>`minLength`: `1`
+- <a id="s-3d9f4a3551"></a>`x-riverhog-encoded-bytes-max`: `32768`
+- <a id="s-2ff92cfdfb"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-catalog-description"}`
+- <a id="s-202e948b1f"></a>`x-unicode-normalization`: `"NFC"`
 
 ## Maintained corroboration
 
@@ -75,6 +85,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.CollectionDescriptionDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -149,3 +162,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

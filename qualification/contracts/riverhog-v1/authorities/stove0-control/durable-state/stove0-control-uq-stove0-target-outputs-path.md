@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c299de8d78"></a>
+
 | Index fact | Value |
 |---|---|
 | `columns` | `["work_id","job_id","output_path"]` |
@@ -49,6 +50,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 9ff2d64118fc592ef7189232a8c2d3057f8c35986d96463412c99294be34d57a -->
@@ -65,3 +69,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "table": "stove0_target_outputs"
 }
 ```
+
+</details>

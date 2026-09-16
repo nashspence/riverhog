@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-04dd294881"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-fd706f529a"></a>`consumers` | ["riverhog-storage-adapter-filesystem"] |
-| <a id="s-e4b45436b2"></a>`default_expressions` | ["''"] |
-| <a id="s-e177560e94"></a>`id` | "riverhog-storage-adapter-filesystem:environment:RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_READ_CHUNK_BYTES" |
-| <a id="s-05c3b10e59"></a>`input_shape` | "environment-string" |
-| <a id="s-33cb89739d"></a>`name` | "RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_READ_CHUNK_BYTES" |
-| <a id="s-4423e20b47"></a>`owner` | "riverhog-storage-adapter-filesystem" |
+| <a id="s-fd706f529a"></a>`consumers` | `["riverhog-storage-adapter-filesystem"]` |
+| <a id="s-e4b45436b2"></a>`default_expressions` | `["''"]` |
+| <a id="s-e177560e94"></a>`id` | `"riverhog-storage-adapter-filesystem:environment:RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_READ_CHUNK_BYTES"` |
+| <a id="s-05c3b10e59"></a>`input_shape` | `"environment-string"` |
+| <a id="s-33cb89739d"></a>`name` | `"RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_READ_CHUNK_BYTES"` |
+| <a id="s-4423e20b47"></a>`owner` | `"riverhog-storage-adapter-filesystem"` |
 
 ### Progression, limits, and lifecycle
 
@@ -64,6 +65,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 2f9a82fe328ce667f72102867c0ee22ba41f0f221722da054bb92de7e1108820 -->
@@ -82,3 +86,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "riverhog-storage-adapter-filesystem"
 }
 ```
+
+</details>

@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-af655bffa6"></a>
-- <a id="s-0ebbaa177b"></a>`title`: CollectionUploadRawDigestProgressDocument
-- <a id="s-eee2c580c6"></a>`type`: object
+
+- <a id="s-eee2c580c6"></a>`type`: `"object"`
+- <a id="s-3c1efd7ed5"></a>`additionalProperties`: `false`
+- <a id="s-8b015bc816"></a>`required`: `["path","accepted_parts","expected_parts","complete"]`
+- <a id="s-0ebbaa177b"></a>`title`: `"CollectionUploadRawDigestProgressDocument"`
 
 ### Fields
 
@@ -47,6 +50,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadRawDigestProgressDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -85,3 +91,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

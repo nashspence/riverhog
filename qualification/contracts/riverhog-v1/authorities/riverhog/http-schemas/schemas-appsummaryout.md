@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3283097820"></a>
-- <a id="s-0ab68a0e8e"></a>`title`: AppSummaryOut
-- <a id="s-5040e20914"></a>`type`: object
+
+- <a id="s-5040e20914"></a>`type`: `"object"`
+- <a id="s-2e16168791"></a>`additionalProperties`: `false`
+- <a id="s-30f4fa1212"></a>`required`: `["name","keys","active_keys","last_used_at"]`
+- <a id="s-0ab68a0e8e"></a>`title`: `"AppSummaryOut"`
 
 ### Fields
 
@@ -23,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-b581e74b72"></a>`active_keys` | yes | type="integer" |  |
 | <a id="s-ce23c1fe47"></a>`keys` | yes | type="integer" |  |
-| <a id="s-7cdb392047"></a>`last_used_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-7cdb392047"></a>`last_used_at` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-514d86a11e"></a>`name` | yes | #/components/schemas/ApplicationName |  |
 
 ## Maintained corroboration
@@ -53,6 +56,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/AppSummaryOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -95,3 +101,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9eaf0f87ce"></a>
-- <a id="s-0da11a55a9"></a>`title`: TargetOutputBindingSetIdentity
-- <a id="s-64b260b804"></a>`type`: object
+
+- <a id="s-64b260b804"></a>`type`: `"object"`
+- <a id="s-5afc8e74e6"></a>`additionalProperties`: `false`
+- <a id="s-8c08ab77f6"></a>`required`: `["artifact_count","total_bytes","sha256"]`
+- <a id="s-0da11a55a9"></a>`title`: `"TargetOutputBindingSetIdentity"`
 
 ### Fields
 
@@ -58,6 +61,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: daf38f19dc312122935afd84d58bf963fa26e233d8633d1f209196e4f92d8e9a -->
@@ -91,3 +97,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

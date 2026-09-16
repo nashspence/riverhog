@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f4823c7029"></a>
-- <a id="s-463735ae7c"></a>`title`: SchedulerPruning
-- <a id="s-d359ab4d29"></a>`type`: object
+
+- <a id="s-d359ab4d29"></a>`type`: `"object"`
+- <a id="s-770918e1e5"></a>`additionalProperties`: `false`
+- <a id="s-484b92a447"></a>`required`: `["work","work_bytes","evaluations","evaluation_bytes","selections","selection_bytes","events","event_bytes"]`
+- <a id="s-463735ae7c"></a>`title`: `"SchedulerPruning"`
 
 ### Fields
 
@@ -51,6 +54,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/stove0/components/schemas/SchedulerPruning`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -115,3 +121,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

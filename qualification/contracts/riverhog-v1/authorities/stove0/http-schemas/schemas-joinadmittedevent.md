@@ -14,18 +14,21 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-89c2b9e530"></a>
-- <a id="s-b5df77a5be"></a>`title`: JoinAdmittedEvent
-- <a id="s-797a81b125"></a>`type`: object
+
+- <a id="s-797a81b125"></a>`type`: `"object"`
+- <a id="s-e6f1ea9542"></a>`additionalProperties`: `false`
+- <a id="s-d719486eb3"></a>`required`: `["id","source","type","subject","time","data"]`
+- <a id="s-b5df77a5be"></a>`title`: `"JoinAdmittedEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-7dff2842c2"></a>`data` | yes | #/components/schemas/JoinAdmittedEventData |  |
-| <a id="s-2ce0d77104"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-2ce0d77104"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-3adf064b80"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-0800c849d6"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
-| <a id="s-443d205ec8"></a>`specversion` | no | type="string"; const="1.0" |  |
+| <a id="s-443d205ec8"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-ae8b6da303"></a>`subject` | yes | type="string"; minLength=1 |  |
 | <a id="s-6d92c96711"></a>`time` | yes | type="string" |  |
 | <a id="s-dbf4280eb9"></a>`type` | yes | type="string"; const="io.riverhog.stove0.join.admitted" |  |
@@ -57,6 +60,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -118,3 +124,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

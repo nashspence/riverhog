@@ -14,17 +14,20 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-cac8d15cc3"></a>
-- <a id="s-d64723c060"></a>`title`: RiverhogEventCause
-- <a id="s-5c5e1a73be"></a>`type`: object
+
+- <a id="s-5c5e1a73be"></a>`type`: `"object"`
+- <a id="s-8e86b4d316"></a>`additionalProperties`: `false`
+- <a id="s-454761c11b"></a>`required`: `["id","source","type"]`
+- <a id="s-d64723c060"></a>`title`: `"RiverhogEventCause"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a8d0df20f2"></a>`id` | yes | type="string"; minLength=1; maxLength=300 |  |
-| <a id="s-55e18d79c3"></a>`source` | yes | type="string"; minLength=1; maxLength=1000 |  |
-| <a id="s-abdf2f2efc"></a>`subject` | no | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
-| <a id="s-a3f28fa3f0"></a>`type` | yes | type="string"; minLength=1; maxLength=300 |  |
+| <a id="s-a8d0df20f2"></a>`id` | yes | type="string"; maxLength=300; minLength=1 |  |
+| <a id="s-55e18d79c3"></a>`source` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-abdf2f2efc"></a>`subject` | no | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null") |  |
+| <a id="s-a3f28fa3f0"></a>`type` | yes | type="string"; maxLength=300; minLength=1 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -61,6 +64,9 @@ Shared facts for every subject below: minimum=1; reason="schema-maximum"
 - `/external_contract/http_openapi/riverhog/components/schemas/RiverhogEventCause`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -111,3 +117,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

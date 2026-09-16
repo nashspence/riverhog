@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b0cf1465ab"></a>
-- <a id="s-8ae75e8380"></a>`title`: CollectionDeletionResultOut
-- <a id="s-0b0225496e"></a>`type`: object
+
+- <a id="s-0b0225496e"></a>`type`: `"object"`
+- <a id="s-d90859db4c"></a>`additionalProperties`: `false`
+- <a id="s-66f04dc355"></a>`required`: `["status","collection_id","files","bytes","remote_storage_bytes"]`
+- <a id="s-8ae75e8380"></a>`title`: `"CollectionDeletionResultOut"`
 
 ### Fields
 
@@ -67,6 +70,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 6c29c7974ad1cb9ee7c6d98e1114fd78f7388b444c98a4d910d5a816982a83be -->
@@ -111,3 +117,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

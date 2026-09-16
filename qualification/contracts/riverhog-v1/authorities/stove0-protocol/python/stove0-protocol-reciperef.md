@@ -27,9 +27,12 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-511880ca2b"></a>
-- <a id="s-c10a188b0a"></a>`type`: object
 
-### Fields
+- <a id="s-c10a188b0a"></a>`type`: `"object"`
+- <a id="s-efba8a10d0"></a>`additionalProperties`: `false`
+- <a id="s-799ffd2f7b"></a>`required`: `["id","revision","sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
@@ -65,6 +68,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_protocol.RecipeRef`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -105,3 +111,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

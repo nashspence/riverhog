@@ -27,26 +27,43 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-8371a97cbe"></a>
-- <a id="s-c2445c347d"></a>`type`: object
 
-### Fields
+- <a id="s-c2445c347d"></a>`type`: `"object"`
+- <a id="s-3474d9162d"></a>`additionalProperties`: `false`
+- <a id="s-e1b5134f59"></a>`required`: `["id","source","type","subject","time","data"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-bb5df1c628"></a>`data` | yes | #/$defs/WorkCreatedEventData |  |
-| <a id="s-6c65f4588c"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-bb5df1c628"></a>`data` | yes | [WorkCreatedEventData](#s-6085de5cba) |  |
+| <a id="s-6c65f4588c"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-2007241504"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-2c356c6a6d"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
-| <a id="s-0a6b3e077e"></a>`specversion` | no | type="string"; const="1.0" |  |
+| <a id="s-0a6b3e077e"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-0fa46ef090"></a>`subject` | yes | type="string"; minLength=1 |  |
 | <a id="s-4e263b1025"></a>`time` | yes | type="string" |  |
 | <a id="s-18839a3c6a"></a>`type` | yes | type="string"; const="io.riverhog.stove0.work.created" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-6085de5cba"></a>`WorkCreatedEventData` | type="object"; fields=`branch_set_sha256`, `join_plan_sha256`, `parent_work_id`, `phase`, `work_id`; additional keys=`additionalProperties`, `required` |
+- [WorkCreatedEventData](#s-6085de5cba)
+
+##### <a id="s-6085de5cba"></a>definition `WorkCreatedEventData`
+
+- <a id="s-83fc9713cc"></a>`type`: `"object"`
+- <a id="s-037b2a079a"></a>`additionalProperties`: `false`
+- <a id="s-ca374a66ed"></a>`required`: `["work_id","phase"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cdec4e381b"></a>`branch_set_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-6c55526b86"></a>`join_plan_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-eba0cb267a"></a>`parent_work_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-5ad7514f0b"></a>`phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] |  |
+| <a id="s-2819be973f"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -76,6 +93,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.WorkCreatedEvent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -213,3 +233,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

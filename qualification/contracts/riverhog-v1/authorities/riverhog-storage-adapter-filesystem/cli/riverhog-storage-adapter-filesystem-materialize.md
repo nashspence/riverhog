@@ -47,7 +47,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-87aa6be67d"></a>`completed` | <a id="s-5214dd4180"></a>`{"kind":"materialization-completed"}` | <a id="s-f75383c0b8"></a>`0` | <a id="s-cf82974b80"></a>human: `noncontractual-presentation-of-command-result`; json: [riverhog-filesystem-materialization-result/v1](#s-cf82974b80) | <a id="s-be54da33ab"></a>all: `empty` |
+| <a id="s-87aa6be67d"></a>`completed` | <a id="s-5214dd4180"></a>`{"kind":"materialization-completed"}` | <a id="s-f75383c0b8"></a>`0` | <a id="s-cf82974b80"></a>human: `noncontractual-presentation-of-command-result`; json: [riverhog-filesystem-materialization-result/v1](#s-2face05c8e) | <a id="s-be54da33ab"></a>all: `empty` |
 
 #### Failure outcomes
 
@@ -55,6 +55,34 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|---|
 | <a id="s-ecfc6df42a"></a>`usage` | <a id="s-67b1b1f3d7"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-4317a5c11c"></a>`2` | <a id="s-86297cde3e"></a>all: `empty` | <a id="s-22fb428ae1"></a>all: `noncontractual-usage-diagnostic` |
 | <a id="s-4ccc914638"></a>`materialization` | <a id="s-5dbfe7b0f2"></a>`{"kind":"materialization-error"}` | <a id="s-87a8cd7159"></a>`1` | <a id="s-382bb6f12c"></a>all: `empty` | <a id="s-57d17310a9"></a>all: `noncontractual-diagnostic` |
+
+### Local structured outputs
+
+
+#### <a id="s-2face05c8e"></a>`riverhog-filesystem-materialization-result/v1`
+
+Applies to: completed · stdout (json).
+
+<a id="s-968c42ed32"></a>
+
+- <a id="s-fc9633f5c3"></a>`type`: `"object"`
+- <a id="s-5cb88db08a"></a>`additionalProperties`: `false`
+- <a id="s-136c6841ae"></a>`required`: `["format","destination","selected_objects","selected_bytes","source_metadata_bytes","destination_verified_objects","destination_verified_bytes","staging_verified_bytes","copied_objects","copied_bytes"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c5ad8bff16"></a>`copied_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-0e711e031c"></a>`copied_objects` | yes | type="integer"; minimum=0 |  |
+| <a id="s-0face9d2bb"></a>`destination` | yes | type="string" |  |
+| <a id="s-526ee78683"></a>`destination_verified_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-9773a4d394"></a>`destination_verified_objects` | yes | type="integer"; minimum=0 |  |
+| <a id="s-e55b402099"></a>`format` | yes | const="riverhog-filesystem-materialization-result/v1" |  |
+| <a id="s-db5bfa46be"></a>`selected_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-583ac4f0de"></a>`selected_objects` | yes | type="integer"; minimum=0 |  |
+| <a id="s-a75a5c7bf5"></a>`source_metadata_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-1b78e45e2f"></a>`staging_verified_bytes` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -107,6 +135,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 - `/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -344,3 +375,5 @@ true
   }
 ]
 ```
+
+</details>

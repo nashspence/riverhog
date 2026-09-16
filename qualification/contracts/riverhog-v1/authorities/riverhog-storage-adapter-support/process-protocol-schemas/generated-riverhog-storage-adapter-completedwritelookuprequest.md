@@ -14,18 +14,21 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-95c307eef1"></a>
-- <a id="s-03703c29e8"></a>`title`: CompletedWriteLookupRequest
-- <a id="s-37f9a223b9"></a>`type`: object
+
+- <a id="s-37f9a223b9"></a>`type`: `"object"`
+- <a id="s-b58067e30e"></a>`additionalProperties`: `false`
+- <a id="s-41b6488a2d"></a>`required`: `["object_path","expected_bytes","expected_content_type","required_identity_assertions","expected_placement"]`
+- <a id="s-03703c29e8"></a>`title`: `"CompletedWriteLookupRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-d6b613d625"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-558690d0bf"></a>`expected_content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
+| <a id="s-558690d0bf"></a>`expected_content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
 | <a id="s-8c0b60131f"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
-| <a id="s-ceec1bb3a7"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-dc8a372d2a"></a>`required_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
+| <a id="s-ceec1bb3a7"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-dc8a372d2a"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
 
 ### Progression, limits, and lifecycle
 
@@ -66,6 +69,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/CompletedWriteLookupRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -126,3 +132,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

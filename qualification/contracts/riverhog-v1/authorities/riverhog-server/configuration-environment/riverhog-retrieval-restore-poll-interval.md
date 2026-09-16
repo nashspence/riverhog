@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-47fb606ae5"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-c114306576"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-f48a7336e8"></a>`default_expressions` | ["'5m'"] |
-| <a id="s-8f3b8fe1e3"></a>`id` | "riverhog-server:environment:RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL" |
-| <a id="s-180063e963"></a>`input_shape` | "environment-string" |
-| <a id="s-e3159c3eeb"></a>`name` | "RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL" |
-| <a id="s-065409c482"></a>`owner` | "riverhog-server" |
+| <a id="s-c114306576"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-f48a7336e8"></a>`default_expressions` | `["'5m'"]` |
+| <a id="s-8f3b8fe1e3"></a>`id` | `"riverhog-server:environment:RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL"` |
+| <a id="s-180063e963"></a>`input_shape` | `"environment-string"` |
+| <a id="s-e3159c3eeb"></a>`name` | `"RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL"` |
+| <a id="s-065409c482"></a>`owner` | `"riverhog-server"` |
 
 ### Progression, limits, and lifecycle
 
@@ -64,6 +65,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 62fe65df21bec409d33370d2eb0d269950ccd0149699dfd926c27c23521ff7a9 -->
@@ -82,3 +86,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "riverhog-server"
 }
 ```
+
+</details>

@@ -14,9 +14,12 @@ One named required branch-bound child coordinator.
 ## External contract
 
 <a id="s-88cc4139d6"></a>
-- <a id="s-4ea2e80500"></a>`title`: CoordinationBranchPlan
-- <a id="s-83a52d4c7d"></a>`description`: One named required branch-bound child coordinator.
-- <a id="s-36097ac18f"></a>`type`: object
+
+- <a id="s-36097ac18f"></a>`type`: `"object"`
+- <a id="s-886480f4fb"></a>`additionalProperties`: `false`
+- <a id="s-83a52d4c7d"></a>`description`: `"One named required branch-bound child coordinator."`
+- <a id="s-04d356bcb3"></a>`required`: `["branch_id","artifact_selection","work","branch_set_sha256"]`
+- <a id="s-4ea2e80500"></a>`title`: `"CoordinationBranchPlan"`
 
 ### Fields
 
@@ -25,7 +28,7 @@ One named required branch-bound child coordinator.
 | <a id="s-bba86c9b0f"></a>`artifact_selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
 | <a id="s-7754ad69f6"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-4260630469"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-329b8ba6f9"></a>`kind` | no | type="string"; const="coordination" |  |
+| <a id="s-329b8ba6f9"></a>`kind` | no | type="string"; const="coordination"; default="coordination" |  |
 | <a id="s-fcffcaa804"></a>`work` | yes | #/components/schemas/WorkIdentity |  |
 
 ### Progression, limits, and lifecycle
@@ -67,6 +70,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -110,3 +116,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

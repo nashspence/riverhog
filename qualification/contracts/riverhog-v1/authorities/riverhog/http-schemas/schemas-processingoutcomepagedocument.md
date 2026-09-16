@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6cc8af8e03"></a>
-- <a id="s-cf7b99b630"></a>`title`: ProcessingOutcomePageDocument
-- <a id="s-15301f63ce"></a>`type`: object
+
+- <a id="s-15301f63ce"></a>`type`: `"object"`
+- <a id="s-23542aec68"></a>`additionalProperties`: `false`
+- <a id="s-a98900d612"></a>`required`: `["authority","start_ordinal","outcomes"]`
+- <a id="s-cf7b99b630"></a>`title`: `"ProcessingOutcomePageDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-f0a04d1a20"></a>`authority` | yes | #/components/schemas/ExactSetAuthorityDocument |  |
-| <a id="s-6f8fcd737f"></a>`next_ordinal` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
-| <a id="s-7532886b30"></a>`outcomes` | yes | type="array"; maxItems=128; items=(#/components/schemas/ProcessingOutcomeIdentityDocument); additional keys=`x-riverhog-extent` |  |
+| <a id="s-6f8fcd737f"></a>`next_ordinal` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
+| <a id="s-7532886b30"></a>`outcomes` | yes | type="array"; items=(#/components/schemas/ProcessingOutcomeIdentityDocument); maxItems=128; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
 | <a id="s-4f1f6deba4"></a>`start_ordinal` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
@@ -71,6 +74,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/ProcessingOutcomePageDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -123,3 +129,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,26 +14,46 @@ Stable positive evidence returned after the complete check set passes.
 ## External contract
 
 <a id="s-d1efcb8390"></a>
-- <a id="s-4c4e89854c"></a>`title`: StorageAdapterConformanceResult
-- <a id="s-8b747e633b"></a>`description`: Stable positive evidence returned after the complete check set passes.
-- <a id="s-8e95ad152b"></a>`type`: object
+
+- <a id="s-8e95ad152b"></a>`type`: `"object"`
+- <a id="s-ae81d78185"></a>`additionalProperties`: `false`
+- <a id="s-8b747e633b"></a>`description`: `"Stable positive evidence returned after the complete check set passes."`
+- <a id="s-6a46179014"></a>`required`: `["descriptor","checks"]`
+- <a id="s-4c4e89854c"></a>`title`: `"StorageAdapterConformanceResult"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-ee5757dee3"></a>`checks` | yes | type="array"; items=(type="string") |  |
-| <a id="s-c25d196dae"></a>`coverage` | no | type="string"; const="complete" |  |
-| <a id="s-6eaad858d9"></a>`descriptor` | yes | #/$defs/AdapterDescriptor |  |
-| <a id="s-6166d1ce52"></a>`format` | no | type="string"; const="riverhog-storage-adapter-conformance-result/v1" |  |
-| <a id="s-7a5a35d6e2"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1" |  |
-| <a id="s-0d4e848375"></a>`status` | no | type="string"; const="conformant" |  |
+| <a id="s-c25d196dae"></a>`coverage` | no | type="string"; const="complete"; default="complete" |  |
+| <a id="s-6eaad858d9"></a>`descriptor` | yes | [AdapterDescriptor](#s-941580622e) |  |
+| <a id="s-6166d1ce52"></a>`format` | no | type="string"; const="riverhog-storage-adapter-conformance-result/v1"; default="riverhog-storage-adapter-conformance-result/v1" |  |
+| <a id="s-7a5a35d6e2"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1"; default="riverhog-storage-adapter/v1" |  |
+| <a id="s-0d4e848375"></a>`status` | no | type="string"; const="conformant"; default="conformant" |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-941580622e"></a>`AdapterDescriptor` | type="object"; fields=`implementation_id`, `implementation_version`, `maximum_segment_bytes`, `maximum_segment_count`, `minimum_nonfinal_segment_bytes`, `protocol`, `read_mode`; additional keys=`additionalProperties`, `required` |
+- [AdapterDescriptor](#s-941580622e)
+
+### <a id="s-941580622e"></a>definition `AdapterDescriptor`
+
+- <a id="s-1bbfa1af1b"></a>`type`: `"object"`
+- <a id="s-e8c19c8ddb"></a>`additionalProperties`: `false`
+- <a id="s-0e8429e873"></a>`required`: `["implementation_id","implementation_version","read_mode","minimum_nonfinal_segment_bytes"]`
+- <a id="s-a417bb9ca6"></a>`title`: `"AdapterDescriptor"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f1b79988eb"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-92ca0aae95"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1 |  |
+| <a id="s-48168b80c7"></a>`maximum_segment_bytes` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
+| <a id="s-60e6132e30"></a>`maximum_segment_count` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
+| <a id="s-65f932beae"></a>`minimum_nonfinal_segment_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-f2cd45f88a"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1"; default="riverhog-storage-adapter/v1" |  |
+| <a id="s-849366dd4b"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"] |  |
 
 ### Progression, limits, and lifecycle
 
@@ -51,7 +71,7 @@ Shared facts for every subject below: maximum=120; minimum=1; reason="schema-max
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-92ca0aae95"></a>[definition AdapterDescriptor · field implementation_version](#s-941580622e) | `length · characters · contract_max` | shared above |
+| [definition AdapterDescriptor · field implementation_version](#s-92ca0aae95) | `length · characters · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -82,6 +102,9 @@ Shared facts for every subject below: maximum=120; minimum=1; reason="schema-max
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/StorageAdapterConformanceResult`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -206,3 +229,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

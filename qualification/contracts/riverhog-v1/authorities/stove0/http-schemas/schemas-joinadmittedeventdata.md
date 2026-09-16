@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-43623f3a7b"></a>
-- <a id="s-0bba2fe1fc"></a>`title`: JoinAdmittedEventData
-- <a id="s-781830739f"></a>`type`: object
+
+- <a id="s-781830739f"></a>`type`: `"object"`
+- <a id="s-77b9b7f000"></a>`additionalProperties`: `false`
+- <a id="s-c6fdbf865f"></a>`required`: `["work_id","phase","revision","branch_set_sha256","join_plan_sha256","join_work_id"]`
+- <a id="s-0bba2fe1fc"></a>`title`: `"JoinAdmittedEventData"`
 
 ### Fields
 
@@ -63,6 +66,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEventData`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -115,3 +121,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

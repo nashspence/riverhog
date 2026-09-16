@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fe3badbf65"></a>
-- <a id="s-f640904f3b"></a>`title`: ObserverImplementation
-- <a id="s-51335bead8"></a>`type`: object
+
+- <a id="s-51335bead8"></a>`type`: `"object"`
+- <a id="s-5b20cbee72"></a>`additionalProperties`: `false`
+- <a id="s-951348a52a"></a>`required`: `["id","version","source_revision","descriptor_sha256"]`
+- <a id="s-f640904f3b"></a>`title`: `"ObserverImplementation"`
 
 ### Fields
 
@@ -23,9 +26,9 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-d8c5b17fff"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-0331c52b64"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-f5bcb2a081"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1" |  |
-| <a id="s-3297eafb2a"></a>`source_revision` | yes | type="string"; minLength=1; maxLength=200 |  |
-| <a id="s-990a1adba3"></a>`version` | yes | type="string"; minLength=1; maxLength=120 |  |
+| <a id="s-f5bcb2a081"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1"; default="stove0-content-observer/v1" |  |
+| <a id="s-3297eafb2a"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
+| <a id="s-990a1adba3"></a>`version` | yes | type="string"; maxLength=120; minLength=1 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -59,6 +62,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/stove0/components/schemas/ObserverImplementation`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -107,3 +113,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6edc3b9bb9"></a>
-- <a id="s-621c7e006e"></a>`title`: ArchiveCopyRetirementResultOut
-- <a id="s-618d3bf1a6"></a>`type`: object
+
+- <a id="s-618d3bf1a6"></a>`type`: `"object"`
+- <a id="s-74c809b997"></a>`additionalProperties`: `false`
+- <a id="s-e664ba798d"></a>`required`: `["status","collection_id","store","remote_storage_bytes","verified_store"]`
+- <a id="s-621c7e006e"></a>`title`: `"ArchiveCopyRetirementResultOut"`
 
 ### Fields
 
@@ -25,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-d6df7ab197"></a>`remote_storage_bytes` | yes | type="integer" |  |
 | <a id="s-f3361fbed4"></a>`status` | yes | type="string"; enum=["retired","already_absent"] |  |
 | <a id="s-03841b12de"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-f7c4101414"></a>`verified_store` | yes | anyOf=#/components/schemas/ArchiveStoreName \| type="null" |  |
+| <a id="s-f7c4101414"></a>`verified_store` | yes | anyOf=(#/components/schemas/ArchiveStoreName) \| (type="null") |  |
 
 ## Maintained corroboration
 
@@ -55,6 +58,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyRetirementResultOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -104,3 +110,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -28,7 +28,7 @@ Flush
 
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
-| <a id="s-010c427b4f"></a>`200` | Successful Response | application/json | type="object"; additional keys=`additionalProperties` | not declared |
+| <a id="s-010c427b4f"></a>`200` | Successful Response | application/json | type="object"; additionalProperties=true | not declared |
 | <a id="s-e2ac7e3c6a"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
 | <a id="s-86321cc684"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
 | <a id="s-ead99851f5"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
@@ -128,6 +128,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 9606950cef18df30221388969787db2bb44fcce1a0a93c83ad7e22630416bf30 -->
@@ -223,3 +226,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   ]
 }
 ```
+
+</details>

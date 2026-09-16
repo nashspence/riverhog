@@ -14,8 +14,12 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-865162e45c"></a>
-- <a id="s-445c37d54b"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-volume-context.json
-- <a id="s-d419668e40"></a>`type`: object
+
+- <a id="s-d419668e40"></a>`type`: `"object"`
+- <a id="s-445c37d54b"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-volume-context.json"`
+- <a id="s-a32b043f8c"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-27430f90c7"></a>`additionalProperties`: `false`
+- <a id="s-f5e8c25bab"></a>`required`: `["filesystem_name","volume_label","volume_serial_number","maximum_component_length","filesystem_flags","mount_path","volume_guid_path","drive_type","sectors_per_cluster","bytes_per_sector","final_path"]`
 
 ### Fields
 
@@ -66,6 +70,9 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 - `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-volume-context.json`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -134,3 +141,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

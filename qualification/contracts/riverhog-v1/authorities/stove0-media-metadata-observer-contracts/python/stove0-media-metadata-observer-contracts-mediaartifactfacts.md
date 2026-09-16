@@ -27,23 +27,61 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-bfe04bf52f"></a>
-- <a id="s-69659dd347"></a>`type`: object
 
-### Fields
+- <a id="s-69659dd347"></a>`type`: `"object"`
+- <a id="s-811a4fb373"></a>`additionalProperties`: `false`
+- <a id="s-e81029fe51"></a>`required`: `["artifact_id","state"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3c6dd9b0ec"></a>`artifact_id` | yes | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-5d0e028eda"></a>`facts` | no | type="array"; items=(#/$defs/MediaMetadataFact) |  |
+| <a id="s-3c6dd9b0ec"></a>`artifact_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-5d0e028eda"></a>`facts` | no | type="array"; default=[]; items=([MediaMetadataFact](#s-9288049ca6)) |  |
 | <a id="s-64fd95ee2e"></a>`state` | yes | type="string"; enum=["observed","unsupported"] |  |
 
-### Definitions
+##### All must match (`allOf`)
 
-| Definition | Shape |
-|---|---|
-| <a id="s-128351c62f"></a>`JsonValue` | empty object |
-| <a id="s-957f003757"></a>`MediaFactEvidence` | type="object"; fields=`artifact_id`, `field`; additional keys=`additionalProperties`, `required` |
-| <a id="s-9288049ca6"></a>`MediaMetadataFact` | type="object"; fields=`evidence`, `name`, `value`; additional keys=`additionalProperties`, `required` |
+| Rule | If schema matches | Then must match | Otherwise must match |
+|---|---|---|---|
+| <a id="s-8a15b5d3f8"></a>1 | properties={state: (const="unsupported")}; required=["state"] | properties={facts: (maxItems=0)} | no additional constraint |
+
+##### Definitions
+
+- [JsonValue](#s-128351c62f)
+- [MediaFactEvidence](#s-957f003757)
+- [MediaMetadataFact](#s-9288049ca6)
+
+##### <a id="s-128351c62f"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-957f003757"></a>definition `MediaFactEvidence`
+
+- <a id="s-3d822ac7b8"></a>`type`: `"object"`
+- <a id="s-9614c4b693"></a>`additionalProperties`: `false`
+- <a id="s-5bffdd9bc2"></a>`required`: `["artifact_id","field"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c4a6ded569"></a>`artifact_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-b6d4bdfc55"></a>`field` | yes | type="string"; maxLength=240; minLength=1 |  |
+
+##### <a id="s-9288049ca6"></a>definition `MediaMetadataFact`
+
+- <a id="s-501e4c7b1c"></a>`type`: `"object"`
+- <a id="s-226723aca7"></a>`additionalProperties`: `false`
+- <a id="s-301f6b5f03"></a>`required`: `["name","value","evidence"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-afe5594465"></a>`evidence` | yes | [MediaFactEvidence](#s-957f003757) |  |
+| <a id="s-3ef66d41f0"></a>`name` | yes | type="string"; enum=["capture-time","container-format","creator","device-make","device-model","gps-latitude","gps-longitude"] |  |
+| <a id="s-71331b503f"></a>`value` | yes | [JsonValue](#s-128351c62f) |  |
 
 ## Maintained corroboration
 
@@ -72,6 +110,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_media_metadata_observer_contracts.MediaArtifactFacts`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -191,3 +232,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

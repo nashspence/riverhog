@@ -27,22 +27,36 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-6c33cc42f3"></a>
-- <a id="s-3aa6510c5a"></a>`type`: object
 
-### Fields
+- <a id="s-3aa6510c5a"></a>`type`: `"object"`
+- <a id="s-866e7825a7"></a>`additionalProperties`: `false`
+- <a id="s-60d5a92908"></a>`required`: `["object","expected_bytes"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-7d79767301"></a>`expected_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-bee60b01d3"></a>`object` | yes | #/$defs/ObjectLocator |  |
-| <a id="s-59bb88205a"></a>`offset` | no | anyOf=type="integer"; minimum=0 \| type="null" |  |
-| <a id="s-a6488f469a"></a>`size` | no | anyOf=type="integer"; minimum=0 \| type="null" |  |
+| <a id="s-bee60b01d3"></a>`object` | yes | [ObjectLocator](#s-a7b8fb18e2) |  |
+| <a id="s-59bb88205a"></a>`offset` | no | anyOf=(type="integer"; minimum=0) \| (type="null"); default=null |  |
+| <a id="s-a6488f469a"></a>`size` | no | anyOf=(type="integer"; minimum=0) \| (type="null"); default=null |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-a7b8fb18e2"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
+- [ObjectLocator](#s-a7b8fb18e2)
+
+##### <a id="s-a7b8fb18e2"></a>definition `ObjectLocator`
+
+- <a id="s-07819f5058"></a>`type`: `"object"`
+- <a id="s-12f4822b76"></a>`additionalProperties`: `false`
+- <a id="s-b2f050e0e8"></a>`required`: `["object_path"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cd6d128d0c"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-747eb445af"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
 
 ## Maintained corroboration
 
@@ -71,6 +85,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.ObjectReadRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -158,3 +175,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

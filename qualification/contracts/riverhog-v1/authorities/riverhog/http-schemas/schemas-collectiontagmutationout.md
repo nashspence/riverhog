@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b4890d412d"></a>
-- <a id="s-c52e9be84e"></a>`title`: CollectionTagMutationOut
-- <a id="s-0fc65ff4ea"></a>`type`: object
+
+- <a id="s-0fc65ff4ea"></a>`type`: `"object"`
+- <a id="s-5cca880c9d"></a>`additionalProperties`: `false`
+- <a id="s-2226148255"></a>`required`: `["collection_id","operation_id","action","tag","changed","revision","root_sha256","tag_set_identity","head_identity","state"]`
+- <a id="s-c52e9be84e"></a>`title`: `"CollectionTagMutationOut"`
 
 ### Fields
 
@@ -27,7 +30,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-a43f16bafa"></a>`head_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-6553f7477d"></a>`operation_id` | yes | type="string"; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
 | <a id="s-342f60d573"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
-| <a id="s-13adc8225c"></a>`root_sha256` | yes | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-13adc8225c"></a>`root_sha256` | yes | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 | <a id="s-89bc2fdc81"></a>`state` | yes | type="string"; enum=["pending","retry_wait","succeeded"] |  |
 | <a id="s-a413ee5a7c"></a>`tag` | yes | #/components/schemas/CollectionTag |  |
 | <a id="s-61ac4c695c"></a>`tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -72,6 +75,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionTagMutationOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -159,3 +165,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

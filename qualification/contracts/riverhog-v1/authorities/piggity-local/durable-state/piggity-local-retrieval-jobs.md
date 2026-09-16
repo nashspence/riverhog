@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ce3aba518c"></a>
-- Table: `retrieval_jobs`
 
-### Columns
+### Table: `retrieval_jobs`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -24,7 +25,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-f6d8ce69bf"></a>`state` | `TEXT` | no | `—` | — |
 | <a id="s-329fdd081c"></a>`updated_at` | `TEXT` | no | `CURRENT_TIMESTAMP` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -58,6 +59,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/1/structure/tables/2`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -104,3 +108,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "retrieval_jobs"
 }
 ```
+
+</details>

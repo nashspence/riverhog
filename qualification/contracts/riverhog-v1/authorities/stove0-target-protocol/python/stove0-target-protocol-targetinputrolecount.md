@@ -27,9 +27,12 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ada9063bbc"></a>
-- <a id="s-863caef276"></a>`type`: object
 
-### Fields
+- <a id="s-863caef276"></a>`type`: `"object"`
+- <a id="s-f14ea58f55"></a>`additionalProperties`: `false`
+- <a id="s-66fb8d0ac0"></a>`required`: `["role","count"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
@@ -57,6 +60,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_protocol.TargetInputRoleCount`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -92,3 +98,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

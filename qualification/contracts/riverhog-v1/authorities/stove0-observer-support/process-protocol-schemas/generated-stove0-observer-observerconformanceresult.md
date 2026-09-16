@@ -14,43 +14,371 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fc5a6c3bef"></a>
-- <a id="s-c607c4203b"></a>`title`: ObserverConformanceResult
-- <a id="s-79c5c6f594"></a>`type`: object
+
+- <a id="s-79c5c6f594"></a>`type`: `"object"`
+- <a id="s-6295f094f9"></a>`additionalProperties`: `false`
+- <a id="s-3e67ce95d3"></a>`required`: `["status","descriptor","coverage","contracts"]`
+- <a id="s-c607c4203b"></a>`title`: `"ObserverConformanceResult"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-11cb6cb7b0"></a>`contracts` | yes | type="array"; items=(#/$defs/ObserverContractConformance) |  |
-| <a id="s-6e150e7a08"></a>`coverage` | yes | #/$defs/ObserverConformanceCoverage |  |
-| <a id="s-503986d75d"></a>`descriptor` | yes | #/$defs/ObserverDescriptor |  |
-| <a id="s-f07392d541"></a>`format` | no | type="string"; const="stove0-observer-conformance-result/v1" |  |
+| <a id="s-11cb6cb7b0"></a>`contracts` | yes | type="array"; items=([ObserverContractConformance](#s-3429ae0b0c)) |  |
+| <a id="s-6e150e7a08"></a>`coverage` | yes | [ObserverConformanceCoverage](#s-a0b35db38e) |  |
+| <a id="s-503986d75d"></a>`descriptor` | yes | [ObserverDescriptor](#s-c720233b4b) |  |
+| <a id="s-f07392d541"></a>`format` | no | type="string"; const="stove0-observer-conformance-result/v1"; default="stove0-observer-conformance-result/v1" |  |
 | <a id="s-86e322f70a"></a>`status` | yes | type="string"; enum=["conformant","partially-exercised","inspected"] |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-6da8dc866c"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-31ea8cf25b"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-44b34c0b44"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
-| <a id="s-1bf0987e08"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-ff4601229e"></a>`JsonValue` | empty object |
-| <a id="s-50f0629b74"></a>`ObservationFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
-| <a id="s-93a287d09a"></a>`ObservationInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
-| <a id="s-257aa2bfb3"></a>`ObservationRequest` | type="object"; fields=`format`, `maximum_result_bytes`, `observer_contract_id`, `observer_contract_sha256`, `observer_descriptor_sha256`, `observer_registration_id`, `options`, `request_id`, `retrieval_policy`, `subjects`, `timeout_seconds`, `work_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-c17307bef8"></a>`ObservationResult` | type="object"; fields=`execution_evidence`, `facts`, `facts_schema`, `facts_sha256`, `failure`, `format`, `inapplicable`, `observer`, `observer_contract_id`, `observer_contract_sha256`, `request_id`, `result_sha256`, `state`, `subjects`; additional keys=`additionalProperties`, `required` |
-| <a id="s-a0b35db38e"></a>`ObserverConformanceCoverage` | type="object"; fields=`advertised`, `complete`, `exercised`; additional keys=`additionalProperties`, `required` |
-| <a id="s-3429ae0b0c"></a>`ObserverContractConformance` | type="object"; fields=`contract_id`, `contract_sha256`, `evidence`, `execution`, `facts_schema_sha256`, `facts_semantics_conformance_vectors_sha256`, `facts_semantics_id`, `facts_semantics_sha256`, `maximum_result_bytes`, `options_schema_sha256`, `preferred_subject_batch_size`, `semantic_acceptance`; additional keys=`additionalProperties`, `required` |
-| <a id="s-6014cd6960"></a>`ObserverContractConformanceEvidence` | type="object"; fields=`observation`, `request`; additional keys=`additionalProperties`, `required` |
-| <a id="s-c7de29acfc"></a>`ObserverContractSupport` | type="object"; fields=`contract_id`, `contract_sha256`, `facts_schema`, `facts_semantics`, `maximum_result_bytes`, `options_schema`, `preferred_subject_batch_size`; additional keys=`additionalProperties`, `required` |
-| <a id="s-c720233b4b"></a>`ObserverDescriptor` | type="object"; fields=`contracts`, `descriptor_sha256`, `image_digest`, `implementation_id`, `implementation_version`, `protocol`, `source_revision`; additional keys=`additionalProperties`, `required` |
-| <a id="s-ff3c4a891a"></a>`ObserverImplementation` | type="object"; fields=`descriptor_sha256`, `id`, `protocol`, `source_revision`, `version`; additional keys=`additionalProperties`, `required` |
-| <a id="s-cb936e6e5e"></a>`ObserverSemanticAcceptance` | type="object"; fields=`kind`, `profile_id`, `profile_sha256`, `vectors`; additional keys=`additionalProperties`, `required` |
-| <a id="s-cadb8352a7"></a>`ObserverSemanticVectorEvidence` | type="object"; fields=`accepted_vector_ids`, `rejected_vector_ids`, `vectors`; additional keys=`additionalProperties`, `required` |
-| <a id="s-c3aa3f5051"></a>`SemanticFactsConformanceVector` | type="object"; fields=`accepted`, `facts`, `id`, `options`, `subjects`; additional keys=`additionalProperties`, `required` |
-| <a id="s-02d07e8151"></a>`SemanticFactsConformanceVectors` | type="object"; fields=`format`, `profile_id`, `vectors`; additional keys=`additionalProperties`, `required` |
-| <a id="s-5fcce07d86"></a>`SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
+- [ArtifactSubject](#s-6da8dc866c)
+- [CollectionId](#s-31ea8cf25b)
+- [CollectionRootRef](#s-44b34c0b44)
+- [JsonSchemaDocument](#s-1bf0987e08)
+- [JsonValue](#s-ff4601229e)
+- [ObservationFailure](#s-50f0629b74)
+- [ObservationInapplicable](#s-93a287d09a)
+- [ObservationRequest](#s-257aa2bfb3)
+- [ObservationResult](#s-c17307bef8)
+- [ObserverConformanceCoverage](#s-a0b35db38e)
+- [ObserverContractConformance](#s-3429ae0b0c)
+- [ObserverContractConformanceEvidence](#s-6014cd6960)
+- [ObserverContractSupport](#s-c7de29acfc)
+- [ObserverDescriptor](#s-c720233b4b)
+- [ObserverImplementation](#s-ff3c4a891a)
+- [ObserverSemanticAcceptance](#s-cb936e6e5e)
+- [ObserverSemanticVectorEvidence](#s-cadb8352a7)
+- [SemanticFactsConformanceVector](#s-c3aa3f5051)
+- [SemanticFactsConformanceVectors](#s-02d07e8151)
+- [SemanticValidationProfile](#s-5fcce07d86)
+
+### <a id="s-6da8dc866c"></a>definition `ArtifactSubject`
+
+- <a id="s-c053f60f84"></a>`type`: `"object"`
+- <a id="s-153be89ef6"></a>`additionalProperties`: `false`
+- <a id="s-f83229bb6a"></a>`required`: `["id","role","collection","path","bytes","sha256"]`
+- <a id="s-5ded488401"></a>`title`: `"ArtifactSubject"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7f4e336ffd"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-11d80d9212"></a>`collection` | yes | [CollectionRootRef](#s-44b34c0b44) |  |
+| <a id="s-32af5dddc0"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-3ae226d409"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-8001657182"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-ad00442c9f"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-a66068345d"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### <a id="s-31ea8cf25b"></a>definition `CollectionId`
+
+- <a id="s-a0a8f8d85c"></a>`type`: `"integer"`
+- <a id="s-afa0ed5985"></a>`minimum`: `1`
+
+### <a id="s-44b34c0b44"></a>definition `CollectionRootRef`
+
+- <a id="s-e80972cfa4"></a>`type`: `"object"`
+- <a id="s-aea7b372b4"></a>`additionalProperties`: `false`
+- <a id="s-d2bebcc355"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+- <a id="s-ec9124659f"></a>`title`: `"CollectionRootRef"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6abd9b8502"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-228e1fc6b5"></a>`collection_id` | yes | [CollectionId](#s-31ea8cf25b) |  |
+| <a id="s-c60a496dd7"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### <a id="s-1bf0987e08"></a>definition `JsonSchemaDocument`
+
+- <a id="s-4c0cbccc59"></a>`type`: `"object"`
+- <a id="s-a74bbd4289"></a>`additionalProperties`: `false`
+- <a id="s-cc8514e61d"></a>`required`: `["id","sha256","schema"]`
+- <a id="s-0e45cd2ed0"></a>`title`: `"JsonSchemaDocument"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6e97b20bbd"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-99203d459a"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-ef7541537a"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-af86fb7579"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-ff4601229e)) |  |
+| <a id="s-467d4e41da"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### <a id="s-ff4601229e"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+### <a id="s-50f0629b74"></a>definition `ObservationFailure`
+
+- <a id="s-06ae15fbac"></a>`type`: `"object"`
+- <a id="s-5d25dd52fa"></a>`additionalProperties`: `false`
+- <a id="s-18b6ce6f67"></a>`required`: `["code","message","retryable"]`
+- <a id="s-08f5cd3f8f"></a>`title`: `"ObservationFailure"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-1b9ec049ca"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-32f334ea59"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-2e0bc17e07"></a>`retryable` | yes | type="boolean" |  |
+
+### <a id="s-93a287d09a"></a>definition `ObservationInapplicable`
+
+- <a id="s-af82c28587"></a>`type`: `"object"`
+- <a id="s-d240f2bbe0"></a>`additionalProperties`: `false`
+- <a id="s-9f95a76019"></a>`required`: `["code","message"]`
+- <a id="s-69227920bd"></a>`title`: `"ObservationInapplicable"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-d16c78a08b"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-124c7a2555"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+
+### <a id="s-257aa2bfb3"></a>definition `ObservationRequest`
+
+- <a id="s-8329a6333d"></a>`type`: `"object"`
+- <a id="s-690386a7d4"></a>`additionalProperties`: `false`
+- <a id="s-f7b8ef2e6b"></a>`required`: `["work_id","observer_registration_id","observer_descriptor_sha256","observer_contract_id","observer_contract_sha256","subjects","request_id"]`
+- <a id="s-deee355643"></a>`title`: `"ObservationRequest"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-063dbbbac8"></a>`format` | no | type="string"; const="stove0-observation-request/v1"; default="stove0-observation-request/v1" |  |
+| <a id="s-85e5d57c88"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
+| <a id="s-9505a95bd6"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-b60c589e12"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a8076c4360"></a>`observer_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-3703138164"></a>`observer_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
+| <a id="s-a6b34a213f"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-ff4601229e)) |  |
+| <a id="s-add37a784d"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6d8c6061d2"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-71c6f314e8"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-6da8dc866c)); minItems=1 |  |
+| <a id="s-9c0a94b110"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300 |  |
+| <a id="s-8f110b30b1"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+### <a id="s-c17307bef8"></a>definition `ObservationResult`
+
+- <a id="s-988702c2ff"></a>`type`: `"object"`
+- <a id="s-9f996697ca"></a>`additionalProperties`: `false`
+- <a id="s-5802f343d8"></a>`required`: `["request_id","state","observer","observer_contract_id","observer_contract_sha256","subjects","result_sha256"]`
+- <a id="s-f816936276"></a>`title`: `"ObservationResult"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-18fec8dde8"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-ff4601229e)) |  |
+| <a id="s-772d9bd642"></a>`facts` | no | anyOf=(type="object"; additionalProperties=([JsonValue](#s-ff4601229e))) \| (type="null"); default=null |  |
+| <a id="s-f25ed3d92e"></a>`facts_schema` | no | anyOf=([JsonSchemaDocument](#s-1bf0987e08)) \| (type="null"); default=null |  |
+| <a id="s-0e80e5d651"></a>`facts_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-0022c7d805"></a>`failure` | no | anyOf=([ObservationFailure](#s-50f0629b74)) \| (type="null"); default=null |  |
+| <a id="s-28498be470"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1" |  |
+| <a id="s-3cf498ecf9"></a>`inapplicable` | no | anyOf=([ObservationInapplicable](#s-93a287d09a)) \| (type="null"); default=null |  |
+| <a id="s-771d96d8ec"></a>`observer` | yes | [ObserverImplementation](#s-ff3c4a891a) |  |
+| <a id="s-90052cd0c4"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-0cc5d9dcbc"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-8e01b8f9e5"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-0d1cf88363"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-30158d8a6d"></a>`state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"] |  |
+| <a id="s-f5c3f9cb96"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-6da8dc866c)); minItems=1 |  |
+
+### <a id="s-a0b35db38e"></a>definition `ObserverConformanceCoverage`
+
+- <a id="s-0e74268425"></a>`type`: `"object"`
+- <a id="s-76d2675a68"></a>`additionalProperties`: `false`
+- <a id="s-47347322b0"></a>`required`: `["advertised","exercised","complete"]`
+- <a id="s-f45fe65b1b"></a>`title`: `"ObserverConformanceCoverage"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cfffbb449b"></a>`advertised` | yes | type="integer"; minimum=0 |  |
+| <a id="s-9035439578"></a>`complete` | yes | type="boolean" |  |
+| <a id="s-8b641bcfe9"></a>`exercised` | yes | type="integer"; minimum=0 |  |
+
+### <a id="s-3429ae0b0c"></a>definition `ObserverContractConformance`
+
+- <a id="s-3896e12241"></a>`type`: `"object"`
+- <a id="s-eae004cf6e"></a>`additionalProperties`: `false`
+- <a id="s-c2ba9a8263"></a>`required`: `["contract_id","contract_sha256","options_schema_sha256","facts_schema_sha256","facts_semantics_id","facts_semantics_sha256","preferred_subject_batch_size","maximum_result_bytes","execution"]`
+- <a id="s-0d0c324fb2"></a>`title`: `"ObserverContractConformance"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-92337f811b"></a>`contract_id` | yes | type="string" |  |
+| <a id="s-61309d58ef"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-fe63aa2b7a"></a>`evidence` | no | anyOf=([ObserverContractConformanceEvidence](#s-6014cd6960)) \| (type="null"); default=null |  |
+| <a id="s-427ec692af"></a>`execution` | yes | type="string"; enum=["not-exercised","exercised"] |  |
+| <a id="s-38d7417051"></a>`facts_schema_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-23b7f66d33"></a>`facts_semantics_conformance_vectors_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-e9835fc00b"></a>`facts_semantics_id` | yes | type="string" |  |
+| <a id="s-4d9c57cb7a"></a>`facts_semantics_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b355fd545b"></a>`maximum_result_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-f25ed6d63b"></a>`options_schema_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ac70fd6b4e"></a>`preferred_subject_batch_size` | yes | type="integer"; minimum=1 |  |
+| <a id="s-f952afe858"></a>`semantic_acceptance` | no | anyOf=([ObserverSemanticAcceptance](#s-cb936e6e5e)) \| (type="null"); default=null |  |
+
+### <a id="s-6014cd6960"></a>definition `ObserverContractConformanceEvidence`
+
+- <a id="s-f721167944"></a>`type`: `"object"`
+- <a id="s-ae2085c8f4"></a>`additionalProperties`: `false`
+- <a id="s-8b39db5175"></a>`required`: `["request","observation"]`
+- <a id="s-80573b26d1"></a>`title`: `"ObserverContractConformanceEvidence"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f1a0bb00f5"></a>`observation` | yes | [ObservationResult](#s-c17307bef8) |  |
+| <a id="s-8f6bf3330e"></a>`request` | yes | [ObservationRequest](#s-257aa2bfb3) |  |
+
+### <a id="s-c7de29acfc"></a>definition `ObserverContractSupport`
+
+- <a id="s-1f6881786f"></a>`type`: `"object"`
+- <a id="s-b1fa78b566"></a>`additionalProperties`: `false`
+- <a id="s-bd1db9508b"></a>`required`: `["contract_id","contract_sha256","options_schema","facts_schema","facts_semantics","maximum_result_bytes"]`
+- <a id="s-7fbc291fdf"></a>`title`: `"ObserverContractSupport"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-9737520dfb"></a>`contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-0bf8abada4"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-be69f7b573"></a>`facts_schema` | yes | [JsonSchemaDocument](#s-1bf0987e08) |  |
+| <a id="s-2954664f39"></a>`facts_semantics` | yes | [SemanticValidationProfile](#s-5fcce07d86) |  |
+| <a id="s-6c87e3c09e"></a>`maximum_result_bytes` | yes | type="integer"; minimum=1; maximum=67108864 |  |
+| <a id="s-71e00e102e"></a>`options_schema` | yes | [JsonSchemaDocument](#s-1bf0987e08) |  |
+| <a id="s-01e13b0bc0"></a>`preferred_subject_batch_size` | no | type="integer"; minimum=1; default=128 |  |
+
+### <a id="s-c720233b4b"></a>definition `ObserverDescriptor`
+
+- <a id="s-cbe0f513a3"></a>`type`: `"object"`
+- <a id="s-2a692d102d"></a>`additionalProperties`: `false`
+- <a id="s-09d1e56d14"></a>`required`: `["implementation_id","implementation_version","source_revision","image_digest","contracts","descriptor_sha256"]`
+- <a id="s-e261655d00"></a>`title`: `"ObserverDescriptor"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2ef1f8a487"></a>`contracts` | yes | type="array"; items=([ObserverContractSupport](#s-c7de29acfc)); minItems=1 |  |
+| <a id="s-42cfeceeff"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f9bf8ce9e8"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-10c44bb963"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-dceba6dd81"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1 |  |
+| <a id="s-1f3d23eb37"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1"; default="stove0-content-observer/v1" |  |
+| <a id="s-065ca78d50"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
+
+### <a id="s-ff3c4a891a"></a>definition `ObserverImplementation`
+
+- <a id="s-9cab9b4336"></a>`type`: `"object"`
+- <a id="s-4feae3e9de"></a>`additionalProperties`: `false`
+- <a id="s-824e8935ba"></a>`required`: `["id","version","source_revision","descriptor_sha256"]`
+- <a id="s-0eb25e140b"></a>`title`: `"ObserverImplementation"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a2e6069b06"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-e98b7bb56c"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-edfa24d35e"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1"; default="stove0-content-observer/v1" |  |
+| <a id="s-bc58e8e12b"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
+| <a id="s-5360514868"></a>`version` | yes | type="string"; maxLength=120; minLength=1 |  |
+
+### <a id="s-cb936e6e5e"></a>definition `ObserverSemanticAcceptance`
+
+- <a id="s-5beef27254"></a>`type`: `"object"`
+- <a id="s-9474c35511"></a>`additionalProperties`: `false`
+- <a id="s-b748102b8d"></a>`description`: `"Exact schema revalidation or explicit conformance-runner attestation."`
+- <a id="s-6165fa5509"></a>`required`: `["kind","profile_id","profile_sha256"]`
+- <a id="s-984aa249a1"></a>`title`: `"ObserverSemanticAcceptance"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-acdca8b0f6"></a>`kind` | yes | type="string"; enum=["schema-only-revalidated","conformance-runner-attestation"] |  |
+| <a id="s-58eb835086"></a>`profile_id` | yes | type="string" |  |
+| <a id="s-4696fbe59a"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-4f684adacc"></a>`vectors` | no | anyOf=([ObserverSemanticVectorEvidence](#s-cadb8352a7)) \| (type="null"); default=null |  |
+
+### <a id="s-cadb8352a7"></a>definition `ObserverSemanticVectorEvidence`
+
+- <a id="s-19749c2c8f"></a>`type`: `"object"`
+- <a id="s-9e5b86f642"></a>`additionalProperties`: `false`
+- <a id="s-4e07f437f6"></a>`required`: `["vectors","accepted_vector_ids","rejected_vector_ids"]`
+- <a id="s-2da3cd282a"></a>`title`: `"ObserverSemanticVectorEvidence"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-84a0c09846"></a>`accepted_vector_ids` | yes | type="array"; items=(type="string") |  |
+| <a id="s-a7a7a2ea7c"></a>`rejected_vector_ids` | yes | type="array"; items=(type="string") |  |
+| <a id="s-0a099f7dfd"></a>`vectors` | yes | [SemanticFactsConformanceVectors](#s-02d07e8151) |  |
+
+### <a id="s-c3aa3f5051"></a>definition `SemanticFactsConformanceVector`
+
+- <a id="s-e76b9ebc9a"></a>`type`: `"object"`
+- <a id="s-aff262e3b2"></a>`additionalProperties`: `false`
+- <a id="s-11fb15ec9d"></a>`required`: `["id","accepted","subjects","facts"]`
+- <a id="s-1f963619c7"></a>`title`: `"SemanticFactsConformanceVector"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4128764b82"></a>`accepted` | yes | type="boolean" |  |
+| <a id="s-b56714fb4e"></a>`facts` | yes | type="object"; additionalProperties=([JsonValue](#s-ff4601229e)) |  |
+| <a id="s-8fd47d1fad"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-14bd5c07e0"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-ff4601229e)) |  |
+| <a id="s-a0524302e6"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-6da8dc866c)); minItems=1 |  |
+
+### <a id="s-02d07e8151"></a>definition `SemanticFactsConformanceVectors`
+
+- <a id="s-7d4901e424"></a>`type`: `"object"`
+- <a id="s-513f29aedd"></a>`additionalProperties`: `false`
+- <a id="s-58339d082c"></a>`required`: `["profile_id","vectors"]`
+- <a id="s-f41b7f920b"></a>`title`: `"SemanticFactsConformanceVectors"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f6d2354da8"></a>`format` | no | type="string"; const="stove0-semantic-facts-conformance/v1"; default="stove0-semantic-facts-conformance/v1" |  |
+| <a id="s-10d5c10d22"></a>`profile_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-34b15007e4"></a>`vectors` | yes | type="array"; items=([SemanticFactsConformanceVector](#s-c3aa3f5051)); minItems=2 |  |
+
+### <a id="s-5fcce07d86"></a>definition `SemanticValidationProfile`
+
+- <a id="s-0dff62d189"></a>`type`: `"object"`
+- <a id="s-d13e661354"></a>`additionalProperties`: `false`
+- <a id="s-74aaefa112"></a>`required`: `["id","rules","profile_sha256"]`
+- <a id="s-d660fc9b23"></a>`title`: `"SemanticValidationProfile"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a5fa440820"></a>`conformance_vectors_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-20d7dcf1ac"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-45433a22b1"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-90fed6464f"></a>`rules` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -61,40 +389,40 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [field contracts](#s-11cb6cb7b0) | `cardinality · items · operational_policy` | shared above |
-| <a id="s-18fec8dde8"></a>[definition ObservationResult · field execution_evidence](#s-c17307bef8) | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-454b889102"></a>[definition ObservationResult · field facts · object value](#s-c17307bef8) | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-f5c3f9cb96"></a>[definition ObservationResult · field subjects](#s-c17307bef8) | `cardinality · items · operational_policy` | shared above |
-| <a id="s-2ef1f8a487"></a>[definition ObserverDescriptor · field contracts](#s-c720233b4b) | `cardinality · items · operational_policy` | shared above |
-| <a id="s-84a0c09846"></a>[definition ObserverSemanticVectorEvidence · field accepted_vector_ids](#s-cadb8352a7) | `cardinality · items · operational_policy` | shared above |
-| <a id="s-a7a7a2ea7c"></a>[definition ObserverSemanticVectorEvidence · field rejected_vector_ids](#s-cadb8352a7) | `cardinality · items · operational_policy` | shared above |
-| <a id="s-b56714fb4e"></a>[definition SemanticFactsConformanceVector · field facts](#s-c3aa3f5051) | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-14bd5c07e0"></a>[definition SemanticFactsConformanceVector · field options](#s-c3aa3f5051) | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-a0524302e6"></a>[definition SemanticFactsConformanceVector · field subjects](#s-c3aa3f5051) | `cardinality · items · operational_policy` | shared above |
-| <a id="s-34b15007e4"></a>[definition SemanticFactsConformanceVectors · field vectors](#s-02d07e8151) | `cardinality · items · operational_policy` | shared above |
-| <a id="s-90fed6464f"></a>[definition SemanticValidationProfile · field rules](#s-5fcce07d86) | `cardinality · items · operational_policy` | shared above |
+| [definition ObservationResult · field execution_evidence](#s-18fec8dde8) | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-454b889102"></a>[definition ObservationResult · field facts · object value](#s-772d9bd642) | `cardinality · entries · operational_policy` | shared above |
+| [definition ObservationResult · field subjects](#s-f5c3f9cb96) | `cardinality · items · operational_policy` | shared above |
+| [definition ObserverDescriptor · field contracts](#s-2ef1f8a487) | `cardinality · items · operational_policy` | shared above |
+| [definition ObserverSemanticVectorEvidence · field accepted_vector_ids](#s-84a0c09846) | `cardinality · items · operational_policy` | shared above |
+| [definition ObserverSemanticVectorEvidence · field rejected_vector_ids](#s-a7a7a2ea7c) | `cardinality · items · operational_policy` | shared above |
+| [definition SemanticFactsConformanceVector · field facts](#s-b56714fb4e) | `cardinality · entries · operational_policy` | shared above |
+| [definition SemanticFactsConformanceVector · field options](#s-14bd5c07e0) | `cardinality · entries · operational_policy` | shared above |
+| [definition SemanticFactsConformanceVector · field subjects](#s-a0524302e6) | `cardinality · items · operational_policy` | shared above |
+| [definition SemanticFactsConformanceVectors · field vectors](#s-34b15007e4) | `cardinality · items · operational_policy` | shared above |
+| [definition SemanticValidationProfile · field rules](#s-90fed6464f) | `cardinality · items · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-689a9a00f0"></a>[definition ObservationResult · field facts_sha256 · string value](#s-c17307bef8) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-0cc5d9dcbc"></a>[definition ObservationResult · field observer_contract_sha256](#s-c17307bef8) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-8e01b8f9e5"></a>[definition ObservationResult · field request_id](#s-c17307bef8) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-0d1cf88363"></a>[definition ObservationResult · field result_sha256](#s-c17307bef8) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-61309d58ef"></a>[definition ObserverContractConformance · field contract_sha256](#s-3429ae0b0c) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-38d7417051"></a>[definition ObserverContractConformance · field facts_schema_sha256](#s-3429ae0b0c) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-24b459cc32"></a>[definition ObserverContractConformance · field facts_semantics_conformance_vectors_sha256 · string value](#s-3429ae0b0c) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-4d9c57cb7a"></a>[definition ObserverContractConformance · field facts_semantics_sha256](#s-3429ae0b0c) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-f25ed6d63b"></a>[definition ObserverContractConformance · field options_schema_sha256](#s-3429ae0b0c) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-0bf8abada4"></a>[definition ObserverContractSupport · field contract_sha256](#s-c7de29acfc) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-6c87e3c09e"></a>[definition ObserverContractSupport · field maximum_result_bytes](#s-c7de29acfc) | `value · schema-value · contract_max` | maximum=67108864; minimum=1; reason="schema-maximum" |
-| <a id="s-42cfeceeff"></a>[definition ObserverDescriptor · field descriptor_sha256](#s-c720233b4b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-f9bf8ce9e8"></a>[definition ObserverDescriptor · field image_digest](#s-c720233b4b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-dceba6dd81"></a>[definition ObserverDescriptor · field implementation_version](#s-c720233b4b) | `length · characters · contract_max` | maximum=120; minimum=1; reason="schema-maximum" |
-| <a id="s-065ca78d50"></a>[definition ObserverDescriptor · field source_revision](#s-c720233b4b) | `length · characters · contract_max` | maximum=200; minimum=1; reason="schema-maximum" |
-| <a id="s-4696fbe59a"></a>[definition ObserverSemanticAcceptance · field profile_sha256](#s-cb936e6e5e) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-2852262eab"></a>[definition SemanticValidationProfile · field conformance_vectors_sha256 · string value](#s-5fcce07d86) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-45433a22b1"></a>[definition SemanticValidationProfile · field profile_sha256](#s-5fcce07d86) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-689a9a00f0"></a>[definition ObservationResult · field facts_sha256 · string value](#s-0e80e5d651) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition ObservationResult · field observer_contract_sha256](#s-0cc5d9dcbc) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition ObservationResult · field request_id](#s-8e01b8f9e5) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition ObservationResult · field result_sha256](#s-0d1cf88363) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition ObserverContractConformance · field contract_sha256](#s-61309d58ef) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition ObserverContractConformance · field facts_schema_sha256](#s-38d7417051) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-24b459cc32"></a>[definition ObserverContractConformance · field facts_semantics_conformance_vectors_sha256 · string value](#s-23b7f66d33) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition ObserverContractConformance · field facts_semantics_sha256](#s-4d9c57cb7a) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition ObserverContractConformance · field options_schema_sha256](#s-f25ed6d63b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition ObserverContractSupport · field contract_sha256](#s-0bf8abada4) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition ObserverContractSupport · field maximum_result_bytes](#s-6c87e3c09e) | `value · schema-value · contract_max` | maximum=67108864; minimum=1; reason="schema-maximum" |
+| [definition ObserverDescriptor · field descriptor_sha256](#s-42cfeceeff) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition ObserverDescriptor · field image_digest](#s-f9bf8ce9e8) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition ObserverDescriptor · field implementation_version](#s-dceba6dd81) | `length · characters · contract_max` | maximum=120; minimum=1; reason="schema-maximum" |
+| [definition ObserverDescriptor · field source_revision](#s-065ca78d50) | `length · characters · contract_max` | maximum=200; minimum=1; reason="schema-maximum" |
+| [definition ObserverSemanticAcceptance · field profile_sha256](#s-4696fbe59a) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-2852262eab"></a>[definition SemanticValidationProfile · field conformance_vectors_sha256 · string value](#s-a5fa440820) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition SemanticValidationProfile · field profile_sha256](#s-45433a22b1) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Maintained corroboration
 
@@ -125,6 +453,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverConformanceResult`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -1047,3 +1378,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

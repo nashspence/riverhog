@@ -14,19 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-60000b3b20"></a>
-- <a id="s-822697a1bd"></a>`title`: EvaluationDefinition
-- <a id="s-ebc2c2cae7"></a>`type`: object
+
+- <a id="s-ebc2c2cae7"></a>`type`: `"object"`
+- <a id="s-064872d3db"></a>`additionalProperties`: `false`
+- <a id="s-8576cd8e08"></a>`required`: `["recipe","inputs","matrix","evaluation_id"]`
+- <a id="s-822697a1bd"></a>`title`: `"EvaluationDefinition"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ed083ea0aa"></a>`common_intent` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-ed083ea0aa"></a>`common_intent` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
 | <a id="s-1d84fffa86"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-d003b4a71c"></a>`format` | no | type="string"; const="stove0-evaluation-definition/v1" |  |
-| <a id="s-52ffc0be04"></a>`inputs` | yes | type="array"; minItems=1; items=(#/components/schemas/CollectionRootRef) |  |
+| <a id="s-d003b4a71c"></a>`format` | no | type="string"; const="stove0-evaluation-definition/v1"; default="stove0-evaluation-definition/v1" |  |
+| <a id="s-52ffc0be04"></a>`inputs` | yes | type="array"; items=(#/components/schemas/CollectionRootRef); minItems=1 |  |
 | <a id="s-bf750d4125"></a>`matrix` | yes | #/components/schemas/EvaluationMatrix |  |
-| <a id="s-ec1c535372"></a>`purpose` | no | type="string"; enum=["trial","evaluation"] |  |
+| <a id="s-ec1c535372"></a>`purpose` | no | type="string"; enum=["trial","evaluation"]; default="evaluation" |  |
 | <a id="s-a02c55f45d"></a>`recipe` | yes | #/components/schemas/RecipeRef |  |
 
 ### Progression, limits, and lifecycle
@@ -80,6 +83,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/EvaluationDefinition`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -141,3 +147,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

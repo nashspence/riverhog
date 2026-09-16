@@ -14,9 +14,14 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-60336dfbc1"></a>
-| Field | Shape |
+
+
+### At least one must match (`anyOf`)
+
+| Alternative | Schema |
 |---|---|
-| <a id="s-bf98f839a8"></a>`anyOf` | items=#/components/schemas/CapturedCollectionFileProvenanceOut \| #/components/schemas/OmittedCollectionFileProvenanceOut |
+| <a id="s-3d92c532e7"></a>1 | #/components/schemas/CapturedCollectionFileProvenanceOut |
+| <a id="s-dd99c51581"></a>2 | #/components/schemas/OmittedCollectionFileProvenanceOut |
 
 ## Maintained corroboration
 
@@ -47,6 +52,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: c1bc71fe1eca29d749d7950ecb0a31e22bd1a68d42d7a613e0193edaa0006f17 -->
@@ -63,3 +71,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   ]
 }
 ```
+
+</details>

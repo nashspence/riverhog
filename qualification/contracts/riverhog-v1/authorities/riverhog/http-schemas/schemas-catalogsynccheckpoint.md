@@ -14,17 +14,20 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-9ddd462b8c"></a>
-- <a id="s-20a428ce84"></a>`title`: CatalogSyncCheckpoint
-- <a id="s-b913c0e64e"></a>`type`: object
+
+- <a id="s-b913c0e64e"></a>`type`: `"object"`
+- <a id="s-4202917118"></a>`additionalProperties`: `false`
+- <a id="s-edb6452966"></a>`required`: `["source_identity","authorization_view_identity","catalog_cursor"]`
+- <a id="s-20a428ce84"></a>`title`: `"CatalogSyncCheckpoint"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-83cd2c8930"></a>`authorization_view_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-dc231f2428"></a>`catalog_cursor` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-cc40445d90"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1" |  |
-| <a id="s-e8505dafc9"></a>`source_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-83cd2c8930"></a>`authorization_view_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-dc231f2428"></a>`catalog_cursor` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-cc40445d90"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1"; default="riverhog-catalog-sync/v1" |  |
+| <a id="s-e8505dafc9"></a>`source_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -58,6 +61,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -103,3 +109,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

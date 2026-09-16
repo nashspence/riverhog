@@ -23,9 +23,9 @@ List Archive Copy Jobs
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-6a836ad124"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-c618f326fe"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
-| <a id="s-3eb290e690"></a>`q` | query | no | not declared | anyOf=[BrowseQuery](../http-schemas/schemas-browsequery.md) \| type="null" |
-| <a id="s-19bdc1af5a"></a>`state` | query | no | not declared | anyOf=[ArchiveCopyState](../http-schemas/schemas-archivecopystate.md) \| type="null" |
+| <a id="s-c618f326fe"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
+| <a id="s-3eb290e690"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
+| <a id="s-19bdc1af5a"></a>`state` | query | no | not declared | anyOf=([ArchiveCopyState](../http-schemas/schemas-archivecopystate.md)) \| (type="null") |
 | <a id="s-266b97f0ac"></a>`sort` | query | no | `"requested_at"` | [ArchiveCopySort](../http-schemas/schemas-archivecopysort.md) |
 | <a id="s-ce30819930"></a>`order` | query | no | `"desc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
 
@@ -160,6 +160,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -338,3 +341,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

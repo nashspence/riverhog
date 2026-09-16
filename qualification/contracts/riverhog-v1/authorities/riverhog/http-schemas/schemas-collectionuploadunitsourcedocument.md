@@ -14,9 +14,12 @@ One exact source range supplied in a server-planned upload unit.
 ## External contract
 
 <a id="s-e5bc88a780"></a>
-- <a id="s-9b8774c3e9"></a>`title`: CollectionUploadUnitSourceDocument
-- <a id="s-02c5a14147"></a>`description`: One exact source range supplied in a server-planned upload unit.
-- <a id="s-7edd31e1ee"></a>`type`: object
+
+- <a id="s-7edd31e1ee"></a>`type`: `"object"`
+- <a id="s-4df73857fd"></a>`additionalProperties`: `false`
+- <a id="s-02c5a14147"></a>`description`: `"One exact source range supplied in a server-planned upload unit."`
+- <a id="s-3e239740c4"></a>`required`: `["path","offset","bytes","artifact_sha256"]`
+- <a id="s-9b8774c3e9"></a>`title`: `"CollectionUploadUnitSourceDocument"`
 
 ### Fields
 
@@ -70,6 +73,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 3870870a9e0b96323d9a6bb59e3124806d4f2cbfd6db047e34765004a7c96160 -->
@@ -109,3 +115,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

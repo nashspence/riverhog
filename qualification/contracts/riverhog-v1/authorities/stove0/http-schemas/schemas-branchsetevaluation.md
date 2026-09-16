@@ -14,9 +14,12 @@ Entirely derived view over a plan and ordinary child/join results.
 ## External contract
 
 <a id="s-dfc1e70c60"></a>
-- <a id="s-759586f947"></a>`title`: BranchSetEvaluation
-- <a id="s-8108b93382"></a>`description`: Entirely derived view over a plan and ordinary child/join results.
-- <a id="s-b749aa723f"></a>`type`: object
+
+- <a id="s-b749aa723f"></a>`type`: `"object"`
+- <a id="s-ab9d9c50b9"></a>`additionalProperties`: `false`
+- <a id="s-8108b93382"></a>`description`: `"Entirely derived view over a plan and ordinary child/join results."`
+- <a id="s-b5d77b0902"></a>`required`: `["branch_set_sha256","succeeded_branches","succeeded_effects","succeeded_coordinations","unsettled_branch_ids","failed_branch_ids","inapplicable_branch_ids","interrupted_branch_ids","canceled_branch_ids","join_ready","resolved_join_plan","join_state","join_settlement","unsettled_work_ids","branch_set_succeeded","coordination_settlement","retirement_requested","coordination_complete_for_retirement"]`
+- <a id="s-759586f947"></a>`title`: `"BranchSetEvaluation"`
 
 ### Fields
 
@@ -26,14 +29,14 @@ Entirely derived view over a plan and ordinary child/join results.
 | <a id="s-0b8012e8f1"></a>`branch_set_succeeded` | yes | type="boolean" |  |
 | <a id="s-28bd0e47e6"></a>`canceled_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
 | <a id="s-63dff433e7"></a>`coordination_complete_for_retirement` | yes | type="boolean" |  |
-| <a id="s-f616c02dd4"></a>`coordination_settlement` | yes | anyOf=#/components/schemas/CoordinationSettlement \| type="null" |  |
+| <a id="s-f616c02dd4"></a>`coordination_settlement` | yes | anyOf=(#/components/schemas/CoordinationSettlement) \| (type="null") |  |
 | <a id="s-7a8d5bbcfe"></a>`failed_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
 | <a id="s-5784e98faa"></a>`inapplicable_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
 | <a id="s-5e39f03291"></a>`interrupted_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
 | <a id="s-88cf89f944"></a>`join_ready` | yes | type="boolean" |  |
-| <a id="s-451ecf2f60"></a>`join_settlement` | yes | anyOf=#/components/schemas/JoinSettlement \| type="null" |  |
+| <a id="s-451ecf2f60"></a>`join_settlement` | yes | anyOf=(#/components/schemas/JoinSettlement) \| (type="null") |  |
 | <a id="s-61ce399152"></a>`join_state` | yes | type="string"; enum=["not-declared","waiting","ready","succeeded","failed","inapplicable","interrupted","canceled"] |  |
-| <a id="s-580c35fecd"></a>`resolved_join_plan` | yes | anyOf=#/components/schemas/JoinPlan \| type="null" |  |
+| <a id="s-580c35fecd"></a>`resolved_join_plan` | yes | anyOf=(#/components/schemas/JoinPlan) \| (type="null") |  |
 | <a id="s-66b65c7b21"></a>`retirement_requested` | yes | type="boolean" |  |
 | <a id="s-532021a47d"></a>`succeeded_branches` | yes | type="array"; items=(#/components/schemas/BranchSettlement) |  |
 | <a id="s-454b7a1bee"></a>`succeeded_coordinations` | yes | type="array"; items=(#/components/schemas/CoordinationSettlement) |  |
@@ -101,6 +104,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -270,3 +276,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

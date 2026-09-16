@@ -104,6 +104,9 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 ### `/external_contract/cli/riverhog-ftp-adapter/commands/listen/allow_abbrev`
@@ -297,3 +300,5 @@ true
   }
 ]
 ```
+
+</details>

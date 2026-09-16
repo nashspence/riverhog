@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-92a2f30f27"></a>
-- <a id="s-c0aacb1f95"></a>`title`: ProvenanceExternalStateReferenceOut
-- <a id="s-b150d10b08"></a>`type`: object
+
+- <a id="s-b150d10b08"></a>`type`: `"object"`
+- <a id="s-79e1c9d861"></a>`additionalProperties`: `false`
+- <a id="s-a377cb19be"></a>`required`: `["from_journal_id","to_journal_id","state_id","entry_id","entry_json_sha256"]`
+- <a id="s-c0aacb1f95"></a>`title`: `"ProvenanceExternalStateReferenceOut"`
 
 ### Fields
 
@@ -68,6 +71,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 0be22da19b0a8f539bd3883f9540fdeb932c4ee27c46a109f44a17090f8e9865 -->
@@ -105,3 +111,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

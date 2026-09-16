@@ -22,7 +22,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Declared structure
 
 - <a id="s-c706b7e5a5"></a>`kind`: `"constant"`
-- <a id="s-e2990b1c10"></a>`value`: `"8999999999999999999"`
+- <a id="s-e2990b1c10"></a>`value`: `8999999999999999999`
 
 ## Governing policies
 
@@ -46,7 +46,12 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+Large integers appear as decimal strings in this machine representation. The machine artifact's `projection_unsafe_integer_paths` identifies them; primary content displays the recovered numeric values.
 
 <!-- exact-contract-value: 8b96841a736361a5e5b025b4a531eb05d64f4155264f89cf553a89b7afc639d9 -->
 
@@ -62,3 +67,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

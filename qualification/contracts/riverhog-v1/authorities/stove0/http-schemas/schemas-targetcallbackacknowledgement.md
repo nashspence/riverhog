@@ -14,15 +14,17 @@ Idempotent acceptance of one execution-scoped declaration.
 ## External contract
 
 <a id="s-4bf66cf0d2"></a>
-- <a id="s-fcda9a7a6d"></a>`title`: TargetCallbackAcknowledgement
-- <a id="s-b30e7fdc9a"></a>`description`: Idempotent acceptance of one execution-scoped declaration.
-- <a id="s-6654fe9b23"></a>`type`: object
+
+- <a id="s-6654fe9b23"></a>`type`: `"object"`
+- <a id="s-a91f67873c"></a>`additionalProperties`: `false`
+- <a id="s-b30e7fdc9a"></a>`description`: `"Idempotent acceptance of one execution-scoped declaration."`
+- <a id="s-fcda9a7a6d"></a>`title`: `"TargetCallbackAcknowledgement"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3be75837a3"></a>`accepted` | no | type="boolean"; const=true |  |
+| <a id="s-3be75837a3"></a>`accepted` | no | type="boolean"; const=true; default=true |  |
 
 ## Governing policies
 
@@ -46,6 +48,9 @@ Idempotent acceptance of one execution-scoped declaration.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 888aeb6259ebbfb946fb389f43530f2e7f42b0aaa47127fc93cde9b46c06ccfc -->
@@ -66,3 +71,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

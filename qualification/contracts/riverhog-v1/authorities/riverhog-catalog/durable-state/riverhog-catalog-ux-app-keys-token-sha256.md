@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-446f2bee98"></a>
+
 | Index fact | Value |
 |---|---|
 | `columns` | `["token_sha256"]` |
@@ -49,6 +50,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 1c39375f91cc025ebb98a4620f060c640c405965d200807bc5bea5b59dcbc70c -->
@@ -63,3 +67,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "table": "app_keys"
 }
 ```
+
+</details>

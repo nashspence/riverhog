@@ -14,19 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a49d05edb1"></a>
-- <a id="s-c6f1ce75a4"></a>`title`: RetrievalCompletedEvent
-- <a id="s-750a8db626"></a>`type`: object
+
+- <a id="s-750a8db626"></a>`type`: `"object"`
+- <a id="s-5e25b7989a"></a>`additionalProperties`: `false`
+- <a id="s-b5782174c0"></a>`required`: `["id","source","type","time","data"]`
+- <a id="s-c6f1ce75a4"></a>`title`: `"RetrievalCompletedEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-2a0f68c88a"></a>`data` | yes | #/components/schemas/RetrievalCompletedData |  |
-| <a id="s-d702cfb5bf"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-d702cfb5bf"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-c4fea1bccd"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-d8681b0ed9"></a>`source` | yes | type="string"; minLength=1 |  |
-| <a id="s-aa88737e55"></a>`specversion` | no | type="string"; const="1.0" |  |
-| <a id="s-e0e0a51d71"></a>`subject` | no | anyOf=type="string"; minLength=1 \| type="null" |  |
+| <a id="s-aa88737e55"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-e0e0a51d71"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null") |  |
 | <a id="s-15b34c1a45"></a>`time` | yes | type="string" |  |
 | <a id="s-ca867fdf3c"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.completed" |  |
 
@@ -57,6 +60,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/RetrievalCompletedEvent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -124,3 +130,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

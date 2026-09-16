@@ -14,8 +14,12 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-13769e3ceb"></a>
-- <a id="s-a06b3f827b"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-compression-state.json
-- <a id="s-3d137e91b3"></a>`type`: object
+
+- <a id="s-3d137e91b3"></a>`type`: `"object"`
+- <a id="s-a06b3f827b"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-compression-state.json"`
+- <a id="s-eab830eb2b"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-f542a05a53"></a>`additionalProperties`: `false`
+- <a id="s-bb7707cf36"></a>`required`: `["file_attribute_compressed","compressed_size","compression_format","compression_format_name","compression_unit_shift","chunk_shift","cluster_shift"]`
 
 ### Fields
 
@@ -61,6 +65,9 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 - `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-compression-state.json`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -112,3 +119,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-53b164176d"></a>
-- <a id="s-c084ae42f8"></a>`title`: ProcessingClaimSettleDocument
-- <a id="s-7cefd7d377"></a>`type`: object
+
+- <a id="s-7cefd7d377"></a>`type`: `"object"`
+- <a id="s-aa276b43d8"></a>`additionalProperties`: `false`
+- <a id="s-f0d3cce35c"></a>`required`: `["fence","output_collection_id","derivation"]`
+- <a id="s-c084ae42f8"></a>`title`: `"ProcessingClaimSettleDocument"`
 
 ### Fields
 
@@ -23,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-2c33191341"></a>`derivation` | yes | #/components/schemas/CollectionDerivationDocument |  |
 | <a id="s-3353cd3ebf"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-593c65a4f2"></a>`outcome` | no | anyOf=#/components/schemas/ProcessingOutcomeBindingDocument \| type="null" |  |
+| <a id="s-593c65a4f2"></a>`outcome` | no | anyOf=(#/components/schemas/ProcessingOutcomeBindingDocument) \| (type="null") |  |
 | <a id="s-bc8bb48614"></a>`output_collection_id` | yes | #/components/schemas/CollectionId |  |
 
 ## Maintained corroboration
@@ -55,6 +58,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimSettleDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -95,3 +101,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

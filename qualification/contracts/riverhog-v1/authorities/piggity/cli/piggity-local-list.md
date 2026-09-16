@@ -49,7 +49,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-b40ede78f3"></a>`completed` | <a id="s-a79553386e"></a>`{"kind":"command-completed"}` | <a id="s-e624bc94a7"></a>`0` | <a id="s-e8ebb0f401"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-local-collection-list/v1](#s-e8ebb0f401) | <a id="s-a173379636"></a>all: `empty` |
+| <a id="s-b40ede78f3"></a>`completed` | <a id="s-a79553386e"></a>`{"kind":"command-completed"}` | <a id="s-e624bc94a7"></a>`0` | <a id="s-e8ebb0f401"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-local-collection-list/v1](#s-75ddbadf19) | <a id="s-a173379636"></a>all: `empty` |
 
 #### Failure outcomes
 
@@ -57,6 +57,52 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|---|
 | <a id="s-53a4388e21"></a>`usage` | <a id="s-52e88b1a8f"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-00c8e54d75"></a>`2` | <a id="s-be36d857ec"></a>all: `empty` | <a id="s-c937018d8c"></a>all: `noncontractual-usage-diagnostic` |
 | <a id="s-d3e9f15cc0"></a>`operational` | <a id="s-4f43a96878"></a>`{"kind":"application-error"}` | <a id="s-60cec51350"></a>`1` | <a id="s-8a82f1b3f2"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-d1d2a276e7"></a>human: `noncontractual-diagnostic`; json: `empty` |
+
+### Local structured outputs
+
+
+#### <a id="s-75ddbadf19"></a>`piggity-local-collection-list/v1`
+
+Applies to: completed · stdout (json).
+
+<a id="s-ae46b097fb"></a>
+
+- <a id="s-ace0bbcd7b"></a>`type`: `"object"`
+- <a id="s-d130a60b1b"></a>`additionalProperties`: `false`
+- <a id="s-056850b7ca"></a>`required`: `["page_size","next_page_token","sort","order","query","collections"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `collections` | yes | [See field `collections`](#s-ff47b102c9) |  |
+| <a id="s-029770f18a"></a>`next_page_token` | yes | type=["string","null"] |  |
+| <a id="s-f5a7f9f3dc"></a>`order` | yes | enum=["asc","desc"] |  |
+| <a id="s-3293770f07"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
+| <a id="s-b3db78c660"></a>`query` | yes | type=["string","null"] |  |
+| <a id="s-a51abacf17"></a>`sort` | yes | enum=["bytes","collection_id","created_at","files","status"] |  |
+
+##### <a id="s-ff47b102c9"></a>field `collections`
+
+- <a id="s-376f54ec1a"></a>`type`: `"array"`
+- `items`: [See field `collections` · `items`](#s-dfc0932ef0)
+
+##### <a id="s-dfc0932ef0"></a>field `collections` · `items`
+
+- <a id="s-5cbade8948"></a>`type`: `"object"`
+- <a id="s-2b1fb407ec"></a>`additionalProperties`: `false`
+- <a id="s-2f4b4b30a0"></a>`required`: `["collection_id","created_at","tag_count","status","files","bytes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-fc6c85cc3e"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-df843b671f"></a>`collection_id` | yes | type="integer"; minimum=1 |  |
+| <a id="s-38bdb0017e"></a>`created_at` | yes | type="string" |  |
+| <a id="s-fb99633b14"></a>`files` | yes | type="integer"; minimum=0 |  |
+| <a id="s-03fa631e6a"></a>`status` | yes | enum=["desired","remote-deleted","synchronizing"] |  |
+| <a id="s-32ef486857"></a>`tag_count` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -101,6 +147,9 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 - `/external_contract/cli/piggity/commands/local/commands/list/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -505,3 +554,5 @@ false
   }
 ]
 ```
+
+</details>

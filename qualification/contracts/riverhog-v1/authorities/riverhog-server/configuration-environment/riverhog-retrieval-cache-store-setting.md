@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-396301adfd"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-aa54bed389"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-cc204f154f"></a>`id` | "riverhog-server:environment-pattern:RIVERHOG_RETRIEVAL_CACHE_{store}_{setting}" |
-| <a id="s-08e772de25"></a>`input_shape` | "environment-string" |
-| <a id="s-e74ff87647"></a>`owner` | "riverhog-server" |
-| <a id="s-2a3ba4acfb"></a>`parameters` | additional keys=`setting`, `store` |
-| <a id="s-1b3de31381"></a>`settings` | ["ADAPTER_URL","ADAPTER_TOKEN_FILE","ADAPTER_ALLOW_INSECURE_HTTP","ADAPTER_MAX_CONNECTIONS","ADAPTER_TIMEOUT_SECONDS","ADMISSION_ENABLED","ADMISSION_BUDGET_BYTES"] |
-| <a id="s-29a999d8fe"></a>`source_symbol` | "_retrieval_cache_store_environment_name" |
-| <a id="s-8821a6767d"></a>`template` | "RIVERHOG_RETRIEVAL_CACHE_{store}_{setting}" |
+| <a id="s-aa54bed389"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-cc204f154f"></a>`id` | `"riverhog-server:environment-pattern:RIVERHOG_RETRIEVAL_CACHE_{store}_{setting}"` |
+| <a id="s-08e772de25"></a>`input_shape` | `"environment-string"` |
+| <a id="s-e74ff87647"></a>`owner` | `"riverhog-server"` |
+| <a id="s-309f59ad52"></a>`parameters · setting` | `["ADAPTER_URL","ADAPTER_TOKEN_FILE","ADAPTER_ALLOW_INSECURE_HTTP","ADAPTER_MAX_CONNECTIONS","ADAPTER_TIMEOUT_SECONDS","ADMISSION_ENABLED","ADMISSION_BUDGET_BYTES"]` |
+| <a id="s-602359dab4"></a>`parameters · store · normalization` | `"uppercase-dashes-to-underscores"` |
+| <a id="s-94f3d62b6c"></a>`parameters · store · source` | `"RIVERHOG_RETRIEVAL_CACHE_STORES"` |
+| <a id="s-1b3de31381"></a>`settings` | `["ADAPTER_URL","ADAPTER_TOKEN_FILE","ADAPTER_ALLOW_INSECURE_HTTP","ADAPTER_MAX_CONNECTIONS","ADAPTER_TIMEOUT_SECONDS","ADMISSION_ENABLED","ADMISSION_BUDGET_BYTES"]` |
+| <a id="s-29a999d8fe"></a>`source_symbol` | `"_retrieval_cache_store_environment_name"` |
+| <a id="s-8821a6767d"></a>`template` | `"RIVERHOG_RETRIEVAL_CACHE_{store}_{setting}"` |
 
 ### Progression, limits, and lifecycle
 
@@ -68,6 +71,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 40c685215b2b1f35200d0db0b8425a6dc21fc43d0d7cc820579b328c6a2615ef -->
@@ -108,3 +114,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "template": "RIVERHOG_RETRIEVAL_CACHE_{store}_{setting}"
 }
 ```
+
+</details>

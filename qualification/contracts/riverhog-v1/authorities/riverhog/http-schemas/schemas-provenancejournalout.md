@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-72c52c1f9b"></a>
-- <a id="s-f5a80d3d54"></a>`title`: ProvenanceJournalOut
-- <a id="s-866ba6766d"></a>`type`: object
+
+- <a id="s-866ba6766d"></a>`type`: `"object"`
+- <a id="s-02ab422923"></a>`additionalProperties`: `false`
+- <a id="s-c61f3a1a7e"></a>`required`: `["journal_id","bytes","sha256","entries","current_state_id","current_path","current_bytes","current_sha256","agent_count","entity_counts"]`
+- <a id="s-f5a80d3d54"></a>`title`: `"ProvenanceJournalOut"`
 
 ### Fields
 
@@ -27,7 +30,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-6215516aa0"></a>`current_path` | yes | #/components/schemas/CanonicalRelPath |  |
 | <a id="s-2fed6651de"></a>`current_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-39da7b375a"></a>`current_state_id` | yes | #/components/schemas/ProvenanceStateId |  |
-| <a id="s-5f305a524f"></a>`entity_counts` | yes | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-5f305a524f"></a>`entity_counts` | yes | type="object"; additionalProperties=(type="integer") |  |
 | <a id="s-904aca57ef"></a>`entries` | yes | type="integer"; minimum=1 |  |
 | <a id="s-0590071dee"></a>`journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
 | <a id="s-3f5ee56d63"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -84,6 +87,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/riverhog/components/schemas/ProvenanceJournalOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -156,3 +162,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

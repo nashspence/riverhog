@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-aba83af95b"></a>
-- <a id="s-47becc1df7"></a>`title`: CollectionRootPageDocument
-- <a id="s-1c10afcf30"></a>`type`: object
+
+- <a id="s-1c10afcf30"></a>`type`: `"object"`
+- <a id="s-b99bbf8f35"></a>`additionalProperties`: `false`
+- <a id="s-b5ae72aedc"></a>`required`: `["authority","start_ordinal","inputs"]`
+- <a id="s-47becc1df7"></a>`title`: `"CollectionRootPageDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-cc3eed5ae7"></a>`authority` | yes | #/components/schemas/ExactSetAuthorityDocument |  |
-| <a id="s-596a3b3f32"></a>`inputs` | yes | type="array"; maxItems=128; items=(#/components/schemas/CollectionRootIdentityDocument); additional keys=`x-riverhog-extent` |  |
-| <a id="s-31aba2331a"></a>`next_ordinal` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| <a id="s-596a3b3f32"></a>`inputs` | yes | type="array"; items=(#/components/schemas/CollectionRootIdentityDocument); maxItems=128; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
+| <a id="s-31aba2331a"></a>`next_ordinal` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
 | <a id="s-b3e9e02376"></a>`start_ordinal` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
@@ -71,6 +74,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionRootPageDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -123,3 +129,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

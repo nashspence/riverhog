@@ -27,21 +27,41 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-0d4a6f7d8e"></a>
-- <a id="s-fcff02be4e"></a>`type`: object
 
-### Fields
+- <a id="s-fcff02be4e"></a>`type`: `"object"`
+- <a id="s-f77f8098ad"></a>`additionalProperties`: `false`
+- <a id="s-e604a856c3"></a>`required`: `["events","next_cursor","has_more"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0facf2cec7"></a>`events` | yes | type="array"; items=(#/$defs/CloudEvent) |  |
+| <a id="s-0facf2cec7"></a>`events` | yes | type="array"; items=([CloudEvent](#s-d72037c6f5)) |  |
 | <a id="s-3c6245566d"></a>`has_more` | yes | type="boolean" |  |
 | <a id="s-98ac6308d7"></a>`next_cursor` | yes | type="string" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-d72037c6f5"></a>`CloudEvent` | type="object"; fields=`data`, `datacontenttype`, `id`, `source`, `specversion`, `subject`, `time`, `type`; additional keys=`additionalProperties`, `required` |
+- [CloudEvent](#s-d72037c6f5)
+
+##### <a id="s-d72037c6f5"></a>definition `CloudEvent`
+
+- <a id="s-f10e2d53a4"></a>`type`: `"object"`
+- <a id="s-af2d35022e"></a>`additionalProperties`: `false`
+- <a id="s-f6c00b9e7d"></a>`required`: `["id","source","type","time"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-59024638e2"></a>`data` | no | type="object"; additionalProperties=true |  |
+| <a id="s-0f0e8ae15b"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
+| <a id="s-84846940b3"></a>`id` | yes | type="string"; minLength=1 |  |
+| <a id="s-d690335fef"></a>`source` | yes | type="string"; minLength=1 |  |
+| <a id="s-5dfa018c91"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-cf47bcc831"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-d33f524596"></a>`time` | yes | type="string" |  |
+| <a id="s-206b110aaf"></a>`type` | yes | type="string"; minLength=1 |  |
 
 ## Maintained corroboration
 
@@ -70,6 +90,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/lifecycle_events.EventPage`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -165,3 +188,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

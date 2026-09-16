@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4ddd41618e"></a>
-- <a id="s-d5ad6d5824"></a>`title`: InputDispositionDeclaration
-- <a id="s-3adace929e"></a>`type`: object
+
+- <a id="s-3adace929e"></a>`type`: `"object"`
+- <a id="s-d53b2388ec"></a>`additionalProperties`: `false`
+- <a id="s-d96c0db3c3"></a>`required`: `["input_id","status"]`
+- <a id="s-d5ad6d5824"></a>`title`: `"InputDispositionDeclaration"`
 
 ### Fields
 
@@ -45,6 +48,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -78,3 +84,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

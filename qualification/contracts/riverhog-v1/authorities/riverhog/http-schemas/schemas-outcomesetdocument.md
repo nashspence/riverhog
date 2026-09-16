@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8256570e62"></a>
-- <a id="s-8f4891b07c"></a>`title`: OutcomeSetDocument
-- <a id="s-10cec658a2"></a>`type`: object
+
+- <a id="s-10cec658a2"></a>`type`: `"object"`
+- <a id="s-08a0d1fcb9"></a>`additionalProperties`: `false`
+- <a id="s-c29e31a699"></a>`required`: `["state","count"]`
+- <a id="s-8f4891b07c"></a>`title`: `"OutcomeSetDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8b98c68813"></a>`authority` | no | anyOf=#/components/schemas/ExactSetAuthorityDocument \| type="null" |  |
+| <a id="s-8b98c68813"></a>`authority` | no | anyOf=(#/components/schemas/ExactSetAuthorityDocument) \| (type="null") |  |
 | <a id="s-c3431dbb24"></a>`count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-102c3f6916"></a>`failure` | no | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
+| <a id="s-102c3f6916"></a>`failure` | no | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null") |  |
 | <a id="s-da0eeee06e"></a>`state` | yes | type="string"; enum=["receiving","sealing","sealed","failed"] |  |
 
 ### Progression, limits, and lifecycle
@@ -73,6 +76,9 @@ Shared facts for every subject below: maximum=1000; minimum=1; reason="schema-ma
 - `/external_contract/http_openapi/riverhog/components/schemas/OutcomeSetDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -129,3 +135,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

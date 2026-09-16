@@ -27,31 +27,97 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-c2006a1634"></a>
-- <a id="s-1b54a2a356"></a>`type`: object
 
-### Fields
+- <a id="s-1b54a2a356"></a>`type`: `"object"`
+- <a id="s-887d9f80e5"></a>`additionalProperties`: `false`
+- <a id="s-dc9c0a9972"></a>`required`: `["id","intent_schema","intent_semantics","inputs","contract_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-f6d8680260"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a7dc046b5b"></a>`effect_receipt_schema` | no | anyOf=#/$defs/JsonSchemaDocument \| type="null" |  |
+| <a id="s-a7dc046b5b"></a>`effect_receipt_schema` | no | anyOf=([JsonSchemaDocument](#s-7a2ac5bc4d)) \| (type="null"); default=null |  |
 | <a id="s-3d1390ddcf"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-ed60cb2c72"></a>`inputs` | yes | type="array"; minItems=1; items=(#/$defs/InputArtifactContract) |  |
-| <a id="s-96c8da7257"></a>`intent_schema` | yes | #/$defs/JsonSchemaDocument |  |
-| <a id="s-02ce94975a"></a>`intent_semantics` | yes | #/$defs/SemanticValidationProfile |  |
-| <a id="s-b90338abaf"></a>`outputs` | no | type="array"; items=(#/$defs/OutputArtifactContract) |  |
-| <a id="s-d48b4ba29a"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"] |  |
-| <a id="s-a360528ad7"></a>`source_retirement_permitted` | no | type="boolean" |  |
+| <a id="s-ed60cb2c72"></a>`inputs` | yes | type="array"; items=([InputArtifactContract](#s-1a2857588b)); minItems=1 |  |
+| <a id="s-96c8da7257"></a>`intent_schema` | yes | [JsonSchemaDocument](#s-7a2ac5bc4d) |  |
+| <a id="s-02ce94975a"></a>`intent_semantics` | yes | [SemanticValidationProfile](#s-7200aaef6b) |  |
+| <a id="s-b90338abaf"></a>`outputs` | no | type="array"; default=[]; items=([OutputArtifactContract](#s-d6184a61f2)) |  |
+| <a id="s-d48b4ba29a"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
+| <a id="s-a360528ad7"></a>`source_retirement_permitted` | no | type="boolean"; default=false |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-1a2857588b"></a>`InputArtifactContract` | type="object"; fields=`allowed_dispositions`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
-| <a id="s-7a2ac5bc4d"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-b33e771e6c"></a>`JsonValue` | empty object |
-| <a id="s-d6184a61f2"></a>`OutputArtifactContract` | type="object"; fields=`derived_from_roles`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
-| <a id="s-7200aaef6b"></a>`SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
+- [InputArtifactContract](#s-1a2857588b)
+- [JsonSchemaDocument](#s-7a2ac5bc4d)
+- [JsonValue](#s-b33e771e6c)
+- [OutputArtifactContract](#s-d6184a61f2)
+- [SemanticValidationProfile](#s-7200aaef6b)
+
+##### <a id="s-1a2857588b"></a>definition `InputArtifactContract`
+
+- <a id="s-873dc56b7d"></a>`type`: `"object"`
+- <a id="s-4d58baee6a"></a>`additionalProperties`: `false`
+- <a id="s-df05c4019e"></a>`required`: `["role"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-03c5e1078b"></a>`allowed_dispositions` | no | anyOf=(type="array"; items=(type="string"; enum=["transformed","preserved","omitted","rejected"])) \| (type="null"); default=null |  |
+| <a id="s-20f3a838c4"></a>`maximum` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
+| <a id="s-917f8232dc"></a>`minimum` | no | type="integer"; minimum=0; default=1 |  |
+| <a id="s-08ea461de6"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+
+##### <a id="s-7a2ac5bc4d"></a>definition `JsonSchemaDocument`
+
+- <a id="s-af5d90c99a"></a>`type`: `"object"`
+- <a id="s-d2effa7cc1"></a>`additionalProperties`: `false`
+- <a id="s-9057c8b971"></a>`required`: `["id","sha256","schema"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-66222630ff"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-cfa2e8ab50"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-12453e9f61"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-0b39dc4320"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-b33e771e6c)) |  |
+| <a id="s-ee9fca1849"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-b33e771e6c"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-d6184a61f2"></a>definition `OutputArtifactContract`
+
+- <a id="s-1c54a6c42b"></a>`type`: `"object"`
+- <a id="s-41e29aaa48"></a>`additionalProperties`: `false`
+- <a id="s-95250aa679"></a>`required`: `["role","derived_from_roles"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-5def165c87"></a>`derived_from_roles` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
+| <a id="s-bc4f034e46"></a>`maximum` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
+| <a id="s-6c37152753"></a>`minimum` | no | type="integer"; minimum=0; default=1 |  |
+| <a id="s-d07acb7b37"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+
+##### <a id="s-7200aaef6b"></a>definition `SemanticValidationProfile`
+
+- <a id="s-d2fb900c83"></a>`type`: `"object"`
+- <a id="s-e0fb2201af"></a>`additionalProperties`: `false`
+- <a id="s-5b693fac7f"></a>`required`: `["id","rules","profile_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-61d38d74ba"></a>`conformance_vectors_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-f31af12031"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-35772521e3"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2e908da765"></a>`rules` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
 
 ## Maintained corroboration
 
@@ -83,6 +149,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_protocol.OperationContract`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -330,3 +399,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

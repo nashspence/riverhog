@@ -14,18 +14,21 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a445d3704c"></a>
-- <a id="s-45045117a2"></a>`title`: SamplerResult
-- <a id="s-85b7f4ac30"></a>`type`: object
+
+- <a id="s-85b7f4ac30"></a>`type`: `"object"`
+- <a id="s-be89c57c6b"></a>`additionalProperties`: `false`
+- <a id="s-3303134d21"></a>`required`: `["request_sha256","sampler_descriptor_sha256","state","result_sha256"]`
+- <a id="s-45045117a2"></a>`title`: `"SamplerResult"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e4192cb294"></a>`execution_evidence` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-8f6d9f0d95"></a>`failure` | no | anyOf=#/$defs/SamplerFailure \| type="null" |  |
-| <a id="s-bfd2e78f66"></a>`format` | no | type="string"; const="stove0-review-sampler-result/v1" |  |
-| <a id="s-69ddaf5c63"></a>`inapplicable` | no | anyOf=#/$defs/SamplerInapplicable \| type="null" |  |
-| <a id="s-d8dbe2a4a2"></a>`outputs` | no | type="array"; items=(#/$defs/SamplerOutput) |  |
+| <a id="s-e4192cb294"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-4394584684)) |  |
+| <a id="s-8f6d9f0d95"></a>`failure` | no | anyOf=([SamplerFailure](#s-fc671c79af)) \| (type="null"); default=null |  |
+| <a id="s-bfd2e78f66"></a>`format` | no | type="string"; const="stove0-review-sampler-result/v1"; default="stove0-review-sampler-result/v1" |  |
+| <a id="s-69ddaf5c63"></a>`inapplicable` | no | anyOf=([SamplerInapplicable](#s-2a8e3a4769)) \| (type="null"); default=null |  |
+| <a id="s-d8dbe2a4a2"></a>`outputs` | no | type="array"; default=[]; items=([SamplerOutput](#s-55b2cc4f6b)) |  |
 | <a id="s-536576137a"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-598c04a1e2"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-eef522c17f"></a>`sampler_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -33,12 +36,61 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-4394584684"></a>`JsonValue` | empty object |
-| <a id="s-fc671c79af"></a>`SamplerFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
-| <a id="s-2a8e3a4769"></a>`SamplerInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
-| <a id="s-55b2cc4f6b"></a>`SamplerOutput` | type="object"; fields=`bytes`, `derived_from`, `id`, `media_type`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
+- [JsonValue](#s-4394584684)
+- [SamplerFailure](#s-fc671c79af)
+- [SamplerInapplicable](#s-2a8e3a4769)
+- [SamplerOutput](#s-55b2cc4f6b)
+
+### <a id="s-4394584684"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+### <a id="s-fc671c79af"></a>definition `SamplerFailure`
+
+- <a id="s-c1cd7f23c9"></a>`type`: `"object"`
+- <a id="s-1f43ce152a"></a>`additionalProperties`: `false`
+- <a id="s-c6c72a23ac"></a>`required`: `["code","message","retryable"]`
+- <a id="s-c00aa47f41"></a>`title`: `"SamplerFailure"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-99bdf3fbe0"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-60f7b02b04"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-1544ef6d15"></a>`retryable` | yes | type="boolean" |  |
+
+### <a id="s-2a8e3a4769"></a>definition `SamplerInapplicable`
+
+- <a id="s-e3eda523d7"></a>`type`: `"object"`
+- <a id="s-3c21f79367"></a>`additionalProperties`: `false`
+- <a id="s-4c071878fe"></a>`required`: `["code","message"]`
+- <a id="s-84595cf1ba"></a>`title`: `"SamplerInapplicable"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b6bd901bb7"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-d6a8aac343"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+
+### <a id="s-55b2cc4f6b"></a>definition `SamplerOutput`
+
+- <a id="s-e7d8f66ed6"></a>`type`: `"object"`
+- <a id="s-9f977a6d6e"></a>`additionalProperties`: `false`
+- <a id="s-97d45dcfd3"></a>`required`: `["id","path","bytes","sha256","media_type","derived_from"]`
+- <a id="s-38802795f0"></a>`title`: `"SamplerOutput"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-428a1ed582"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-d843eec98e"></a>`derived_from` | yes | type="array"; items=(type="string"); minItems=1 |  |
+| <a id="s-d8c8503ae6"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-07d7974e71"></a>`media_type` | yes | type="string"; maxLength=255; minLength=1 |  |
+| <a id="s-f8e3536ede"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-3ecee0330f"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -90,6 +142,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/protocol_schemas/generated:stove0-review-sampler/schemas/SamplerResult`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -280,3 +335,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,20 +14,35 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4173c7b1a9"></a>
-- <a id="s-3bbfe82e59"></a>`title`: ReadPreparationRequest
-- <a id="s-60a7ccf92b"></a>`type`: object
+
+- <a id="s-60a7ccf92b"></a>`type`: `"object"`
+- <a id="s-2d1a3b3204"></a>`additionalProperties`: `false`
+- <a id="s-d9a68f6935"></a>`required`: `["objects"]`
+- <a id="s-3bbfe82e59"></a>`title`: `"ReadPreparationRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-60e69d3f7d"></a>`objects` | yes | type="array"; minItems=1; items=(#/$defs/ObjectLocator) |  |
+| <a id="s-60e69d3f7d"></a>`objects` | yes | type="array"; items=([ObjectLocator](#s-1d34366070)); minItems=1 |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-1d34366070"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
+- [ObjectLocator](#s-1d34366070)
+
+### <a id="s-1d34366070"></a>definition `ObjectLocator`
+
+- <a id="s-e4b66e5931"></a>`type`: `"object"`
+- <a id="s-9d0a2bad5a"></a>`additionalProperties`: `false`
+- <a id="s-4a01ab5806"></a>`required`: `["object_path"]`
+- <a id="s-51fb2052b1"></a>`title`: `"ObjectLocator"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f856f6fc3d"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-0ef58f764d"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
 
 ### Progression, limits, and lifecycle
 
@@ -67,6 +82,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ReadPreparationRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -124,3 +142,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

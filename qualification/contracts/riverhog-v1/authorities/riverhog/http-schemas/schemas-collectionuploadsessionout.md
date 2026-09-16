@@ -14,49 +14,77 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8ffd85b110"></a>
-- <a id="s-0fcc1ecfde"></a>`title`: CollectionUploadSessionOut
-- <a id="s-fd3c253146"></a>`type`: object
+
+- <a id="s-fd3c253146"></a>`type`: `"object"`
+- <a id="s-1f0a6f08f5"></a>`additionalProperties`: `false`
+- <a id="s-03440553db"></a>`required`: `["collection_id","created_at","ingest_source","description","description_revision","description_identity","description_publication","tag_publication","tag_count","provenance_mode","archive_store","encryption_format","passphrase_id","state","custody_mode","registration_constraints","files_total","bytes_total","upload_state_expires_at","custody","orphaned_at","latest_failure","archive_phase","archive_phase_updated_at","archive_next_attempt_at","collection"]`
+- <a id="s-0fcc1ecfde"></a>`title`: `"CollectionUploadSessionOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-9b1773688a"></a>`archive_next_attempt_at` | yes | anyOf=type="string"; pattern="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$" \| type="null" |  |
+| <a id="s-9b1773688a"></a>`archive_next_attempt_at` | yes | anyOf=(type="string"; pattern="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$") \| (type="null") |  |
 | <a id="s-b6f24c5453"></a>`archive_phase` | yes | type="string"; enum=["planning","uploading","finalization_queued","finalizing","retry_wait","completed","canceled","orphaned","discarding"] |  |
 | <a id="s-40cb395743"></a>`archive_phase_updated_at` | yes | type="string"; pattern="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$" |  |
-| <a id="s-4c2695d822"></a>`archive_root_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-c6e3f15926"></a>`archive_storage_prefix` | no | anyOf=type="string" \| type="null" |  |
+| <a id="s-4c2695d822"></a>`archive_root_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
+| <a id="s-c6e3f15926"></a>`archive_storage_prefix` | no | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-b0b2fc7a0d"></a>`archive_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-e70dac8ff9"></a>`archive_total_bytes` | no | anyOf=type="integer" \| type="null" |  |
-| <a id="s-08a6059292"></a>`archive_total_units` | no | anyOf=type="integer" \| type="null" |  |
-| <a id="s-5f8835c2ce"></a>`archive_uploaded_bytes` | no | anyOf=type="integer" \| type="null" |  |
-| <a id="s-e173f08920"></a>`archive_uploaded_units` | no | anyOf=type="integer" \| type="null" |  |
+| <a id="s-e70dac8ff9"></a>`archive_total_bytes` | no | anyOf=(type="integer") \| (type="null") |  |
+| <a id="s-08a6059292"></a>`archive_total_units` | no | anyOf=(type="integer") \| (type="null") |  |
+| <a id="s-5f8835c2ce"></a>`archive_uploaded_bytes` | no | anyOf=(type="integer") \| (type="null") |  |
+| <a id="s-e173f08920"></a>`archive_uploaded_units` | no | anyOf=(type="integer") \| (type="null") |  |
 | <a id="s-11002853d8"></a>`bytes_total` | yes | type="integer"; minimum=0 |  |
-| <a id="s-69ad9fc366"></a>`collection` | yes | anyOf=#/components/schemas/CollectionSummaryOut \| type="null" |  |
+| <a id="s-69ad9fc366"></a>`collection` | yes | anyOf=(#/components/schemas/CollectionSummaryOut) \| (type="null") |  |
 | <a id="s-fdc801eb0a"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-b9651ea42e"></a>`content_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-b9651ea42e"></a>`content_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 | <a id="s-bece9bbffb"></a>`created_at` | yes | type="string" |  |
-| <a id="s-c267172c78"></a>`custody` | yes | oneOf=#/components/schemas/PendingCollectionUploadCustodyOut \| #/components/schemas/CompleteCollectionUploadCustodyOut; additional keys=`discriminator` |  |
+| <a id="s-c267172c78"></a>`custody` | yes | discriminator={"mapping":{"complete":"#/components/schemas/CompleteCollectionUploadCustodyOut","pending":"#/components/schemas/PendingCollectionUploadCustodyOut"},"propertyName":"state"}; oneOf=(#/components/schemas/PendingCollectionUploadCustodyOut) \| (#/components/schemas/CompleteCollectionUploadCustodyOut) |  |
 | <a id="s-449911e290"></a>`custody_mode` | yes | type="string"; enum=["producer-retained","custody-transfer"] |  |
-| <a id="s-91c9b60eef"></a>`description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
-| <a id="s-0e3caca7dc"></a>`description_identity` | yes | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-91c9b60eef"></a>`description` | yes | anyOf=(#/components/schemas/CollectionDescription) \| (type="null") |  |
+| <a id="s-0e3caca7dc"></a>`description_identity` | yes | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 | <a id="s-406d74e184"></a>`description_publication` | yes | type="string"; enum=["pending","not_required","current"] |  |
-| <a id="s-17a2e2a4fd"></a>`description_revision` | yes | anyOf=type="integer"; minimum=0; maximum=9007199254740991 \| type="null" |  |
+| <a id="s-17a2e2a4fd"></a>`description_revision` | yes | anyOf=(type="integer"; minimum=0; maximum=9007199254740991) \| (type="null") |  |
 | <a id="s-e561d8b174"></a>`encryption_format` | yes | type="string" |  |
 | <a id="s-10f5a3b3b8"></a>`files_total` | yes | type="integer"; minimum=0 |  |
-| <a id="s-54879215e4"></a>`ingest_source` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-2c574f18dd"></a>`latest_failure` | yes | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
-| <a id="s-43ab285f83"></a>`orphaned_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-54879215e4"></a>`ingest_source` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-2c574f18dd"></a>`latest_failure` | yes | anyOf=(type="string"; maxLength=1000; minLength=1) \| (type="null") |  |
+| <a id="s-43ab285f83"></a>`orphaned_at` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-6dac1eb9bc"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
-| <a id="s-13b5f1d3eb"></a>`provenance_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-13b5f1d3eb"></a>`provenance_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 | <a id="s-8447ff2de7"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"] |  |
-| <a id="s-ae9f4ae61b"></a>`registration_constraints` | yes | anyOf=#/components/schemas/CollectionUploadRegistrationConstraintsOut \| type="null" |  |
+| <a id="s-ae9f4ae61b"></a>`registration_constraints` | yes | anyOf=(#/components/schemas/CollectionUploadRegistrationConstraintsOut) \| (type="null") |  |
 | <a id="s-ecc4798871"></a>`state` | yes | type="string"; enum=["open","closing","uploading","finalizing","finalized","canceled","orphaned","discarding"] |  |
 | <a id="s-0513821e14"></a>`tag_count` | yes | type="integer"; minimum=0 |  |
 | <a id="s-ad623850e5"></a>`tag_publication` | yes | type="string"; enum=["pending","current"] |  |
-| <a id="s-9b310b8936"></a>`tag_revision` | no | anyOf=type="integer"; minimum=1; maximum=9007199254740991 \| type="null" |  |
-| <a id="s-5e83624c1e"></a>`tag_set_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-ddf168beca"></a>`upload_state_expires_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-9b310b8936"></a>`tag_revision` | no | anyOf=(type="integer"; minimum=1; maximum=9007199254740991) \| (type="null") |  |
+| <a id="s-5e83624c1e"></a>`tag_set_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
+| <a id="s-ddf168beca"></a>`upload_state_expires_at` | yes | anyOf=(type="string") \| (type="null") |  |
+
+### All must match (`allOf`)
+
+| Rule | If schema matches | Then must match | Otherwise must match |
+|---|---|---|---|
+| <a id="s-ece32ec12b"></a>1 | properties={state: (const="finalized")} | properties={archive_root_sha256: (type="string"); collection: (type="object"); content_identity: (type="string"); registration_constraints: (type="null"); tag_publication: (const="current"); tag_revision: (type="integer"); tag_set_identity: (type="string")} | properties={archive_root_sha256: (type="null"); collection: (type="null"); content_identity: (type="null"); registration_constraints: (type="object")} |
+| <a id="s-052c2dfd86"></a>2 | properties={tag_publication: (const="current")} | properties={tag_revision: (type="integer"); tag_set_identity: (type="string")} | no additional constraint |
+| <a id="s-ea42661cb0"></a>3 | properties={state: (const="finalized")}; required=["state"] | oneOf=(properties={provenance_identity: (type="string"; pattern="^[0-9a-f]{64}$"); provenance_mode: (enum=["captured","mixed"])}; required=["provenance_mode","provenance_identity"]) \| (properties={provenance_identity: (type="null"); provenance_mode: (const="omitted")}; required=["provenance_mode","provenance_identity"]) | properties={provenance_identity: (type="null"); provenance_mode: (enum=["captured","omitted"])} |
+| <a id="s-b94c19da9b"></a>4 | properties={custody_mode: (const="producer-retained")}; required=["custody_mode"] | properties={orphaned_at: (type="null"); state: (enum=["open","uploading","finalizing","canceled","finalized"]); upload_state_expires_at: (type="null")} | no additional constraint |
+| <a id="s-6a9935e8f3"></a>5 | properties={state: (enum=["orphaned","discarding"])}; required=["state"] | properties={custody_mode: (const="custody-transfer"); orphaned_at: (type="string"); upload_state_expires_at: (type="null")} | no additional constraint |
+| <a id="s-ac067f3585"></a>6 | properties={custody_mode: (const="custody-transfer"); state: (enum=["open","closing"])}; required=["custody_mode","state"] | properties={orphaned_at: (type="null"); upload_state_expires_at: (type="string")} | no additional constraint |
+| <a id="s-ef257400b3"></a>7 | properties={custody_mode: (const="custody-transfer"); state: (enum=["uploading","finalizing","canceled","finalized"])}; required=["custody_mode","state"] | properties={orphaned_at: (type="null"); upload_state_expires_at: (type="null")} | no additional constraint |
+| <a id="s-dbea157926"></a>8 | properties={state: (enum=["finalizing","finalized"])}; required=["state"] | properties={custody: (properties={state: (const="complete")}; required=["state"])} | no additional constraint |
+| <a id="s-bd5c9462ee"></a>9 | properties={custody_mode: (const="custody-transfer"); state: (const="uploading")}; required=["custody_mode","state"] | properties={custody: (properties={state: (const="complete")}; required=["state"])} | no additional constraint |
+| <a id="s-032ec9a428"></a>10 | properties={state: (const="open")}; required=["state"] | properties={archive_phase: (enum=["planning","uploading"])}; required=["archive_phase"] | no additional constraint |
+| <a id="s-0b3f209dbe"></a>11 | properties={state: (const="closing")}; required=["state"] | properties={archive_phase: (enum=["uploading"])}; required=["archive_phase"] | no additional constraint |
+| <a id="s-ff3c380b6d"></a>12 | properties={state: (const="uploading")}; required=["state"] | properties={archive_phase: (enum=["uploading"])}; required=["archive_phase"] | no additional constraint |
+| <a id="s-ae159b4ba5"></a>13 | properties={state: (const="finalizing")}; required=["state"] | properties={archive_phase: (enum=["finalization_queued","finalizing","retry_wait"])}; required=["archive_phase"] | no additional constraint |
+| <a id="s-7a52d7b20b"></a>14 | properties={state: (const="finalized")}; required=["state"] | properties={archive_phase: (enum=["completed"])}; required=["archive_phase"] | no additional constraint |
+| <a id="s-ca4c7972dc"></a>15 | properties={state: (const="canceled")}; required=["state"] | properties={archive_phase: (enum=["canceled"])}; required=["archive_phase"] | no additional constraint |
+| <a id="s-c16ef629a8"></a>16 | properties={state: (const="orphaned")}; required=["state"] | properties={archive_phase: (enum=["orphaned"])}; required=["archive_phase"] | no additional constraint |
+| <a id="s-bece3f9199"></a>17 | properties={state: (const="discarding")}; required=["state"] | properties={archive_phase: (enum=["discarding"])}; required=["archive_phase"] | no additional constraint |
+| <a id="s-9e02429bff"></a>18 | properties={archive_phase: (const="retry_wait")}; required=["archive_phase"] | properties={archive_next_attempt_at: (type="string"; minLength=1); latest_failure: (type="string"; minLength=1)} | no additional constraint |
+| <a id="s-6afd82a485"></a>19 | properties={archive_phase: (const="finalization_queued")}; required=["archive_phase"] | properties={archive_next_attempt_at: (type="string"; minLength=1); latest_failure: (type="null")} | no additional constraint |
+| <a id="s-cce856fcd8"></a>20 | properties={archive_phase: (not=(enum=["finalization_queued","retry_wait"]))}; required=["archive_phase"] | properties={archive_next_attempt_at: (type="null")} | no additional constraint |
 
 ### Progression, limits, and lifecycle
 
@@ -64,7 +92,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-848466ef26"></a>[allOf alternative 3 · then · oneOf alternative 1 · field provenance_identity](#s-8ffd85b110) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-848466ef26"></a>[allOf alternative 3 · then · oneOf alternative 1 · field provenance_identity](#s-ea42661cb0) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | <a id="s-03d76d63b1"></a>[field archive_root_sha256 · string value](#s-4c2695d822) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | <a id="s-733b493f9e"></a>[field content_identity · string value](#s-b9651ea42e) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | <a id="s-e62e1e660f"></a>[field description_identity · string value](#s-0e3caca7dc) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
@@ -108,6 +136,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -1075,3 +1106,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

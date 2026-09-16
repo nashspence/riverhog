@@ -27,32 +27,74 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-fcd3c8d531"></a>
-- <a id="s-f8f1727e6a"></a>`type`: object
 
-### Fields
+- <a id="s-f8f1727e6a"></a>`type`: `"object"`
+- <a id="s-a678e75edf"></a>`additionalProperties`: `false`
+- <a id="s-c4ff3d00e9"></a>`required`: `["work_id","observer_registration_id","observer_descriptor_sha256","observer_contract_id","observer_contract_sha256","subjects"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ebf1352eb5"></a>`format` | no | type="string"; const="stove0-observation-request/v1" |  |
-| <a id="s-47f15e6367"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864 |  |
+| <a id="s-ebf1352eb5"></a>`format` | no | type="string"; const="stove0-observation-request/v1"; default="stove0-observation-request/v1" |  |
+| <a id="s-47f15e6367"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
 | <a id="s-b8128f6cc4"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-3564c24862"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-bf4cbb5394"></a>`observer_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-6f308432bd"></a>`observer_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
-| <a id="s-9650fd67a3"></a>`options` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-30ee01f17c"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
-| <a id="s-464c3e04cf"></a>`subjects` | yes | type="array"; minItems=1; items=(#/$defs/ArtifactSubject) |  |
-| <a id="s-017271c335"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400 |  |
+| <a id="s-9650fd67a3"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-f0b0210f5a)) |  |
+| <a id="s-30ee01f17c"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-464c3e04cf"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-ec42b20846)); minItems=1 |  |
+| <a id="s-017271c335"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300 |  |
 | <a id="s-b9c8abee16"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-ec42b20846"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-59a94e1980"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-f089104b8c"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
-| <a id="s-f0b0210f5a"></a>`JsonValue` | empty object |
+- [ArtifactSubject](#s-ec42b20846)
+- [CollectionId](#s-59a94e1980)
+- [CollectionRootRef](#s-f089104b8c)
+- [JsonValue](#s-f0b0210f5a)
+
+##### <a id="s-ec42b20846"></a>definition `ArtifactSubject`
+
+- <a id="s-a09121712f"></a>`type`: `"object"`
+- <a id="s-a8e72840ec"></a>`additionalProperties`: `false`
+- <a id="s-dd494e4d11"></a>`required`: `["id","role","collection","path","bytes","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e66b4219e0"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-89aff51a8f"></a>`collection` | yes | [CollectionRootRef](#s-f089104b8c) |  |
+| <a id="s-f36a716a97"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-d9bdb5b3a1"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-e39fc3b897"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-e25fb6c472"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-ed8b3f0527"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-59a94e1980"></a>definition `CollectionId`
+
+- <a id="s-6fbaa5f74d"></a>`type`: `"integer"`
+- <a id="s-ad9b6b33e6"></a>`minimum`: `1`
+
+##### <a id="s-f089104b8c"></a>definition `CollectionRootRef`
+
+- <a id="s-1bd623355f"></a>`type`: `"object"`
+- <a id="s-c6e2c7d72e"></a>`additionalProperties`: `false`
+- <a id="s-f104d113a5"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-45a142eb05"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-bd2ff7595c"></a>`collection_id` | yes | [CollectionId](#s-59a94e1980) |  |
+| <a id="s-bc4dcbb73b"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-f0b0210f5a"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Maintained corroboration
 
@@ -81,6 +123,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_observer_protocol.ObservationRequestPayload`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -250,3 +295,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

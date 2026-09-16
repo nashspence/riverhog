@@ -14,6 +14,7 @@ from .model import (
     ATLAS_DIRECTORY,
     INTERFACE_REGISTRY,
     ContractAtlasError,
+    _decode_unsafe_integers,
     _slug,
     pointer_value,
 )
@@ -471,17 +472,24 @@ def _render_atlas(
     identities: Mapping[str, object],
     discovery: Mapping[str, object],
     component_descriptions: Mapping[str, str],
+    *,
+    projection_integer_paths: Sequence[str],
 ) -> tuple[dict[str, bytes], list[dict[str, object]], dict[str, object]]:
     files: dict[str, bytes] = {}
     descriptors: list[dict[str, object]] = []
     source_evidence_path = f"{ATLAS_DIRECTORY}/evidence/sources.md"
     by_id = {str(item["id"]): item for item in elements}
+    primary_projection = cast(
+        Mapping[str, object], _decode_unsafe_integers(projection, projection_integer_paths)
+    )
     grouped: dict[str, dict[str, list[dict[str, object]]]] = defaultdict(lambda: defaultdict(list))
     for item in elements:
         grouped[str(item["authority"])][str(item["interface"])].append(item)
 
     for element in elements:
-        files[str(element["dossier"])] = _render_dossier(element, projection, trace, by_id)
+        files[str(element["dossier"])] = _render_dossier(
+            element, projection, trace, by_id, primary_projection=primary_projection
+        )
 
     policy_path = f"{ATLAS_DIRECTORY}/policies/index.md"
     policy_lines = [

@@ -27,16 +27,19 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-50b14a6c22"></a>
-- <a id="s-875bd83b21"></a>`type`: object
 
-### Fields
+- <a id="s-875bd83b21"></a>`type`: `"object"`
+- <a id="s-248c995131"></a>`additionalProperties`: `false`
+- <a id="s-f0a6b89a1d"></a>`required`: `["number","segment_token","stored_bytes"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-41111b1770"></a>`number` | yes | type="integer"; minimum=1 |  |
-| <a id="s-8e844b4616"></a>`segment_token` | yes | type="string"; minLength=1; maxLength=4000 |  |
+| <a id="s-8e844b4616"></a>`segment_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
 | <a id="s-2114107bd7"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-a22f06e6d5"></a>`stored_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-a22f06e6d5"></a>`stored_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
 
 ## Governing policies
 
@@ -59,6 +62,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.WriteSegmentReceipt`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -112,3 +118,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

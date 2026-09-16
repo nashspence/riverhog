@@ -27,30 +27,60 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-071f2c7276"></a>
-- <a id="s-f0a90a2c3d"></a>`type`: object
 
-### Fields
+- <a id="s-f0a90a2c3d"></a>`type`: `"object"`
+- <a id="s-cf1cfa6dd7"></a>`additionalProperties`: `false`
+- <a id="s-4d842f019e"></a>`required`: `["format","id","claim_id","fence","audience","actions","state","principal_app","expires_at","artifacts","token"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-fa27ce7040"></a>`actions` | yes | type="array"; minItems=1; items=(type="string"; enum=["read-inputs","write-output"]); oneOf=const=["read-inputs"] \| const=["read-inputs","write-output"] |  |
-| <a id="s-9717f29e89"></a>`artifacts` | yes | #/$defs/ArtifactReceivingSetDocument |  |
+| <a id="s-fa27ce7040"></a>`actions` | yes | type="array"; items=(type="string"; enum=["read-inputs","write-output"]); minItems=1; oneOf=(const=["read-inputs"]) \| (const=["read-inputs","write-output"]) |  |
+| <a id="s-9717f29e89"></a>`artifacts` | yes | [ArtifactReceivingSetDocument](#s-12e03bb1bc) |  |
 | <a id="s-0ea541ef21"></a>`audience` | yes | type="string"; pattern="^[a-z0-9][a-z0-9._:/-]{0,299}$" |  |
 | <a id="s-be290c9233"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-5338f570fa"></a>`expires_at` | yes | type="string"; minLength=1; maxLength=64 |  |
+| <a id="s-5338f570fa"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1 |  |
 | <a id="s-ca39ae8afe"></a>`fence` | yes | type="integer"; minimum=1 |  |
 | <a id="s-71303d8f5c"></a>`format` | yes | type="string"; const="riverhog-transform-capability/v1" |  |
-| <a id="s-1ecd9f3954"></a>`id` | yes | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-2758f46f2a"></a>`principal_app` | yes | type="string"; minLength=1; maxLength=300 |  |
+| <a id="s-1ecd9f3954"></a>`id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-2758f46f2a"></a>`principal_app` | yes | type="string"; maxLength=300; minLength=1 |  |
 | <a id="s-95ddc61ed1"></a>`state` | yes | type="string"; enum=["receiving","active"] |  |
 | <a id="s-ed5f872a31"></a>`token` | yes | type="string"; pattern="^rhc_[A-Za-z0-9_-]+$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-12e03bb1bc"></a>`ArtifactReceivingSetDocument` | type="object"; fields=`authority`, `count`, `state`, `total_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-6a2b19199e"></a>`ArtifactSetAuthorityDocument` | type="object"; fields=`count`, `sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
+- [ArtifactReceivingSetDocument](#s-12e03bb1bc)
+- [ArtifactSetAuthorityDocument](#s-6a2b19199e)
+
+##### <a id="s-12e03bb1bc"></a>definition `ArtifactReceivingSetDocument`
+
+- <a id="s-d7e66c6118"></a>`type`: `"object"`
+- <a id="s-d2012fc7b7"></a>`additionalProperties`: `false`
+- <a id="s-5db77e5248"></a>`required`: `["state","count","total_bytes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4e7fe48037"></a>`authority` | no | anyOf=([ArtifactSetAuthorityDocument](#s-6a2b19199e)) \| (type="null"); default=null |  |
+| <a id="s-56adc08a7d"></a>`count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-415ecd6ca4"></a>`state` | yes | type="string"; enum=["receiving","sealed"] |  |
+| <a id="s-a45e9e7b9d"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+
+##### <a id="s-6a2b19199e"></a>definition `ArtifactSetAuthorityDocument`
+
+- <a id="s-fca2b14728"></a>`type`: `"object"`
+- <a id="s-b07d92120a"></a>`additionalProperties`: `false`
+- <a id="s-4743c36528"></a>`required`: `["count","sha256","total_bytes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ee5ab19b33"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-640267e39e"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-247e9891d1"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
 
 ## Maintained corroboration
 
@@ -81,6 +111,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.TransformCapabilityDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -248,3 +281,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

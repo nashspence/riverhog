@@ -27,17 +27,20 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-58dccf3714"></a>
-- <a id="s-7bfc9452ca"></a>`type`: object
 
-### Fields
+- <a id="s-7bfc9452ca"></a>`type`: `"object"`
+- <a id="s-8dbe26c13f"></a>`additionalProperties`: `false`
+- <a id="s-f922001099"></a>`required`: `["id","source","type","subject","time","data"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b3ad5c015c"></a>`data` | yes | empty object |  |
-| <a id="s-12e327774b"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-b3ad5c015c"></a>`data` | yes | any JSON value |  |
+| <a id="s-12e327774b"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-7909202afe"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-503011d03a"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
-| <a id="s-11497c7367"></a>`specversion` | no | type="string"; const="1.0" |  |
+| <a id="s-11497c7367"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-20c1c814af"></a>`subject` | yes | type="string"; minLength=1 |  |
 | <a id="s-cca47fbd88"></a>`time` | yes | type="string" |  |
 | <a id="s-7b8dd11a65"></a>`type` | yes | type="string"; minLength=1 |  |
@@ -70,6 +73,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.Stove0CloudEvent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -131,3 +137,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

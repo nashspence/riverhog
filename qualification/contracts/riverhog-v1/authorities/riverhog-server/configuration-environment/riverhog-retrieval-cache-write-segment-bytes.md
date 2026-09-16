@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a4749ac7f3"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-a43b0da62e"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-14e364ccc3"></a>`default_expressions` | ["'64MiB'"] |
-| <a id="s-bff0e51f69"></a>`id` | "riverhog-server:environment:RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES" |
-| <a id="s-9ac8b2959d"></a>`input_shape` | "environment-string" |
-| <a id="s-45655e8c1b"></a>`name` | "RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES" |
-| <a id="s-6c4637bf18"></a>`owner` | "riverhog-server" |
+| <a id="s-a43b0da62e"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-14e364ccc3"></a>`default_expressions` | `["'64MiB'"]` |
+| <a id="s-bff0e51f69"></a>`id` | `"riverhog-server:environment:RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES"` |
+| <a id="s-9ac8b2959d"></a>`input_shape` | `"environment-string"` |
+| <a id="s-45655e8c1b"></a>`name` | `"RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES"` |
+| <a id="s-6c4637bf18"></a>`owner` | `"riverhog-server"` |
 
 ### Progression, limits, and lifecycle
 
@@ -64,6 +65,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 7241665bd2040c30fe4f2afa7bda911f3bf3fbae8c72c69cef88caca422b93f4 -->
@@ -82,3 +86,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "riverhog-server"
 }
 ```
+
+</details>

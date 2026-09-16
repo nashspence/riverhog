@@ -13,8 +13,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-f75ba69202"></a>
-- Shape: "Hardware- or environment-dependent limits that observably affect accepted work are operator-configurable and source-linked."
+
+| Field | Value |
+|---|---|
+| <a id="s-f75ba69202"></a>`configuration` | `"Hardware- or environment-dependent limits that observably affect accepted work are operator-configurable and source-linked."` |
 
 ## Governing policies
 
@@ -38,6 +40,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: ad9c9db446693f985358d6094a1ca38d63c535fab151fb471f1916d1d9425083 -->
@@ -45,3 +50,5 @@ The following JSON is the complete value owned at each machine-authority pointer
 ```json
 "Hardware- or environment-dependent limits that observably affect accepted work are operator-configurable and source-linked."
 ```
+
+</details>

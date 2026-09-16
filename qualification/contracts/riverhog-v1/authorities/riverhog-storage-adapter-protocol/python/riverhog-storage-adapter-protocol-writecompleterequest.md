@@ -27,25 +27,54 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-c446ae64ca"></a>
-- <a id="s-149060f9b6"></a>`type`: object
 
-### Fields
+- <a id="s-149060f9b6"></a>`type`: `"object"`
+- <a id="s-06c4ee0293"></a>`additionalProperties`: `false`
+- <a id="s-0c8939af9a"></a>`required`: `["session","completion","expected_bytes","expected_content_type","required_identity_assertions","expected_placement"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-760d87722b"></a>`completion` | yes | #/$defs/WriteCompletionAuthority |  |
+| <a id="s-760d87722b"></a>`completion` | yes | [WriteCompletionAuthority](#s-d78eb0b56c) |  |
 | <a id="s-7a8d87fa71"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-ef006a81c9"></a>`expected_content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
+| <a id="s-ef006a81c9"></a>`expected_content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
 | <a id="s-5e42590d31"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
-| <a id="s-8c917da295"></a>`required_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
-| <a id="s-77b14e55b9"></a>`session` | yes | #/$defs/WriteSession |  |
+| <a id="s-8c917da295"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} |  |
+| <a id="s-77b14e55b9"></a>`session` | yes | [WriteSession](#s-7089c76a7b) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-d78eb0b56c"></a>`WriteCompletionAuthority` | type="object"; fields=`authority_token`, `segment_count`, `stored_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-7089c76a7b"></a>`WriteSession` | type="object"; fields=`expected_bytes`, `object_path`, `write_token`; additional keys=`additionalProperties`, `required` |
+- [WriteCompletionAuthority](#s-d78eb0b56c)
+- [WriteSession](#s-7089c76a7b)
+
+##### <a id="s-d78eb0b56c"></a>definition `WriteCompletionAuthority`
+
+- <a id="s-bbd2a5fc47"></a>`type`: `"object"`
+- <a id="s-0fa21b80f6"></a>`additionalProperties`: `false`
+- <a id="s-03ecbf432b"></a>`required`: `["segment_count","stored_bytes","authority_token"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3197417b17"></a>`authority_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
+| <a id="s-75cf91dbd4"></a>`segment_count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-2bd6b08275"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
+
+##### <a id="s-7089c76a7b"></a>definition `WriteSession`
+
+- <a id="s-57286e4b07"></a>`type`: `"object"`
+- <a id="s-3526c9de9a"></a>`additionalProperties`: `false`
+- <a id="s-7a8021ab37"></a>`required`: `["object_path","expected_bytes","write_token"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e029c297cf"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-3af3650aa5"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-4a9ee9c2c9"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
 
 ## Maintained corroboration
 
@@ -75,6 +104,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.WriteCompleteRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -191,3 +223,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

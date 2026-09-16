@@ -27,27 +27,108 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-0296a30214"></a>
-- <a id="s-affc330a90"></a>`type`: object
 
-### Fields
+- <a id="s-affc330a90"></a>`type`: `"object"`
+- <a id="s-48fe083073"></a>`additionalProperties`: `false`
+- <a id="s-5bcf913528"></a>`required`: `["request","claim_id","fence","runtime"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a7e3975231"></a>`claim_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-a7e3975231"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-9c8d53db83"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-80b6631af8"></a>`request` | yes | #/$defs/ObservationRequest |  |
-| <a id="s-c6b96ab6fd"></a>`runtime` | yes | #/$defs/ObserverRuntimeAuthority |  |
+| <a id="s-80b6631af8"></a>`request` | yes | [ObservationRequest](#s-957e246dd2) |  |
+| <a id="s-c6b96ab6fd"></a>`runtime` | yes | [ObserverRuntimeAuthority](#s-9875058c01) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-a6a9f9a8cd"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-9d6c2f9f38"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-52bea440ad"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
-| <a id="s-3c9822b86f"></a>`JsonValue` | empty object |
-| <a id="s-957e246dd2"></a>`ObservationRequest` | type="object"; fields=`format`, `maximum_result_bytes`, `observer_contract_id`, `observer_contract_sha256`, `observer_descriptor_sha256`, `observer_registration_id`, `options`, `request_id`, `retrieval_policy`, `subjects`, `timeout_seconds`, `work_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-9875058c01"></a>`ObserverRuntimeAuthority` | type="object"; fields=`allow_insecure_http`, `capability_token`, `riverhog_base_url`, `transport`, `workspace_assurance`; additional keys=`additionalProperties`, `required` |
+- [ArtifactSubject](#s-a6a9f9a8cd)
+- [CollectionId](#s-9d6c2f9f38)
+- [CollectionRootRef](#s-52bea440ad)
+- [JsonValue](#s-3c9822b86f)
+- [ObservationRequest](#s-957e246dd2)
+- [ObserverRuntimeAuthority](#s-9875058c01)
+
+##### <a id="s-a6a9f9a8cd"></a>definition `ArtifactSubject`
+
+- <a id="s-9c84c3e137"></a>`type`: `"object"`
+- <a id="s-1d617e5733"></a>`additionalProperties`: `false`
+- <a id="s-6ad0f793b8"></a>`required`: `["id","role","collection","path","bytes","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ddfa36e499"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-5d46afcfe6"></a>`collection` | yes | [CollectionRootRef](#s-52bea440ad) |  |
+| <a id="s-90dc0592f4"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-77f1f69ae9"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-f9983989ac"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-b27a53db28"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-cc743505f2"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-9d6c2f9f38"></a>definition `CollectionId`
+
+- <a id="s-a291cb001e"></a>`type`: `"integer"`
+- <a id="s-365e0def63"></a>`minimum`: `1`
+
+##### <a id="s-52bea440ad"></a>definition `CollectionRootRef`
+
+- <a id="s-8c46896eac"></a>`type`: `"object"`
+- <a id="s-7d0edb13aa"></a>`additionalProperties`: `false`
+- <a id="s-3f6116917b"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-96ca42b955"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-af16933782"></a>`collection_id` | yes | [CollectionId](#s-9d6c2f9f38) |  |
+| <a id="s-c6e424916a"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-3c9822b86f"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-957e246dd2"></a>definition `ObservationRequest`
+
+- <a id="s-4b396e5c5d"></a>`type`: `"object"`
+- <a id="s-408960f23a"></a>`additionalProperties`: `false`
+- <a id="s-3b20cfb686"></a>`required`: `["work_id","observer_registration_id","observer_descriptor_sha256","observer_contract_id","observer_contract_sha256","subjects","request_id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-35bb6d3df8"></a>`format` | no | type="string"; const="stove0-observation-request/v1"; default="stove0-observation-request/v1" |  |
+| <a id="s-8601a5545d"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
+| <a id="s-b44b3e6c9a"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-1893fa2f6a"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-fa5ae44d1c"></a>`observer_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c8dcc57703"></a>`observer_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
+| <a id="s-5104ee09c8"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-3c9822b86f)) |  |
+| <a id="s-a0f8323c58"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ab17c5e2bb"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-a431ac1d6a"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-a6a9f9a8cd)); minItems=1 |  |
+| <a id="s-1f93a88c70"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300 |  |
+| <a id="s-e803ce8a24"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-9875058c01"></a>definition `ObserverRuntimeAuthority`
+
+- <a id="s-5fde14d9e7"></a>`type`: `"object"`
+- <a id="s-fdea5b7ab6"></a>`additionalProperties`: `false`
+- <a id="s-37489ed37a"></a>`required`: `["riverhog_base_url","capability_token","workspace_assurance"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0cceaee2c7"></a>`allow_insecure_http` | no | type="boolean"; default=false |  |
+| <a id="s-924a8acb24"></a>`capability_token` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-93b095a72f"></a>`riverhog_base_url` | yes | type="string"; maxLength=2048; minLength=1 |  |
+| <a id="s-332a21d897"></a>`transport` | no | type="string"; const="riverhog-capability/v1"; default="riverhog-capability/v1" |  |
+| <a id="s-6b4313a6aa"></a>`workspace_assurance` | yes | type="string"; enum=["encrypted","ephemeral"] |  |
 
 ## Maintained corroboration
 
@@ -76,6 +157,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_observer_protocol.ObservationInvocation`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -314,3 +398,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

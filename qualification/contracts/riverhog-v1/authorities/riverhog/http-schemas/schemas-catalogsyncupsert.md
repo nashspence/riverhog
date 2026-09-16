@@ -14,23 +14,26 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8711c355e2"></a>
-- <a id="s-6644b70f71"></a>`title`: CatalogSyncUpsert
-- <a id="s-f7ad15979d"></a>`type`: object
+
+- <a id="s-f7ad15979d"></a>`type`: `"object"`
+- <a id="s-66c5c53bb3"></a>`additionalProperties`: `false`
+- <a id="s-472d43ee60"></a>`required`: `["collection_id","archive_root_sha256","content_identity","description","description_revision","description_identity","tag_revision","tag_set_identity","revision"]`
+- <a id="s-6644b70f71"></a>`title`: `"CatalogSyncUpsert"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c8a4a01aa1"></a>`archive_root_sha256` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c8a4a01aa1"></a>`archive_root_sha256` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-a2b1ded4cb"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-5f2c06192f"></a>`content_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-effc539626"></a>`description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
-| <a id="s-3d8c8564c3"></a>`description_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-5f2c06192f"></a>`content_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-effc539626"></a>`description` | yes | anyOf=(#/components/schemas/CollectionDescription) \| (type="null") |  |
+| <a id="s-3d8c8564c3"></a>`description_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-37af96b838"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
-| <a id="s-fe82889f13"></a>`operation` | no | type="string"; const="upsert" |  |
-| <a id="s-beb58546cc"></a>`revision` | yes | type="string"; minLength=1; maxLength=19; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+| <a id="s-fe82889f13"></a>`operation` | no | type="string"; const="upsert"; default="upsert" |  |
+| <a id="s-beb58546cc"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
 | <a id="s-de502899cb"></a>`tag_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
-| <a id="s-9974c886dd"></a>`tag_set_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-9974c886dd"></a>`tag_set_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -75,6 +78,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncUpsert`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -166,3 +172,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

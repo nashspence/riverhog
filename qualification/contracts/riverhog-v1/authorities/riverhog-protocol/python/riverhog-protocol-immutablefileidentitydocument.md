@@ -27,21 +27,38 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-6c90ef496b"></a>
-- <a id="s-a26b9a0466"></a>`type`: object
 
-### Fields
+- <a id="s-a26b9a0466"></a>`type`: `"object"`
+- <a id="s-70f2b7f9f2"></a>`additionalProperties`: `false`
+- <a id="s-e834a73fc1"></a>`required`: `["path","bytes","sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-73aa3462b8"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-d8d372ba45"></a>`path` | yes | #/$defs/CanonicalRelPath |  |
+| <a id="s-d8d372ba45"></a>`path` | yes | [CanonicalRelPath](#s-2f866a5e07) |  |
 | <a id="s-e161f15c80"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
+- [CanonicalRelPath](#s-2f866a5e07)
+
+##### <a id="s-2f866a5e07"></a>definition `CanonicalRelPath`
+
+- <a id="s-14f96c6e18"></a>`type`: `"string"`
+- <a id="s-16e5868dcd"></a>`format`: `"riverhog-canonical-relpath-v1"`
+- <a id="s-7410b951d5"></a>`maxLength`: `4096`
+- <a id="s-e6eace92e9"></a>`minLength`: `1`
+- <a id="s-b26210e9ee"></a>`pattern`: `"^[^/\\\\]+(?:/[^/\\\\]+)*$"`
+- <a id="s-9a31e18b7d"></a>`x-unicode-normalization`: `"NFC"`
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
 |---|---|
-| <a id="s-2f866a5e07"></a>`CanonicalRelPath` | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
+| <a id="s-3abb6d9b12"></a>1 | not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)") |
+| <a id="s-5d4898801b"></a>2 | not=(pattern="^\\s\|\\s$") |
 
 ## Governing policies
 
@@ -64,6 +81,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.ImmutableFileIdentityDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -125,3 +145,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

@@ -43,7 +43,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-c21881a37c"></a>`completed` | <a id="s-20c5e936c6"></a>`{"kind":"command-completed"}` | <a id="s-5dd3e89b2b"></a>`0` | <a id="s-a921e6957c"></a>human: `noncontractual-presentation-of-command-result`; json: [stove0-recipe-catalog-validation/v1](#s-a921e6957c) | <a id="s-6c21a31a21"></a>all: `empty` |
+| <a id="s-c21881a37c"></a>`completed` | <a id="s-20c5e936c6"></a>`{"kind":"command-completed"}` | <a id="s-5dd3e89b2b"></a>`0` | <a id="s-a921e6957c"></a>human: `noncontractual-presentation-of-command-result`; json: [stove0-recipe-catalog-validation/v1](#s-a3f0abef56) | <a id="s-6c21a31a21"></a>all: `empty` |
 
 #### Failure outcomes
 
@@ -51,6 +51,29 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|---|
 | <a id="s-a468e4be4c"></a>`usage` | <a id="s-6bee01f5c8"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-22932551d7"></a>`2` | <a id="s-4562e7c916"></a>all: `empty` | <a id="s-1a8131ce7d"></a>all: `noncontractual-usage-diagnostic` |
 | <a id="s-d9580518c5"></a>`operational` | <a id="s-4170cf0b97"></a>`{"kind":"application-error"}` | <a id="s-cd98d79afb"></a>`1` | <a id="s-c1bc01a565"></a>all: `empty` | <a id="s-0d4ee34a0b"></a>all: `noncontractual-diagnostic` |
+
+### Local structured outputs
+
+
+#### <a id="s-a3f0abef56"></a>`stove0-recipe-catalog-validation/v1`
+
+Applies to: completed · stdout (json).
+
+<a id="s-79c041b1d3"></a>
+
+- <a id="s-662c5c75ac"></a>`type`: `"object"`
+- <a id="s-ea020f6e02"></a>`additionalProperties`: `false`
+- <a id="s-cf2dc785f9"></a>`required`: `["format","catalog_sha256","operation_count","recipe_count","recipes"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b847c35f46"></a>`catalog_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-aa05f119a0"></a>`format` | yes | const="stove0-recipe-catalog-validation/v1" |  |
+| <a id="s-f787de4709"></a>`operation_count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-299b74cea6"></a>`recipe_count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-a8b9082a1c"></a>`recipes` | yes | type="array"; items=(type="object") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -90,6 +113,9 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 - `/external_contract/cli/stove0/commands/recipe/commands/validate/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -271,3 +297,5 @@ false
   }
 ]
 ```
+
+</details>

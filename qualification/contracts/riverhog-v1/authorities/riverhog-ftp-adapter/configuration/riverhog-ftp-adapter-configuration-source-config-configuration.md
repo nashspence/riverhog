@@ -14,32 +14,51 @@ One deployment-owned, content-opaque intake source.
 ## External contract
 
 <a id="s-6faee706ac"></a>
-- <a id="s-ad8c226b83"></a>`title`: SourceConfig
-- <a id="s-0e345f7a8e"></a>`description`: One deployment-owned, content-opaque intake source.
-- <a id="s-c6d70e7ca8"></a>`type`: object
+
+- <a id="s-c6d70e7ca8"></a>`type`: `"object"`
+- <a id="s-86d44ae814"></a>`additionalProperties`: `false`
+- <a id="s-0e345f7a8e"></a>`description`: `"One deployment-owned, content-opaque intake source."`
+- <a id="s-76995b4e5a"></a>`required`: `["id","root","ingest_source"]`
+- <a id="s-ad8c226b83"></a>`title`: `"SourceConfig"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-44782b2557"></a>`archive_store` | no | anyOf=type="string"; minLength=1; maxLength=160 \| type="null" |  |
-| <a id="s-d8f63ea908"></a>`close_mode` | no | type="string"; enum=["stable","explicit-flush"] |  |
-| <a id="s-05492fae9c"></a>`description` | no | anyOf=#/$defs/CollectionDescription \| type="null" |  |
+| <a id="s-44782b2557"></a>`archive_store` | no | anyOf=(type="string"; maxLength=160; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-d8f63ea908"></a>`close_mode` | no | type="string"; enum=["stable","explicit-flush"]; default="stable" |  |
+| <a id="s-05492fae9c"></a>`description` | no | anyOf=([CollectionDescription](#s-fb60852aae)) \| (type="null"); default=null |  |
 | <a id="s-ae0af366ef"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$" |  |
-| <a id="s-7147ff2557"></a>`ingest_source` | yes | type="string"; minLength=1; maxLength=512 |  |
-| <a id="s-5e54358858"></a>`max_bytes` | no | type="integer"; minimum=1 |  |
-| <a id="s-f3e227fccb"></a>`max_files` | no | type="integer"; minimum=1 |  |
-| <a id="s-cf8393c1e2"></a>`provenance` | no | type="string"; enum=["capture","omit"] |  |
-| <a id="s-5be0fa673e"></a>`provenance_omission_reason` | no | anyOf=type="string"; maxLength=1000 \| type="null" |  |
+| <a id="s-7147ff2557"></a>`ingest_source` | yes | type="string"; maxLength=512; minLength=1 |  |
+| <a id="s-5e54358858"></a>`max_bytes` | no | type="integer"; minimum=1; default=107374182400 |  |
+| <a id="s-f3e227fccb"></a>`max_files` | no | type="integer"; minimum=1; default=1000 |  |
+| <a id="s-cf8393c1e2"></a>`provenance` | no | type="string"; enum=["capture","omit"]; default="capture" |  |
+| <a id="s-5be0fa673e"></a>`provenance_omission_reason` | no | anyOf=(type="string"; maxLength=1000) \| (type="null"); default=null |  |
 | <a id="s-4a38ed53f2"></a>`root` | yes | type="string"; format="path" |  |
-| <a id="s-eea19079fd"></a>`tags` | no | type="array"; items=(#/$defs/CollectionTag) |  |
+| <a id="s-eea19079fd"></a>`tags` | no | type="array"; default=[]; items=([CollectionTag](#s-de506e6f37)) |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-fb60852aae"></a>`CollectionDescription` | type="string"; minLength=1; maxLength=32768; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
-| <a id="s-de506e6f37"></a>`CollectionTag` | type="string"; minLength=1; maxLength=65536; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
+- [CollectionDescription](#s-fb60852aae)
+- [CollectionTag](#s-de506e6f37)
+
+### <a id="s-fb60852aae"></a>definition `CollectionDescription`
+
+- <a id="s-20ee5ef59c"></a>`type`: `"string"`
+- <a id="s-c03148b162"></a>`maxLength`: `32768`
+- <a id="s-ae2b9132dd"></a>`minLength`: `1`
+- <a id="s-e82276f448"></a>`x-riverhog-encoded-bytes-max`: `32768`
+- <a id="s-b1e4fa5c09"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-catalog-description"}`
+- <a id="s-c934e0ef70"></a>`x-unicode-normalization`: `"NFC"`
+
+### <a id="s-de506e6f37"></a>definition `CollectionTag`
+
+- <a id="s-578909a98f"></a>`type`: `"string"`
+- <a id="s-5b76b4f92c"></a>`maxLength`: `65536`
+- <a id="s-ca74e36250"></a>`minLength`: `1`
+- <a id="s-b7db7969aa"></a>`x-riverhog-encoded-bytes-max`: `65536`
+- <a id="s-ade8b6299a"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-collection-tag"}`
+- <a id="s-743130c186"></a>`x-unicode-normalization`: `"NFC"`
 
 ### Progression, limits, and lifecycle
 
@@ -86,6 +105,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/configuration_documents/riverhog-ftp-adapter:configuration:source-config`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -222,3 +244,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

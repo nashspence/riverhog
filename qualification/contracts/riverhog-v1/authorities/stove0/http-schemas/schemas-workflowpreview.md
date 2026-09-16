@@ -14,24 +14,27 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f0f07e63bd"></a>
-- <a id="s-aa6d1cb984"></a>`title`: WorkflowPreview
-- <a id="s-482360a6a8"></a>`type`: object
+
+- <a id="s-482360a6a8"></a>`type`: `"object"`
+- <a id="s-f77e1d277e"></a>`additionalProperties`: `false`
+- <a id="s-542f4cf396"></a>`required`: `["preview_id","state","work","preview_sha256"]`
+- <a id="s-aa6d1cb984"></a>`title`: `"WorkflowPreview"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-09d8a2f675"></a>`branch_set_plan` | no | anyOf=#/components/schemas/BranchSetPlan \| type="null" |  |
-| <a id="s-af86a5605a"></a>`branch_sets` | no | type="array"; items=(#/components/schemas/BranchSetPlan) |  |
-| <a id="s-3803d68986"></a>`format` | no | type="string"; const="stove0-workflow-preview/v1" |  |
-| <a id="s-55d0cba4ef"></a>`observations` | no | type="array"; items=(#/components/schemas/ObservationEvidence) |  |
-| <a id="s-e4744c1f84"></a>`outcome` | no | anyOf=#/components/schemas/PreviewOutcome \| type="null" |  |
+| <a id="s-09d8a2f675"></a>`branch_set_plan` | no | anyOf=(#/components/schemas/BranchSetPlan) \| (type="null") |  |
+| <a id="s-af86a5605a"></a>`branch_sets` | no | type="array"; default=[]; items=(#/components/schemas/BranchSetPlan) |  |
+| <a id="s-3803d68986"></a>`format` | no | type="string"; const="stove0-workflow-preview/v1"; default="stove0-workflow-preview/v1" |  |
+| <a id="s-55d0cba4ef"></a>`observations` | no | type="array"; default=[]; items=(#/components/schemas/ObservationEvidence) |  |
+| <a id="s-e4744c1f84"></a>`outcome` | no | anyOf=(#/components/schemas/PreviewOutcome) \| (type="null") |  |
 | <a id="s-715057aea7"></a>`preview_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-3c3b2303ab"></a>`preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-af19f564b7"></a>`selections` | no | type="array"; items=(#/components/schemas/ArtifactSelection) |  |
+| <a id="s-af19f564b7"></a>`selections` | no | type="array"; default=[]; items=(#/components/schemas/ArtifactSelection) |  |
 | <a id="s-842de9abc9"></a>`state` | yes | type="string"; enum=["ready","inapplicable","failed","canceled"] |  |
-| <a id="s-a984bdec16"></a>`target_plans` | no | type="array"; items=(#/components/schemas/BranchTargetPreview) |  |
-| <a id="s-ed22ffece9"></a>`warnings` | no | type="array"; items=(type="string") |  |
+| <a id="s-a984bdec16"></a>`target_plans` | no | type="array"; default=[]; items=(#/components/schemas/BranchTargetPreview) |  |
+| <a id="s-ed22ffece9"></a>`warnings` | no | type="array"; default=[]; items=(type="string") |  |
 | <a id="s-807a7c0d8b"></a>`work` | yes | #/components/schemas/WorkIdentity |  |
 
 ### Progression, limits, and lifecycle
@@ -91,6 +94,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/WorkflowPreview`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -200,3 +206,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -27,23 +27,47 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-3faf3f53b8"></a>
-- <a id="s-6068f9ef62"></a>`type`: object
 
-### Fields
+- <a id="s-6068f9ef62"></a>`type`: `"object"`
+- <a id="s-89ebc20b7d"></a>`additionalProperties`: `false`
+- <a id="s-e84db2a02b"></a>`required`: `["header","inventory_identity","file_count","file_bytes"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-5a27b4f2b8"></a>`file_bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-40606344be"></a>`file_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-42cbdd55a0"></a>`header` | yes | #/$defs/PortableCollectionHeader |  |
+| <a id="s-42cbdd55a0"></a>`header` | yes | [PortableCollectionHeader](#s-98fff72407) |  |
 | <a id="s-925b6902ff"></a>`inventory_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-d363bae8a7"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-98fff72407"></a>`PortableCollectionHeader` | type="object"; fields=`collection`, `content_identity`, `encryption_format`, `format`, `passphrase_id`, `provenance_identity`, `provenance_mode`; additional keys=`additionalProperties`, `required` |
+- [CollectionId](#s-d363bae8a7)
+- [PortableCollectionHeader](#s-98fff72407)
+
+##### <a id="s-d363bae8a7"></a>definition `CollectionId`
+
+- <a id="s-02646d607d"></a>`type`: `"integer"`
+- <a id="s-e0b4a1f722"></a>`minimum`: `1`
+
+##### <a id="s-98fff72407"></a>definition `PortableCollectionHeader`
+
+- <a id="s-6f79eed830"></a>`type`: `"object"`
+- <a id="s-40f934aa5f"></a>`additionalProperties`: `false`
+- <a id="s-8558561cbb"></a>`required`: `["collection","content_identity","encryption_format","passphrase_id","provenance_mode"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-40738de5dd"></a>`collection` | yes | [CollectionId](#s-d363bae8a7) |  |
+| <a id="s-29f2935c59"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-995ef54dc2"></a>`encryption_format` | yes | type="string"; minLength=1 |  |
+| <a id="s-c05f51718d"></a>`format` | no | type="string"; const="riverhog-collection/v1"; default="riverhog-collection/v1" |  |
+| <a id="s-a8748b73bf"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
+| <a id="s-c6463915eb"></a>`provenance_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-f9273655ce"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"] |  |
 
 ## Governing policies
 
@@ -66,6 +90,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.PortableCollectionInventoryAuthority`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -169,3 +196,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

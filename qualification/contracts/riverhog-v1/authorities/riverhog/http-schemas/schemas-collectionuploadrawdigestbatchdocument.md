@@ -14,9 +14,12 @@ One append-only bounded slice of a registered raw source digest sequence.
 ## External contract
 
 <a id="s-8c2dbc8625"></a>
-- <a id="s-383d2b173e"></a>`title`: CollectionUploadRawDigestBatchDocument
-- <a id="s-04494a1222"></a>`description`: One append-only bounded slice of a registered raw source digest sequence.
-- <a id="s-eb89fa257f"></a>`type`: object
+
+- <a id="s-eb89fa257f"></a>`type`: `"object"`
+- <a id="s-c809e782aa"></a>`additionalProperties`: `false`
+- <a id="s-04494a1222"></a>`description`: `"One append-only bounded slice of a registered raw source digest sequence."`
+- <a id="s-71fca8d150"></a>`required`: `["path","first_part","sha256s"]`
+- <a id="s-383d2b173e"></a>`title`: `"CollectionUploadRawDigestBatchDocument"`
 
 ### Fields
 
@@ -24,7 +27,7 @@ One append-only bounded slice of a registered raw source digest sequence.
 |---|---:|---|---|
 | <a id="s-65e7a28bb3"></a>`first_part` | yes | type="integer"; minimum=0 |  |
 | <a id="s-a0efbe2329"></a>`path` | yes | type="string" |  |
-| <a id="s-2c06441938"></a>`sha256s` | yes | type="array"; minItems=1; maxItems=1024; items=(type="string"; pattern="^[0-9a-f]{64}$"); additional keys=`x-riverhog-extent` |  |
+| <a id="s-2c06441938"></a>`sha256s` | yes | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$"); maxItems=1024; minItems=1; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"first_part","reason":"bounded-raw-digest-append"} |  |
 
 ### Progression, limits, and lifecycle
 
@@ -74,6 +77,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: b3e9c783bf5afec4ecfc01d05a15564e73cead5a37ad60e657d59c0a4e586f01 -->
@@ -117,3 +123,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

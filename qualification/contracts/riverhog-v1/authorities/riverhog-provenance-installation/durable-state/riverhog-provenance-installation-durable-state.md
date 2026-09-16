@@ -15,7 +15,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 <a id="s-4250c856b8"></a>
 
-- <a id="s-0ce078a71d"></a>`format`: riverhog-provenance-installation-id/v1
+
+
+| Field | Value |
+|---|---|
+| <a id="s-20c7aa4825"></a>`distribution` | `"riverhog-provenance"` |
+| <a id="s-0ce078a71d"></a>`format` | `"riverhog-provenance-installation-id/v1"` |
+| <a id="s-4b5b4b7d11"></a>`head` | `"v1"` |
+| <a id="s-d6a8830309"></a>`id` | `"riverhog-provenance-installation"` |
+| <a id="s-c1a86443e6"></a>`structure · encoding` | `"ascii"` |
+| <a id="s-9ed44fc954"></a>`structure · kind` | `"text-document"` |
+| <a id="s-4ab3cff37a"></a>`structure · line_count` | `1` |
+| <a id="s-f258d7bd79"></a>`structure · terminator` | `"LF"` |
+| <a id="s-fda4dadc04"></a>`structure · value · kind` | `"canonical-uuid-urn"` |
+| <a id="s-f8abb85d19"></a>`structure · value · pattern` | `"^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"` |
+| <a id="s-4ee2fb76e5"></a>`transition` | `"immutable-identity"` |
 
 ## Governing policies
 
@@ -38,6 +52,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/7`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -62,3 +79,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "transition": "immutable-identity"
 }
 ```
+
+</details>

@@ -27,22 +27,55 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-e70a4b1460"></a>
-- <a id="s-42d5ab1a2b"></a>`type`: object
 
-### Fields
+- <a id="s-42d5ab1a2b"></a>`type`: `"object"`
+- <a id="s-12d143e7aa"></a>`additionalProperties`: `false`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-844450f375"></a>`format` | no | type="string"; const="stove0-admissions/v1" |  |
-| <a id="s-4996621053"></a>`policies` | no | type="array"; maxItems=100; items=(#/$defs/AdmissionPolicy); additional keys=`x-riverhog-extent` |  |
+| <a id="s-844450f375"></a>`format` | no | type="string"; const="stove0-admissions/v1"; default="stove0-admissions/v1" |  |
+| <a id="s-4996621053"></a>`policies` | no | type="array"; default=[]; items=([AdmissionPolicy](#s-0d836ab3d0)); maxItems=100; x-riverhog-extent={"policy":"contract_max","reason":"bounded-deployment-admission-catalog"} |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-0d836ab3d0"></a>`AdmissionPolicy` | type="object"; fields=`automatic_preview`, `effective_intent`, `format`, `id`, `recipe_id`, `recipe_revision`, `recipe_sha256`, `required_tags`, `revision`; additional keys=`additionalProperties`, `required` |
-| <a id="s-faf360b591"></a>`CollectionTag` | type="string"; minLength=1; maxLength=65536; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
-| <a id="s-0f94759ee8"></a>`JsonValue` | empty object |
+- [AdmissionPolicy](#s-0d836ab3d0)
+- [CollectionTag](#s-faf360b591)
+- [JsonValue](#s-0f94759ee8)
+
+##### <a id="s-0d836ab3d0"></a>definition `AdmissionPolicy`
+
+- <a id="s-ffcf16cbe8"></a>`type`: `"object"`
+- <a id="s-76bb036182"></a>`additionalProperties`: `false`
+- <a id="s-c9e53d2402"></a>`required`: `["id","revision","required_tags","recipe_id","recipe_revision","recipe_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-50b9ab1501"></a>`automatic_preview` | no | type="string"; const="accept-ready"; default="accept-ready" |  |
+| <a id="s-f479d92581"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](#s-0f94759ee8)) |  |
+| <a id="s-770ef3f34e"></a>`format` | no | type="string"; const="stove0-admission-policy/v1"; default="stove0-admission-policy/v1" |  |
+| <a id="s-941227cf31"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-802dadf68b"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-200d5fef77"></a>`recipe_revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-a9687c9bfe"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-e8dc91bade"></a>`required_tags` | yes | type="array"; items=([CollectionTag](#s-faf360b591)); maxItems=100; minItems=1; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-classification-admission-predicate"} |  |
+| <a id="s-f83795db7e"></a>`revision` | yes | type="integer"; minimum=1 |  |
+
+##### <a id="s-faf360b591"></a>definition `CollectionTag`
+
+- <a id="s-3ce0f0179e"></a>`type`: `"string"`
+- <a id="s-d680904f0f"></a>`maxLength`: `65536`
+- <a id="s-c6d8b78acf"></a>`minLength`: `1`
+- <a id="s-daf761a541"></a>`x-riverhog-encoded-bytes-max`: `65536`
+- <a id="s-1108b0f664"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-collection-tag"}`
+- <a id="s-151b35fc57"></a>`x-unicode-normalization`: `"NFC"`
+
+##### <a id="s-0f94759ee8"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Maintained corroboration
 
@@ -72,6 +105,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.AdmissionCatalog`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -189,3 +225,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

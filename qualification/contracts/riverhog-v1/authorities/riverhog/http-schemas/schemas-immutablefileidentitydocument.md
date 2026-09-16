@@ -14,9 +14,12 @@ The exact path, length, and plaintext digest shared by file projections.
 ## External contract
 
 <a id="s-62880c732d"></a>
-- <a id="s-b6ebf3dc41"></a>`title`: ImmutableFileIdentityDocument
-- <a id="s-b9386adb4c"></a>`description`: The exact path, length, and plaintext digest shared by file projections.
-- <a id="s-0fbaa2401b"></a>`type`: object
+
+- <a id="s-0fbaa2401b"></a>`type`: `"object"`
+- <a id="s-bc8641ea45"></a>`additionalProperties`: `false`
+- <a id="s-b9386adb4c"></a>`description`: `"The exact path, length, and plaintext digest shared by file projections."`
+- <a id="s-7f5848f6cb"></a>`required`: `["path","bytes","sha256"]`
+- <a id="s-b6ebf3dc41"></a>`title`: `"ImmutableFileIdentityDocument"`
 
 ### Fields
 
@@ -74,6 +77,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 8c2805986926e29a6c406c80c224e37296c6bd56550bcb6c78776369f757a75c -->
@@ -106,3 +112,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

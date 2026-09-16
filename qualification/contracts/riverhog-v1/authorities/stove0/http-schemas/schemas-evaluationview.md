@@ -14,9 +14,12 @@ Operator projection of a materialized evaluation, not its identity.
 ## External contract
 
 <a id="s-230a00e666"></a>
-- <a id="s-4a4c8bc739"></a>`title`: EvaluationView
-- <a id="s-9abb8c3148"></a>`description`: Operator projection of a materialized evaluation, not its identity.
-- <a id="s-f311aef2ad"></a>`type`: object
+
+- <a id="s-f311aef2ad"></a>`type`: `"object"`
+- <a id="s-5d6a16f44f"></a>`additionalProperties`: `false`
+- <a id="s-9abb8c3148"></a>`description`: `"Operator projection of a materialized evaluation, not its identity."`
+- <a id="s-80ff4a235c"></a>`required`: `["evaluation_id","definition","phase","revision","children"]`
+- <a id="s-4a4c8bc739"></a>`title`: `"EvaluationView"`
 
 ### Fields
 
@@ -25,9 +28,9 @@ Operator projection of a materialized evaluation, not its identity.
 | <a id="s-f420db1841"></a>`children` | yes | type="array"; items=(#/components/schemas/EvaluationChildView) |  |
 | <a id="s-89f936baba"></a>`definition` | yes | #/components/schemas/EvaluationDefinition |  |
 | <a id="s-004a345cd7"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-55a799b1af"></a>`format` | no | type="string"; const="stove0-evaluation-view/v1" |  |
+| <a id="s-55a799b1af"></a>`format` | no | type="string"; const="stove0-evaluation-view/v1"; default="stove0-evaluation-view/v1" |  |
 | <a id="s-bc4fcb4992"></a>`phase` | yes | type="string"; enum=["planning","running","partially_complete","complete","failed","canceled"] |  |
-| <a id="s-ca1a0eb70f"></a>`reviews` | no | type="array"; items=(#/components/schemas/EvaluationReviewView) |  |
+| <a id="s-ca1a0eb70f"></a>`reviews` | no | type="array"; default=[]; items=(#/components/schemas/EvaluationReviewView) |  |
 | <a id="s-f04cdee067"></a>`revision` | yes | type="integer"; minimum=1 |  |
 
 ### Progression, limits, and lifecycle
@@ -80,6 +83,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/EvaluationView`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -148,3 +154,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

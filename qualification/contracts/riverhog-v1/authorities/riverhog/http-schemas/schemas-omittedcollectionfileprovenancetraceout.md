@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1144bae5ab"></a>
-- <a id="s-d1d7c3ef6b"></a>`title`: OmittedCollectionFileProvenanceTraceOut
-- <a id="s-6fbe1fb8ee"></a>`type`: object
+
+- <a id="s-6fbe1fb8ee"></a>`type`: `"object"`
+- <a id="s-b21f1c0b60"></a>`additionalProperties`: `false`
+- <a id="s-77c8d22c70"></a>`required`: `["page_size","next_page_token","items","path","bytes","sha256","collection_id","provenance"]`
+- <a id="s-d1d7c3ef6b"></a>`title`: `"OmittedCollectionFileProvenanceTraceOut"`
 
 ### Fields
 
@@ -25,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-cadd7e4202"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
 | <a id="s-fe03a35378"></a>`items` | yes | type="array"; items=(#/components/schemas/ProvenanceTraceItemOut) |  |
 | <a id="s-9eb0308058"></a>`journal` | no | type="null" |  |
-| <a id="s-17962107fc"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-17962107fc"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-adc43cc81f"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
 | <a id="s-4b217563fd"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
 | <a id="s-0e08484812"></a>`provenance` | yes | #/components/schemas/OmittedFileProvenanceBinding |  |
@@ -82,6 +85,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/OmittedCollectionFileProvenanceTraceOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -152,3 +158,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

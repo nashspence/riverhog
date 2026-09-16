@@ -27,9 +27,12 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-7b6db1bda1"></a>
-- <a id="s-cd26ee3d7e"></a>`type`: object
 
-### Fields
+- <a id="s-cd26ee3d7e"></a>`type`: `"object"`
+- <a id="s-743ce9e496"></a>`additionalProperties`: `false`
+- <a id="s-c87d3f05bc"></a>`required`: `["path","accepted_parts","expected_parts","complete"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
@@ -66,6 +69,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.CollectionUploadRawDigestProgressDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -109,3 +115,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

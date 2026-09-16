@@ -22,12 +22,12 @@ Search
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-fa52230b61"></a>`q` | query | no | not declared | anyOf=[BrowseQuery](../http-schemas/schemas-browsequery.md) \| type="null" |
+| <a id="s-fa52230b61"></a>`q` | query | no | not declared | anyOf=([BrowseQuery](../http-schemas/schemas-browsequery.md)) \| (type="null") |
 | <a id="s-0897c641b3"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100 |
-| <a id="s-ff9d1780de"></a>`page_token` | query | no | not declared | anyOf=[BrowsePageToken](../http-schemas/schemas-browsepagetoken.md) \| type="null" |
+| <a id="s-ff9d1780de"></a>`page_token` | query | no | not declared | anyOf=([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)) \| (type="null") |
 | <a id="s-a72f8fa8f6"></a>`sort` | query | no | `"file_ref"` | [SearchSort](../http-schemas/schemas-searchsort.md) |
 | <a id="s-4fd93c17d0"></a>`order` | query | no | `"asc"` | [SortOrder](../http-schemas/schemas-sortorder.md) |
-| <a id="s-fc2236a28f"></a>`collection` | query | no | not declared | anyOf=[CollectionIdParameter](../http-schemas/schemas-collectionidparameter.md) \| type="null" |
+| <a id="s-fc2236a28f"></a>`collection` | query | no | not declared | anyOf=([CollectionIdParameter](../http-schemas/schemas-collectionidparameter.md)) \| (type="null") |
 
 ### Responses
 
@@ -160,6 +160,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/riverhog/paths/~1v1~1search/get`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -338,3 +341,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   }
 }
 ```
+
+</details>

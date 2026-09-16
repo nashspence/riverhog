@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-bd0a2e9964"></a>
-- <a id="s-56ff6e4433"></a>`title`: JoinInputPlan
-- <a id="s-b61d278a28"></a>`type`: object
+
+- <a id="s-b61d278a28"></a>`type`: `"object"`
+- <a id="s-0b7fbddd1d"></a>`additionalProperties`: `false`
+- <a id="s-98a85d3ee8"></a>`required`: `["branch_id","settlement_sha256","derivation_sha256","output_collection","artifact_selection"]`
+- <a id="s-56ff6e4433"></a>`title`: `"JoinInputPlan"`
 
 ### Fields
 
@@ -25,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-fc60225524"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-abe5984f82"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-1543aa4be8"></a>`output_collection` | yes | #/components/schemas/CollectionRootRef |  |
-| <a id="s-54a858b5bb"></a>`producer_settlement_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-54a858b5bb"></a>`producer_settlement_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 | <a id="s-c0b94e9d50"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
@@ -69,6 +72,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/JoinInputPlan`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -123,3 +129,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,9 +14,12 @@ The immutable authority shared by every bounded inventory page.
 ## External contract
 
 <a id="s-da66940f25"></a>
-- <a id="s-820c2dd4c6"></a>`title`: PortableCollectionInventoryAuthority
-- <a id="s-3b186695d1"></a>`description`: The immutable authority shared by every bounded inventory page.
-- <a id="s-77dcd58f84"></a>`type`: object
+
+- <a id="s-77dcd58f84"></a>`type`: `"object"`
+- <a id="s-5d8c5c6c16"></a>`additionalProperties`: `false`
+- <a id="s-3b186695d1"></a>`description`: `"The immutable authority shared by every bounded inventory page."`
+- <a id="s-e397349425"></a>`required`: `["header","inventory_identity","file_count","file_bytes"]`
+- <a id="s-820c2dd4c6"></a>`title`: `"PortableCollectionInventoryAuthority"`
 
 ### Fields
 
@@ -66,6 +69,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 98ff10220bdc7d51fc7ea37e5234aa18214324afa3fdcb4155f079fed05bc4cb -->
@@ -104,3 +110,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

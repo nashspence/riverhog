@@ -27,15 +27,108 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-4421aea33c"></a>
-- <a id="s-a4e482d604"></a>`type`: array
 
-### Definitions
+- <a id="s-a4e482d604"></a>`type`: `"array"`
+- <a id="s-62df42db3d"></a>`items`: [ApplicationAccessGrant](#s-50674c05ad)
+- <a id="s-5e709c6a89"></a>`minItems`: `1`
+- <a id="s-3eddd136fb"></a>`uniqueItems`: `true`
 
-| Definition | Shape |
+##### All must match (`allOf`)
+
+| Rule | If schema matches | Then must match | Otherwise must match |
+|---|---|---|---|
+| <a id="s-a25051a2b0"></a>1 | contains=(type="object"; properties={permission: (const="*")}; required=["permission"]) | maxItems=1; x-riverhog-extent={"policy":"contract_max","reason":"wildcard-access-grant-is-exclusive"} | no additional constraint |
+
+##### Definitions
+
+- [ApplicationAccessGrant](#s-50674c05ad)
+- [ApplicationPermission](#s-af1e2efa80)
+- [ApplicationResource](#s-b149116dc2)
+
+##### <a id="s-50674c05ad"></a>definition `ApplicationAccessGrant`
+
+- <a id="s-27c3729410"></a>`type`: `"object"`
+- <a id="s-1be680e47c"></a>`additionalProperties`: `false`
+- <a id="s-59803e54c3"></a>`required`: `["permission"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2057073be0"></a>`permission` | yes | [ApplicationPermission](#s-af1e2efa80) |  |
+| <a id="s-f1eed063dd"></a>`resource` | no | [ApplicationResource](#s-b149116dc2); default="*" |  |
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
 |---|---|
-| <a id="s-50674c05ad"></a>`ApplicationAccessGrant` | type="object"; fields=`permission`, `resource`; allOf=oneOf=fields=`permission`, `resource`; additional keys=`required` \| fields=`permission`, `resource`; additional keys=`required` \| fields=`permission`, `resource`; additional keys=`required` \| fields=`permission`, `resource`; additional keys=`required`; additional keys=`additionalProperties`, `required` |
-| <a id="s-af1e2efa80"></a>`ApplicationPermission` | type="string"; enum=["*","catalog:read","retrieval:manage","collections:create","collection-descriptions:manage","collection-transforms:control","collection-transforms:execute","collection-tags:manage","collections:delete","archives:read","archives:manage","keys:manage","quotas:manage","events:read","events:read_all","provenance:read","provenance:export"] |
-| <a id="s-b149116dc2"></a>`ApplicationResource` | type="string"; pattern="^(?:\\*\|tag:.+\|collection:[1-9][0-9]*)$" |
+| 1 | [See definition `ApplicationAccessGrant` · `allOf` alternative 1](#s-8f5a7cd5d4) |
+
+##### <a id="s-af1e2efa80"></a>definition `ApplicationPermission`
+
+- <a id="s-dc3dc429b0"></a>`type`: `"string"`
+- <a id="s-595a73587e"></a>`enum`: `["*","catalog:read","retrieval:manage","collections:create","collection-descriptions:manage","collection-transforms:control","collection-transforms:execute","collection-tags:manage","collections:delete","archives:read","archives:manage","keys:manage","quotas:manage","events:read","events:read_all","provenance:read","provenance:export"]`
+
+##### <a id="s-b149116dc2"></a>definition `ApplicationResource`
+
+- <a id="s-5fc8dace7f"></a>`type`: `"string"`
+- <a id="s-0f8b1f7c74"></a>`pattern`: `"^(?:\\*\|tag:.+\|collection:[1-9][0-9]*)$"`
+
+##### <a id="s-8f5a7cd5d4"></a>definition `ApplicationAccessGrant` · `allOf` alternative 1
+
+
+###### Exactly one must match (`oneOf`)
+
+| Alternative | Schema |
+|---|---|
+| 1 | [See definition `ApplicationAccessGrant` · `allOf` alternative 1 · `oneOf` alternative 1](#s-dc9658a55b) |
+| 2 | [See definition `ApplicationAccessGrant` · `allOf` alternative 1 · `oneOf` alternative 2](#s-39646dacae) |
+| 3 | [See definition `ApplicationAccessGrant` · `allOf` alternative 1 · `oneOf` alternative 3](#s-3e48830d48) |
+| 4 | [See definition `ApplicationAccessGrant` · `allOf` alternative 1 · `oneOf` alternative 4](#s-869b61ca1f) |
+
+##### <a id="s-dc9658a55b"></a>definition `ApplicationAccessGrant` · `allOf` alternative 1 · `oneOf` alternative 1
+
+- <a id="s-4cebb0bd87"></a>`required`: `["permission"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6c68c860cd"></a>`permission` | yes | const="*" |  |
+| <a id="s-c136bdcc5f"></a>`resource` | no | const="*" |  |
+
+##### <a id="s-39646dacae"></a>definition `ApplicationAccessGrant` · `allOf` alternative 1 · `oneOf` alternative 2
+
+- <a id="s-275a011c79"></a>`required`: `["permission"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-47586effba"></a>`permission` | yes | const="collections:create" |  |
+| <a id="s-b9c1f3757a"></a>`resource` | no | type="string"; pattern="^(?:\\*\|tag:.+)$" |  |
+
+##### <a id="s-3e48830d48"></a>definition `ApplicationAccessGrant` · `allOf` alternative 1 · `oneOf` alternative 3
+
+- <a id="s-427cced805"></a>`required`: `["permission"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-43d0ada6b7"></a>`permission` | yes | enum=["archives:manage","archives:read","catalog:read","collection-descriptions:manage","collection-tags:manage","collections:delete","provenance:export","provenance:read","retrieval:manage"] |  |
+| <a id="s-6f1844bbc1"></a>`resource` | no | type="string"; pattern="^(?:\\*\|tag:.+\|collection:[1-9][0-9]*)$" |  |
+
+##### <a id="s-869b61ca1f"></a>definition `ApplicationAccessGrant` · `allOf` alternative 1 · `oneOf` alternative 4
+
+- <a id="s-bfb5fd30e2"></a>`required`: `["permission"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-18903ed3ee"></a>`permission` | yes | enum=["collection-transforms:control","collection-transforms:execute","events:read","events:read_all","keys:manage","quotas:manage"] |  |
+| <a id="s-48e34a6fb6"></a>`resource` | no | const="*" |  |
 
 ## Maintained corroboration
 
@@ -64,6 +157,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_application_access.ApplicationAccessGrantSet`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -234,3 +330,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

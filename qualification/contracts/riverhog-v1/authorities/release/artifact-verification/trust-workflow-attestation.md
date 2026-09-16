@@ -43,6 +43,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 3ab42dee1c319687f63ba561c0128796055de2d00f11396b3cec4e9928b53989 -->
@@ -53,3 +56,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "scheme": "github-oidc"
 }
 ```
+
+</details>

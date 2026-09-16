@@ -14,26 +14,58 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-ae1ba73678"></a>
-- <a id="s-c628be94cf"></a>`title`: WriteCompleteRequest
-- <a id="s-9b8bcb2574"></a>`type`: object
+
+- <a id="s-9b8bcb2574"></a>`type`: `"object"`
+- <a id="s-a008380d81"></a>`additionalProperties`: `false`
+- <a id="s-a8f407501e"></a>`required`: `["session","completion","expected_bytes","expected_content_type","required_identity_assertions","expected_placement"]`
+- <a id="s-c628be94cf"></a>`title`: `"WriteCompleteRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6c1d725696"></a>`completion` | yes | #/$defs/WriteCompletionAuthority |  |
+| <a id="s-6c1d725696"></a>`completion` | yes | [WriteCompletionAuthority](#s-2aa29473ed) |  |
 | <a id="s-3dd31e3915"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-918194abd0"></a>`expected_content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
+| <a id="s-918194abd0"></a>`expected_content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
 | <a id="s-41c9c882c5"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
-| <a id="s-3fe7699e11"></a>`required_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
-| <a id="s-b80752731f"></a>`session` | yes | #/$defs/WriteSession |  |
+| <a id="s-3fe7699e11"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
+| <a id="s-b80752731f"></a>`session` | yes | [WriteSession](#s-43526cbe13) |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-2aa29473ed"></a>`WriteCompletionAuthority` | type="object"; fields=`authority_token`, `segment_count`, `stored_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-43526cbe13"></a>`WriteSession` | type="object"; fields=`expected_bytes`, `object_path`, `write_token`; additional keys=`additionalProperties`, `required` |
+- [WriteCompletionAuthority](#s-2aa29473ed)
+- [WriteSession](#s-43526cbe13)
+
+### <a id="s-2aa29473ed"></a>definition `WriteCompletionAuthority`
+
+- <a id="s-3c3fa2eba9"></a>`type`: `"object"`
+- <a id="s-c1b61d9dac"></a>`additionalProperties`: `false`
+- <a id="s-b59a631e9d"></a>`description`: `"Adapter-issued terminal authority for one exact active-write state.\n\nConsumers echo the opaque token unchanged. It is neither a credential nor a\nbearer capability; completion remains independently authorized. Once an exact\nimmutable object is published, its completed-object identity supersedes this\ntransport authority for terminal reconciliation."`
+- <a id="s-1e75fe9c08"></a>`required`: `["segment_count","stored_bytes","authority_token"]`
+- <a id="s-fd5367c2a1"></a>`title`: `"WriteCompletionAuthority"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-924d57268f"></a>`authority_token` | yes | type="string"; maxLength=4000; minLength=1 | Bounded opaque adapter-issued authority for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged. |
+| <a id="s-f2d5b6894e"></a>`segment_count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-212652088c"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
+
+### <a id="s-43526cbe13"></a>definition `WriteSession`
+
+- <a id="s-b180909d70"></a>`type`: `"object"`
+- <a id="s-25059f0349"></a>`additionalProperties`: `false`
+- <a id="s-993867265f"></a>`required`: `["object_path","expected_bytes","write_token"]`
+- <a id="s-7562c3205c"></a>`title`: `"WriteSession"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2975343229"></a>`expected_bytes` | yes | type="integer"; minimum=1 | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
+| <a id="s-ff6e987a77"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-751c151e29"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1 | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
 
 ### Progression, limits, and lifecycle
 
@@ -44,9 +76,9 @@ Exact externally visible contract owned by this semantic dossier.
 | [field expected_content_type](#s-918194abd0) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
 | [field required_identity_assertions](#s-3fe7699e11) | `encoded-size · bytes · contract_max` | maximum=16384; reason="bounded-object-identity-assertion-envelope"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
 | [field required_identity_assertions](#s-3fe7699e11) | `cardinality · entries · contract_max` | maximum=64; reason="bounded-object-identity-assertion-envelope" |
-| <a id="s-924d57268f"></a>[definition WriteCompletionAuthority · field authority_token](#s-2aa29473ed) | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
-| <a id="s-ff6e987a77"></a>[definition WriteSession · field object_path](#s-43526cbe13) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
-| <a id="s-751c151e29"></a>[definition WriteSession · field write_token](#s-43526cbe13) | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
+| [definition WriteCompletionAuthority · field authority_token](#s-924d57268f) | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
+| [definition WriteSession · field object_path](#s-ff6e987a77) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| [definition WriteSession · field write_token](#s-751c151e29) | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
 
 ## Maintained corroboration
 
@@ -76,6 +108,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteCompleteRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -200,3 +235,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

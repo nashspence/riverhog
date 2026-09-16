@@ -14,19 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-dd95c26113"></a>
-- <a id="s-25f631f39f"></a>`title`: KeyDownloadQuotaListOut
-- <a id="s-3d13e04359"></a>`type`: object
+
+- <a id="s-3d13e04359"></a>`type`: `"object"`
+- <a id="s-4b20e77577"></a>`additionalProperties`: `false`
+- <a id="s-267c026be0"></a>`required`: `["page_size","next_page_token","sort","order","query","app","active","quotas"]`
+- <a id="s-25f631f39f"></a>`title`: `"KeyDownloadQuotaListOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2bd88bec1e"></a>`active` | yes | anyOf=type="boolean" \| type="null" |  |
-| <a id="s-61d180626b"></a>`app` | yes | anyOf=#/components/schemas/ApplicationName \| type="null" |  |
-| <a id="s-185405e83d"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-2bd88bec1e"></a>`active` | yes | anyOf=(type="boolean") \| (type="null") |  |
+| <a id="s-61d180626b"></a>`app` | yes | anyOf=(#/components/schemas/ApplicationName) \| (type="null") |  |
+| <a id="s-185405e83d"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-fafda38a69"></a>`order` | yes | #/components/schemas/SortOrder |  |
 | <a id="s-ea9fc70dca"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-4cccd8c9cf"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-4cccd8c9cf"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-3326d2ce08"></a>`quotas` | yes | type="array"; items=(#/components/schemas/KeyDownloadQuotaOut) |  |
 | <a id="s-1460139393"></a>`sort` | yes | #/components/schemas/DownloadQuotaSort |  |
 
@@ -87,6 +90,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -172,3 +178,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

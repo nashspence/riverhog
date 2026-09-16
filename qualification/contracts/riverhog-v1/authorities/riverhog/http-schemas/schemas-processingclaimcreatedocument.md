@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-305a17ea50"></a>
-- <a id="s-50eec0ea4e"></a>`title`: ProcessingClaimCreateDocument
-- <a id="s-9c4f4f21f4"></a>`type`: object
+
+- <a id="s-9c4f4f21f4"></a>`type`: `"object"`
+- <a id="s-82c20e3f62"></a>`additionalProperties`: `false`
+- <a id="s-23ed3ed5a6"></a>`required`: `["work_id","work_document","work_document_sha256"]`
+- <a id="s-50eec0ea4e"></a>`title`: `"ProcessingClaimCreateDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3601c46110"></a>`lease_seconds` | no | type="integer"; minimum=30; maximum=86400 |  |
-| <a id="s-227587b793"></a>`purpose` | no | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-fcd9a436ed"></a>`work_document` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| <a id="s-3601c46110"></a>`lease_seconds` | no | type="integer"; minimum=30; maximum=86400; default=1800 |  |
+| <a id="s-227587b793"></a>`purpose` | no | type="string"; default="collection-work/v1"; maxLength=160; minLength=1 |  |
+| <a id="s-fcd9a436ed"></a>`work_document` | yes | type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4194304; x-riverhog-extent={"policy":"contract_max","reason":"bounded-work-document-envelope"} |  |
 | <a id="s-8334d12b08"></a>`work_document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-935ed0da9d"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
@@ -70,6 +73,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimCreateDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -123,3 +129,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

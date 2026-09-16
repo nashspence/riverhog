@@ -45,7 +45,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-a88a58b788"></a>`completed` | <a id="s-27bddeb10f"></a>`{"kind":"command-completed"}` | <a id="s-ad38c1ecbd"></a>`0` | <a id="s-d1c0d802ff"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-local-sync-result/v1](#s-d1c0d802ff) | <a id="s-6a0c8e1296"></a>all: `empty` |
+| <a id="s-a88a58b788"></a>`completed` | <a id="s-27bddeb10f"></a>`{"kind":"command-completed"}` | <a id="s-ad38c1ecbd"></a>`0` | <a id="s-d1c0d802ff"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-local-sync-result/v1](#s-d7b67dfc92) | <a id="s-6a0c8e1296"></a>all: `empty` |
 
 #### Failure outcomes
 
@@ -53,6 +53,30 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|---|
 | <a id="s-2c68626b32"></a>`usage` | <a id="s-a7305c6269"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-6122ac8b73"></a>`2` | <a id="s-969d817e85"></a>all: `empty` | <a id="s-f30185b3b5"></a>all: `noncontractual-usage-diagnostic` |
 | <a id="s-306e62a3ab"></a>`operational` | <a id="s-1a8da6175b"></a>`{"kind":"application-error"}` | <a id="s-4ef01f8631"></a>`1` | <a id="s-5cdfee6996"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-dc0e16944e"></a>human: `noncontractual-diagnostic`; json: `empty` |
+
+### Local structured outputs
+
+
+#### <a id="s-d7b67dfc92"></a>`piggity-local-sync-result/v1`
+
+Applies to: completed · stdout (json).
+
+<a id="s-ddca095d04"></a>
+
+- <a id="s-22047c161e"></a>`type`: `"object"`
+- <a id="s-80d87dc9e2"></a>`additionalProperties`: `false`
+- <a id="s-d6103101b8"></a>`required`: `["status","materialized_files"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-0e02208654"></a>`materialized_files` | yes | type="integer"; minimum=0 |  |
+| <a id="s-f861347c2e"></a>`restore_policy` | no | enum=["allow","never"] |  |
+| <a id="s-d64ee0a41d"></a>`retrieval` | no | type="object" |  |
+| <a id="s-7ca6d2321f"></a>`retrieval_id` | no | type="string" |  |
+| <a id="s-e08d0c1d13"></a>`status` | yes | enum=["requested","ready","cache-miss","current","materialized"] |  |
+| <a id="s-5a160dda3d"></a>`unavailable_files` | no | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -122,6 +146,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 - `/external_contract/cli/piggity/commands/local/commands/sync/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -398,3 +425,5 @@ false
   }
 ]
 ```
+
+</details>

@@ -14,17 +14,20 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8f8465c766"></a>
-- <a id="s-32226824e2"></a>`title`: ArchiveStoreListOut
-- <a id="s-7963ba868e"></a>`type`: object
+
+- <a id="s-7963ba868e"></a>`type`: `"object"`
+- <a id="s-ba77ddafb4"></a>`additionalProperties`: `false`
+- <a id="s-3624c7bd0c"></a>`required`: `["page_size","next_page_token","sort","order","query","stores"]`
+- <a id="s-32226824e2"></a>`title`: `"ArchiveStoreListOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d9819f2441"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-d9819f2441"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-9769555320"></a>`order` | yes | #/components/schemas/SortOrder |  |
 | <a id="s-5ff41a14f1"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-3f9aa6ec70"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-3f9aa6ec70"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-a6a74ff330"></a>`sort` | yes | #/components/schemas/ArchiveStoreSort |  |
 | <a id="s-cfd4a736fc"></a>`stores` | yes | type="array"; items=(#/components/schemas/ArchiveStoreOut) |  |
 
@@ -84,6 +87,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/ArchiveStoreListOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -146,3 +152,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

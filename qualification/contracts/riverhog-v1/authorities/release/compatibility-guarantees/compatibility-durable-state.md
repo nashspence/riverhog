@@ -13,8 +13,10 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-ac3d88d871"></a>
-- Shape: "Every later v1 release applies each durable-state authority's declared transition rule to state created by every earlier v1 release; this does not promise downgrade support or earlier software reading later state."
+
+| Field | Value |
+|---|---|
+| <a id="s-ac3d88d871"></a>`durable_state` | `"Every later v1 release applies each durable-state authority's declared transition rule to state created by every earlier v1 release; this does not promise downgrade support or earlier software reading later state."` |
 
 ## Governing policies
 
@@ -39,6 +41,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 903340d7ff46140702f3c53400b8444ca984646ea458ebda76acc9b5025a4c20 -->
@@ -46,3 +51,5 @@ The following JSON is the complete value owned at each machine-authority pointer
 ```json
 "Every later v1 release applies each durable-state authority's declared transition rule to state created by every earlier v1 release; this does not promise downgrade support or earlier software reading later state."
 ```
+
+</details>

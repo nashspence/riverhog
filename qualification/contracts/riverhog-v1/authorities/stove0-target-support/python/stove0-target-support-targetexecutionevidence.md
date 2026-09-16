@@ -27,23 +27,28 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-a380b5eef6"></a>
-- <a id="s-4cb65104b5"></a>`type`: object
 
-### Fields
+- <a id="s-4cb65104b5"></a>`type`: `"object"`
+- <a id="s-ad9445b7cd"></a>`additionalProperties`: `false`
+- <a id="s-b1cf935c67"></a>`required`: `["target_contract_sha256","operation_contract_sha256","plan_sha256","execution_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-7991237fdd"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-43cd25b29d"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-3733610925"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-2f68b966a2"></a>`runtime` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-2f68b966a2"></a>`runtime` | no | type="object"; additionalProperties=([JsonValue](#s-dbfd32b71e)) |  |
 | <a id="s-2b1d3bf079"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-dbfd32b71e"></a>`JsonValue` | empty object |
+- [JsonValue](#s-dbfd32b71e)
+
+##### <a id="s-dbfd32b71e"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Governing policies
 
@@ -66,6 +71,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_support.TargetExecutionEvidence`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -120,3 +128,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

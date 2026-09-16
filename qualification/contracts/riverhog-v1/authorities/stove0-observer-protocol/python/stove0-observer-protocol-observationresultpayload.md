@@ -27,38 +27,139 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-021ce1ada6"></a>
-- <a id="s-deedd3f39f"></a>`type`: object
 
-### Fields
+- <a id="s-deedd3f39f"></a>`type`: `"object"`
+- <a id="s-d1f8da531d"></a>`additionalProperties`: `false`
+- <a id="s-49d320f2f3"></a>`required`: `["request_id","state","observer","observer_contract_id","observer_contract_sha256","subjects"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4e055628c3"></a>`execution_evidence` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-5aa0ee3812"></a>`facts` | no | anyOf=type="object"; additional keys=`additionalProperties` \| type="null" |  |
-| <a id="s-b539e9f399"></a>`facts_schema` | no | anyOf=#/$defs/JsonSchemaDocument \| type="null" |  |
-| <a id="s-1b672888eb"></a>`facts_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-5e22481dcd"></a>`failure` | no | anyOf=#/$defs/ObservationFailure \| type="null" |  |
-| <a id="s-707b4adcd5"></a>`format` | no | type="string"; const="stove0-observation-result/v1" |  |
-| <a id="s-fd6bca3715"></a>`inapplicable` | no | anyOf=#/$defs/ObservationInapplicable \| type="null" |  |
-| <a id="s-f64abe282d"></a>`observer` | yes | #/$defs/ObserverImplementation |  |
+| <a id="s-4e055628c3"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-f9aa3a9c3c)) |  |
+| <a id="s-5aa0ee3812"></a>`facts` | no | anyOf=(type="object"; additionalProperties=([JsonValue](#s-f9aa3a9c3c))) \| (type="null"); default=null |  |
+| <a id="s-b539e9f399"></a>`facts_schema` | no | anyOf=([JsonSchemaDocument](#s-df19d8c006)) \| (type="null"); default=null |  |
+| <a id="s-1b672888eb"></a>`facts_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-5e22481dcd"></a>`failure` | no | anyOf=([ObservationFailure](#s-1bd4e79cf5)) \| (type="null"); default=null |  |
+| <a id="s-707b4adcd5"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1" |  |
+| <a id="s-fd6bca3715"></a>`inapplicable` | no | anyOf=([ObservationInapplicable](#s-f8f7672fdd)) \| (type="null"); default=null |  |
+| <a id="s-f64abe282d"></a>`observer` | yes | [ObserverImplementation](#s-4e82d6a5bd) |  |
 | <a id="s-6bcb9af691"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-6efb5f5caa"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-95c5a696f4"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-ae1397f173"></a>`state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"] |  |
-| <a id="s-31e85fc077"></a>`subjects` | yes | type="array"; minItems=1; items=(#/$defs/ArtifactSubject) |  |
+| <a id="s-31e85fc077"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-c7c51d960e)); minItems=1 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-c7c51d960e"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e17cf34172"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-c67ac7bc46"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
-| <a id="s-df19d8c006"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-f9aa3a9c3c"></a>`JsonValue` | empty object |
-| <a id="s-1bd4e79cf5"></a>`ObservationFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
-| <a id="s-f8f7672fdd"></a>`ObservationInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
-| <a id="s-4e82d6a5bd"></a>`ObserverImplementation` | type="object"; fields=`descriptor_sha256`, `id`, `protocol`, `source_revision`, `version`; additional keys=`additionalProperties`, `required` |
+- [ArtifactSubject](#s-c7c51d960e)
+- [CollectionId](#s-e17cf34172)
+- [CollectionRootRef](#s-c67ac7bc46)
+- [JsonSchemaDocument](#s-df19d8c006)
+- [JsonValue](#s-f9aa3a9c3c)
+- [ObservationFailure](#s-1bd4e79cf5)
+- [ObservationInapplicable](#s-f8f7672fdd)
+- [ObserverImplementation](#s-4e82d6a5bd)
+
+##### <a id="s-c7c51d960e"></a>definition `ArtifactSubject`
+
+- <a id="s-7b64ef5776"></a>`type`: `"object"`
+- <a id="s-897a2649e4"></a>`additionalProperties`: `false`
+- <a id="s-b9512086e9"></a>`required`: `["id","role","collection","path","bytes","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-244a76f0b1"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-2a4f286294"></a>`collection` | yes | [CollectionRootRef](#s-c67ac7bc46) |  |
+| <a id="s-8509c8632b"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-09b4fb06ce"></a>`media_type` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-603bc219b6"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-324a557d5b"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-7b23c8a6d6"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-e17cf34172"></a>definition `CollectionId`
+
+- <a id="s-6a46d09b74"></a>`type`: `"integer"`
+- <a id="s-1bff6a8988"></a>`minimum`: `1`
+
+##### <a id="s-c67ac7bc46"></a>definition `CollectionRootRef`
+
+- <a id="s-5232a4038b"></a>`type`: `"object"`
+- <a id="s-c027c19c85"></a>`additionalProperties`: `false`
+- <a id="s-a3bb2d3d46"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7d00d2b726"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f81163f616"></a>`collection_id` | yes | [CollectionId](#s-e17cf34172) |  |
+| <a id="s-be91c07d91"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-df19d8c006"></a>definition `JsonSchemaDocument`
+
+- <a id="s-541e3d1082"></a>`type`: `"object"`
+- <a id="s-11b917f5fb"></a>`additionalProperties`: `false`
+- <a id="s-1e4688c1a5"></a>`required`: `["id","sha256","schema"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-367f44981f"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-9b126d5dc9"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-2be7e9e7e5"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-9a79b90656"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-f9aa3a9c3c)) |  |
+| <a id="s-e0cfb352bc"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-f9aa3a9c3c"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-1bd4e79cf5"></a>definition `ObservationFailure`
+
+- <a id="s-5f4129cfe0"></a>`type`: `"object"`
+- <a id="s-7489eeba6d"></a>`additionalProperties`: `false`
+- <a id="s-d7991f6bfd"></a>`required`: `["code","message","retryable"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4364a5c8a5"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-769b625f8a"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-9ba4b9809c"></a>`retryable` | yes | type="boolean" |  |
+
+##### <a id="s-f8f7672fdd"></a>definition `ObservationInapplicable`
+
+- <a id="s-e59e167f90"></a>`type`: `"object"`
+- <a id="s-db441c0d49"></a>`additionalProperties`: `false`
+- <a id="s-1bd724e771"></a>`required`: `["code","message"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6c5717b5ad"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-1739e8ed08"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+
+##### <a id="s-4e82d6a5bd"></a>definition `ObserverImplementation`
+
+- <a id="s-fdc8a703b1"></a>`type`: `"object"`
+- <a id="s-3a80ce9645"></a>`additionalProperties`: `false`
+- <a id="s-8101cf13da"></a>`required`: `["id","version","source_revision","descriptor_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f3f9b0aef2"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-0f8e2cf277"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-5c2119c4b4"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1"; default="stove0-content-observer/v1" |  |
+| <a id="s-3234dbd1af"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
+| <a id="s-9ed856eed2"></a>`version` | yes | type="string"; maxLength=120; minLength=1 |  |
 
 ## Maintained corroboration
 
@@ -88,6 +189,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_observer_protocol.ObservationResultPayload`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -412,3 +516,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

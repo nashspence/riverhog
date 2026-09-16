@@ -14,7 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-fc3b295a10"></a>
-- <a id="s-36f3bbe4b0"></a>`type`: string
+
+- <a id="s-36f3bbe4b0"></a>`type`: `"string"`
+- <a id="s-97f89b9bdb"></a>`enum`: `["asc","desc"]`
 
 ## Governing policies
 
@@ -38,6 +40,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 9b8522343e904a6908f65ec7db95490a63e30e948de8cb97c708687370b0bb03 -->
@@ -51,3 +56,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "string"
 }
 ```
+
+</details>

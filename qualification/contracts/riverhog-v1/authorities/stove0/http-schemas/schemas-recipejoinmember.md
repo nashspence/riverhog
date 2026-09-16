@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1efde80ce1"></a>
-- <a id="s-c1be9911ab"></a>`title`: RecipeJoinMember
-- <a id="s-c26664d405"></a>`type`: object
+
+- <a id="s-c26664d405"></a>`type`: `"object"`
+- <a id="s-211b6193f4"></a>`additionalProperties`: `false`
+- <a id="s-6085e18f4d"></a>`required`: `["branch_id","output_roles"]`
+- <a id="s-c1be9911ab"></a>`title`: `"RecipeJoinMember"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-3caeec9b31"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-6597c1faca"></a>`output_roles` | yes | type="array"; minItems=1; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| <a id="s-6597c1faca"></a>`output_roles` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -57,6 +60,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: f96f0cc79aff67369a99fa4bb8d4b8f29e89bdd258e990af58d3e937574ad43f -->
@@ -88,3 +94,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

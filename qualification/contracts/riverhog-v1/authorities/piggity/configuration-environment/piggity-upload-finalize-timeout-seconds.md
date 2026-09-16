@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b7a4f6f148"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-7590734788"></a>`consumers` | ["piggity"] |
-| <a id="s-d8ebd849d8"></a>`default_expressions` | ["unset"] |
-| <a id="s-a600f51a3c"></a>`id` | "piggity:environment:PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS" |
-| <a id="s-81d1d3813e"></a>`input_shape` | "environment-string" |
-| <a id="s-727a81b3ac"></a>`name` | "PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS" |
-| <a id="s-10a1945249"></a>`owner` | "piggity" |
+| <a id="s-7590734788"></a>`consumers` | `["piggity"]` |
+| <a id="s-d8ebd849d8"></a>`default_expressions` | `["unset"]` |
+| <a id="s-a600f51a3c"></a>`id` | `"piggity:environment:PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS"` |
+| <a id="s-81d1d3813e"></a>`input_shape` | `"environment-string"` |
+| <a id="s-727a81b3ac"></a>`name` | `"PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS"` |
+| <a id="s-10a1945249"></a>`owner` | `"piggity"` |
 
 ### Progression, limits, and lifecycle
 
@@ -64,6 +65,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: c4f5569d2f1b05e173bfc8eb4a04c5ca03b530c5c9a3af4cd89174590464822e -->
@@ -82,3 +86,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "piggity"
 }
 ```
+
+</details>

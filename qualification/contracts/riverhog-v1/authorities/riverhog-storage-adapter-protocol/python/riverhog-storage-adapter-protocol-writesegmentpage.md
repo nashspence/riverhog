@@ -27,25 +27,69 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-1247f2a421"></a>
-- <a id="s-4fd02c051b"></a>`type`: object
 
-### Fields
+- <a id="s-4fd02c051b"></a>`type`: `"object"`
+- <a id="s-7e117267ac"></a>`additionalProperties`: `false`
+- <a id="s-7610aac3b8"></a>`required`: `["session","traversal_token"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-00b7280fd0"></a>`completion` | no | anyOf=#/$defs/WriteCompletionAuthority \| type="null" |  |
-| <a id="s-9930afc595"></a>`next_after_number` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
-| <a id="s-c7cb242b01"></a>`segments` | no | type="array"; maxItems=128; items=(#/$defs/WriteSegmentReceipt); additional keys=`x-riverhog-extent` |  |
-| <a id="s-19c41d3e62"></a>`session` | yes | #/$defs/WriteSession |  |
-| <a id="s-a60eb0650f"></a>`traversal_token` | yes | type="string"; minLength=1; maxLength=4000 |  |
+| <a id="s-00b7280fd0"></a>`completion` | no | anyOf=([WriteCompletionAuthority](#s-bdd5ecbe60)) \| (type="null"); default=null |  |
+| <a id="s-9930afc595"></a>`next_after_number` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
+| <a id="s-c7cb242b01"></a>`segments` | no | type="array"; default=[]; items=([WriteSegmentReceipt](#s-f1c59d947a)); maxItems=128; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"exact-adapter-write-traversal","reason":"bounded-storage-write-segment-page"} |  |
+| <a id="s-19c41d3e62"></a>`session` | yes | [WriteSession](#s-3303effcc4) |  |
+| <a id="s-a60eb0650f"></a>`traversal_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-bdd5ecbe60"></a>`WriteCompletionAuthority` | type="object"; fields=`authority_token`, `segment_count`, `stored_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-f1c59d947a"></a>`WriteSegmentReceipt` | type="object"; fields=`number`, `segment_token`, `stored_bytes`, `stored_sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-3303effcc4"></a>`WriteSession` | type="object"; fields=`expected_bytes`, `object_path`, `write_token`; additional keys=`additionalProperties`, `required` |
+- [WriteCompletionAuthority](#s-bdd5ecbe60)
+- [WriteSegmentReceipt](#s-f1c59d947a)
+- [WriteSession](#s-3303effcc4)
+
+##### <a id="s-bdd5ecbe60"></a>definition `WriteCompletionAuthority`
+
+- <a id="s-6445d09d2a"></a>`type`: `"object"`
+- <a id="s-deab48a17a"></a>`additionalProperties`: `false`
+- <a id="s-4c7ac3b353"></a>`required`: `["segment_count","stored_bytes","authority_token"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c412c0cfe6"></a>`authority_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
+| <a id="s-93343dc83f"></a>`segment_count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-45b6a6bed2"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
+
+##### <a id="s-f1c59d947a"></a>definition `WriteSegmentReceipt`
+
+- <a id="s-c9dfeee29d"></a>`type`: `"object"`
+- <a id="s-3b19b017a2"></a>`additionalProperties`: `false`
+- <a id="s-e8511a7384"></a>`required`: `["number","segment_token","stored_bytes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-04a6cbda43"></a>`number` | yes | type="integer"; minimum=1 |  |
+| <a id="s-16e346847c"></a>`segment_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
+| <a id="s-5d370e6e2f"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-ed65f66ca2"></a>`stored_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+
+##### <a id="s-3303effcc4"></a>definition `WriteSession`
+
+- <a id="s-f65b861220"></a>`type`: `"object"`
+- <a id="s-99d200198a"></a>`additionalProperties`: `false`
+- <a id="s-f2f1288029"></a>`required`: `["object_path","expected_bytes","write_token"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3d82c6f0a9"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-f80ef4dafd"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-d40cc4ae9e"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
 
 ## Maintained corroboration
 
@@ -75,6 +119,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.WriteSegmentPage`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -233,3 +280,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

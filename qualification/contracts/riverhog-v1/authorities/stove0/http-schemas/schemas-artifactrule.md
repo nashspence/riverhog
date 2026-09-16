@@ -14,17 +14,19 @@ Classify one path; first matching rule wins.
 ## External contract
 
 <a id="s-ab5708cfcb"></a>
-- <a id="s-49029b7615"></a>`title`: ArtifactRule
-- <a id="s-edfa6cde0a"></a>`description`: Classify one path; first matching rule wins.
-- <a id="s-a8acaa94a4"></a>`type`: object
+
+- <a id="s-a8acaa94a4"></a>`type`: `"object"`
+- <a id="s-46eaa78b4a"></a>`additionalProperties`: `false`
+- <a id="s-edfa6cde0a"></a>`description`: `"Classify one path; first matching rule wins."`
+- <a id="s-49029b7615"></a>`title`: `"ArtifactRule"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6f5087153a"></a>`glob` | no | type="string" |  |
-| <a id="s-14f9256789"></a>`media_type` | no | anyOf=type="string" \| type="null" |  |
-| <a id="s-041330fca4"></a>`role` | no | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-6f5087153a"></a>`glob` | no | type="string"; default="*" |  |
+| <a id="s-14f9256789"></a>`media_type` | no | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-041330fca4"></a>`role` | no | type="string"; default="stove0.source/v1"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ## Governing policies
 
@@ -47,6 +49,9 @@ Classify one path; first matching rule wins.
 - `/external_contract/http_openapi/stove0/components/schemas/ArtifactRule`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -84,3 +89,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

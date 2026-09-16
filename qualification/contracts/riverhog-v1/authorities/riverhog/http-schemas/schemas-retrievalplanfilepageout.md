@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-35d2ab1520"></a>
-- <a id="s-9d3361e816"></a>`title`: RetrievalPlanFilePageOut
-- <a id="s-ed412b4683"></a>`type`: object
+
+- <a id="s-ed412b4683"></a>`type`: `"object"`
+- <a id="s-16dde3f70b"></a>`additionalProperties`: `false`
+- <a id="s-e44c8a2127"></a>`required`: `["format","plan_id","etag","start_ordinal","complete","files"]`
+- <a id="s-9d3361e816"></a>`title`: `"RetrievalPlanFilePageOut"`
 
 ### Fields
 
@@ -23,9 +26,9 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-328cd49682"></a>`complete` | yes | type="boolean" |  |
 | <a id="s-02762d6e31"></a>`etag` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-20cf25d13a"></a>`files` | yes | type="array"; maxItems=100; items=(#/components/schemas/RetrievalPlanFileOut) |  |
+| <a id="s-20cf25d13a"></a>`files` | yes | type="array"; items=(#/components/schemas/RetrievalPlanFileOut); maxItems=100 |  |
 | <a id="s-3f4953179c"></a>`format` | yes | type="string"; const="riverhog-retrieval-plan-files/v1" |  |
-| <a id="s-b41186f25a"></a>`next_ordinal` | no | anyOf=type="integer"; minimum=1; maximum=10000 \| type="null" |  |
+| <a id="s-b41186f25a"></a>`next_ordinal` | no | anyOf=(type="integer"; minimum=1; maximum=10000) \| (type="null") |  |
 | <a id="s-a644293808"></a>`plan_id` | yes | type="string" |  |
 | <a id="s-8dc3c38e1e"></a>`start_ordinal` | yes | type="integer"; minimum=0; maximum=10000 |  |
 
@@ -82,6 +85,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/RetrievalPlanFilePageOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -149,3 +155,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

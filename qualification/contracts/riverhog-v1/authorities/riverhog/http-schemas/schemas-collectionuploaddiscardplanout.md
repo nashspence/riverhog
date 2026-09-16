@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-6ed9cd7952"></a>
-- <a id="s-b48465ba3f"></a>`title`: CollectionUploadDiscardPlanOut
-- <a id="s-605f5c9eb2"></a>`type`: object
+
+- <a id="s-605f5c9eb2"></a>`type`: `"object"`
+- <a id="s-876db65395"></a>`additionalProperties`: `false`
+- <a id="s-e4db16fdde"></a>`required`: `["status","collection_id","warning","expires_at","challenge","state","files","bytes","custody","archive_objects","blockers"]`
+- <a id="s-b48465ba3f"></a>`title`: `"CollectionUploadDiscardPlanOut"`
 
 ### Fields
 
@@ -24,14 +27,20 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-8d03a26312"></a>`archive_objects` | yes | type="integer" |  |
 | <a id="s-71e5eff23e"></a>`blockers` | yes | type="array"; items=(type="string") |  |
 | <a id="s-54499c7b79"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-7d087eddae"></a>`challenge` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-7d087eddae"></a>`challenge` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-bb62e75af0"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-ff4cd61355"></a>`custody` | yes | oneOf=#/components/schemas/PendingCollectionUploadCustodyOut \| #/components/schemas/CompleteCollectionUploadCustodyOut; additional keys=`discriminator` |  |
+| <a id="s-ff4cd61355"></a>`custody` | yes | discriminator={"mapping":{"complete":"#/components/schemas/CompleteCollectionUploadCustodyOut","pending":"#/components/schemas/PendingCollectionUploadCustodyOut"},"propertyName":"state"}; oneOf=(#/components/schemas/PendingCollectionUploadCustodyOut) \| (#/components/schemas/CompleteCollectionUploadCustodyOut) |  |
 | <a id="s-4240669b0c"></a>`expires_at` | yes | type="string" |  |
 | <a id="s-c89b6e31a6"></a>`files` | yes | type="integer"; minimum=0 |  |
 | <a id="s-f06ccf51a0"></a>`state` | yes | type="string"; enum=["open","closing","uploading","finalizing","orphaned","discarding"] |  |
 | <a id="s-e9e793215e"></a>`status` | yes | type="string"; enum=["ready","blocked"] |  |
 | <a id="s-30f2c19b26"></a>`warning` | yes | type="string" |  |
+
+### All must match (`allOf`)
+
+| Rule | If schema matches | Then must match | Otherwise must match |
+|---|---|---|---|
+| <a id="s-d02e3dda7b"></a>1 | properties={state: (const="finalizing")}; required=["state"] | properties={custody: (properties={state: (const="complete")}; required=["state"])} | no additional constraint |
 
 ### Progression, limits, and lifecycle
 
@@ -75,6 +84,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadDiscardPlanOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -211,3 +223,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

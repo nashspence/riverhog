@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-787fd4b453"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-5f53685028"></a>`consumers` | ["stove0-opus-target"] |
-| <a id="s-9f8a9d0439"></a>`default_expressions` | ["''"] |
-| <a id="s-8cd9a2b240"></a>`id` | "stove0-opus-target:environment:STOVE0_OPUS_TARGET_IMAGE_DIGEST" |
-| <a id="s-46621afb01"></a>`input_shape` | "environment-string" |
-| <a id="s-18c3d1d37b"></a>`name` | "STOVE0_OPUS_TARGET_IMAGE_DIGEST" |
-| <a id="s-7047319589"></a>`owner` | "stove0-opus-target" |
+| <a id="s-5f53685028"></a>`consumers` | `["stove0-opus-target"]` |
+| <a id="s-9f8a9d0439"></a>`default_expressions` | `["''"]` |
+| <a id="s-8cd9a2b240"></a>`id` | `"stove0-opus-target:environment:STOVE0_OPUS_TARGET_IMAGE_DIGEST"` |
+| <a id="s-46621afb01"></a>`input_shape` | `"environment-string"` |
+| <a id="s-18c3d1d37b"></a>`name` | `"STOVE0_OPUS_TARGET_IMAGE_DIGEST"` |
+| <a id="s-7047319589"></a>`owner` | `"stove0-opus-target"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: e37a482f03567d25cf347b1a02a0d1c10b0344434312cfae063b0cd945fa9172 -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "stove0-opus-target"
 }
 ```
+
+</details>

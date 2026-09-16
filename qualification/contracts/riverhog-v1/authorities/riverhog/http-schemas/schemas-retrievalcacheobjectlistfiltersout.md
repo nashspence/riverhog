@@ -14,20 +14,23 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8d691b6be5"></a>
-- <a id="s-0c47a50a37"></a>`title`: RetrievalCacheObjectListFiltersOut
-- <a id="s-ad2805047f"></a>`type`: object
+
+- <a id="s-ad2805047f"></a>`type`: `"object"`
+- <a id="s-f9b9ece19f"></a>`additionalProperties`: `false`
+- <a id="s-101127781c"></a>`required`: `["collection_id","source_store","cache_store","state","protection","expires_before","expires_after"]`
+- <a id="s-0c47a50a37"></a>`title`: `"RetrievalCacheObjectListFiltersOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-dd585de032"></a>`cache_store` | yes | anyOf=#/components/schemas/RetrievalCacheStoreName \| type="null" |  |
-| <a id="s-ff7436da97"></a>`collection_id` | yes | anyOf=#/components/schemas/CollectionId \| type="null" |  |
-| <a id="s-1f1860910a"></a>`expires_after` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-3207f9d87d"></a>`expires_before` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-092fcd3fb7"></a>`protection` | yes | anyOf=#/components/schemas/RetrievalCacheProtection \| type="null" |  |
-| <a id="s-b1c9c2dae1"></a>`source_store` | yes | anyOf=#/components/schemas/ArchiveStoreName \| type="null" |  |
-| <a id="s-31829d68f2"></a>`state` | yes | anyOf=#/components/schemas/RetrievalCacheState \| type="null" |  |
+| <a id="s-dd585de032"></a>`cache_store` | yes | anyOf=(#/components/schemas/RetrievalCacheStoreName) \| (type="null") |  |
+| <a id="s-ff7436da97"></a>`collection_id` | yes | anyOf=(#/components/schemas/CollectionId) \| (type="null") |  |
+| <a id="s-1f1860910a"></a>`expires_after` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-3207f9d87d"></a>`expires_before` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-092fcd3fb7"></a>`protection` | yes | anyOf=(#/components/schemas/RetrievalCacheProtection) \| (type="null") |  |
+| <a id="s-b1c9c2dae1"></a>`source_store` | yes | anyOf=(#/components/schemas/ArchiveStoreName) \| (type="null") |  |
+| <a id="s-31829d68f2"></a>`state` | yes | anyOf=(#/components/schemas/RetrievalCacheState) \| (type="null") |  |
 
 ## Maintained corroboration
 
@@ -60,6 +63,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheObjectListFiltersOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -155,3 +161,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

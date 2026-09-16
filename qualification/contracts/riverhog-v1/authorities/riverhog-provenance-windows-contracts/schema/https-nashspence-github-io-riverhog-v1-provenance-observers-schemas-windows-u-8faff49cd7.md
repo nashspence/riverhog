@@ -14,8 +14,12 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-740b4aabb0"></a>
-- <a id="s-6ad7b66791"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json
-- <a id="s-e652a64a5e"></a>`type`: object
+
+- <a id="s-e652a64a5e"></a>`type`: `"object"`
+- <a id="s-6ad7b66791"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json"`
+- <a id="s-a95ea9d6c3"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-dde2b04139"></a>`additionalProperties`: `false`
+- <a id="s-8a34113e7f"></a>`required`: `["record_length","major_version","minor_version","parse_status"]`
 
 ### Fields
 
@@ -24,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-2384c7e8e7"></a>`file_attributes` | no | type="integer"; minimum=0 |  |
 | <a id="s-d0ea6b8d9c"></a>`file_name` | no | type="string" |  |
 | <a id="s-231ea73abe"></a>`file_name_role` | no | enum=["exact","display"] |  |
-| <a id="s-5f44cc2a52"></a>`file_name_utf16le_base64` | no | type="string"; additional keys=`contentEncoding` |  |
+| <a id="s-5f44cc2a52"></a>`file_name_utf16le_base64` | no | type="string"; contentEncoding="base64" |  |
 | <a id="s-d9be3c10e6"></a>`file_reference_number` | no | type="string"; pattern="^[0-9a-f]+$" |  |
 | <a id="s-88739230bb"></a>`major_version` | yes | type="integer"; minimum=0 |  |
 | <a id="s-81947330b8"></a>`minor_version` | yes | type="integer"; minimum=0 |  |
@@ -67,6 +71,9 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 - `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -140,3 +147,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

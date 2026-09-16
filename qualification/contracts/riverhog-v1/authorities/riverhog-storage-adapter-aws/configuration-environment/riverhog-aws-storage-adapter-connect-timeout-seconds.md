@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-651129acd1"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-0a8dd8ad5b"></a>`consumers` | ["riverhog-storage-adapter-aws"] |
-| <a id="s-506bc75a04"></a>`default_expressions` | ["''"] |
-| <a id="s-448ec91883"></a>`id` | "riverhog-storage-adapter-aws:environment:RIVERHOG_AWS_STORAGE_ADAPTER_CONNECT_TIMEOUT_SECONDS" |
-| <a id="s-49c9216ceb"></a>`input_shape` | "environment-string" |
-| <a id="s-b54b400817"></a>`name` | "RIVERHOG_AWS_STORAGE_ADAPTER_CONNECT_TIMEOUT_SECONDS" |
-| <a id="s-8ded7f4c58"></a>`owner` | "riverhog-storage-adapter-aws" |
+| <a id="s-0a8dd8ad5b"></a>`consumers` | `["riverhog-storage-adapter-aws"]` |
+| <a id="s-506bc75a04"></a>`default_expressions` | `["''"]` |
+| <a id="s-448ec91883"></a>`id` | `"riverhog-storage-adapter-aws:environment:RIVERHOG_AWS_STORAGE_ADAPTER_CONNECT_TIMEOUT_SECONDS"` |
+| <a id="s-49c9216ceb"></a>`input_shape` | `"environment-string"` |
+| <a id="s-b54b400817"></a>`name` | `"RIVERHOG_AWS_STORAGE_ADAPTER_CONNECT_TIMEOUT_SECONDS"` |
+| <a id="s-8ded7f4c58"></a>`owner` | `"riverhog-storage-adapter-aws"` |
 
 ### Progression, limits, and lifecycle
 
@@ -64,6 +65,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: b73d751e55997e7b650cb13231576b214ec400e0c9092d1aa6b15b93614eb392 -->
@@ -82,3 +86,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "riverhog-storage-adapter-aws"
 }
 ```
+
+</details>

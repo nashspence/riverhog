@@ -27,17 +27,20 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-907553dbff"></a>
-- <a id="s-d1aad8e833"></a>`type`: object
 
-### Fields
+- <a id="s-d1aad8e833"></a>`type`: `"object"`
+- <a id="s-d2adc91c27"></a>`additionalProperties`: `false`
+- <a id="s-6c43588762"></a>`required`: `["id","version","source_revision","descriptor_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-fd5ab589e1"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-ca1eb8a66d"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-90297de3f0"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1" |  |
-| <a id="s-099d750c4b"></a>`source_revision` | yes | type="string"; minLength=1; maxLength=200 |  |
-| <a id="s-d172b29d75"></a>`version` | yes | type="string"; minLength=1; maxLength=120 |  |
+| <a id="s-90297de3f0"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1"; default="stove0-content-observer/v1" |  |
+| <a id="s-099d750c4b"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1 |  |
+| <a id="s-d172b29d75"></a>`version` | yes | type="string"; maxLength=120; minLength=1 |  |
 
 ## Governing policies
 
@@ -60,6 +63,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_observer_protocol.ObserverImplementation`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -112,3 +118,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

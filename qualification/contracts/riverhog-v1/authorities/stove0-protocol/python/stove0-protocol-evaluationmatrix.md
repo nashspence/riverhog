@@ -27,22 +27,40 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-12db0e5e34"></a>
-- <a id="s-33e6ff0eac"></a>`type`: object
 
-### Fields
+- <a id="s-33e6ff0eac"></a>`type`: `"object"`
+- <a id="s-c195f28bb5"></a>`additionalProperties`: `false`
+- <a id="s-0b36e54d05"></a>`required`: `["variants","matrix_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ef0e66d82d"></a>`format` | no | type="string"; const="stove0-evaluation-matrix/v1" |  |
+| <a id="s-ef0e66d82d"></a>`format` | no | type="string"; const="stove0-evaluation-matrix/v1"; default="stove0-evaluation-matrix/v1" |  |
 | <a id="s-faffe2f543"></a>`matrix_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-c45debe1cd"></a>`variants` | yes | type="array"; minItems=1; items=(#/$defs/EvaluationVariant) |  |
+| <a id="s-c45debe1cd"></a>`variants` | yes | type="array"; items=([EvaluationVariant](#s-690953775a)); minItems=1 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-690953775a"></a>`EvaluationVariant` | type="object"; fields=`id`, `parameters`; additional keys=`additionalProperties`, `required` |
-| <a id="s-61da80a26e"></a>`JsonValue` | empty object |
+- [EvaluationVariant](#s-690953775a)
+- [JsonValue](#s-61da80a26e)
+
+##### <a id="s-690953775a"></a>definition `EvaluationVariant`
+
+- <a id="s-4b7132c855"></a>`type`: `"object"`
+- <a id="s-278c9892fc"></a>`additionalProperties`: `false`
+- <a id="s-4ce0306c15"></a>`required`: `["id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-698acc47f3"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-91f98a8eeb"></a>`parameters` | no | type="object"; additionalProperties=([JsonValue](#s-61da80a26e)) |  |
+
+##### <a id="s-61da80a26e"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Maintained corroboration
 
@@ -73,6 +91,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_protocol.EvaluationMatrix`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -138,3 +159,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

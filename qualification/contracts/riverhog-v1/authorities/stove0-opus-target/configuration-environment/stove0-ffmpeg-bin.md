@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-aa4f15d37f"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-c2a9438d60"></a>`consumers` | ["stove0-opus-target"] |
-| <a id="s-d1035c754d"></a>`default_expressions` | ["'ffmpeg'"] |
-| <a id="s-0fc161ae60"></a>`id` | "stove0-opus-target:environment:STOVE0_FFMPEG_BIN" |
-| <a id="s-cc2b365de6"></a>`input_shape` | "environment-string" |
-| <a id="s-c35c4f35c0"></a>`name` | "STOVE0_FFMPEG_BIN" |
-| <a id="s-213db7b774"></a>`owner` | "stove0-opus-target" |
+| <a id="s-c2a9438d60"></a>`consumers` | `["stove0-opus-target"]` |
+| <a id="s-d1035c754d"></a>`default_expressions` | `["'ffmpeg'"]` |
+| <a id="s-0fc161ae60"></a>`id` | `"stove0-opus-target:environment:STOVE0_FFMPEG_BIN"` |
+| <a id="s-cc2b365de6"></a>`input_shape` | `"environment-string"` |
+| <a id="s-c35c4f35c0"></a>`name` | `"STOVE0_FFMPEG_BIN"` |
+| <a id="s-213db7b774"></a>`owner` | `"stove0-opus-target"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: ce90955c8e39640f61efdd927eed644792c28b9f3f3b0eefb880d93b96aaf9bf -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "stove0-opus-target"
 }
 ```
+
+</details>

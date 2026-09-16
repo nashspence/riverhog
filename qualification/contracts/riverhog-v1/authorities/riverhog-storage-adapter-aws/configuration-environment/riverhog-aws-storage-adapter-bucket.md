@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5fe6983476"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-939e46bead"></a>`consumers` | ["riverhog-storage-adapter-aws"] |
-| <a id="s-4e50679c67"></a>`default_expressions` | ["''"] |
-| <a id="s-46a05f24bc"></a>`id` | "riverhog-storage-adapter-aws:environment:RIVERHOG_AWS_STORAGE_ADAPTER_BUCKET" |
-| <a id="s-0ce1d91389"></a>`input_shape` | "environment-string" |
-| <a id="s-f7d158a894"></a>`name` | "RIVERHOG_AWS_STORAGE_ADAPTER_BUCKET" |
-| <a id="s-0050bf8e14"></a>`owner` | "riverhog-storage-adapter-aws" |
+| <a id="s-939e46bead"></a>`consumers` | `["riverhog-storage-adapter-aws"]` |
+| <a id="s-4e50679c67"></a>`default_expressions` | `["''"]` |
+| <a id="s-46a05f24bc"></a>`id` | `"riverhog-storage-adapter-aws:environment:RIVERHOG_AWS_STORAGE_ADAPTER_BUCKET"` |
+| <a id="s-0ce1d91389"></a>`input_shape` | `"environment-string"` |
+| <a id="s-f7d158a894"></a>`name` | `"RIVERHOG_AWS_STORAGE_ADAPTER_BUCKET"` |
+| <a id="s-0050bf8e14"></a>`owner` | `"riverhog-storage-adapter-aws"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 904638ba52a13d3492a193e1af1dd316aaa5fcfafb253e5fd49fcca5faa37eb1 -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "riverhog-storage-adapter-aws"
 }
 ```
+
+</details>

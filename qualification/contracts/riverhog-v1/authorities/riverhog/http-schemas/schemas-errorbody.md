@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e341a8fff0"></a>
-- <a id="s-d16bb1c543"></a>`title`: ErrorBody
-- <a id="s-c42ede3b72"></a>`type`: object
+
+- <a id="s-c42ede3b72"></a>`type`: `"object"`
+- <a id="s-b5026c3cb1"></a>`additionalProperties`: `false`
+- <a id="s-625a1c18a9"></a>`required`: `["code","message"]`
+- <a id="s-d16bb1c543"></a>`title`: `"ErrorBody"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-6ed442e30b"></a>`code` | yes | type="string"; minLength=1 |  |
-| <a id="s-6cf5a8898b"></a>`details` | no | anyOf=type="object"; additional keys=`additionalProperties` \| type="null" |  |
+| <a id="s-6cf5a8898b"></a>`details` | no | anyOf=(type="object"; additionalProperties=true) \| (type="null"); default=null |  |
 | <a id="s-08f76da0e6"></a>`message` | yes | type="string"; minLength=1 |  |
 
 ### Progression, limits, and lifecycle
@@ -57,6 +60,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/ErrorBody`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -98,3 +104,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

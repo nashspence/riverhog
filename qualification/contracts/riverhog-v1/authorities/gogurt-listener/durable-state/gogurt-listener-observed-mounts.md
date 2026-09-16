@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1982d018ff"></a>
-- Table: `observed_mounts`
 
-### Columns
+### Table: `observed_mounts`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -52,6 +53,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/4/structure/tables/1`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -96,3 +100,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "observed_mounts"
 }
 ```
+
+</details>

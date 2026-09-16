@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7fbf7db9d0"></a>
-- <a id="s-5b709f4f16"></a>`title`: TagSummaryOut
-- <a id="s-e5e2b841db"></a>`type`: object
+
+- <a id="s-e5e2b841db"></a>`type`: `"object"`
+- <a id="s-e6c8d2639e"></a>`additionalProperties`: `false`
+- <a id="s-cc6da783b3"></a>`required`: `["tag","collection_count"]`
+- <a id="s-5b709f4f16"></a>`title`: `"TagSummaryOut"`
 
 ### Fields
 
@@ -52,6 +55,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 354b8d7177581c064ad240b844abe463b451ddae7b4de49cf6616aec2584009a -->
@@ -77,3 +83,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

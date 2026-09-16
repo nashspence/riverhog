@@ -14,19 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-25fab1a1b0"></a>
-- <a id="s-2040f98675"></a>`title`: SmallObjectWriteRequest
-- <a id="s-376ce5c3c7"></a>`type`: object
+
+- <a id="s-376ce5c3c7"></a>`type`: `"object"`
+- <a id="s-1a59983e51"></a>`additionalProperties`: `false`
+- <a id="s-d142c2462b"></a>`required`: `["object_path","content_type","required_identity_assertions","placement","mode","stored_bytes","stored_sha256"]`
+- <a id="s-2040f98675"></a>`title`: `"SmallObjectWriteRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-245dd83a60"></a>`content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
-| <a id="s-694f5617c3"></a>`expected_current_stored_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-245dd83a60"></a>`content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
+| <a id="s-694f5617c3"></a>`expected_current_stored_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
 | <a id="s-cddc05ccf5"></a>`mode` | yes | type="string"; enum=["create_only","replace_current"] |  |
-| <a id="s-9555273565"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-9555273565"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-60cd7fe648"></a>`placement` | yes | type="string"; enum=["archive","immediate"] |  |
-| <a id="s-a8fdc8c0a1"></a>`required_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
+| <a id="s-a8fdc8c0a1"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
 | <a id="s-831f49620d"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-d8fcaa470d"></a>`stored_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
@@ -71,6 +74,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/SmallObjectWriteRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -159,3 +165,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

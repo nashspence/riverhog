@@ -14,24 +14,40 @@ Request one bounded page from an exact accepted-segment view.
 ## External contract
 
 <a id="s-03eab200df"></a>
-- <a id="s-acf29da67e"></a>`title`: WriteSegmentListRequest
-- <a id="s-ddcc4da5bb"></a>`description`: Request one bounded page from an exact accepted-segment view.
-- <a id="s-102093f05e"></a>`type`: object
+
+- <a id="s-102093f05e"></a>`type`: `"object"`
+- <a id="s-6a64d139a3"></a>`additionalProperties`: `false`
+- <a id="s-ddcc4da5bb"></a>`description`: `"Request one bounded page from an exact accepted-segment view."`
+- <a id="s-fb75016dff"></a>`required`: `["session"]`
+- <a id="s-acf29da67e"></a>`title`: `"WriteSegmentListRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f1d3323083"></a>`after_number` | no | type="integer"; minimum=0; additional keys=`x-riverhog-extent` |  |
-| <a id="s-86d5f555d2"></a>`maximum_items` | no | type="integer"; minimum=1; maximum=128 |  |
-| <a id="s-9142d95f27"></a>`session` | yes | #/$defs/WriteSession |  |
-| <a id="s-6b5c1418bd"></a>`traversal_token` | no | anyOf=type="string"; minLength=1; maxLength=4000 \| type="null" |  |
+| <a id="s-f1d3323083"></a>`after_number` | no | type="integer"; minimum=0; default=0; x-riverhog-extent={"policy":"segmented_no_total_max","reason":"write-segment-history-bounded-traversal"} |  |
+| <a id="s-86d5f555d2"></a>`maximum_items` | no | type="integer"; minimum=1; maximum=128; default=128 |  |
+| <a id="s-9142d95f27"></a>`session` | yes | [WriteSession](#s-524b3d9072) |  |
+| <a id="s-6b5c1418bd"></a>`traversal_token` | no | anyOf=(type="string"; maxLength=4000; minLength=1) \| (type="null"); default=null |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-524b3d9072"></a>`WriteSession` | type="object"; fields=`expected_bytes`, `object_path`, `write_token`; additional keys=`additionalProperties`, `required` |
+- [WriteSession](#s-524b3d9072)
+
+### <a id="s-524b3d9072"></a>definition `WriteSession`
+
+- <a id="s-bccf3a8405"></a>`type`: `"object"`
+- <a id="s-d80d3fc7bc"></a>`additionalProperties`: `false`
+- <a id="s-41af59998a"></a>`required`: `["object_path","expected_bytes","write_token"]`
+- <a id="s-7aa0e05e25"></a>`title`: `"WriteSession"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ec7a1bfb7a"></a>`expected_bytes` | yes | type="integer"; minimum=1 | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
+| <a id="s-6859981f1c"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-ca2109b609"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1 | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
 
 ### Progression, limits, and lifecycle
 
@@ -72,6 +88,9 @@ Shared facts for every subject below: minimum=1; reason="schema-maximum"
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentListRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -157,3 +176,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

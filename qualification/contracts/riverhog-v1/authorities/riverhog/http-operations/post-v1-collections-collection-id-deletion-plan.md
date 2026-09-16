@@ -23,7 +23,7 @@ Plan Collection Deletion
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-a9b5a1b3dc"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1 |
-| <a id="s-8f51f3021d"></a>`retirement_claim_id` | query | no | not declared | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |
+| <a id="s-8f51f3021d"></a>`retirement_claim_id` | query | no | not declared | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |
 
 ### Responses
 
@@ -131,6 +131,9 @@ This generated record links maintained client, CLI, response-authority, and prov
 - `/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1deletion-plan/post`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -277,3 +280,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   ]
 }
 ```
+
+</details>

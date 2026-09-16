@@ -14,15 +14,18 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-b416730527"></a>
-- <a id="s-bc75f9b96b"></a>`title`: CollectionDescriptionOut
-- <a id="s-9a95548ab9"></a>`type`: object
+
+- <a id="s-9a95548ab9"></a>`type`: `"object"`
+- <a id="s-e76bb01194"></a>`additionalProperties`: `false`
+- <a id="s-0e7ba20066"></a>`required`: `["collection_id","description","description_revision","description_identity","description_publication"]`
+- <a id="s-bc75f9b96b"></a>`title`: `"CollectionDescriptionOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-ff89eed8dd"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-fad18f5e39"></a>`description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
+| <a id="s-fad18f5e39"></a>`description` | yes | anyOf=(#/components/schemas/CollectionDescription) \| (type="null") |  |
 | <a id="s-ed8b188dda"></a>`description_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-fb5f576279"></a>`description_publication` | yes | type="string"; enum=["not_required","current","reconciling"] |  |
 | <a id="s-cdcae3a251"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
@@ -65,6 +68,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionDescriptionOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -119,3 +125,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

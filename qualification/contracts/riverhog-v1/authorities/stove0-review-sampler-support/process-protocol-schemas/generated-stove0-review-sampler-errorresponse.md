@@ -14,20 +14,36 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-76159d0953"></a>
-- <a id="s-cd9e354db7"></a>`title`: ErrorResponse
-- <a id="s-6004480872"></a>`type`: object
+
+- <a id="s-6004480872"></a>`type`: `"object"`
+- <a id="s-0d95bb49ef"></a>`additionalProperties`: `false`
+- <a id="s-b1a24e92a2"></a>`required`: `["error"]`
+- <a id="s-cd9e354db7"></a>`title`: `"ErrorResponse"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-701af705dd"></a>`error` | yes | #/$defs/ErrorBody |  |
+| <a id="s-701af705dd"></a>`error` | yes | [ErrorBody](#s-377a402816) |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-377a402816"></a>`ErrorBody` | type="object"; fields=`code`, `details`, `message`; additional keys=`additionalProperties`, `required` |
+- [ErrorBody](#s-377a402816)
+
+### <a id="s-377a402816"></a>definition `ErrorBody`
+
+- <a id="s-571e301812"></a>`type`: `"object"`
+- <a id="s-6385508fe6"></a>`additionalProperties`: `false`
+- <a id="s-e1a984f261"></a>`required`: `["code","message"]`
+- <a id="s-131011a406"></a>`title`: `"ErrorBody"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ff1f25a08f"></a>`code` | yes | type="string"; minLength=1 |  |
+| <a id="s-0d9bec331e"></a>`details` | no | anyOf=(type="object"; additionalProperties=true) \| (type="null"); default=null |  |
+| <a id="s-27efa2f024"></a>`message` | yes | type="string"; minLength=1 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -37,7 +53,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-b96c4de4f5"></a>[definition ErrorBody · field details · object value](#s-377a402816) | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-b96c4de4f5"></a>[definition ErrorBody · field details · object value](#s-0d9bec331e) | `cardinality · entries · operational_policy` | shared above |
 
 ## Maintained corroboration
 
@@ -67,6 +83,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/protocol_schemas/generated:stove0-review-sampler/schemas/ErrorResponse`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -123,3 +142,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

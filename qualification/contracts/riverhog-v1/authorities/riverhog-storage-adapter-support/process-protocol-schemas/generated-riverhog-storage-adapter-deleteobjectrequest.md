@@ -14,22 +14,37 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4244e1c1b1"></a>
-- <a id="s-1e3aee157a"></a>`title`: DeleteObjectRequest
-- <a id="s-f7bf1217a9"></a>`type`: object
+
+- <a id="s-f7bf1217a9"></a>`type`: `"object"`
+- <a id="s-25f878224d"></a>`additionalProperties`: `false`
+- <a id="s-5cb80a641b"></a>`required`: `["object","mode"]`
+- <a id="s-1e3aee157a"></a>`title`: `"DeleteObjectRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-25cdfe5616"></a>`expected_current_stored_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-25cdfe5616"></a>`expected_current_stored_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
 | <a id="s-e096d56146"></a>`mode` | yes | type="string"; enum=["current","exact_revision","all_versions"] |  |
-| <a id="s-9578123839"></a>`object` | yes | #/$defs/ObjectLocator |  |
+| <a id="s-9578123839"></a>`object` | yes | [ObjectLocator](#s-1c064e0ef6) |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-1c064e0ef6"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
+- [ObjectLocator](#s-1c064e0ef6)
+
+### <a id="s-1c064e0ef6"></a>definition `ObjectLocator`
+
+- <a id="s-dd8fd84a60"></a>`type`: `"object"`
+- <a id="s-b6fc1dcfce"></a>`additionalProperties`: `false`
+- <a id="s-df62ecfbd6"></a>`required`: `["object_path"]`
+- <a id="s-dcd44e2bd5"></a>`title`: `"ObjectLocator"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e96704bca9"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-6c4d81adfa"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
 
 ### Progression, limits, and lifecycle
 
@@ -38,8 +53,8 @@ Exact externally visible contract owned by this semantic dossier.
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | <a id="s-6a0a486f31"></a>[field expected_current_stored_sha256 · string value](#s-25cdfe5616) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-e96704bca9"></a>[definition ObjectLocator · field object_path](#s-1c064e0ef6) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
-| <a id="s-f5db287c99"></a>[definition ObjectLocator · field revision · string value](#s-1c064e0ef6) | `length · characters · contract_max` | maximum=2000; minimum=1; reason="schema-maximum" |
+| [definition ObjectLocator · field object_path](#s-e96704bca9) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| <a id="s-f5db287c99"></a>[definition ObjectLocator · field revision · string value](#s-6c4d81adfa) | `length · characters · contract_max` | maximum=2000; minimum=1; reason="schema-maximum" |
 
 ## Maintained corroboration
 
@@ -69,6 +84,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/DeleteObjectRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -144,3 +162,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

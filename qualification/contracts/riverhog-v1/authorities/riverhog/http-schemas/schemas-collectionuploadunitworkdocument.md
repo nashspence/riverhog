@@ -14,9 +14,12 @@ One exact unit and its durable upload checkpoint state.
 ## External contract
 
 <a id="s-29d4fa5d77"></a>
-- <a id="s-2db9f005e3"></a>`title`: CollectionUploadUnitWorkDocument
-- <a id="s-266a855cc9"></a>`description`: One exact unit and its durable upload checkpoint state.
-- <a id="s-50ac7bdce0"></a>`type`: object
+
+- <a id="s-50ac7bdce0"></a>`type`: `"object"`
+- <a id="s-1a967a560a"></a>`additionalProperties`: `false`
+- <a id="s-266a855cc9"></a>`description`: `"One exact unit and its durable upload checkpoint state."`
+- <a id="s-1adad7c9c0"></a>`required`: `["unit","payload_bytes","plaintext_bytes","sources","state"]`
+- <a id="s-2db9f005e3"></a>`title`: `"CollectionUploadUnitWorkDocument"`
 
 ### Fields
 
@@ -24,7 +27,7 @@ One exact unit and its durable upload checkpoint state.
 |---|---:|---|---|
 | <a id="s-5bbbdc396e"></a>`payload_bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-16c47a39dd"></a>`plaintext_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-1922dd6481"></a>`sources` | yes | type="array"; maxItems=1000; items=(#/components/schemas/CollectionUploadUnitSourceDocument); additional keys=`x-riverhog-extent` |  |
+| <a id="s-1922dd6481"></a>`sources` | yes | type="array"; items=(#/components/schemas/CollectionUploadUnitSourceDocument); maxItems=1000; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"collection-volume-sequence","reason":"bounded-upload-unit-source-map"} |  |
 | <a id="s-c2d6a23375"></a>`state` | yes | type="string"; enum=["pending","committed"] |  |
 | <a id="s-df608cbe0c"></a>`unit` | yes | type="integer"; minimum=0 |  |
 
@@ -72,6 +75,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadUnitWorkDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -130,3 +136,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

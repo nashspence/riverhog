@@ -14,24 +14,39 @@ Adapter-observed identity and range for one single-pass read.
 ## External contract
 
 <a id="s-af23daf6d7"></a>
-- <a id="s-e97b07454c"></a>`title`: ObjectReadReceipt
-- <a id="s-0eb9c3d724"></a>`description`: Adapter-observed identity and range for one single-pass read.
-- <a id="s-fd118908e7"></a>`type`: object
+
+- <a id="s-fd118908e7"></a>`type`: `"object"`
+- <a id="s-149f776e44"></a>`additionalProperties`: `false`
+- <a id="s-0eb9c3d724"></a>`description`: `"Adapter-observed identity and range for one single-pass read."`
+- <a id="s-1af766c56e"></a>`required`: `["object","total_bytes","offset","read_bytes"]`
+- <a id="s-e97b07454c"></a>`title`: `"ObjectReadReceipt"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-036b19f39b"></a>`object` | yes | #/$defs/ObjectLocator |  |
+| <a id="s-036b19f39b"></a>`object` | yes | [ObjectLocator](#s-43c741ab8f) |  |
 | <a id="s-66b82b7e4f"></a>`offset` | yes | type="integer"; minimum=0 |  |
 | <a id="s-cbc2c869b9"></a>`read_bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-214b4e2d30"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-43c741ab8f"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
+- [ObjectLocator](#s-43c741ab8f)
+
+### <a id="s-43c741ab8f"></a>definition `ObjectLocator`
+
+- <a id="s-4242a7a160"></a>`type`: `"object"`
+- <a id="s-52736fa855"></a>`additionalProperties`: `false`
+- <a id="s-f130376dfa"></a>`required`: `["object_path"]`
+- <a id="s-460c43e497"></a>`title`: `"ObjectLocator"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-bb4835dae2"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-d0c342614f"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
 
 ### Progression, limits, and lifecycle
 
@@ -71,6 +86,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -142,3 +160,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

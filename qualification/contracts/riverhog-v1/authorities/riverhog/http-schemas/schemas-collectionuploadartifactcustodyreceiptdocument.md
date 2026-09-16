@@ -14,9 +14,12 @@ Exact safe-release evidence for one artifact in construction state.
 ## External contract
 
 <a id="s-de01edc6c7"></a>
-- <a id="s-991238a92b"></a>`title`: CollectionUploadArtifactCustodyReceiptDocument
-- <a id="s-881a8cdfbb"></a>`description`: Exact safe-release evidence for one artifact in construction state.
-- <a id="s-7ba375dfb5"></a>`type`: object
+
+- <a id="s-7ba375dfb5"></a>`type`: `"object"`
+- <a id="s-7c2724ec4d"></a>`additionalProperties`: `false`
+- <a id="s-881a8cdfbb"></a>`description`: `"Exact safe-release evidence for one artifact in construction state."`
+- <a id="s-3acd69ba7d"></a>`required`: `["collection_id","path","bytes","sha256","archive_object_count","archive_object_set_sha256","receipt_sha256"]`
+- <a id="s-991238a92b"></a>`title`: `"CollectionUploadArtifactCustodyReceiptDocument"`
 
 ### Fields
 
@@ -26,7 +29,7 @@ Exact safe-release evidence for one artifact in construction state.
 | <a id="s-652d1bb86c"></a>`archive_object_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-5ff22aaac2"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-48eeb34d30"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-db6cbedc39"></a>`format` | no | type="string"; const="riverhog-artifact-custody-receipt/v1" |  |
+| <a id="s-db6cbedc39"></a>`format` | no | type="string"; const="riverhog-artifact-custody-receipt/v1"; default="riverhog-artifact-custody-receipt/v1" |  |
 | <a id="s-478a27e2aa"></a>`path` | yes | type="string" |  |
 | <a id="s-0ee690ffb9"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-c54e529e15"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -80,6 +83,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadArtifactCustodyReceiptDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -142,3 +148,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

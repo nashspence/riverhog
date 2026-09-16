@@ -27,22 +27,36 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2b4e9c5bd7"></a>
-- <a id="s-63f5762c25"></a>`type`: object
 
-### Fields
+- <a id="s-63f5762c25"></a>`type`: `"object"`
+- <a id="s-2210d51a58"></a>`additionalProperties`: `false`
+- <a id="s-eeff13e697"></a>`required`: `["object","total_bytes","offset","read_bytes"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3feef6f54a"></a>`object` | yes | #/$defs/ObjectLocator |  |
+| <a id="s-3feef6f54a"></a>`object` | yes | [ObjectLocator](#s-4d487770c6) |  |
 | <a id="s-897ac44be0"></a>`offset` | yes | type="integer"; minimum=0 |  |
 | <a id="s-db424d7fdd"></a>`read_bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-e930bb066b"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-4d487770c6"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
+- [ObjectLocator](#s-4d487770c6)
+
+##### <a id="s-4d487770c6"></a>definition `ObjectLocator`
+
+- <a id="s-abe92aaac1"></a>`type`: `"object"`
+- <a id="s-ba0be28e56"></a>`additionalProperties`: `false`
+- <a id="s-b13037cf4a"></a>`required`: `["object_path"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c9b9355869"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-dec2a2d4e2"></a>`revision` | no | anyOf=(type="string"; maxLength=2000; minLength=1) \| (type="null"); default=null |  |
 
 ## Maintained corroboration
 
@@ -71,6 +85,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.ObjectReadReceipt`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -144,3 +161,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

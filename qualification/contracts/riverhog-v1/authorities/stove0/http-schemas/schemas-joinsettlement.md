@@ -14,16 +14,19 @@ Success-only, Riverhog-verified result of one resolved join plan.
 ## External contract
 
 <a id="s-90043d6d0e"></a>
-- <a id="s-c65afa4ddd"></a>`title`: JoinSettlement
-- <a id="s-ab05905591"></a>`description`: Success-only, Riverhog-verified result of one resolved join plan.
-- <a id="s-b8d396c35b"></a>`type`: object
+
+- <a id="s-b8d396c35b"></a>`type`: `"object"`
+- <a id="s-e283d2ed22"></a>`additionalProperties`: `false`
+- <a id="s-ab05905591"></a>`description`: `"Success-only, Riverhog-verified result of one resolved join plan."`
+- <a id="s-94df2d4913"></a>`required`: `["work_id","workflow_plan_sha256","join_plan_sha256","derivation_sha256","producer_settlement_sha256","output_collection","output_selection","settlement_sha256"]`
+- <a id="s-c65afa4ddd"></a>`title`: `"JoinSettlement"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-db3e6acc98"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-87f6901bd8"></a>`format` | no | type="string"; const="stove0-join-settlement/v1" |  |
+| <a id="s-87f6901bd8"></a>`format` | no | type="string"; const="stove0-join-settlement/v1"; default="stove0-join-settlement/v1" |  |
 | <a id="s-2846d59ef9"></a>`join_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-96a7bf9913"></a>`output_collection` | yes | #/components/schemas/CollectionRootRef |  |
 | <a id="s-edfa0bba52"></a>`output_selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
@@ -76,6 +79,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/JoinSettlement`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -143,3 +149,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

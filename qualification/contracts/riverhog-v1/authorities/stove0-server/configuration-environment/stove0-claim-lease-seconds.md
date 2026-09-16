@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-2832b8e991"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-8fb4f3e4c3"></a>`consumers` | ["stove0-server"] |
-| <a id="s-f8450a61d2"></a>`default_expressions` | ["str(default)"] |
-| <a id="s-77881b1fba"></a>`id` | "stove0-server:environment:STOVE0_CLAIM_LEASE_SECONDS" |
-| <a id="s-fc0a93c82e"></a>`input_shape` | "environment-string" |
-| <a id="s-2656b48bb7"></a>`name` | "STOVE0_CLAIM_LEASE_SECONDS" |
-| <a id="s-25093ba074"></a>`owner` | "stove0-server" |
+| <a id="s-8fb4f3e4c3"></a>`consumers` | `["stove0-server"]` |
+| <a id="s-f8450a61d2"></a>`default_expressions` | `["str(default)"]` |
+| <a id="s-77881b1fba"></a>`id` | `"stove0-server:environment:STOVE0_CLAIM_LEASE_SECONDS"` |
+| <a id="s-fc0a93c82e"></a>`input_shape` | `"environment-string"` |
+| <a id="s-2656b48bb7"></a>`name` | `"STOVE0_CLAIM_LEASE_SECONDS"` |
+| <a id="s-25093ba074"></a>`owner` | `"stove0-server"` |
 
 ### Progression, limits, and lifecycle
 
@@ -64,6 +65,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 9fa8c9ef09d45cdd333b1b633188e3c9661a3bef2df7a27988955bad9e3237a5 -->
@@ -82,3 +86,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "stove0-server"
 }
 ```
+
+</details>

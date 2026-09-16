@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-dbef3c997a"></a>
-- <a id="s-dd8fc78ddc"></a>`title`: ArtifactDispositionInputDocument
-- <a id="s-0776603369"></a>`type`: object
+
+- <a id="s-0776603369"></a>`type`: `"object"`
+- <a id="s-3defca387a"></a>`additionalProperties`: `false`
+- <a id="s-bcee5565ba"></a>`required`: `["collection_id","archive_root_sha256","path"]`
+- <a id="s-dd8fc78ddc"></a>`title`: `"ArtifactDispositionInputDocument"`
 
 ### Fields
 
@@ -65,6 +68,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 18a9d379929f7e070761f6950cd137bfefaf471c2866f75d414b7faec3e731b0 -->
@@ -94,3 +100,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,9 +14,12 @@ Success-only exact completion of one root or branch-bound coordinator.
 ## External contract
 
 <a id="s-d0ceeae978"></a>
-- <a id="s-15bb1ea7e0"></a>`title`: CoordinationSettlement
-- <a id="s-3d0c1a6a86"></a>`description`: Success-only exact completion of one root or branch-bound coordinator.
-- <a id="s-c4f7fee2d0"></a>`type`: object
+
+- <a id="s-c4f7fee2d0"></a>`type`: `"object"`
+- <a id="s-5d7d2807e6"></a>`additionalProperties`: `false`
+- <a id="s-3d0c1a6a86"></a>`description`: `"Success-only exact completion of one root or branch-bound coordinator."`
+- <a id="s-11ece5be38"></a>`required`: `["work","branch_set_sha256","children","contains_external_effects","settlement_sha256"]`
+- <a id="s-15bb1ea7e0"></a>`title`: `"CoordinationSettlement"`
 
 ### Fields
 
@@ -24,10 +27,10 @@ Success-only exact completion of one root or branch-bound coordinator.
 |---|---:|---|---|
 | <a id="s-00b0c65a2e"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-d20e730907"></a>`children` | yes | type="array"; items=(#/components/schemas/CoordinationChildSettlementRef) |  |
-| <a id="s-22e70e8b9b"></a>`collection_result` | no | anyOf=#/components/schemas/CoordinationCollectionResult \| type="null" |  |
+| <a id="s-22e70e8b9b"></a>`collection_result` | no | anyOf=(#/components/schemas/CoordinationCollectionResult) \| (type="null") |  |
 | <a id="s-52f40f13e4"></a>`contains_external_effects` | yes | type="boolean" |  |
-| <a id="s-0e942bf28a"></a>`final_join_settlement_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-f3bd3005e5"></a>`format` | no | type="string"; const="stove0-coordination-settlement/v1" |  |
+| <a id="s-0e942bf28a"></a>`final_join_settlement_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
+| <a id="s-f3bd3005e5"></a>`format` | no | type="string"; const="stove0-coordination-settlement/v1"; default="stove0-coordination-settlement/v1" |  |
 | <a id="s-5432273c79"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-ea2c242f18"></a>`work` | yes | #/components/schemas/WorkIdentity |  |
 
@@ -82,6 +85,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -156,3 +162,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

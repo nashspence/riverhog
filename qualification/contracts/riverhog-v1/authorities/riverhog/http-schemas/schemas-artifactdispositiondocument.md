@@ -14,16 +14,47 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-24a8ecfb85"></a>
-- <a id="s-48f677b91a"></a>`title`: ArtifactDispositionDocument
-- <a id="s-517aea0476"></a>`type`: object
+
+- <a id="s-517aea0476"></a>`type`: `"object"`
+- <a id="s-a26fad90e1"></a>`additionalProperties`: `false`
+- <a id="s-d0cf7e1771"></a>`required`: `["input","status"]`
+- <a id="s-48f677b91a"></a>`title`: `"ArtifactDispositionDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f848c33494"></a>`failure` | no | anyOf=#/components/schemas/ArtifactDispositionFailureDocument \| type="null" |  |
+| <a id="s-f848c33494"></a>`failure` | no | anyOf=(#/components/schemas/ArtifactDispositionFailureDocument) \| (type="null") |  |
 | <a id="s-f7c6e570c3"></a>`input` | yes | #/components/schemas/ArtifactDispositionInputDocument |  |
 | <a id="s-f506733223"></a>`status` | yes | type="string"; enum=["transformed","preserved","omitted","rejected"] |  |
+
+### Exactly one must match (`oneOf`)
+
+| Alternative | Schema |
+|---|---|
+| 1 | [See `oneOf` alternative 1](#s-27b164a074) |
+| 2 | [See `oneOf` alternative 2](#s-0bdc389c28) |
+
+### <a id="s-27b164a074"></a>`oneOf` alternative 1
+
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-24fed008fd"></a>`failure` | no | type="null" |  |
+| <a id="s-e8c4ca74e4"></a>`status` | no | enum=["transformed","preserved"] |  |
+
+### <a id="s-0bdc389c28"></a>`oneOf` alternative 2
+
+- <a id="s-e3fd6b295c"></a>`required`: `["failure"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-8abf5c80d2"></a>`failure` | yes | type="object" |  |
+| <a id="s-2a7f6bc55d"></a>`status` | no | enum=["omitted","rejected"] |  |
 
 ## Maintained corroboration
 
@@ -53,6 +84,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -125,3 +159,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-38985fdc82"></a>
-- <a id="s-07130d5b80"></a>`title`: CapturedCollectionFileProvenancePage
-- <a id="s-7d024fd078"></a>`type`: object
+
+- <a id="s-7d024fd078"></a>`type`: `"object"`
+- <a id="s-263d3e1839"></a>`additionalProperties`: `false`
+- <a id="s-c1d1431c1a"></a>`required`: `["page_size","next_page_token","sort","order","query","status","collection_id","provenance_mode","provenance_identity","files"]`
+- <a id="s-07130d5b80"></a>`title`: `"CapturedCollectionFileProvenancePage"`
 
 ### Fields
 
@@ -23,14 +26,14 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-e743e31934"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
 | <a id="s-c1a45d0053"></a>`files` | yes | type="array"; items=(#/components/schemas/CapturedCollectionFileProvenanceOut) |  |
-| <a id="s-514f560e2d"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-514f560e2d"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-9bfe818c3e"></a>`order` | yes | #/components/schemas/SortOrder |  |
 | <a id="s-21122411f5"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
 | <a id="s-b2d8829d1f"></a>`provenance_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-61cca968ad"></a>`provenance_mode` | yes | type="string"; const="captured" |  |
-| <a id="s-8af0c2d14a"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-8af0c2d14a"></a>`query` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-89d66c5715"></a>`sort` | yes | #/components/schemas/ProvenanceSort |  |
-| <a id="s-1d6d15527b"></a>`status` | yes | anyOf=#/components/schemas/ProvenanceStatus \| type="null" |  |
+| <a id="s-1d6d15527b"></a>`status` | yes | anyOf=(#/components/schemas/ProvenanceStatus) \| (type="null") |  |
 
 ### Progression, limits, and lifecycle
 
@@ -83,6 +86,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/CapturedCollectionFileProvenancePage`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -172,3 +178,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

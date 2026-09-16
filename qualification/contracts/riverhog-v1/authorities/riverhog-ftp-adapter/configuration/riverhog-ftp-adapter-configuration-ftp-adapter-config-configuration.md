@@ -14,34 +14,77 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1720d3961c"></a>
-- <a id="s-16e59a37de"></a>`title`: FtpAdapterConfig
-- <a id="s-fe9ddcb15a"></a>`type`: object
+
+- <a id="s-fe9ddcb15a"></a>`type`: `"object"`
+- <a id="s-5c64d0ade2"></a>`additionalProperties`: `false`
+- <a id="s-7a6d4adcb1"></a>`required`: `["host_id","riverhog_base_url","riverhog_token","api_token","sources"]`
+- <a id="s-16e59a37de"></a>`title`: `"FtpAdapterConfig"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f911dd1f94"></a>`allow_insecure_http` | no | type="boolean" |  |
-| <a id="s-dbf5ea4ac5"></a>`api_token` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-7c7fe84c8b"></a>`claim_attempt_budget` | no | type="integer"; minimum=2 |  |
-| <a id="s-684f7aa9c4"></a>`completion_failure_attempt_budget` | no | type="integer"; minimum=1 |  |
-| <a id="s-c151434722"></a>`completion_failure_capacity` | no | type="integer"; minimum=1 |  |
-| <a id="s-6c890fc5d5"></a>`discovery_entry_budget` | no | type="integer"; minimum=1 |  |
-| <a id="s-72ad5db1e6"></a>`host_id` | yes | type="string"; minLength=1; maxLength=255 |  |
-| <a id="s-7c5fa78bfc"></a>`pending_claim_capacity` | no | type="integer"; minimum=1 |  |
-| <a id="s-82aa3eb24d"></a>`poll_seconds` | no | type="number"; minimum=0.1; maximum=3600 |  |
-| <a id="s-2a409954ca"></a>`provenance_observer` | no | anyOf=type="string"; minLength=1; maxLength=255 \| type="null" |  |
-| <a id="s-22a68b6f37"></a>`riverhog_base_url` | yes | type="string"; minLength=1; maxLength=2048 |  |
-| <a id="s-132c5582fa"></a>`riverhog_token` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-c96e3a57ab"></a>`sources` | yes | type="array"; minItems=1; items=(#/$defs/SourceConfig) |  |
+| <a id="s-f911dd1f94"></a>`allow_insecure_http` | no | type="boolean"; default=false |  |
+| <a id="s-dbf5ea4ac5"></a>`api_token` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-7c7fe84c8b"></a>`claim_attempt_budget` | no | type="integer"; minimum=2; default=8 |  |
+| <a id="s-684f7aa9c4"></a>`completion_failure_attempt_budget` | no | type="integer"; minimum=1; default=8 |  |
+| <a id="s-c151434722"></a>`completion_failure_capacity` | no | type="integer"; minimum=1; default=128 |  |
+| <a id="s-6c890fc5d5"></a>`discovery_entry_budget` | no | type="integer"; minimum=1; default=4096 |  |
+| <a id="s-72ad5db1e6"></a>`host_id` | yes | type="string"; maxLength=255; minLength=1 |  |
+| <a id="s-7c5fa78bfc"></a>`pending_claim_capacity` | no | type="integer"; minimum=1; default=128 |  |
+| <a id="s-82aa3eb24d"></a>`poll_seconds` | no | type="number"; minimum=0.1; maximum=3600; default=5 |  |
+| <a id="s-2a409954ca"></a>`provenance_observer` | no | anyOf=(type="string"; maxLength=255; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-22a68b6f37"></a>`riverhog_base_url` | yes | type="string"; maxLength=2048; minLength=1 |  |
+| <a id="s-132c5582fa"></a>`riverhog_token` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-c96e3a57ab"></a>`sources` | yes | type="array"; items=([SourceConfig](#s-b4cbe4146f)); minItems=1 |  |
 
 ### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-de0b3f6676"></a>`CollectionDescription` | type="string"; minLength=1; maxLength=32768; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
-| <a id="s-031bfd2553"></a>`CollectionTag` | type="string"; minLength=1; maxLength=65536; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
-| <a id="s-b4cbe4146f"></a>`SourceConfig` | type="object"; fields=`archive_store`, `close_mode`, `description`, `id`, `ingest_source`, `max_bytes`, `max_files`, `provenance`, `provenance_omission_reason`, `root`, `tags`; additional keys=`additionalProperties`, `required` |
+- [CollectionDescription](#s-de0b3f6676)
+- [CollectionTag](#s-031bfd2553)
+- [SourceConfig](#s-b4cbe4146f)
+
+### <a id="s-de0b3f6676"></a>definition `CollectionDescription`
+
+- <a id="s-4692000325"></a>`type`: `"string"`
+- <a id="s-5b25e1f476"></a>`maxLength`: `32768`
+- <a id="s-f7061fa30a"></a>`minLength`: `1`
+- <a id="s-01f4d2aa7c"></a>`x-riverhog-encoded-bytes-max`: `32768`
+- <a id="s-144d66539f"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-catalog-description"}`
+- <a id="s-393294ed07"></a>`x-unicode-normalization`: `"NFC"`
+
+### <a id="s-031bfd2553"></a>definition `CollectionTag`
+
+- <a id="s-dce56ffd8e"></a>`type`: `"string"`
+- <a id="s-4e5db1c1f6"></a>`maxLength`: `65536`
+- <a id="s-4c9a7f815f"></a>`minLength`: `1`
+- <a id="s-06092b1f00"></a>`x-riverhog-encoded-bytes-max`: `65536`
+- <a id="s-cc2b9cfcbe"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-collection-tag"}`
+- <a id="s-192cff69a4"></a>`x-unicode-normalization`: `"NFC"`
+
+### <a id="s-b4cbe4146f"></a>definition `SourceConfig`
+
+- <a id="s-f0f381abae"></a>`type`: `"object"`
+- <a id="s-0862e6a3e3"></a>`additionalProperties`: `false`
+- <a id="s-36753f0b80"></a>`description`: `"One deployment-owned, content-opaque intake source."`
+- <a id="s-f7da26f3bb"></a>`required`: `["id","root","ingest_source"]`
+- <a id="s-1275c30dd4"></a>`title`: `"SourceConfig"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3246c539d9"></a>`archive_store` | no | anyOf=(type="string"; maxLength=160; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-9711d6753d"></a>`close_mode` | no | type="string"; enum=["stable","explicit-flush"]; default="stable" |  |
+| <a id="s-276db63837"></a>`description` | no | anyOf=([CollectionDescription](#s-de0b3f6676)) \| (type="null"); default=null |  |
+| <a id="s-8f393e4b41"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$" |  |
+| <a id="s-d364f97555"></a>`ingest_source` | yes | type="string"; maxLength=512; minLength=1 |  |
+| <a id="s-16b095e18a"></a>`max_bytes` | no | type="integer"; minimum=1; default=107374182400 |  |
+| <a id="s-487e91e300"></a>`max_files` | no | type="integer"; minimum=1; default=1000 |  |
+| <a id="s-78d458ca6a"></a>`provenance` | no | type="string"; enum=["capture","omit"]; default="capture" |  |
+| <a id="s-a05abaefd3"></a>`provenance_omission_reason` | no | anyOf=(type="string"; maxLength=1000) \| (type="null"); default=null |  |
+| <a id="s-042095c12f"></a>`root` | yes | type="string"; format="path" |  |
+| <a id="s-779c3d2f99"></a>`tags` | no | type="array"; default=[]; items=([CollectionTag](#s-031bfd2553)) |  |
 
 ### Progression, limits, and lifecycle
 
@@ -51,7 +94,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-779c3d2f99"></a>[definition SourceConfig · field tags](#s-b4cbe4146f) | `cardinality · items · operational_policy` | shared above |
+| [definition SourceConfig · field tags](#s-779c3d2f99) | `cardinality · items · operational_policy` | shared above |
 | [field sources](#s-c96e3a57ab) | `cardinality · items · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
@@ -62,9 +105,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [definition CollectionDescription](#s-de0b3f6676) | `length · characters · contract_max` | maximum=32768; minimum=1; reason="schema-maximum" |
 | [definition CollectionTag](#s-031bfd2553) | `encoded-size · bytes · contract_max` | maximum=65536; reason="bounded-human-authored-collection-tag"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
 | [definition CollectionTag](#s-031bfd2553) | `length · characters · contract_max` | maximum=65536; minimum=1; reason="schema-maximum" |
-| <a id="s-58715b7340"></a>[definition SourceConfig · field archive_store · string value](#s-b4cbe4146f) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
-| <a id="s-d364f97555"></a>[definition SourceConfig · field ingest_source](#s-b4cbe4146f) | `length · characters · contract_max` | maximum=512; minimum=1; reason="schema-maximum" |
-| <a id="s-6e40570cee"></a>[definition SourceConfig · field provenance_omission_reason · string value](#s-b4cbe4146f) | `length · characters · contract_max` | maximum=1000; reason="schema-maximum" |
+| <a id="s-58715b7340"></a>[definition SourceConfig · field archive_store · string value](#s-3246c539d9) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
+| [definition SourceConfig · field ingest_source](#s-d364f97555) | `length · characters · contract_max` | maximum=512; minimum=1; reason="schema-maximum" |
+| <a id="s-6e40570cee"></a>[definition SourceConfig · field provenance_omission_reason · string value](#s-a05abaefd3) | `length · characters · contract_max` | maximum=1000; reason="schema-maximum" |
 | [field api_token](#s-dbf5ea4ac5) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
 | [field host_id](#s-72ad5db1e6) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
 | [field poll_seconds](#s-82aa3eb24d) | `value · schema-value · contract_max` | maximum=3600; minimum=0.1; reason="schema-maximum" |
@@ -95,6 +138,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/configuration_documents/riverhog-ftp-adapter:configuration:ftp-adapter-config`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -333,3 +379,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

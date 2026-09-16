@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3ced3fdf8f"></a>
-- <a id="s-bebdb2fa63"></a>`title`: AdmissionPolicyCatalogView
-- <a id="s-7c2852f540"></a>`type`: object
+
+- <a id="s-7c2852f540"></a>`type`: `"object"`
+- <a id="s-a7b0b2bce2"></a>`additionalProperties`: `false`
+- <a id="s-cac21d588a"></a>`required`: `["catalog_sha256","policies"]`
+- <a id="s-bebdb2fa63"></a>`title`: `"AdmissionPolicyCatalogView"`
 
 ### Fields
 
@@ -72,6 +75,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 04298da17774d7c5d89b5b02199638603037f7be9d0a675d5e4ca71ff7612af8 -->
@@ -101,3 +107,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

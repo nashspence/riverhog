@@ -27,13 +27,16 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-0aad1ea5a6"></a>
-- <a id="s-6fcab1fdf3"></a>`type`: object
 
-### Fields
+- <a id="s-6fcab1fdf3"></a>`type`: `"object"`
+- <a id="s-236d5d6d86"></a>`additionalProperties`: `false`
+- <a id="s-e3a5acc937"></a>`required`: `["artifact_id","start_ms","duration_ms"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-35c8ae862c"></a>`artifact_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-35c8ae862c"></a>`artifact_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-d724965218"></a>`duration_ms` | yes | type="integer"; minimum=1 |  |
 | <a id="s-489c1bc11e"></a>`start_ms` | yes | type="integer"; minimum=0 |  |
 
@@ -58,6 +61,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_review_target_contracts.ReviewSampleWindow`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -99,3 +105,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

@@ -14,9 +14,12 @@ Exact successful branch result used to derive one join work identity.
 ## External contract
 
 <a id="s-c52b2a82ff"></a>
-- <a id="s-6fb692513a"></a>`title`: JoinWorkMemberBinding
-- <a id="s-7046b4db9c"></a>`description`: Exact successful branch result used to derive one join work identity.
-- <a id="s-c68f77fdd2"></a>`type`: object
+
+- <a id="s-c68f77fdd2"></a>`type`: `"object"`
+- <a id="s-1ac6fc71be"></a>`additionalProperties`: `false`
+- <a id="s-7046b4db9c"></a>`description`: `"Exact successful branch result used to derive one join work identity."`
+- <a id="s-646ccdb6cd"></a>`required`: `["branch_id","settlement_sha256","artifact_selection_sha256"]`
+- <a id="s-6fb692513a"></a>`title`: `"JoinWorkMemberBinding"`
 
 ### Fields
 
@@ -24,7 +27,7 @@ Exact successful branch result used to derive one join work identity.
 |---|---:|---|---|
 | <a id="s-e94c9d3dc7"></a>`artifact_selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-ee37562d56"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-d66dcc0a37"></a>`producer_settlement_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-d66dcc0a37"></a>`producer_settlement_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
 | <a id="s-6c249ece18"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
@@ -61,6 +64,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/JoinWorkMemberBinding`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -108,3 +114,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

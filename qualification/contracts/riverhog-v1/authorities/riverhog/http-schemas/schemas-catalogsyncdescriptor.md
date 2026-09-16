@@ -14,22 +14,25 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8e6a59f082"></a>
-- <a id="s-472ac7ad4b"></a>`title`: CatalogSyncDescriptor
-- <a id="s-f11fd59494"></a>`type`: object
+
+- <a id="s-f11fd59494"></a>`type`: `"object"`
+- <a id="s-4441387560"></a>`additionalProperties`: `false`
+- <a id="s-130594c9f9"></a>`required`: `["collection_id","archive_root_sha256","content_identity","description","description_revision","description_identity","tag_revision","tag_set_identity","revision"]`
+- <a id="s-472ac7ad4b"></a>`title`: `"CatalogSyncDescriptor"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ff143d900d"></a>`archive_root_sha256` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ff143d900d"></a>`archive_root_sha256` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-75e947c024"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-eda7115168"></a>`content_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-0acf4a3f6c"></a>`description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
-| <a id="s-c2e2616dd7"></a>`description_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-eda7115168"></a>`content_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-0acf4a3f6c"></a>`description` | yes | anyOf=(#/components/schemas/CollectionDescription) \| (type="null") |  |
+| <a id="s-c2e2616dd7"></a>`description_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-6e54f11a9e"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
-| <a id="s-d06f1868a6"></a>`revision` | yes | type="string"; minLength=1; maxLength=19; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+| <a id="s-d06f1868a6"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
 | <a id="s-e2cc0388c1"></a>`tag_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
-| <a id="s-f40cefb16d"></a>`tag_set_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f40cefb16d"></a>`tag_set_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -74,6 +77,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncDescriptor`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -159,3 +165,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

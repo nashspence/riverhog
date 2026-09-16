@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c87794d161"></a>
-- <a id="s-c75964838f"></a>`title`: EvaluationChildView
-- <a id="s-d07150de4f"></a>`type`: object
+
+- <a id="s-d07150de4f"></a>`type`: `"object"`
+- <a id="s-90f844c731"></a>`additionalProperties`: `false`
+- <a id="s-c583b95677"></a>`required`: `["variant_id","work_id","state"]`
+- <a id="s-c75964838f"></a>`title`: `"EvaluationChildView"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f4f4f554f1"></a>`output` | no | anyOf=#/components/schemas/OutputCollectionRef \| type="null" |  |
+| <a id="s-f4f4f554f1"></a>`output` | no | anyOf=(#/components/schemas/OutputCollectionRef) \| (type="null") |  |
 | <a id="s-baf274864a"></a>`state` | yes | type="string"; enum=["pending","active","complete","inapplicable","failed","canceled"] |  |
-| <a id="s-28b6d88982"></a>`variant_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-28b6d88982"></a>`variant_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-794161c858"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
@@ -63,6 +66,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/stove0/components/schemas/EvaluationChildView`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -115,3 +121,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

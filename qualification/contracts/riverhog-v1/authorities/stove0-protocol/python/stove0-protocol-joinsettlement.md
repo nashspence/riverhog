@@ -27,29 +27,63 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-0b32b7a2dc"></a>
-- <a id="s-c93221e533"></a>`type`: object
 
-### Fields
+- <a id="s-c93221e533"></a>`type`: `"object"`
+- <a id="s-bba4d45bcf"></a>`additionalProperties`: `false`
+- <a id="s-715c1ea148"></a>`required`: `["work_id","workflow_plan_sha256","join_plan_sha256","derivation_sha256","producer_settlement_sha256","output_collection","output_selection","settlement_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-c5967c3618"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-2bf52a28a7"></a>`format` | no | type="string"; const="stove0-join-settlement/v1" |  |
+| <a id="s-2bf52a28a7"></a>`format` | no | type="string"; const="stove0-join-settlement/v1"; default="stove0-join-settlement/v1" |  |
 | <a id="s-e8c99719c7"></a>`join_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-b6641a0702"></a>`output_collection` | yes | #/$defs/CollectionRootRef |  |
-| <a id="s-0dffa823d1"></a>`output_selection` | yes | #/$defs/ArtifactSelectionRef |  |
+| <a id="s-b6641a0702"></a>`output_collection` | yes | [CollectionRootRef](#s-314b13a04f) |  |
+| <a id="s-0dffa823d1"></a>`output_selection` | yes | [ArtifactSelectionRef](#s-09d3fb4dae) |  |
 | <a id="s-468a4eb04b"></a>`producer_settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-b849bc92a7"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-c77cad58ef"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-030f98d42e"></a>`workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-09d3fb4dae"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-f30386e37f"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-314b13a04f"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
+- [ArtifactSelectionRef](#s-09d3fb4dae)
+- [CollectionId](#s-f30386e37f)
+- [CollectionRootRef](#s-314b13a04f)
+
+##### <a id="s-09d3fb4dae"></a>definition `ArtifactSelectionRef`
+
+- <a id="s-d4c58fa294"></a>`type`: `"object"`
+- <a id="s-4557fc7982"></a>`additionalProperties`: `false`
+- <a id="s-00a469b8ff"></a>`required`: `["selection_sha256","artifact_count","total_bytes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6f28036908"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-872d49f200"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-fa0db39064"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+
+##### <a id="s-f30386e37f"></a>definition `CollectionId`
+
+- <a id="s-7cb89793a5"></a>`type`: `"integer"`
+- <a id="s-8982841499"></a>`minimum`: `1`
+
+##### <a id="s-314b13a04f"></a>definition `CollectionRootRef`
+
+- <a id="s-5e42cd9dcf"></a>`type`: `"object"`
+- <a id="s-e10e0c342c"></a>`additionalProperties`: `false`
+- <a id="s-6a651848b3"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a42211b8fa"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c4c5706b13"></a>`collection_id` | yes | [CollectionId](#s-f30386e37f) |  |
+| <a id="s-338642f94f"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -79,6 +113,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_protocol.JoinSettlement`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -198,3 +235,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

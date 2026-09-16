@@ -27,21 +27,43 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ae554c5d48"></a>
-- <a id="s-b897be87c8"></a>`type`: object
 
-### Fields
+- <a id="s-b897be87c8"></a>`type`: `"object"`
+- <a id="s-6b289f9429"></a>`additionalProperties`: `false`
+- <a id="s-e25c97a6e6"></a>`required`: `["collection_id","path"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7be108cddd"></a>`collection_id` | yes | #/$defs/CollectionId |  |
-| <a id="s-7e9ef988be"></a>`path` | yes | #/$defs/CanonicalRelPath |  |
+| <a id="s-7be108cddd"></a>`collection_id` | yes | [CollectionId](#s-66b4e9bd4e) |  |
+| <a id="s-7e9ef988be"></a>`path` | yes | [CanonicalRelPath](#s-63a8c2807f) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
+- [CanonicalRelPath](#s-63a8c2807f)
+- [CollectionId](#s-66b4e9bd4e)
+
+##### <a id="s-63a8c2807f"></a>definition `CanonicalRelPath`
+
+- <a id="s-6cf8697779"></a>`type`: `"string"`
+- <a id="s-1f955ea12d"></a>`format`: `"riverhog-canonical-relpath-v1"`
+- <a id="s-4caa214984"></a>`maxLength`: `4096`
+- <a id="s-4841c3f7b8"></a>`minLength`: `1`
+- <a id="s-ef29d2abed"></a>`pattern`: `"^[^/\\\\]+(?:/[^/\\\\]+)*$"`
+- <a id="s-b415c93e91"></a>`x-unicode-normalization`: `"NFC"`
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
 |---|---|
-| <a id="s-63a8c2807f"></a>`CanonicalRelPath` | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
-| <a id="s-66b4e9bd4e"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-873506c0b9"></a>1 | not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)") |
+| <a id="s-acd960eaf2"></a>2 | not=(pattern="^\\s\|\\s$") |
+
+##### <a id="s-66b4e9bd4e"></a>definition `CollectionId`
+
+- <a id="s-333d924024"></a>`type`: `"integer"`
+- <a id="s-eaa21623bc"></a>`minimum`: `1`
 
 ## Governing policies
 
@@ -64,6 +86,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -123,3 +148,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

@@ -14,14 +14,17 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a3bf92561f"></a>
-- <a id="s-5f38231474"></a>`title`: CollectionUploadListFiltersOut
-- <a id="s-26e41b9a11"></a>`type`: object
+
+- <a id="s-26e41b9a11"></a>`type`: `"object"`
+- <a id="s-211c7f2dec"></a>`additionalProperties`: `false`
+- <a id="s-d26cd512e5"></a>`required`: `["state"]`
+- <a id="s-5f38231474"></a>`title`: `"CollectionUploadListFiltersOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f0a343edfd"></a>`state` | yes | anyOf=#/components/schemas/CollectionUploadState \| type="null" |  |
+| <a id="s-f0a343edfd"></a>`state` | yes | anyOf=(#/components/schemas/CollectionUploadState) \| (type="null") |  |
 
 ## Maintained corroboration
 
@@ -51,6 +54,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 2367deaea2a301a7886ae46cf9df477060428a27b716384f27d61e80cd32b82c -->
@@ -77,3 +83,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

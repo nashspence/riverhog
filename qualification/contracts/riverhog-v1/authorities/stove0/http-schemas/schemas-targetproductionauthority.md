@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c3ee643298"></a>
-- <a id="s-033fae8d9a"></a>`title`: TargetProductionAuthority
-- <a id="s-6d6f0f906a"></a>`type`: object
+
+- <a id="s-6d6f0f906a"></a>`type`: `"object"`
+- <a id="s-1527293966"></a>`additionalProperties`: `false`
+- <a id="s-4627170ade"></a>`required`: `["job_id","plan_sha256","outputs","disposition_count","disposition_sha256","source_edge_count","source_edge_sha256","riverhog_disposition_set","production_sha256"]`
+- <a id="s-033fae8d9a"></a>`title`: `"TargetProductionAuthority"`
 
 ### Fields
 
@@ -23,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-35a1adfc05"></a>`disposition_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-74bb4956e0"></a>`disposition_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ad8b45f4a0"></a>`format` | no | type="string"; const="stove0-target-production/v1" |  |
+| <a id="s-ad8b45f4a0"></a>`format` | no | type="string"; const="stove0-target-production/v1"; default="stove0-target-production/v1" |  |
 | <a id="s-47b3af76c1"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-4c5e8f7dd1"></a>`outputs` | yes | #/components/schemas/OutputArtifactSetIdentity |  |
 | <a id="s-261797bf17"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -75,6 +78,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/TargetProductionAuthority`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -147,3 +153,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

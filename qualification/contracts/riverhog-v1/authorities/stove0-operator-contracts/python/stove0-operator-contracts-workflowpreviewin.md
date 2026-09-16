@@ -27,24 +27,48 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d04d5dab91"></a>
-- <a id="s-3caace8cca"></a>`type`: object
 
-### Fields
+- <a id="s-3caace8cca"></a>`type`: `"object"`
+- <a id="s-bc534b234b"></a>`additionalProperties`: `false`
+- <a id="s-6d0f6aa916"></a>`required`: `["recipe_id","inputs"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2d9430f995"></a>`effective_intent` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-21bef1f98d"></a>`inputs` | yes | type="array"; minItems=1; items=(#/$defs/CollectionRootRef) |  |
-| <a id="s-f25e9c76e6"></a>`recipe_id` | yes | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-0a6f3ccb15"></a>`recipe_revision` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| <a id="s-2d9430f995"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](#s-e10ebafa23)) |  |
+| <a id="s-21bef1f98d"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](#s-c90b432181)); minItems=1 |  |
+| <a id="s-f25e9c76e6"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-0a6f3ccb15"></a>`recipe_revision` | no | anyOf=(type="integer"; minimum=1) \| (type="null"); default=null |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-01b0583462"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-c90b432181"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e10ebafa23"></a>`JsonValue` | empty object |
+- [CollectionId](#s-01b0583462)
+- [CollectionRootRef](#s-c90b432181)
+- [JsonValue](#s-e10ebafa23)
+
+##### <a id="s-01b0583462"></a>definition `CollectionId`
+
+- <a id="s-6dbfbce98c"></a>`type`: `"integer"`
+- <a id="s-a54a678d2d"></a>`minimum`: `1`
+
+##### <a id="s-c90b432181"></a>definition `CollectionRootRef`
+
+- <a id="s-37d5864f74"></a>`type`: `"object"`
+- <a id="s-c87665492d"></a>`additionalProperties`: `false`
+- <a id="s-e99a5b2fff"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-120dcc48e5"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-bc0d1b495a"></a>`collection_id` | yes | [CollectionId](#s-01b0583462) |  |
+| <a id="s-dd03cb5e45"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-e10ebafa23"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Maintained corroboration
 
@@ -73,6 +97,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.WorkflowPreviewIn`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -159,3 +186,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

@@ -14,18 +14,21 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-31286c7a21"></a>
-- <a id="s-3599038fec"></a>`title`: WorkCreatedEvent
-- <a id="s-a5fac1868f"></a>`type`: object
+
+- <a id="s-a5fac1868f"></a>`type`: `"object"`
+- <a id="s-9bdeceda25"></a>`additionalProperties`: `false`
+- <a id="s-c7bfcac709"></a>`required`: `["id","source","type","subject","time","data"]`
+- <a id="s-3599038fec"></a>`title`: `"WorkCreatedEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-e5fe01cde7"></a>`data` | yes | #/components/schemas/WorkCreatedEventData |  |
-| <a id="s-aa0945a217"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-aa0945a217"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-c328ad7c51"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-66e15f03ce"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
-| <a id="s-ebaa118e07"></a>`specversion` | no | type="string"; const="1.0" |  |
+| <a id="s-ebaa118e07"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-c5c0e7e820"></a>`subject` | yes | type="string"; minLength=1 |  |
 | <a id="s-7ecc2de9c2"></a>`time` | yes | type="string" |  |
 | <a id="s-0bf2ceef75"></a>`type` | yes | type="string"; const="io.riverhog.stove0.work.created" |  |
@@ -57,6 +60,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -118,3 +124,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

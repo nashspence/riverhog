@@ -14,19 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-e102080776"></a>
-- <a id="s-2e46c614ff"></a>`title`: RetrievalExpiredEvent
-- <a id="s-83e3b5fdb2"></a>`type`: object
+
+- <a id="s-83e3b5fdb2"></a>`type`: `"object"`
+- <a id="s-6caf13bba3"></a>`additionalProperties`: `false`
+- <a id="s-ef4a07f699"></a>`required`: `["id","source","type","time","data"]`
+- <a id="s-2e46c614ff"></a>`title`: `"RetrievalExpiredEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-a70e65c3c7"></a>`data` | yes | #/components/schemas/RetrievalExpiredData |  |
-| <a id="s-ed4b356122"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-ed4b356122"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-1f4f2d7d08"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-2e6997fde9"></a>`source` | yes | type="string"; minLength=1 |  |
-| <a id="s-f69ac13250"></a>`specversion` | no | type="string"; const="1.0" |  |
-| <a id="s-4dadef44a7"></a>`subject` | no | anyOf=type="string"; minLength=1 \| type="null" |  |
+| <a id="s-f69ac13250"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-4dadef44a7"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null") |  |
 | <a id="s-3bc6cf0fd9"></a>`time` | yes | type="string" |  |
 | <a id="s-4d9f982b0f"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.expired" |  |
 
@@ -57,6 +60,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredEvent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -124,3 +130,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

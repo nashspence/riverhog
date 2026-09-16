@@ -27,16 +27,19 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-1f52d7e70c"></a>
-- <a id="s-66673791c9"></a>`type`: object
 
-### Fields
+- <a id="s-66673791c9"></a>`type`: `"object"`
+- <a id="s-3eeff740a4"></a>`additionalProperties`: `false`
+- <a id="s-022494f425"></a>`required`: `["riverhog_base_url","capability_token"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c2bfdfd403"></a>`allow_insecure_http` | no | type="boolean" |  |
-| <a id="s-c652ffe607"></a>`capability_token` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-764f70019b"></a>`riverhog_base_url` | yes | type="string"; minLength=1; maxLength=2048 |  |
-| <a id="s-d4a36defe1"></a>`transport` | no | type="string"; const="riverhog-capability/v1" |  |
+| <a id="s-c2bfdfd403"></a>`allow_insecure_http` | no | type="boolean"; default=false |  |
+| <a id="s-c652ffe607"></a>`capability_token` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-764f70019b"></a>`riverhog_base_url` | yes | type="string"; maxLength=2048; minLength=1 |  |
+| <a id="s-d4a36defe1"></a>`transport` | no | type="string"; const="riverhog-capability/v1"; default="riverhog-capability/v1" |  |
 
 ## Governing policies
 
@@ -59,6 +62,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_protocol.TargetRuntimeAuthority`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -105,3 +111,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

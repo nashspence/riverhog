@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c607c0529c"></a>
-- <a id="s-b7f4c7bed0"></a>`title`: KeyDownloadQuotaOut
-- <a id="s-5c422e1a11"></a>`type`: object
+
+- <a id="s-5c422e1a11"></a>`type`: `"object"`
+- <a id="s-ddd210c17c"></a>`additionalProperties`: `false`
+- <a id="s-35f09b222e"></a>`required`: `["id","app","key_id","key_status","monthly_bytes","month_started_at","resets_at","accounted_bytes","reserved_bytes","remaining_bytes"]`
+- <a id="s-b7f4c7bed0"></a>`title`: `"KeyDownloadQuotaOut"`
 
 ### Fields
 
@@ -27,8 +30,8 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-78846b1bfc"></a>`key_id` | yes | #/components/schemas/ApplicationKeyId |  |
 | <a id="s-a6a9ffecad"></a>`key_status` | yes | type="string"; enum=["active","expired","revoked"] |  |
 | <a id="s-a5c3111220"></a>`month_started_at` | yes | type="string" |  |
-| <a id="s-b33af12726"></a>`monthly_bytes` | yes | anyOf=#/components/schemas/MonthlyDownloadQuotaBytes \| type="null" |  |
-| <a id="s-06aaaaa45e"></a>`remaining_bytes` | yes | anyOf=type="integer"; minimum=0 \| type="null" |  |
+| <a id="s-b33af12726"></a>`monthly_bytes` | yes | anyOf=(#/components/schemas/MonthlyDownloadQuotaBytes) \| (type="null") |  |
+| <a id="s-06aaaaa45e"></a>`remaining_bytes` | yes | anyOf=(type="integer"; minimum=0) \| (type="null") |  |
 | <a id="s-60638ee712"></a>`reserved_bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-76ad698142"></a>`resets_at` | yes | type="string" |  |
 
@@ -61,6 +64,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -146,3 +152,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

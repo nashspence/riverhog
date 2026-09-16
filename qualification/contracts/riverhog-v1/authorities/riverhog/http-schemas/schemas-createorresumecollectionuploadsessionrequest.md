@@ -14,23 +14,54 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-751d9669fa"></a>
-- <a id="s-0ade5d291c"></a>`title`: CreateOrResumeCollectionUploadSessionRequest
-- <a id="s-93feacf501"></a>`type`: object
+
+- <a id="s-93feacf501"></a>`type`: `"object"`
+- <a id="s-1077d1d9d4"></a>`additionalProperties`: `false`
+- <a id="s-ca263ee794"></a>`required`: `["idempotency_key","initial_tag_set_identity"]`
+- <a id="s-0ade5d291c"></a>`title`: `"CreateOrResumeCollectionUploadSessionRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1edb4de319"></a>`archive_store` | no | anyOf=#/components/schemas/ArchiveStoreName \| type="null" |  |
-| <a id="s-f6c4e0c61a"></a>`custody_mode` | no | type="string"; enum=["producer-retained","custody-transfer"] |  |
-| <a id="s-1f95c5607e"></a>`description` | no | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
-| <a id="s-8189380365"></a>`event_context` | no | anyOf=type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` \| type="null" |  |
-| <a id="s-11b776ca6b"></a>`idempotency_key` | yes | type="string"; minLength=1; maxLength=200; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
-| <a id="s-aa7adb9466"></a>`ingest_source` | no | anyOf=type="string" \| type="null" |  |
+| <a id="s-1edb4de319"></a>`archive_store` | no | anyOf=(#/components/schemas/ArchiveStoreName) \| (type="null") |  |
+| <a id="s-f6c4e0c61a"></a>`custody_mode` | no | type="string"; enum=["producer-retained","custody-transfer"]; default="producer-retained" |  |
+| <a id="s-1f95c5607e"></a>`description` | no | anyOf=(#/components/schemas/CollectionDescription) \| (type="null") |  |
+| <a id="s-8189380365"></a>`event_context` | no | anyOf=(type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}) \| (type="null") |  |
+| <a id="s-11b776ca6b"></a>`idempotency_key` | yes | type="string"; maxLength=200; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
+| <a id="s-aa7adb9466"></a>`ingest_source` | no | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-9c8b7f769b"></a>`initial_tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-8fbd974a3d"></a>`provenance_mode` | no | type="string"; enum=["captured","omitted"] |  |
-| <a id="s-cdc66d8038"></a>`provenance_omission_reason` | no | anyOf=type="string"; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$" \| type="null" |  |
-| <a id="s-d7947f281e"></a>`tags` | no | type="array"; maxItems=100; items=(#/components/schemas/CollectionTag); additional keys=`x-riverhog-extent` |  |
+| <a id="s-8fbd974a3d"></a>`provenance_mode` | no | type="string"; enum=["captured","omitted"]; default="captured" |  |
+| <a id="s-cdc66d8038"></a>`provenance_omission_reason` | no | anyOf=(type="string"; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$") \| (type="null") |  |
+| <a id="s-d7947f281e"></a>`tags` | no | type="array"; items=(#/components/schemas/CollectionTag); maxItems=100; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"repeat-request","reason":"bounded-upload-staging-step; collection-tag-set-is-unbounded"} |  |
+
+### Exactly one must match (`oneOf`)
+
+| Alternative | Schema |
+|---|---|
+| 1 | [See `oneOf` alternative 1](#s-2fe533a22f) |
+| 2 | [See `oneOf` alternative 2](#s-57076eb34e) |
+
+### <a id="s-2fe533a22f"></a>`oneOf` alternative 1
+
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-8e4f6f2982"></a>`provenance_mode` | no | const="captured" |  |
+| <a id="s-288c139b2c"></a>`provenance_omission_reason` | no | type="null" |  |
+
+### <a id="s-57076eb34e"></a>`oneOf` alternative 2
+
+- <a id="s-ead4de5d59"></a>`required`: `["provenance_mode","provenance_omission_reason"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-57314536d2"></a>`provenance_mode` | yes | const="omitted" |  |
+| <a id="s-37f238e7c6"></a>`provenance_omission_reason` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -96,6 +127,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/CreateOrResumeCollectionUploadSessionRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -244,3 +278,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

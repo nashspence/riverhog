@@ -27,26 +27,61 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d4ba1e9ed8"></a>
-- <a id="s-41ab9bc9c1"></a>`type`: object
 
-### Fields
+- <a id="s-41ab9bc9c1"></a>`type`: `"object"`
+- <a id="s-b8389d738b"></a>`additionalProperties`: `false`
+- <a id="s-8be0b79946"></a>`required`: `["source_identity","authorization_view_identity","collections"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-de5dee8417"></a>`authorization_view_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-84ebedcdca"></a>`changes_cursor` | no | anyOf=type="string"; minLength=1; maxLength=4096 \| type="null" |  |
-| <a id="s-b1b4fdf8cf"></a>`collections` | yes | type="array"; maxItems=100; items=(#/$defs/CatalogSyncDescriptor) |  |
-| <a id="s-91d2f7e6a2"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1" |  |
-| <a id="s-e4c6d56bef"></a>`next_cursor` | no | anyOf=type="string"; minLength=1; maxLength=4096 \| type="null" |  |
-| <a id="s-84522265fb"></a>`source_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-de5dee8417"></a>`authorization_view_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-84ebedcdca"></a>`changes_cursor` | no | anyOf=(type="string"; maxLength=4096; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-b1b4fdf8cf"></a>`collections` | yes | type="array"; items=([CatalogSyncDescriptor](#s-8c25c1131c)); maxItems=100 |  |
+| <a id="s-91d2f7e6a2"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1"; default="riverhog-catalog-sync/v1" |  |
+| <a id="s-e4c6d56bef"></a>`next_cursor` | no | anyOf=(type="string"; maxLength=4096; minLength=1) \| (type="null"); default=null |  |
+| <a id="s-84522265fb"></a>`source_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-8c25c1131c"></a>`CatalogSyncDescriptor` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`, `description`, `description_identity`, `description_revision`, `revision`, `tag_revision`, `tag_set_identity`; additional keys=`additionalProperties`, `required` |
-| <a id="s-9422def1b1"></a>`CollectionDescription` | type="string"; minLength=1; maxLength=32768; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
-| <a id="s-a83fcd9192"></a>`CollectionId` | type="integer"; minimum=1 |
+- [CatalogSyncDescriptor](#s-8c25c1131c)
+- [CollectionDescription](#s-9422def1b1)
+- [CollectionId](#s-a83fcd9192)
+
+##### <a id="s-8c25c1131c"></a>definition `CatalogSyncDescriptor`
+
+- <a id="s-88b763a076"></a>`type`: `"object"`
+- <a id="s-38775328d1"></a>`additionalProperties`: `false`
+- <a id="s-1efd2d8931"></a>`required`: `["collection_id","archive_root_sha256","content_identity","description","description_revision","description_identity","tag_revision","tag_set_identity","revision"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2a22a4e16b"></a>`archive_root_sha256` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6418b0cd40"></a>`collection_id` | yes | [CollectionId](#s-a83fcd9192) |  |
+| <a id="s-7255ac678a"></a>`content_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2b03d9b4fd"></a>`description` | yes | anyOf=([CollectionDescription](#s-9422def1b1)) \| (type="null") |  |
+| <a id="s-5e814898de"></a>`description_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-dd33ef622b"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
+| <a id="s-641ef1956d"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+| <a id="s-cde77198b5"></a>`tag_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
+| <a id="s-25715b5c06"></a>`tag_set_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-9422def1b1"></a>definition `CollectionDescription`
+
+- <a id="s-93af252e07"></a>`type`: `"string"`
+- <a id="s-54613cb947"></a>`maxLength`: `32768`
+- <a id="s-b574be85fd"></a>`minLength`: `1`
+- <a id="s-44dea2b09d"></a>`x-riverhog-encoded-bytes-max`: `32768`
+- <a id="s-f4f165d53d"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-catalog-description"}`
+- <a id="s-5f5dd78faa"></a>`x-unicode-normalization`: `"NFC"`
+
+##### <a id="s-a83fcd9192"></a>definition `CollectionId`
+
+- <a id="s-8746180cec"></a>`type`: `"integer"`
+- <a id="s-1753f8624a"></a>`minimum`: `1`
 
 ## Maintained corroboration
 
@@ -75,6 +110,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.CatalogSyncCollectionPage`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -240,3 +278,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

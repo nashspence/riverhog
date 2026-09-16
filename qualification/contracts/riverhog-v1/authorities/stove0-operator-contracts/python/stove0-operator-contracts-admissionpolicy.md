@@ -27,28 +27,42 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-886f287521"></a>
-- <a id="s-845b3374ea"></a>`type`: object
 
-### Fields
+- <a id="s-845b3374ea"></a>`type`: `"object"`
+- <a id="s-a2cf20a7de"></a>`additionalProperties`: `false`
+- <a id="s-5a724a63e3"></a>`required`: `["id","revision","required_tags","recipe_id","recipe_revision","recipe_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-eaea3852d7"></a>`automatic_preview` | no | type="string"; const="accept-ready" |  |
-| <a id="s-443f9b71cf"></a>`effective_intent` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-9bad2e23cc"></a>`format` | no | type="string"; const="stove0-admission-policy/v1" |  |
+| <a id="s-eaea3852d7"></a>`automatic_preview` | no | type="string"; const="accept-ready"; default="accept-ready" |  |
+| <a id="s-443f9b71cf"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](#s-7830c390f5)) |  |
+| <a id="s-9bad2e23cc"></a>`format` | no | type="string"; const="stove0-admission-policy/v1"; default="stove0-admission-policy/v1" |  |
 | <a id="s-c56cfe0f78"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-4ea2bba8aa"></a>`recipe_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-4ea2bba8aa"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-e69fcbefed"></a>`recipe_revision` | yes | type="integer"; minimum=1 |  |
 | <a id="s-69008c4330"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ae61a1b632"></a>`required_tags` | yes | type="array"; minItems=1; maxItems=100; items=(#/$defs/CollectionTag); additional keys=`x-riverhog-extent` |  |
+| <a id="s-ae61a1b632"></a>`required_tags` | yes | type="array"; items=([CollectionTag](#s-e223a27a21)); maxItems=100; minItems=1; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-classification-admission-predicate"} |  |
 | <a id="s-7e13c20b0c"></a>`revision` | yes | type="integer"; minimum=1 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-e223a27a21"></a>`CollectionTag` | type="string"; minLength=1; maxLength=65536; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
-| <a id="s-7830c390f5"></a>`JsonValue` | empty object |
+- [CollectionTag](#s-e223a27a21)
+- [JsonValue](#s-7830c390f5)
+
+##### <a id="s-e223a27a21"></a>definition `CollectionTag`
+
+- <a id="s-1620ea55a4"></a>`type`: `"string"`
+- <a id="s-a7700501f3"></a>`maxLength`: `65536`
+- <a id="s-f970ec8523"></a>`minLength`: `1`
+- <a id="s-faa8d66d4a"></a>`x-riverhog-encoded-bytes-max`: `65536`
+- <a id="s-08a475b9ee"></a>`x-riverhog-extent`: `{"policy":"contract_max","reason":"bounded-human-authored-collection-tag"}`
+- <a id="s-9a49382214"></a>`x-unicode-normalization`: `"NFC"`
+
+##### <a id="s-7830c390f5"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Maintained corroboration
 
@@ -78,6 +92,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.AdmissionPolicy`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -172,3 +189,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

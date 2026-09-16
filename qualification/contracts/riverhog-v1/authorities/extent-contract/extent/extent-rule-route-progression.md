@@ -14,11 +14,12 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-c35859ad2c"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-1aeb3f70a7"></a>`authority` | "the route-owned x-riverhog-read-collection declaration" |
-| <a id="s-3f1439835e"></a>`completion` | "the owning progression contract" |
-| <a id="s-aa5edca8df"></a>`policy` | "segmented_no_total_max" |
+| <a id="s-1aeb3f70a7"></a>`authority` | `"the route-owned x-riverhog-read-collection declaration"` |
+| <a id="s-3f1439835e"></a>`completion` | `"the owning progression contract"` |
+| <a id="s-aa5edca8df"></a>`policy` | `"segmented_no_total_max"` |
 
 ## Governing policies
 
@@ -42,6 +43,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 524dea7a4d43815099baefe219d38866fbdfabfb1e615203e0c41da3cc11fca0 -->
@@ -53,3 +57,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "policy": "segmented_no_total_max"
 }
 ```
+
+</details>

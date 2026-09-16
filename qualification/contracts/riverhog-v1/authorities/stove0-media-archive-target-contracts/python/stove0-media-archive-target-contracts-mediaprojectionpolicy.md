@@ -27,26 +27,52 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-1ef0b6d911"></a>
-- <a id="s-3a66fe7954"></a>`type`: object
 
-### Fields
+- <a id="s-3a66fe7954"></a>`type`: `"object"`
+- <a id="s-3e7bcda6ed"></a>`additionalProperties`: `false`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f165b60f52"></a>`creators` | no | type="array"; items=(type="string") |  |
-| <a id="s-8a5b4f8985"></a>`device_make` | no | anyOf=type="string" \| type="null" |  |
-| <a id="s-5b78b916e3"></a>`device_model` | no | anyOf=type="string" \| type="null" |  |
-| <a id="s-bd011a12ad"></a>`field_preferences` | no | type="array"; items=(#/$defs/MediaFieldPreference) |  |
-| <a id="s-d84a23de97"></a>`format` | no | type="string"; const="stove0-media-projection-policy/v1" |  |
-| <a id="s-767a992ab5"></a>`gps` | no | anyOf=#/$defs/MediaGps \| type="null" |  |
-| <a id="s-abb83142af"></a>`tags` | no | type="array"; items=(type="string") |  |
+| <a id="s-f165b60f52"></a>`creators` | no | type="array"; default=[]; items=(type="string") |  |
+| <a id="s-8a5b4f8985"></a>`device_make` | no | anyOf=(type="string") \| (type="null"); default=null |  |
+| <a id="s-5b78b916e3"></a>`device_model` | no | anyOf=(type="string") \| (type="null"); default=null |  |
+| <a id="s-bd011a12ad"></a>`field_preferences` | no | type="array"; default=[]; items=([MediaFieldPreference](#s-9266a8309a)) |  |
+| <a id="s-d84a23de97"></a>`format` | no | type="string"; const="stove0-media-projection-policy/v1"; default="stove0-media-projection-policy/v1" |  |
+| <a id="s-767a992ab5"></a>`gps` | no | anyOf=([MediaGps](#s-12cf49e35b)) \| (type="null"); default=null |  |
+| <a id="s-abb83142af"></a>`tags` | no | type="array"; default=[]; items=(type="string") |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-9266a8309a"></a>`MediaFieldPreference` | type="object"; fields=`fields`, `name`; additional keys=`additionalProperties`, `required` |
-| <a id="s-12cf49e35b"></a>`MediaGps` | type="object"; fields=`latitude`, `longitude`; additional keys=`additionalProperties`, `required` |
+- [MediaFieldPreference](#s-9266a8309a)
+- [MediaGps](#s-12cf49e35b)
+
+##### <a id="s-9266a8309a"></a>definition `MediaFieldPreference`
+
+- <a id="s-4309c86c5e"></a>`type`: `"object"`
+- <a id="s-87079f088e"></a>`additionalProperties`: `false`
+- <a id="s-a25c5333ea"></a>`required`: `["name","fields"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-1c0dbccd03"></a>`fields` | yes | type="array"; items=(type="string"); minItems=1 |  |
+| <a id="s-1277c484eb"></a>`name` | yes | type="string"; enum=["capture-time","creator","device-make","device-model","gps-latitude","gps-longitude"] |  |
+
+##### <a id="s-12cf49e35b"></a>definition `MediaGps`
+
+- <a id="s-1a1fc0ed5c"></a>`type`: `"object"`
+- <a id="s-bea6e09dc8"></a>`additionalProperties`: `false`
+- <a id="s-deb651fa78"></a>`required`: `["latitude","longitude"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-037d2560ec"></a>`latitude` | yes | type="number" |  |
+| <a id="s-8f4b3156c6"></a>`longitude` | yes | type="number" |  |
 
 ## Maintained corroboration
 
@@ -78,6 +104,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_media_archive_target_contracts.MediaProjectionPolicy`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -206,3 +235,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

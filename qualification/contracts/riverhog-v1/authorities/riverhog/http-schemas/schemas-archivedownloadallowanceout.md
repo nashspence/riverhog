@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-46f521de79"></a>
-- <a id="s-4519ce4635"></a>`title`: ArchiveDownloadAllowanceOut
-- <a id="s-7270dcd7af"></a>`type`: object
+
+- <a id="s-7270dcd7af"></a>`type`: `"object"`
+- <a id="s-b12d9f6c6b"></a>`additionalProperties`: `false`
+- <a id="s-c853bcb9d0"></a>`required`: `["store","state","month_started_at","resets_at","allowance_bytes","safety_buffer_bytes","effective_limit_bytes","accounted_bytes","reserved_bytes","remaining_bytes"]`
+- <a id="s-4519ce4635"></a>`title`: `"ArchiveDownloadAllowanceOut"`
 
 ### Fields
 
@@ -59,6 +62,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/ArchiveDownloadAllowanceOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -128,3 +134,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

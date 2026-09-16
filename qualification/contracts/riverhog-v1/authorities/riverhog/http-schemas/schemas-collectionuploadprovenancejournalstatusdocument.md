@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5a9f227dd0"></a>
-- <a id="s-8e14aa9b6d"></a>`title`: CollectionUploadProvenanceJournalStatusDocument
-- <a id="s-9fa100d82d"></a>`type`: object
+
+- <a id="s-9fa100d82d"></a>`type`: `"object"`
+- <a id="s-4358631de9"></a>`additionalProperties`: `false`
+- <a id="s-124c63a9ea"></a>`required`: `["journal_id","state","bytes","sha256","accepted_bytes"]`
+- <a id="s-8e14aa9b6d"></a>`title`: `"CollectionUploadProvenanceJournalStatusDocument"`
 
 ### Fields
 
@@ -23,11 +26,11 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-982c4304db"></a>`accepted_bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-9cb379acc2"></a>`bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-a21edea4a5"></a>`current_bytes` | no | anyOf=type="integer"; minimum=0 \| type="null" |  |
-| <a id="s-ec0690f235"></a>`current_path` | no | anyOf=type="string" \| type="null" |  |
-| <a id="s-b72a4150cb"></a>`current_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-60b9f44c31"></a>`current_state_id` | no | anyOf=#/components/schemas/ProvenanceStateId \| type="null" |  |
-| <a id="s-aa10735815"></a>`failure` | no | anyOf=type="string" \| type="null" |  |
+| <a id="s-a21edea4a5"></a>`current_bytes` | no | anyOf=(type="integer"; minimum=0) \| (type="null") |  |
+| <a id="s-ec0690f235"></a>`current_path` | no | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-b72a4150cb"></a>`current_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
+| <a id="s-60b9f44c31"></a>`current_state_id` | no | anyOf=(#/components/schemas/ProvenanceStateId) \| (type="null") |  |
+| <a id="s-aa10735815"></a>`failure` | no | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-d2d8bb6a2c"></a>`journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
 | <a id="s-f21af066db"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-ee287dd4a9"></a>`state` | yes | type="string"; enum=["accepting","validating","sealed","failed"] |  |
@@ -81,6 +84,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadProvenanceJournalStatusDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -186,3 +192,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

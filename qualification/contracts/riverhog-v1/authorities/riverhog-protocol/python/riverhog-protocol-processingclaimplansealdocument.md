@@ -27,25 +27,59 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-5166053768"></a>
-- <a id="s-2cf7e6847f"></a>`type`: object
 
-### Fields
+- <a id="s-2cf7e6847f"></a>`type`: `"object"`
+- <a id="s-95df9fb5b4"></a>`additionalProperties`: `false`
+- `if`: [See `if`](#s-1c58018aaa)
+- <a id="s-accf47b326"></a>`required`: `["fence","execution_id","controller_evidence","controller_evidence_sha256","operation"]`
+- `then`: [See `then`](#s-77762ccc0f)
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-24f056ab1a"></a>`controller_evidence` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| <a id="s-24f056ab1a"></a>`controller_evidence` | yes | type="object"; additionalProperties=true; x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
 | <a id="s-bae704d1c6"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-18261de791"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-6fbb64b834"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-2549d87071"></a>`operation` | yes | #/$defs/OperationIdentityDocument |  |
-| <a id="s-3a0b445d63"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0 |  |
-| <a id="s-e1c4c56d90"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"] |  |
+| <a id="s-2549d87071"></a>`operation` | yes | [OperationIdentityDocument](#s-fa7d9bfff2) |  |
+| <a id="s-3a0b445d63"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-e1c4c56d90"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-fa7d9bfff2"></a>`OperationIdentityDocument` | type="object"; fields=`id`, `sha256`; additional keys=`additionalProperties`, `required` |
+- [OperationIdentityDocument](#s-fa7d9bfff2)
+
+##### <a id="s-1c58018aaa"></a>`if`
+
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-de210e83a6"></a>`retirement_policy` | no | const="retain" |  |
+
+##### <a id="s-77762ccc0f"></a>`then`
+
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e6ecc4b8c2"></a>`retirement_grace_seconds` | no | const=0 |  |
+
+##### <a id="s-fa7d9bfff2"></a>definition `OperationIdentityDocument`
+
+- <a id="s-71e0f2bcc1"></a>`type`: `"object"`
+- <a id="s-8ff32c8618"></a>`additionalProperties`: `false`
+- <a id="s-eee6fe2a10"></a>`required`: `["id","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ecf17275ab"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-cdfa89074a"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -76,6 +110,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -177,3 +214,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

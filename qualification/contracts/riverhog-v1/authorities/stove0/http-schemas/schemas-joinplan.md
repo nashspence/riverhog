@@ -14,9 +14,12 @@ Resolved ordinary join work over exact successful branch outputs.
 ## External contract
 
 <a id="s-e8e5828f9d"></a>
-- <a id="s-670a142fd6"></a>`title`: JoinPlan
-- <a id="s-d819568938"></a>`description`: Resolved ordinary join work over exact successful branch outputs.
-- <a id="s-80474eb93b"></a>`type`: object
+
+- <a id="s-80474eb93b"></a>`type`: `"object"`
+- <a id="s-a444f049cc"></a>`additionalProperties`: `false`
+- <a id="s-d819568938"></a>`description`: `"Resolved ordinary join work over exact successful branch outputs."`
+- <a id="s-e13fc7823b"></a>`required`: `["parent_work_id","branch_set_sha256","declaration","inputs","work","workflow_plan","join_plan_sha256"]`
+- <a id="s-670a142fd6"></a>`title`: `"JoinPlan"`
 
 ### Fields
 
@@ -24,8 +27,8 @@ Resolved ordinary join work over exact successful branch outputs.
 |---|---:|---|---|
 | <a id="s-a5ba769baf"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-1330e552ba"></a>`declaration` | yes | #/components/schemas/JoinDeclaration |  |
-| <a id="s-66b0e81086"></a>`format` | no | type="string"; const="stove0-join-plan/v1" |  |
-| <a id="s-d233798083"></a>`inputs` | yes | type="array"; minItems=2; items=(#/components/schemas/JoinInputPlan) |  |
+| <a id="s-66b0e81086"></a>`format` | no | type="string"; const="stove0-join-plan/v1"; default="stove0-join-plan/v1" |  |
+| <a id="s-d233798083"></a>`inputs` | yes | type="array"; items=(#/components/schemas/JoinInputPlan); minItems=2 |  |
 | <a id="s-280eacdfc4"></a>`join_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-157328a94c"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-bc2d25649d"></a>`work` | yes | #/components/schemas/WorkIdentity |  |
@@ -83,6 +86,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/JoinPlan`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -145,3 +151,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

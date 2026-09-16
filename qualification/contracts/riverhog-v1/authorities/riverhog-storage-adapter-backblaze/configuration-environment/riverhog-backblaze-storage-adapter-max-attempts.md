@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-1c81252996"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-841c1e0c0e"></a>`consumers` | ["riverhog-storage-adapter-backblaze"] |
-| <a id="s-b96c482685"></a>`default_expressions` | ["''"] |
-| <a id="s-ae1c3e3714"></a>`id` | "riverhog-storage-adapter-backblaze:environment:RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_MAX_ATTEMPTS" |
-| <a id="s-74bf540ff3"></a>`input_shape` | "environment-string" |
-| <a id="s-cfc1e16201"></a>`name` | "RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_MAX_ATTEMPTS" |
-| <a id="s-f76569877b"></a>`owner` | "riverhog-storage-adapter-backblaze" |
+| <a id="s-841c1e0c0e"></a>`consumers` | `["riverhog-storage-adapter-backblaze"]` |
+| <a id="s-b96c482685"></a>`default_expressions` | `["''"]` |
+| <a id="s-ae1c3e3714"></a>`id` | `"riverhog-storage-adapter-backblaze:environment:RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_MAX_ATTEMPTS"` |
+| <a id="s-74bf540ff3"></a>`input_shape` | `"environment-string"` |
+| <a id="s-cfc1e16201"></a>`name` | `"RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_MAX_ATTEMPTS"` |
+| <a id="s-f76569877b"></a>`owner` | `"riverhog-storage-adapter-backblaze"` |
 
 ### Progression, limits, and lifecycle
 
@@ -64,6 +65,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 853da67b6d6ca508f2ecee9c0a9213527c636525031309a6d3b4eeee1e7beeeb -->
@@ -82,3 +86,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "riverhog-storage-adapter-backblaze"
 }
 ```
+
+</details>

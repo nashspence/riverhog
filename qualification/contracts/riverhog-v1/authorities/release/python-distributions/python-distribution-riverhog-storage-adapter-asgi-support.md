@@ -58,6 +58,9 @@ Publication preserves these existing component authorities; it does not reclassi
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: d75b7a912bc0cd5d898d74bf51c8519ee81a54d2a03c406a63d0cc4b4af6d86f -->
@@ -87,3 +90,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "source": "packages/riverhog-storage-adapter-asgi-support/pyproject.toml"
 }
 ```
+
+</details>

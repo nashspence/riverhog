@@ -27,25 +27,31 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-bab12140ce"></a>
-- <a id="s-563ffec762"></a>`type`: object
 
-### Fields
+- <a id="s-563ffec762"></a>`type`: `"object"`
+- <a id="s-7605f0e965"></a>`additionalProperties`: `false`
+- <a id="s-e20f1f69c4"></a>`required`: `["collection","content_identity","encryption_format","passphrase_id","provenance_mode"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-25bffff653"></a>`collection` | yes | #/$defs/CollectionId |  |
+| <a id="s-25bffff653"></a>`collection` | yes | [CollectionId](#s-739396f78e) |  |
 | <a id="s-bc8d4e6d1c"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-0b502a3262"></a>`encryption_format` | yes | type="string"; minLength=1 |  |
-| <a id="s-b5c657def0"></a>`format` | no | type="string"; const="riverhog-collection/v1" |  |
+| <a id="s-b5c657def0"></a>`format` | no | type="string"; const="riverhog-collection/v1"; default="riverhog-collection/v1" |  |
 | <a id="s-00bf3b7928"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
-| <a id="s-017934e63a"></a>`provenance_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-017934e63a"></a>`provenance_identity` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
 | <a id="s-23cf53cbef"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"] |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-739396f78e"></a>`CollectionId` | type="integer"; minimum=1 |
+- [CollectionId](#s-739396f78e)
+
+##### <a id="s-739396f78e"></a>definition `CollectionId`
+
+- <a id="s-3dc300542b"></a>`type`: `"integer"`
+- <a id="s-95b21cd82b"></a>`minimum`: `1`
 
 ## Maintained corroboration
 
@@ -74,6 +80,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.PortableCollectionHeader`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -150,3 +159,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

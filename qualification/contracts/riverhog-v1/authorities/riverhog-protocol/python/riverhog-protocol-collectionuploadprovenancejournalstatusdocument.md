@@ -27,29 +27,40 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-48d89948a0"></a>
-- <a id="s-e104228c65"></a>`type`: object
 
-### Fields
+- <a id="s-e104228c65"></a>`type`: `"object"`
+- <a id="s-f38b7aa55c"></a>`additionalProperties`: `false`
+- <a id="s-610da3d15a"></a>`required`: `["journal_id","state","bytes","sha256","accepted_bytes"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-c05f142da4"></a>`accepted_bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-e0c87204a2"></a>`bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-ddef0dd98c"></a>`current_bytes` | no | anyOf=type="integer"; minimum=0 \| type="null" |  |
-| <a id="s-c34cd2178b"></a>`current_path` | no | anyOf=type="string" \| type="null" |  |
-| <a id="s-7f2707a86d"></a>`current_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-232feea01f"></a>`current_state_id` | no | anyOf=#/$defs/ProvenanceStateId \| type="null" |  |
-| <a id="s-7e7ede4480"></a>`failure` | no | anyOf=type="string" \| type="null" |  |
-| <a id="s-f7ea842030"></a>`journal_id` | yes | #/$defs/ProvenanceJournalId |  |
+| <a id="s-ddef0dd98c"></a>`current_bytes` | no | anyOf=(type="integer"; minimum=0) \| (type="null"); default=null |  |
+| <a id="s-c34cd2178b"></a>`current_path` | no | anyOf=(type="string") \| (type="null"); default=null |  |
+| <a id="s-7f2707a86d"></a>`current_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
+| <a id="s-232feea01f"></a>`current_state_id` | no | anyOf=([ProvenanceStateId](#s-0e1edefe0b)) \| (type="null"); default=null |  |
+| <a id="s-7e7ede4480"></a>`failure` | no | anyOf=(type="string") \| (type="null"); default=null |  |
+| <a id="s-f7ea842030"></a>`journal_id` | yes | [ProvenanceJournalId](#s-941b870066) |  |
 | <a id="s-8e2556666a"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-5b08c1e75b"></a>`state` | yes | type="string"; enum=["accepting","validating","sealed","failed"] |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-941b870066"></a>`ProvenanceJournalId` | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
-| <a id="s-0e1edefe0b"></a>`ProvenanceStateId` | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
+- [ProvenanceJournalId](#s-941b870066)
+- [ProvenanceStateId](#s-0e1edefe0b)
+
+##### <a id="s-941b870066"></a>definition `ProvenanceJournalId`
+
+- <a id="s-8f65b2da52"></a>`type`: `"string"`
+- <a id="s-61d1c74f38"></a>`pattern`: `"^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"`
+
+##### <a id="s-0e1edefe0b"></a>definition `ProvenanceStateId`
+
+- <a id="s-6a83d7fa83"></a>`type`: `"string"`
+- <a id="s-bd5d0aa10d"></a>`pattern`: `"^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"`
 
 ## Maintained corroboration
 
@@ -78,6 +89,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -199,3 +213,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

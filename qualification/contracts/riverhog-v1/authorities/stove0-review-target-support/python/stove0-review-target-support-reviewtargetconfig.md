@@ -27,19 +27,37 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-243034401d"></a>
-- <a id="s-261a0d1b65"></a>`type`: object
 
-### Fields
+- <a id="s-261a0d1b65"></a>`type`: `"object"`
+- <a id="s-4c4629b1a0"></a>`additionalProperties`: `false`
+- <a id="s-671efc0fcf"></a>`required`: `["samplers"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-849c1b0a82"></a>`samplers` | yes | type="array"; minItems=1; items=(#/$defs/SamplerConfig) |  |
+| <a id="s-849c1b0a82"></a>`samplers` | yes | type="array"; items=([SamplerConfig](#s-50d7f1f942)); minItems=1 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-50d7f1f942"></a>`SamplerConfig` | type="object"; fields=`allow_insecure_http`, `base_url`, `descriptor_sha256`, `id`, `image_digest`, `token_file`; additional keys=`additionalProperties`, `required` |
+- [SamplerConfig](#s-50d7f1f942)
+
+##### <a id="s-50d7f1f942"></a>definition `SamplerConfig`
+
+- <a id="s-1bfba2933d"></a>`type`: `"object"`
+- <a id="s-583381677b"></a>`additionalProperties`: `false`
+- <a id="s-4232842582"></a>`required`: `["id","base_url","token_file","descriptor_sha256","image_digest"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-d1732d4d1e"></a>`allow_insecure_http` | no | type="boolean"; default=false |  |
+| <a id="s-e3d061f39d"></a>`base_url` | yes | type="string"; maxLength=2048; minLength=1 |  |
+| <a id="s-a260a6c66a"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-9fdf8da8f9"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$" |  |
+| <a id="s-7adf8d7735"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ca2b9ace3b"></a>`token_file` | yes | type="string"; format="path" |  |
 
 ## Maintained corroboration
 
@@ -68,6 +86,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_review_target_support.ReviewTargetConfig`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -141,3 +162,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

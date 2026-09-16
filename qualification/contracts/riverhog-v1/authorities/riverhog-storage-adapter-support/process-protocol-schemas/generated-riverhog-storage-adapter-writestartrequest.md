@@ -18,19 +18,22 @@ credentials used to realize that session remain adapter-private.
 ## External contract
 
 <a id="s-2b36e52b84"></a>
-- <a id="s-2e642e279f"></a>`title`: WriteStartRequest
-- <a id="s-5b9e227aa3"></a>`description`: Exact authority for one idempotently established nonterminal write.  Repeating the same canonical request against the same configured adapter while the write remains nonterminal returns the same continuation session. Operational credentials used to realize that session remain adapter-private.
-- <a id="s-5de2718e1e"></a>`type`: object
+
+- <a id="s-5de2718e1e"></a>`type`: `"object"`
+- <a id="s-0ed83f3a4f"></a>`additionalProperties`: `false`
+- <a id="s-5b9e227aa3"></a>`description`: `"Exact authority for one idempotently established nonterminal write.\n\nRepeating the same canonical request against the same configured adapter while the\nwrite remains nonterminal returns the same continuation session. Operational\ncredentials used to realize that session remain adapter-private."`
+- <a id="s-1b1df3a43d"></a>`required`: `["object_path","expected_bytes","content_type","required_identity_assertions","placement"]`
+- <a id="s-2e642e279f"></a>`title`: `"WriteStartRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f983ec7947"></a>`content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
+| <a id="s-f983ec7947"></a>`content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
 | <a id="s-ba391b3964"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-59aac5a432"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-59aac5a432"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-23f1edee7b"></a>`placement` | yes | type="string"; enum=["archive","immediate"] |  |
-| <a id="s-3f20a9ba4d"></a>`required_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
+| <a id="s-3f20a9ba4d"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
 
 ### Progression, limits, and lifecycle
 
@@ -71,6 +74,9 @@ credentials used to realize that session remain adapter-private.
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -132,3 +138,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

@@ -27,26 +27,71 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-37219e2d2e"></a>
-- <a id="s-22fe6cb854"></a>`type`: object
 
-### Fields
+- <a id="s-22fe6cb854"></a>`type`: `"object"`
+- <a id="s-88bf54dcec"></a>`additionalProperties`: `false`
+- <a id="s-9f8ba67062"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a287e0badd"></a>`inputs` | yes | #/$defs/TargetInputAuthority |  |
-| <a id="s-9cbcf14317"></a>`intent` | yes | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-a287e0badd"></a>`inputs` | yes | [TargetInputAuthority](#s-894c0460ed) |  |
+| <a id="s-9cbcf14317"></a>`intent` | yes | type="object"; additionalProperties=([JsonValue](#s-b02bf50d68)) |  |
 | <a id="s-74f40fc5cc"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-dd270463c2"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-d58529fd80"></a>`target_options` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-d58529fd80"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-b02bf50d68)) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-84dc83c9f1"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-b02bf50d68"></a>`JsonValue` | empty object |
-| <a id="s-894c0460ed"></a>`TargetInputAuthority` | type="object"; fields=`roles`, `selection`; additional keys=`additionalProperties`, `required` |
-| <a id="s-7b067f8b3b"></a>`TargetInputRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
+- [ArtifactSelectionRef](#s-84dc83c9f1)
+- [JsonValue](#s-b02bf50d68)
+- [TargetInputAuthority](#s-894c0460ed)
+- [TargetInputRoleCount](#s-7b067f8b3b)
+
+##### <a id="s-84dc83c9f1"></a>definition `ArtifactSelectionRef`
+
+- <a id="s-19b9259da5"></a>`type`: `"object"`
+- <a id="s-e5a3190c25"></a>`additionalProperties`: `false`
+- <a id="s-4fee02dfb7"></a>`required`: `["selection_sha256","artifact_count","total_bytes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ca327a2768"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-9b5aab4100"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-4fa7cdd041"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+
+##### <a id="s-b02bf50d68"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-894c0460ed"></a>definition `TargetInputAuthority`
+
+- <a id="s-32b8397d91"></a>`type`: `"object"`
+- <a id="s-e1ca4479de"></a>`additionalProperties`: `false`
+- <a id="s-cf27174d82"></a>`required`: `["selection","roles"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-fb6f116f73"></a>`roles` | yes | type="array"; items=([TargetInputRoleCount](#s-7b067f8b3b)); minItems=1 |  |
+| <a id="s-2c7a152f71"></a>`selection` | yes | [ArtifactSelectionRef](#s-84dc83c9f1) |  |
+
+##### <a id="s-7b067f8b3b"></a>definition `TargetInputRoleCount`
+
+- <a id="s-6dc4b36c8f"></a>`type`: `"object"`
+- <a id="s-9dd234c4f1"></a>`additionalProperties`: `false`
+- <a id="s-54a382c71d"></a>`required`: `["role","count"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-21eac204a0"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-62514dd74a"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ## Governing policies
 
@@ -69,6 +114,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_target_protocol.TargetDeclaration`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -185,3 +233,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

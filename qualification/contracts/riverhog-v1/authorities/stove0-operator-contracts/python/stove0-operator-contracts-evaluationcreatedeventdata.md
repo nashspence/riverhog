@@ -27,9 +27,12 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2a88a0c022"></a>
-- <a id="s-1013824684"></a>`type`: object
 
-### Fields
+- <a id="s-1013824684"></a>`type`: `"object"`
+- <a id="s-d359137b0d"></a>`additionalProperties`: `false`
+- <a id="s-97844fb4a5"></a>`required`: `["evaluation_id","phase"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
@@ -64,6 +67,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -106,3 +112,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

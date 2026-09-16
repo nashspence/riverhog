@@ -20,16 +20,19 @@ identity while preserving the full document in the execution envelope.
 ## External contract
 
 <a id="s-b6eb0a2955"></a>
-- <a id="s-0ca7c36062"></a>`title`: TargetPlanBinding
-- <a id="s-f30d751b24"></a>`description`: Opaque binding to a target-owned preflight plan.  The target protocol owns the plan schema and canonicalization algorithm. stove0 retains the complete validated plan document and its target-issued digest, but deliberately does not reinterpret or re-hash the plan with stove0's canonical JSON rules. This prevents two authorities from disagreeing about target plan identity while preserving the full document in the execution envelope.
-- <a id="s-346dc2109d"></a>`type`: object
+
+- <a id="s-346dc2109d"></a>`type`: `"object"`
+- <a id="s-7d02b0ee48"></a>`additionalProperties`: `false`
+- <a id="s-f30d751b24"></a>`description`: `"Opaque binding to a target-owned preflight plan.\n\nThe target protocol owns the plan schema and canonicalization algorithm. stove0\nretains the complete validated plan document and its target-issued digest, but\ndeliberately does not reinterpret or re-hash the plan with stove0's canonical\nJSON rules. This prevents two authorities from disagreeing about target plan\nidentity while preserving the full document in the execution envelope."`
+- <a id="s-7bbf67155b"></a>`required`: `["protocol","target_implementation_id","target_contract_sha256","operation_contract_sha256","plan","plan_sha256"]`
+- <a id="s-0ca7c36062"></a>`title`: `"TargetPlanBinding"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-413e96b2fe"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-993b6f21cd"></a>`plan` | yes | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-993b6f21cd"></a>`plan` | yes | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
 | <a id="s-8280a47826"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-9dd294d2a7"></a>`protocol` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-d9f811c470"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -85,6 +88,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: e347041141bb80657f5487a5324d1f55b68bcaee8feaa37c3c34760ba20f5045 -->
@@ -139,3 +145,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

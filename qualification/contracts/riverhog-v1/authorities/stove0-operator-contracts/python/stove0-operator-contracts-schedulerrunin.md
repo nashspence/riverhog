@@ -27,14 +27,16 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-650df8a463"></a>
-- <a id="s-29eab23810"></a>`type`: object
 
-### Fields
+- <a id="s-29eab23810"></a>`type`: `"object"`
+- <a id="s-44f1b93d31"></a>`additionalProperties`: `false`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2bbbfb2c7f"></a>`role` | no | type="string"; enum=["controller","worker","combined"] |  |
-| <a id="s-361bcb3516"></a>`work_limit` | no | type="integer"; minimum=1; maximum=100 |  |
+| <a id="s-2bbbfb2c7f"></a>`role` | no | type="string"; enum=["controller","worker","combined"]; default="combined" |  |
+| <a id="s-361bcb3516"></a>`work_limit` | no | type="integer"; minimum=1; maximum=100; default=25 |  |
 
 ## Governing policies
 
@@ -57,6 +59,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.SchedulerRunIn`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -95,3 +100,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

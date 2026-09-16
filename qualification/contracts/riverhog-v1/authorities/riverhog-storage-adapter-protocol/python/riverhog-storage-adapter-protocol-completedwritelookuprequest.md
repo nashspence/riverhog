@@ -27,17 +27,20 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-4836c37ef0"></a>
-- <a id="s-ac31600127"></a>`type`: object
 
-### Fields
+- <a id="s-ac31600127"></a>`type`: `"object"`
+- <a id="s-a6bee3cd02"></a>`additionalProperties`: `false`
+- <a id="s-1947ad74e8"></a>`required`: `["object_path","expected_bytes","expected_content_type","required_identity_assertions","expected_placement"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-5a818e43f0"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-4065844c2e"></a>`expected_content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
+| <a id="s-4065844c2e"></a>`expected_content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
 | <a id="s-eb7521c9e8"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
-| <a id="s-83c616d94c"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-f23981c971"></a>`required_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| <a id="s-83c616d94c"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-f23981c971"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} |  |
 
 ## Maintained corroboration
 
@@ -67,6 +70,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_storage_adapter_protocol.CompletedWriteLookupRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -130,3 +136,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

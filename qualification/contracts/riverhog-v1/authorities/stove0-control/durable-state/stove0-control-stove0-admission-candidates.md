@@ -14,9 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-710e9488a2"></a>
-- Table: `stove0_admission_candidates`
 
-### Columns
+### Table: `stove0_admission_candidates`
+
+#### Columns
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
@@ -35,7 +36,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-2c77dfb06d"></a>`created_at` | `VARCHAR(40)` | no | `—` | — |
 | <a id="s-a3d1e97e09"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
 
-### Table constraints
+#### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
@@ -76,6 +77,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/durable_state/owners/3/structure/tables/3`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -229,3 +233,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "name": "stove0_admission_candidates"
 }
 ```
+
+</details>

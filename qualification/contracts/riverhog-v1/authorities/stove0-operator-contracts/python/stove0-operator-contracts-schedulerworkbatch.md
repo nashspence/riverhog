@@ -27,23 +27,38 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-32572a0437"></a>
-- <a id="s-4bc9da636a"></a>`type`: object
 
-### Fields
+- <a id="s-4bc9da636a"></a>`type`: `"object"`
+- <a id="s-6bc01b557b"></a>`additionalProperties`: `false`
+- <a id="s-31a027b38a"></a>`required`: `["role","cursor","next_cursor","progressed","failures"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-a1f4c295e8"></a>`cursor` | yes | type="string" |  |
-| <a id="s-355109a36f"></a>`failures` | yes | type="array"; items=(#/$defs/SchedulerFailure) |  |
+| <a id="s-355109a36f"></a>`failures` | yes | type="array"; items=([SchedulerFailure](#s-2747364e28)) |  |
 | <a id="s-b0d7b8b4a6"></a>`next_cursor` | yes | type="string" |  |
 | <a id="s-ef32b8f15b"></a>`progressed` | yes | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
 | <a id="s-95adbfea4b"></a>`role` | yes | type="string"; enum=["controller","worker","combined"] |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-2747364e28"></a>`SchedulerFailure` | type="object"; fields=`error`, `event_id`, `work_id`; additional keys=`additionalProperties`, `required` |
+- [SchedulerFailure](#s-2747364e28)
+
+##### <a id="s-2747364e28"></a>definition `SchedulerFailure`
+
+- <a id="s-d99f93a642"></a>`type`: `"object"`
+- <a id="s-c70c5faaa3"></a>`additionalProperties`: `false`
+- <a id="s-610011052b"></a>`required`: `["error"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-104475c1eb"></a>`error` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-303f2323bf"></a>`event_id` | no | anyOf=(type="string") \| (type="null"); default=null |  |
+| <a id="s-1a4f5f47cf"></a>`work_id` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null"); default=null |  |
 
 ## Governing policies
 
@@ -66,6 +81,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -162,3 +180,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

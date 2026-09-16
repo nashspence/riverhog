@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-3dcc67425a"></a>
-- <a id="s-73dd7cf3dc"></a>`title`: CollectionArchiveCopyListOut
-- <a id="s-ce2c8e495b"></a>`type`: object
+
+- <a id="s-ce2c8e495b"></a>`type`: `"object"`
+- <a id="s-ef7d0388cd"></a>`additionalProperties`: `false`
+- <a id="s-22bee6ad39"></a>`required`: `["collection_id","page_size","next_page_token","copies"]`
+- <a id="s-73dd7cf3dc"></a>`title`: `"CollectionArchiveCopyListOut"`
 
 ### Fields
 
@@ -23,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-c4517a89e2"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
 | <a id="s-677882908c"></a>`copies` | yes | type="array"; items=(#/components/schemas/ArchiveCopyOut) |  |
-| <a id="s-679b9d7139"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-679b9d7139"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-aef023ab6e"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
 
 ### Progression, limits, and lifecycle
@@ -82,6 +85,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 32d0f1ea2a25e46086d96f1d485b97af83099433ef4dde85cfe972815dc0abb7 -->
@@ -127,3 +133,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

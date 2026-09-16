@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-380c3f60fd"></a>
-- <a id="s-8b3ae7d02f"></a>`title`: ReplaceAppAccessRequest
-- <a id="s-7f816904c8"></a>`type`: object
+
+- <a id="s-7f816904c8"></a>`type`: `"object"`
+- <a id="s-ce3bc18f56"></a>`additionalProperties`: `false`
+- <a id="s-1691183cce"></a>`required`: `["access"]`
+- <a id="s-8b3ae7d02f"></a>`title`: `"ReplaceAppAccessRequest"`
 
 ### Fields
 
@@ -51,6 +54,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 95fe088d01d861de5cd6e4f12e8a679f80043db02021062e83bd52673b2cf245 -->
@@ -70,3 +76,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

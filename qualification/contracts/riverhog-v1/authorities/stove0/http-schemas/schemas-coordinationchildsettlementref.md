@@ -14,9 +14,12 @@ Exact direct-child success included in a coordination settlement.
 ## External contract
 
 <a id="s-f6790286f8"></a>
-- <a id="s-331df79f8a"></a>`title`: CoordinationChildSettlementRef
-- <a id="s-6a3dd80955"></a>`description`: Exact direct-child success included in a coordination settlement.
-- <a id="s-c278867e11"></a>`type`: object
+
+- <a id="s-c278867e11"></a>`type`: `"object"`
+- <a id="s-b392bc8dcb"></a>`additionalProperties`: `false`
+- <a id="s-6a3dd80955"></a>`description`: `"Exact direct-child success included in a coordination settlement."`
+- <a id="s-497ade4f16"></a>`required`: `["branch_id","kind","settlement_sha256"]`
+- <a id="s-331df79f8a"></a>`title`: `"CoordinationChildSettlementRef"`
 
 ### Fields
 
@@ -59,6 +62,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 7bd31023cc09897af3321f85d7438ce508e1093e2abf51326d29362ab02bb869 -->
@@ -97,3 +103,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

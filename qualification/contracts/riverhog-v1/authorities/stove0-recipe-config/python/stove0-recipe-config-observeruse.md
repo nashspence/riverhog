@@ -27,27 +27,45 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-17dcc8eea2"></a>
-- <a id="s-f9feab4556"></a>`type`: object
 
-### Fields
+- <a id="s-f9feab4556"></a>`type`: `"object"`
+- <a id="s-011878ab94"></a>`additionalProperties`: `false`
+- <a id="s-3f0a55de67"></a>`required`: `["registration_id","contract_id","contract_sha256"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3bb0ec182a"></a>`artifact_rules` | no | type="array"; items=(#/$defs/ArtifactRule) |  |
+| <a id="s-3bb0ec182a"></a>`artifact_rules` | no | type="array"; default=[{"glob":"*","media_type":null,"role":"stove0.source/v1"}]; items=([ArtifactRule](#s-33e3f47c25)) |  |
 | <a id="s-5ea6924980"></a>`contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-8699d54c02"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-53a5f97506"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864 |  |
-| <a id="s-e4baccd503"></a>`options` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-53a5f97506"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
+| <a id="s-e4baccd503"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-43040b55c2)) |  |
 | <a id="s-097102eefb"></a>`registration_id` | yes | type="string" |  |
-| <a id="s-163df06ff5"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
-| <a id="s-4413d8f6e7"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400 |  |
+| <a id="s-163df06ff5"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-4413d8f6e7"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300 |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-33e3f47c25"></a>`ArtifactRule` | type="object"; fields=`glob`, `media_type`, `role`; additional keys=`additionalProperties` |
-| <a id="s-43040b55c2"></a>`JsonValue` | empty object |
+- [ArtifactRule](#s-33e3f47c25)
+- [JsonValue](#s-43040b55c2)
+
+##### <a id="s-33e3f47c25"></a>definition `ArtifactRule`
+
+- <a id="s-f206b8c81f"></a>`type`: `"object"`
+- <a id="s-e5c4ea3ca1"></a>`additionalProperties`: `false`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e195b876dc"></a>`glob` | no | type="string"; default="*" |  |
+| <a id="s-39b0dd5d2f"></a>`media_type` | no | anyOf=(type="string") \| (type="null"); default=null |  |
+| <a id="s-42ad2423d0"></a>`role` | no | type="string"; default="stove0.source/v1"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+
+##### <a id="s-43040b55c2"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
 
 ## Governing policies
 
@@ -70,6 +88,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_recipe_config.ObserverUse`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -177,3 +198,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

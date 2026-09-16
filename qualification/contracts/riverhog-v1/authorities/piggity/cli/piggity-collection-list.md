@@ -119,6 +119,9 @@ Repeated `tag` accepts at most **100** occurrences, through [GET /v1/collections
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 ### `/external_contract/cli/piggity/commands/collection/commands/list/allow_extra_args`
@@ -495,3 +498,5 @@ false
   }
 ]
 ```
+
+</details>

@@ -14,18 +14,21 @@ One optional exact named-subset join declaration.
 ## External contract
 
 <a id="s-5693acffb6"></a>
-- <a id="s-bca1349211"></a>`title`: JoinDeclaration
-- <a id="s-422859882c"></a>`description`: One optional exact named-subset join declaration.
-- <a id="s-5f45fed464"></a>`type`: object
+
+- <a id="s-5f45fed464"></a>`type`: `"object"`
+- <a id="s-ad3ca898ce"></a>`additionalProperties`: `false`
+- <a id="s-422859882c"></a>`description`: `"One optional exact named-subset join declaration."`
+- <a id="s-154418823d"></a>`required`: `["members","recipe","workflow_intent","join_declaration_sha256"]`
+- <a id="s-bca1349211"></a>`title`: `"JoinDeclaration"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-eca86f5eae"></a>`effective_intent` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-31d9aefee4"></a>`format` | no | type="string"; const="stove0-join-declaration/v1" |  |
+| <a id="s-eca86f5eae"></a>`effective_intent` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-31d9aefee4"></a>`format` | no | type="string"; const="stove0-join-declaration/v1"; default="stove0-join-declaration/v1" |  |
 | <a id="s-a8773a6c8d"></a>`join_declaration_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-23dfcec269"></a>`members` | yes | type="array"; minItems=2; items=(#/components/schemas/JoinMemberDeclaration) |  |
+| <a id="s-23dfcec269"></a>`members` | yes | type="array"; items=(#/components/schemas/JoinMemberDeclaration); minItems=2 |  |
 | <a id="s-df2b4dd551"></a>`recipe` | yes | #/components/schemas/RecipeRef |  |
 | <a id="s-6e6a700a1a"></a>`workflow_intent` | yes | #/components/schemas/WorkflowPlanIntent |  |
 
@@ -81,6 +84,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: f5546eba1b0ee2da6a3a1215a3422b2bbd3ea9083d64eff4344c803b089b9ecb -->
@@ -133,3 +139,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

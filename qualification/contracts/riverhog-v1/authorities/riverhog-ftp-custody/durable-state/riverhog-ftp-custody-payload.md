@@ -15,11 +15,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 <a id="s-ebd9b486a9"></a>
 
-| Field | Shape |
+
+
+| Field | Value |
 |---|---|
-| <a id="s-1be383ed84"></a>`id` | "payload" |
-| <a id="s-8061ff2e68"></a>`identity` | "claim file path, byte length, and SHA-256" |
-| <a id="s-5d95aebccb"></a>`kind` | "opaque-bytes" |
+| <a id="s-1be383ed84"></a>`id` | `"payload"` |
+| <a id="s-8061ff2e68"></a>`identity` | `"claim file path, byte length, and SHA-256"` |
+| <a id="s-5d95aebccb"></a>`kind` | `"opaque-bytes"` |
 
 ## Maintained corroboration
 
@@ -49,6 +51,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 5f5427ec521e220cf3cdc02bacbaff164b520f6f610ed506b6a37b9bc078ff2c -->
@@ -60,3 +65,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "kind": "opaque-bytes"
 }
 ```
+
+</details>

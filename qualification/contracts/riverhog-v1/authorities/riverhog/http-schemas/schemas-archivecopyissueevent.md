@@ -14,19 +14,22 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-dcffbe5ba6"></a>
-- <a id="s-ce4407197d"></a>`title`: ArchiveCopyIssueEvent
-- <a id="s-5cec970feb"></a>`type`: object
+
+- <a id="s-5cec970feb"></a>`type`: `"object"`
+- <a id="s-f9f5891763"></a>`additionalProperties`: `false`
+- <a id="s-a77d06b0c7"></a>`required`: `["id","source","type","time","data"]`
+- <a id="s-ce4407197d"></a>`title`: `"ArchiveCopyIssueEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-1f0e50ea7f"></a>`data` | yes | #/components/schemas/ArchiveCopyIssueData |  |
-| <a id="s-e4e39ce12e"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-e4e39ce12e"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-12e8a505b7"></a>`id` | yes | type="string"; minLength=1 |  |
 | <a id="s-ef33a70260"></a>`source` | yes | type="string"; minLength=1 |  |
-| <a id="s-f8187d32b3"></a>`specversion` | no | type="string"; const="1.0" |  |
-| <a id="s-ebf240e425"></a>`subject` | no | anyOf=type="string"; minLength=1 \| type="null" |  |
+| <a id="s-f8187d32b3"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-ebf240e425"></a>`subject` | no | anyOf=(type="string"; minLength=1) \| (type="null") |  |
 | <a id="s-d33159ed91"></a>`time` | yes | type="string" |  |
 | <a id="s-54cd2a7184"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy.issue" |  |
 
@@ -57,6 +60,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyIssueEvent`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -124,3 +130,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

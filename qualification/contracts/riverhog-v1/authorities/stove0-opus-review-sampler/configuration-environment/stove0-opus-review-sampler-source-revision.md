@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5cf617c7a1"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-3bdfe4a37f"></a>`consumers` | ["stove0-opus-review-sampler"] |
-| <a id="s-f1e8e66179"></a>`default_expressions` | ["'unknown'"] |
-| <a id="s-fc8f9e3eb4"></a>`id` | "stove0-opus-review-sampler:environment:STOVE0_OPUS_REVIEW_SAMPLER_SOURCE_REVISION" |
-| <a id="s-ee45c84e11"></a>`input_shape` | "environment-string" |
-| <a id="s-e188630524"></a>`name` | "STOVE0_OPUS_REVIEW_SAMPLER_SOURCE_REVISION" |
-| <a id="s-7c1ae4c87e"></a>`owner` | "stove0-opus-review-sampler" |
+| <a id="s-3bdfe4a37f"></a>`consumers` | `["stove0-opus-review-sampler"]` |
+| <a id="s-f1e8e66179"></a>`default_expressions` | `["'unknown'"]` |
+| <a id="s-fc8f9e3eb4"></a>`id` | `"stove0-opus-review-sampler:environment:STOVE0_OPUS_REVIEW_SAMPLER_SOURCE_REVISION"` |
+| <a id="s-ee45c84e11"></a>`input_shape` | `"environment-string"` |
+| <a id="s-e188630524"></a>`name` | `"STOVE0_OPUS_REVIEW_SAMPLER_SOURCE_REVISION"` |
+| <a id="s-7c1ae4c87e"></a>`owner` | `"stove0-opus-review-sampler"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: bad9e43c29671859e02e2b34736acb1723c398cef02b28690094baa8df4fef24 -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "stove0-opus-review-sampler"
 }
 ```
+
+</details>

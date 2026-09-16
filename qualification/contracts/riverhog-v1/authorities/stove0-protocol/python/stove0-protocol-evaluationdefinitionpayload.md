@@ -27,29 +27,94 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-48cb2e213f"></a>
-- <a id="s-aca9784d9c"></a>`type`: object
 
-### Fields
+- <a id="s-aca9784d9c"></a>`type`: `"object"`
+- <a id="s-7f4f83f17e"></a>`additionalProperties`: `false`
+- <a id="s-05d8c9a15f"></a>`required`: `["recipe","inputs","matrix"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-565cfb668f"></a>`common_intent` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-9f19669d55"></a>`format` | no | type="string"; const="stove0-evaluation-definition/v1" |  |
-| <a id="s-d7c0bf2be9"></a>`inputs` | yes | type="array"; minItems=1; items=(#/$defs/CollectionRootRef) |  |
-| <a id="s-826225a96a"></a>`matrix` | yes | #/$defs/EvaluationMatrix |  |
-| <a id="s-69b1cbd2d1"></a>`purpose` | no | type="string"; enum=["trial","evaluation"] |  |
-| <a id="s-7e64b60961"></a>`recipe` | yes | #/$defs/RecipeRef |  |
+| <a id="s-565cfb668f"></a>`common_intent` | no | type="object"; additionalProperties=([JsonValue](#s-616036bef7)) |  |
+| <a id="s-9f19669d55"></a>`format` | no | type="string"; const="stove0-evaluation-definition/v1"; default="stove0-evaluation-definition/v1" |  |
+| <a id="s-d7c0bf2be9"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](#s-f0e1f7c814)); minItems=1 |  |
+| <a id="s-826225a96a"></a>`matrix` | yes | [EvaluationMatrix](#s-582abf498d) |  |
+| <a id="s-69b1cbd2d1"></a>`purpose` | no | type="string"; enum=["trial","evaluation"]; default="evaluation" |  |
+| <a id="s-7e64b60961"></a>`recipe` | yes | [RecipeRef](#s-e7d3cbc07d) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-15e342a157"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-f0e1f7c814"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
-| <a id="s-582abf498d"></a>`EvaluationMatrix` | type="object"; fields=`format`, `matrix_sha256`, `variants`; additional keys=`additionalProperties`, `required` |
-| <a id="s-742251bbba"></a>`EvaluationVariant` | type="object"; fields=`id`, `parameters`; additional keys=`additionalProperties`, `required` |
-| <a id="s-616036bef7"></a>`JsonValue` | empty object |
-| <a id="s-e7d3cbc07d"></a>`RecipeRef` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
+- [CollectionId](#s-15e342a157)
+- [CollectionRootRef](#s-f0e1f7c814)
+- [EvaluationMatrix](#s-582abf498d)
+- [EvaluationVariant](#s-742251bbba)
+- [JsonValue](#s-616036bef7)
+- [RecipeRef](#s-e7d3cbc07d)
+
+##### <a id="s-15e342a157"></a>definition `CollectionId`
+
+- <a id="s-5e2aa618db"></a>`type`: `"integer"`
+- <a id="s-2f83b78eb8"></a>`minimum`: `1`
+
+##### <a id="s-f0e1f7c814"></a>definition `CollectionRootRef`
+
+- <a id="s-369f1c4e8c"></a>`type`: `"object"`
+- <a id="s-237aba3625"></a>`additionalProperties`: `false`
+- <a id="s-1e9e1b09a8"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-07ef32cbe3"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d973eb800f"></a>`collection_id` | yes | [CollectionId](#s-15e342a157) |  |
+| <a id="s-03370f118b"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-582abf498d"></a>definition `EvaluationMatrix`
+
+- <a id="s-6906a005af"></a>`type`: `"object"`
+- <a id="s-5d7822398b"></a>`additionalProperties`: `false`
+- <a id="s-8f859727ba"></a>`required`: `["variants","matrix_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-121c91f986"></a>`format` | no | type="string"; const="stove0-evaluation-matrix/v1"; default="stove0-evaluation-matrix/v1" |  |
+| <a id="s-781d685003"></a>`matrix_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6d4fd792fe"></a>`variants` | yes | type="array"; items=([EvaluationVariant](#s-742251bbba)); minItems=1 |  |
+
+##### <a id="s-742251bbba"></a>definition `EvaluationVariant`
+
+- <a id="s-1807a47472"></a>`type`: `"object"`
+- <a id="s-e8129017ce"></a>`additionalProperties`: `false`
+- <a id="s-cd1c945ae3"></a>`required`: `["id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-f1be365107"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-9f1529d888"></a>`parameters` | no | type="object"; additionalProperties=([JsonValue](#s-616036bef7)) |  |
+
+##### <a id="s-616036bef7"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-e7d3cbc07d"></a>definition `RecipeRef`
+
+- <a id="s-54346a7c3e"></a>`type`: `"object"`
+- <a id="s-3549c8a50e"></a>`additionalProperties`: `false`
+- <a id="s-3d6c3fe169"></a>`required`: `["id","revision","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-dd36aa4f64"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-b616487f2c"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-baa6938d1e"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -79,6 +144,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_protocol.EvaluationDefinitionPayload`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -236,3 +304,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

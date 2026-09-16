@@ -46,7 +46,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-54c365a877"></a>`completed` | <a id="s-9eb5f8121b"></a>`{"kind":"command-completed"}` | <a id="s-3c77526821"></a>`0` | <a id="s-a3a0a70fd5"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-provenance-journal-export/v1](#s-a3a0a70fd5) | <a id="s-e9d03a6eb5"></a>all: `empty` |
+| <a id="s-54c365a877"></a>`completed` | <a id="s-9eb5f8121b"></a>`{"kind":"command-completed"}` | <a id="s-3c77526821"></a>`0` | <a id="s-a3a0a70fd5"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-provenance-journal-export/v1](#s-b542d66ff6) | <a id="s-e9d03a6eb5"></a>all: `empty` |
 
 #### Failure outcomes
 
@@ -54,6 +54,29 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|---|
 | <a id="s-d77f6a8f47"></a>`usage` | <a id="s-57925c97aa"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-9dc652abf3"></a>`2` | <a id="s-b2d941374b"></a>all: `empty` | <a id="s-d0e0ed8df9"></a>all: `noncontractual-usage-diagnostic` |
 | <a id="s-cb2d3355cc"></a>`operational` | <a id="s-810fd80b39"></a>`{"kind":"application-error"}` | <a id="s-4bbf5dc3b2"></a>`1` | <a id="s-c9f2314d7e"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-b55e01adc5"></a>human: `noncontractual-diagnostic`; json: `empty` |
+
+### Local structured outputs
+
+
+#### <a id="s-b542d66ff6"></a>`piggity-provenance-journal-export/v1`
+
+Applies to: completed · stdout (json).
+
+<a id="s-5b5ef7595a"></a>
+
+- <a id="s-93ea5d06e9"></a>`type`: `"object"`
+- <a id="s-fde6aed09f"></a>`additionalProperties`: `false`
+- <a id="s-2f9af96650"></a>`required`: `["collection_id","journal_id","output","bytes","sha256"]`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3d6696a103"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-c0925f8b8f"></a>`collection_id` | yes | type="integer"; minimum=1 |  |
+| <a id="s-54011914e4"></a>`journal_id` | yes | type="string" |  |
+| <a id="s-d6f848ec37"></a>`output` | yes | type="string" |  |
+| <a id="s-ef892ce86a"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -104,6 +127,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 - `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -390,3 +416,5 @@ false
   }
 ]
 ```
+
+</details>

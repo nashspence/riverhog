@@ -14,17 +14,20 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4b2e57f624"></a>
-- <a id="s-8aa7907ec0"></a>`title`: RetrievalPlanRequest
-- <a id="s-4a8dc3ad10"></a>`type`: object
+
+- <a id="s-4a8dc3ad10"></a>`type`: `"object"`
+- <a id="s-5c5041a734"></a>`additionalProperties`: `false`
+- <a id="s-b58681aa7d"></a>`required`: `["files","idempotency_key"]`
+- <a id="s-8aa7907ec0"></a>`title`: `"RetrievalPlanRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-92156c5164"></a>`files` | yes | type="array"; minItems=1; maxItems=10000; items=(#/components/schemas/RetrievalFileReferenceDocument); additional keys=`x-riverhog-extent` |  |
-| <a id="s-1281abc044"></a>`idempotency_key` | yes | type="string"; minLength=1; maxLength=200; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
-| <a id="s-ca9836474f"></a>`lease_seconds` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
-| <a id="s-f33de244d2"></a>`restore_policy` | no | type="string"; enum=["allow","never"] |  |
+| <a id="s-92156c5164"></a>`files` | yes | type="array"; items=(#/components/schemas/RetrievalFileReferenceDocument); maxItems=10000; minItems=1; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"multiple-retrieval-jobs","reason":"bounded-retrieval-work-request"} |  |
+| <a id="s-1281abc044"></a>`idempotency_key` | yes | type="string"; maxLength=200; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
+| <a id="s-ca9836474f"></a>`lease_seconds` | no | anyOf=(type="integer"; minimum=1) \| (type="null") |  |
+| <a id="s-f33de244d2"></a>`restore_policy` | no | type="string"; enum=["allow","never"]; default="allow" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -79,6 +82,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - `/external_contract/http_openapi/riverhog/components/schemas/RetrievalPlanRequest`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -139,3 +145,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

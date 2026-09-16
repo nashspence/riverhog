@@ -112,6 +112,9 @@ Shared facts for every subject below: minimum=1
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 ### `/external_contract/cli/stove0/commands/admission/commands/list/allow_extra_args`
@@ -377,3 +380,5 @@ false
   }
 ]
 ```
+
+</details>

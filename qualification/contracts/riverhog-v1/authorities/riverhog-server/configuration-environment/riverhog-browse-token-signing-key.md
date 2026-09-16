@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-71aef6f25d"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-a3df3866fb"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-3fe8602d6c"></a>`default_expressions` | ["''"] |
-| <a id="s-ffb1f55176"></a>`id` | "riverhog-server:environment:RIVERHOG_BROWSE_TOKEN_SIGNING_KEY" |
-| <a id="s-cf559f5a8f"></a>`input_shape` | "environment-string" |
-| <a id="s-8019296a33"></a>`name` | "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY" |
-| <a id="s-796b4f0f4b"></a>`owner` | "riverhog-server" |
+| <a id="s-a3df3866fb"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-3fe8602d6c"></a>`default_expressions` | `["''"]` |
+| <a id="s-ffb1f55176"></a>`id` | `"riverhog-server:environment:RIVERHOG_BROWSE_TOKEN_SIGNING_KEY"` |
+| <a id="s-cf559f5a8f"></a>`input_shape` | `"environment-string"` |
+| <a id="s-8019296a33"></a>`name` | `"RIVERHOG_BROWSE_TOKEN_SIGNING_KEY"` |
+| <a id="s-796b4f0f4b"></a>`owner` | `"riverhog-server"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 011850a00b922fbbcd3dd02f78c1fe3e1b4449c6b3208b0e0fdafbc8d6d999e1 -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "riverhog-server"
 }
 ```
+
+</details>

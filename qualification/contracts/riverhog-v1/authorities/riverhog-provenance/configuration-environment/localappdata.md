@@ -14,14 +14,15 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-a9fb2eff34"></a>
-| Field | Shape |
+
+| Field | Value |
 |---|---|
-| <a id="s-c00038c38f"></a>`consumers` | ["riverhog-provenance"] |
-| <a id="s-5600fa3893"></a>`default_expressions` | ["unset"] |
-| <a id="s-c9b454920d"></a>`id` | "riverhog-provenance:environment:LOCALAPPDATA" |
-| <a id="s-bca3c308a4"></a>`input_shape` | "environment-string" |
-| <a id="s-caff9576d7"></a>`name` | "LOCALAPPDATA" |
-| <a id="s-69d21c7a53"></a>`owner` | "riverhog-provenance" |
+| <a id="s-c00038c38f"></a>`consumers` | `["riverhog-provenance"]` |
+| <a id="s-5600fa3893"></a>`default_expressions` | `["unset"]` |
+| <a id="s-c9b454920d"></a>`id` | `"riverhog-provenance:environment:LOCALAPPDATA"` |
+| <a id="s-bca3c308a4"></a>`input_shape` | `"environment-string"` |
+| <a id="s-caff9576d7"></a>`name` | `"LOCALAPPDATA"` |
+| <a id="s-69d21c7a53"></a>`owner` | `"riverhog-provenance"` |
 
 ## Governing policies
 
@@ -53,6 +54,9 @@ The owning implementation defines the setting. The parser expression records eac
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: 6eecff273ae7c443f5e6bff5d6d2e70bc64b5b3442e25d6a35baec92679b104a -->
@@ -71,3 +75,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "owner": "riverhog-provenance"
 }
 ```
+
+</details>

@@ -53,7 +53,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|---|
 | <a id="s-e6ffcd91df"></a>`archive-recovered` | <a id="s-b3f25cf921"></a>`{"kind":"options-absent","parameters":["description_only","tags_only"]}` | <a id="s-cc80a4f4a0"></a>`0` | <a id="s-82103433e9"></a>human: `noncontractual-recovery-summary` | <a id="s-1b310db431"></a>all: `empty` |
 | <a id="s-1cd6f69133"></a>`description-recovered` | <a id="s-228b200272"></a>`{"kind":"option-equals","parameter":"description_only","value":true}` | <a id="s-e8bbbcc49c"></a>`0` | <a id="s-bdf9e5feff"></a>json: [Riverhog collection description document v1](../../riverhog-protocol/schema/riverhog-collection-description-document-v1.md) | <a id="s-018043ff9a"></a>all: `empty` |
-| <a id="s-b4a66c971c"></a>`tags-recovered` | <a id="s-191ff5ecba"></a>`{"kind":"option-equals","parameter":"tags_only","value":true}` | <a id="s-70c0bd4c11"></a>`0` | <a id="s-d382d2c367"></a>json: [riverhog-recovered-collection-tags/v1-json-sequence](#s-d382d2c367) | <a id="s-cb2e774c6f"></a>all: `empty` |
+| <a id="s-b4a66c971c"></a>`tags-recovered` | <a id="s-191ff5ecba"></a>`{"kind":"option-equals","parameter":"tags_only","value":true}` | <a id="s-70c0bd4c11"></a>`0` | <a id="s-d382d2c367"></a>json: [riverhog-recovered-collection-tags/v1-json-sequence](#s-245a0f6858) | <a id="s-cb2e774c6f"></a>all: `empty` |
 
 #### Failure outcomes
 
@@ -61,6 +61,72 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|---|
 | <a id="s-f02faf7dad"></a>`usage` | <a id="s-140eafc026"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-33edb1b1ec"></a>`2` | <a id="s-19f9334bbd"></a>all: `empty` | <a id="s-2dfd45a472"></a>all: `noncontractual-usage-diagnostic` |
 | <a id="s-4b8e5acd9d"></a>`recovery` | <a id="s-7253334adc"></a>`{"kind":"recovery-error"}` | <a id="s-3c2553c1f0"></a>`1` | <a id="s-664d5b2d56"></a>all: `empty` | <a id="s-8ca9ad09a8"></a>all: `noncontractual-diagnostic` |
+
+### Local structured outputs
+
+
+#### <a id="s-245a0f6858"></a>`riverhog-recovered-collection-tags/v1-json-sequence`
+
+Applies to: tags-recovered · stdout (json).
+
+
+
+| Field | Value |
+|---|---|
+| <a id="s-d90038d625"></a>`framing` | `"newline-delimited-json"` |
+| <a id="s-c925d62769"></a>`identity` | `"riverhog-recovered-collection-tags/v1-json-sequence"` |
+| <a id="s-400a6e4178"></a>`kind` | `"cli-local-json-sequence"` |
+| <a id="s-2ee6189aab"></a>`sequence · end` | `"complete"` |
+| <a id="s-bc2e198249"></a>`sequence · repeated` | `"tag"` |
+| <a id="s-d81ff93b3f"></a>`sequence · start` | `"authority"` |
+
+##### Record `authority`
+
+<a id="s-776fab7254"></a>
+
+- <a id="s-b828445f49"></a>`type`: `"object"`
+- <a id="s-1ac5b0611a"></a>`additionalProperties`: `false`
+- <a id="s-82d82bd16a"></a>`required`: `["format","record","revision","tag_set_identity","head_identity"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4dc41ac915"></a>`format` | yes | const="riverhog-recovered-collection-tags/v1" |  |
+| <a id="s-6144d5cb43"></a>`head_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f15d09635c"></a>`record` | yes | const="authority" |  |
+| <a id="s-a13a682e2a"></a>`revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
+| <a id="s-b9d4e27d9c"></a>`tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### Record `complete`
+
+<a id="s-06650150de"></a>
+
+- <a id="s-32f6cc255b"></a>`type`: `"object"`
+- <a id="s-1426af015f"></a>`additionalProperties`: `false`
+- <a id="s-a88e71fe5d"></a>`required`: `["record","tag_count"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-fd3d5c4578"></a>`record` | yes | const="complete" |  |
+| <a id="s-dfb58f5178"></a>`tag_count` | yes | type="integer"; minimum=0 |  |
+
+##### Record `tag`
+
+<a id="s-7fae82835b"></a>
+
+- <a id="s-b09f5d560f"></a>`type`: `"object"`
+- <a id="s-f255136431"></a>`additionalProperties`: `false`
+- <a id="s-3ed4ff89fe"></a>`required`: `["record","tag"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7ef508fae9"></a>`record` | yes | const="tag" |  |
+| <a id="s-dff4c11fbc"></a>`tag` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -104,6 +170,9 @@ Shared facts for every subject below: source_constraint={"field":"nargs"}
 - `/external_contract/cli/riverhog-recover/terminating_controls`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -411,3 +480,5 @@ true
   }
 ]
 ```
+
+</details>

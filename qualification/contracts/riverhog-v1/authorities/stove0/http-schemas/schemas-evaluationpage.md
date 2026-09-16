@@ -14,16 +14,19 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f8832b7945"></a>
-- <a id="s-affd60995e"></a>`title`: EvaluationPage
-- <a id="s-bf521c0f24"></a>`type`: object
+
+- <a id="s-bf521c0f24"></a>`type`: `"object"`
+- <a id="s-719ecda30d"></a>`additionalProperties`: `false`
+- <a id="s-81456c11b4"></a>`required`: `["page_size","next_page_token","sort","order","filters","evaluations"]`
+- <a id="s-affd60995e"></a>`title`: `"EvaluationPage"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-d5faabd944"></a>`evaluations` | yes | type="array"; items=(#/components/schemas/EvaluationView) |  |
-| <a id="s-de52137029"></a>`filters` | yes | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-cc896697a8"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-de52137029"></a>`filters` | yes | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-cc896697a8"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-30a4e0c811"></a>`order` | yes | type="string"; enum=["asc","desc"] |  |
 | <a id="s-195de04014"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
 | <a id="s-3950ed2d14"></a>`sort` | yes | type="string"; enum=["updated_at","phase","evaluation_id"] |  |
@@ -93,6 +96,9 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Exact owned JSON
 
+<details>
+<summary>Expand exact machine-owned values</summary>
+
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
 <!-- exact-contract-value: cee0d603fb538ed2c5a3cbf91eac88d0608b0b76d76e243725d7daca7f568a9d -->
@@ -161,3 +167,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

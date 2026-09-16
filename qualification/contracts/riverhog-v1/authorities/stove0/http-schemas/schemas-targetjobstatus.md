@@ -14,27 +14,36 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-5b62e18de1"></a>
-- <a id="s-1b9c3b496c"></a>`title`: TargetJobStatus
-- <a id="s-c5af2d7527"></a>`type`: object
+
+- <a id="s-c5af2d7527"></a>`type`: `"object"`
+- <a id="s-8a0466394c"></a>`additionalProperties`: `false`
+- <a id="s-85d7a23602"></a>`required`: `["job_id","state","attempt","request_sha256","plan_sha256","progress"]`
+- <a id="s-1b9c3b496c"></a>`title`: `"TargetJobStatus"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-606c664aea"></a>`attempt` | yes | type="integer"; minimum=1 |  |
-| <a id="s-b09da142f6"></a>`derivation` | no | anyOf=type="object"; additional keys=`additionalProperties` \| type="null" |  |
-| <a id="s-57ab7a6f5e"></a>`effect_receipt` | no | anyOf=#/components/schemas/ExternalEffectReceipt \| type="null" |  |
-| <a id="s-c57da9e956"></a>`execution_evidence` | no | anyOf=#/components/schemas/TargetExecutionEvidence \| type="null" |  |
-| <a id="s-f403678d57"></a>`failure` | no | anyOf=#/components/schemas/TargetFailure \| type="null" |  |
-| <a id="s-c77d39f4fe"></a>`inapplicable` | no | anyOf=#/components/schemas/TargetInapplicable \| type="null" |  |
+| <a id="s-b09da142f6"></a>`derivation` | no | anyOf=(type="object"; additionalProperties=true) \| (type="null") |  |
+| <a id="s-57ab7a6f5e"></a>`effect_receipt` | no | anyOf=(#/components/schemas/ExternalEffectReceipt) \| (type="null") |  |
+| <a id="s-c57da9e956"></a>`execution_evidence` | no | anyOf=(#/components/schemas/TargetExecutionEvidence) \| (type="null") |  |
+| <a id="s-f403678d57"></a>`failure` | no | anyOf=(#/components/schemas/TargetFailure) \| (type="null") |  |
+| <a id="s-c77d39f4fe"></a>`inapplicable` | no | anyOf=(#/components/schemas/TargetInapplicable) \| (type="null") |  |
 | <a id="s-ce6a90cdcf"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-34fa32b154"></a>`output_collection` | no | anyOf=#/components/schemas/OutputCollectionRef \| type="null" |  |
+| <a id="s-34fa32b154"></a>`output_collection` | no | anyOf=(#/components/schemas/OutputCollectionRef) \| (type="null") |  |
 | <a id="s-4858da8e4d"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-b13de944b9"></a>`production` | no | anyOf=#/components/schemas/TargetProductionAuthority \| type="null" |  |
+| <a id="s-b13de944b9"></a>`production` | no | anyOf=(#/components/schemas/TargetProductionAuthority) \| (type="null") |  |
 | <a id="s-a4fb3e445f"></a>`progress` | yes | #/components/schemas/TargetProgress |  |
-| <a id="s-9c0c396bbc"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"] |  |
+| <a id="s-9c0c396bbc"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1" |  |
 | <a id="s-8373216865"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-b4712e4aec"></a>`state` | yes | type="string"; enum=["queued","running","canceling","interrupted","inapplicable","succeeded","failed","canceled"] |  |
+
+### All must match (`allOf`)
+
+| Rule | If schema matches | Then must match | Otherwise must match |
+|---|---|---|---|
+| <a id="s-cae24ce388"></a>1 | properties={state: (const="failed")} | properties={failure: (type="object")}; required=["failure"] | properties={failure: (type="null")} |
 
 ### Progression, limits, and lifecycle
 
@@ -91,6 +100,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/TargetJobStatus`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -259,3 +271,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

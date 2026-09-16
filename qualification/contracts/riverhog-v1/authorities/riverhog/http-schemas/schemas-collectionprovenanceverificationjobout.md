@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-968608cbbf"></a>
-- <a id="s-c514fe5c30"></a>`title`: CollectionProvenanceVerificationJobOut
-- <a id="s-0e00b9ee87"></a>`type`: object
+
+- <a id="s-0e00b9ee87"></a>`type`: `"object"`
+- <a id="s-cdc338302b"></a>`additionalProperties`: `false`
+- <a id="s-442f0f444b"></a>`required`: `["collection_id","state","requested_at","started_at","finished_at","attempts","result","failure"]`
+- <a id="s-c514fe5c30"></a>`title`: `"CollectionProvenanceVerificationJobOut"`
 
 ### Fields
 
@@ -23,11 +26,11 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---:|---|---|
 | <a id="s-47daac55a0"></a>`attempts` | yes | type="integer"; minimum=0 |  |
 | <a id="s-6ca57b3926"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-b6bb0512f6"></a>`failure` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-c7a8ebe491"></a>`finished_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-b6bb0512f6"></a>`failure` | yes | anyOf=(type="string") \| (type="null") |  |
+| <a id="s-c7a8ebe491"></a>`finished_at` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-f484534cb7"></a>`requested_at` | yes | type="string" |  |
-| <a id="s-de3dc86efe"></a>`result` | yes | anyOf=#/components/schemas/CollectionProvenanceVerificationOut \| type="null" |  |
-| <a id="s-e54a5477bb"></a>`started_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-de3dc86efe"></a>`result` | yes | anyOf=(#/components/schemas/CollectionProvenanceVerificationOut) \| (type="null") |  |
+| <a id="s-e54a5477bb"></a>`started_at` | yes | anyOf=(type="string") \| (type="null") |  |
 | <a id="s-32e51516fe"></a>`state` | yes | type="string"; enum=["queued","running","canceling","succeeded","failed","canceled"] |  |
 
 ## Maintained corroboration
@@ -58,6 +61,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/http_openapi/riverhog/components/schemas/CollectionProvenanceVerificationJobOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -149,3 +155,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

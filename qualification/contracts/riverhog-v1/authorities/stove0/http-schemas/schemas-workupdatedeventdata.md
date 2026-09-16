@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-4aa899f5f5"></a>
-- <a id="s-43d601ed31"></a>`title`: WorkUpdatedEventData
-- <a id="s-12839df953"></a>`type`: object
+
+- <a id="s-12839df953"></a>`type`: `"object"`
+- <a id="s-a573a72290"></a>`additionalProperties`: `false`
+- <a id="s-7645d51bd5"></a>`required`: `["work_id","phase","revision"]`
+- <a id="s-43d601ed31"></a>`title`: `"WorkUpdatedEventData"`
 
 ### Fields
 
@@ -57,6 +60,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/WorkUpdatedEventData`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -109,3 +115,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

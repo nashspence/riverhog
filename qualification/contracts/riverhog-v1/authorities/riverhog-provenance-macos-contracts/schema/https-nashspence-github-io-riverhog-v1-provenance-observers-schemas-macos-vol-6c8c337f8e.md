@@ -14,8 +14,12 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-f66e0e33bd"></a>
-- <a id="s-c4c1b282c3"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/macos-volume-context.json
-- <a id="s-636512cba7"></a>`type`: object
+
+- <a id="s-636512cba7"></a>`type`: `"object"`
+- <a id="s-c4c1b282c3"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/macos-volume-context.json"`
+- <a id="s-a1eaf01af8"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-70518728f5"></a>`additionalProperties`: `false`
+- <a id="s-beb5a2e12b"></a>`required`: `["filesystem_type","mount_point","mounted_from","fsid","mount_flags","filesystem_subtype","io_size","block_size"]`
 
 ### Fields
 
@@ -25,13 +29,25 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-43114201cf"></a>`capabilities` | no | type="array"; items=(type="integer"; minimum=0) |  |
 | <a id="s-4446990b9f"></a>`filesystem_subtype` | yes | type="integer"; minimum=0 |  |
 | <a id="s-260fe41897"></a>`filesystem_type` | yes | type="string"; minLength=1 |  |
-| <a id="s-614684236b"></a>`fsid` | yes | type="array"; items=(false); additional keys=`prefixItems` |  |
+| `fsid` | yes | [See field `fsid`](#s-614684236b) |  |
 | <a id="s-ee3db8e92a"></a>`io_size` | yes | type="integer"; minimum=0 |  |
 | <a id="s-863f4ce4e5"></a>`mount_flags` | yes | type="integer"; minimum=0 |  |
 | <a id="s-b8a066ca6e"></a>`mount_point` | yes | type="string" |  |
 | <a id="s-2f1c9badc5"></a>`mounted_from` | yes | type="string" |  |
 | <a id="s-d06da5ba6a"></a>`valid_capabilities` | no | type="array"; items=(type="integer"; minimum=0) |  |
 | <a id="s-daf9c9b338"></a>`volume_uuid` | no | type="string"; format="uuid"; pattern="^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$" |  |
+
+### <a id="s-614684236b"></a>field `fsid`
+
+- <a id="s-d668d36d7a"></a>`type`: `"array"`
+- <a id="s-3cbf413b3b"></a>`items`: `false`
+
+#### Positional item schemas, in order (`prefixItems`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-e1220bfa5e"></a>1 | type="integer" |
+| <a id="s-32b57d1937"></a>2 | type="integer" |
 
 ### Progression, limits, and lifecycle
 
@@ -71,6 +87,9 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 - `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-volume-context.json`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -153,3 +172,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

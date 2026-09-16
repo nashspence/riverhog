@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d4cd078234"></a>
-- <a id="s-a8b54722f8"></a>`title`: RetrievalCacheStatusOut
-- <a id="s-4b18d0211d"></a>`type`: object
+
+- <a id="s-4b18d0211d"></a>`type`: `"object"`
+- <a id="s-ddcb7b878c"></a>`additionalProperties`: `false`
+- <a id="s-652ce8a712"></a>`required`: `["configured","new_archive_enabled","objects","stored_bytes","protected_objects","unleased_objects","stores","policy"]`
+- <a id="s-a8b54722f8"></a>`title`: `"RetrievalCacheStatusOut"`
 
 ### Fields
 
@@ -69,6 +72,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheStatusOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -127,3 +133,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

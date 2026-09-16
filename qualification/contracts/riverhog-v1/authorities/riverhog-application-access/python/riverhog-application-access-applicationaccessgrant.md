@@ -27,21 +27,94 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2f97f3665f"></a>
-- <a id="s-2bc5cade12"></a>`type`: object
 
-### Fields
+- <a id="s-2bc5cade12"></a>`type`: `"object"`
+- <a id="s-e87c9f73b7"></a>`additionalProperties`: `false`
+- <a id="s-e7a42c1f7e"></a>`required`: `["permission"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-35340f1f8d"></a>`permission` | yes | #/$defs/ApplicationPermission |  |
-| <a id="s-d717c2ef66"></a>`resource` | no | $ref="#/$defs/ApplicationResource" |  |
+| <a id="s-35340f1f8d"></a>`permission` | yes | [ApplicationPermission](#s-95da86e4fe) |  |
+| <a id="s-d717c2ef66"></a>`resource` | no | [ApplicationResource](#s-1bf3d3f588); default="*" |  |
 
-### Definitions
+##### All must match (`allOf`)
 
-| Definition | Shape |
+| Alternative | Schema |
 |---|---|
-| <a id="s-95da86e4fe"></a>`ApplicationPermission` | type="string"; enum=["*","catalog:read","retrieval:manage","collections:create","collection-descriptions:manage","collection-transforms:control","collection-transforms:execute","collection-tags:manage","collections:delete","archives:read","archives:manage","keys:manage","quotas:manage","events:read","events:read_all","provenance:read","provenance:export"] |
-| <a id="s-1bf3d3f588"></a>`ApplicationResource` | type="string"; pattern="^(?:\\*\|tag:.+\|collection:[1-9][0-9]*)$" |
+| 1 | [See `allOf` alternative 1](#s-28f68c3e3c) |
+
+##### Definitions
+
+- [ApplicationPermission](#s-95da86e4fe)
+- [ApplicationResource](#s-1bf3d3f588)
+
+##### <a id="s-28f68c3e3c"></a>`allOf` alternative 1
+
+
+###### Exactly one must match (`oneOf`)
+
+| Alternative | Schema |
+|---|---|
+| 1 | [See `allOf` alternative 1 · `oneOf` alternative 1](#s-53a64992c8) |
+| 2 | [See `allOf` alternative 1 · `oneOf` alternative 2](#s-b108ef462f) |
+| 3 | [See `allOf` alternative 1 · `oneOf` alternative 3](#s-2a64f7dca1) |
+| 4 | [See `allOf` alternative 1 · `oneOf` alternative 4](#s-e79aeca70d) |
+
+##### <a id="s-95da86e4fe"></a>definition `ApplicationPermission`
+
+- <a id="s-f3bef043e6"></a>`type`: `"string"`
+- <a id="s-233b95f6a5"></a>`enum`: `["*","catalog:read","retrieval:manage","collections:create","collection-descriptions:manage","collection-transforms:control","collection-transforms:execute","collection-tags:manage","collections:delete","archives:read","archives:manage","keys:manage","quotas:manage","events:read","events:read_all","provenance:read","provenance:export"]`
+
+##### <a id="s-1bf3d3f588"></a>definition `ApplicationResource`
+
+- <a id="s-c0fcacb434"></a>`type`: `"string"`
+- <a id="s-a5cb46c823"></a>`pattern`: `"^(?:\\*\|tag:.+\|collection:[1-9][0-9]*)$"`
+
+##### <a id="s-53a64992c8"></a>`allOf` alternative 1 · `oneOf` alternative 1
+
+- <a id="s-f9a03274be"></a>`required`: `["permission"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-91e42ab37c"></a>`permission` | yes | const="*" |  |
+| <a id="s-a21cbeb555"></a>`resource` | no | const="*" |  |
+
+##### <a id="s-b108ef462f"></a>`allOf` alternative 1 · `oneOf` alternative 2
+
+- <a id="s-c41dfa12d0"></a>`required`: `["permission"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b5c2c14e3a"></a>`permission` | yes | const="collections:create" |  |
+| <a id="s-1aa433d478"></a>`resource` | no | type="string"; pattern="^(?:\\*\|tag:.+)$" |  |
+
+##### <a id="s-2a64f7dca1"></a>`allOf` alternative 1 · `oneOf` alternative 3
+
+- <a id="s-a13b889bca"></a>`required`: `["permission"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-26226fddd5"></a>`permission` | yes | enum=["archives:manage","archives:read","catalog:read","collection-descriptions:manage","collection-tags:manage","collections:delete","provenance:export","provenance:read","retrieval:manage"] |  |
+| <a id="s-48c37fb9d1"></a>`resource` | no | type="string"; pattern="^(?:\\*\|tag:.+\|collection:[1-9][0-9]*)$" |  |
+
+##### <a id="s-e79aeca70d"></a>`allOf` alternative 1 · `oneOf` alternative 4
+
+- <a id="s-2b7345e034"></a>`required`: `["permission"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-433202c11e"></a>`permission` | yes | enum=["collection-transforms:control","collection-transforms:execute","events:read","events:read_all","keys:manage","quotas:manage"] |  |
+| <a id="s-cd48ffb6ab"></a>`resource` | no | const="*" |  |
 
 ## Maintained corroboration
 
@@ -71,6 +144,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/riverhog_application_access.ApplicationAccessGrant`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -209,3 +285,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

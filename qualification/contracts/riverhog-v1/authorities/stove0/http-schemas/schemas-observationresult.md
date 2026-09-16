@@ -14,27 +14,30 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-362be6f847"></a>
-- <a id="s-333a22b624"></a>`title`: ObservationResult
-- <a id="s-767426d7f7"></a>`type`: object
+
+- <a id="s-767426d7f7"></a>`type`: `"object"`
+- <a id="s-4440212c50"></a>`additionalProperties`: `false`
+- <a id="s-e720665c34"></a>`required`: `["request_id","state","observer","observer_contract_id","observer_contract_sha256","subjects","result_sha256"]`
+- <a id="s-333a22b624"></a>`title`: `"ObservationResult"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e68ebf9982"></a>`execution_evidence` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-e0e895304b"></a>`facts` | no | anyOf=type="object"; additional keys=`additionalProperties` \| type="null" |  |
-| <a id="s-1494511718"></a>`facts_schema` | no | anyOf=#/components/schemas/JsonSchemaDocument \| type="null" |  |
-| <a id="s-95b10a81fc"></a>`facts_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-5791d4f0bf"></a>`failure` | no | anyOf=#/components/schemas/ObservationFailure \| type="null" |  |
-| <a id="s-6bac73ead1"></a>`format` | no | type="string"; const="stove0-observation-result/v1" |  |
-| <a id="s-8f9648eaee"></a>`inapplicable` | no | anyOf=#/components/schemas/ObservationInapplicable \| type="null" |  |
+| <a id="s-e68ebf9982"></a>`execution_evidence` | no | type="object"; additionalProperties=(#/components/schemas/JsonValue) |  |
+| <a id="s-e0e895304b"></a>`facts` | no | anyOf=(type="object"; additionalProperties=(#/components/schemas/JsonValue)) \| (type="null") |  |
+| <a id="s-1494511718"></a>`facts_schema` | no | anyOf=(#/components/schemas/JsonSchemaDocument) \| (type="null") |  |
+| <a id="s-95b10a81fc"></a>`facts_sha256` | no | anyOf=(type="string"; pattern="^[0-9a-f]{64}$") \| (type="null") |  |
+| <a id="s-5791d4f0bf"></a>`failure` | no | anyOf=(#/components/schemas/ObservationFailure) \| (type="null") |  |
+| <a id="s-6bac73ead1"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1" |  |
+| <a id="s-8f9648eaee"></a>`inapplicable` | no | anyOf=(#/components/schemas/ObservationInapplicable) \| (type="null") |  |
 | <a id="s-68bd3b50f5"></a>`observer` | yes | #/components/schemas/ObserverImplementation |  |
 | <a id="s-a828b01615"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-c8e70d63d0"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-47e38dcff5"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-c8d52706f8"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-a750e42386"></a>`state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"] |  |
-| <a id="s-1e906affbb"></a>`subjects` | yes | type="array"; minItems=1; items=(#/components/schemas/ArtifactSubject) |  |
+| <a id="s-1e906affbb"></a>`subjects` | yes | type="array"; items=(#/components/schemas/ArtifactSubject); minItems=1 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -93,6 +96,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/http_openapi/stove0/components/schemas/ObservationResult`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -226,3 +232,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

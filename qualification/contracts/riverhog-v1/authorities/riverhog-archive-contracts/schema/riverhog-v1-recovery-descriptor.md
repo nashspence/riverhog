@@ -14,17 +14,48 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-d0e22522fc"></a>
-- <a id="s-73491a8562"></a>`$id`: https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json
-- <a id="s-9788b6bdfd"></a>`title`: Riverhog v1 recovery descriptor
-- <a id="s-a1f5264f4a"></a>`type`: object
+
+- <a id="s-a1f5264f4a"></a>`type`: `"object"`
+- <a id="s-73491a8562"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json"`
+- <a id="s-b6e231d4d9"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-1a229fead9"></a>`additionalProperties`: `false`
+- <a id="s-59821c0437"></a>`required`: `["schema","encryption","root"]`
+- <a id="s-9788b6bdfd"></a>`title`: `"Riverhog v1 recovery descriptor"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d907c3144a"></a>`encryption` | yes | type="object"; fields=`format`, `passphrase_id`; additional keys=`additionalProperties`, `required` |  |
-| <a id="s-2b019864cd"></a>`root` | yes | type="object"; fields=`path`, `stored_bytes`, `stored_sha256`; additional keys=`additionalProperties`, `required` |  |
+| `encryption` | yes | [See field `encryption`](#s-d907c3144a) |  |
+| `root` | yes | [See field `root`](#s-2b019864cd) |  |
 | <a id="s-d0b998e46c"></a>`schema` | yes | const="riverhog-recovery-descriptor/v1" |  |
+
+### <a id="s-d907c3144a"></a>field `encryption`
+
+- <a id="s-0adbe1a054"></a>`type`: `"object"`
+- <a id="s-ecb5c38996"></a>`additionalProperties`: `false`
+- <a id="s-612a673251"></a>`required`: `["format","passphrase_id"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b70ff1741a"></a>`format` | yes | const="age-v1-scrypt" |  |
+| <a id="s-9f0bf45f71"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
+
+### <a id="s-2b019864cd"></a>field `root`
+
+- <a id="s-7be2244482"></a>`type`: `"object"`
+- <a id="s-aa195ac116"></a>`additionalProperties`: `false`
+- <a id="s-3663c6f878"></a>`required`: `["path","stored_bytes","stored_sha256"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-46a6ba0c8e"></a>`path` | yes | const="manifest.json.age" |  |
+| <a id="s-abd13e34a1"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-b3eb015b6d"></a>`stored_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -34,7 +65,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-abd13e34a1"></a>[field root · field stored_bytes](#s-2b019864cd) | `value · schema-value · operational_policy` | shared above |
+| [field root · field stored_bytes](#s-abd13e34a1) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
@@ -42,7 +73,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-b3eb015b6d"></a>[field root · field stored_sha256](#s-2b019864cd) | `length · characters · fixed` | shared above |
+| [field root · field stored_sha256](#s-b3eb015b6d) | `length · characters · fixed` | shared above |
 
 ## Governing policies
 
@@ -67,6 +98,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1riverhog-recovery-descriptor-v1.schema.json`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -130,3 +164,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>

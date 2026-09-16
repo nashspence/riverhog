@@ -27,23 +27,41 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-a6afa45f9c"></a>
-- <a id="s-dcd28f60ec"></a>`type`: object
 
-### Fields
+- <a id="s-dcd28f60ec"></a>`type`: `"object"`
+- <a id="s-ea19832701"></a>`additionalProperties`: `false`
+- <a id="s-d0d6d7de6a"></a>`required`: `["name","value","source"]`
+
+##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1e1aadd981"></a>`evidence` | no | type="array"; items=(#/$defs/MediaFactEvidence) |  |
+| <a id="s-1e1aadd981"></a>`evidence` | no | type="array"; default=[]; items=([MediaFactEvidence](#s-d89aacd611)) |  |
 | <a id="s-07dc9075c1"></a>`name` | yes | type="string"; enum=["capture-time","creator","device-make","device-model","gps-latitude","gps-longitude"] |  |
 | <a id="s-aebfdb916c"></a>`source` | yes | type="string"; enum=["observation","recipe"] |  |
-| <a id="s-0202da227e"></a>`value` | yes | #/$defs/JsonValue |  |
+| <a id="s-0202da227e"></a>`value` | yes | [JsonValue](#s-cd70d44f81) |  |
 
-### Definitions
+##### Definitions
 
-| Definition | Shape |
-|---|---|
-| <a id="s-cd70d44f81"></a>`JsonValue` | empty object |
-| <a id="s-d89aacd611"></a>`MediaFactEvidence` | type="object"; fields=`artifact_id`, `field`; additional keys=`additionalProperties`, `required` |
+- [JsonValue](#s-cd70d44f81)
+- [MediaFactEvidence](#s-d89aacd611)
+
+##### <a id="s-cd70d44f81"></a>definition `JsonValue`
+
+- Accepts: any JSON value.
+
+##### <a id="s-d89aacd611"></a>definition `MediaFactEvidence`
+
+- <a id="s-28757e93d8"></a>`type`: `"object"`
+- <a id="s-b74f3b5ccf"></a>`additionalProperties`: `false`
+- <a id="s-4ce8b2c56e"></a>`required`: `["artifact_id","field"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-66960ee4ce"></a>`artifact_id` | yes | type="string"; maxLength=160; minLength=1 |  |
+| <a id="s-18ceb39579"></a>`field` | yes | type="string"; maxLength=240; minLength=1 |  |
 
 ## Maintained corroboration
 
@@ -73,6 +91,9 @@ Exact externally visible contract owned by this semantic dossier.
 - `/external_contract/python/stove0_media_archive_target_support.MediaProjectedValue`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -152,3 +173,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "unit": "export"
 }
 ```
+
+</details>

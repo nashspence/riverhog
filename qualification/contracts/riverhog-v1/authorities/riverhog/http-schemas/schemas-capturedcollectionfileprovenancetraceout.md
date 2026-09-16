@@ -14,8 +14,11 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-8271ebccc8"></a>
-- <a id="s-4413335467"></a>`title`: CapturedCollectionFileProvenanceTraceOut
-- <a id="s-8f2b81060c"></a>`type`: object
+
+- <a id="s-8f2b81060c"></a>`type`: `"object"`
+- <a id="s-e6205e293d"></a>`additionalProperties`: `false`
+- <a id="s-7fd95e62b9"></a>`required`: `["page_size","next_page_token","items","path","bytes","sha256","collection_id","provenance","journal"]`
+- <a id="s-4413335467"></a>`title`: `"CapturedCollectionFileProvenanceTraceOut"`
 
 ### Fields
 
@@ -25,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-ce32f13faa"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
 | <a id="s-6736d431c3"></a>`items` | yes | type="array"; items=(#/components/schemas/ProvenanceTraceItemOut) |  |
 | <a id="s-4a71d3cab5"></a>`journal` | yes | #/components/schemas/ProvenanceJournalOut |  |
-| <a id="s-988e1d208f"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-988e1d208f"></a>`next_page_token` | yes | anyOf=(#/components/schemas/BrowsePageToken) \| (type="null") |  |
 | <a id="s-7e35635550"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
 | <a id="s-2b50f8202f"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
 | <a id="s-77b4c1146c"></a>`provenance` | yes | #/components/schemas/CapturedFileProvenanceBinding |  |
@@ -83,6 +86,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - `/external_contract/http_openapi/riverhog/components/schemas/CapturedCollectionFileProvenanceTraceOut`
 
 ### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
@@ -153,3 +159,5 @@ The following JSON is the complete value owned at each machine-authority pointer
   "type": "object"
 }
 ```
+
+</details>
