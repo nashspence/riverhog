@@ -33,6 +33,26 @@ def checked_atlas() -> atlas.ContractAtlas:
     return _CHECKED_ATLAS
 
 
+@pytest.mark.parametrize("checkout", ("project", "riverhog", "riverhog/riverhog"))
+def test_repository_source_links_do_not_depend_on_checkout_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, checkout: str
+) -> None:
+    worktree = tmp_path / checkout
+    worktree.mkdir(parents=True)
+    monkeypatch.chdir(worktree)
+    document = "riverhog-v1/authorities/riverhog/http-operations/operation.md"
+    location = {"path": "riverhog/src/riverhog_api/routers/apps.py", "line": 219}
+
+    link = atlas_navigation._repository_source_link(document, location, "Handler")
+
+    assert link == "[Handler](../../../../../../riverhog/src/riverhog_api/routers/apps.py#L219)"
+    assert atlas._reachable_atlas_documents(
+        document,
+        {document: link.encode()},
+        repository_sources={"../../riverhog/src/riverhog_api/routers/apps.py#L219"},
+    ) == {document}
+
+
 def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None:
     checked = checked_atlas()
     root = checked.root
