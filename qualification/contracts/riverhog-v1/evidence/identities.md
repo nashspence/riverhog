@@ -13,4 +13,4 @@ These independent identities distinguish frozen semantics, discovery coverage, p
 | <a id="i-d374a59a6c"></a>`coverage_sha256` | `8d7ce9eda63ae193a317ecae52be69614f2b913d65f18ebe4fe717d69dddb2da` |
 | <a id="i-b201ae62f3"></a>`trace_sha256` | `cde27152d052f958d73ff4ce6f9ced5925301e82e97ba1341d57ff0520a274ed` |
 
-<a id="i-af23736723"></a>The byte-exact `atlas_representation_sha256` is recorded at `/identities/atlas_representation_sha256` in the machine closure. It cannot be embedded inside the document bytes that it identifies.
+<a id="i-af23736723"></a>The byte-exact `atlas_representation_sha256` is recorded at `/identities/atlas_representation_sha256` in the [machine closure](../../riverhog-v1.json). It cannot be embedded inside the document bytes that it identifies.

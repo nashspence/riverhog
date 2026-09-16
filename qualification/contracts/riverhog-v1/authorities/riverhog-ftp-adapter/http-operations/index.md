@@ -6,8 +6,10 @@ Callable HTTP operations.
 
 ## Semantic dossiers
 
+Marked entries have group-level unestablished progression claims; follow their qualification links for the exact witnesses. Unmarked entries carry no implied approval.
+
 - [GET /health/live](get-health-live.md)
 - [GET /health/ready](get-health-ready.md)
-- [GET /v1/status](get-v1-status.md)
+- [GET /v1/status](get-v1-status.md) — [unestablished progression claims](get-v1-status.md#progression-evidence-and-open-obligations)
 - [POST /v1/run](post-v1-run.md)
 - [POST /v1/sources/{source_id}/flush](post-v1-sources-source-id-flush.md)

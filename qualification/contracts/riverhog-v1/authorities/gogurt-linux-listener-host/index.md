@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Optional nonnormative Linux systemd-user listener-host reference for Gogurt.
+
 Contract elements: **14** · Extent decisions: **0**
 
 ## Interfaces

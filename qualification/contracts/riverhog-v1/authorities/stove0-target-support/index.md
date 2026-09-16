@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Hardware-neutral target protocol, runtime, and conformance support for stove0.
+
 Contract elements: **169** · Extent decisions: **168**
 
 ## Interfaces

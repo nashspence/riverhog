@@ -23,6 +23,36 @@ from .model import (
 )
 
 
+def _element_progression_witnesses(
+    elements: Sequence[Mapping[str, object]], trace: Mapping[str, object]
+) -> dict[str, tuple[str, ...]]:
+    """Join only owned extent decisions to explicitly recorded open witness groups."""
+    witnesses = {
+        str(item["id"]): item
+        for item in cast(Sequence[Mapping[str, object]], trace["segmented_extent_witnesses"])
+    }
+    by_extent: dict[str, tuple[str, ...]] = {}
+    for source in cast(Sequence[Mapping[str, object]], trace["extent_sources"]):
+        ids = cast(Sequence[str], source.get("segmented_extent_witnesses", ()))
+        if any(identity not in witnesses for identity in ids):
+            raise ContractAtlasError(f"extent references an unresolved witness: {source['id']}")
+        by_extent[str(source["id"])] = tuple(
+            identity for identity in ids if witnesses[identity]["unestablished_claims"]
+        )
+    return {
+        str(item["id"]): tuple(
+            sorted(
+                {
+                    witness
+                    for extent in cast(Sequence[str], item["extent_decision_ids"])
+                    for witness in by_extent.get(extent, ())
+                }
+            )
+        )
+        for item in elements
+    }
+
+
 def _assign_dossiers(elements: list[dict[str, object]]) -> None:
     used: set[str] = set()
     for element in sorted(elements, key=lambda item: str(item["id"])):

@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Canonical Riverhog wire and identity contracts.
+
 Contract elements: **324** · Extent decisions: **5**
 
 ## Interfaces

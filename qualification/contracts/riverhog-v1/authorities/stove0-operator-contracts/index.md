@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Canonical public state contracts for the Stove0 v1 operator surface.
+
 Contract elements: **125** · Extent decisions: **7**
 
 ## Interfaces

@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Optional nonnormative Linux filesystem storage reference for Riverhog.
+
 Contract elements: **31** · Extent decisions: **13**
 
 ## Interfaces

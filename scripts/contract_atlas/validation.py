@@ -24,7 +24,6 @@ from .discovery import (
 from .dossier_rendering import _local_contract_references, _pretty_json
 from .model import (
     ATLAS_DIRECTORY,
-    CONTRACT_MAP_SCHEMA,
     COVERAGE_IDENTITY_SCHEMA,
     INTERFACE_REGISTRY,
     QUALIFICATION_ROUTES,
@@ -49,7 +48,6 @@ from .navigation import (
     _interface_index_path,
     _interface_label,
     _interface_navigation_labels,
-    _interface_sort_key,
     _md,
     _policy_anchor,
     _policy_application_anchor,
@@ -135,6 +133,8 @@ def _reachable_atlas_documents(
                 else posixpath.normpath(posixpath.join(posixpath.dirname(source), local_path))
             )
             if resolved not in files:
+                if resolved == f"{ATLAS_DIRECTORY}.json" and not separator:
+                    continue
                 if separator and f"{resolved}#{fragment}" in repository_sources:
                     continue
                 raise ContractAtlasError(
@@ -547,33 +547,16 @@ def validate_atlas(
     root_page = atlas.files[root_path].decode()
     ordered_headings = (
         "> **Audit question:**",
-        "**Audit path:** Scope → Semantics → Evidence",
-        "## Contract map",
-        "## Contract-wide policies",
-        "## Freeze evidence",
+        "## Audit references",
+        "## Authorities and interfaces",
     )
+    if any(heading not in root_page for heading in ordered_headings):
+        raise ContractAtlasError("atlas root lacks scope, references, or exact inventory")
     heading_offsets = [root_page.index(heading) for heading in ordered_headings]
     if heading_offsets != sorted(heading_offsets):
-        raise ContractAtlasError(
-            "atlas root must present the Scope → Semantics → Evidence audit path"
-        )
-    forbidden_root_terms = (
-        "Guided contract map",
-        "relationship map",
-        "authority map",
-        "Closure anomalies",
-        "SHA-256",
-        "Qualification route",
-    )
-    if any(term in root_page for term in forbidden_root_terms):
-        raise ContractAtlasError("atlas root competes with its contract map or evidence layer")
-    if (
-        "contract elements" in root_page
-        or re.search(r"— \d+ authorit(?:y|ies)", root_page) is not None
-        or "Python extension:" in root_page
-        or "Process protocol:" in root_page
-    ):
-        raise ContractAtlasError("atlas root repeats accounting or renders extensions as children")
+        raise ContractAtlasError("atlas references must be discoverable before the inventory")
+    if f"](../{ATLAS_DIRECTORY}.json)" not in root_page:
+        raise ContractAtlasError("atlas root omits its exact machine artifact")
     reachable_documents = _reachable_atlas_documents(
         root_path, atlas.files, repository_sources=_repository_source_targets(trace_value)
     )
@@ -635,80 +618,26 @@ def validate_atlas(
         raise ContractAtlasError("atlas relationship navigation has an unexpected schema")
     if component_descriptions is not None:
         expected_relationship = _relationship_model(
-            projection_value, trace_value, elements, component_descriptions
+            projection_value, elements, component_descriptions
         )
         if relationship != expected_relationship:
             raise ContractAtlasError("atlas relationship navigation is stale")
+    interface_counts_by_authority = Counter(
+        (str(item["authority"]), str(item["interface"])) for item in elements
+    )
     relationship_nodes = cast(Sequence[Mapping[str, object]], relationship["nodes"])
     relationship_edges = cast(Sequence[Mapping[str, object]], relationship["edges"])
     relationship_nodes_by_id = {str(item["id"]): item for item in relationship_nodes}
     if any(path.startswith(f"{ATLAS_DIRECTORY}/relationships/") for path in atlas.files):
         raise ContractAtlasError("relationship evidence must not become a second human map")
-    contract_map = cast(Mapping[str, object], relationship["contract_map"])
-    if contract_map.get("schema") != CONTRACT_MAP_SCHEMA:
-        raise ContractAtlasError("human contract map has an unexpected schema")
-    contract_map_nodes = cast(Sequence[Mapping[str, object]], contract_map["nodes"])
-    contract_map_ids = [str(item["id"]) for item in contract_map_nodes]
-    if len(contract_map_ids) != len(set(contract_map_ids)):
-        raise ContractAtlasError("human contract map repeats a semantic node")
-    if any(
-        node.get("parent") is not None and node.get("parent") not in contract_map_ids
-        for node in contract_map_nodes
-    ):
-        raise ContractAtlasError("human contract map contains an unresolved parent")
-    mapped_authorities = [
-        str(item["authority"])
-        for node in contract_map_nodes
-        for item in cast(Sequence[Mapping[str, object]], node["authorities"])
-    ]
     exact_authorities = sorted({str(item["authority"]) for item in elements})
-    if sorted(mapped_authorities) != exact_authorities or len(mapped_authorities) != len(
-        set(mapped_authorities)
-    ):
-        raise ContractAtlasError(
-            "human contract map does not own every exact authority exactly once"
-        )
-    element_counts_by_authority = Counter(str(item["authority"]) for item in elements)
-    interface_counts_by_authority = Counter(
-        (str(item["authority"]), str(item["interface"])) for item in elements
-    )
-    for node in contract_map_nodes:
-        for record in cast(Sequence[Mapping[str, object]], node["authorities"]):
-            authority = str(record["authority"])
-            expected_interfaces = [
-                {
-                    "id": interface,
-                    "label": _interface_label(interface),
-                    "contract_elements": count,
-                }
-                for (candidate, interface), count in sorted(
-                    interface_counts_by_authority.items(),
-                    key=lambda item: (item[0][0], _interface_sort_key(item[0][1])),
-                )
-                if candidate == authority
-            ]
-            if (
-                record["contract_elements"] != element_counts_by_authority[authority]
-                or record.get("interfaces") != expected_interfaces
-                or not str(record.get("purpose", "")).strip()
-            ):
-                raise ContractAtlasError(
-                    f"human contract-map authority projection is stale: {authority}"
-                )
-        if "path" in node:
-            path = f"{ATLAS_DIRECTORY}/{str(node['path']).split('#', 1)[0]}"
-            if path not in reachable_documents:
-                raise ContractAtlasError(f"human contract-map branch is unreachable: {node['id']}")
     authority_inventory_path = f"{ATLAS_DIRECTORY}/evidence/authorities.md"
     authority_inventory_page = atlas.files[authority_inventory_path].decode()
     for authority in exact_authorities:
         authority_path = _authority_index_path(authority)
         root_link = _relative_link(root_path, authority_path)
-        inventory_link = _relative_link(authority_inventory_path, authority_path)
         if root_page.count(f"]({root_link})") != 1:
-            raise ContractAtlasError(f"human contract map omits exact authority: {authority}")
-        if f"]({inventory_link})" not in authority_inventory_page:
-            raise ContractAtlasError(f"authority evidence omits exact authority: {authority}")
+            raise ContractAtlasError(f"authority inventory omits exact authority: {authority}")
         for interface in sorted(
             {str(item["interface"]) for item in elements if item["authority"] == authority}
         ):
@@ -716,7 +645,7 @@ def validate_atlas(
             interface_link = _relative_link(root_path, interface_path)
             if root_page.count(f"]({interface_link})") != 1:
                 raise ContractAtlasError(
-                    f"human contract map omits direct interface navigation: "
+                    f"authority inventory omits direct interface navigation: "
                     f"{authority}: {interface}"
                 )
             interface_page = atlas.files[interface_path].decode()
@@ -958,8 +887,8 @@ def validate_atlas(
                         f"extension provider is misrepresented as interface ownership: "
                         f"{provider_name}: {extension_id}"
                     )
-    if "Maintainer-selected nonnormative references" not in root_page:
-        raise ContractAtlasError("atlas front door does not identify references as nonnormative")
+    if str(relationship["reference_policy"]) not in root_page:
+        raise ContractAtlasError("atlas opening omits the declared reference policy")
     if any("/families/" in path for path in atlas.files) or "Semantic families" in root_page:
         raise ContractAtlasError("semantic-family navigation remains in the human atlas")
     for path, descriptor in descriptors.items():
@@ -1014,21 +943,6 @@ def validate_atlas(
         elif kind == "evidence-identity-inventory":
             expected_counts = {
                 "identity_domains": len(cast(Mapping[str, object], root["identities"]))
-            }
-        elif kind == "semantic-surface":
-            map_node_ids = cast(Sequence[str], descriptor["map_node_ids"])
-            selected_nodes = [
-                node for node in contract_map_nodes if str(node["id"]) in map_node_ids
-            ]
-            expected_counts = {
-                "authorities": sum(
-                    len(cast(Sequence[object], node["authorities"])) for node in selected_nodes
-                ),
-                "contract_elements": sum(
-                    cast(int, item["contract_elements"])
-                    for node in selected_nodes
-                    for item in cast(Sequence[Mapping[str, object]], node["authorities"])
-                ),
             }
         elif kind == "extension-context":
             extension_id = str(descriptor["extension_id"])

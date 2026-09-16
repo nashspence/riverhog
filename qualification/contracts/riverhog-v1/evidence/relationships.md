@@ -2,7 +2,7 @@
 
 [Atlas](../index.md) · [Freeze evidence](index.md)
 
-This is the exact generated node and edge set behind the human contract map. It is evidence, not a second navigation hierarchy.
+This is the exact generated node and edge set behind the declared relationships. It is evidence, not a second navigation hierarchy.
 
 ## Relationship shape
 

@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Optional nonnormative ExifTool observer reference for Stove0.
+
 Contract elements: **13** · Extent decisions: **2**
 
 ## Interfaces

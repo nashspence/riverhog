@@ -6,6 +6,8 @@ Structured values exchanged by a process protocol.
 
 ## Semantic dossiers
 
+Marked entries have group-level unestablished progression claims; follow their qualification links for the exact witnesses. Unmarked entries carry no implied approval.
+
 - [AdapterDescriptor](generated-riverhog-storage-adapter-adapterdescriptor.md)
 - [CompletedObjectReceipt](generated-riverhog-storage-adapter-completedobjectreceipt.md)
 - [CompletedWriteLookupRequest](generated-riverhog-storage-adapter-completedwritelookuprequest.md)
@@ -24,7 +26,7 @@ Structured values exchanged by a process protocol.
 - [StorageAdapterError](generated-riverhog-storage-adapter-storageadaptererror.md)
 - [WriteCompleteRequest](generated-riverhog-storage-adapter-writecompleterequest.md)
 - [WriteSegmentListRequest](generated-riverhog-storage-adapter-writesegmentlistrequest.md)
-- [WriteSegmentPage](generated-riverhog-storage-adapter-writesegmentpage.md)
+- [WriteSegmentPage](generated-riverhog-storage-adapter-writesegmentpage.md) — [unestablished progression claims](generated-riverhog-storage-adapter-writesegmentpage.md#progression-evidence-and-open-obligations)
 - [WriteSegmentReceipt](generated-riverhog-storage-adapter-writesegmentreceipt.md)
 - [WriteSegmentRequest](generated-riverhog-storage-adapter-writesegmentrequest.md)
 - [WriteSession](generated-riverhog-storage-adapter-writesession.md)

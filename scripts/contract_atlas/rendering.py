@@ -22,6 +22,7 @@ from .navigation import (
     _anchor_id,
     _anchor_link,
     _anchor_marker,
+    _element_progression_witnesses,
     _extension_context_path,
     _html_anchor,
     _interface_index_path,
@@ -66,33 +67,15 @@ def _authority_index_path(authority: str) -> str:
     return f"{ATLAS_DIRECTORY}/authorities/{_slug(authority, limit=72)}/index.md"
 
 
-def _contract_map_nodes(relationship: Mapping[str, object]) -> dict[str, Mapping[str, object]]:
-    contract_map = cast(Mapping[str, object], relationship["contract_map"])
-    return {
-        str(item["id"]): item
-        for item in cast(Sequence[Mapping[str, object]], contract_map["nodes"])
-    }
-
-
-def _map_node_link(source: str, node: Mapping[str, object]) -> str:
-    path = node.get("path")
-    title = _md(node["title"])
-    if path is None:
-        return title
-    return f"[{title}]({_relative_link(source, f'{ATLAS_DIRECTORY}/{path}')})"
-
-
-def _render_contract_map(
+def _render_authority_inventory(
     relationship: Mapping[str, object],
+    grouped: Mapping[str, Mapping[str, Sequence[Mapping[str, object]]]],
+    descriptions: Mapping[str, str],
+    qualifications: Mapping[str, Sequence[str]],
     *,
     source: str,
 ) -> list[str]:
-    """Render the one canonical human-facing map of the repository contract."""
-
-    nodes = _contract_map_nodes(relationship)
-    children: dict[str | None, list[Mapping[str, object]]] = defaultdict(list)
-    for node in nodes.values():
-        children[cast(str | None, node.get("parent"))].append(node)
+    """Render exact authorities and interfaces without inferred categories."""
 
     relationship_nodes = cast(Sequence[Mapping[str, object]], relationship["nodes"])
     relationship_nodes_by_id = {str(item["id"]): item for item in relationship_nodes}
@@ -131,11 +114,9 @@ def _render_contract_map(
         )
 
     def render_authority(
-        authority: Mapping[str, object],
-        *,
-        prefix: str,
+        authority_name: str,
+        interfaces: Mapping[str, Sequence[Mapping[str, object]]],
     ) -> list[str]:
-        authority_name = str(authority["authority"])
         provider_extensions = extensions_by_provider.get(authority_name, ())
         provider_annotation = ""
         if provider_extensions:
@@ -147,12 +128,16 @@ def _render_contract_map(
                 label += "s"
             provider_annotation = f" {label}: {extension_links(provider_extensions)}."
         result = [
-            f"{prefix}- [{_md(authority_name)}]"
+            f"- [{_md(authority_name)}]"
             f"({_relative_link(source, _authority_index_path(authority_name))}) — "
-            f"{_md(authority['purpose'])}{provider_annotation}"
+            f"{_md(descriptions[authority_name])}{provider_annotation}"
+            + _qualification_cue(
+                [item for values in interfaces.values() for item in values], qualifications
+            )
         ]
-        for interface in cast(Sequence[Mapping[str, object]], authority["interfaces"]):
-            interface_id = str(interface["id"])
+        for interface_id, values in sorted(
+            interfaces.items(), key=lambda item: _interface_sort_key(item[0])
+        ):
             owner_extensions = extensions_by_owner_interface.get((authority_name, interface_id), ())
             owner_annotation = ""
             if owner_extensions:
@@ -162,185 +147,93 @@ def _render_contract_map(
                     label += "s"
                 owner_annotation = f" — {label}: {extension_links(owner_extensions)}."
             result.append(
-                f"{prefix}  - [{_md(interface['label'])}]"
+                f"  - [{_md(_interface_label(interface_id))}]"
                 f"({_relative_link(source, _interface_index_path(authority_name, interface_id))}) "
-                f"({interface['contract_elements']}){owner_annotation}"
+                f"({len(values)}){owner_annotation}" + _qualification_cue(values, qualifications)
             )
         return result
 
-    def render_node(node: Mapping[str, object], depth: int) -> list[str]:
-        prefix = "  " * depth
-        authorities = cast(Sequence[Mapping[str, object]], node["authorities"])
-        result = [f"{prefix}- {_map_node_link(source, node)}"]
-        for authority in authorities:
-            result.extend(render_authority(authority, prefix=f"{prefix}  "))
-        for child in children.get(str(node["id"]), []):
-            result.extend(render_node(child, depth + 1))
-        return result
-
-    lines = ["## Contract map", ""]
-    for top in children[None]:
-        lines.extend([f"### {_map_node_link(source, top)}", ""])
-        top_children = children.get(str(top["id"]), [])
-        if top_children:
-            for child in top_children:
-                lines.extend(render_node(child, 0))
-        else:
-            authorities = cast(Sequence[Mapping[str, object]], top["authorities"])
-            for authority in authorities:
-                lines.extend(render_authority(authority, prefix=""))
+    lines = ["## Authorities and interfaces", ""]
+    for authority, interfaces in sorted(grouped.items()):
+        lines.extend(render_authority(authority, interfaces))
         lines.append("")
     return lines
 
 
-def _render_surface_authorities(
-    *,
-    source: str,
-    node: Mapping[str, object],
-    relationship: Mapping[str, object],
-    elements: Sequence[Mapping[str, object]],
-) -> list[str]:
-    records = cast(Sequence[Mapping[str, object]], node["authorities"])
-    by_authority: dict[str, list[Mapping[str, object]]] = defaultdict(list)
-    for element in elements:
-        by_authority[str(element["authority"])].append(element)
-    relationship_nodes = {
-        str(item["id"]): item
-        for item in cast(Sequence[Mapping[str, object]], relationship["nodes"])
-    }
-    lines = [
-        f"## {node['title']}",
-        "",
-        f"Authorities: **{len(records)}** · Contract elements: "
-        f"**{sum(cast(int, item['contract_elements']) for item in records)}**",
-        "",
-    ]
-    if not records:
-        return lines
-    lines.extend(
-        [
-            "| Exact authority | Contract elements | Interfaces | Maintained purpose |",
-            "|---|---:|---|---|",
-        ]
-    )
-    for record in records:
-        authority = str(record["authority"])
-        interfaces = sorted(
-            {str(item["interface"]) for item in by_authority[authority]},
-            key=_interface_sort_key,
+def _authority_descriptions(
+    projection: Mapping[str, object],
+    trace: Mapping[str, object],
+    component_descriptions: Mapping[str, str],
+) -> dict[str, str]:
+    """Use explicit aggregate declarations and component ownership, never name categories."""
+    descriptions = dict(component_descriptions)
+    external = cast(Mapping[str, object], projection["external_contract"])
+    state = cast(Mapping[str, object], external["durable_state"])
+    for owner in cast(Sequence[Mapping[str, object]], state["owners"]):
+        descriptions[str(owner["id"])] = component_descriptions[str(owner["distribution"])]
+    registry = cast(Mapping[str, object], trace["authority_registry"])
+    for authority in cast(Sequence[Mapping[str, object]], registry["declared_authorities"]):
+        descriptions[str(authority["id"])] = str(authority["meaning"])
+    return descriptions
+
+
+def _qualification_cue(
+    elements: Sequence[Mapping[str, object]], qualifications: Mapping[str, Sequence[str]]
+) -> str:
+    if not any(qualifications.get(str(item["id"])) for item in elements):
+        return ""
+    return " — contains contracts with unestablished progression claims"
+
+
+def _interface_qualifications(
+    values: Sequence[Mapping[str, object]],
+    qualifications: Mapping[str, Sequence[str]],
+    interface_path: str,
+) -> tuple[list[str], dict[str, str]]:
+    """State a shared qualification once, otherwise mark its exact affected entries."""
+    source_evidence_path = f"{ATLAS_DIRECTORY}/evidence/sources.md"
+    lines: list[str] = []
+    witness_sets = {tuple(qualifications[str(item["id"])]) for item in values}
+    shared_witnesses = next(iter(witness_sets)) if len(witness_sets) == 1 else ()
+    suffixes: dict[str, str] = {}
+    if shared_witnesses:
+        lines.extend(
+            [
+                "All entries below are bound to candidate witness groups with "
+                "unestablished progression claims. The claims retain group-level scope:",
+                "",
+                *(
+                    f"- [{_md(identity)}]"
+                    f"({_relative_link(interface_path, source_evidence_path)}#"
+                    f"{_anchor_id('extent-witness', identity)})"
+                    for identity in shared_witnesses
+                ),
+                "",
+            ]
         )
-        owners = [
-            relationship_nodes[owner]
-            for owner in cast(Sequence[str], record["owner_component_ids"])
-        ]
-        purposes = sorted({str(owner["description"]) for owner in owners})
-        lines.append(
-            f"| [{_md(authority)}]({_relative_link(source, _authority_index_path(authority))}) | "
-            f"{record['contract_elements']} | "
-            f"{_md(', '.join(_interface_label(interface) for interface in interfaces))} | "
-            f"{_md(' '.join(purposes) or 'Cross-cutting generated authority.')} |"
+    elif any(witness_sets):
+        lines.extend(
+            [
+                "Marked entries have group-level unestablished progression claims; "
+                "follow their qualification links for the exact witnesses. "
+                "Unmarked entries carry no implied approval.",
+                "",
+            ]
         )
-    lines.append("")
-    return lines
-
-
-def _render_contract_surfaces(
-    relationship: Mapping[str, object],
-    elements: Sequence[Mapping[str, object]],
-) -> tuple[dict[str, bytes], dict[str, dict[str, object]]]:
-    """Render pages only where the auditor's semantic question changes."""
-
-    root_path = f"{ATLAS_DIRECTORY}/index.md"
-    nodes = _contract_map_nodes(relationship)
-    files: dict[str, bytes] = {}
-    metadata: dict[str, dict[str, object]] = {}
-
-    surface_specs = (
-        (
-            f"{ATLAS_DIRECTORY}/surfaces/riverhog.md",
-            "Riverhog product",
-            "Riverhog owns the public archive service and the reusable contracts that define "
-            "its maintained extension boundaries. Reference implementations remain nonnormative.",
-            ("riverhog-service", "riverhog-contracts", "riverhog-implementation"),
-        ),
-        (
-            f"{ATLAS_DIRECTORY}/surfaces/references.md",
-            "Maintainer-selected Riverhog references",
-            str(relationship["reference_policy"]),
-            ("riverhog-references", "gogurt", "mango-fish", "piggity"),
-        ),
-        (
-            f"{ATLAS_DIRECTORY}/surfaces/stove0.md",
-            "Stove0",
-            "Stove0 is a maintainer-selected, nonnormative Riverhog reference application. "
-            "It owns its interfaces and state without becoming Riverhog authority.",
-            (
-                "stove0-application",
-                "stove0-observers",
-                "stove0-targets",
-                "stove0-review",
-                "stove0-recipes",
-            ),
-        ),
-        (
-            f"{ATLAS_DIRECTORY}/surfaces/cross-cutting.md",
-            "Cross-cutting v1 authorities",
-            "These generated authorities bind repository-wide configuration, state, extent, "
-            "and boundary semantics without becoming a separate product surface.",
-            ("cross-cutting",),
-        ),
-    )
-    for path, title, description, node_ids in surface_specs:
-        lines = [
-            f"# {title}",
-            "",
-            f"[Atlas]({_relative_link(path, root_path)})",
-            "",
-            description,
-            "",
-            "## Surface shape",
-            "",
-            "| Semantic area | Exact authorities | Contract elements |",
-            "|---|---:|---:|",
-        ]
-        for node_id in node_ids:
-            node = nodes[node_id]
-            authorities = cast(Sequence[Mapping[str, object]], node["authorities"])
-            lines.append(
-                f"| {node['title']} | {len(authorities)} | "
-                f"{sum(cast(int, item['contract_elements']) for item in authorities)} |"
-            )
-        lines.append("")
-        for node_id in node_ids:
-            lines.extend(
-                _render_surface_authorities(
-                    source=path,
-                    node=nodes[node_id],
-                    relationship=relationship,
-                    elements=elements,
-                )
-            )
-        counts = {
-            "authorities": sum(
-                len(cast(Sequence[object], nodes[node_id]["authorities"])) for node_id in node_ids
-            ),
-            "contract_elements": sum(
-                cast(int, item["contract_elements"])
-                for node_id in node_ids
-                for item in cast(Sequence[Mapping[str, object]], nodes[node_id]["authorities"])
-            ),
+        suffixes = {
+            str(item["id"]): " — [unestablished progression claims]("
+            + _relative_link(interface_path, str(item["dossier"]))
+            + "#progression-evidence-and-open-obligations)"
+            for item in values
+            if qualifications[str(item["id"])]
         }
-        files[path] = ("\n".join(lines).rstrip() + "\n").encode()
-        metadata[path] = {
-            "kind": "semantic-surface",
-            "counts": counts,
-            "map_node_ids": list(node_ids),
-        }
-    return files, metadata
+    return lines, suffixes
 
 
 def _render_extension_contexts(
     relationship: Mapping[str, object],
+    grouped: Mapping[str, Mapping[str, Sequence[Mapping[str, object]]]],
+    qualifications: Mapping[str, Sequence[str]],
 ) -> tuple[dict[str, bytes], dict[str, dict[str, object]]]:
     """Render non-semantic context for each frozen extension boundary."""
 
@@ -436,6 +329,7 @@ def _render_extension_contexts(
             lines.append(
                 f"- [{_md(interface_authority)} · {_md(interface['label'])}]"
                 f"({_relative_link(path, interface_path)}){binding}"
+                + _qualification_cue(grouped[interface_authority][interface_id], qualifications)
             )
         lines.extend(
             [
@@ -485,6 +379,14 @@ def _render_atlas(
     grouped: dict[str, dict[str, list[dict[str, object]]]] = defaultdict(lambda: defaultdict(list))
     for item in elements:
         grouped[str(item["authority"])][str(item["interface"])].append(item)
+
+    qualifications = _element_progression_witnesses(elements, trace)
+    descriptions = _authority_descriptions(projection, trace, component_descriptions)
+    missing_descriptions = set(grouped) - set(descriptions)
+    if missing_descriptions:
+        raise ContractAtlasError(
+            f"authorities lack declared descriptions: {sorted(missing_descriptions)}"
+        )
 
     for element in elements:
         files[str(element["dossier"])] = _render_dossier(
@@ -607,12 +509,23 @@ def _render_atlas(
             f"[Atlas]({_relative_link(authority_path, f'{ATLAS_DIRECTORY}/index.md')}) · "
             f"[Policies]({_relative_link(authority_path, policy_path)})",
             "",
+            _md(descriptions[authority]),
+            "",
             f"Contract elements: **{counts['contract_elements']}** · "
             f"Extent decisions: **{counts['extent_decisions']}**",
             "",
             "## Interfaces",
             "",
         ]
+        if any(qualifications[str(item["id"])] for item in authority_elements):
+            lines.extend(
+                [
+                    "Marked interfaces contain records bound to candidate witness groups with "
+                    "unestablished progression claims. These are group-level limitations, "
+                    "not failed operations or approval of unmarked records.",
+                    "",
+                ]
+            )
         for interface, values in sorted(
             interfaces.items(), key=lambda item: _interface_sort_key(item[0])
         ):
@@ -623,6 +536,7 @@ def _render_atlas(
             lines.append(
                 f"- [{_interface_label(interface)}]"
                 f"({_relative_link(authority_path, interface_path)}) ({len(values)})"
+                + _qualification_cue(values, qualifications)
             )
         files[authority_path] = ("\n".join(lines).rstrip() + "\n").encode()
 
@@ -648,6 +562,17 @@ def _render_atlas(
                 "",
             ]
             labels = _interface_navigation_labels(interface, values)
+            qualification_lines, suffixes = _interface_qualifications(
+                values, qualifications, interface_path
+            )
+            lines.extend(qualification_lines)
+            entries = {
+                str(item["id"]): f"[{_md(labels[str(item['id'])])}]"
+                f"({_relative_link(interface_path, str(item['dossier']))})"
+                + suffixes.get(str(item["id"]), "")
+                for item in values
+            }
+
             renderer = INTERFACE_REGISTRY[interface].renderer
             if renderer == "durable-state":
                 lines.extend(
@@ -662,11 +587,7 @@ def _render_atlas(
                         raise ContractAtlasError(
                             f"durable-state navigation lacks a kind: {state_item['id']}"
                         )
-                    lines.append(
-                        f"| [{_md(labels[str(state_item['id'])])}]"
-                        f"({_relative_link(interface_path, str(state_item['dossier']))}) | "
-                        f"{_md(kind)} |"
-                    )
+                    lines.append(f"| {entries[str(state_item['id'])]} | {_md(kind)} |")
             elif renderer == "release":
                 lines.extend(
                     [
@@ -681,9 +602,7 @@ def _render_atlas(
                         f"`{_md(classification)}`" if classification != "—" else "—"
                     )
                     lines.append(
-                        f"| [{_md(labels[str(release_item['id'])])}]"
-                        f"({_relative_link(interface_path, str(release_item['dossier']))}) | "
-                        f"{rendered_classification} |"
+                        f"| {entries[str(release_item['id'])]} | {rendered_classification} |"
                     )
             elif renderer == "cli":
                 executable_count = sum(
@@ -698,7 +617,9 @@ def _render_atlas(
                         "",
                         "### Command tree",
                         "",
-                        *_render_cli_navigation_tree(values, interface_path=interface_path),
+                        *_render_cli_navigation_tree(
+                            values, interface_path=interface_path, suffixes=suffixes
+                        ),
                     ]
                 )
             elif renderer == "python":
@@ -723,19 +644,13 @@ def _render_atlas(
                         )
                     lines.extend([f"### `{_md(module)}`", ""])
                     for public_identity, item in sorted(exports.items()):
-                        lines.append(
-                            f"- [{_md(labels[str(item['id'])])}]"
-                            f"({_relative_link(interface_path, str(item['dossier']))})"
-                        )
+                        lines.append(f"- {entries[str(item['id'])]}")
                         owner_members = sorted(
                             members.get(public_identity, ()), key=lambda value: str(value["title"])
                         )
 
                         for member in owner_members:
-                            lines.append(
-                                f"  - [{_md(labels[str(member['id'])])}]"
-                                f"({_relative_link(interface_path, str(member['dossier']))})"
-                            )
+                            lines.append(f"  - {entries[str(member['id'])]}")
                     lines.append("")
             else:
                 values.sort(
@@ -756,16 +671,13 @@ def _render_atlas(
                     )
                 )
                 for item in values:
-                    lines.append(
-                        f"- [{_md(labels[str(item['id'])])}]"
-                        f"({_relative_link(interface_path, str(item['dossier']))})"
-                    )
+                    lines.append(f"- {entries[str(item['id'])]}")
             files[interface_path] = ("\n".join(lines).rstrip() + "\n").encode()
 
-    relationship = _relationship_model(projection, trace, elements, component_descriptions)
-    surface_files, surface_metadata = _render_contract_surfaces(relationship, elements)
-    extension_files, extension_metadata = _render_extension_contexts(relationship)
-    files.update(surface_files)
+    relationship = _relationship_model(projection, elements, component_descriptions)
+    extension_files, extension_metadata = _render_extension_contexts(
+        relationship, grouped, qualifications
+    )
     files.update(extension_files)
 
     root_counts = _counts(elements)
@@ -869,35 +781,24 @@ def _render_atlas(
             "requires a separate route-wiring argument; mutable browsing carries no implied "
             "snapshot-completeness guarantee.",
             "",
-            "| Candidate group | Bound extent decisions | Candidate tests | Unestablished claims |",
-            "|---|---:|---:|---|",
+            "| Candidate group | Bound extent decisions | Candidate tests |",
+            "|---|---:|---:|",
         ]
     )
     for witness in witnesses:
         witness_id = str(witness["id"])
         witness_anchor = _anchor_id("extent-witness", witness_id)
-        witness_label = (
-            f"[{_md(witness_id)}](#{witness_anchor})"
-            if witness["test_scopes"]
-            else f"{_html_anchor(witness_anchor)}`{_md(witness_id)}`"
-        )
+        witness_label = f"[{_md(witness_id)}](#{witness_anchor})"
         bound_count = sum(
             witness_id in cast(Sequence[str], link.get("segmented_extent_witnesses", ()))
             for link in cast(Sequence[Mapping[str, object]], trace["extent_sources"])
         )
         source_lines.append(
             f"| {witness_label} | "
-            f"{bound_count} | {len(cast(Sequence[str], witness['test_node_ids']))} | "
-            + ", ".join(
-                _md(claim.replace("_", " "))
-                for claim in cast(Sequence[str], witness["unestablished_claims"])
-            )
-            + " |"
+            f"{bound_count} | {len(cast(Sequence[str], witness['test_node_ids']))} |"
         )
-    source_lines.extend(["", "### Reviewed test scopes", ""])
+    source_lines.extend(["", "### Witness groups", ""])
     for witness in witnesses:
-        if not witness["test_scopes"]:
-            continue
         source_lines.extend(
             [
                 f"#### {_html_anchor(_anchor_id('extent-witness', str(witness['id'])))}"
@@ -905,6 +806,29 @@ def _render_atlas(
                 "",
             ]
         )
+        source_lines.extend(
+            [
+                "Unestablished group-wide claims: "
+                + ", ".join(
+                    _md(claim.replace("_", " "))
+                    for claim in cast(Sequence[str], witness["unestablished_claims"])
+                )
+                + ".",
+                "",
+                "Affected contracts:",
+                "",
+            ]
+        )
+        for item in sorted(elements, key=lambda item: (str(item["authority"]), str(item["title"]))):
+            if str(witness["id"]) in qualifications[str(item["id"])]:
+                source_lines.append(
+                    f"- [{_md(item['authority'])}: {_md(item['title'])}]"
+                    f"({_relative_link(source_evidence_path, str(item['dossier']))}"
+                    "#progression-evidence-and-open-obligations)"
+                )
+        source_lines.append("")
+        if witness["test_scopes"]:
+            source_lines.extend(["Reviewed test scopes:", ""])
         for test in cast(Sequence[Mapping[str, object]], witness["test_scopes"]):
             test_source = cast(Mapping[str, object], test["source"])
             link = _repository_source_link(source_evidence_path, test_source, str(test["node_id"]))
@@ -1056,13 +980,13 @@ def _render_atlas(
     files[configuration_evidence_path] = ("\n".join(configuration_lines).rstrip() + "\n").encode()
 
     authority_lines = [
-        "# Exact authority inventory",
+        "# Authority reconciliation",
         "",
         f"[Atlas]({_relative_link(authority_evidence_path, root_path)}) · "
         f"[Freeze evidence]({_relative_link(authority_evidence_path, evidence_path)})",
         "",
-        "This page is intentionally an alphabetical reconciliation inventory, not another "
-        "contract map.",
+        "Aggregate ownership and projection bookkeeping support reconciliation. "
+        "The atlas opening is the canonical authority/interface inventory.",
         "",
         "## Aggregate ownership",
         "",
@@ -1091,18 +1015,7 @@ def _render_atlas(
             for item in noncontractual_projection
         ),
         "",
-        "## Authorities",
-        "",
-        "| Authority | Contract elements | Interfaces |",
-        "|---|---:|---|",
     ]
-    for authority, interfaces in sorted(grouped.items()):
-        authority_elements = [item for values in interfaces.values() for item in values]
-        authority_lines.append(
-            f"| [{_md(authority)}]"
-            f"({_relative_link(authority_evidence_path, _authority_index_path(authority))}) | "
-            f"{len(authority_elements)} | {_md(', '.join(sorted(interfaces)))} |"
-        )
     files[authority_evidence_path] = ("\n".join(authority_lines).rstrip() + "\n").encode()
 
     relationship_nodes = cast(Sequence[Mapping[str, object]], relationship["nodes"])
@@ -1114,7 +1027,7 @@ def _render_atlas(
         f"[Atlas]({_relative_link(relationship_evidence_path, root_path)}) · "
         f"[Freeze evidence]({_relative_link(relationship_evidence_path, evidence_path)})",
         "",
-        "This is the exact generated node and edge set behind the human contract map. It is "
+        "This is the exact generated node and edge set behind the declared relationships. It is "
         "evidence, not a second navigation hierarchy.",
         "",
         "## Relationship shape",
@@ -1188,7 +1101,8 @@ def _render_atlas(
         "",
         f"{_anchor_marker('identity', 'atlas_representation_sha256')}"
         "The byte-exact `atlas_representation_sha256` is recorded at "
-        "`/identities/atlas_representation_sha256` in the machine closure. It cannot be embedded "
+        "`/identities/atlas_representation_sha256` in the "
+        f"[machine closure](../../{ATLAS_DIRECTORY}.json). It cannot be embedded "
         "inside the document bytes that it identifies.",
     ]
     files[identity_evidence_path] = ("\n".join(identity_lines).rstrip() + "\n").encode()
@@ -1229,7 +1143,7 @@ def _render_atlas(
         "",
         "## Exact evidence",
         "",
-        f"- [Exact authority inventory]({_relative_link(evidence_path, authority_evidence_path)})",
+        f"- [Authority reconciliation]({_relative_link(evidence_path, authority_evidence_path)})",
         "- [Configuration ownership registry]"
         f"({_relative_link(evidence_path, configuration_evidence_path)})",
         "- [Source and qualification inventory]"
@@ -1246,19 +1160,40 @@ def _render_atlas(
         "> **Audit question:** Is this exactly the external contract the Riverhog repository "
         "should support for v1 — no more, no less?",
         "",
-        "**Audit path:** Scope → Semantics → Evidence",
+        "This generated snapshot accounts for the externally exposed surfaces discovered "
+        "from this repository revision. Discovery means inclusion; no separate acceptance "
+        "decision is required.",
         "",
-        *_render_contract_map(relationship, source=root_path),
+        f"Included contract elements: **{root_counts['contract_elements']}** · "
+        f"Extent decisions: **{root_counts['extent_decisions']}**. "
+        "Complete accounting does not establish desirable contracts, behavioral proof, "
+        "freeze approval, or release readiness.",
         "",
-        "## Contract-wide policies",
+        str(relationship["reference_policy"]),
         "",
-        f"[Review the normative policies that govern the contract.]"
-        f"({_relative_link(root_path, policy_path)})",
+        "## Audit references",
         "",
-        "## Freeze evidence",
+        f"- [Governing policies]({_relative_link(root_path, policy_path)}) — "
+        "compatibility, publication, and extent rules; applicable dossiers link exact definitions.",
+        f"- [Accounting checks]({_relative_link(root_path, evidence_path)}) — "
+        "closure results and reconciliation inventories.",
+        f"- [Sources and qualifications]({_relative_link(root_path, source_evidence_path)}) — "
+        "source bindings, candidate tests, and unestablished obligations; no executed attestation.",
+        f"- [Configuration comparison]({_relative_link(root_path, configuration_evidence_path)}) — "
+        "owners, consumers, and default expressions across settings.",
+        f"- [Declared relationships]({_relative_link(root_path, relationship_evidence_path)}) — "
+        "exact dependency, packaging, and extension joins.",
+        f"- [Snapshot identities]({_relative_link(root_path, identity_evidence_path)}) "
+        f"and [machine artifact](../{ATLAS_DIRECTORY}.json) — "
+        "match semantic, accounting, trace, and presentation records.",
         "",
-        f"[Verify completeness, ownership, identities, and proof.]"
-        f"({_relative_link(root_path, evidence_path)})",
+        "Entries marked below contain contracts bound to witness groups with unestablished "
+        "progression claims. Follow the affected interface and element to its exact witnesses. "
+        "These are group-level limitations; unmarked entries carry no implied approval.",
+        "",
+        *_render_authority_inventory(
+            relationship, grouped, descriptions, qualifications, source=root_path
+        ),
     ]
     files[root_path] = ("\n".join(root_lines).rstrip() + "\n").encode()
 
@@ -1313,10 +1248,6 @@ def _render_atlas(
         elif path == identity_evidence_path:
             document_counts = {"identity_domains": len(identities) + 1}
             kind = "evidence-identity-inventory"
-        elif path in surface_metadata:
-            surface_descriptor = surface_metadata[path]
-            document_counts = cast(dict[str, object], surface_descriptor["counts"])
-            kind = str(surface_descriptor["kind"])
         elif path in extension_metadata:
             extension_descriptor = extension_metadata[path]
             document_counts = cast(dict[str, object], extension_descriptor["counts"])
@@ -1349,15 +1280,6 @@ def _render_atlas(
                 "sha256": hashlib.sha256(payload).hexdigest(),
                 "counts": document_counts,
                 **({"element_id": dossier_element["id"]} if dossier_element is not None else {}),
-                **(
-                    {
-                        key: value
-                        for key, value in surface_metadata[path].items()
-                        if key not in {"kind", "counts"}
-                    }
-                    if path in surface_metadata
-                    else {}
-                ),
                 **(
                     {
                         key: value

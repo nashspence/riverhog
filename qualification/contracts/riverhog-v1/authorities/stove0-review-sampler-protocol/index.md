@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Optional nonnormative sampler-protocol reference for the Stove0 review target.
+
 Contract elements: **36** · Extent decisions: **0**
 
 ## Interfaces

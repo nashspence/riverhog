@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Optional nonnormative Backblaze B2 storage reference for Riverhog.
+
 Contract elements: **21** · Extent decisions: **7**
 
 ## Interfaces

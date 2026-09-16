@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Optional nonnormative Windows observation-contract reference for Riverhog provenance.
+
 Contract elements: **14** · Extent decisions: **22**
 
 ## Interfaces

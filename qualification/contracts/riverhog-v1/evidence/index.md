@@ -31,7 +31,7 @@ Discovery identifies externally exposed contract surfaces. Every discovered cand
 
 ## Exact evidence
 
-- [Exact authority inventory](authorities.md)
+- [Authority reconciliation](authorities.md)
 - [Configuration ownership registry](configuration.md)
 - [Source and qualification inventory](sources.md)
 - [Relationship-edge inventory](relationships.md)

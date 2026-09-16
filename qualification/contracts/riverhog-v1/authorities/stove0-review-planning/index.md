@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Optional nonnormative planning bridge for maintained Stove0 review references.
+
 Contract elements: **5** · Extent decisions: **0**
 
 ## Interfaces

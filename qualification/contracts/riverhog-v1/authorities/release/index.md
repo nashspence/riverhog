@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Coordinated v1 compatibility and publication promises.
+
 Contract elements: **119** · Extent decisions: **0**
 
 ## Interfaces

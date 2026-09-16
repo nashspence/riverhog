@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Optional nonnormative Opus review-sampler reference for Stove0.
+
 Contract elements: **12** · Extent decisions: **2**
 
 ## Interfaces

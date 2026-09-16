@@ -13,7 +13,7 @@ Independently deployed process protocol owned by riverhog-storage-adapter-protoc
 - [riverhog-storage-adapter-protocol · Python](../authorities/riverhog-storage-adapter-protocol/python/index.md)
 - [riverhog-storage-adapter-support · Process Protocol](../authorities/riverhog-storage-adapter-support/process-protocol/index.md) ([exact binding](../evidence/relationships.md#re-5b6ba26bb3))
 - [riverhog-storage-adapter-support · Process Protocol Operations](../authorities/riverhog-storage-adapter-support/process-protocol-operations/index.md) ([exact binding](../evidence/relationships.md#re-5b6ba26bb3))
-- [riverhog-storage-adapter-support · Process Protocol Schemas](../authorities/riverhog-storage-adapter-support/process-protocol-schemas/index.md) ([exact binding](../evidence/relationships.md#re-5b6ba26bb3))
+- [riverhog-storage-adapter-support · Process Protocol Schemas](../authorities/riverhog-storage-adapter-support/process-protocol-schemas/index.md) ([exact binding](../evidence/relationships.md#re-5b6ba26bb3)) — contains contracts with unestablished progression claims
 
 ## Checked-in nonnormative implementations
 

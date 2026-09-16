@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Optional nonnormative review contract reference for Stove0 targets.
+
 Contract elements: **26** · Extent decisions: **0**
 
 ## Interfaces

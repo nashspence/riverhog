@@ -2,11 +2,15 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Optional nonnormative FTP ingress reference for Riverhog.
+
 Contract elements: **37** · Extent decisions: **52**
 
 ## Interfaces
 
-- [HTTP Operations](http-operations/index.md) (5)
+Marked interfaces contain records bound to candidate witness groups with unestablished progression claims. These are group-level limitations, not failed operations or approval of unmarked records.
+
+- [HTTP Operations](http-operations/index.md) (5) — contains contracts with unestablished progression claims
 - [HTTP Schemas](http-schemas/index.md) (5)
 - [HTTP Service Declaration](http-service-declaration/index.md) (1)
 - [HTTP Security Schemes](http-security-schemes/index.md) (1)

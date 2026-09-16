@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Optional nonnormative client for the Riverhog FTP ingress reference.
+
 Contract elements: **16** · Extent decisions: **1**
 
 ## Interfaces

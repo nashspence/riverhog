@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Optional nonnormative NVENC AV1 and Opus target reference for Stove0.
+
 Contract elements: **19** · Extent decisions: **2**
 
 ## Interfaces

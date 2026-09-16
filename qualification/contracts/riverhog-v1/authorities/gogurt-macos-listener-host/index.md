@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Optional nonnormative macOS launchd listener-host reference for Gogurt.
+
 Contract elements: **12** · Extent decisions: **0**
 
 ## Interfaces

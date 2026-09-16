@@ -23,7 +23,6 @@ ATLAS_DIRECTORY = "riverhog-v1"
 # Reading-size target before the collapsed exact-JSON fallback, not a v1 contract extent.
 AUDIT_PRIMARY_CONTENT_TARGET_BYTES = 128 * 1024
 RELATIONSHIP_SCHEMA = "riverhog-contract-human-relationships/v1"
-CONTRACT_MAP_SCHEMA = "riverhog-contract-human-map/v1"
 
 _SCHEMA_MAPPING_KEYWORDS = frozenset(
     {"$defs", "definitions", "dependentSchemas", "patternProperties", "properties"}

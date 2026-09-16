@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Optional nonnormative CloudEvents reference application for Riverhog.
+
 Contract elements: **2** · Extent decisions: **0**
 
 ## Interfaces

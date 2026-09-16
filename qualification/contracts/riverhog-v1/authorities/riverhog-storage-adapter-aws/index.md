@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Optional nonnormative AWS storage reference for Riverhog.
+
 Contract elements: **38** · Extent decisions: **7**
 
 ## Interfaces

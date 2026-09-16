@@ -522,26 +522,153 @@ Fixtures prove restart and introspection behavior; component declarations above 
 
 Each group lists its unestablished obligations. Test-symbol existence and owner/reason matching validate routing only. A shared codec test requires a separate route-wiring argument; mutable browsing carries no implied snapshot-completeness guarantee.
 
-| Candidate group | Bound extent decisions | Candidate tests | Unestablished claims |
-|---|---:|---:|---|
-| <a id="e-5707b3a2d3-b068c34cbb"></a>`riverhog-upload-work-progression/v1` | 1 | 3 | bounded step, forward progress, multiple segments, no silent truncation, restart |
-| <a id="e-5707b3a2d3-a01ca2b113"></a>`riverhog-archive-volume-part-progression/v1` | 2 | 3 | bounded step, forward progress, multiple segments, no silent truncation, restart |
-| <a id="e-5707b3a2d3-26637e3f38"></a>`riverhog-storage-write-segment-progression/v1` | 1 | 3 | bounded step, forward progress, multiple segments, no silent truncation, restart |
-| <a id="e-5707b3a2d3-6a55d20aca"></a>`riverhog-work-authority-append/v1` | 2 | 2 | bounded step, forward progress, multiple segments, no silent truncation, restart |
-| <a id="e-5707b3a2d3-401544f03b"></a>`riverhog-work-disposition-append/v1` | 2 | 2 | bounded step, forward progress, multiple segments, no silent truncation, restart |
-| <a id="e-5707b3a2d3-8577e11c6a"></a>`riverhog-provenance-volume-progression/v1` | 1 | 3 | bounded step, forward progress, multiple segments, no silent truncation, restart |
-| <a id="e-5707b3a2d3-dbc4c688e1"></a>`riverhog-raw-digest-progression/v1` | 1 | 2 | bounded step, forward progress, multiple segments, no silent truncation, restart |
-| <a id="e-5707b3a2d3-bff92ce2bd"></a>`riverhog-retrieval-work-progression/v1` | 1 | 2 | bounded step, forward progress, multiple segments, no silent truncation, restart |
-| [riverhog-read-collection-progression/v1](#e-5707b3a2d3-1536c4a29a) | 54 | 9 | bounded step, forward progress, multiple segments, no silent truncation, restart |
-| <a id="e-5707b3a2d3-34931f753b"></a>`stove0-read-collection-progression/v1` | 12 | 3 | bounded step, forward progress, multiple segments, no silent truncation, restart |
-| <a id="e-5707b3a2d3-98357b3ef7"></a>`riverhog-ftp-adapter-status-progression/v1` | 1 | 17 | bounded step, forward progress, multiple segments, no silent truncation, restart |
-| <a id="e-5707b3a2d3-ca266cc9fb"></a>`riverhog-upload-registration-progression/v1` | 1 | 2 | bounded step, forward progress, multiple segments, no silent truncation, restart |
-| <a id="e-5707b3a2d3-5f2b3d8179"></a>`riverhog-upload-tag-staging-progression/v1` | 2 | 8 | bounded step, forward progress, multiple segments, no silent truncation, restart |
-| <a id="e-5707b3a2d3-7e680acb75"></a>`riverhog-upload-unit-source-progression/v1` | 1 | 3 | bounded step, forward progress, multiple segments, no silent truncation, restart |
+| Candidate group | Bound extent decisions | Candidate tests |
+|---|---:|---:|
+| [riverhog-upload-work-progression/v1](#e-5707b3a2d3-b068c34cbb) | 1 | 3 |
+| [riverhog-archive-volume-part-progression/v1](#e-5707b3a2d3-a01ca2b113) | 2 | 3 |
+| [riverhog-storage-write-segment-progression/v1](#e-5707b3a2d3-26637e3f38) | 1 | 3 |
+| [riverhog-work-authority-append/v1](#e-5707b3a2d3-6a55d20aca) | 2 | 2 |
+| [riverhog-work-disposition-append/v1](#e-5707b3a2d3-401544f03b) | 2 | 2 |
+| [riverhog-provenance-volume-progression/v1](#e-5707b3a2d3-8577e11c6a) | 1 | 3 |
+| [riverhog-raw-digest-progression/v1](#e-5707b3a2d3-dbc4c688e1) | 1 | 2 |
+| [riverhog-retrieval-work-progression/v1](#e-5707b3a2d3-bff92ce2bd) | 1 | 2 |
+| [riverhog-read-collection-progression/v1](#e-5707b3a2d3-1536c4a29a) | 54 | 9 |
+| [stove0-read-collection-progression/v1](#e-5707b3a2d3-34931f753b) | 12 | 3 |
+| [riverhog-ftp-adapter-status-progression/v1](#e-5707b3a2d3-98357b3ef7) | 1 | 17 |
+| [riverhog-upload-registration-progression/v1](#e-5707b3a2d3-ca266cc9fb) | 1 | 2 |
+| [riverhog-upload-tag-staging-progression/v1](#e-5707b3a2d3-5f2b3d8179) | 2 | 8 |
+| [riverhog-upload-unit-source-progression/v1](#e-5707b3a2d3-7e680acb75) | 1 | 3 |
 
-### Reviewed test scopes
+### Witness groups
+
+#### <a id="e-5707b3a2d3-b068c34cbb"></a>riverhog-upload-work-progression/v1
+
+Unestablished group-wide claims: bounded step, forward progress, multiple segments, no silent truncation, restart.
+
+Affected contracts:
+
+- [riverhog: schemas: CollectionUploadWorkBatchDocument](../authorities/riverhog/http-schemas/schemas-collectionuploadworkbatchdocument.md#progression-evidence-and-open-obligations)
+
+#### <a id="e-5707b3a2d3-a01ca2b113"></a>riverhog-archive-volume-part-progression/v1
+
+Unestablished group-wide claims: bounded step, forward progress, multiple segments, no silent truncation, restart.
+
+Affected contracts:
+
+- [riverhog-archive-contracts: Riverhog v1 bounded immutable archive-volume metadata](../authorities/riverhog-archive-contracts/schema/riverhog-v1-bounded-immutable-archive-volume-metadata.md#progression-evidence-and-open-obligations)
+
+#### <a id="e-5707b3a2d3-26637e3f38"></a>riverhog-storage-write-segment-progression/v1
+
+Unestablished group-wide claims: bounded step, forward progress, multiple segments, no silent truncation, restart.
+
+Affected contracts:
+
+- [riverhog-storage-adapter-support: generated:riverhog-storage-adapter: WriteSegmentPage](../authorities/riverhog-storage-adapter-support/process-protocol-schemas/generated-riverhog-storage-adapter-writesegmentpage.md#progression-evidence-and-open-obligations)
+
+#### <a id="e-5707b3a2d3-6a55d20aca"></a>riverhog-work-authority-append/v1
+
+Unestablished group-wide claims: bounded step, forward progress, multiple segments, no silent truncation, restart.
+
+Affected contracts:
+
+- [riverhog: schemas: CollectionArtifactBatchDocument](../authorities/riverhog/http-schemas/schemas-collectionartifactbatchdocument.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: CollectionRootBatchDocument](../authorities/riverhog/http-schemas/schemas-collectionrootbatchdocument.md#progression-evidence-and-open-obligations)
+
+#### <a id="e-5707b3a2d3-401544f03b"></a>riverhog-work-disposition-append/v1
+
+Unestablished group-wide claims: bounded step, forward progress, multiple segments, no silent truncation, restart.
+
+Affected contracts:
+
+- [riverhog: schemas: ArtifactDispositionBatchDocument](../authorities/riverhog/http-schemas/schemas-artifactdispositionbatchdocument.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: ArtifactDispositionOutputBatchDocument](../authorities/riverhog/http-schemas/schemas-artifactdispositionoutputbatchdocument.md#progression-evidence-and-open-obligations)
+
+#### <a id="e-5707b3a2d3-8577e11c6a"></a>riverhog-provenance-volume-progression/v1
+
+Unestablished group-wide claims: bounded step, forward progress, multiple segments, no silent truncation, restart.
+
+Affected contracts:
+
+- [riverhog-provenance: Riverhog v1 bounded provenance file bindings](../authorities/riverhog-provenance/schema/riverhog-v1-bounded-provenance-file-bindings.md#progression-evidence-and-open-obligations)
+
+#### <a id="e-5707b3a2d3-dbc4c688e1"></a>riverhog-raw-digest-progression/v1
+
+Unestablished group-wide claims: bounded step, forward progress, multiple segments, no silent truncation, restart.
+
+Affected contracts:
+
+- [riverhog: schemas: CollectionUploadRawDigestBatchDocument](../authorities/riverhog/http-schemas/schemas-collectionuploadrawdigestbatchdocument.md#progression-evidence-and-open-obligations)
+
+#### <a id="e-5707b3a2d3-bff92ce2bd"></a>riverhog-retrieval-work-progression/v1
+
+Unestablished group-wide claims: bounded step, forward progress, multiple segments, no silent truncation, restart.
+
+Affected contracts:
+
+- [riverhog: schemas: RetrievalPlanRequest](../authorities/riverhog/http-schemas/schemas-retrievalplanrequest.md#progression-evidence-and-open-obligations)
 
 #### <a id="e-5707b3a2d3-1536c4a29a"></a>riverhog-read-collection-progression/v1
+
+Unestablished group-wide claims: bounded step, forward progress, multiple segments, no silent truncation, restart.
+
+Affected contracts:
+
+- [riverhog: GET /v1/app-key-access](../authorities/riverhog/http-operations/get-v1-app-key-access.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/apps](../authorities/riverhog/http-operations/get-v1-apps.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/apps/{app}/keys](../authorities/riverhog/http-operations/get-v1-apps-app-keys.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/archive/copies](../authorities/riverhog/http-operations/get-v1-archive-copies.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/archive/stores](../authorities/riverhog/http-operations/get-v1-archive-stores.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/catalog-sync/changes](../authorities/riverhog/http-operations/get-v1-catalog-sync-changes.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/catalog-sync/collections](../authorities/riverhog/http-operations/get-v1-catalog-sync-collections.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/catalog/collections/{collection_id}/inventory](../authorities/riverhog/http-operations/get-v1-catalog-collections-collection-id-inventory.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/collection-processing-claims](../authorities/riverhog/http-operations/get-v1-collection-processing-claims.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/collection-processing-claims/{claim_id}/derivation/dispositions](../authorities/riverhog/http-operations/get-v1-collection-processing-claims-claim-id-derivation-dispositions.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/collection-processing-claims/{claim_id}/derivation/output-edges](../authorities/riverhog/http-operations/get-v1-collection-processing-claims-claim-id-derivation-output-edges.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/collection-processing-claims/{claim_id}/inputs](../authorities/riverhog/http-operations/get-v1-collection-processing-claims-claim-id-inputs.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/collection-processing-claims/{claim_id}/outcomes](../authorities/riverhog/http-operations/get-v1-collection-processing-claims-claim-id-outcomes.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/collection-processing-claims/{claim_id}/plan/artifacts](../authorities/riverhog/http-operations/get-v1-collection-processing-claims-claim-id-plan-artifacts.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/collection-upload-sessions](../authorities/riverhog/http-operations/get-v1-collection-upload-sessions.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/collection-upload-sessions/{collection_id}/files](../authorities/riverhog/http-operations/get-v1-collection-upload-sessions-collection-id-files.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/collections](../authorities/riverhog/http-operations/get-v1-collections.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/collections/{collection_id}/archive-copies](../authorities/riverhog/http-operations/get-v1-collections-collection-id-archive-copies.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/collections/{collection_id}/provenance/files](../authorities/riverhog/http-operations/get-v1-collections-collection-id-provenance-files.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/collections/{collection_id}/provenance/journals/{journal_id}/agents](../authorities/riverhog/http-operations/get-v1-collections-collection-id-provenance-journals-journal-id-agents.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/collections/{collection_id}/provenance/trace/{path}](../authorities/riverhog/http-operations/get-v1-collections-collection-id-provenance-trace-path.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/collections/{collection_id}/tags](../authorities/riverhog/http-operations/get-v1-collections-collection-id-tags.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/download-quotas](../authorities/riverhog/http-operations/get-v1-download-quotas.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/events](../authorities/riverhog/http-operations/get-v1-events.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/retrieval-cache/objects](../authorities/riverhog/http-operations/get-v1-retrieval-cache-objects.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/retrieval-plans/{plan_id}/files](../authorities/riverhog/http-operations/get-v1-retrieval-plans-plan-id-files.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/search](../authorities/riverhog/http-operations/get-v1-search.md#progression-evidence-and-open-obligations)
+- [riverhog: GET /v1/tags](../authorities/riverhog/http-operations/get-v1-tags.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: AppAccessListOut](../authorities/riverhog/http-schemas/schemas-appaccesslistout.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: AppKeyListOut](../authorities/riverhog/http-schemas/schemas-appkeylistout.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: AppListOut](../authorities/riverhog/http-schemas/schemas-applistout.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: ArchiveCopyJobListOut](../authorities/riverhog/http-schemas/schemas-archivecopyjoblistout.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: ArchiveStoreListOut](../authorities/riverhog/http-schemas/schemas-archivestorelistout.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: ArtifactDispositionOutputPageDocument](../authorities/riverhog/http-schemas/schemas-artifactdispositionoutputpagedocument.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: ArtifactDispositionPageDocument](../authorities/riverhog/http-schemas/schemas-artifactdispositionpagedocument.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: CatalogSyncChangePage](../authorities/riverhog/http-schemas/schemas-catalogsyncchangepage.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: CatalogSyncCollectionPage](../authorities/riverhog/http-schemas/schemas-catalogsynccollectionpage.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: CollectionArchiveCopyListOut](../authorities/riverhog/http-schemas/schemas-collectionarchivecopylistout.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: CollectionArtifactPageDocument](../authorities/riverhog/http-schemas/schemas-collectionartifactpagedocument.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: CollectionRootPageDocument](../authorities/riverhog/http-schemas/schemas-collectionrootpagedocument.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: CollectionTagListOut](../authorities/riverhog/http-schemas/schemas-collectiontaglistout.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: KeyDownloadQuotaListOut](../authorities/riverhog/http-schemas/schemas-keydownloadquotalistout.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: ListCollectionUploadSessionFilesResponse](../authorities/riverhog/http-schemas/schemas-listcollectionuploadsessionfilesresponse.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: ListCollectionUploadSessionsResponse](../authorities/riverhog/http-schemas/schemas-listcollectionuploadsessionsresponse.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: ListCollectionsResponse](../authorities/riverhog/http-schemas/schemas-listcollectionsresponse.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: ListProvenanceJournalAgentsResponse](../authorities/riverhog/http-schemas/schemas-listprovenancejournalagentsresponse.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: PortableCollectionInventoryPage](../authorities/riverhog/http-schemas/schemas-portablecollectioninventorypage.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: ProcessingClaimPageDocument](../authorities/riverhog/http-schemas/schemas-processingclaimpagedocument.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: ProcessingOutcomePageDocument](../authorities/riverhog/http-schemas/schemas-processingoutcomepagedocument.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: RetrievalCacheObjectListOut](../authorities/riverhog/http-schemas/schemas-retrievalcacheobjectlistout.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: RetrievalPlanFilePageOut](../authorities/riverhog/http-schemas/schemas-retrievalplanfilepageout.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: RiverhogEventPage](../authorities/riverhog/http-schemas/schemas-riverhogeventpage.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: SearchResponse](../authorities/riverhog/http-schemas/schemas-searchresponse.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: TagListOut](../authorities/riverhog/http-schemas/schemas-taglistout.md#progression-evidence-and-open-obligations)
+
+Reviewed test scopes:
 
 - [tests/unit/test_public_interface_parity.py::test_public_read_collection_selectors_are_bounded_and_frozen](../../../../tests/unit/test_public_interface_parity.py#L732): Structural OpenAPI checks for bounded read selectors; no traversal is executed.
 
@@ -560,3 +687,55 @@ Each group lists its unestablished obligations. Test-symbol existence and owner/
 - [tests/unit/test_catalog_sync.py::test_catalog_sync_crosses_many_pages_and_repairs_fixed_frontier_changes](../../../../tests/unit/test_catalog_sync.py#L234): Catalog-sync fixed-frontier traversal and repair; ordinary mutable collection browsing has different semantics and gains no snapshot-completeness claim.
 
 - [tests/integration/test_lifecycle_event_concurrency.py::test_event_reads_and_concurrent_context_reapers_do_only_bounded_work](../../../../tests/integration/test_lifecycle_event_concurrency.py#L74): Lifecycle-event reads and concurrent context reaping; not collection browsing.
+
+#### <a id="e-5707b3a2d3-34931f753b"></a>stove0-read-collection-progression/v1
+
+Unestablished group-wide claims: bounded step, forward progress, multiple segments, no silent truncation, restart.
+
+Affected contracts:
+
+- [stove0: GET /v1/admissions](../authorities/stove0/http-operations/get-v1-admissions.md#progression-evidence-and-open-obligations)
+- [stove0: GET /v1/artifact-selections/{selection_sha256}](../authorities/stove0/http-operations/get-v1-artifact-selections-selection-sha256.md#progression-evidence-and-open-obligations)
+- [stove0: GET /v1/evaluations](../authorities/stove0/http-operations/get-v1-evaluations.md#progression-evidence-and-open-obligations)
+- [stove0: GET /v1/events](../authorities/stove0/http-operations/get-v1-events.md#progression-evidence-and-open-obligations)
+- [stove0: GET /v1/target-executions/{job_id}/inputs](../authorities/stove0/http-operations/get-v1-target-executions-job-id-inputs.md#progression-evidence-and-open-obligations)
+- [stove0: GET /v1/work](../authorities/stove0/http-operations/get-v1-work.md#progression-evidence-and-open-obligations)
+- [stove0: schemas: AdmissionPage](../authorities/stove0/http-schemas/schemas-admissionpage.md#progression-evidence-and-open-obligations)
+- [stove0: schemas: ArtifactSelectionPage](../authorities/stove0/http-schemas/schemas-artifactselectionpage.md#progression-evidence-and-open-obligations)
+- [stove0: schemas: EvaluationPage](../authorities/stove0/http-schemas/schemas-evaluationpage.md#progression-evidence-and-open-obligations)
+- [stove0: schemas: Stove0EventPage](../authorities/stove0/http-schemas/schemas-stove0eventpage.md#progression-evidence-and-open-obligations)
+- [stove0: schemas: TargetInputPage](../authorities/stove0/http-schemas/schemas-targetinputpage.md#progression-evidence-and-open-obligations)
+- [stove0: schemas: WorkPage](../authorities/stove0/http-schemas/schemas-workpage.md#progression-evidence-and-open-obligations)
+
+#### <a id="e-5707b3a2d3-98357b3ef7"></a>riverhog-ftp-adapter-status-progression/v1
+
+Unestablished group-wide claims: bounded step, forward progress, multiple segments, no silent truncation, restart.
+
+Affected contracts:
+
+- [riverhog-ftp-adapter: GET /v1/status](../authorities/riverhog-ftp-adapter/http-operations/get-v1-status.md#progression-evidence-and-open-obligations)
+
+#### <a id="e-5707b3a2d3-ca266cc9fb"></a>riverhog-upload-registration-progression/v1
+
+Unestablished group-wide claims: bounded step, forward progress, multiple segments, no silent truncation, restart.
+
+Affected contracts:
+
+- [riverhog: schemas: RegisterCollectionUploadSessionFilesRequest](../authorities/riverhog/http-schemas/schemas-registercollectionuploadsessionfilesrequest.md#progression-evidence-and-open-obligations)
+
+#### <a id="e-5707b3a2d3-5f2b3d8179"></a>riverhog-upload-tag-staging-progression/v1
+
+Unestablished group-wide claims: bounded step, forward progress, multiple segments, no silent truncation, restart.
+
+Affected contracts:
+
+- [riverhog: schemas: AddCollectionUploadTagsRequest](../authorities/riverhog/http-schemas/schemas-addcollectionuploadtagsrequest.md#progression-evidence-and-open-obligations)
+- [riverhog: schemas: CreateOrResumeCollectionUploadSessionRequest](../authorities/riverhog/http-schemas/schemas-createorresumecollectionuploadsessionrequest.md#progression-evidence-and-open-obligations)
+
+#### <a id="e-5707b3a2d3-7e680acb75"></a>riverhog-upload-unit-source-progression/v1
+
+Unestablished group-wide claims: bounded step, forward progress, multiple segments, no silent truncation, restart.
+
+Affected contracts:
+
+- [riverhog: schemas: CollectionUploadUnitWorkDocument](../authorities/riverhog/http-schemas/schemas-collectionuploadunitworkdocument.md#progression-evidence-and-open-obligations)

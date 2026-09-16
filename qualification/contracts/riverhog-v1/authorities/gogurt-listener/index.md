@@ -2,6 +2,8 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
+Portable durable listener runtime and native-platform port for Gogurt.
+
 Contract elements: **4** · Extent decisions: **0**
 
 ## Interfaces
