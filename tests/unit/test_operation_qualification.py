@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import sys
 from copy import deepcopy
+from dataclasses import replace
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -108,8 +109,6 @@ def observed_operation_evidence(
     timings = tmp_path / "timings.json"
     timing_rows = []
     for item in matrix:
-        if item.provider_evidence is not None:
-            continue
         row = {
             "application": item.application,
             "operation_id": item.operation_id,
@@ -144,6 +143,7 @@ def observed_operation_evidence(
 
 def test_exact_sha_evidence_contains_only_generated_current_rows(
     observed_operation_evidence: tuple[ModuleType, dict[str, Any], Path],
+    monkeypatch,
 ) -> None:
     module, payload, timings = observed_operation_evidence
     source_sha = payload["source_sha"]
@@ -161,7 +161,13 @@ def test_exact_sha_evidence_contains_only_generated_current_rows(
     assert payload["qualification"]["positive_local_lifecycles"]["status"] == "not_established"
     assert payload["qualification"]["positive_local_lifecycles"][
         "operations_with_successful_responses"
+    ] == len(payload["performance"]["local_api"]["operations"])
+    assert payload["qualification"]["positive_local_lifecycles"][
+        "locally_required_operations"
     ] == sum(item.provider_evidence is None for item in matrix)
+    assert len(payload["performance"]["local_api"]["operations"]) > sum(
+        item.provider_evidence is None for item in matrix
+    )
     extent = payload["qualification"]["extent_contract"]
     assert extent["status"] == "passed"
     assert extent["schema"] == "riverhog-contract-machine-closure/v1"
@@ -174,8 +180,40 @@ def test_exact_sha_evidence_contains_only_generated_current_rows(
     assert payload["qualification"]["event_cursor_restart_resume"]["status"] == "not_established"
     assert all(set(item) == set(module.Operation.__dataclass_fields__) for item in operations)
 
+    output = timings.parent / "operations.json"
+    monkeypatch.setattr(module, "evidence", lambda **kwargs: payload)
+    assert (
+        module.main(
+            [
+                "evidence",
+                "--source-sha",
+                source_sha,
+                "--timings",
+                str(timings),
+                "--output",
+                str(output),
+            ]
+        )
+        == 0
+    )
+    assert json.loads(output.read_text()) == json.loads(json.dumps(payload))
+    markdown = output.with_name(output.name + ".md").read_text()
+    assert markdown == module.evidence_markdown(payload)
+    assert "Required witness did not pass in this run." in markdown
+    assert "**not established**" in markdown
+
     incomplete = json.loads(timings.read_text())
-    client_row = next(item for item in incomplete["operations"] if "client_wall" in item)
+    required_clients = {
+        (item.application, item.operation_id)
+        for item in matrix
+        if item.provider_evidence is None
+        and item.classification in {"human-cli+json", "client-only-primitive"}
+    }
+    client_row = next(
+        item
+        for item in incomplete["operations"]
+        if (item["application"], item["operation_id"]) in required_clients
+    )
     del client_row["client_wall"]
     timings.write_text(json.dumps(incomplete))
     with pytest.raises(module.QualificationError, match="lack client wall timings"):
@@ -193,6 +231,7 @@ def _release_qualification_step(name: str) -> str:
 
 def test_release_disposable_selection_satisfies_current_observation_requirements(
     tmp_path: Path,
+    monkeypatch,
 ) -> None:
     module = load_script()
     source_sha = module._git_head()
@@ -222,14 +261,146 @@ def test_release_disposable_selection_satisfies_current_observation_requirements
     )
     assert selected.returncode == 0, selected.stdout + selected.stderr
 
-    # Consume the real run through the producer's input validator. These are
-    # API timing observations; they do not establish behavioral claims.
+    # Timing observations and passed restart assertions are separate inputs.
+    matrix = module.operation_matrix()
     observations = module._load_operation_timings(
         timings,
         source_sha=module._source_sha(source_sha),
-        matrix=module.operation_matrix(),
+        matrix=matrix,
     )
     assert observations["operations"]
+    surfaces = module.application_surfaces()
+    monkeypatch.setattr(module, "application_surfaces", lambda: surfaces)
+    witnesses = observations["event_cursor_restarts"]
+    claim = module._event_cursor_restart_claim(witnesses, matrix=matrix, source_sha=source_sha)
+    assert claim["status"] == "not_established"
+    local = claim["local_api_process_restart"]
+    assert local["status"] == "passed"
+    assert {(item["application"], item["operation_id"]) for item in local["operations"]} == {
+        ("riverhog", "list_lifecycle_events"),
+        ("stove0", "list_events"),
+    }
+    assert all(item["status"] == "passed" for item in local["operations"])
+    assert all(f"/blob/{source_sha}/" in item["assertion_source"] for item in local["operations"])
+    payload = module.evidence(source_sha=source_sha, timings=timings)
+    assert payload["qualification"]["event_cursor_restart_resume"] == claim
+    markdown = module.evidence_markdown(payload)
+    for item in local["operations"]:
+        assert (
+            f"[Restart assertions ({item['application']})]({item['assertion_source']})" in markdown
+        )
+    assert local["scope"] in markdown
+    assert local["limitations"] in markdown
+    assert "| event cursor restart resume | **not established** |" in markdown
+
+    for missing in ([], witnesses[:1]):
+        partial = module._event_cursor_restart_claim(missing, matrix=matrix, source_sha=source_sha)
+        assert partial["local_api_process_restart"]["status"] == "not_established"
+    invalid_witnesses = [None, [*witnesses, witnesses[0]]]
+    for field, value in (
+        ("application", "riverhog-ftp-adapter"),
+        ("operation_id", "unknown"),
+        ("test_nodeid", "tests/unit/test_operation_lifecycle_api.py::unrelated_test"),
+    ):
+        invalid = deepcopy(witnesses)
+        invalid[0][field] = value
+        invalid_witnesses.append(invalid)
+    for invalid in invalid_witnesses:
+        with pytest.raises(module.QualificationError, match="restart witness"):
+            module._event_cursor_restart_claim(invalid, matrix=matrix, source_sha=source_sha)
+
+    # Discovery must leave a newly exposed feed unqualified until its assertions run.
+    riverhog = next(surface for surface in surfaces if surface.name == "riverhog")
+    event_route = next(
+        route for route, path in module._application_routes(riverhog.app) if path == "/v1/events"
+    )
+    riverhog.app.add_api_route(
+        "/v1/additional-events",
+        lambda: {},
+        operation_id="additional_events",
+        response_model=event_route.response_model,
+        openapi_extra=event_route.openapi_extra,
+    )
+    riverhog.app.openapi_schema = None
+    existing = next(item for item in matrix if item.operation_id == "list_lifecycle_events")
+    expanded = (
+        *matrix,
+        replace(existing, operation_id="additional_events", path="/v1/additional-events"),
+    )
+    missing_new_feed = module._event_cursor_restart_claim(
+        witnesses,
+        matrix=expanded,
+        source_sha=source_sha,
+    )["local_api_process_restart"]
+    assert missing_new_feed["status"] == "not_established"
+    assert (
+        next(
+            item
+            for item in missing_new_feed["operations"]
+            if item["operation_id"] == "additional_events"
+        )["status"]
+        == "not_established"
+    )
+
+
+@pytest.mark.parametrize(
+    ("outcome", "exit_status", "recorded"),
+    [
+        ("pass", 0, True),
+        ("fail", 1, False),
+        ("skip", 0, False),
+        ("xfail", 0, False),
+        ("xpass", 0, False),
+        ("teardown_failure", 1, True),
+    ],
+)
+def test_restart_attribution_requires_successful_test_outcome(
+    tmp_path,
+    outcome,
+    exit_status,
+    recorded,
+):
+    source = tmp_path / "test_outcome.py"
+    action = {
+        "fail": "assert False",
+        "skip": "pytest.skip('skipped')",
+        "xfail": "pytest.xfail('expected failure')",
+    }.get(outcome, "pass")
+    marker = "@pytest.mark.xfail(reason='expected failure')" if outcome == "xpass" else ""
+    source.write_text(
+        "import pytest\n"
+        "@pytest.fixture(autouse=True)\n"
+        "def teardown():\n"
+        "    yield\n"
+        f"    assert {outcome!r} != 'teardown_failure'\n"
+        f"{marker}\n"
+        "def test_witness(record_property):\n"
+        "    record_property('event_cursor_restart', "
+        "{'application': 'riverhog', 'operation_id': 'list_lifecycle_events'})\n"
+        f"    {action}\n"
+    )
+    timing_path = tmp_path / "timings.json"
+    source_sha = "a" * 40
+    selected = subprocess.run(
+        [sys.executable, "-m", "pytest", "-q", "-p", "tests.operation_observer", str(source)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "RIVERHOG_OPERATION_SOURCE_SHA": source_sha,
+            "RIVERHOG_OPERATION_TIMINGS": str(timing_path),
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert selected.returncode == exit_status, selected.stdout + selected.stderr
+    observed = json.loads(timing_path.read_text())
+    assert observed["pytest_exit_status"] == exit_status
+    assert bool(observed["event_cursor_restarts"]) is recorded
+    if exit_status:
+        module = load_script()
+        with pytest.raises(module.QualificationError, match="identity or test result"):
+            module._load_operation_timings(timing_path, source_sha=source_sha, matrix=())
 
 
 def test_release_operation_predicate_consumes_current_evidence_and_rejects_missing_proof(

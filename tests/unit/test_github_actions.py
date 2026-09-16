@@ -322,6 +322,7 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     assert "make operation-qualification" in operation_evidence["run"]
     assert "--source-sha $SOURCE_SHA" in operation_evidence["run"]
     assert "--timings $OPERATIONS_TIMINGS" in operation_evidence["run"]
+    assert '"$OPERATIONS_SUMMARY.md" >> "$GITHUB_STEP_SUMMARY"' in operation_evidence["run"]
     verify_operations = next(
         step for step in audit["steps"] if step["name"] == "Verify exact-SHA operation evidence"
     )
@@ -432,7 +433,11 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     assert "database_evidence_sha256" in record["run"]
     assert "release_evidence_sha256" in record["run"]
     assert upload["uses"].startswith("actions/upload-artifact@")
-    assert upload["with"]["path"] == "${{ runner.temp }}/release-qualification/*.json"
+    assert upload["if"] == "always()"
+    assert upload["with"]["path"].splitlines() == [
+        "${{ runner.temp }}/release-qualification/*.json",
+        "${{ runner.temp }}/release-qualification/*.md",
+    ]
     assert "published == false" in text
     assert "riverhog-release-qualification/v1" in text
     assert 'operation_matrix: "passed"' in text

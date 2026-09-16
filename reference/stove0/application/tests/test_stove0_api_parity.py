@@ -591,17 +591,17 @@ def _ready_preview(work: WorkIdentity) -> WorkflowPreview:
     )
 
 
-def _composition() -> Stove0Composition:
+def _composition(database_url: str = "sqlite+pysqlite:///:memory:") -> Stove0Composition:
     engine = create_engine(
-        "sqlite+pysqlite:///:memory:",
+        database_url,
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )
-    state = SqlAlchemyStateStore("sqlite+pysqlite:///:memory:", engine=engine)
+    state = SqlAlchemyStateStore(database_url, engine=engine)
     work = Stove0WorkService(state)
     return Stove0Composition(
         config=Stove0RuntimeConfig(
-            database_url="sqlite+pysqlite:///:memory:",
+            database_url=database_url,
             api_token="stove0-test-token",
             riverhog_base_url="https://riverhog.invalid",
             riverhog_token="riverhog-test-token",

@@ -129,6 +129,15 @@ class OperationObserver:
 
 
 _OBSERVERS: list[OperationObserver] = []
+_EVENT_CURSOR_RESTARTS: list[dict[str, object]] = []
+
+
+def pytest_runtest_logreport(report: Any) -> None:
+    if report.when != "call" or not report.passed or hasattr(report, "wasxfail"):
+        return
+    for name, value in report.user_properties:
+        if name == "event_cursor_restart":
+            _EVENT_CURSOR_RESTARTS.append({**value, "test_nodeid": report.nodeid})
 
 
 def _timing_summary(samples: list[float]) -> dict[str, int | float]:
@@ -162,6 +171,7 @@ def timing_evidence(*, source_sha: str, exit_status: int) -> dict[str, object]:
         "source_sha": source_sha,
         "pytest_exit_status": exit_status,
         "operations": operations,
+        "event_cursor_restarts": _EVENT_CURSOR_RESTARTS,
     }
 
 
