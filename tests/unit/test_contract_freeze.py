@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import inspect
 import json
 import sys
 import tomllib
@@ -12,6 +13,7 @@ from typing import Any
 
 import pytest
 from pydantic import BaseModel, Field
+from riverhog_client import ApiClient
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts/contract_freeze.py"
@@ -27,6 +29,19 @@ def load_script() -> ModuleType:
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
+
+
+def test_decorated_client_source_resolves_to_its_repository_definition() -> None:
+    module = load_script()
+    method = ApiClient.stream_collection_provenance_journal
+    definition = inspect.unwrap(method)
+    assert definition is not method
+
+    source = module._linked_source_ref(method)
+
+    assert source["path"] == "packages/riverhog-client/src/riverhog_client/client.py"
+    assert source["symbol"] == "ApiClient.stream_collection_provenance_journal"
+    assert source["line"] == inspect.getsourcelines(definition)[1]
 
 
 def test_checked_contract_freeze_matches_every_executable_authority(

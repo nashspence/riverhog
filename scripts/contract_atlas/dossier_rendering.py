@@ -32,6 +32,7 @@ from .navigation import (
     _qualification_anchor,
     _relationship_node_anchor,
     _relative_link,
+    _repository_source_link,
     _source_anchor,
     _subject_anchor,
     _subject_marker,
@@ -567,7 +568,24 @@ def _render_http(
     details: Mapping[str, object],
     base_pointer: str,
     placed_subjects: set[str],
+    *,
+    element: Mapping[str, object],
+    elements_by_id: Mapping[str, Mapping[str, object]],
 ) -> list[str]:
+    def shape(schema: object) -> str:
+        rendered = _md(_shape_summary(schema))
+        prefix = f"/external_contract/http_openapi/{element['authority']}"
+        owners = _local_contract_references(str(element["authority"]), [schema], elements_by_id)
+        for owner in sorted(owners, key=lambda item: len(str(item["title"])), reverse=True):
+            for pointer in cast(Sequence[str], owner["pointers"]):
+                reference = f"#{pointer.removeprefix(prefix)}"
+                label = _pointer_parts(pointer)[-1]
+                href = _relative_link(str(element["dossier"]), str(owner["dossier"]))
+                link = f"[{_md(label)}]({href})"
+                rendered = rendered.replace(f'$ref="{_md(reference)}"', link)
+                rendered = rendered.replace(_md(reference), link)
+        return rendered
+
     lines = [_subject_marker(base_pointer, placed_subjects)]
     for key in ("operationId", "summary", "description", "deprecated"):
         if key in value:
@@ -582,15 +600,27 @@ def _render_http(
     parameters = cast(Sequence[Mapping[str, object]], value.get("parameters", ()))
     if parameters:
         lines.extend(
-            ["", "### Parameters", "", "| Name | In | Required | Schema |", "|---|---|---:|---|"]
+            [
+                "",
+                "### Parameters",
+                "",
+                "| Name | In | Required | Default | Schema |",
+                "|---|---|---:|---|---|",
+            ]
         )
         for index, item in enumerate(parameters):
             pointer = f"{base_pointer}/parameters/{index}"
+            schema = item.get("schema", {})
+            default = (
+                f"`{_md(_compact_json(schema['default']))}`"
+                if isinstance(schema, Mapping) and "default" in schema
+                else "not declared"
+            )
             lines.append(
                 f"| {_subject_marker(pointer, placed_subjects)}`{_md(item.get('name', ''))}` | "
                 f"{_md(item.get('in', ''))} | "
                 f"{'yes' if item.get('required') else 'no'} | "
-                f"{_md(_shape_summary(item.get('schema')))} |"
+                f"{default} | {shape(schema)} |"
             )
     if "requestBody" in value:
         pointer = f"{base_pointer}/requestBody"
@@ -604,18 +634,30 @@ def _render_http(
         )
     responses = value.get("responses")
     if isinstance(responses, Mapping):
-        lines.extend(["", "### Responses", "", "| Status | Description |", "|---|---|"])
+        lines.extend(
+            [
+                "",
+                "### Responses",
+                "",
+                "| Status | Description | Media type | Schema | Declared error codes |",
+                "|---|---|---|---|---|",
+            ]
+        )
         for status, response in responses.items():
             pointer = f"{base_pointer}/responses/{_escape_pointer(str(status))}"
-            description = (
-                cast(Mapping[str, object], response).get("description", "")
-                if isinstance(response, Mapping)
-                else ""
+            response_map = cast(Mapping[str, object], response)
+            content = cast(Mapping[str, Mapping[str, object]], response_map.get("content", {}))
+            codes = ", ".join(
+                f"`{_md(code)}`"
+                for code in cast(Sequence[str], response_map.get("x-riverhog-error-codes", ()))
             )
-            lines.append(
-                f"| {_subject_marker(pointer, placed_subjects)}`{_md(status)}` | "
-                f"{_md(description)} |"
-            )
+            for media_type, media in content.items() or [("—", {})]:
+                lines.append(
+                    f"| {_subject_marker(pointer, placed_subjects)}`{_md(status)}` | "
+                    f"{_md(response_map.get('description', ''))} | {_md(media_type)} | "
+                    f"{shape(media['schema']) if 'schema' in media else 'not declared'} | "
+                    f"{codes or 'not declared'} |"
+                )
     del details
     return lines
 
@@ -1035,6 +1077,54 @@ def _subject_reference(
     return f'<a id="{anchor}"></a>{label}'
 
 
+def _implementation_sources(
+    element: Mapping[str, object],
+    trace: Mapping[str, object],
+    elements_by_id: Mapping[str, Mapping[str, object]],
+) -> list[tuple[str, Mapping[str, object]]]:
+    details = cast(Mapping[str, object], element.get("details", {}))
+    if element["interface"] == "http-operations" and not details.get("supplemental"):
+        source = _source_index(trace)[f"openapi:{element['authority']}"]
+        routes = [
+            cast(Mapping[str, object], route["source"])
+            for route in cast(Sequence[Mapping[str, object]], source["routes"])
+            if route["operation_id"] == details["operation_id"]
+            and details["method"] in cast(Sequence[str], route["methods"])
+        ]
+        if len(routes) != 1:
+            raise ContractAtlasError(f"HTTP handler source is ambiguous: {element['id']}")
+        return [("Handler", routes[0])]
+    if element["interface"] not in {"python", "cli"}:
+        return []
+    keys = {
+        tuple(cast(Sequence[str], related_details["qualification_key"]))
+        for identity in cast(Sequence[str], element["related_element_ids"])
+        for related in (elements_by_id[identity],)
+        for related_details in (cast(Mapping[str, object], related.get("details", {})),)
+        if related["interface"] == "http-operations" and "qualification_key" in related_details
+    }
+    located: dict[str, tuple[str, Mapping[str, object]]] = {}
+    qualification = cast(Mapping[str, object], trace["operation_qualification"])
+    for record in cast(Sequence[Mapping[str, object]], qualification["records"]):
+        if (record["application"], record["operation_id"]) not in keys:
+            continue
+        binding_key = "client_bindings" if element["interface"] == "python" else "cli_bindings"
+        for binding in cast(Sequence[Mapping[str, object]], record[binding_key]):
+            if element["interface"] == "python":
+                matches = binding["public_identity"] == details["public_identity"]
+                role = "Client method"
+            else:
+                command = " ".join(cast(Sequence[str], details["command_path"]))
+                matches = command == binding["command"] or command.endswith(
+                    f" {binding['command']}"
+                )
+                role = "Command callback"
+            if matches:
+                location = cast(Mapping[str, object], binding["source"])
+                located[_compact_json(location)] = (role, location)
+    return [located[key] for key in sorted(located)]
+
+
 def _render_dossier(
     element: Mapping[str, object],
     projection: Mapping[str, object],
@@ -1055,6 +1145,7 @@ def _render_dossier(
     values = [pointer_value(projection, pointer) for pointer in pointers]
     placed_subjects: set[str] = set()
     source_index = _source_index(trace)
+    implementation_sources = _implementation_sources(element, trace, elements_by_id)
     details = cast(Mapping[str, object], element.get("details", {}))
     purpose = "Exact externally visible contract owned by this semantic dossier."
     if len(values) == 1 and isinstance(values[0], Mapping):
@@ -1092,7 +1183,12 @@ def _render_dossier(
     ):
         lines.extend(
             _render_http(
-                cast(Mapping[str, object], values[0]), details, pointers[0], placed_subjects
+                cast(Mapping[str, object], values[0]),
+                details,
+                pointers[0],
+                placed_subjects,
+                element=element,
+                elements_by_id=elements_by_id,
             )
         )
     elif renderer == "cli":
@@ -1301,6 +1397,12 @@ def _render_dossier(
         ]
     )
     for source_id in cast(Sequence[str], element["source_authority_ids"]):
+        if source_id.startswith("openapi:") and implementation_sources:
+            lines.append(
+                f"- **OpenAPI authority:** [{_md(source_id)}]"
+                f"({_anchor_link(path, source_evidence_path, _source_anchor(source_id))})"
+            )
+            continue
         source = source_index[source_id]
         location = cast(Mapping[str, object], source.get("source", {}))
         bindings = cast(Sequence[Mapping[str, object]], source.get("bindings", ()))
@@ -1324,6 +1426,9 @@ def _render_dossier(
             f"({_anchor_link(path, source_evidence_path, _source_anchor(source_id))}) — "
             f"`{rendered}{symbol}`"
         )
+    for role, location in implementation_sources:
+        label = f"{location['path']}::{location['symbol']}"
+        lines.append(f"- **{role}:** {_repository_source_link(path, location, label)}")
     qualification_key = details.get("qualification_key")
     if isinstance(qualification_key, Sequence) and not isinstance(qualification_key, str):
         records = cast(
@@ -1339,6 +1444,24 @@ def _render_dossier(
             raise ContractAtlasError(
                 f"HTTP contract has ambiguous operation qualification evidence: {qualification_key}"
             )
+        python_identities = {
+            cast(Mapping[str, object], item["details"])["public_identity"]
+            for item in elements_by_id.values()
+            if item["interface"] == "python"
+        }
+        for binding in cast(Sequence[Mapping[str, object]], matching_records[0]["client_bindings"]):
+            if binding["public_identity"] in python_identities:
+                continue
+            link = _repository_source_link(
+                path, cast(Mapping[str, object], binding["source"]), str(binding["public_identity"])
+            )
+            lines.extend(
+                [
+                    "",
+                    f"**Accounting gap:** {link} is callable through the maintained client "
+                    "but has no Python contract dossier in the current freeze.",
+                ]
+            )
         lines.extend(
             [
                 "",
@@ -1349,9 +1472,14 @@ def _render_dossier(
                 "successful CLI execution, or human/JSON equivalence. Test bindings and "
                 "qualification commands are audit leads, not run results.",
                 "",
+                "<details>",
+                "<summary>Exact structural binding record</summary>",
+                "",
                 "```json",
                 _pretty_json(matching_records[0]),
                 "```",
+                "",
+                "</details>",
             ]
         )
     if element["interface"] == "configuration-environment":

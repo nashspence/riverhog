@@ -301,18 +301,18 @@ class ExtentWitnessError(RuntimeError):
     """Raised when the nonnormative proof bindings no longer resolve."""
 
 
-def _test_symbol_exists(root: Path, node_id: str) -> bool:
+def _test_source(root: Path, node_id: str) -> dict[str, object] | None:
     path_value, separator, symbol = node_id.partition("::")
     if not separator or not symbol or "::" in symbol:
-        return False
+        return None
     path = root / path_value
     if not path.is_file():
-        return False
+        return None
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=path.as_posix())
-    return any(
-        isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == symbol
-        for node in tree.body
-    )
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == symbol:
+            return {"path": path_value, "symbol": symbol, "line": node.lineno}
+    return None
 
 
 def bind_segmented_decisions(
@@ -332,7 +332,7 @@ def bind_segmented_decisions(
         if not witness.test_node_ids or not witness.gates:
             raise ExtentWitnessError(f"segmented extent witness is not executable: {witness.id}")
         missing = [
-            node_id for node_id in witness.test_node_ids if not _test_symbol_exists(root, node_id)
+            node_id for node_id in witness.test_node_ids if _test_source(root, node_id) is None
         ]
         if missing:
             raise ExtentWitnessError(
@@ -377,7 +377,7 @@ def bind_segmented_decisions(
             "gates": list(witness.gates),
             "unestablished_claims": sorted(PROGRESSION_OBLIGATIONS),
             "test_scopes": [
-                {"node_id": node_id, "scope": scope}
+                {"node_id": node_id, "scope": scope, "source": _test_source(root, node_id)}
                 for node_id, scope in zip(witness.test_node_ids, witness.test_scopes, strict=True)
             ]
             if witness.test_scopes

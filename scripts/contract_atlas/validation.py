@@ -57,6 +57,7 @@ from .navigation import (
     _relationship_edge_anchor,
     _relationship_node_anchor,
     _relative_link,
+    _repository_source_targets,
     _source_anchor,
     _subject_anchor,
 )
@@ -87,7 +88,12 @@ def _atlas_paths(root: Mapping[str, object]) -> set[str]:
     return paths
 
 
-def _reachable_atlas_documents(root_path: str, files: Mapping[str, bytes]) -> set[str]:
+def _reachable_atlas_documents(
+    root_path: str,
+    files: Mapping[str, bytes],
+    *,
+    repository_sources: frozenset[str] | set[str] = frozenset(),
+) -> set[str]:
     """Return documents reachable through generated local Markdown links."""
 
     link_pattern = re.compile(r"\]\(([^)\s]+)\)")
@@ -129,6 +135,8 @@ def _reachable_atlas_documents(root_path: str, files: Mapping[str, bytes]) -> se
                 else posixpath.normpath(posixpath.join(posixpath.dirname(source), local_path))
             )
             if resolved not in files:
+                if separator and f"{resolved}#{fragment}" in repository_sources:
+                    continue
                 raise ContractAtlasError(
                     f"atlas document has an unresolved local link: {source} -> {target}"
                 )
@@ -567,7 +575,9 @@ def validate_atlas(
         or "Process protocol:" in root_page
     ):
         raise ContractAtlasError("atlas root repeats accounting or renders extensions as children")
-    reachable_documents = _reachable_atlas_documents(root_path, atlas.files)
+    reachable_documents = _reachable_atlas_documents(
+        root_path, atlas.files, repository_sources=_repository_source_targets(trace_value)
+    )
     if reachable_documents != set(atlas.files):
         unreachable = sorted(set(atlas.files) - reachable_documents)
         raise ContractAtlasError(
