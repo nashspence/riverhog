@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-scheduler-run:fde1f11f8e -->
+<!-- contract-element: cli:stove0-client:stove0-scheduler-run:cffcc800c4 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-009e6012f8"></a>Parser name: `run`
+- <a id="s-f8a17ffde9"></a>Extra arguments at this parser: rejected.
+- <a id="s-680433515f"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-8e29c74190"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -22,7 +25,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
 | <a id="s-aa38c45548"></a>`role`<br>`--role` | optional option; 1 value | text | `"combined"` |
-| <a id="s-b52681f913"></a>`work_limit`<br>`--work-limit` | optional option; 1 value | integer range; minimum=`1`; maximum=`100` | `25` |
+| <a id="s-b52681f913"></a>`work_limit`<br>`--work-limit` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
 
 ### Terminating controls
 
@@ -71,8 +74,8 @@ Shared facts for every subject below: minimum=1
 
 ## Governing policies
 
-- <a id="pa-f25eb48b4a"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-f7e9f56fd5"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-2767b83d1b"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-8f66d89321"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -89,6 +92,9 @@ Shared facts for every subject below: minimum=1
 
 ### Machine authority
 
+- `/external_contract/cli/stove0/commands/scheduler/commands/run/allow_extra_args`
+- `/external_contract/cli/stove0/commands/scheduler/commands/run/allow_interspersed_args`
+- `/external_contract/cli/stove0/commands/scheduler/commands/run/ignore_unknown_options`
 - `/external_contract/cli/stove0/commands/scheduler/commands/run/name`
 - `/external_contract/cli/stove0/commands/scheduler/commands/run/parameters`
 - `/external_contract/cli/stove0/commands/scheduler/commands/run/result_contract`
@@ -97,6 +103,30 @@ Shared facts for every subject below: minimum=1
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/scheduler/commands/run/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/stove0/commands/scheduler/commands/run/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/stove0/commands/scheduler/commands/run/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/stove0/commands/scheduler/commands/run/name`
 
@@ -108,7 +138,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0/commands/scheduler/commands/run/parameters`
 
-<!-- exact-contract-value: 198dc1e55bab3f6ecd224ceb7b0ff54337834c094dafda254b965b16a742f4f1 -->
+<!-- exact-contract-value: 3c9b2fb2e4e4c41f42c5e1f4b79e04f8da998b1a37015d1242834181c1fe1245 -->
 
 ```json
 [
@@ -146,8 +176,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "clamp": false,
       "class": "typer._click.types.IntRange",
+      "max_open": false,
       "maximum": 100,
+      "min_open": false,
       "minimum": 1,
       "name": "integer range"
     }

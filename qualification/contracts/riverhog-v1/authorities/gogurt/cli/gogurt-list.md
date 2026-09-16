@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt-list:094b3f0991 -->
+<!-- contract-element: cli:gogurt:gogurt-list:1600e8fba5 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-df82c9962d"></a>Parser name: `list`
+- <a id="s-fe9815c6d8"></a>Extra arguments at this parser: rejected.
+- <a id="s-ba6b90807c"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-f55b5fface"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -21,7 +24,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-64caa42d6e"></a>`config`<br>`--config` | optional option; 1 value | path | not recorded |
+| <a id="s-64caa42d6e"></a>`config`<br>`--config` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
 | <a id="s-52df517a50"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
 
 ### Terminating controls
@@ -63,8 +66,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ## Governing policies
 
-- <a id="pa-b7bd1c9e8f"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-514af86d21"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-b94ad11697"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-b9d8daac6d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -80,6 +83,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ### Machine authority
 
+- `/external_contract/cli/gogurt/commands/list/allow_extra_args`
+- `/external_contract/cli/gogurt/commands/list/allow_interspersed_args`
+- `/external_contract/cli/gogurt/commands/list/ignore_unknown_options`
 - `/external_contract/cli/gogurt/commands/list/name`
 - `/external_contract/cli/gogurt/commands/list/parameters`
 - `/external_contract/cli/gogurt/commands/list/result_contract`
@@ -88,6 +94,30 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/gogurt/commands/list/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/gogurt/commands/list/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/gogurt/commands/list/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/gogurt/commands/list/name`
 
@@ -99,7 +129,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/gogurt/commands/list/parameters`
 
-<!-- exact-contract-value: b0c1dccf67308fb5c7cd018f676b02ffe94f17f1b2aee1604942097a29f03aa0 -->
+<!-- exact-contract-value: ab745f30a64f8ef8aa28769c8709b0ec0355375abc829a32f3d8b3cfbbb2f47b -->
 
 ```json
 [
@@ -117,8 +147,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "allow_dash": false,
       "class": "typer.models.TyperPath",
-      "name": "path"
+      "dir_okay": true,
+      "exists": false,
+      "file_okay": true,
+      "name": "path",
+      "readable": true,
+      "resolve_path": false,
+      "writable": false
     }
   },
   {

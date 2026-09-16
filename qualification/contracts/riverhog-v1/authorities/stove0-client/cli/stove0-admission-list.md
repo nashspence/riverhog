@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-admission-list:dc422484db -->
+<!-- contract-element: cli:stove0-client:stove0-admission-list:ba9201368f -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-551c9532b6"></a>Parser name: `list`
+- <a id="s-fe8f038f81"></a>Extra arguments at this parser: rejected.
+- <a id="s-9f57df67e4"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-d32a79dd08"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -21,7 +24,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-7949639bab"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1`; maximum=`100` | `25` |
+| <a id="s-7949639bab"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
 | <a id="s-f3c2ae9eeb"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
 | <a id="s-279e13c010"></a>`policy_id`<br>`--policy-id` | optional option; 1 value | text | not recorded |
 | <a id="s-3b178f7301"></a>`state_filter`<br>`--state` | optional option; 1 value | text | not recorded |
@@ -81,8 +84,8 @@ Shared facts for every subject below: minimum=1
 
 ## Governing policies
 
-- <a id="pa-c1b94afe93"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-b14e9f2b61"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-295f616395"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-08e76a11f1"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -99,6 +102,9 @@ Shared facts for every subject below: minimum=1
 
 ### Machine authority
 
+- `/external_contract/cli/stove0/commands/admission/commands/list/allow_extra_args`
+- `/external_contract/cli/stove0/commands/admission/commands/list/allow_interspersed_args`
+- `/external_contract/cli/stove0/commands/admission/commands/list/ignore_unknown_options`
 - `/external_contract/cli/stove0/commands/admission/commands/list/name`
 - `/external_contract/cli/stove0/commands/admission/commands/list/parameters`
 - `/external_contract/cli/stove0/commands/admission/commands/list/result_contract`
@@ -107,6 +113,30 @@ Shared facts for every subject below: minimum=1
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/admission/commands/list/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/stove0/commands/admission/commands/list/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/stove0/commands/admission/commands/list/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/stove0/commands/admission/commands/list/name`
 
@@ -118,7 +148,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0/commands/admission/commands/list/parameters`
 
-<!-- exact-contract-value: 21e38c15d7a10619b96a8a640fda1a12409895373e807088f0e46fc3cfd40fff -->
+<!-- exact-contract-value: 0855665f013028d95d7a0efcb04f9864b1f156bbeff500e325ef0a47fb79ab15 -->
 
 ```json
 [
@@ -137,8 +167,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "clamp": false,
       "class": "typer._click.types.IntRange",
+      "max_open": false,
       "maximum": 100,
+      "min_open": false,
       "minimum": 1,
       "name": "integer range"
     }

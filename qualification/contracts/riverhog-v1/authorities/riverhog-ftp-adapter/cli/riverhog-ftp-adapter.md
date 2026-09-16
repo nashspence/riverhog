@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:riverhog-ftp-adapter:riverhog-ftp-adapter:ff7f549ce2 -->
+<!-- contract-element: cli:riverhog-ftp-adapter:riverhog-ftp-adapter:f042ae8454 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,8 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-3b77079260"></a>Parser name: `riverhog-ftp-adapter`
+- <a id="s-ce705eba53"></a>Subcommand selection: optional.
+- <a id="s-b4f6bfdbe2"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -69,8 +71,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 
 ## Governing policies
 
-- <a id="pa-b88e6bbdaa"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-4ab8861746"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-e28bfc5496"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-13c00b78e8"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -86,14 +88,24 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 
 ### Machine authority
 
+- `/external_contract/cli/riverhog-ftp-adapter/allow_abbrev`
 - `/external_contract/cli/riverhog-ftp-adapter/name`
 - `/external_contract/cli/riverhog-ftp-adapter/parameters`
 - `/external_contract/cli/riverhog-ftp-adapter/result_contract`
+- `/external_contract/cli/riverhog-ftp-adapter/subcommand_required`
 - `/external_contract/cli/riverhog-ftp-adapter/terminating_controls`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/riverhog-ftp-adapter/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/riverhog-ftp-adapter/name`
 
@@ -200,6 +212,14 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   ]
 }
+```
+
+### `/external_contract/cli/riverhog-ftp-adapter/subcommand_required`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
 ```
 
 ### `/external_contract/cli/riverhog-ftp-adapter/terminating_controls`

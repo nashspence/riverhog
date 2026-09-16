@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:riverhog-ftp-adapter:riverhog-ftp-adapter-serve:c4b29328a9 -->
+<!-- contract-element: cli:riverhog-ftp-adapter:riverhog-ftp-adapter-serve:cb5ffc24ab -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-cf31bb6074"></a>Parser name: `serve`
+- <a id="s-54a6813f76"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -62,8 +63,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-0ebd3c77bc"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-f7b913e677"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-fe9b5262be"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-6d08c96b07"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -79,6 +80,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/riverhog-ftp-adapter/commands/serve/allow_abbrev`
 - `/external_contract/cli/riverhog-ftp-adapter/commands/serve/name`
 - `/external_contract/cli/riverhog-ftp-adapter/commands/serve/parameters`
 - `/external_contract/cli/riverhog-ftp-adapter/commands/serve/result_contract`
@@ -87,6 +89,14 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/riverhog-ftp-adapter/commands/serve/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/riverhog-ftp-adapter/commands/serve/name`
 

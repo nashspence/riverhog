@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-local-provenance-observer:7bff0ce112 -->
+<!-- contract-element: cli:piggity:piggity-local-provenance-observer:b4e09cb22b -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-008acffa9c"></a>Parser name: `provenance-observer`
+- <a id="s-fa7442b073"></a>Subcommand selection: required.
+- <a id="s-c084649bef"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
+- <a id="s-8793d5fb27"></a>Options after positional arguments at this parser: left as arguments.
+- <a id="s-f1f527d66b"></a>Unknown options at this parser: rejected.
 
 ### Terminating controls
 
@@ -24,7 +28,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-7db385e56c"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-dfb55f7e21"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -40,13 +44,41 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Machine authority
 
+- `/external_contract/cli/piggity/commands/local/commands/provenance-observer/allow_extra_args`
+- `/external_contract/cli/piggity/commands/local/commands/provenance-observer/allow_interspersed_args`
+- `/external_contract/cli/piggity/commands/local/commands/provenance-observer/ignore_unknown_options`
 - `/external_contract/cli/piggity/commands/local/commands/provenance-observer/name`
 - `/external_contract/cli/piggity/commands/local/commands/provenance-observer/parameters`
+- `/external_contract/cli/piggity/commands/local/commands/provenance-observer/subcommand_required`
 - `/external_contract/cli/piggity/commands/local/commands/provenance-observer/terminating_controls`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/local/commands/provenance-observer/allow_extra_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/piggity/commands/local/commands/provenance-observer/allow_interspersed_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/piggity/commands/local/commands/provenance-observer/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/piggity/commands/local/commands/provenance-observer/name`
 
@@ -62,6 +94,14 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ```json
 []
+```
+
+### `/external_contract/cli/piggity/commands/local/commands/provenance-observer/subcommand_required`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
 ```
 
 ### `/external_contract/cli/piggity/commands/local/commands/provenance-observer/terminating_controls`

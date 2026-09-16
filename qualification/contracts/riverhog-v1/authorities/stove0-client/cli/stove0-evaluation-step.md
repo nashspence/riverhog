@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-evaluation-step:cc846264b9 -->
+<!-- contract-element: cli:stove0-client:stove0-evaluation-step:fc31e59d60 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-7b832294f5"></a>Parser name: `step`
+- <a id="s-745b649388"></a>Extra arguments at this parser: rejected.
+- <a id="s-6829629c0d"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-b038b59d5a"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -68,8 +71,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-0fae36174e"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-3df5484a6b"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-4d9fd49985"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-ce5a7cef2a"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -86,6 +89,9 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/stove0/commands/evaluation/commands/step/allow_extra_args`
+- `/external_contract/cli/stove0/commands/evaluation/commands/step/allow_interspersed_args`
+- `/external_contract/cli/stove0/commands/evaluation/commands/step/ignore_unknown_options`
 - `/external_contract/cli/stove0/commands/evaluation/commands/step/name`
 - `/external_contract/cli/stove0/commands/evaluation/commands/step/parameters`
 - `/external_contract/cli/stove0/commands/evaluation/commands/step/result_contract`
@@ -94,6 +100,30 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/evaluation/commands/step/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/stove0/commands/evaluation/commands/step/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/stove0/commands/evaluation/commands/step/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/stove0/commands/evaluation/commands/step/name`
 

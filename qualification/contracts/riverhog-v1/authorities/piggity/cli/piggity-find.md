@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-find:eed2a0f5a7 -->
+<!-- contract-element: cli:piggity:piggity-find:6ee82d5c15 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-b080b673f2"></a>Parser name: `find`
+- <a id="s-4b72f0f253"></a>Extra arguments at this parser: rejected.
+- <a id="s-df0cd025c2"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-3a7e71ee8b"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -22,7 +25,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
 | <a id="s-8fa2213b0a"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded |
-| <a id="s-ebc66f0d6c"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1`; maximum=`100` | `25` |
+| <a id="s-ebc66f0d6c"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
 | <a id="s-d65074f125"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
 | <a id="s-d85824fb9f"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"file_ref"` |
 | <a id="s-4813cf8a14"></a>`order`<br>`--order` | optional option; 1 value | text | `"asc"` |
@@ -81,8 +84,8 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ## Governing policies
 
-- <a id="pa-7174ebe4b6"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-a1030e54a4"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-aa7de01a40"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-9ce4125f1c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -99,6 +102,9 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ### Machine authority
 
+- `/external_contract/cli/piggity/commands/find/allow_extra_args`
+- `/external_contract/cli/piggity/commands/find/allow_interspersed_args`
+- `/external_contract/cli/piggity/commands/find/ignore_unknown_options`
 - `/external_contract/cli/piggity/commands/find/name`
 - `/external_contract/cli/piggity/commands/find/parameters`
 - `/external_contract/cli/piggity/commands/find/result_contract`
@@ -107,6 +113,30 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/find/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/piggity/commands/find/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/piggity/commands/find/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/piggity/commands/find/name`
 
@@ -118,7 +148,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/find/parameters`
 
-<!-- exact-contract-value: 31e0c74352dccf262e4d001387d9e25e8f76009e3255c106ccef647da2a8559f -->
+<!-- exact-contract-value: f6b0d3ebe508980a6d19f3b5dda48b1d8e60333374eadeb0da2873b2ecf6f6b7 -->
 
 ```json
 [
@@ -156,8 +186,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "clamp": false,
       "class": "typer._click.types.IntRange",
+      "max_open": false,
       "maximum": 100,
+      "min_open": false,
       "minimum": 1,
       "name": "integer range"
     }

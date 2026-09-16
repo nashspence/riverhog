@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-evaluation-create:6d1ebcb1fa -->
+<!-- contract-element: cli:stove0-client:stove0-evaluation-create:23a61c7652 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-0639b8f049"></a>Parser name: `create`
+- <a id="s-2481be77c7"></a>Extra arguments at this parser: rejected.
+- <a id="s-854bb22fe8"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-8647250b3f"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -21,7 +24,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-64aae09091"></a>`definition`<br>`definition` | required positional; 1 value | path | not recorded |
+| <a id="s-64aae09091"></a>`definition`<br>`definition` | required positional; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
 
 ### Terminating controls
 
@@ -68,8 +71,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-9b7f1f86df"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-1b8a6b6376"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-665719a78f"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-9ee91241f8"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -86,6 +89,9 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/stove0/commands/evaluation/commands/create/allow_extra_args`
+- `/external_contract/cli/stove0/commands/evaluation/commands/create/allow_interspersed_args`
+- `/external_contract/cli/stove0/commands/evaluation/commands/create/ignore_unknown_options`
 - `/external_contract/cli/stove0/commands/evaluation/commands/create/name`
 - `/external_contract/cli/stove0/commands/evaluation/commands/create/parameters`
 - `/external_contract/cli/stove0/commands/evaluation/commands/create/result_contract`
@@ -94,6 +100,30 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/evaluation/commands/create/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/stove0/commands/evaluation/commands/create/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/stove0/commands/evaluation/commands/create/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/stove0/commands/evaluation/commands/create/name`
 
@@ -105,7 +135,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0/commands/evaluation/commands/create/parameters`
 
-<!-- exact-contract-value: 4fb330ee8d838285ee3bb2f2f8c99dccc40350eb1951a541aaaddd3d0f750f22 -->
+<!-- exact-contract-value: d987abab91273ab614a0654ac2f4a50be084883f6768e1151a43abf8005e70aa -->
 
 ```json
 [
@@ -121,8 +151,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": true,
     "secondary_options": [],
     "type": {
+      "allow_dash": false,
       "class": "typer.models.TyperPath",
-      "name": "path"
+      "dir_okay": true,
+      "exists": false,
+      "file_okay": true,
+      "name": "path",
+      "readable": true,
+      "resolve_path": false,
+      "writable": false
     }
   }
 ]

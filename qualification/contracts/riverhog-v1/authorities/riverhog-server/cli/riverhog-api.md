@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:riverhog-server:riverhog-api:4060dc803e -->
+<!-- contract-element: cli:riverhog-server:riverhog-api:9b5302929c -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,8 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-395fe3aacf"></a>Parser name: `riverhog-api`
+- <a id="s-bcf8f06216"></a>Subcommand selection: optional.
+- <a id="s-410963d8dd"></a>Unique long-option abbreviations: accepted.
 
 ### Terminating controls
 
@@ -43,7 +45,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-1e1d79d435"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-190c4aa3d6"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -59,14 +61,24 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Machine authority
 
+- `/external_contract/cli/riverhog-api/allow_abbrev`
 - `/external_contract/cli/riverhog-api/name`
 - `/external_contract/cli/riverhog-api/parameters`
 - `/external_contract/cli/riverhog-api/result_contract`
+- `/external_contract/cli/riverhog-api/subcommand_required`
 - `/external_contract/cli/riverhog-api/terminating_controls`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/riverhog-api/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/riverhog-api/name`
 
@@ -125,6 +137,14 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   ]
 }
+```
+
+### `/external_contract/cli/riverhog-api/subcommand_required`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
 ```
 
 ### `/external_contract/cli/riverhog-api/terminating_controls`

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-retrieval-cache-status:6d3a16c639 -->
+<!-- contract-element: cli:piggity:piggity-retrieval-cache-status:be91c34c7f -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-cd2252804c"></a>Parser name: `status`
+- <a id="s-39b521340a"></a>Extra arguments at this parser: rejected.
+- <a id="s-6347419c6e"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-25532ecb3d"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -68,8 +71,8 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-acecd8fcce"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-dd85a09703"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-6249452792"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-97a859afac"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -86,6 +89,9 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/piggity/commands/retrieval/commands/cache/commands/status/allow_extra_args`
+- `/external_contract/cli/piggity/commands/retrieval/commands/cache/commands/status/allow_interspersed_args`
+- `/external_contract/cli/piggity/commands/retrieval/commands/cache/commands/status/ignore_unknown_options`
 - `/external_contract/cli/piggity/commands/retrieval/commands/cache/commands/status/name`
 - `/external_contract/cli/piggity/commands/retrieval/commands/cache/commands/status/parameters`
 - `/external_contract/cli/piggity/commands/retrieval/commands/cache/commands/status/result_contract`
@@ -94,6 +100,30 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/retrieval/commands/cache/commands/status/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/piggity/commands/retrieval/commands/cache/commands/status/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/piggity/commands/retrieval/commands/cache/commands/status/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/piggity/commands/retrieval/commands/cache/commands/status/name`
 

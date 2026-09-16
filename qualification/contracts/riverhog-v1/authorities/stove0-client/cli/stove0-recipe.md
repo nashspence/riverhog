@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-recipe:51430912c7 -->
+<!-- contract-element: cli:stove0-client:stove0-recipe:833327acd4 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-c3d3521eb1"></a>Parser name: `recipe`
+- <a id="s-e9eb4b4a2e"></a>Subcommand selection: required.
+- <a id="s-e72a418e16"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
+- <a id="s-05027f0112"></a>Options after positional arguments at this parser: left as arguments.
+- <a id="s-b961f771b1"></a>Unknown options at this parser: rejected.
 
 ### Terminating controls
 
@@ -23,7 +27,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-f515b94e8a"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-5929222a0b"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -39,13 +43,41 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Machine authority
 
+- `/external_contract/cli/stove0/commands/recipe/allow_extra_args`
+- `/external_contract/cli/stove0/commands/recipe/allow_interspersed_args`
+- `/external_contract/cli/stove0/commands/recipe/ignore_unknown_options`
 - `/external_contract/cli/stove0/commands/recipe/name`
 - `/external_contract/cli/stove0/commands/recipe/parameters`
+- `/external_contract/cli/stove0/commands/recipe/subcommand_required`
 - `/external_contract/cli/stove0/commands/recipe/terminating_controls`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/recipe/allow_extra_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/stove0/commands/recipe/allow_interspersed_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/stove0/commands/recipe/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/stove0/commands/recipe/name`
 
@@ -61,6 +93,14 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ```json
 []
+```
+
+### `/external_contract/cli/stove0/commands/recipe/subcommand_required`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
 ```
 
 ### `/external_contract/cli/stove0/commands/recipe/terminating_controls`

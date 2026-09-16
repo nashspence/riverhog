@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-review-sampler-support:stove0-review-sampler-schemas:25719ca871 -->
+<!-- contract-element: cli:stove0-review-sampler-support:stove0-review-sampler-schemas:5295047520 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-faa7bf9354"></a>Parser name: `stove0-review-sampler-schemas`
+- <a id="s-90b0ada507"></a>Unique long-option abbreviations: accepted.
 
 ### Terminating controls
 
@@ -43,7 +44,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-8a79810a69"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-7d5ccbfbd2"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -59,6 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Machine authority
 
+- `/external_contract/cli/stove0-review-sampler-schemas/allow_abbrev`
 - `/external_contract/cli/stove0-review-sampler-schemas/name`
 - `/external_contract/cli/stove0-review-sampler-schemas/parameters`
 - `/external_contract/cli/stove0-review-sampler-schemas/result_contract`
@@ -67,6 +69,14 @@ Exact externally visible contract owned by this semantic dossier.
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-review-sampler-schemas/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/stove0-review-sampler-schemas/name`
 

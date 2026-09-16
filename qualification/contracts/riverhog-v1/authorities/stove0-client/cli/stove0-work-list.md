@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-work-list:b3f5158ebf -->
+<!-- contract-element: cli:stove0-client:stove0-work-list:d7ddb82070 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-7133feb3f9"></a>Parser name: `list`
+- <a id="s-902d80d49f"></a>Extra arguments at this parser: rejected.
+- <a id="s-80e85ac7bd"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-67cfe8898a"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -21,7 +24,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-c57dac5cff"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1`; maximum=`100` | `25` |
+| <a id="s-c57dac5cff"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
 | <a id="s-37ac272d38"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
 | <a id="s-db3eaea3f6"></a>`phase`<br>`--phase` | optional option; 1 value | text | not recorded |
 | <a id="s-32a1a20eda"></a>`query`<br>`--query`, `-q` | optional option; 1 value | text | not recorded |
@@ -79,8 +82,8 @@ Shared facts for every subject below: minimum=1
 
 ## Governing policies
 
-- <a id="pa-507efd3e6b"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-56315b3432"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-8a3471f4dc"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-0e96f2d8c0"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -97,6 +100,9 @@ Shared facts for every subject below: minimum=1
 
 ### Machine authority
 
+- `/external_contract/cli/stove0/commands/work/commands/list/allow_extra_args`
+- `/external_contract/cli/stove0/commands/work/commands/list/allow_interspersed_args`
+- `/external_contract/cli/stove0/commands/work/commands/list/ignore_unknown_options`
 - `/external_contract/cli/stove0/commands/work/commands/list/name`
 - `/external_contract/cli/stove0/commands/work/commands/list/parameters`
 - `/external_contract/cli/stove0/commands/work/commands/list/result_contract`
@@ -105,6 +111,30 @@ Shared facts for every subject below: minimum=1
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/work/commands/list/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/stove0/commands/work/commands/list/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/stove0/commands/work/commands/list/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/stove0/commands/work/commands/list/name`
 
@@ -116,7 +146,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0/commands/work/commands/list/parameters`
 
-<!-- exact-contract-value: d815a71bab11de6766932cfcd452a0b35bc7b01deff42da278fcf3fd16eb889d -->
+<!-- exact-contract-value: dd4eb3e1d8e28cae304826d6de2bfba02b746d2e1b3dd5cc01eea5adf21a45d6 -->
 
 ```json
 [
@@ -135,8 +165,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "clamp": false,
       "class": "typer._click.types.IntRange",
+      "max_open": false,
       "maximum": 100,
+      "min_open": false,
       "minimum": 1,
       "name": "integer range"
     }

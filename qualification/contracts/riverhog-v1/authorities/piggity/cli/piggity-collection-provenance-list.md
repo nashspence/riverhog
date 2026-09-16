@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-collection-provenance-list:bdffa61358 -->
+<!-- contract-element: cli:piggity:piggity-collection-provenance-list:4dd2f2b7e4 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-7e26dc5607"></a>Parser name: `list`
+- <a id="s-e661256935"></a>Extra arguments at this parser: rejected.
+- <a id="s-a14ec77d7f"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-b667ee36f2"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -22,7 +25,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
 | <a id="s-f5559afeee"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded |
-| <a id="s-01c3138346"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1`; maximum=`100` | `25` |
+| <a id="s-01c3138346"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
 | <a id="s-555db10fef"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
 | <a id="s-67a62d1793"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"path"` |
 | <a id="s-abb18d9ee3"></a>`order`<br>`--order` | optional option; 1 value | text | `"asc"` |
@@ -83,8 +86,8 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ## Governing policies
 
-- <a id="pa-e717e58676"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-8ae19ed772"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-0023cfd324"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-510589c42e"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -101,6 +104,9 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ### Machine authority
 
+- `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/list/allow_extra_args`
+- `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/list/allow_interspersed_args`
+- `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/list/ignore_unknown_options`
 - `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/list/name`
 - `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/list/parameters`
 - `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/list/result_contract`
@@ -109,6 +115,30 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/list/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/list/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/list/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/list/name`
 
@@ -120,7 +150,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/list/parameters`
 
-<!-- exact-contract-value: 76b1df70b42796c81fabac2033d709d80c6164d706f8c90c4a22345f0142d928 -->
+<!-- exact-contract-value: 4110c3ba988be626a1827d33e90f80936c5d25e2018ee43578b9439e9705fcaf -->
 
 ```json
 [
@@ -155,8 +185,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "clamp": false,
       "class": "typer._click.types.IntRange",
+      "max_open": false,
       "maximum": 100,
+      "min_open": false,
       "minimum": 1,
       "name": "integer range"
     }

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt-listener-stop:3d2e285362 -->
+<!-- contract-element: cli:gogurt:gogurt-listener-stop:7e1603429a -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-b8a05038de"></a>Parser name: `stop`
+- <a id="s-e0e8deff85"></a>Extra arguments at this parser: rejected.
+- <a id="s-7b0bd0ce75"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-89c486f24a"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -63,8 +66,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ## Governing policies
 
-- <a id="pa-8191db6018"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-6b84c2d867"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-b44a04c0b2"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-5de456c976"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -80,6 +83,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ### Machine authority
 
+- `/external_contract/cli/gogurt/commands/listener/commands/stop/allow_extra_args`
+- `/external_contract/cli/gogurt/commands/listener/commands/stop/allow_interspersed_args`
+- `/external_contract/cli/gogurt/commands/listener/commands/stop/ignore_unknown_options`
 - `/external_contract/cli/gogurt/commands/listener/commands/stop/name`
 - `/external_contract/cli/gogurt/commands/listener/commands/stop/parameters`
 - `/external_contract/cli/gogurt/commands/listener/commands/stop/result_contract`
@@ -88,6 +94,30 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/gogurt/commands/listener/commands/stop/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/gogurt/commands/listener/commands/stop/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/gogurt/commands/listener/commands/stop/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/gogurt/commands/listener/commands/stop/name`
 

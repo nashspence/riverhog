@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-archive-copy-start:371b6c846a -->
+<!-- contract-element: cli:piggity:piggity-archive-copy-start:9a14f4a9a1 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-47f6ebe872"></a>Parser name: `start`
+- <a id="s-9394122b27"></a>Extra arguments at this parser: rejected.
+- <a id="s-c56fb61279"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-ae70450bb7"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -74,8 +77,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ## Governing policies
 
-- <a id="pa-5b25711c38"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-f5ac8d3be6"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-ff4020f583"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-5cdce11599"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -92,6 +95,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ### Machine authority
 
+- `/external_contract/cli/piggity/commands/archive/commands/copy/commands/start/allow_extra_args`
+- `/external_contract/cli/piggity/commands/archive/commands/copy/commands/start/allow_interspersed_args`
+- `/external_contract/cli/piggity/commands/archive/commands/copy/commands/start/ignore_unknown_options`
 - `/external_contract/cli/piggity/commands/archive/commands/copy/commands/start/name`
 - `/external_contract/cli/piggity/commands/archive/commands/copy/commands/start/parameters`
 - `/external_contract/cli/piggity/commands/archive/commands/copy/commands/start/result_contract`
@@ -100,6 +106,30 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/archive/commands/copy/commands/start/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/piggity/commands/archive/commands/copy/commands/start/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/piggity/commands/archive/commands/copy/commands/start/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/piggity/commands/archive/commands/copy/commands/start/name`
 

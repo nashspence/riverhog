@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt-provider-mounted-volume:b50912f90b -->
+<!-- contract-element: cli:gogurt:gogurt-provider-mounted-volume:17c59fc789 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-d9ba8ed0af"></a>Parser name: `mounted-volume`
+- <a id="s-ae0959ad8c"></a>Subcommand selection: required.
+- <a id="s-75b55a41ac"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
+- <a id="s-e95d9bf011"></a>Options after positional arguments at this parser: left as arguments.
+- <a id="s-8d2a37a164"></a>Unknown options at this parser: rejected.
 
 ### Terminating controls
 
@@ -23,7 +27,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-905564dac2"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-dedea0d98a"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -39,13 +43,41 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Machine authority
 
+- `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/allow_extra_args`
+- `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/allow_interspersed_args`
+- `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/ignore_unknown_options`
 - `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/name`
 - `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/parameters`
+- `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/subcommand_required`
 - `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/terminating_controls`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/allow_extra_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/allow_interspersed_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/name`
 
@@ -61,6 +93,14 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ```json
 []
+```
+
+### `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/subcommand_required`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
 ```
 
 ### `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/terminating_controls`

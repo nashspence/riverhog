@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:mango-fish:mango-fish:9d3c7ccffa -->
+<!-- contract-element: cli:mango-fish:mango-fish:739a779c7e -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,8 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-8e837eac2f"></a>Parser name: `mango-fish`
+- <a id="s-7ccec0513a"></a>Subcommand selection: optional.
+- <a id="s-e49100df2e"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -67,8 +69,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 
 ## Governing policies
 
-- <a id="pa-c9e5571731"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-d44632afe1"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-833cbd0fc1"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-022c85e1ff"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -84,14 +86,24 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 
 ### Machine authority
 
+- `/external_contract/cli/mango-fish/allow_abbrev`
 - `/external_contract/cli/mango-fish/name`
 - `/external_contract/cli/mango-fish/parameters`
 - `/external_contract/cli/mango-fish/result_contract`
+- `/external_contract/cli/mango-fish/subcommand_required`
 - `/external_contract/cli/mango-fish/terminating_controls`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/mango-fish/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/mango-fish/name`
 
@@ -211,6 +223,14 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   ]
 }
+```
+
+### `/external_contract/cli/mango-fish/subcommand_required`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
 ```
 
 ### `/external_contract/cli/mango-fish/terminating_controls`

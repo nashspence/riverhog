@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-archive-copy-watch:ed2be866af -->
+<!-- contract-element: cli:piggity:piggity-archive-copy-watch:981f7e3f9d -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-887c110d92"></a>Parser name: `watch`
+- <a id="s-f2f079d546"></a>Extra arguments at this parser: rejected.
+- <a id="s-47bd5b145a"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-2fa12968c7"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -22,7 +25,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
 | <a id="s-078e3f681f"></a>`selector`<br>`selector` | required positional; 1 value | text | not recorded |
-| <a id="s-d555ad43d2"></a>`interval`<br>`--interval` | optional option; 1 value | float range; minimum=`0.1` | `1` |
+| <a id="s-d555ad43d2"></a>`interval`<br>`--interval` | optional option; 1 value | float range; minimum=`0.1` (inclusive); outside range: reject | `1` |
 | <a id="s-d51d9a083a"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
 
 ### Terminating controls
@@ -73,8 +76,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ## Governing policies
 
-- <a id="pa-bcfeeee4cd"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-bdf9e1dfc0"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-1972a063ae"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-4eaa9d38e9"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -91,6 +94,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ### Machine authority
 
+- `/external_contract/cli/piggity/commands/archive/commands/copy/commands/watch/allow_extra_args`
+- `/external_contract/cli/piggity/commands/archive/commands/copy/commands/watch/allow_interspersed_args`
+- `/external_contract/cli/piggity/commands/archive/commands/copy/commands/watch/ignore_unknown_options`
 - `/external_contract/cli/piggity/commands/archive/commands/copy/commands/watch/name`
 - `/external_contract/cli/piggity/commands/archive/commands/copy/commands/watch/parameters`
 - `/external_contract/cli/piggity/commands/archive/commands/copy/commands/watch/result_contract`
@@ -99,6 +105,30 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/archive/commands/copy/commands/watch/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/piggity/commands/archive/commands/copy/commands/watch/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/piggity/commands/archive/commands/copy/commands/watch/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/piggity/commands/archive/commands/copy/commands/watch/name`
 
@@ -110,7 +140,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/archive/commands/copy/commands/watch/parameters`
 
-<!-- exact-contract-value: eb6e1b2a1271291e3a99a3c15afd19951a252010905621030980f9b269a6d741 -->
+<!-- exact-contract-value: 75dc4e03bb6d35db32eca142a6f52a9faf8f7ae59353723fd6931d1b7cc53e02 -->
 
 ```json
 [
@@ -145,7 +175,10 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "clamp": false,
       "class": "typer._click.types.FloatRange",
+      "max_open": false,
+      "min_open": false,
       "minimum": 0.1,
       "name": "float range"
     }

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:riverhog-ftp-adapter:riverhog-ftp-adapter-listen:bd530a9a23 -->
+<!-- contract-element: cli:riverhog-ftp-adapter:riverhog-ftp-adapter-listen:02e5e91e7e -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-74be9905cb"></a>Parser name: `listen`
+- <a id="s-252a324368"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -78,8 +79,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-22462763aa"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-26150cba1f"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-33760781cb"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-5a9d477f0d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -95,6 +96,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/riverhog-ftp-adapter/commands/listen/allow_abbrev`
 - `/external_contract/cli/riverhog-ftp-adapter/commands/listen/name`
 - `/external_contract/cli/riverhog-ftp-adapter/commands/listen/parameters`
 - `/external_contract/cli/riverhog-ftp-adapter/commands/listen/result_contract`
@@ -103,6 +105,14 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/riverhog-ftp-adapter/commands/listen/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/riverhog-ftp-adapter/commands/listen/name`
 

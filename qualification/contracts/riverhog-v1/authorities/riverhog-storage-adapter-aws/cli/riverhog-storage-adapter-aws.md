@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:riverhog-storage-adapter-aws:riverhog-storage-adapter-aws:d232e90efe -->
+<!-- contract-element: cli:riverhog-storage-adapter-aws:riverhog-storage-adapter-aws:1b8597d3b4 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-b07406fd0f"></a>Parser name: `riverhog-storage-adapter-aws`
+- <a id="s-353207f9a3"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -63,8 +64,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-94ab52e426"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-68317ee95e"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-a3aff67bd2"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-4420d619e1"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -80,6 +81,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/riverhog-storage-adapter-aws/allow_abbrev`
 - `/external_contract/cli/riverhog-storage-adapter-aws/name`
 - `/external_contract/cli/riverhog-storage-adapter-aws/parameters`
 - `/external_contract/cli/riverhog-storage-adapter-aws/result_contract`
@@ -88,6 +90,14 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/riverhog-storage-adapter-aws/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/riverhog-storage-adapter-aws/name`
 

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-observer-support:stove0-observer-schemas:eea7ab9f4c -->
+<!-- contract-element: cli:stove0-observer-support:stove0-observer-schemas:37a6f2c18b -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-b8d24568a3"></a>Parser name: `stove0-observer-schemas`
+- <a id="s-7d03e3b17f"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -63,8 +64,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 
 ## Governing policies
 
-- <a id="pa-ca466b21c1"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-b6ec5cab66"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-3d85929844"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-4b56d463bb"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -80,6 +81,7 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 
 ### Machine authority
 
+- `/external_contract/cli/stove0-observer-schemas/allow_abbrev`
 - `/external_contract/cli/stove0-observer-schemas/name`
 - `/external_contract/cli/stove0-observer-schemas/parameters`
 - `/external_contract/cli/stove0-observer-schemas/result_contract`
@@ -88,6 +90,14 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-observer-schemas/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/stove0-observer-schemas/name`
 

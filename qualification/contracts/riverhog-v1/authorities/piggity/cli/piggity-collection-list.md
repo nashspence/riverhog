@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-collection-list:bd2e61ffc3 -->
+<!-- contract-element: cli:piggity:piggity-collection-list:4a4749e0ee -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-418c5b192b"></a>Parser name: `list`
+- <a id="s-a68f728e8d"></a>Extra arguments at this parser: rejected.
+- <a id="s-d8c72dad4a"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-5e5f93ab52"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -21,7 +24,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-95723ce082"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1`; maximum=`100` | `25` |
+| <a id="s-95723ce082"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
 | <a id="s-7444300279"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
 | <a id="s-06860e4c41"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"id"` |
 | <a id="s-30f31aa241"></a>`order`<br>`--order` | optional option; 1 value | text | `"asc"` |
@@ -88,8 +91,8 @@ Repeated `tag` accepts at most **100** occurrences, through [GET /v1/collections
 
 ## Governing policies
 
-- <a id="pa-1e717cc39e"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-d074e8411e"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-30dcf41924"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-a9b012b9ef"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -106,6 +109,9 @@ Repeated `tag` accepts at most **100** occurrences, through [GET /v1/collections
 
 ### Machine authority
 
+- `/external_contract/cli/piggity/commands/collection/commands/list/allow_extra_args`
+- `/external_contract/cli/piggity/commands/collection/commands/list/allow_interspersed_args`
+- `/external_contract/cli/piggity/commands/collection/commands/list/ignore_unknown_options`
 - `/external_contract/cli/piggity/commands/collection/commands/list/name`
 - `/external_contract/cli/piggity/commands/collection/commands/list/parameters`
 - `/external_contract/cli/piggity/commands/collection/commands/list/result_contract`
@@ -114,6 +120,30 @@ Repeated `tag` accepts at most **100** occurrences, through [GET /v1/collections
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/collection/commands/list/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/piggity/commands/collection/commands/list/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/piggity/commands/collection/commands/list/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/piggity/commands/collection/commands/list/name`
 
@@ -125,7 +155,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/collection/commands/list/parameters`
 
-<!-- exact-contract-value: 0c23c08e4f546aecc5b33af84ca36be02efa920fcbb1003a8f8d734bc7627044 -->
+<!-- exact-contract-value: b7b93799a471c42a7f29f5cf28b2a2ba9cbc3f90c04255080599cd0addab7db2 -->
 
 ```json
 [
@@ -144,8 +174,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "clamp": false,
       "class": "typer._click.types.IntRange",
+      "max_open": false,
       "maximum": 100,
+      "min_open": false,
       "minimum": 1,
       "name": "integer range"
     }

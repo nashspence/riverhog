@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-evaluation-review:2c3e15c7ed -->
+<!-- contract-element: cli:stove0-client:stove0-evaluation-review:50fb42045b -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-dac3c32382"></a>Parser name: `review`
+- <a id="s-902365f0dd"></a>Extra arguments at this parser: rejected.
+- <a id="s-eb2c85ca53"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-86174cd032"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -23,7 +26,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|
 | <a id="s-5d4571c4fb"></a>`evaluation_id`<br>`evaluation_id` | required positional; 1 value | text | not recorded |
 | <a id="s-988f27c018"></a>`variant_id`<br>`variant_id` | required positional; 1 value | text | not recorded |
-| <a id="s-9c3cdf9820"></a>`rating`<br>`--rating` | optional option; 1 value | integer range; minimum=`1`; maximum=`5` | not recorded |
+| <a id="s-9c3cdf9820"></a>`rating`<br>`--rating` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`5` (inclusive); outside range: reject | not recorded |
 | <a id="s-7944ac36f5"></a>`note`<br>`--note` | optional option; 1 value | text | not recorded |
 
 ### Terminating controls
@@ -75,8 +78,8 @@ Shared facts for every subject below: minimum=1
 
 ## Governing policies
 
-- <a id="pa-a5139ef873"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-c21532a272"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-0cebf7d3f5"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-9a76bc5b83"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -93,6 +96,9 @@ Shared facts for every subject below: minimum=1
 
 ### Machine authority
 
+- `/external_contract/cli/stove0/commands/evaluation/commands/review/allow_extra_args`
+- `/external_contract/cli/stove0/commands/evaluation/commands/review/allow_interspersed_args`
+- `/external_contract/cli/stove0/commands/evaluation/commands/review/ignore_unknown_options`
 - `/external_contract/cli/stove0/commands/evaluation/commands/review/name`
 - `/external_contract/cli/stove0/commands/evaluation/commands/review/parameters`
 - `/external_contract/cli/stove0/commands/evaluation/commands/review/result_contract`
@@ -101,6 +107,30 @@ Shared facts for every subject below: minimum=1
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/evaluation/commands/review/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/stove0/commands/evaluation/commands/review/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/stove0/commands/evaluation/commands/review/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/stove0/commands/evaluation/commands/review/name`
 
@@ -112,7 +142,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0/commands/evaluation/commands/review/parameters`
 
-<!-- exact-contract-value: 79adb3a588446ba8deca3a85ad0ce63ed2f49b2c0ee0678bea72fe7a7373fa00 -->
+<!-- exact-contract-value: 3a2617089f8c39ecfb1baab9d9c3c008f5fec2f4958c8ab212b3fcb2b8311993 -->
 
 ```json
 [
@@ -162,8 +192,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "clamp": false,
       "class": "typer._click.types.IntRange",
+      "max_open": false,
       "maximum": 5,
+      "min_open": false,
       "minimum": 1,
       "name": "integer range"
     }

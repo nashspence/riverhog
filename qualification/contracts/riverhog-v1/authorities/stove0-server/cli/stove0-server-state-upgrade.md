@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-server:stove0-server-state-upgrade:eb772f5a9a -->
+<!-- contract-element: cli:stove0-server:stove0-server-state-upgrade:dc864b8f33 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-cbef36f027"></a>Parser name: `upgrade`
+- <a id="s-e78d6e9d78"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -61,8 +62,8 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-cf12c36e59"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-798a1c2c52"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-f43ceeaee8"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-caed35ff5e"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -78,6 +79,7 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/stove0-server/commands/state/commands/upgrade/allow_abbrev`
 - `/external_contract/cli/stove0-server/commands/state/commands/upgrade/name`
 - `/external_contract/cli/stove0-server/commands/state/commands/upgrade/parameters`
 - `/external_contract/cli/stove0-server/commands/state/commands/upgrade/result_contract`
@@ -86,6 +88,14 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-server/commands/state/commands/upgrade/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/stove0-server/commands/state/commands/upgrade/name`
 

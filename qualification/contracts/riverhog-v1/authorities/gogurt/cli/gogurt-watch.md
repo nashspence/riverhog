@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt-watch:c738c3246e -->
+<!-- contract-element: cli:gogurt:gogurt-watch:00fb8e17c9 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-d36da8c1e2"></a>Parser name: `watch`
+- <a id="s-58e5c19564"></a>Extra arguments at this parser: rejected.
+- <a id="s-cff163cdcb"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-2e11b1d8b5"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -21,9 +24,9 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-8c1c3a78df"></a>`config`<br>`--config` | optional option; 1 value | path | not recorded |
-| <a id="s-e1a415005b"></a>`actions_dir`<br>`--actions-dir` | optional option; 1 value | path | not recorded |
-| <a id="s-50b8960c86"></a>`interval_seconds`<br>`--interval` | optional option; 1 value | float range; minimum=`0.1`; maximum=`3600` | `2` |
+| <a id="s-8c1c3a78df"></a>`config`<br>`--config` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
+| <a id="s-e1a415005b"></a>`actions_dir`<br>`--actions-dir` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
+| <a id="s-50b8960c86"></a>`interval_seconds`<br>`--interval` | optional option; 1 value | float range; minimum=`0.1` (inclusive); maximum=`3600` (inclusive); outside range: reject | `2` |
 | <a id="s-de6a5f63a0"></a>`include_existing`<br>`--include-existing` | optional flag; 0 values | boolean | `false` |
 | <a id="s-efe1748062"></a>`autorun`<br>`--autorun` | optional flag; 0 values | boolean | `false` |
 | <a id="s-f5f158bdd9"></a>`dry_run`<br>`--dry-run` | optional flag; 0 values | boolean | `false` |
@@ -72,8 +75,8 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ## Governing policies
 
-- <a id="pa-80259e6d8e"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-3534d8a60d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-98faceebfa"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-17d44e24ac"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -89,6 +92,9 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ### Machine authority
 
+- `/external_contract/cli/gogurt/commands/watch/allow_extra_args`
+- `/external_contract/cli/gogurt/commands/watch/allow_interspersed_args`
+- `/external_contract/cli/gogurt/commands/watch/ignore_unknown_options`
 - `/external_contract/cli/gogurt/commands/watch/name`
 - `/external_contract/cli/gogurt/commands/watch/parameters`
 - `/external_contract/cli/gogurt/commands/watch/result_contract`
@@ -97,6 +103,30 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/gogurt/commands/watch/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/gogurt/commands/watch/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/gogurt/commands/watch/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/gogurt/commands/watch/name`
 
@@ -108,7 +138,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/gogurt/commands/watch/parameters`
 
-<!-- exact-contract-value: 6bec3188ced3d683b8f7e52e79c65d56854b89bea563459705f2462b7798cc5a -->
+<!-- exact-contract-value: 0cb5b8772c1e16cf43f6f35118e0eaa4c7f55536d7e7eafab74db95bcb9a4e6e -->
 
 ```json
 [
@@ -126,8 +156,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "allow_dash": false,
       "class": "typer.models.TyperPath",
-      "name": "path"
+      "dir_okay": true,
+      "exists": false,
+      "file_okay": true,
+      "name": "path",
+      "readable": true,
+      "resolve_path": false,
+      "writable": false
     }
   },
   {
@@ -144,8 +181,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "allow_dash": false,
       "class": "typer.models.TyperPath",
-      "name": "path"
+      "dir_okay": true,
+      "exists": false,
+      "file_okay": true,
+      "name": "path",
+      "readable": true,
+      "resolve_path": false,
+      "writable": false
     }
   },
   {
@@ -163,8 +207,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "clamp": false,
       "class": "typer._click.types.FloatRange",
+      "max_open": false,
       "maximum": 3600,
+      "min_open": false,
       "minimum": 0.1,
       "name": "float range"
     }

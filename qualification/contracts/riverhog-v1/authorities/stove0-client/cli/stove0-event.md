@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-event:e064b5ec3e -->
+<!-- contract-element: cli:stove0-client:stove0-event:0d68bf01f6 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-c86560ef4b"></a>Parser name: `event`
+- <a id="s-454394cf06"></a>Subcommand selection: required.
+- <a id="s-96e1d122bc"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
+- <a id="s-082317c117"></a>Options after positional arguments at this parser: left as arguments.
+- <a id="s-8e2e154374"></a>Unknown options at this parser: rejected.
 
 ### Terminating controls
 
@@ -23,7 +27,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-ffdea4e97d"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-f0f9b48556"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -39,13 +43,41 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Machine authority
 
+- `/external_contract/cli/stove0/commands/event/allow_extra_args`
+- `/external_contract/cli/stove0/commands/event/allow_interspersed_args`
+- `/external_contract/cli/stove0/commands/event/ignore_unknown_options`
 - `/external_contract/cli/stove0/commands/event/name`
 - `/external_contract/cli/stove0/commands/event/parameters`
+- `/external_contract/cli/stove0/commands/event/subcommand_required`
 - `/external_contract/cli/stove0/commands/event/terminating_controls`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/event/allow_extra_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/stove0/commands/event/allow_interspersed_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/stove0/commands/event/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/stove0/commands/event/name`
 
@@ -61,6 +93,14 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ```json
 []
+```
+
+### `/external_contract/cli/stove0/commands/event/subcommand_required`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
 ```
 
 ### `/external_contract/cli/stove0/commands/event/terminating_controls`

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-event-list:9a82aabe26 -->
+<!-- contract-element: cli:piggity:piggity-event-list:1cf6274642 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-d2138ca7d1"></a>Parser name: `list`
+- <a id="s-18bf303e31"></a>Extra arguments at this parser: rejected.
+- <a id="s-e245027b14"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-6386d86380"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -22,7 +25,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
 | <a id="s-9b6e165302"></a>`after`<br>`--after` | optional option; 1 value | text | not recorded |
-| <a id="s-694707cea7"></a>`limit`<br>`--limit` | optional option; 1 value | integer range; minimum=`1`; maximum=`100` | `100` |
+| <a id="s-694707cea7"></a>`limit`<br>`--limit` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `100` |
 | <a id="s-c9e9de4469"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
 
 ### Terminating controls
@@ -71,8 +74,8 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ## Governing policies
 
-- <a id="pa-8549d6343a"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-b0fa7e0802"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-ff78854f85"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-85004b1586"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -89,6 +92,9 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ### Machine authority
 
+- `/external_contract/cli/piggity/commands/event/commands/list/allow_extra_args`
+- `/external_contract/cli/piggity/commands/event/commands/list/allow_interspersed_args`
+- `/external_contract/cli/piggity/commands/event/commands/list/ignore_unknown_options`
 - `/external_contract/cli/piggity/commands/event/commands/list/name`
 - `/external_contract/cli/piggity/commands/event/commands/list/parameters`
 - `/external_contract/cli/piggity/commands/event/commands/list/result_contract`
@@ -97,6 +103,30 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/event/commands/list/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/piggity/commands/event/commands/list/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/piggity/commands/event/commands/list/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/piggity/commands/event/commands/list/name`
 
@@ -108,7 +138,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/event/commands/list/parameters`
 
-<!-- exact-contract-value: d1dcd264e4d0682fb677304f77f84a4be86a712b177dc7e1262e2177ea8f6694 -->
+<!-- exact-contract-value: 58bdb5d2272cda012f6ecc8df92e1ad40584c2489121e76cf089dacb20aa1b6b -->
 
 ```json
 [
@@ -145,8 +175,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "clamp": false,
       "class": "typer._click.types.IntRange",
+      "max_open": false,
       "maximum": 100,
+      "min_open": false,
       "minimum": 1,
       "name": "integer range"
     }

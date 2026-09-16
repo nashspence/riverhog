@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt-listener-install:392568a7e0 -->
+<!-- contract-element: cli:gogurt:gogurt-listener-install:35dbc46475 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-50f526d032"></a>Parser name: `install`
+- <a id="s-2e570ae5f3"></a>Extra arguments at this parser: rejected.
+- <a id="s-8688dfe3b1"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-30ff35e6b3"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -21,9 +24,9 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-a7098f7a64"></a>`config`<br>`--config` | optional option; 1 value | path | not recorded |
-| <a id="s-e2444f543f"></a>`actions_dir`<br>`--actions-dir` | optional option; 1 value | path | not recorded |
-| <a id="s-93b1bdc7db"></a>`interval_seconds`<br>`--interval` | optional option; 1 value | float range; minimum=`0.1`; maximum=`3600` | `2` |
+| <a id="s-a7098f7a64"></a>`config`<br>`--config` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
+| <a id="s-e2444f543f"></a>`actions_dir`<br>`--actions-dir` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
+| <a id="s-93b1bdc7db"></a>`interval_seconds`<br>`--interval` | optional option; 1 value | float range; minimum=`0.1` (inclusive); maximum=`3600` (inclusive); outside range: reject | `2` |
 | <a id="s-22d9cfd874"></a>`autorun`<br>`--autorun` | optional flag; 0 values | boolean | `false` |
 | <a id="s-84c6a2811e"></a>`mounted_volume_provider`<br>`--mounted-volume-provider` | optional option; 1 value | text | not recorded<br>Env: `"GOGURT_MOUNTED_VOLUME_PROVIDER"` |
 | <a id="s-0f93a46b54"></a>`listener_host_provider`<br>`--listener-host-provider` | optional option; 1 value | text | not recorded<br>Env: `"GOGURT_LISTENER_HOST_PROVIDER"` |
@@ -72,8 +75,8 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ## Governing policies
 
-- <a id="pa-fd2a70eb63"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-cfbbfe3391"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-fa29a6c1ae"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-29bc3b29e4"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -89,6 +92,9 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ### Machine authority
 
+- `/external_contract/cli/gogurt/commands/listener/commands/install/allow_extra_args`
+- `/external_contract/cli/gogurt/commands/listener/commands/install/allow_interspersed_args`
+- `/external_contract/cli/gogurt/commands/listener/commands/install/ignore_unknown_options`
 - `/external_contract/cli/gogurt/commands/listener/commands/install/name`
 - `/external_contract/cli/gogurt/commands/listener/commands/install/parameters`
 - `/external_contract/cli/gogurt/commands/listener/commands/install/result_contract`
@@ -97,6 +103,30 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/gogurt/commands/listener/commands/install/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/gogurt/commands/listener/commands/install/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/gogurt/commands/listener/commands/install/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/gogurt/commands/listener/commands/install/name`
 
@@ -108,7 +138,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/gogurt/commands/listener/commands/install/parameters`
 
-<!-- exact-contract-value: a14d7546255da1a419ae8505f7913be301582bf048cb2a960b02bbc962c9e486 -->
+<!-- exact-contract-value: db4e07140f7ddcbbac4b0dcf2888e8999b9d00bc8786875815b5f782fb4db546 -->
 
 ```json
 [
@@ -126,8 +156,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "allow_dash": false,
       "class": "typer.models.TyperPath",
-      "name": "path"
+      "dir_okay": true,
+      "exists": false,
+      "file_okay": true,
+      "name": "path",
+      "readable": true,
+      "resolve_path": false,
+      "writable": false
     }
   },
   {
@@ -144,8 +181,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "allow_dash": false,
       "class": "typer.models.TyperPath",
-      "name": "path"
+      "dir_okay": true,
+      "exists": false,
+      "file_okay": true,
+      "name": "path",
+      "readable": true,
+      "resolve_path": false,
+      "writable": false
     }
   },
   {
@@ -163,8 +207,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "clamp": false,
       "class": "typer._click.types.FloatRange",
+      "max_open": false,
       "maximum": 3600,
+      "min_open": false,
       "minimum": 0.1,
       "name": "float range"
     }

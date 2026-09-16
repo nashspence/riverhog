@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-admission-policy-list:cabf9e03e1 -->
+<!-- contract-element: cli:stove0-client:stove0-admission-policy-list:db22ba4d55 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-080a18bf21"></a>Parser name: `list`
+- <a id="s-1d9b703f2d"></a>Extra arguments at this parser: rejected.
+- <a id="s-5ac8ae2be3"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-d614bfe950"></a>Unknown options at this parser: rejected.
 
 ### Terminating controls
 
@@ -50,7 +53,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-76988ac4eb"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-fdb1ffea78"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -67,6 +70,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Machine authority
 
+- `/external_contract/cli/stove0/commands/admission/commands/policy/commands/list/allow_extra_args`
+- `/external_contract/cli/stove0/commands/admission/commands/policy/commands/list/allow_interspersed_args`
+- `/external_contract/cli/stove0/commands/admission/commands/policy/commands/list/ignore_unknown_options`
 - `/external_contract/cli/stove0/commands/admission/commands/policy/commands/list/name`
 - `/external_contract/cli/stove0/commands/admission/commands/policy/commands/list/parameters`
 - `/external_contract/cli/stove0/commands/admission/commands/policy/commands/list/result_contract`
@@ -75,6 +81,30 @@ Exact externally visible contract owned by this semantic dossier.
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/admission/commands/policy/commands/list/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/stove0/commands/admission/commands/policy/commands/list/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/stove0/commands/admission/commands/policy/commands/list/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/stove0/commands/admission/commands/policy/commands/list/name`
 

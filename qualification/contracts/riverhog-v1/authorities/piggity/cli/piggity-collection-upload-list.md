@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-collection-upload-list:5fdeaf4dca -->
+<!-- contract-element: cli:piggity:piggity-collection-upload-list:bebb70e5e1 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-7923b13c45"></a>Parser name: `list`
+- <a id="s-f76fc4d844"></a>Extra arguments at this parser: rejected.
+- <a id="s-e627fc5531"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-5eb64a330c"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -21,7 +24,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-a9ff2db878"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1`; maximum=`100` | `25` |
+| <a id="s-a9ff2db878"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
 | <a id="s-1612e03310"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
 | <a id="s-e01fa7e363"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"created_at"` |
 | <a id="s-b3b84d8fd9"></a>`order`<br>`--order` | optional option; 1 value | text | `"desc"` |
@@ -81,8 +84,8 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ## Governing policies
 
-- <a id="pa-ce29a78d9d"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-bcdec1f078"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-303c90f849"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-a2b9bd0f03"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -99,6 +102,9 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ### Machine authority
 
+- `/external_contract/cli/piggity/commands/collection/commands/upload/commands/list/allow_extra_args`
+- `/external_contract/cli/piggity/commands/collection/commands/upload/commands/list/allow_interspersed_args`
+- `/external_contract/cli/piggity/commands/collection/commands/upload/commands/list/ignore_unknown_options`
 - `/external_contract/cli/piggity/commands/collection/commands/upload/commands/list/name`
 - `/external_contract/cli/piggity/commands/collection/commands/upload/commands/list/parameters`
 - `/external_contract/cli/piggity/commands/collection/commands/upload/commands/list/result_contract`
@@ -107,6 +113,30 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/collection/commands/upload/commands/list/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/piggity/commands/collection/commands/upload/commands/list/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/piggity/commands/collection/commands/upload/commands/list/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/piggity/commands/collection/commands/upload/commands/list/name`
 
@@ -118,7 +148,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/collection/commands/upload/commands/list/parameters`
 
-<!-- exact-contract-value: b33b752feafb87296221d6d728cc60f98246116945ab8293167e8344228b3778 -->
+<!-- exact-contract-value: 4b626b4255df642b29b76cec9b5f1b2d747a572727a35dbff386f0bb65221b44 -->
 
 ```json
 [
@@ -137,8 +167,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "clamp": false,
       "class": "typer._click.types.IntRange",
+      "max_open": false,
       "maximum": 100,
+      "min_open": false,
       "minimum": 1,
       "name": "integer range"
     }

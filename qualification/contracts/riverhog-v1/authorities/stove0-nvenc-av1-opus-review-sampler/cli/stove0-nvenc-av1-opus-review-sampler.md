@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-nvenc-av1-opus-review-sampler:stove0-nvenc-av1-opus-review-sampler:9da0a7205f -->
+<!-- contract-element: cli:stove0-nvenc-av1-opus-review-sampler:stove0-nvenc-av1-opus-review-sampler:a6c5832001 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-121a36339a"></a>Parser name: `stove0-nvenc-av1-opus-review-sampler`
+- <a id="s-39a4cfad09"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -63,8 +64,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-529f38a91d"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-f548bacc19"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-eec3b25247"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-8abffb1514"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -80,6 +81,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/stove0-nvenc-av1-opus-review-sampler/allow_abbrev`
 - `/external_contract/cli/stove0-nvenc-av1-opus-review-sampler/name`
 - `/external_contract/cli/stove0-nvenc-av1-opus-review-sampler/parameters`
 - `/external_contract/cli/stove0-nvenc-av1-opus-review-sampler/result_contract`
@@ -88,6 +90,14 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-nvenc-av1-opus-review-sampler/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/stove0-nvenc-av1-opus-review-sampler/name`
 

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-server:stove0-server-state-status:5912f0ba32 -->
+<!-- contract-element: cli:stove0-server:stove0-server-state-status:eaea128afe -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-3940dd993a"></a>Parser name: `status`
+- <a id="s-09e144684f"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -61,8 +62,8 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-32b7e58432"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-dd1f9ac381"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-dddb96bfe3"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-e13e7e1231"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -78,6 +79,7 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/stove0-server/commands/state/commands/status/allow_abbrev`
 - `/external_contract/cli/stove0-server/commands/state/commands/status/name`
 - `/external_contract/cli/stove0-server/commands/state/commands/status/parameters`
 - `/external_contract/cli/stove0-server/commands/state/commands/status/result_contract`
@@ -86,6 +88,14 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-server/commands/state/commands/status/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/stove0-server/commands/state/commands/status/name`
 

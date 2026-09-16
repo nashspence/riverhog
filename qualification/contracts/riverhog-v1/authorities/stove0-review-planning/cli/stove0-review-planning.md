@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-review-planning:stove0-review-planning:a2e2686849 -->
+<!-- contract-element: cli:stove0-review-planning:stove0-review-planning:d83ce63aee -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-dae9ec8755"></a>Parser name: `stove0-review-planning`
+- <a id="s-86b1c7e7d9"></a>Unique long-option abbreviations: accepted.
 
 ### Terminating controls
 
@@ -42,7 +43,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-0f04ec36cf"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-cfaa1d3c31"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -58,6 +59,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Machine authority
 
+- `/external_contract/cli/stove0-review-planning/allow_abbrev`
 - `/external_contract/cli/stove0-review-planning/name`
 - `/external_contract/cli/stove0-review-planning/parameters`
 - `/external_contract/cli/stove0-review-planning/result_contract`
@@ -66,6 +68,14 @@ Exact externally visible contract owned by this semantic dossier.
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-review-planning/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/stove0-review-planning/name`
 

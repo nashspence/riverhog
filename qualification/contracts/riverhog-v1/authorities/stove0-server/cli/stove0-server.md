@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-server:stove0-server:548a4c85be -->
+<!-- contract-element: cli:stove0-server:stove0-server:a568d7d141 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,8 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-031448ef76"></a>Parser name: `stove0-server`
+- <a id="s-5d6b18e27a"></a>Subcommand selection: required.
+- <a id="s-76b2303574"></a>Unique long-option abbreviations: accepted.
 
 ### Terminating controls
 
@@ -24,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-0ddbf1866d"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-03bffe565f"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -40,13 +42,23 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Machine authority
 
+- `/external_contract/cli/stove0-server/allow_abbrev`
 - `/external_contract/cli/stove0-server/name`
 - `/external_contract/cli/stove0-server/parameters`
+- `/external_contract/cli/stove0-server/subcommand_required`
 - `/external_contract/cli/stove0-server/terminating_controls`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-server/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/stove0-server/name`
 
@@ -62,6 +74,14 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ```json
 []
+```
+
+### `/external_contract/cli/stove0-server/subcommand_required`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
 ```
 
 ### `/external_contract/cli/stove0-server/terminating_controls`

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt-run:093713ffe6 -->
+<!-- contract-element: cli:gogurt:gogurt-run:5b0e244001 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-aba9c0e5e0"></a>Parser name: `run`
+- <a id="s-1ac5f267a8"></a>Extra arguments at this parser: rejected.
+- <a id="s-d87ab3647e"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-0fbd550c70"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -21,9 +24,9 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-8087dcff61"></a>`mount_point`<br>`mount_point` | required positional; 1 value | path | not recorded |
-| <a id="s-6f8a90a5e2"></a>`config`<br>`--config` | optional option; 1 value | path | not recorded |
-| <a id="s-dad97bb92b"></a>`actions_dir`<br>`--actions-dir` | optional option; 1 value | path | not recorded |
+| <a id="s-8087dcff61"></a>`mount_point`<br>`mount_point` | required positional; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
+| <a id="s-6f8a90a5e2"></a>`config`<br>`--config` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
+| <a id="s-dad97bb92b"></a>`actions_dir`<br>`--actions-dir` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
 | <a id="s-8cb427b8d5"></a>`autorun`<br>`--autorun` | optional flag; 0 values | boolean | `false` |
 | <a id="s-1e601a6dd2"></a>`dry_run`<br>`--dry-run` | optional flag; 0 values | boolean | `false` |
 | <a id="s-2c39914b8b"></a>`mounted_volume_provider`<br>`--mounted-volume-provider` | optional option; 1 value | text | not recorded<br>Env: `"GOGURT_MOUNTED_VOLUME_PROVIDER"` |
@@ -72,8 +75,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ## Governing policies
 
-- <a id="pa-298e0469a9"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-9dd4a4a276"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-0f66efd540"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-47f10516dc"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -89,6 +92,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ### Machine authority
 
+- `/external_contract/cli/gogurt/commands/run/allow_extra_args`
+- `/external_contract/cli/gogurt/commands/run/allow_interspersed_args`
+- `/external_contract/cli/gogurt/commands/run/ignore_unknown_options`
 - `/external_contract/cli/gogurt/commands/run/name`
 - `/external_contract/cli/gogurt/commands/run/parameters`
 - `/external_contract/cli/gogurt/commands/run/result_contract`
@@ -97,6 +103,30 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/gogurt/commands/run/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/gogurt/commands/run/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/gogurt/commands/run/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/gogurt/commands/run/name`
 
@@ -108,7 +138,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/gogurt/commands/run/parameters`
 
-<!-- exact-contract-value: 71334cbe42b63de19c542866177a9d9043a11b263fe1bbf92ac6bfe356af284f -->
+<!-- exact-contract-value: e3ca5466064a3767e2faa1a50274c4cc04a876c72ef0e39c91c7eafbba7b3392 -->
 
 ```json
 [
@@ -124,8 +154,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": true,
     "secondary_options": [],
     "type": {
+      "allow_dash": false,
       "class": "typer.models.TyperPath",
-      "name": "path"
+      "dir_okay": true,
+      "exists": false,
+      "file_okay": true,
+      "name": "path",
+      "readable": true,
+      "resolve_path": false,
+      "writable": false
     }
   },
   {
@@ -142,8 +179,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "allow_dash": false,
       "class": "typer.models.TyperPath",
-      "name": "path"
+      "dir_okay": true,
+      "exists": false,
+      "file_okay": true,
+      "name": "path",
+      "readable": true,
+      "resolve_path": false,
+      "writable": false
     }
   },
   {
@@ -160,8 +204,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "allow_dash": false,
       "class": "typer.models.TyperPath",
-      "name": "path"
+      "dir_okay": true,
+      "exists": false,
+      "file_okay": true,
+      "name": "path",
+      "readable": true,
+      "resolve_path": false,
+      "writable": false
     }
   },
   {

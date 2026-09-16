@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-event-list:719f55a801 -->
+<!-- contract-element: cli:stove0-client:stove0-event-list:73cc3657a9 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-be551f1555"></a>Parser name: `list`
+- <a id="s-454fc7d821"></a>Extra arguments at this parser: rejected.
+- <a id="s-d75df555c3"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-afb4f39dd4"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -22,7 +25,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
 | <a id="s-43a6ce6b6f"></a>`after`<br>`--after` | optional option; 1 value | text | not recorded |
-| <a id="s-247945017e"></a>`limit`<br>`--limit` | optional option; 1 value | integer range; minimum=`1`; maximum=`100` | `100` |
+| <a id="s-247945017e"></a>`limit`<br>`--limit` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `100` |
 
 ### Terminating controls
 
@@ -71,8 +74,8 @@ Shared facts for every subject below: minimum=1
 
 ## Governing policies
 
-- <a id="pa-6f680e276c"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-5cf116bbe7"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-dfe26bc39a"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-bc4077d998"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -89,6 +92,9 @@ Shared facts for every subject below: minimum=1
 
 ### Machine authority
 
+- `/external_contract/cli/stove0/commands/event/commands/list/allow_extra_args`
+- `/external_contract/cli/stove0/commands/event/commands/list/allow_interspersed_args`
+- `/external_contract/cli/stove0/commands/event/commands/list/ignore_unknown_options`
 - `/external_contract/cli/stove0/commands/event/commands/list/name`
 - `/external_contract/cli/stove0/commands/event/commands/list/parameters`
 - `/external_contract/cli/stove0/commands/event/commands/list/result_contract`
@@ -97,6 +103,30 @@ Shared facts for every subject below: minimum=1
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/event/commands/list/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/stove0/commands/event/commands/list/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/stove0/commands/event/commands/list/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/stove0/commands/event/commands/list/name`
 
@@ -108,7 +138,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0/commands/event/commands/list/parameters`
 
-<!-- exact-contract-value: c5a15fad184dce9004bf6a5d73b682313fdbe44cfb6323c6bd53c3cb57f198e6 -->
+<!-- exact-contract-value: fea3dc979b1eb185fc558f747ed0b3920c1eb4915b321b20680abf2ef54cba1c -->
 
 ```json
 [
@@ -145,8 +175,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "clamp": false,
       "class": "typer._click.types.IntRange",
+      "max_open": false,
       "maximum": 100,
+      "min_open": false,
       "minimum": 1,
       "name": "integer range"
     }

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-target-support:stove0-target-conformance:3ebf652daa -->
+<!-- contract-element: cli:stove0-target-support:stove0-target-conformance:0674dd7e07 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-fde6abe43b"></a>Parser name: `stove0-target-conformance`
+- <a id="s-ddc80d1b1f"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -70,9 +71,9 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-c80f2bfdda"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-433cb878e5"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
-- <a id="pa-4b80575089"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-71e3d10d1e"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-7b21d6732c"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-87d65002fd"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -88,6 +89,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/stove0-target-conformance/allow_abbrev`
 - `/external_contract/cli/stove0-target-conformance/name`
 - `/external_contract/cli/stove0-target-conformance/parameters`
 - `/external_contract/cli/stove0-target-conformance/result_contract`
@@ -96,6 +98,14 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-target-conformance/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/stove0-target-conformance/name`
 

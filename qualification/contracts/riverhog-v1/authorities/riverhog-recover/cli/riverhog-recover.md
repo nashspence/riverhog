@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:riverhog-recover:riverhog-recover:13c5f602be -->
+<!-- contract-element: cli:riverhog-recover:riverhog-recover:568929d061 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-c9dbdcd915"></a>Parser name: `riverhog-recover`
+- <a id="s-7016a87ae7"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -27,6 +28,10 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | <a id="s-ae476bc569"></a>`tags_only`<br>`--tags-only` | optional flag; 0 values | not recorded | `false` |
 | <a id="s-27589f8407"></a>`passphrases_file`<br>`--passphrases-file` | optional option; 1 value | Path | not recorded |
 | <a id="s-bc196a2661"></a>`age_command`<br>`--age-command` | optional option; 1 value | not recorded | `"age"` |
+
+### Argument combinations
+
+- <a id="s-69b548b386"></a>At most one of: [`--description-only`](#s-15d3edeac1), [`--tags-only`](#s-ae476bc569).
 
 ### Terminating controls
 
@@ -74,8 +79,8 @@ Shared facts for every subject below: source_constraint={"field":"nargs"}
 
 ## Governing policies
 
-- <a id="pa-a4623d3500"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-c337dd4a4c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-23fb9963f8"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-ef8a531856"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -91,6 +96,8 @@ Shared facts for every subject below: source_constraint={"field":"nargs"}
 
 ### Machine authority
 
+- `/external_contract/cli/riverhog-recover/allow_abbrev`
+- `/external_contract/cli/riverhog-recover/mutually_exclusive_groups`
 - `/external_contract/cli/riverhog-recover/name`
 - `/external_contract/cli/riverhog-recover/parameters`
 - `/external_contract/cli/riverhog-recover/result_contract`
@@ -99,6 +106,30 @@ Shared facts for every subject below: source_constraint={"field":"nargs"}
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/riverhog-recover/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/riverhog-recover/mutually_exclusive_groups`
+
+<!-- exact-contract-value: ee24cabb716498d7db676e44519f748b1cfce92834d3f0f63b569f2545d96646 -->
+
+```json
+[
+  {
+    "parameters": [
+      2,
+      3
+    ],
+    "required": false
+  }
+]
+```
 
 ### `/external_contract/cli/riverhog-recover/name`
 

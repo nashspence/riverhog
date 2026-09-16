@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-preview:55b1ec15a7 -->
+<!-- contract-element: cli:stove0-client:stove0-preview:2d35c1d0cd -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-df3533fcff"></a>Parser name: `preview`
+- <a id="s-cc57e33030"></a>Extra arguments at this parser: rejected.
+- <a id="s-8d4560df93"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-135760281e"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -24,7 +27,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | <a id="s-90627304a6"></a>`recipe_id`<br>`recipe_id` | required positional; 1 value | text | not recorded |
 | <a id="s-f6a4b5a531"></a>`inputs`<br>`inputs` | required positional; 1+ values; no parser maximum | text | not recorded |
 | <a id="s-4f9f8ea3f9"></a>`revision`<br>`--revision` | optional option; 1 value | integer | not recorded |
-| <a id="s-4ed179ad38"></a>`intent`<br>`--intent` | optional option; 1 value | file | not recorded |
+| <a id="s-4ed179ad38"></a>`intent`<br>`--intent` | optional option; 1 value | file; existence required; regular files allowed; directories rejected; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
 
 ### Terminating controls
 
@@ -81,9 +84,9 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-2c19761b37"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-ffa10197ea"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
-- <a id="pa-b8e9799adb"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-dee2418915"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-54b56d3f9d"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-061475198c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -100,6 +103,9 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/stove0/commands/preview/allow_extra_args`
+- `/external_contract/cli/stove0/commands/preview/allow_interspersed_args`
+- `/external_contract/cli/stove0/commands/preview/ignore_unknown_options`
 - `/external_contract/cli/stove0/commands/preview/name`
 - `/external_contract/cli/stove0/commands/preview/parameters`
 - `/external_contract/cli/stove0/commands/preview/result_contract`
@@ -108,6 +114,30 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/preview/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/stove0/commands/preview/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/stove0/commands/preview/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/stove0/commands/preview/name`
 
@@ -119,7 +149,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/stove0/commands/preview/parameters`
 
-<!-- exact-contract-value: fbd2f667e95fa41096ff61d53335fbd2ff64a22dd74a9f1a7fadbbba9ab33231 -->
+<!-- exact-contract-value: 6e8fb5690ec3391c482598c40125324a9f58ec56360a3c2245bc0a41dd061ca1 -->
 
 ```json
 [
@@ -187,8 +217,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "allow_dash": false,
       "class": "typer.models.TyperPath",
-      "name": "file"
+      "dir_okay": false,
+      "exists": true,
+      "file_okay": true,
+      "name": "file",
+      "readable": true,
+      "resolve_path": false,
+      "writable": false
     }
   }
 ]

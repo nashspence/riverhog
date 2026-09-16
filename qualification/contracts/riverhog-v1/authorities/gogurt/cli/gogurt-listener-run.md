@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt-listener-run:e31d07ea2b -->
+<!-- contract-element: cli:gogurt:gogurt-listener-run:445c96f501 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-fb1d923bfc"></a>Parser name: `_run`
+- <a id="s-ab8b1a160c"></a>Extra arguments at this parser: rejected.
+- <a id="s-4305afeadc"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-e5b9d7bbbb"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -21,7 +24,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-0c097bf54d"></a>`runtime_config`<br>`--runtime-config` | required option; 1 value | path | not recorded |
+| <a id="s-0c097bf54d"></a>`runtime_config`<br>`--runtime-config` | required option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
 
 ### Terminating controls
 
@@ -61,8 +64,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-e5769530de"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-4f4d8c26fd"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-3912b14bd5"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-e1d4dda27e"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -78,6 +81,9 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/gogurt/commands/listener/commands/_run/allow_extra_args`
+- `/external_contract/cli/gogurt/commands/listener/commands/_run/allow_interspersed_args`
+- `/external_contract/cli/gogurt/commands/listener/commands/_run/ignore_unknown_options`
 - `/external_contract/cli/gogurt/commands/listener/commands/_run/name`
 - `/external_contract/cli/gogurt/commands/listener/commands/_run/parameters`
 - `/external_contract/cli/gogurt/commands/listener/commands/_run/result_contract`
@@ -86,6 +92,30 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/gogurt/commands/listener/commands/_run/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/gogurt/commands/listener/commands/_run/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/gogurt/commands/listener/commands/_run/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/gogurt/commands/listener/commands/_run/name`
 
@@ -97,7 +127,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/gogurt/commands/listener/commands/_run/parameters`
 
-<!-- exact-contract-value: bcc4ae3bf32fb126fe4759e5f09ca3b2a76c909da7f41cd96b017dac9a244080 -->
+<!-- exact-contract-value: dd37343082f2804cd2c238266fa0b51ec261292077c8a608015b266c5fc79f36 -->
 
 ```json
 [
@@ -115,8 +145,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": true,
     "secondary_options": [],
     "type": {
+      "allow_dash": false,
       "class": "typer.models.TyperPath",
-      "name": "path"
+      "dir_okay": true,
+      "exists": false,
+      "file_okay": true,
+      "name": "path",
+      "readable": true,
+      "resolve_path": false,
+      "writable": false
     }
   }
 ]

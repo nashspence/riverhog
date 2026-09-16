@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-collection-provenance-export:033c221964 -->
+<!-- contract-element: cli:piggity:piggity-collection-provenance-export:48f0d22d07 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-002c4f842a"></a>Parser name: `export`
+- <a id="s-b1d2dd1ddd"></a>Extra arguments at this parser: rejected.
+- <a id="s-d24eb9c840"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-3957f61c27"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -23,7 +26,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|
 | <a id="s-546fc23aad"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded |
 | <a id="s-918685ae19"></a>`journal_id`<br>`journal_id` | required positional; 1 value | text | not recorded |
-| <a id="s-23253560e6"></a>`output`<br>`--output`, `-o` | required option; 1 value | path | not recorded |
+| <a id="s-23253560e6"></a>`output`<br>`--output`, `-o` | required option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
 | <a id="s-4168b25082"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
 
 ### Terminating controls
@@ -74,8 +77,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ## Governing policies
 
-- <a id="pa-25b98f52df"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-9fcc029a85"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-549f52d451"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-311ee39898"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -92,6 +95,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ### Machine authority
 
+- `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/allow_extra_args`
+- `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/allow_interspersed_args`
+- `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/ignore_unknown_options`
 - `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/name`
 - `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/parameters`
 - `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/result_contract`
@@ -100,6 +106,30 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/name`
 
@@ -111,7 +141,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/collection/commands/provenance/commands/export/parameters`
 
-<!-- exact-contract-value: 88c297cf98f356fa3084298eea3abd882f0387518e55775f6171b1512cec06df -->
+<!-- exact-contract-value: 172eb38024f7f529a857232b400b239af1b17988a1e4b4804028b925f780d7cc -->
 
 ```json
 [
@@ -162,8 +192,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": true,
     "secondary_options": [],
     "type": {
+      "allow_dash": false,
       "class": "typer.models.TyperPath",
-      "name": "path"
+      "dir_okay": true,
+      "exists": false,
+      "file_okay": true,
+      "name": "path",
+      "readable": true,
+      "resolve_path": false,
+      "writable": false
     }
   },
   {

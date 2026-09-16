@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-collection-tag-contains:3228bd3a94 -->
+<!-- contract-element: cli:piggity:piggity-collection-tag-contains:789f3a7861 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-b569d0f93b"></a>Parser name: `contains`
+- <a id="s-8a20b2daa5"></a>Extra arguments at this parser: rejected.
+- <a id="s-f19489ac0f"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-46df7c4f7c"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -23,7 +26,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|
 | <a id="s-26476668d5"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded |
 | <a id="s-2482b9c520"></a>`tag`<br>`tag` | required positional; 1 value | text | not recorded |
-| <a id="s-4f6f468c54"></a>`revision`<br>`--revision` | optional option; 1 value | integer range; minimum=`1` | not recorded |
+| <a id="s-4f6f468c54"></a>`revision`<br>`--revision` | optional option; 1 value | integer range; minimum=`1` (inclusive); outside range: reject | not recorded |
 | <a id="s-3380feb855"></a>`tag_set_identity`<br>`--tag-set-identity` | optional option; 1 value | text | not recorded |
 | <a id="s-dbfd84e078"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
 
@@ -78,8 +81,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ## Governing policies
 
-- <a id="pa-6ecf1cc9da"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-cdd547a7b2"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-16a606c9d1"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-4f27cf0bf1"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -96,6 +99,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ### Machine authority
 
+- `/external_contract/cli/piggity/commands/collection/commands/tag/commands/contains/allow_extra_args`
+- `/external_contract/cli/piggity/commands/collection/commands/tag/commands/contains/allow_interspersed_args`
+- `/external_contract/cli/piggity/commands/collection/commands/tag/commands/contains/ignore_unknown_options`
 - `/external_contract/cli/piggity/commands/collection/commands/tag/commands/contains/name`
 - `/external_contract/cli/piggity/commands/collection/commands/tag/commands/contains/parameters`
 - `/external_contract/cli/piggity/commands/collection/commands/tag/commands/contains/result_contract`
@@ -104,6 +110,30 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/collection/commands/tag/commands/contains/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/piggity/commands/collection/commands/tag/commands/contains/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/piggity/commands/collection/commands/tag/commands/contains/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/piggity/commands/collection/commands/tag/commands/contains/name`
 
@@ -115,7 +145,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/collection/commands/tag/commands/contains/parameters`
 
-<!-- exact-contract-value: add53ce5019710415eb0f73299d64482e6cf7c94e539208b0b4120bf5aabd62f -->
+<!-- exact-contract-value: 545f7a270aa271b951b2b6ce4d0313284cd9758e6589f90cc348b4de22d965e2 -->
 
 ```json
 [
@@ -165,7 +195,10 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "clamp": false,
       "class": "typer._click.types.IntRange",
+      "max_open": false,
+      "min_open": false,
       "minimum": 1,
       "name": "integer range"
     }

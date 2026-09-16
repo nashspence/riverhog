@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:mango-fish:mango-fish-state-verify:22459f1743 -->
+<!-- contract-element: cli:mango-fish:mango-fish-state-verify:384b9ac81b -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-9527b6167f"></a>Parser name: `verify`
+- <a id="s-46bb6d815a"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -61,8 +62,8 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-21a4824ac6"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-0e9d9e46c7"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-ffc58149b1"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-c0331b6971"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -78,6 +79,7 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/mango-fish/commands/state/commands/verify/allow_abbrev`
 - `/external_contract/cli/mango-fish/commands/state/commands/verify/name`
 - `/external_contract/cli/mango-fish/commands/state/commands/verify/parameters`
 - `/external_contract/cli/mango-fish/commands/state/commands/verify/result_contract`
@@ -86,6 +88,14 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/mango-fish/commands/state/commands/verify/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/mango-fish/commands/state/commands/verify/name`
 

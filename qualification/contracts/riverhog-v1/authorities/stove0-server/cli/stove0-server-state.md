@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-server:stove0-server-state:f0f444a0cb -->
+<!-- contract-element: cli:stove0-server:stove0-server-state:fefcdf0037 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,8 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-3143e65bdd"></a>Parser name: `state`
+- <a id="s-18150d219c"></a>Subcommand selection: required.
+- <a id="s-86b49ad6aa"></a>Unique long-option abbreviations: accepted.
 
 ### Terminating controls
 
@@ -23,7 +25,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-f25edf361a"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-f10e91e57c"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -39,13 +41,23 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Machine authority
 
+- `/external_contract/cli/stove0-server/commands/state/allow_abbrev`
 - `/external_contract/cli/stove0-server/commands/state/name`
 - `/external_contract/cli/stove0-server/commands/state/parameters`
+- `/external_contract/cli/stove0-server/commands/state/subcommand_required`
 - `/external_contract/cli/stove0-server/commands/state/terminating_controls`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-server/commands/state/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/stove0-server/commands/state/name`
 
@@ -61,6 +73,14 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ```json
 []
+```
+
+### `/external_contract/cli/stove0-server/commands/state/subcommand_required`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
 ```
 
 ### `/external_contract/cli/stove0-server/commands/state/terminating_controls`

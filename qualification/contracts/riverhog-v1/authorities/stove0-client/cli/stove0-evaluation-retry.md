@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0-evaluation-retry:4449eb300a -->
+<!-- contract-element: cli:stove0-client:stove0-evaluation-retry:aa48077c2a -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-51b6f9fa8e"></a>Parser name: `retry`
+- <a id="s-1b6cbcf8d2"></a>Extra arguments at this parser: rejected.
+- <a id="s-473ed9b33e"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-9215a70bc8"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -70,8 +73,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-c877f980eb"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-e70584bb91"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-d4ab408a42"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-de4ae4cd09"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -88,6 +91,9 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/stove0/commands/evaluation/commands/retry/allow_extra_args`
+- `/external_contract/cli/stove0/commands/evaluation/commands/retry/allow_interspersed_args`
+- `/external_contract/cli/stove0/commands/evaluation/commands/retry/ignore_unknown_options`
 - `/external_contract/cli/stove0/commands/evaluation/commands/retry/name`
 - `/external_contract/cli/stove0/commands/evaluation/commands/retry/parameters`
 - `/external_contract/cli/stove0/commands/evaluation/commands/retry/result_contract`
@@ -96,6 +102,30 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/evaluation/commands/retry/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/stove0/commands/evaluation/commands/retry/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/stove0/commands/evaluation/commands/retry/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/stove0/commands/evaluation/commands/retry/name`
 

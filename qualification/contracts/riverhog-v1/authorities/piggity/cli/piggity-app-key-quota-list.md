@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-app-key-quota-list:0e1a0191d8 -->
+<!-- contract-element: cli:piggity:piggity-app-key-quota-list:1c3e34b896 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-82e2e3e279"></a>Parser name: `list`
+- <a id="s-99ac43ce2e"></a>Extra arguments at this parser: rejected.
+- <a id="s-17cd0c4627"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-e8cd72b123"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -21,7 +24,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
-| <a id="s-67bf6567a4"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1`; maximum=`100` | `25` |
+| <a id="s-67bf6567a4"></a>`page_size`<br>`--page-size` | optional option; 1 value | integer range; minimum=`1` (inclusive); maximum=`100` (inclusive); outside range: reject | `25` |
 | <a id="s-6c2926dc16"></a>`page_token`<br>`--page-token` | optional option; 1 value | text | not recorded |
 | <a id="s-09d9d0e244"></a>`sort`<br>`--sort` | optional option; 1 value | text | `"app"` |
 | <a id="s-76b0d49fdb"></a>`order`<br>`--order` | optional option; 1 value | text | `"asc"` |
@@ -83,8 +86,8 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ## Governing policies
 
-- <a id="pa-667350b15c"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-8a8b9d2498"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-679547cd49"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-6ecd017648"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -101,6 +104,9 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ### Machine authority
 
+- `/external_contract/cli/piggity/commands/app/commands/key/commands/quota/commands/list/allow_extra_args`
+- `/external_contract/cli/piggity/commands/app/commands/key/commands/quota/commands/list/allow_interspersed_args`
+- `/external_contract/cli/piggity/commands/app/commands/key/commands/quota/commands/list/ignore_unknown_options`
 - `/external_contract/cli/piggity/commands/app/commands/key/commands/quota/commands/list/name`
 - `/external_contract/cli/piggity/commands/app/commands/key/commands/quota/commands/list/parameters`
 - `/external_contract/cli/piggity/commands/app/commands/key/commands/quota/commands/list/result_contract`
@@ -109,6 +115,30 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/app/commands/key/commands/quota/commands/list/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/piggity/commands/app/commands/key/commands/quota/commands/list/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/piggity/commands/app/commands/key/commands/quota/commands/list/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/piggity/commands/app/commands/key/commands/quota/commands/list/name`
 
@@ -120,7 +150,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/piggity/commands/app/commands/key/commands/quota/commands/list/parameters`
 
-<!-- exact-contract-value: 19f7e9fe529cb2ae793ba7e2c0338dc50bb371cc32c1f3e6f3f0e72f8bb00015 -->
+<!-- exact-contract-value: 94546d750a94fed2ae1dfd7a094755ec5aee5ed29f6b0d1e2a7eb7b95d2c1168 -->
 
 ```json
 [
@@ -139,8 +169,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "clamp": false,
       "class": "typer._click.types.IntRange",
+      "max_open": false,
       "maximum": 100,
+      "min_open": false,
       "minimum": 1,
       "name": "integer range"
     }

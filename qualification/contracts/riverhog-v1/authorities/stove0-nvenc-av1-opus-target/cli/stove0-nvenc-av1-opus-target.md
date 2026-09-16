@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-nvenc-av1-opus-target:stove0-nvenc-av1-opus-target:3df33c8ff8 -->
+<!-- contract-element: cli:stove0-nvenc-av1-opus-target:stove0-nvenc-av1-opus-target:2186537e2f -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-6139065804"></a>Parser name: `stove0-nvenc-av1-opus-target`
+- <a id="s-11f4f9d52a"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -63,8 +64,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-b090c80942"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-3163375bf8"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-a0a41bd094"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-0b61330c50"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -80,6 +81,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/stove0-nvenc-av1-opus-target/allow_abbrev`
 - `/external_contract/cli/stove0-nvenc-av1-opus-target/name`
 - `/external_contract/cli/stove0-nvenc-av1-opus-target/parameters`
 - `/external_contract/cli/stove0-nvenc-av1-opus-target/result_contract`
@@ -88,6 +90,14 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-nvenc-av1-opus-target/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/stove0-nvenc-av1-opus-target/name`
 

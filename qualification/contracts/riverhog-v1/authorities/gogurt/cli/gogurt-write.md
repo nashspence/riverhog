@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:gogurt:gogurt-write:3ebfacd4bc -->
+<!-- contract-element: cli:gogurt:gogurt-write:b6c92799ef -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-8595e8e5ab"></a>Parser name: `write`
+- <a id="s-b0700bc109"></a>Extra arguments at this parser: rejected.
+- <a id="s-1c103922d4"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-c50f682485"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -22,8 +25,8 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Parameter / spelling | Invocation | Type / constraints | Default / environment |
 |---|---|---|---|
 | <a id="s-e3296e8a22"></a>`route`<br>`route` | required positional; 1 value | text | not recorded |
-| <a id="s-08581ea9b7"></a>`mount_point`<br>`mount_point` | required positional; 1 value | path | not recorded |
-| <a id="s-f0b9492d8e"></a>`config`<br>`--config` | optional option; 1 value | path | not recorded |
+| <a id="s-08581ea9b7"></a>`mount_point`<br>`mount_point` | required positional; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
+| <a id="s-f0b9492d8e"></a>`config`<br>`--config` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded |
 | <a id="s-aba7dbf38e"></a>`force`<br>`--force` | optional flag; 0 values | boolean | `false` |
 | <a id="s-cef35a84fe"></a>`dry_run`<br>`--dry-run` | optional flag; 0 values | boolean | `false` |
 | <a id="s-d2fbb045b4"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false` |
@@ -74,8 +77,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ## Governing policies
 
-- <a id="pa-2f65838f53"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-6ba375e2b7"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-69134ccf54"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-bae43f1bf4"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -91,6 +94,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ### Machine authority
 
+- `/external_contract/cli/gogurt/commands/write/allow_extra_args`
+- `/external_contract/cli/gogurt/commands/write/allow_interspersed_args`
+- `/external_contract/cli/gogurt/commands/write/ignore_unknown_options`
 - `/external_contract/cli/gogurt/commands/write/name`
 - `/external_contract/cli/gogurt/commands/write/parameters`
 - `/external_contract/cli/gogurt/commands/write/result_contract`
@@ -99,6 +105,30 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/gogurt/commands/write/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/gogurt/commands/write/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/gogurt/commands/write/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/gogurt/commands/write/name`
 
@@ -110,7 +140,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/cli/gogurt/commands/write/parameters`
 
-<!-- exact-contract-value: b3d48e6509916c8278252ee2275d02848c9d2f69f23af502a7b82e22f6097f49 -->
+<!-- exact-contract-value: a5e4ffe12b89d5c7141a28609a7ecff32ca7cb3461af3d7dbc10940d1dd07556 -->
 
 ```json
 [
@@ -142,8 +172,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": true,
     "secondary_options": [],
     "type": {
+      "allow_dash": false,
       "class": "typer.models.TyperPath",
-      "name": "path"
+      "dir_okay": true,
+      "exists": false,
+      "file_okay": true,
+      "name": "path",
+      "readable": true,
+      "resolve_path": false,
+      "writable": false
     }
   },
   {
@@ -160,8 +197,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "required": false,
     "secondary_options": [],
     "type": {
+      "allow_dash": false,
       "class": "typer.models.TyperPath",
-      "name": "path"
+      "dir_okay": true,
+      "exists": false,
+      "file_okay": true,
+      "name": "path",
+      "readable": true,
+      "resolve_path": false,
+      "writable": false
     }
   },
   {

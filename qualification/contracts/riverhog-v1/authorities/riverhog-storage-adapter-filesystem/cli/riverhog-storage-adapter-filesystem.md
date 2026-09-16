@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:riverhog-storage-adapter-filesystem:riverhog-storage-adapter-filesystem:ae17437fb6 -->
+<!-- contract-element: cli:riverhog-storage-adapter-filesystem:riverhog-storage-adapter-filesystem:9474cf8cd9 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-2648424075"></a>Parser name: `riverhog-storage-adapter-filesystem`
+- <a id="s-3b0d702877"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -63,8 +64,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-1a193ffb19"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-c23c341e6d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-23f0e9008d"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-c65ed6a4b3"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -80,6 +81,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/riverhog-storage-adapter-filesystem/allow_abbrev`
 - `/external_contract/cli/riverhog-storage-adapter-filesystem/name`
 - `/external_contract/cli/riverhog-storage-adapter-filesystem/parameters`
 - `/external_contract/cli/riverhog-storage-adapter-filesystem/result_contract`
@@ -88,6 +90,14 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/riverhog-storage-adapter-filesystem/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/riverhog-storage-adapter-filesystem/name`
 

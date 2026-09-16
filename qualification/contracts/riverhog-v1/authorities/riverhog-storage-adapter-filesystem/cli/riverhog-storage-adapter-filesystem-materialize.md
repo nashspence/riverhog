@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:riverhog-storage-adapter-filesystem:riverhog-storage-adapter-filesystem-materialize:c528e0a756 -->
+<!-- contract-element: cli:riverhog-storage-adapter-filesystem:riverhog-storage-adapter-filesystem-materialize:22725d19b1 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-220ede082e"></a>Parser name: `riverhog-storage-adapter-filesystem-materialize`
+- <a id="s-be2025609c"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -81,9 +82,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 
 ## Governing policies
 
-- <a id="pa-80c5b6cb3c"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-45f873127f"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
-- <a id="pa-383a872168"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-783f799413"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-c191b6e90f"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-07d672ccf9"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -99,6 +100,7 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 
 ### Machine authority
 
+- `/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/allow_abbrev`
 - `/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/name`
 - `/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/parameters`
 - `/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/result_contract`
@@ -107,6 +109,14 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/name`
 

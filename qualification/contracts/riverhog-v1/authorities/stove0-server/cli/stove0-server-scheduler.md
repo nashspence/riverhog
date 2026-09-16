@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-server:stove0-server-scheduler:fc248b9066 -->
+<!-- contract-element: cli:stove0-server:stove0-server-scheduler:214121ca44 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-8357693941"></a>Parser name: `scheduler`
+- <a id="s-83e8b98c66"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -60,8 +61,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-7fb77a0994"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-01b8e31354"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-95efd85860"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-e77fd772cd"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -77,6 +78,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/stove0-server/commands/scheduler/allow_abbrev`
 - `/external_contract/cli/stove0-server/commands/scheduler/name`
 - `/external_contract/cli/stove0-server/commands/scheduler/parameters`
 - `/external_contract/cli/stove0-server/commands/scheduler/result_contract`
@@ -85,6 +87,14 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-server/commands/scheduler/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/stove0-server/commands/scheduler/name`
 

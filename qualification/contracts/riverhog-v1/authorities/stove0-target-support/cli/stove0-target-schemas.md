@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-target-support:stove0-target-schemas:23cfbd1fa3 -->
+<!-- contract-element: cli:stove0-target-support:stove0-target-schemas:80fcd17702 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-bf1e05e507"></a>Parser name: `stove0-target-schemas`
+- <a id="s-720335571d"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -63,8 +64,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 
 ## Governing policies
 
-- <a id="pa-b9062b2394"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-851f99f45d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-1b4e353fd3"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-666b95e802"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -80,6 +81,7 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 
 ### Machine authority
 
+- `/external_contract/cli/stove0-target-schemas/allow_abbrev`
 - `/external_contract/cli/stove0-target-schemas/name`
 - `/external_contract/cli/stove0-target-schemas/parameters`
 - `/external_contract/cli/stove0-target-schemas/result_contract`
@@ -88,6 +90,14 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-target-schemas/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/stove0-target-schemas/name`
 

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-opus-target:stove0-opus-target:72cfbcb1ed -->
+<!-- contract-element: cli:stove0-opus-target:stove0-opus-target:fa94685927 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-572c77475e"></a>Parser name: `stove0-opus-target`
+- <a id="s-4398efa208"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -63,8 +64,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-5111f3cddb"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-62f733433e"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-9bf8261659"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-de1bcffc27"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -80,6 +81,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/stove0-opus-target/allow_abbrev`
 - `/external_contract/cli/stove0-opus-target/name`
 - `/external_contract/cli/stove0-opus-target/parameters`
 - `/external_contract/cli/stove0-opus-target/result_contract`
@@ -88,6 +90,14 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-opus-target/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/stove0-opus-target/name`
 

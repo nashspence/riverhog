@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:stove0-client:stove0:5c2b4266f3 -->
+<!-- contract-element: cli:stove0-client:stove0:5c49049442 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,10 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-6a82e759aa"></a>Parser name: `stove0`
+- <a id="s-9e3acf0583"></a>Subcommand selection: required.
+- <a id="s-eb0cf4e165"></a>Extra arguments at this parser: accepted. Subcommand selection and child parsing still apply.
+- <a id="s-a4d0b20f73"></a>Options after positional arguments at this parser: left as arguments.
+- <a id="s-906050735e"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -48,8 +52,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ## Governing policies
 
-- <a id="pa-2f1807e08a"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-8f9c5c6ffb"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-7f11bd5a20"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-09dedfd447"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -65,13 +69,41 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ### Machine authority
 
+- `/external_contract/cli/stove0/allow_extra_args`
+- `/external_contract/cli/stove0/allow_interspersed_args`
+- `/external_contract/cli/stove0/ignore_unknown_options`
 - `/external_contract/cli/stove0/name`
 - `/external_contract/cli/stove0/parameters`
+- `/external_contract/cli/stove0/subcommand_required`
 - `/external_contract/cli/stove0/terminating_controls`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/allow_extra_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/stove0/allow_interspersed_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/stove0/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/stove0/name`
 
@@ -163,6 +195,14 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   }
 ]
+```
+
+### `/external_contract/cli/stove0/subcommand_required`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
 ```
 
 ### `/external_contract/cli/stove0/terminating_controls`

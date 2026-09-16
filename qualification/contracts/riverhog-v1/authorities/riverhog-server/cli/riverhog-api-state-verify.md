@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:riverhog-server:riverhog-api-state-verify:4f8272f0fb -->
+<!-- contract-element: cli:riverhog-server:riverhog-api-state-verify:ece4af962f -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-27e2aa4c46"></a>Parser name: `verify`
+- <a id="s-5170169332"></a>Unique long-option abbreviations: accepted.
 
 ### Parameters
 
@@ -61,8 +62,8 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-4f54b1f5f7"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-a3a7e2e6f4"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-9464da49d9"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-8c2c2abc90"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -78,6 +79,7 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 ### Machine authority
 
+- `/external_contract/cli/riverhog-api/commands/state/commands/verify/allow_abbrev`
 - `/external_contract/cli/riverhog-api/commands/state/commands/verify/name`
 - `/external_contract/cli/riverhog-api/commands/state/commands/verify/parameters`
 - `/external_contract/cli/riverhog-api/commands/state/commands/verify/result_contract`
@@ -86,6 +88,14 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/riverhog-api/commands/state/commands/verify/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/riverhog-api/commands/state/commands/verify/name`
 

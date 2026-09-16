@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:riverhog-ftp-adapter:riverhog-ftp-adapter-check-config:a6a531c811 -->
+<!-- contract-element: cli:riverhog-ftp-adapter:riverhog-ftp-adapter-check-config:9a5a0d5766 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-8d9a1412db"></a>Parser name: `check-config`
+- <a id="s-a5034181e5"></a>Unique long-option abbreviations: accepted.
 
 ### Terminating controls
 
@@ -42,7 +43,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-63b576e08b"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-c148700d0e"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
@@ -58,6 +59,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Machine authority
 
+- `/external_contract/cli/riverhog-ftp-adapter/commands/check-config/allow_abbrev`
 - `/external_contract/cli/riverhog-ftp-adapter/commands/check-config/name`
 - `/external_contract/cli/riverhog-ftp-adapter/commands/check-config/parameters`
 - `/external_contract/cli/riverhog-ftp-adapter/commands/check-config/result_contract`
@@ -66,6 +68,14 @@ Exact externally visible contract owned by this semantic dossier.
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/riverhog-ftp-adapter/commands/check-config/allow_abbrev`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
 
 ### `/external_contract/cli/riverhog-ftp-adapter/commands/check-config/name`
 

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: cli:piggity:piggity-local-provenance-observer-show:d4b9d5eb4f -->
+<!-- contract-element: cli:piggity:piggity-local-provenance-observer-show:f054074b07 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -14,6 +14,9 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 - <a id="s-1ba9a6a3ee"></a>Parser name: `show`
+- <a id="s-90552f749b"></a>Extra arguments at this parser: rejected.
+- <a id="s-ba1c72d583"></a>Options after positional arguments at this parser: parsed as options.
+- <a id="s-e7b447c6ae"></a>Unknown options at this parser: rejected.
 
 ### Parameters
 
@@ -63,8 +66,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ## Governing policies
 
-- <a id="pa-ca7c7d8aa8"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-764b1ab5e1"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-5bde38f73e"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-c9e3ba5a59"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -80,6 +83,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ### Machine authority
 
+- `/external_contract/cli/piggity/commands/local/commands/provenance-observer/commands/show/allow_extra_args`
+- `/external_contract/cli/piggity/commands/local/commands/provenance-observer/commands/show/allow_interspersed_args`
+- `/external_contract/cli/piggity/commands/local/commands/provenance-observer/commands/show/ignore_unknown_options`
 - `/external_contract/cli/piggity/commands/local/commands/provenance-observer/commands/show/name`
 - `/external_contract/cli/piggity/commands/local/commands/provenance-observer/commands/show/parameters`
 - `/external_contract/cli/piggity/commands/local/commands/provenance-observer/commands/show/result_contract`
@@ -88,6 +94,30 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/local/commands/provenance-observer/commands/show/allow_extra_args`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
+
+### `/external_contract/cli/piggity/commands/local/commands/provenance-observer/commands/show/allow_interspersed_args`
+
+<!-- exact-contract-value: b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b -->
+
+```json
+true
+```
+
+### `/external_contract/cli/piggity/commands/local/commands/provenance-observer/commands/show/ignore_unknown_options`
+
+<!-- exact-contract-value: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa -->
+
+```json
+false
+```
 
 ### `/external_contract/cli/piggity/commands/local/commands/provenance-observer/commands/show/name`
 
