@@ -7,7 +7,6 @@ import os
 import shutil
 import subprocess
 import sys
-from collections import defaultdict
 from copy import deepcopy
 from pathlib import Path
 from types import ModuleType
@@ -15,6 +14,8 @@ from typing import Any
 
 import pytest
 import yaml
+from fastapi import FastAPI, HTTPException
+from fastapi.testclient import TestClient
 
 from tests import operation_observer
 
@@ -134,22 +135,6 @@ def observed_operation_evidence(
                 "source_sha": source_sha,
                 "pytest_exit_status": 0,
                 "operations": timing_rows,
-                "cli_callback_entries": [
-                    {
-                        "application": application,
-                        "command": command,
-                        "human_entries": 1,
-                        "json_entries": 1,
-                    }
-                    for application, command in sorted(
-                        {
-                            (item.application, command)
-                            for item in matrix
-                            if item.classification == "human-cli+json"
-                            for command in item.cli_commands
-                        }
-                    )
-                ],
             }
         )
     )
@@ -190,19 +175,11 @@ def test_exact_sha_evidence_contains_only_generated_current_rows(
     assert all(set(item) == set(module.Operation.__dataclass_fields__) for item in operations)
 
     incomplete = json.loads(timings.read_text())
-    projection = next(
-        item
-        for item in incomplete["cli_callback_entries"]
-        if item["application"] == "riverhog" and item["command"] == "retrieval cache status"
-    )
-    projection["json_entries"] = 0
+    client_row = next(item for item in incomplete["operations"] if "client_wall" in item)
+    del client_row["client_wall"]
     timings.write_text(json.dumps(incomplete))
-    try:
+    with pytest.raises(module.QualificationError, match="lack client wall timings"):
         module._load_operation_timings(timings, source_sha=source_sha, matrix=matrix)
-    except module.QualificationError as exc:
-        assert "commands lack human/JSON callback entries" in str(exc)
-    else:
-        raise AssertionError("missing CLI callback coverage must fail observation validation")
 
 
 def _release_qualification_step(name: str) -> str:
@@ -212,6 +189,47 @@ def _release_qualification_step(name: str) -> str:
     return next(
         step["run"] for step in workflow["jobs"]["release-audit"]["steps"] if step["name"] == name
     )
+
+
+def test_release_disposable_selection_satisfies_current_observation_requirements(
+    tmp_path: Path,
+) -> None:
+    module = load_script()
+    source_sha = module._git_head()
+    timings = tmp_path / "timings.json"
+    selected = subprocess.run(
+        [
+            "bash",
+            "--noprofile",
+            "--norc",
+            "-e",
+            "-o",
+            "pipefail",
+            "-c",
+            _release_qualification_step(
+                "Exercise disposable operation lifecycles and record timings"
+            ),
+        ],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "RIVERHOG_OPERATION_SOURCE_SHA": source_sha,
+            "RIVERHOG_OPERATION_TIMINGS": str(timings),
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert selected.returncode == 0, selected.stdout + selected.stderr
+
+    # Consume the real run through the producer's input validator. These are
+    # API timing observations; they do not establish behavioral claims.
+    observations = module._load_operation_timings(
+        timings,
+        source_sha=module._source_sha(source_sha),
+        matrix=module.operation_matrix(),
+    )
+    assert observations["operations"]
 
 
 def test_release_operation_predicate_consumes_current_evidence_and_rejects_missing_proof(
@@ -380,37 +398,30 @@ def test_operation_evidence_rejects_an_incomplete_extent_authority(tmp_path: Pat
         raise AssertionError("incomplete extent authority must fail runtime qualification")
 
 
-def test_failed_cli_callbacks_are_only_reported_as_entries(monkeypatch) -> None:
-    def failed_command(*, json_mode: bool) -> None:
-        raise RuntimeError("command failed before producing output")
-
+def test_operation_timings_record_successful_responses(monkeypatch) -> None:
     monkeypatch.setattr(operation_observer, "_OBSERVERS", [])
-    monkeypatch.setattr(
-        operation_observer,
-        "_CLI_CALLBACKS",
-        {failed_command.__code__: [("riverhog", "collection list")]},
-    )
-    monkeypatch.setattr(
-        operation_observer, "_CLI_CALLBACK_ENTRIES", defaultdict(lambda: defaultdict(int))
-    )
-    previous = sys.getprofile()
-    try:
-        sys.setprofile(operation_observer._observe_cli_callback_entry)
-        for mode in (False, True):
-            with pytest.raises(RuntimeError, match="before producing output"):
-                failed_command(json_mode=mode)
-    finally:
-        sys.setprofile(previous)
+    app = FastAPI()
+
+    @app.get("/items/{item_id}", operation_id="get_item")
+    def get_item(item_id: int) -> dict[str, int]:
+        if item_id != 1:
+            raise HTTPException(status_code=404)
+        return {"id": item_id}
+
+    observer = operation_observer.OperationObserver.install(app, application="example")
+    with TestClient(app) as client:
+        observed = operation_observer.TimeoutNeutralTestClient(client, observer=observer)
+        assert observed.get("/items/1").json() == {"id": 1}
+        assert observed.get("/items/2").status_code == 404
 
     payload = operation_observer.timing_evidence(source_sha="a" * 40, exit_status=0)
-    assert payload["cli_callback_entries"] == [
-        {
-            "application": "riverhog",
-            "command": "collection list",
-            "human_entries": 1,
-            "json_entries": 1,
-        }
-    ]
+    assert payload["source_sha"] == "a" * 40
+    assert payload["pytest_exit_status"] == 0
+    [row] = payload["operations"]
+    assert row["application"] == "example"
+    assert row["operation_id"] == "get_item"
+    assert row["server_wall"]["samples"] == 1
+    assert row["client_wall"]["samples"] == 1
 
 
 def test_timing_evidence_fails_closed_on_missing_local_operation(tmp_path: Path) -> None:
@@ -424,7 +435,6 @@ def test_timing_evidence_fails_closed_on_missing_local_operation(tmp_path: Path)
                 "source_sha": source_sha,
                 "pytest_exit_status": 0,
                 "operations": [],
-                "cli_callback_entries": [],
             }
         )
     )

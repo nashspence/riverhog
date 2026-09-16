@@ -309,7 +309,8 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     assert "test_unified_state_store_is_restart_safe" in lifecycle_evidence["run"]
     assert "test_unified_evaluation_store_is_restart_safe" in lifecycle_evidence["run"]
     assert (
-        "test_worker_tick_never_consumes_the_controller_event_cursor" in lifecycle_evidence["run"]
+        "test_scheduler_uses_bounded_keyset_scans_and_rotates_past_a_permanent_noop"
+        in lifecycle_evidence["run"]
     )
     assert "test_landing_adapter_reconciles_lost_response" in lifecycle_evidence["run"]
     assert "tests.operation_observer" in lifecycle_evidence["run"]
