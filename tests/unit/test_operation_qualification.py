@@ -1,13 +1,20 @@
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
+import os
+import shutil
+import subprocess
 import sys
 from collections import defaultdict
+from copy import deepcopy
 from pathlib import Path
 from types import ModuleType
+from typing import Any
 
 import pytest
+import yaml
 
 from tests import operation_observer
 
@@ -82,10 +89,11 @@ def test_operation_audiences_distinguish_commands_wires_and_protocols() -> None:
     )
 
 
-def test_exact_sha_evidence_contains_only_generated_current_rows(
+@pytest.fixture
+def observed_operation_evidence(
     tmp_path: Path,
-    monkeypatch,
-) -> None:  # type: ignore[no-untyped-def]
+    monkeypatch: pytest.MonkeyPatch,
+) -> tuple[ModuleType, dict[str, Any], Path]:
     module = load_script()
     source_sha = "a" * 40
     monkeypatch.setattr(module, "_git_head", lambda: source_sha)
@@ -146,7 +154,15 @@ def test_exact_sha_evidence_contains_only_generated_current_rows(
         )
     )
 
-    payload = module.evidence(source_sha=source_sha, timings=timings)
+    return module, module.evidence(source_sha=source_sha, timings=timings), timings
+
+
+def test_exact_sha_evidence_contains_only_generated_current_rows(
+    observed_operation_evidence: tuple[ModuleType, dict[str, Any], Path],
+) -> None:
+    module, payload, timings = observed_operation_evidence
+    source_sha = payload["source_sha"]
+    matrix = module.operation_matrix()
     operations = payload["operations"]
 
     assert payload["schema"] == "riverhog-operation-qualification/v1"
@@ -187,6 +203,161 @@ def test_exact_sha_evidence_contains_only_generated_current_rows(
         assert "commands lack human/JSON callback entries" in str(exc)
     else:
         raise AssertionError("missing CLI callback coverage must fail observation validation")
+
+
+def _release_qualification_step(name: str) -> str:
+    workflow = yaml.safe_load(
+        (REPO_ROOT / ".github/workflows/release-qualification.yml").read_text()
+    )
+    return next(
+        step["run"] for step in workflow["jobs"]["release-audit"]["steps"] if step["name"] == name
+    )
+
+
+def test_release_operation_predicate_consumes_current_evidence_and_rejects_missing_proof(
+    observed_operation_evidence: tuple[ModuleType, dict[str, Any], Path],
+    tmp_path: Path,
+) -> None:
+    module, observed, _ = observed_operation_evidence
+    artifact = tmp_path / "qualification/contracts/riverhog-v1.json"
+    artifact.parent.mkdir(parents=True)
+    shutil.copyfile(module.CONTRACT_FREEZE, artifact)
+    evidence_path = tmp_path / "operations.json"
+    step = _release_qualification_step("Verify exact-SHA operation evidence")
+
+    def verify(payload: dict[str, Any]) -> subprocess.CompletedProcess[str]:
+        evidence_path.write_text(json.dumps(payload))
+        return subprocess.run(
+            ["bash", "--noprofile", "--norc", "-e", "-o", "pipefail", "-c", step],
+            cwd=tmp_path,
+            env={
+                **os.environ,
+                "SOURCE_SHA": observed["source_sha"],
+                "OPERATIONS_SUMMARY": str(evidence_path),
+            },
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    rejected = verify(observed)
+    assert rejected.returncode == 1, rejected.stderr
+    assert rejected.stdout.strip() == "false"
+
+    # Counterfactual statuses isolate consumer wiring from the producer's known
+    # proof gaps. This test does not establish any behavioral qualification.
+    qualified = deepcopy(observed)
+    unestablished = [
+        name
+        for name, claim in qualified["qualification"].items()
+        if claim["status"] == "not_established"
+    ]
+    assert unestablished
+    for name in unestablished:
+        qualified["qualification"][name]["status"] = "passed"
+    accepted = verify(qualified)
+    assert accepted.returncode == 0, accepted.stdout + accepted.stderr
+    assert accepted.stdout.strip() == "true"
+
+    mutations = [
+        (("source_sha",), "b" * 40),
+        (("performance", "local_api", "source_sha"), "b" * 40),
+        (("qualification", "extent_contract", "projection_sha256"), "0" * 64),
+        (("qualification", "extent_contract", "extent_sha256"), "0" * 64),
+        (("summary", "operations"), len(observed["operations"]) + 1),
+        (("summary", "applications"), {"unexpected-application": 1}),
+        (("summary", "classifications"), {"unexpected-classification": 1}),
+        *[
+            (("qualification", name, "status"), status)
+            for name in unestablished
+            for status in ("not_established", None)
+        ],
+    ]
+    for path, value in mutations:
+        invalid = deepcopy(qualified)
+        target = invalid
+        for key in path[:-1]:
+            target = target[key]
+        target[path[-1]] = value
+        rejected = verify(invalid)
+        assert rejected.returncode == 1, (path, value, rejected.stdout, rejected.stderr)
+        assert rejected.stdout.strip() == "false", path
+
+    frozen = json.loads(artifact.read_bytes())
+    del frozen["projection"]["external_contract"]["extents"]["sha256"]
+    artifact.write_text(json.dumps(frozen))
+    invalid = deepcopy(qualified)
+    invalid["qualification"]["extent_contract"].update(
+        projection_sha256=hashlib.sha256(artifact.read_bytes()).hexdigest(),
+        extent_sha256=None,
+    )
+    assert verify(invalid).returncode != 0
+
+
+def test_release_qualification_record_uses_current_artifact_identities(tmp_path: Path) -> None:
+    artifact = tmp_path / "qualification/contracts/riverhog-v1.json"
+    artifact.parent.mkdir(parents=True)
+    shutil.copyfile(REPO_ROOT / "qualification/contracts/riverhog-v1.json", artifact)
+    frozen = json.loads(artifact.read_bytes())
+    summaries = {}
+    for name in ("operations", "database", "release"):
+        summary = tmp_path / f"{name}.json"
+        summary.write_text(json.dumps({"fixture": name}))
+        summaries[name] = summary
+    step = _release_qualification_step("Record the completed qualification")
+    environment = {
+        **os.environ,
+        "SOURCE_REF": "refs/heads/release/v1",
+        "QUALIFICATION_MODE": "prospective",
+        "SOURCE_SHA": "a" * 40,
+        "RELEASE_VERSION": "1.0.0",
+        "QUALIFICATION_DIR": str(tmp_path),
+        **{f"{name.upper()}_SUMMARY": str(path) for name, path in summaries.items()},
+    }
+
+    def record() -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            ["bash", "--noprofile", "--norc", "-e", "-o", "pipefail", "-c", step],
+            cwd=tmp_path,
+            env=environment,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    completed = record()
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    output = tmp_path / "qualification.json"
+    qualification = json.loads(output.read_text())
+    assert (
+        qualification["contract_projection_sha256"]
+        == hashlib.sha256(artifact.read_bytes()).hexdigest()
+    )
+    assert qualification["contract_trace_sha256"] == frozen["identities"]["trace_sha256"]
+    assert (
+        qualification["extent_contract_sha256"]
+        == frozen["projection"]["external_contract"]["extents"]["sha256"]
+    )
+    assert qualification["source_sha"] == environment["SOURCE_SHA"]
+    assert qualification["published"] is False
+    for name, path in summaries.items():
+        assert (
+            qualification[f"{name.removesuffix('s')}_evidence_sha256"]
+            == hashlib.sha256(path.read_bytes()).hexdigest()
+        )
+
+    for identity_path in (
+        ("identities", "trace_sha256"),
+        ("projection", "external_contract", "extents", "sha256"),
+    ):
+        invalid = deepcopy(frozen)
+        target = invalid
+        for key in identity_path[:-1]:
+            target = target[key]
+        del target[identity_path[-1]]
+        artifact.write_text(json.dumps(invalid))
+        assert record().returncode != 0, identity_path
+        assert output.read_text() == "", identity_path
 
 
 def test_operation_evidence_rejects_an_incomplete_extent_authority(tmp_path: Path) -> None:

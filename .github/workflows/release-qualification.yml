@@ -324,12 +324,13 @@ jobs:
           --output $OPERATIONS_SUMMARY"
       - name: Verify exact-SHA operation evidence
         run: |
-          CONTRACT_SUMMARY="$(mise x -- uv run --locked --all-packages --group dev python scripts/contract_freeze.py summary)"
           jq --exit-status \
             --arg sha "$SOURCE_SHA" \
             --arg contract "$(sha256sum qualification/contracts/riverhog-v1.json | cut -d ' ' -f 1)" \
-            --arg extent "$(jq -r '.extent_contract.sha256' <<<"$CONTRACT_SUMMARY")" '
-            .schema == "riverhog-operation-qualification/v1"
+            --slurpfile freeze qualification/contracts/riverhog-v1.json '
+            $freeze[0].projection.external_contract.extents.sha256 as $extent
+            | ($extent | test("^[0-9a-f]{64}$"))
+            and .schema == "riverhog-operation-qualification/v1"
             and .source_sha == $sha
             and .summary.operations == (.operations | length)
             and .qualification.extent_contract.status == "passed"
@@ -345,11 +346,10 @@ jobs:
             and .qualification.provider_backed_lifecycles.status == "linked"
             and .performance.local_api.schema == "riverhog-operation-timings/v1"
             and .performance.local_api.source_sha == $sha
-            and (.summary.applications | keys == ["riverhog", "riverhog-adapters", "stove0"])
+            and (.summary.applications | keys == ["riverhog", "riverhog-ftp-adapter", "stove0"])
             and (.summary.classifications | keys == [
               "client-only-primitive",
               "human-cli+json",
-              "service-internal",
               "standard-tool/protocol"
             ])
           ' "$OPERATIONS_SUMMARY"
@@ -438,15 +438,13 @@ jobs:
             "$GOVERNANCE_SUMMARY"
       - name: Record the completed qualification
         run: |
-          CONTRACT_SUMMARY="$(mise x -- uv run --locked --all-packages --group dev python scripts/contract_freeze.py summary)"
-          jq --null-input \
+          jq --exit-status --null-input \
+            --slurpfile freeze qualification/contracts/riverhog-v1.json \
             --arg ref "$SOURCE_REF" \
             --arg qualification_mode "$QUALIFICATION_MODE" \
             --arg sha "$SOURCE_SHA" \
             --arg version "$RELEASE_VERSION" \
             --arg contract_projection_sha256 "$(sha256sum qualification/contracts/riverhog-v1.json | cut -d ' ' -f 1)" \
-            --arg contract_trace_sha256 "$(jq -r '.identities.trace_sha256' <<<"$CONTRACT_SUMMARY")" \
-            --arg extent_contract_sha256 "$(jq -r '.extent_contract.sha256' <<<"$CONTRACT_SUMMARY")" \
             --arg operation_evidence_sha256 "$(sha256sum "$OPERATIONS_SUMMARY" | cut -d ' ' -f 1)" \
             --arg database_evidence_sha256 "$(sha256sum "$DATABASE_SUMMARY" | cut -d ' ' -f 1)" \
             --arg release_evidence_sha256 "$(sha256sum "$RELEASE_SUMMARY" | cut -d ' ' -f 1)" \
@@ -457,8 +455,8 @@ jobs:
               source_sha: $sha,
               version: $version,
               contract_projection_sha256: $contract_projection_sha256,
-              contract_trace_sha256: $contract_trace_sha256,
-              extent_contract_sha256: $extent_contract_sha256,
+              contract_trace_sha256: $freeze[0].identities.trace_sha256,
+              extent_contract_sha256: $freeze[0].projection.external_contract.extents.sha256,
               operation_evidence_sha256: $operation_evidence_sha256,
               database_evidence_sha256: $database_evidence_sha256,
               release_evidence_sha256: $release_evidence_sha256,
@@ -468,7 +466,10 @@ jobs:
               github_governance: "actions-observable-passed",
               release_evidence: "passed",
               published: false
-            }' > "$QUALIFICATION_DIR/qualification.json"
+            }
+            | select(.contract_trace_sha256 | test("^[0-9a-f]{64}$"))
+            | select(.extent_contract_sha256 | test("^[0-9a-f]{64}$"))
+            ' > "$QUALIFICATION_DIR/qualification.json"
       - name: Upload SHA-bound summaries
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
