@@ -82,6 +82,9 @@ _COLUMN_CLAUSE = re.compile(
     r"\b(?:NOT\s+NULL|NULL|DEFAULT|PRIMARY\s+KEY|UNIQUE|CHECK|REFERENCES|GENERATED)\b",
     re.IGNORECASE,
 )
+_IDENTITY_CLAUSE = re.compile(
+    r"GENERATED\s+(?:ALWAYS|BY\s+DEFAULT)\s+AS\s+IDENTITY\b", re.IGNORECASE
+)
 
 
 def _top_level_clause_positions(value: str) -> list[tuple[int, str]]:
@@ -112,9 +115,11 @@ def _top_level_clause_positions(value: str) -> list[tuple[int, str]]:
             index += 1
             continue
         if depth == 0:
-            match = _COLUMN_CLAUSE.match(value, index)
+            # DEFAULT inside an identity clause is not an ordinary column default.
+            match = _IDENTITY_CLAUSE.match(value, index) or _COLUMN_CLAUSE.match(value, index)
             if match is not None:
-                positions.append((index, re.sub(r"\s+", " ", match.group(0).upper())))
+                kind = re.sub(r"\s+", " ", match.group(0).upper())
+                positions.append((index, "GENERATED" if kind.startswith("GENERATED") else kind))
                 index = match.end()
                 continue
         index += 1
@@ -142,7 +147,6 @@ def _column(value: str) -> dict[str, object]:
     kinds = [kind for _position, kind in clauses]
     if "PRIMARY KEY" in kinds:
         result["primary_key"] = True
-        result["nullable"] = False
     if "UNIQUE" in kinds:
         result["unique"] = True
     for current_index, (position, kind) in enumerate(clauses):
@@ -211,6 +215,8 @@ def _table_constraint(value: str) -> dict[str, object]:
 def relational_schema(ddl: object, *, dialect: str) -> dict[str, object]:
     """Return the semantic relational structure from one canonical DDL authority."""
 
+    if dialect not in {"postgresql", "sqlite"}:
+        raise StateContractError(f"unsupported SQL dialect: {dialect}")
     tables: list[dict[str, object]] = []
     unique_indexes: list[dict[str, object]] = []
     for raw_statement in _statements(ddl):
@@ -234,6 +240,24 @@ def relational_schema(ddl: object, *, dialect: str) -> dict[str, object]:
                     constraints.append(_table_constraint(definition))
                 else:
                     columns.append(_column(definition))
+            primary_key = {column["name"] for column in columns if column.get("primary_key")}
+            for constraint in constraints:
+                if constraint["kind"] == "primary-key":
+                    primary_key.update(cast(list[str], constraint["columns"]))
+            for column in columns:
+                if dialect == "postgresql":
+                    if column["name"] in primary_key or _IDENTITY_CLAUSE.match(
+                        str(column.get("generated", ""))
+                    ):
+                        column["nullable"] = False
+                elif (
+                    column["name"] in primary_key
+                    and len(primary_key) == 1
+                    and str(column["type"]).upper() == "INTEGER"
+                ):
+                    # In ordinary SQLite tables only an INTEGER PRIMARY KEY aliases
+                    # the non-null rowid. Text and composite keys can store NULL.
+                    column["nullable"] = False
             tables.append(
                 {
                     "name": _identifier(table_match.group("name")),
@@ -320,14 +344,12 @@ def project_owner(owner: Mapping[str, object]) -> dict[str, object]:
     kind = descriptor.get("kind")
     structure: Mapping[str, object]
     if kind == "sql-ddl":
-        if set(descriptor) != {"kind", "module", "symbol"}:
+        if set(descriptor) != {"kind", "module", "symbol", "dialect"}:
             raise StateContractError(f"SQL structure descriptor is not exact: {owner.get('id')}")
         symbol = descriptor.get("symbol")
         if not isinstance(symbol, str) or not hasattr(module, symbol):
             raise StateContractError(f"SQL structure symbol is missing: {owner.get('id')}")
-        format_value = str(owner.get("format", ""))
-        dialect = format_value.rsplit("/", 1)[-1]
-        structure = relational_schema(getattr(module, symbol), dialect=dialect)
+        structure = relational_schema(getattr(module, symbol), dialect=str(descriptor["dialect"]))
     elif kind == "pydantic-models":
         if set(descriptor) != {"kind", "module", "symbols"}:
             raise StateContractError(

@@ -13,7 +13,9 @@ from mango_fish.relay import CursorState
 from mango_fish.schema import state_schema as mango_fish_state_schema
 from piggity.local_state import state_schema as local_state_schema
 from riverhog_core.state_migrations.v1_ddl import POSTGRESQL_DDL
+from riverhog_ftp_adapter.state_contract import FTP_OPERATIONAL_STATE_DDL
 from riverhog_provenance import load_or_create_installation_id
+from sqlalchemy.dialects import postgresql
 from stove0_core.state_migrations.v1_ddl import POSTGRESQL_DDL as STOVE0_POSTGRESQL_DDL
 
 from scripts import state_contract
@@ -232,6 +234,114 @@ def test_every_v1_state_owner_projects_its_component_owned_exact_structure() -> 
         },
         "terminator": "LF",
     }
+    assert projected["gogurt-listener"]["structure"]["dialect"] == "sqlite"
+
+
+@pytest.mark.parametrize("owner", ["riverhog", "stove0"])
+def test_postgresql_state_nullability_and_generation_match_runtime_models(owner: str) -> None:
+    from riverhog_core.catalog_db import Base
+    from stove0_core.persistence import _Base as Stove0Base
+
+    ddl, metadata = (
+        (POSTGRESQL_DDL, Base.metadata)
+        if owner == "riverhog"
+        else (STOVE0_POSTGRESQL_DDL, Stove0Base.metadata)
+    )
+    projected = state_contract.relational_schema(ddl, dialect="postgresql")
+    dialect = postgresql.dialect()
+    compiler = dialect.ddl_compiler(dialect, None)
+    assert {table["name"] for table in projected["tables"]} == set(metadata.tables)
+    for table in projected["tables"]:
+        model = metadata.tables[table["name"]]
+        assert {column["name"] for column in table["columns"]} == set(model.c.keys())
+        for column in table["columns"]:
+            source = model.c[column["name"]]
+            identity = f"{owner}:{model.name}.{source.name}"
+            assert column["nullable"] is source.nullable, identity
+            if source.identity is not None:
+                assert column["generated"] == compiler.visit_identity_column(source.identity)
+                assert "default" not in column, identity
+            elif source.computed is not None:
+                assert column["generated"] == compiler.visit_computed_column(source.computed)
+            else:
+                assert "generated" not in column, identity
+
+
+@pytest.mark.parametrize("mode", ["BY DEFAULT", "ALWAYS"])
+def test_postgresql_identity_is_nonnullable_without_a_primary_key(mode: str) -> None:
+    projected = state_contract.relational_schema(
+        f"CREATE TABLE items (id BIGINT GENERATED {mode} AS IDENTITY, value INTEGER DEFAULT 7)",
+        dialect="postgresql",
+    )
+    identity, value = projected["tables"][0]["columns"]
+    assert identity["generated"] == f"GENERATED {mode} AS IDENTITY"
+    assert identity["nullable"] is False
+    assert "default" not in identity
+    assert value["default"] == "7"
+    assert value["nullable"] is True
+
+
+def test_postgresql_table_primary_key_makes_each_member_nonnullable() -> None:
+    projected = state_contract.relational_schema(
+        'CREATE TABLE items ("group" TEXT, id BIGINT, value TEXT, '
+        'CONSTRAINT items_pk PRIMARY KEY ("group", id))',
+        dialect="postgresql",
+    )
+    assert {column["name"]: column["nullable"] for column in projected["tables"][0]["columns"]} == {
+        "group": False,
+        "id": False,
+        "value": True,
+    }
+
+
+@pytest.mark.parametrize(
+    ("table", "key", "insert"),
+    [
+        ("adapter_state", "key", "INSERT INTO adapter_state VALUES (NULL, 'value')"),
+        ("completion_events", "event_id", "INSERT INTO completion_events VALUES (NULL, 'claim')"),
+        ("claims", "ordinal", "INSERT INTO claims VALUES (NULL, 'claim', '{}', 0)"),
+    ],
+)
+def test_ftp_primary_key_nullability_matches_sqlite_storage(
+    table: str, key: str, insert: str
+) -> None:
+    projected = state_contract.relational_schema(FTP_OPERATIONAL_STATE_DDL, dialect="sqlite")
+    projected_table = next(item for item in projected["tables"] if item["name"] == table)
+    column = next(item for item in projected_table["columns"] if item["name"] == key)
+    with closing(sqlite3.connect(":memory:")) as connection:
+        connection.executescript(FTP_OPERATIONAL_STATE_DDL)
+        connection.execute(insert)
+        stored_key = connection.execute(f'SELECT "{key}" FROM "{table}"').fetchone()[0]
+    # SQLite permits stored NULLs in ordinary text primary keys, but assigns
+    # an integer rowid when NULL is supplied for an INTEGER PRIMARY KEY.
+    assert column["nullable"] is (stored_key is None)
+
+
+@pytest.mark.parametrize(
+    "columns",
+    [
+        "id INTEGER PRIMARY KEY, value TEXT",
+        "id INTEGER, value TEXT, PRIMARY KEY (id)",
+        "id TEXT PRIMARY KEY, value TEXT",
+        "id TEXT, value TEXT, PRIMARY KEY (id)",
+        "id INTEGER, value TEXT, PRIMARY KEY (id, value)",
+    ],
+)
+def test_sqlite_primary_key_nullability_matches_storage(columns: str) -> None:
+    ddl = f"CREATE TABLE items ({columns})"
+    projected = state_contract.relational_schema(ddl, dialect="sqlite")
+    with closing(sqlite3.connect(":memory:")) as connection:
+        connection.execute(ddl)
+        connection.execute("INSERT INTO items VALUES (NULL, NULL)")
+        stored = connection.execute("SELECT id, value FROM items").fetchone()
+    assert [column["nullable"] for column in projected["tables"][0]["columns"]] == [
+        value is None for value in stored
+    ]
+
+
+def test_relational_state_projection_requires_a_supported_dialect() -> None:
+    with pytest.raises(state_contract.StateContractError, match="unsupported SQL dialect"):
+        state_contract.relational_schema("CREATE TABLE items (id INTEGER)", dialect="v1")
 
 
 def test_relational_state_projection_preserves_semantics_not_migration_operations() -> None:

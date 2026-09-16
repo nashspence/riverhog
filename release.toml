@@ -107,7 +107,7 @@ distribution = "riverhog-server"
 format = "state-schema/postgresql"
 head = "v1_0001"
 transition = "forward-migration-chain"
-structure = { kind = "sql-ddl", module = "riverhog_core.state_migrations.v1_ddl", symbol = "POSTGRESQL_DDL" }
+structure = { kind = "sql-ddl", dialect = "postgresql", module = "riverhog_core.state_migrations.v1_ddl", symbol = "POSTGRESQL_DDL" }
 fixtures = ["tests/fixtures/state/v1_0001/riverhog.postgresql.sql"]
 
 [[state.owners]]
@@ -116,7 +116,7 @@ distribution = "piggity"
 format = "state-schema/sqlite"
 head = "v1_0001"
 transition = "forward-migration-chain"
-structure = { kind = "sql-ddl", module = "piggity.state_migrations.v1_ddl", symbol = "SQLITE_DDL" }
+structure = { kind = "sql-ddl", dialect = "sqlite", module = "piggity.state_migrations.v1_ddl", symbol = "SQLITE_DDL" }
 fixtures = ["tests/fixtures/state/v1_0001/piggity.sqlite.sql"]
 
 [[state.owners]]
@@ -125,7 +125,7 @@ distribution = "mango-fish"
 format = "state-schema/sqlite"
 head = "v1_0001"
 transition = "forward-migration-chain"
-structure = { kind = "sql-ddl", module = "mango_fish.state_migrations.v1_ddl", symbol = "SQLITE_DDL" }
+structure = { kind = "sql-ddl", dialect = "sqlite", module = "mango_fish.state_migrations.v1_ddl", symbol = "SQLITE_DDL" }
 fixtures = ["tests/fixtures/state/v1_0001/mango-fish.sqlite.sql"]
 
 [[state.owners]]
@@ -134,7 +134,7 @@ distribution = "stove0-server"
 format = "state-schema/postgresql"
 head = "v1_0001"
 transition = "forward-migration-chain"
-structure = { kind = "sql-ddl", module = "stove0_core.state_migrations.v1_ddl", symbol = "POSTGRESQL_DDL" }
+structure = { kind = "sql-ddl", dialect = "postgresql", module = "stove0_core.state_migrations.v1_ddl", symbol = "POSTGRESQL_DDL" }
 fixtures = ["tests/fixtures/state/v1_0001/stove0.postgresql.sql"]
 
 [[state.owners]]
@@ -143,7 +143,7 @@ distribution = "gogurt-listener-runtime"
 format = "gogurt-listener-state/v1"
 head = "1"
 transition = "forward-migration-chain"
-structure = { kind = "sql-ddl", module = "gogurt_listener_runtime.listener", symbol = "_LISTENER_STATE_DDL" }
+structure = { kind = "sql-ddl", dialect = "sqlite", module = "gogurt_listener_runtime.listener", symbol = "_LISTENER_STATE_DDL" }
 fixtures = ["tests/fixtures/state/v1_0001/gogurt-listener.sqlite.sql"]
 
 [[state.owners]]

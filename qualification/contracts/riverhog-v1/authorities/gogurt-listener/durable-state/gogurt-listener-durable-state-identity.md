@@ -19,7 +19,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-dfdb8345df"></a>`format` | `"gogurt-listener-state/v1"` |
 | <a id="s-5f90543a80"></a>`head` | `"1"` |
 | <a id="s-01e00b3419"></a>`id` | `"gogurt-listener"` |
-| <a id="s-92f3c74137"></a>`dialect` | `"v1"` |
+| <a id="s-92f3c74137"></a>`dialect` | `"sqlite"` |
 | <a id="s-9b48522278"></a>`kind` | `"relational-schema"` |
 | <a id="s-29e150c4ba"></a>`unique_indexes` | `[]` |
 | <a id="s-09f176d7fc"></a>`transition` | `"forward-migration-chain"` |
@@ -97,10 +97,10 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/durable_state/owners/4/structure/dialect`
 
-<!-- exact-contract-value: 161078e42e8fef3ba4b9c984035baa2e431a50b31a18ac95614cc6820394af13 -->
+<!-- exact-contract-value: 8d52f1b6c789bf660109e29a2036ba4a52615222a8b1ac6f3b94bfdcdc9d93cc -->
 
 ```json
-"v1"
+"sqlite"
 ```
 
 ### `/external_contract/durable_state/owners/4/structure/kind`

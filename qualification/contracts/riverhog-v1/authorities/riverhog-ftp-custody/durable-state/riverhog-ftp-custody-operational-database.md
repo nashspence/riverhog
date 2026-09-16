@@ -54,7 +54,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: aeacdbc342d1d5c49d2a9a332630fdc0020364280713138bdde0c29fa52e95c1 -->
+<!-- exact-contract-value: 1513b8c445d9c9243e439461f0647ee8110f5669ec5442e059c2181a0b938f15 -->
 
 ```json
 {
@@ -102,7 +102,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         {
           "definition": "key TEXT PRIMARY KEY",
           "name": "key",
-          "nullable": false,
+          "nullable": true,
           "primary_key": true,
           "type": "TEXT"
         },
@@ -121,7 +121,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         {
           "definition": "event_id TEXT PRIMARY KEY",
           "name": "event_id",
-          "nullable": false,
+          "nullable": true,
           "primary_key": true,
           "type": "TEXT"
         },
