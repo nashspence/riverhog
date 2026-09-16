@@ -25,7 +25,6 @@ from .model import (
     ATLAS_DIRECTORY,
     ATLAS_SCHEMA,
     AUDIT_PRIMARY_CONTENT_TARGET_BYTES,
-    CONTRACT_MAP_SCHEMA,
     COVERAGE_IDENTITY_SCHEMA,
     INTERFACE_LABELS,
     INTERFACE_REGISTRY,
@@ -76,7 +75,6 @@ from .validation import _atlas_paths, _reachable_atlas_documents, validate_atlas
 
 __all__ = [
     "AUDIT_PRIMARY_CONTENT_TARGET_BYTES",
-    "CONTRACT_MAP_SCHEMA",
     "INTERFACE_LABELS",
     "INTERFACE_REGISTRY",
     "RELATIONSHIP_SCHEMA",

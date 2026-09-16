@@ -43,7 +43,10 @@ from .navigation import (
 
 
 def _render_cli_navigation_tree(
-    values: Sequence[Mapping[str, object]], *, interface_path: str
+    values: Sequence[Mapping[str, object]],
+    *,
+    interface_path: str,
+    suffixes: Mapping[str, str] | None = None,
 ) -> list[str]:
     by_path: dict[tuple[str, ...], Mapping[str, object]] = {}
     for item in values:
@@ -64,6 +67,7 @@ def _render_cli_navigation_tree(
         lines.append(
             f"{'  ' * depth}- [{_md(path[-1])}]"
             f"({_relative_link(interface_path, str(item['dossier']))})"
+            + (suffixes or {}).get(str(item["id"]), "")
         )
         children = sorted(
             candidate
