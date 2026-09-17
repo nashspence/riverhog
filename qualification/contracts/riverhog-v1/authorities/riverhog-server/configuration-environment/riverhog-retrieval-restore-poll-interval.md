@@ -4,7 +4,7 @@
 
 <!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-restore-poll-interval:34c07e5195 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -26,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+#### [extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL"; consumers=["riverhog-server"]; maximum=null; reason="operator-configured-capacity"
 
@@ -36,20 +36,20 @@ Shared facts for every subject below: configuration="RIVERHOG_RETRIEVAL_RESTORE_
 
 ## Governing policies
 
-- <a id="pa-7c7eca9361"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-f2dc609ea1"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-7c7eca9361"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-f2dc609ea1"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f50)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make unit](../../../evidence/sources/commands.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:riverhog-server:RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL](../../../evidence/sources.md#src-4c5aea570f) — [riverhog/src/riverhog\_core/runtime\_config.py::load\_runtime\_config](../../../../../../riverhog/src/riverhog_core/runtime_config.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [configuration-environment:riverhog-server:RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL](../../../evidence/sources/authorities.md#src-4c5aea570f) — [riverhog/src/riverhog\_core/runtime\_config.py::load\_runtime\_config](../../../../../../riverhog/src/riverhog_core/runtime_config.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 

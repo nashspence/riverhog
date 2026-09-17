@@ -4,7 +4,7 @@
 
 <!-- contract-element: configuration-environment:riverhog-server:riverhog-archive-scrypt-work-factor:92e0418b6a -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -26,19 +26,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-9485ecb079"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-9485ecb079"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f50)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make unit](../../../evidence/sources/commands.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:riverhog-server:RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR](../../../evidence/sources.md#src-3434cbb4f1) — [riverhog/src/riverhog\_core/runtime\_config.py::load\_runtime\_config](../../../../../../riverhog/src/riverhog_core/runtime_config.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [configuration-environment:riverhog-server:RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR](../../../evidence/sources/authorities.md#src-3434cbb4f1) — [riverhog/src/riverhog\_core/runtime\_config.py::load\_runtime\_config](../../../../../../riverhog/src/riverhog_core/runtime_config.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 

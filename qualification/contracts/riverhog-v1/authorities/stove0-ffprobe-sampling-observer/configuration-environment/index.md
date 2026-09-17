@@ -4,7 +4,9 @@
 
 Configuration Environment contract owned by stove0-ffprobe-sampling-observer.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-9f86e5b7b8) for this authority.
 
 - [STOVE0_FFPROBE_BIN](stove0-ffprobe-bin.md)
 - [STOVE0_FFPROBE_SAMPLING_OBSERVER_HOST](stove0-ffprobe-sampling-observer-host.md)

@@ -4,7 +4,7 @@
 
 Coordinated version and immutable-tag semantics.
 
-## Semantic dossiers
+## Contract elements
 
 | Exact unit | Classification |
 |---|---|

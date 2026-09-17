@@ -4,7 +4,7 @@
 
 <!-- contract-element: configuration-environment:piggity:piggity-upload-finalize-timeout-seconds:9dfbb3ac4b -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -26,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+#### [extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS"; consumers=["piggity"]; maximum=null; reason="operator-configured-capacity"
 
@@ -36,20 +36,20 @@ Shared facts for every subject below: configuration="PIGGITY_UPLOAD_FINALIZE_TIM
 
 ## Governing policies
 
-- <a id="pa-83f0b3ae69"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-56e7e300e5"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-83f0b3ae69"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-56e7e300e5"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f50)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make unit](../../../evidence/sources/commands.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:piggity:PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS](../../../evidence/sources.md#src-40c863880d) — [reference/riverhog/applications/piggity/src/piggity/main.py::\_upload\_finalize\_timeout\_seconds](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [configuration-environment:piggity:PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS](../../../evidence/sources/authorities.md#src-40c863880d) — [reference/riverhog/applications/piggity/src/piggity/main.py::\_upload\_finalize\_timeout\_seconds](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 

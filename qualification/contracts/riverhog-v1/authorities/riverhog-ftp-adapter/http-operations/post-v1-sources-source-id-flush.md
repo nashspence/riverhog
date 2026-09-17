@@ -37,7 +37,7 @@ Flush
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog-ftp-adapter"}; maximum=null; reason="no-declared-semantic-maximum"
 
@@ -52,27 +52,27 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - [riverhog-ftp-adapter flush](../cli/riverhog-ftp-adapter-flush.md)
 - [riverhog_ftp_adapter_api_client.RiverhogFtpAdapterClient.flush_ftp_adapter_source](../../riverhog-ftp-adapter-api-client/python/riverhog-ftp-adapter-api-client-riverhogftpadapterclient-flush-ftp-adapter-source.md)
 
-### Referenced contract dossiers
+### Referenced contract elements
 
 - [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
 
 ## Governing policies
 
-- <a id="pa-da1091c998"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
-- <a id="pa-24983dd5c5"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-da1091c998"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-24983dd5c5"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29a) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:riverhog-ftp-adapter](../../../evidence/sources/authorities.md#src-c3a51ac29a) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
 - **Handler:** [reference/riverhog/ingress/ftp/src/riverhog\_ftp\_adapter/app.py::create\_app.&lt;locals&gt;.flush](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py#L292)
 
 ### Structural operation bindings

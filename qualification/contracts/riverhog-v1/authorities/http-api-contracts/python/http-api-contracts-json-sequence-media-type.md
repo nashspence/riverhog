@@ -4,7 +4,7 @@
 
 <!-- contract-element: python:http-api-contracts:http-api-contracts-json-sequence-media-type:12a61e6f7e -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -26,19 +26,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-3e46c1d6fe"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+- <a id="pa-3e46c1d6fe"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make build](../../../evidence/sources.md#q-d1121e35fa)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources/commands.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [python:http-api-contracts:http_api_contracts](../../../evidence/sources.md#src-a522df4cfd) — [packages/http-api-contracts/src/http\_api\_contracts/\_\_init\_\_.py](../../../../../../packages/http-api-contracts/src/http_api_contracts/__init__.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [python:http-api-contracts:http_api_contracts](../../../evidence/sources/authorities.md#src-a522df4cfd) — [packages/http-api-contracts/src/http\_api\_contracts/\_\_init\_\_.py](../../../../../../packages/http-api-contracts/src/http_api_contracts/__init__.py)
 
 ### Machine authority
 

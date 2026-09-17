@@ -4,7 +4,7 @@
 
 Structured values exchanged by a process protocol.
 
-## Semantic dossiers
+## Contract elements
 
 - [ErrorResponse](generated-stove0-review-sampler-errorresponse.md)
 - [SamplerConformanceResult](generated-stove0-review-sampler-samplerconformanceresult.md)

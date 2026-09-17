@@ -4,7 +4,7 @@
 
 <!-- contract-element: python:riverhog-storage-adapter-filesystem:riverhog-storage-adapter-filesystem-files-25bbf201fb:0e08c00b7c -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -33,19 +33,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-e738d80577"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+- <a id="pa-e738d80577"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make build](../../../evidence/sources.md#q-d1121e35fa)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources/commands.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [python:riverhog-storage-adapter-filesystem:riverhog_storage_adapter_filesystem](../../../evidence/sources.md#src-e075952170) — [reference/riverhog/storage/filesystem/src/riverhog\_storage\_adapter\_filesystem/\_\_init\_\_.py](../../../../../../reference/riverhog/storage/filesystem/src/riverhog_storage_adapter_filesystem/__init__.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [python:riverhog-storage-adapter-filesystem:riverhog_storage_adapter_filesystem](../../../evidence/sources/authorities.md#src-e075952170) — [reference/riverhog/storage/filesystem/src/riverhog\_storage\_adapter\_filesystem/\_\_init\_\_.py](../../../../../../reference/riverhog/storage/filesystem/src/riverhog_storage_adapter_filesystem/__init__.py)
 
 ### Machine authority
 

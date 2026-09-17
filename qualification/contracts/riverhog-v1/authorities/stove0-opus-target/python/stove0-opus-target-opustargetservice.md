@@ -4,7 +4,7 @@
 
 <!-- contract-element: python:stove0-opus-target:stove0-opus-target-opustargetservice:73e0383b03 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -38,19 +38,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-172e6114f5"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+- <a id="pa-172e6114f5"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make build](../../../evidence/sources.md#q-d1121e35fa)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources/commands.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [python:stove0-opus-target:stove0_opus_target](../../../evidence/sources.md#src-9164f15983) — [reference/stove0/targets/opus/target/src/stove0\_opus\_target/\_\_init\_\_.py](../../../../../../reference/stove0/targets/opus/target/src/stove0_opus_target/__init__.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [python:stove0-opus-target:stove0_opus_target](../../../evidence/sources/authorities.md#src-9164f15983) — [reference/stove0/targets/opus/target/src/stove0\_opus\_target/\_\_init\_\_.py](../../../../../../reference/stove0/targets/opus/target/src/stove0_opus_target/__init__.py)
 
 ### Machine authority
 

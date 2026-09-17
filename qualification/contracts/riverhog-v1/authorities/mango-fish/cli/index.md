@@ -4,7 +4,7 @@
 
 CLI contract owned by mango-fish.
 
-## Semantic dossiers
+## Contract elements
 
 Executable commands: **4** · Command groups: **1**
 

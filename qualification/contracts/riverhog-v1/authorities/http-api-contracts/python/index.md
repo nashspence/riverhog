@@ -4,7 +4,7 @@
 
 Declared public imports and their selected exact structural contracts.
 
-## Semantic dossiers
+## Contract elements
 
 ### `http_api_contracts`
 

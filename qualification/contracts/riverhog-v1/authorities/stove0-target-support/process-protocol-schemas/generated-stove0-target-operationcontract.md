@@ -4,7 +4,7 @@
 
 <!-- contract-element: process-protocol-schemas:stove0-target-support:generated-stove0-target-operationcontract:592bdf29d6 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -113,7 +113,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0-target-protocol"}; maximum=null; reason="no-declared-semantic-maximum"
 
@@ -126,7 +126,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [definition OutputArtifactContract · field derived_from_roles](#s-db0de128fe) | `cardinality · items · operational_policy` | shared above |
 | [definition SemanticValidationProfile · field rules](#s-2f2dbe7f7f) | `cardinality · items · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
@@ -145,21 +145,21 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-018bb7213f"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
-- <a id="pa-31d61071b2"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
-- <a id="pa-a7cca2a7b5"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-018bb7213f"></a>[compatibility/components/v1](../../release/compatibility-guarantees/compatibility-components.md#p-95e9a12259)
+- <a id="pa-31d61071b2"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
+- <a id="pa-a7cca2a7b5"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make build](../../../evidence/sources.md#q-d1121e35fa)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources/commands.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [protocol:generated:stove0-target](../../../evidence/sources.md#src-2c42f9d39a) — [reference/stove0/packages/target-support/src/stove0\_target\_support/schemas.py::target\_schema\_bundle](../../../../../../reference/stove0/packages/target-support/src/stove0_target_support/schemas.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [protocol:generated:stove0-target](../../../evidence/sources/authorities.md#src-2c42f9d39a) — [reference/stove0/packages/target-support/src/stove0\_target\_support/schemas.py::target\_schema\_bundle](../../../../../../reference/stove0/packages/target-support/src/stove0_target_support/schemas.py)
 
 ### Machine authority
 

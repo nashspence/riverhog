@@ -4,7 +4,7 @@
 
 Coordinated v1 compatibility promises.
 
-## Semantic dossiers
+## Contract elements
 
 | Exact unit | Classification |
 |---|---|

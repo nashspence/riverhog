@@ -4,7 +4,7 @@
 
 <!-- contract-element: python:stove0-observer-protocol:stove0-observer-protocol-observercontract-8db74f213c:badfff9f28 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -33,19 +33,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-e8e652be6f"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+- <a id="pa-e8e652be6f"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make build](../../../evidence/sources.md#q-d1121e35fa)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources/commands.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [python:stove0-observer-protocol:stove0_observer_protocol](../../../evidence/sources.md#src-62450e0156) — [reference/stove0/packages/observer-protocol/src/stove0\_observer\_protocol/\_\_init\_\_.py](../../../../../../reference/stove0/packages/observer-protocol/src/stove0_observer_protocol/__init__.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [python:stove0-observer-protocol:stove0_observer_protocol](../../../evidence/sources/authorities.md#src-62450e0156) — [reference/stove0/packages/observer-protocol/src/stove0\_observer\_protocol/\_\_init\_\_.py](../../../../../../reference/stove0/packages/observer-protocol/src/stove0_observer_protocol/__init__.py)
 
 ### Machine authority
 

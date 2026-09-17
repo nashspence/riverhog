@@ -30,27 +30,27 @@ Dependency-light immutable Riverhog archive recovery contracts.
 
 Publication preserves these existing component authorities; it does not reclassify or duplicate their interfaces.
 
-- [riverhog-archive-contracts](../../../evidence/relationships.md#rn-3f00f69253)
+- [riverhog-archive-contracts](../../../evidence/relationships/nodes.md#rn-3f00f69253)
 
 ## Governing policies
 
-- <a id="pa-2aec1a8f1c"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
-- <a id="pa-a30ae5282a"></a>[publication/role-retention/v1](../../../policies/index.md#p-3e4dc2e851)
+- <a id="pa-2aec1a8f1c"></a>[compatibility/components/v1](../compatibility-guarantees/compatibility-components.md#p-95e9a12259)
+- <a id="pa-a30ae5282a"></a>[publication/role-retention/v1](../../../policies/publication-role-retention-v1/index.md#p-3e4dc2e851)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make build](../../../evidence/sources.md#q-d1121e35fa)
+- [make release-check](../../../evidence/sources/commands.md#q-8d8d22d6a6)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources/commands.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [release-distribution:riverhog-archive-contracts](../../../evidence/sources.md#src-f6ac304b52) — [packages/riverhog-archive-contracts/pyproject.toml](../../../../../../packages/riverhog-archive-contracts/pyproject.toml)
-- [release-publication:planner](../../../evidence/sources.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
-- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [release-distribution:riverhog-archive-contracts](../../../evidence/sources/authorities.md#src-f6ac304b52) — [packages/riverhog-archive-contracts/pyproject.toml](../../../../../../packages/riverhog-archive-contracts/pyproject.toml)
+- [release-publication:planner](../../../evidence/sources/authorities.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
+- [release:release.toml](../../../evidence/sources/authorities.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
 
 ### Machine authority
 

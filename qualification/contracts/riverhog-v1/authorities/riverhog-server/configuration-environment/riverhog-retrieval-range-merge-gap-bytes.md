@@ -4,7 +4,7 @@
 
 <!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-range-merge-gap-bytes:f845f185e2 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -26,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+#### [extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES"; consumers=["riverhog-server"]; maximum=null; reason="operator-configured-capacity"
 
@@ -36,20 +36,20 @@ Shared facts for every subject below: configuration="RIVERHOG_RETRIEVAL_RANGE_ME
 
 ## Governing policies
 
-- <a id="pa-9ba2ed5b3a"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-03136e4a5f"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-9ba2ed5b3a"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-03136e4a5f"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f50)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make unit](../../../evidence/sources/commands.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:riverhog-server:RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES](../../../evidence/sources.md#src-972a8351e5) — [riverhog/src/riverhog\_core/pack\_retrieval.py::\_scoped\_env\_value](../../../../../../riverhog/src/riverhog_core/pack_retrieval.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [configuration-environment:riverhog-server:RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES](../../../evidence/sources/authorities.md#src-972a8351e5) — [riverhog/src/riverhog\_core/pack\_retrieval.py::\_scoped\_env\_value](../../../../../../riverhog/src/riverhog_core/pack_retrieval.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 

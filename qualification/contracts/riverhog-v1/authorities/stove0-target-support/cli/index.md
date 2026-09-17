@@ -4,7 +4,7 @@
 
 CLI contract owned by stove0-target-support.
 
-## Semantic dossiers
+## Contract elements
 
 Executable commands: **2** · Command groups: **0**
 

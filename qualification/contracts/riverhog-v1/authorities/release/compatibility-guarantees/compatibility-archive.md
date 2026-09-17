@@ -4,7 +4,7 @@
 
 <!-- contract-element: compatibility-guarantees:release:compatibility-archive:3eeae311a6 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -13,6 +13,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
+<a id="p-915b8756ae"></a>
+[Where this policy applies](../../../policies/compatibility-archive-v1/applications.md)
+
 
 | Field | Value |
 |---|---|
@@ -20,20 +23,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-8d5e343efb"></a>[compatibility/archive/v1](../../../policies/index.md#p-915b8756ae)
+- <a id="pa-8d5e343efb"></a>[compatibility/archive/v1](#p-915b8756ae)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make build](../../../evidence/sources.md#q-d1121e35fa)
+- [make release-check](../../../evidence/sources/commands.md#q-8d8d22d6a6)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources/commands.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [release:release.toml](../../../evidence/sources/authorities.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
 
 ### Machine authority
 

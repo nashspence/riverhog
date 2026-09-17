@@ -40,7 +40,7 @@ Rotate App Key
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{16}$"}
 
@@ -55,28 +55,28 @@ Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-publ
 - [piggity app key rotate](../../piggity/cli/piggity-app-key-rotate.md)
 - [riverhog_client.ApiClient.rotate_app_key](../../riverhog-client/python/riverhog-client-apiclient-rotate-app-key.md)
 
-### Referenced contract dossiers
+### Referenced contract elements
 
 - [schemas: AppKeyCreatedOut](../http-schemas/schemas-appkeycreatedout.md)
 - [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
 
 ## Governing policies
 
-- <a id="pa-c45536dd51"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
-- <a id="pa-19066b6306"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-c45536dd51"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-19066b6306"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
 - **Handler:** [riverhog/src/riverhog\_api/routers/apps.py::rotate\_app\_key](../../../../../../riverhog/src/riverhog_api/routers/apps.py#L107)
 
 ### Structural operation bindings

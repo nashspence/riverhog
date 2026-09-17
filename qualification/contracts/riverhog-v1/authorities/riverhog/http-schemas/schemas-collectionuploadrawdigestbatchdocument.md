@@ -31,7 +31,7 @@ One append-only bounded slice of a registered raw source digest sequence.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594)
+#### [extent-rule/bounded-segment/v1](../../extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594)
 
 Shared facts for every subject below: maximum=1024; minimum=1; progression={"progression":"first_part"}; reason="bounded-raw-digest-append"
 
@@ -39,7 +39,7 @@ Shared facts for every subject below: maximum=1024; minimum=1; progression={"pro
 |---|---|---|
 | [field sha256s](#s-2c06441938) | `cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
@@ -47,29 +47,43 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 |---|---|---|
 | <a id="s-ef3601ab55"></a>[field sha256s · items](#s-2c06441938) | `length · characters · fixed` | shared above |
 
-### Progression evidence and open obligations
+### Evidence gaps
 
-These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+The named contract groups have recorded evidence gaps in the following guarantees. Each group's page identifies its exact open guarantees and candidate tests:
 
-- [riverhog-raw-digest-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-dbc4c688e1)
+- Each step stays within its declared limits.
+- Continuing the work makes progress toward its declared completion.
+- The operation works across multiple pages or chunks.
+- Required data or work is not silently left out.
+- Work can resume after a restart as its contract requires.
+
+These guarantees let large tasks proceed in smaller steps: a limit on one page or chunk must not become a hidden limit on the whole task. Returning a first page correctly does not establish that continuation or recovery works. Capacity may explicitly reject, defer, or throttle work; it must not silently omit work.
+
+Existing tests may establish individual cases. The gaps retain their recorded group-wide scope and do not establish a bug in every linked contract. Completion follows each contract's rules; mutable browsing carries no implied snapshot guarantee.
+
+Required by: [extent-rule/bounded-segment/v1](../../extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594).
+
+Exact evidence groups for this contract element:
+
+- [riverhog-raw-digest-progression/v1](../../../evidence/qualifications/riverhog-raw-digest-progression-v1/index.md)
 
 ## Governing policies
 
-- <a id="pa-c61dd9eff6"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
-- <a id="pa-83e7f826e0"></a>[extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594)
-- <a id="pa-655304e252"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-c61dd9eff6"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-83e7f826e0"></a>[extent-rule/bounded-segment/v1](../../extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594)
+- <a id="pa-655304e252"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 
 ### Machine authority
 

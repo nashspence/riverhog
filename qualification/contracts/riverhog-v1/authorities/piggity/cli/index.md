@@ -4,7 +4,7 @@
 
 CLI contract owned by piggity.
 
-## Semantic dossiers
+## Contract elements
 
 Executable commands: **66** · Command groups: **20**
 

@@ -4,7 +4,7 @@
 
 Callable operations in an independently deployed process protocol; method and path describe that protocol binding, not a product/service HTTP API.
 
-## Semantic dossiers
+## Contract elements
 
 - [GET /v1/observer](get-v1-observer.md)
 - [POST /v1/observe](post-v1-observe.md)

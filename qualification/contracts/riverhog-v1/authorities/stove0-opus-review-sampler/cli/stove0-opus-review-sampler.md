@@ -4,7 +4,7 @@
 
 <!-- contract-element: cli:stove0-opus-review-sampler:stove0-opus-review-sampler:9e8e6b6c95 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -53,7 +53,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
 
@@ -64,20 +64,20 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-6bd590a18c"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-cdd0bffdaa"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-6bd590a18c"></a>[compatibility/cli/v1](../../release/compatibility-guarantees/compatibility-cli.md#p-48a89776de)
+- <a id="pa-cdd0bffdaa"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [cli:stove0-opus-review-sampler](../../../evidence/sources.md#src-77383ced4a) — [reference/stove0/targets/opus/review-sampler/src/stove0\_opus\_review\_sampler/app.py::&lt;module&gt;](../../../../../../reference/stove0/targets/opus/review-sampler/src/stove0_opus_review_sampler/app.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [cli:stove0-opus-review-sampler](../../../evidence/sources/authorities.md#src-77383ced4a) — [reference/stove0/targets/opus/review-sampler/src/stove0\_opus\_review\_sampler/app.py::&lt;module&gt;](../../../../../../reference/stove0/targets/opus/review-sampler/src/stove0_opus_review_sampler/app.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

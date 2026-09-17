@@ -4,7 +4,9 @@
 
 Configuration Environment contract owned by riverhog-storage-adapter-backblaze.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-1cc5235454) for this authority.
 
 - [RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_ACCESS_KEY_ID](riverhog-backblaze-storage-adapter-access-key-id.md)
 - [RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_ACCESS_KEY_ID_FILE](riverhog-backblaze-storage-adapter-access-key-id-file.md)

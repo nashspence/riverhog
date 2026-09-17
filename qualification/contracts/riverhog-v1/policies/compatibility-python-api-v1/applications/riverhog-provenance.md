@@ -1,0 +1,115 @@
+# Where compatibility/python-api/v1 applies
+
+[Atlas](../../../index.md) · [Reference navigation](../applications.md)
+
+Definition: [compatibility/python-api/v1](../../../authorities/release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5).
+
+These are the exact recorded policy applications. Each link reaches the policy application on its contract element page; a definition location is not an application or an executed test result.
+
+| Authority | Contract element |
+|---|---|
+| `riverhog-provenance` | [riverhog_provenance.DEFAULT_OBSERVER_AGENT_ID](../../../authorities/riverhog-provenance/python/riverhog-provenance-default-observer-agent-id.md#pa-c938b93708) |
+| `riverhog-provenance` | [riverhog_provenance.DerivativeJournalSeed](../../../authorities/riverhog-provenance/python/riverhog-provenance-derivativejournalseed.md#pa-36233ada0f) |
+| `riverhog-provenance` | [riverhog_provenance.ExternalStateReference](../../../authorities/riverhog-provenance/python/riverhog-provenance-externalstatereference.md#pa-b7dae286a6) |
+| `riverhog-provenance` | [riverhog_provenance.FileProvenanceBinding](../../../authorities/riverhog-provenance/python/riverhog-provenance-fileprovenancebinding.md#pa-5838d53f17) |
+| `riverhog-provenance` | [riverhog_provenance.FileStateObserver](../../../authorities/riverhog-provenance/python/riverhog-provenance-filestateobserver.md#pa-8d6b2bc9db) |
+| `riverhog-provenance` | [riverhog_provenance.FileStateObserver.observe](../../../authorities/riverhog-provenance/python/riverhog-provenance-filestateobserver-observe.md#pa-feff087902) |
+| `riverhog-provenance` | [riverhog_provenance.FileStateObserverFactory](../../../authorities/riverhog-provenance/python/riverhog-provenance-filestateobserverfactory.md#pa-418719e0a3) |
+| `riverhog-provenance` | [riverhog_provenance.INSTALLATION_ID_FILENAME](../../../authorities/riverhog-provenance/python/riverhog-provenance-installation-id-filename.md#pa-8bec4e7fc4) |
+| `riverhog-provenance` | [riverhog_provenance.IncrementalJournalEntry](../../../authorities/riverhog-provenance/python/riverhog-provenance-incrementaljournalentry.md#pa-50601393c8) |
+| `riverhog-provenance` | [riverhog_provenance.JournalFrame](../../../authorities/riverhog-provenance/python/riverhog-provenance-journalframe.md#pa-d6ac56a1ee) |
+| `riverhog-provenance` | [riverhog_provenance.JournalSummary](../../../authorities/riverhog-provenance/python/riverhog-provenance-journalsummary.md#pa-eb6f3e320a) |
+| `riverhog-provenance` | [riverhog_provenance.JournalSummary.tail](../../../authorities/riverhog-provenance/python/riverhog-provenance-journalsummary-tail.md#pa-5d5c0571e0) |
+| `riverhog-provenance` | [riverhog_provenance.LargeValueDisposition](../../../authorities/riverhog-provenance/python/riverhog-provenance-largevaluedisposition.md#pa-9dd22814c3) |
+| `riverhog-provenance` | [riverhog_provenance.LargeValueDisposition.__format__](../../../authorities/riverhog-provenance/python/riverhog-provenance-largevaluedisposition-format.md#pa-818365bd95) |
+| `riverhog-provenance` | [riverhog_provenance.LargeValueDisposition.__str__](../../../authorities/riverhog-provenance/python/riverhog-provenance-largevaluedisposition-str.md#pa-1e9e6b49b3) |
+| `riverhog-provenance` | [riverhog_provenance.NativeObservationError](../../../authorities/riverhog-provenance/python/riverhog-provenance-nativeobservationerror.md#pa-3fb3d914f1) |
+| `riverhog-provenance` | [riverhog_provenance.ObservationPolicy](../../../authorities/riverhog-provenance/python/riverhog-provenance-observationpolicy.md#pa-cbd2a034eb) |
+| `riverhog-provenance` | [riverhog_provenance.ObservationRequest](../../../authorities/riverhog-provenance/python/riverhog-provenance-observationrequest.md#pa-3c61537f75) |
+| `riverhog-provenance` | [riverhog_provenance.ObservationResult](../../../authorities/riverhog-provenance/python/riverhog-provenance-observationresult.md#pa-3f30d0b1c1) |
+| `riverhog-provenance` | [riverhog_provenance.ObservationResult.assertion_body](../../../authorities/riverhog-provenance/python/riverhog-provenance-observationresult-assertion-body.md#pa-41d551cd99) |
+| `riverhog-provenance` | [riverhog_provenance.ObservationResult.graph_fragment](../../../authorities/riverhog-provenance/python/riverhog-provenance-observationresult-graph-fragment.md#pa-a415a39266) |
+| `riverhog-provenance` | [riverhog_provenance.ObservationResult.make_assertion_entry](../../../authorities/riverhog-provenance/python/riverhog-provenance-observationresult-make-assertion-entry.md#pa-b54c91b202) |
+| `riverhog-provenance` | [riverhog_provenance.ObservationResult.payload_binding](../../../authorities/riverhog-provenance/python/riverhog-provenance-observationresult-payload-binding.md#pa-3b8923f57c) |
+| `riverhog-provenance` | [riverhog_provenance.PROVENANCE_BINDING_SEGMENT_BYTES_MAX](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-binding-segment-bytes-max.md#pa-59bf1e0dce) |
+| `riverhog-provenance` | [riverhog_provenance.PROVENANCE_BINDING_SEGMENT_FILES_MAX](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-binding-segment-files-max.md#pa-e97b6d2559) |
+| `riverhog-provenance` | [riverhog_provenance.PROVENANCE_BINDING_SEGMENT_SCHEMA](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-binding-segment-schema.md#pa-301537acc1) |
+| `riverhog-provenance` | [riverhog_provenance.PROVENANCE_ENTRY_SCHEMA](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-entry-schema.md#pa-22ce7f2446) |
+| `riverhog-provenance` | [riverhog_provenance.PROVENANCE_JOURNAL_ENTRY_BYTES_MAX](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-journal-entry-bytes-max.md#pa-1d77f303ad) |
+| `riverhog-provenance` | [riverhog_provenance.PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-journal-segment-bytes-max.md#pa-beca7fae34) |
+| `riverhog-provenance` | [riverhog_provenance.PROVENANCE_OBSERVER_BINDING_FORMAT](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-observer-binding-format.md#pa-655a6490b3) |
+| `riverhog-provenance` | [riverhog_provenance.PROVENANCE_OBSERVER_ENTRY_POINT_GROUP](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-observer-entry-point-group.md#pa-f149674a64) |
+| `riverhog-provenance` | [riverhog_provenance.PROVENANCE_OBSERVER_REFERENCE_FORMAT](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-observer-reference-format.md#pa-5a8de6be41) |
+| `riverhog-provenance` | [riverhog_provenance.PROVENANCE_PROFILE](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-profile.md#pa-afa2f61dc6) |
+| `riverhog-provenance` | [riverhog_provenance.PROVENANCE_ROOT_DOCUMENT_BYTES_MAX](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-root-document-bytes-max.md#pa-153101bcff) |
+| `riverhog-provenance` | [riverhog_provenance.PROVENANCE_ROOT_SCHEMA](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-root-schema.md#pa-510b1311a4) |
+| `riverhog-provenance` | [riverhog_provenance.PROVENANCE_SEQUENCE_BITS](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-sequence-bits.md#pa-a014745b2d) |
+| `riverhog-provenance` | [riverhog_provenance.PROVENANCE_SEQUENCE_HEX_WIDTH](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-sequence-hex-width.md#pa-1260f3870c) |
+| `riverhog-provenance` | [riverhog_provenance.PROVENANCE_TERMINAL_SCHEMA](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-terminal-schema.md#pa-5a70509e02) |
+| `riverhog-provenance` | [riverhog_provenance.PROVENANCE_VOLUME_DOCUMENT_BYTES_MAX](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-volume-document-bytes-max.md#pa-49d092ca42) |
+| `riverhog-provenance` | [riverhog_provenance.PROVENANCE_VOLUME_SCHEMA](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-volume-schema.md#pa-7e35998525) |
+| `riverhog-provenance` | [riverhog_provenance.PayloadBindingRequest](../../../authorities/riverhog-provenance/python/riverhog-provenance-payloadbindingrequest.md#pa-20f94d470e) |
+| `riverhog-provenance` | [riverhog_provenance.PreparedFileProvenance](../../../authorities/riverhog-provenance/python/riverhog-provenance-preparedfileprovenance.md#pa-26bdc95e0f) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceObserverBinding](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenanceobserverbinding.md#pa-7fdeb94fa2) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceObserverError](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenanceobservererror.md#pa-6a4be5d1a8) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenancePayloadIdentity](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenancepayloadidentity.md#pa-cb19439007) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenancePayloadIdentity.to_mapping](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenancepayloadidentity-to-mapping.md#pa-6c8279bba9) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceProviderMetadata](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenanceprovidermetadata.md#pa-104be5bd15) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceProviderMetadata.as_dict](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenanceprovidermetadata-as-dict.md#pa-61bc1241a5) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceRootDocument](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenancerootdocument.md#pa-a2abc96915) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceRootDocument.from_json_bytes](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenancerootdocument-from-json-bytes.md#pa-6d6272b8b1) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceRootDocument.identity](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenancerootdocument-identity.md#pa-e9e44c117a) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceRootDocument.to_json_bytes](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenancerootdocument-to-json-bytes.md#pa-1a7742083b) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceRootDocument.to_mapping](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenancerootdocument-to-mapping.md#pa-ff84131980) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceTerminalDocument](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenanceterminaldocument.md#pa-ce67094c2f) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceTerminalDocument.from_json_bytes](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenanceterminaldocument-from-json-bytes.md#pa-8cf68d40d4) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceTerminalDocument.metadata_path](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenanceterminaldocument-metadata-path.md#pa-68ee1ecb35) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceTerminalDocument.to_json_bytes](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenanceterminaldocument-to-json-bytes.md#pa-4115e34f6c) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceTerminalDocument.to_mapping](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenanceterminaldocument-to-mapping.md#pa-f91786f577) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceValidationError](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenancevalidationerror.md#pa-efa764b2f5) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceVolumeDocument](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenancevolumedocument.md#pa-65f1742c19) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceVolumeDocument.from_json_bytes](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenancevolumedocument-from-json-bytes.md#pa-ad0807ec0a) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceVolumeDocument.metadata_path](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenancevolumedocument-metadata-path.md#pa-ab35f2f9a1) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceVolumeDocument.to_json_bytes](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenancevolumedocument-to-json-bytes.md#pa-fbebcb47f3) |
+| `riverhog-provenance` | [riverhog_provenance.ProvenanceVolumeDocument.to_mapping](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenancevolumedocument-to-mapping.md#pa-0d305962af) |
+| `riverhog-provenance` | [riverhog_provenance.ResolvedProvenanceObserver](../../../authorities/riverhog-provenance/python/riverhog-provenance-resolvedprovenanceobserver.md#pa-010f8e5441) |
+| `riverhog-provenance` | [riverhog_provenance.ResolvedProvenanceObserver.as_dict](../../../authorities/riverhog-provenance/python/riverhog-provenance-resolvedprovenanceobserver-as-dict.md#pa-44882ec2b0) |
+| `riverhog-provenance` | [riverhog_provenance.ResolvedProvenanceObserver.create](../../../authorities/riverhog-provenance/python/riverhog-provenance-resolvedprovenanceobserver-create.md#pa-0c4f88aaab) |
+| `riverhog-provenance` | [riverhog_provenance.ResolvedProvenanceObserver.observer_reference](../../../authorities/riverhog-provenance/python/riverhog-provenance-resolvedprovenanceobserver-observer-reference.md#pa-2323d14107) |
+| `riverhog-provenance` | [riverhog_provenance.SIDECAR_SUFFIX](../../../authorities/riverhog-provenance/python/riverhog-provenance-sidecar-suffix.md#pa-0509fdb6d4) |
+| `riverhog-provenance` | [riverhog_provenance.SchemaValidationUnavailable](../../../authorities/riverhog-provenance/python/riverhog-provenance-schemavalidationunavailable.md#pa-f94808df0a) |
+| `riverhog-provenance` | [riverhog_provenance.SymlinkRefusedError](../../../authorities/riverhog-provenance/python/riverhog-provenance-symlinkrefusederror.md#pa-bdc83b4729) |
+| `riverhog-provenance` | [riverhog_provenance.UnstableFileError](../../../authorities/riverhog-provenance/python/riverhog-provenance-unstablefileerror.md#pa-0159d97c64) |
+| `riverhog-provenance` | [riverhog_provenance.UnsupportedFileTypeError](../../../authorities/riverhog-provenance/python/riverhog-provenance-unsupportedfiletypeerror.md#pa-a6b8a68f3d) |
+| `riverhog-provenance` | [riverhog_provenance.UnsupportedPlatformError](../../../authorities/riverhog-provenance/python/riverhog-provenance-unsupportedplatformerror.md#pa-46599e19f2) |
+| `riverhog-provenance` | [riverhog_provenance.append_observation](../../../authorities/riverhog-provenance/python/riverhog-provenance-append-observation.md#pa-1876698fe4) |
+| `riverhog-provenance` | [riverhog_provenance.append_replacement_transformation](../../../authorities/riverhog-provenance/python/riverhog-provenance-append-replacement-transformation.md#pa-f174f560f9) |
+| `riverhog-provenance` | [riverhog_provenance.binding_segment_bytes](../../../authorities/riverhog-provenance/python/riverhog-provenance-binding-segment-bytes.md#pa-96ffa652e0) |
+| `riverhog-provenance` | [riverhog_provenance.bounded_binding_segment_bytes](../../../authorities/riverhog-provenance/python/riverhog-provenance-bounded-binding-segment-bytes.md#pa-ce8d076b2d) |
+| `riverhog-provenance` | [riverhog_provenance.canonical_sidecar_path](../../../authorities/riverhog-provenance/python/riverhog-provenance-canonical-sidecar-path.md#pa-4ffef920fc) |
+| `riverhog-provenance` | [riverhog_provenance.create_derivative_journal](../../../authorities/riverhog-provenance/python/riverhog-provenance-create-derivative-journal.md#pa-54ac180646) |
+| `riverhog-provenance` | [riverhog_provenance.create_derivative_journal_from_identity](../../../authorities/riverhog-provenance/python/riverhog-provenance-create-derivative-journal-from-identity.md#pa-15258562d4) |
+| `riverhog-provenance` | [riverhog_provenance.create_derivative_journal_seed](../../../authorities/riverhog-provenance/python/riverhog-provenance-create-derivative-journal-seed.md#pa-124bca5294) |
+| `riverhog-provenance` | [riverhog_provenance.create_derivative_source_entry](../../../authorities/riverhog-provenance/python/riverhog-provenance-create-derivative-source-entry.md#pa-c97a56dae1) |
+| `riverhog-provenance` | [riverhog_provenance.create_observation_journal](../../../authorities/riverhog-provenance/python/riverhog-provenance-create-observation-journal.md#pa-db40b5e4f9) |
+| `riverhog-provenance` | [riverhog_provenance.current_state_reference](../../../authorities/riverhog-provenance/python/riverhog-provenance-current-state-reference.md#pa-2f5f812548) |
+| `riverhog-provenance` | [riverhog_provenance.format_provenance_sequence](../../../authorities/riverhog-provenance/python/riverhog-provenance-format-provenance-sequence.md#pa-2f730ff6ce) |
+| `riverhog-provenance` | [riverhog_provenance.list_provenance_observers](../../../authorities/riverhog-provenance/python/riverhog-provenance-list-provenance-observers.md#pa-31b51c9ca9) |
+| `riverhog-provenance` | [riverhog_provenance.load_or_create_installation_id](../../../authorities/riverhog-provenance/python/riverhog-provenance-load-or-create-installation-id.md#pa-fc884c1939) |
+| `riverhog-provenance` | [riverhog_provenance.parse_binding_segment](../../../authorities/riverhog-provenance/python/riverhog-provenance-parse-binding-segment.md#pa-ea360c0cc7) |
+| `riverhog-provenance` | [riverhog_provenance.parse_journal](../../../authorities/riverhog-provenance/python/riverhog-provenance-parse-journal.md#pa-6fab4fd9b2) |
+| `riverhog-provenance` | [riverhog_provenance.parse_provenance_sequence](../../../authorities/riverhog-provenance/python/riverhog-provenance-parse-provenance-sequence.md#pa-4b5a29fa6e) |
+| `riverhog-provenance` | [riverhog_provenance.prepare_file_provenance](../../../authorities/riverhog-provenance/python/riverhog-provenance-prepare-file-provenance.md#pa-75163d6298) |
+| `riverhog-provenance` | [riverhog_provenance.provenance_journal_filename](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-journal-filename.md#pa-da70872353) |
+| `riverhog-provenance` | [riverhog_provenance.resolve_incremental_journal_current_state](../../../authorities/riverhog-provenance/python/riverhog-provenance-resolve-incremental-journal-current-state.md#pa-dd48f517af) |
+| `riverhog-provenance` | [riverhog_provenance.resolve_provenance_observer](../../../authorities/riverhog-provenance/python/riverhog-provenance-resolve-provenance-observer.md#pa-21aa378d8c) |
+| `riverhog-provenance` | [riverhog_provenance.software_agent_id](../../../authorities/riverhog-provenance/python/riverhog-provenance-software-agent-id.md#pa-af3785c990) |
+| `riverhog-provenance` | [riverhog_provenance.update_ordered_volume_commitment](../../../authorities/riverhog-provenance/python/riverhog-provenance-update-ordered-volume-commitment.md#pa-fb95066b74) |
+| `riverhog-provenance` | [riverhog_provenance.user_installation_id](../../../authorities/riverhog-provenance/python/riverhog-provenance-user-installation-id.md#pa-7f475f54dd) |
+| `riverhog-provenance` | [riverhog_provenance.validate_entry_document](../../../authorities/riverhog-provenance/python/riverhog-provenance-validate-entry-document.md#pa-47846b91aa) |
+| `riverhog-provenance` | [riverhog_provenance.validate_graph_fragment](../../../authorities/riverhog-provenance/python/riverhog-provenance-validate-graph-fragment.md#pa-df2cf71899) |
+| `riverhog-provenance` | [riverhog_provenance.validate_incremental_journal_entry](../../../authorities/riverhog-provenance/python/riverhog-provenance-validate-incremental-journal-entry.md#pa-3e28bbdd19) |
+| `riverhog-provenance` | [riverhog_provenance.validate_journal](../../../authorities/riverhog-provenance/python/riverhog-provenance-validate-journal.md#pa-0ef1672208) |
+| `riverhog-provenance` | [riverhog_provenance.validate_journal_chunks](../../../authorities/riverhog-provenance/python/riverhog-provenance-validate-journal-chunks.md#pa-6ea085c54a) |
+| `riverhog-provenance` | [riverhog_provenance.validate_journal_set](../../../authorities/riverhog-provenance/python/riverhog-provenance-validate-journal-set.md#pa-0a2d670fe0) |
+| `riverhog-provenance` | [riverhog_provenance.verify_payload_binding](../../../authorities/riverhog-provenance/python/riverhog-provenance-verify-payload-binding.md#pa-626007eba4) |

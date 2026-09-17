@@ -41,7 +41,7 @@ Plan Collection Deletion
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
@@ -56,28 +56,28 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - [piggity collection delete](../../piggity/cli/piggity-collection-delete.md)
 - [riverhog_client.ApiClient.plan_collection_deletion](../../riverhog-client/python/riverhog-client-apiclient-plan-collection-deletion.md)
 
-### Referenced contract dossiers
+### Referenced contract elements
 
 - [schemas: CollectionDeletionPlanOut](../http-schemas/schemas-collectiondeletionplanout.md)
 - [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
 
 ## Governing policies
 
-- <a id="pa-9ecb8b8a5d"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
-- <a id="pa-4f01ffe004"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-9ecb8b8a5d"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-4f01ffe004"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
 - **Handler:** [riverhog/src/riverhog\_api/routers/collections.py::plan\_collection\_deletion](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L656)
 
 ### Structural operation bindings

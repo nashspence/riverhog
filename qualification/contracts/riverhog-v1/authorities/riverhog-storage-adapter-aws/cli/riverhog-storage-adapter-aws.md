@@ -4,7 +4,7 @@
 
 <!-- contract-element: cli:riverhog-storage-adapter-aws:riverhog-storage-adapter-aws:1b8597d3b4 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -53,7 +53,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
 
@@ -64,20 +64,20 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-a3aff67bd2"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-4420d619e1"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-a3aff67bd2"></a>[compatibility/cli/v1](../../release/compatibility-guarantees/compatibility-cli.md#p-48a89776de)
+- <a id="pa-4420d619e1"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [cli:riverhog-storage-adapter-aws](../../../evidence/sources.md#src-e3262944a6) — [reference/riverhog/storage/aws/src/riverhog\_storage\_adapter\_aws/app.py::&lt;module&gt;](../../../../../../reference/riverhog/storage/aws/src/riverhog_storage_adapter_aws/app.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [cli:riverhog-storage-adapter-aws](../../../evidence/sources/authorities.md#src-e3262944a6) — [reference/riverhog/storage/aws/src/riverhog\_storage\_adapter\_aws/app.py::&lt;module&gt;](../../../../../../reference/riverhog/storage/aws/src/riverhog_storage_adapter_aws/app.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

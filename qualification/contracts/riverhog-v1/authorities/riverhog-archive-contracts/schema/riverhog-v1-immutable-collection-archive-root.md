@@ -4,7 +4,7 @@
 
 <!-- contract-element: schema:riverhog-archive-contracts:riverhog-v1-immutable-collection-archive-root:684e181178 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -120,7 +120,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"https://nashspence.github.io/riverhog/v1/schemas/collection-archive-manifest-v1.schema.json"}; maximum=null; reason="no-declared-semantic-maximum"
 
@@ -131,7 +131,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [definition tree · field bytes](#s-b8c328ddc3) | `value · schema-value · operational_policy` | shared above |
 | [definition tree · field files](#s-77bf49c805) | `value · schema-value · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
@@ -141,21 +141,21 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-58615ad0c1"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
-- <a id="pa-10fa131df9"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
-- <a id="pa-545116de4c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-58615ad0c1"></a>[compatibility/components/v1](../../release/compatibility-guarantees/compatibility-components.md#p-95e9a12259)
+- <a id="pa-10fa131df9"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
+- <a id="pa-545116de4c"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make build](../../../evidence/sources.md#q-d1121e35fa)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources/commands.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-manifest-v1.schema.json](../../../evidence/sources.md#src-fc0a3e3cab) — [packages/riverhog-archive-contracts/schemas/collection-archive-manifest-v1.schema.json](../../../../../../packages/riverhog-archive-contracts/schemas/collection-archive-manifest-v1.schema.json)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-manifest-v1.schema.json](../../../evidence/sources/authorities.md#src-fc0a3e3cab) — [packages/riverhog-archive-contracts/schemas/collection-archive-manifest-v1.schema.json](../../../../../../packages/riverhog-archive-contracts/schemas/collection-archive-manifest-v1.schema.json)
 
 ### Machine authority
 

@@ -4,7 +4,7 @@
 
 <!-- contract-element: schema:riverhog-provenance-macos-contracts:https-nashspence-github-io-riverhog-v1-pr-cda5d58e04:07ab4b8e44 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -37,7 +37,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c)
+#### [extent-rule/extension-contract/v1](../../extent-contract/extent/extent-rule-extension-contract.md#p-75a89f9d1c)
 
 Shared facts for every subject below: maximum=null; reason="independently-versioned-extension-authority"
 
@@ -54,20 +54,20 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 
 ## Governing policies
 
-- <a id="pa-b239e3b48d"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
-- <a id="pa-d6a4e6a601"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c)
+- <a id="pa-b239e3b48d"></a>[compatibility/components/v1](../../release/compatibility-guarantees/compatibility-components.md#p-95e9a12259)
+- <a id="pa-d6a4e6a601"></a>[extent-rule/extension-contract/v1](../../extent-contract/extent/extent-rule-extension-contract.md#p-75a89f9d1c)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make build](../../../evidence/sources.md#q-d1121e35fa)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources/commands.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-attributes.json](../../../evidence/sources.md#src-8191cd2baf) — [reference/riverhog/provenance/contracts/macos/src/riverhog\_provenance\_macos\_contracts/schemas/darwin-file-attributes.schema.json](../../../../../../reference/riverhog/provenance/contracts/macos/src/riverhog_provenance_macos_contracts/schemas/darwin-file-attributes.schema.json)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-attributes.json](../../../evidence/sources/authorities.md#src-8191cd2baf) — [reference/riverhog/provenance/contracts/macos/src/riverhog\_provenance\_macos\_contracts/schemas/darwin-file-attributes.schema.json](../../../../../../reference/riverhog/provenance/contracts/macos/src/riverhog_provenance_macos_contracts/schemas/darwin-file-attributes.schema.json)
 
 ### Machine authority
 

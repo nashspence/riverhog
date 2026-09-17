@@ -4,7 +4,7 @@
 
 Stable externally used publication locations.
 
-## Semantic dossiers
+## Contract elements
 
 | Exact unit | Classification |
 |---|---|

@@ -35,27 +35,27 @@ List Recipes
 - [stove0 recipe list](../../stove0-client/cli/stove0-recipe-list.md)
 - [stove0_api_client.Stove0ApiClient.list_recipes](../../stove0-api-client/python/stove0-api-client-stove0apiclient-list-recipes.md)
 
-### Referenced contract dossiers
+### Referenced contract elements
 
 - [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
 - [schemas: RecipeCatalogView](../http-schemas/schemas-recipecatalogview.md)
 
 ## Governing policies
 
-- <a id="pa-0e5c4ab99c"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-0e5c4ab99c"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:stove0](../../../evidence/sources/authorities.md#src-52e6e32124) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
 - **Handler:** [reference/stove0/application/server/src/stove0\_api/app.py::create\_app.&lt;locals&gt;.list\_recipes](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L547)
 
 ### Structural operation bindings

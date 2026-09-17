@@ -4,6 +4,8 @@
 
 Configuration Documents contract owned by stove0-operator-contracts.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare configuration documents](../../../evidence/configuration/documents.md#c-9c0b6efc83-b7ceedf95d) for this authority.
 
 - [admission-catalog](stove0-operator-contracts-configuration-admission-catalog-configuration.md)

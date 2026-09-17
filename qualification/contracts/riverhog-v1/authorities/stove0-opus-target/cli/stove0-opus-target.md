@@ -4,7 +4,7 @@
 
 <!-- contract-element: cli:stove0-opus-target:stove0-opus-target:fa94685927 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -53,7 +53,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
 
@@ -64,20 +64,20 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-9bf8261659"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-de1bcffc27"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-9bf8261659"></a>[compatibility/cli/v1](../../release/compatibility-guarantees/compatibility-cli.md#p-48a89776de)
+- <a id="pa-de1bcffc27"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [cli:stove0-opus-target](../../../evidence/sources.md#src-d300688475) — [reference/stove0/targets/opus/target/src/stove0\_opus\_target/app.py::&lt;module&gt;](../../../../../../reference/stove0/targets/opus/target/src/stove0_opus_target/app.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [cli:stove0-opus-target](../../../evidence/sources/authorities.md#src-d300688475) — [reference/stove0/targets/opus/target/src/stove0\_opus\_target/app.py::&lt;module&gt;](../../../../../../reference/stove0/targets/opus/target/src/stove0_opus_target/app.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

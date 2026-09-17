@@ -4,7 +4,9 @@
 
 Configuration Environment contract owned by stove0-opus-target.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-c634288fb9) for this authority.
 
 - [STOVE0_FFMPEG_BIN](stove0-ffmpeg-bin.md)
 - [STOVE0_OPUS_TARGET_HOST](stove0-opus-target-host.md)

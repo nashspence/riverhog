@@ -4,7 +4,7 @@
 
 <!-- contract-element: configuration-environment:riverhog-storage-adapter-backblaze:riverhog-backblaze-storage-adapter-max-po-d8b9924b8a:5a6540d8a7 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -26,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+#### [extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_MAX_POOL_CONNECTIONS"; consumers=["riverhog-storage-adapter-backblaze"]; maximum=null; reason="operator-configured-capacity"
 
@@ -36,20 +36,20 @@ Shared facts for every subject below: configuration="RIVERHOG_BACKBLAZE_STORAGE_
 
 ## Governing policies
 
-- <a id="pa-d5e74fb0ef"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-934b5209d0"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-d5e74fb0ef"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-934b5209d0"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f50)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make unit](../../../evidence/sources/commands.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:riverhog-storage-adapter-backblaze:RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_MAX_POOL_CONNECTIONS](../../../evidence/sources.md#src-eba038dc56) — [reference/riverhog/storage/backblaze/src/riverhog\_storage\_adapter\_backblaze/app.py::\_optional](../../../../../../reference/riverhog/storage/backblaze/src/riverhog_storage_adapter_backblaze/app.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [configuration-environment:riverhog-storage-adapter-backblaze:RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_MAX_POOL_CONNECTIONS](../../../evidence/sources/authorities.md#src-eba038dc56) — [reference/riverhog/storage/backblaze/src/riverhog\_storage\_adapter\_backblaze/app.py::\_optional](../../../../../../reference/riverhog/storage/backblaze/src/riverhog_storage_adapter_backblaze/app.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 

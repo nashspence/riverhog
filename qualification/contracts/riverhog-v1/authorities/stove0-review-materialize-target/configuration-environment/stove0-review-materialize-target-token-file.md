@@ -4,7 +4,7 @@
 
 <!-- contract-element: configuration-environment:stove0-review-materialize-target:stove0-review-materialize-target-token-file:f0d82004e1 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -26,19 +26,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-8ee831f557"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-8ee831f557"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f50)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make unit](../../../evidence/sources/commands.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:stove0-review-materialize-target:STOVE0_REVIEW_MATERIALIZE_TARGET_TOKEN_FILE](../../../evidence/sources.md#src-569110a206) — [reference/stove0/targets/review/materialize-target/src/stove0\_review\_materialize\_target/app.py::\_secret](../../../../../../reference/stove0/targets/review/materialize-target/src/stove0_review_materialize_target/app.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [configuration-environment:stove0-review-materialize-target:STOVE0_REVIEW_MATERIALIZE_TARGET_TOKEN_FILE](../../../evidence/sources/authorities.md#src-569110a206) — [reference/stove0/targets/review/materialize-target/src/stove0\_review\_materialize\_target/app.py::\_secret](../../../../../../reference/stove0/targets/review/materialize-target/src/stove0_review_materialize_target/app.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 

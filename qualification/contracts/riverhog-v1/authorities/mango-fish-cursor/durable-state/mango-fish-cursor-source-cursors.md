@@ -4,7 +4,7 @@
 
 <!-- contract-element: durable-state:mango-fish-cursor:mango-fish-cursor-source-cursors:ff21b5dcb5 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -38,19 +38,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-f193d3d478"></a>[compatibility/durable-state/v1](../../../policies/index.md#p-214a49c2de)
+- <a id="pa-f193d3d478"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
-- [make database-qualification](../../../evidence/sources.md#q-27f281b51e)
+- [make release-check](../../../evidence/sources/commands.md#q-8d8d22d6a6)
+- [make database-qualification](../../../evidence/sources/commands.md#q-27f281b51e)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [state:mango-fish-cursor](../../../evidence/sources.md#src-b1cc215b8d) — [reference/riverhog/applications/mango-fish/src/mango\_fish/state\_migrations/v1\_ddl.py::SQLITE\_DDL](../../../../../../reference/riverhog/applications/mango-fish/src/mango_fish/state_migrations/v1_ddl.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [state:mango-fish-cursor](../../../evidence/sources/authorities.md#src-b1cc215b8d) — [reference/riverhog/applications/mango-fish/src/mango\_fish/state\_migrations/v1\_ddl.py::SQLITE\_DDL](../../../../../../reference/riverhog/applications/mango-fish/src/mango_fish/state_migrations/v1_ddl.py)
 
 ### Machine authority
 

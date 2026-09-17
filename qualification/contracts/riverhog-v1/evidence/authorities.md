@@ -1,8 +1,8 @@
 # Authority reconciliation
 
-[Atlas](../index.md) · [Freeze evidence](index.md)
+[Atlas](../index.md) · [Reference navigation](index.md)
 
-Aggregate ownership and projection bookkeeping support reconciliation. The atlas opening is the canonical authority/interface inventory.
+The ordinary atlas map owns the authority/interface inventory and its scope descriptions. This reference reconciles aggregate ownership and the projection's internal bookkeeping.
 
 ## Aggregate ownership
 
@@ -31,23 +31,21 @@ Aggregate ownership and projection bookkeeping support reconciliation. The atlas
 | `schema` | 31 |
 | `versioning-tags` | 5 |
 
-## Declared aggregate authorities
+## Declared aggregate scopes
 
-These cross-component authorities are explicit repository decisions. Component and durable-state authorities come directly from their frozen registries.
-
-| Authority | Normative scope |
+| Declared authority | Scope description |
 |---|---|
-| `extent-contract` | Repository-wide v1 external extent principles and rules. |
-| `release` | Coordinated v1 compatibility and publication promises. |
-| `repository` | Repository-owned v1 boundary and packaging promises. |
-| `riverhog` | The Riverhog service API and its maintained cross-interface operation parity. |
-| `stove0` | The Stove0 reference application API and its maintained cross-interface operation parity. |
+| `extent-contract` | [extent-contract](../authorities/extent-contract/index.md) |
+| `release` | [release](../authorities/release/index.md) |
+| `repository` | Repository-owned v1 boundary and packaging promises. No contract elements use this aggregate owner. |
+| `riverhog` | [riverhog](../authorities/riverhog/index.md) |
+| `stove0` | [stove0](../authorities/stove0/index.md) |
 
 ## Non-contractual projection machinery
 
-These values remain in the exact machine projection for validation, but do not own external product promises.
+These internal projection records are not exclusions of discovered external contracts.
 
-| Projection record | Machine authority | Reason |
+| Projection record | Machine location | Reason |
 |---|---|---|
 | `boundary-projection` | `/boundaries` | Frozen authority and extension topology used to attribute and navigate semantic contracts; component existence is not itself an external semantic promise. |
 | `contract-projection-envelope` | `/schema, /series` | Machine projection identity, not an external product promise. |

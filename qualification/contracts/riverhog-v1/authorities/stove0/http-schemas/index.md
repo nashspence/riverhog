@@ -4,13 +4,13 @@
 
 Supporting HTTP data definitions; these are not callable operations.
 
-## Semantic dossiers
+## Contract elements
 
-Marked entries have group-level unestablished progression claims; follow their qualification links for the exact witnesses. Unmarked entries carry no implied approval.
+**(!)** Some guarantees for work spanning pages or chunks still lack supporting evidence. Follow the marker for the affected guarantees and contracts. This records an evidence gap, not an observed bug; unmarked entries imply no approval.
 
 - [AcceptedTargetJob](schemas-acceptedtargetjob.md)
 - [AdmissionIntent](schemas-admissionintent.md)
-- [AdmissionPage](schemas-admissionpage.md) — [unestablished progression claims](schemas-admissionpage.md#progression-evidence-and-open-obligations)
+- **[AdmissionPage](schemas-admissionpage.md)** [(!)](schemas-admissionpage.md#evidence-gaps)
 - [AdmissionPolicy](schemas-admissionpolicy.md)
 - [AdmissionPolicyCatalogView](schemas-admissionpolicycatalogview.md)
 - [AdmissionPolicyStatus](schemas-admissionpolicystatus.md)
@@ -21,7 +21,7 @@ Marked entries have group-level unestablished progression claims; follow their q
 - [ArtifactFactBinding](schemas-artifactfactbinding.md)
 - [ArtifactRule](schemas-artifactrule.md)
 - [ArtifactSelection](schemas-artifactselection.md)
-- [ArtifactSelectionPage](schemas-artifactselectionpage.md) — [unestablished progression claims](schemas-artifactselectionpage.md#progression-evidence-and-open-obligations)
+- **[ArtifactSelectionPage](schemas-artifactselectionpage.md)** [(!)](schemas-artifactselectionpage.md#evidence-gaps)
 - [ArtifactSelectionRef](schemas-artifactselectionref.md)
 - [ArtifactSubject](schemas-artifactsubject.md)
 - [BranchEffectSettlement](schemas-brancheffectsettlement.md)
@@ -54,7 +54,7 @@ Marked entries have group-level unestablished progression claims; follow their q
 - [EvaluationCreatedEventData](schemas-evaluationcreatedeventdata.md)
 - [EvaluationDefinition](schemas-evaluationdefinition.md)
 - [EvaluationMatrix](schemas-evaluationmatrix.md)
-- [EvaluationPage](schemas-evaluationpage.md) — [unestablished progression claims](schemas-evaluationpage.md#progression-evidence-and-open-obligations)
+- **[EvaluationPage](schemas-evaluationpage.md)** [(!)](schemas-evaluationpage.md#evidence-gaps)
 - [EvaluationReviewIn](schemas-evaluationreviewin.md)
 - [EvaluationReviewView](schemas-evaluationreviewview.md)
 - [EvaluationUpdatedEvent](schemas-evaluationupdatedevent.md)
@@ -110,14 +110,14 @@ Marked entries have group-level unestablished progression claims; follow their q
 - [SchedulerRunIn](schemas-schedulerrunin.md)
 - [SchedulerStatus](schemas-schedulerstatus.md)
 - [SchedulerWorkBatch](schemas-schedulerworkbatch.md)
-- [Stove0EventPage](schemas-stove0eventpage.md) — [unestablished progression claims](schemas-stove0eventpage.md#progression-evidence-and-open-obligations)
+- **[Stove0EventPage](schemas-stove0eventpage.md)** [(!)](schemas-stove0eventpage.md#evidence-gaps)
 - [Stove0LifecycleEvent](schemas-stove0lifecycleevent.md)
 - [TargetCallbackAcknowledgement](schemas-targetcallbackacknowledgement.md)
 - [TargetExecutionEvidence](schemas-targetexecutionevidence.md)
 - [TargetFailure](schemas-targetfailure.md)
 - [TargetInapplicable](schemas-targetinapplicable.md)
 - [TargetInputAuthority](schemas-targetinputauthority.md)
-- [TargetInputPage](schemas-targetinputpage.md) — [unestablished progression claims](schemas-targetinputpage.md#progression-evidence-and-open-obligations)
+- **[TargetInputPage](schemas-targetinputpage.md)** [(!)](schemas-targetinputpage.md#evidence-gaps)
 - [TargetInputRoleCount](schemas-targetinputrolecount.md)
 - [TargetJobDeclaration](schemas-targetjobdeclaration.md)
 - [TargetJobStatus](schemas-targetjobstatus.md)
@@ -136,7 +136,7 @@ Marked entries have group-level unestablished progression claims; follow their q
 - [WorkFailureView](schemas-workfailureview.md)
 - [WorkIdentity](schemas-workidentity.md)
 - [WorkInapplicableView](schemas-workinapplicableview.md)
-- [WorkPage](schemas-workpage.md) — [unestablished progression claims](schemas-workpage.md#progression-evidence-and-open-obligations)
+- **[WorkPage](schemas-workpage.md)** [(!)](schemas-workpage.md#evidence-gaps)
 - [WorkUpdatedEvent](schemas-workupdatedevent.md)
 - [WorkUpdatedEventData](schemas-workupdatedeventdata.md)
 - [WorkView](schemas-workview.md)

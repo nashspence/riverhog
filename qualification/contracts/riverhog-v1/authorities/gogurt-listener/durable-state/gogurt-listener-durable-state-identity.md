@@ -4,7 +4,7 @@
 
 <!-- contract-element: durable-state:gogurt-listener:gogurt-listener-durable-state-identity:f597fa6454 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -34,19 +34,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-7ceba5b7a0"></a>[compatibility/durable-state/v1](../../../policies/index.md#p-214a49c2de)
+- <a id="pa-7ceba5b7a0"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
-- [make database-qualification](../../../evidence/sources.md#q-27f281b51e)
+- [make release-check](../../../evidence/sources/commands.md#q-8d8d22d6a6)
+- [make database-qualification](../../../evidence/sources/commands.md#q-27f281b51e)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [state:gogurt-listener](../../../evidence/sources.md#src-6b3ecfced3) — [reference/gogurt/packages/listener-runtime/src/gogurt\_listener\_runtime/listener.py::\_LISTENER\_STATE\_DDL](../../../../../../reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/listener.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [state:gogurt-listener](../../../evidence/sources/authorities.md#src-6b3ecfced3) — [reference/gogurt/packages/listener-runtime/src/gogurt\_listener\_runtime/listener.py::\_LISTENER\_STATE\_DDL](../../../../../../reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/listener.py)
 
 ### Machine authority
 

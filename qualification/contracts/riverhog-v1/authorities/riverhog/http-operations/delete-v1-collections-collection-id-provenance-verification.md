@@ -44,27 +44,27 @@ Cancel Collection Provenance Verification
 - [piggity collection provenance verification-cancel](../../piggity/cli/piggity-collection-provenance-verification-cancel.md)
 - [riverhog_client.ApiClient.cancel_collection_provenance_verification](../../riverhog-client/python/riverhog-client-apiclient-cancel-collection-provenance-verification.md)
 
-### Referenced contract dossiers
+### Referenced contract elements
 
 - [schemas: CollectionProvenanceVerificationJobOut](../http-schemas/schemas-collectionprovenanceverificationjobout.md)
 - [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
 
 ## Governing policies
 
-- <a id="pa-ee77d7df4f"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-ee77d7df4f"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
 - **Handler:** [riverhog/src/riverhog\_api/routers/provenance.py::cancel\_collection\_provenance\_verification](../../../../../../riverhog/src/riverhog_api/routers/provenance.py#L330)
 
 ### Structural operation bindings

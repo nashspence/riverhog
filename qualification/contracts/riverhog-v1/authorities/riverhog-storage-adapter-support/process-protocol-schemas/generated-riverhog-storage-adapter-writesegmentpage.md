@@ -86,7 +86,7 @@ One bounded page under an adapter-owned immutable traversal view.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594)
+#### [extent-rule/bounded-segment/v1](../../extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594)
 
 Shared facts for every subject below: maximum=128; minimum=null; progression={"progression":"exact-adapter-write-traversal"}; reason="bounded-storage-write-segment-page"
 
@@ -94,7 +94,7 @@ Shared facts for every subject below: maximum=128; minimum=null; progression={"p
 |---|---|---|
 | [field segments](#s-33643dd5a1) | `cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
@@ -102,11 +102,25 @@ Shared facts for every subject below: maximum=128; minimum=null; progression={"p
 | [definition WriteSegmentReceipt · field segment_token](#s-61c3694c07) | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
 | <a id="s-0833484d84"></a>[definition WriteSegmentReceipt · field stored_sha256 · string value](#s-bf436c18ac) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
-### Progression evidence and open obligations
+### Evidence gaps
 
-These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+The named contract groups have recorded evidence gaps in the following guarantees. Each group's page identifies its exact open guarantees and candidate tests:
 
-- [riverhog-storage-write-segment-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-26637e3f38)
+- Each step stays within its declared limits.
+- Continuing the work makes progress toward its declared completion.
+- The operation works across multiple pages or chunks.
+- Required data or work is not silently left out.
+- Work can resume after a restart as its contract requires.
+
+These guarantees let large tasks proceed in smaller steps: a limit on one page or chunk must not become a hidden limit on the whole task. Returning a first page correctly does not establish that continuation or recovery works. Capacity may explicitly reject, defer, or throttle work; it must not silently omit work.
+
+Existing tests may establish individual cases. The gaps retain their recorded group-wide scope and do not establish a bug in every linked contract. Completion follows each contract's rules; mutable browsing carries no implied snapshot guarantee.
+
+Required by: [extent-rule/bounded-segment/v1](../../extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594).
+
+Exact evidence groups for this contract element:
+
+- [riverhog-storage-write-segment-progression/v1](../../../evidence/qualifications/riverhog-storage-write-segment-progression-v1/index.md)
 
 ## Maintained corroboration
 
@@ -116,21 +130,21 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ## Governing policies
 
-- <a id="pa-15a40b5664"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
-- <a id="pa-3b45f16905"></a>[extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594)
-- <a id="pa-2afec23897"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-15a40b5664"></a>[compatibility/components/v1](../../release/compatibility-guarantees/compatibility-components.md#p-95e9a12259)
+- <a id="pa-3b45f16905"></a>[extent-rule/bounded-segment/v1](../../extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594)
+- <a id="pa-2afec23897"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make build](../../../evidence/sources.md#q-d1121e35fa)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources/commands.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471) — [packages/riverhog-storage-adapter-support/src/riverhog\_storage\_adapter\_support/schemas.py::storage\_adapter\_schema\_bundle](../../../../../../packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources/authorities.md#src-ef281f2471) — [packages/riverhog-storage-adapter-support/src/riverhog\_storage\_adapter\_support/schemas.py::storage\_adapter\_schema\_bundle](../../../../../../packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py)
 
 ### Machine authority
 

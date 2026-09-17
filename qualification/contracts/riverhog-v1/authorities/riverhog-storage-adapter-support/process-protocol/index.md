@@ -4,6 +4,6 @@
 
 Cross-participant protocol identity, compatibility, and common acceptance rules. Exact operations and schemas are separately owned below.
 
-## Semantic dossiers
+## Contract elements
 
 - [generated:riverhog-storage-adapter](generated-riverhog-storage-adapter-protocol.md)

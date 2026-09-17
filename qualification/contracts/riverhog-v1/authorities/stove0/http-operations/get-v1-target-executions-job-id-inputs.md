@@ -39,7 +39,7 @@ Get Target Execution Inputs
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+#### [extent-rule/route-progression/v1](../../extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb)
 
 Shared facts for every subject below: progression={"authority":"target-input-authority","cursor_parameter":"continuation","fixed_limit":256,"kind":"exact-authority-page"}; reason="bounded-route-progression"
 
@@ -47,11 +47,25 @@ Shared facts for every subject below: progression={"authority":"target-input-aut
 |---|---|---|
 | [GET /v1/target-executions/{job_id}/inputs](#s-dd498ea95c) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
 
-### Progression evidence and open obligations
+### Evidence gaps
 
-These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+The named contract groups have recorded evidence gaps in the following guarantees. Each group's page identifies its exact open guarantees and candidate tests:
 
-- [stove0-read-collection-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-34931f753b)
+- Each step stays within its declared limits.
+- Continuing the work makes progress toward its declared completion.
+- The operation works across multiple pages or chunks.
+- Required data or work is not silently left out.
+- Work can resume after a restart as its contract requires.
+
+These guarantees let large tasks proceed in smaller steps: a limit on one page or chunk must not become a hidden limit on the whole task. Returning a first page correctly does not establish that continuation or recovery works. Capacity may explicitly reject, defer, or throttle work; it must not silently omit work.
+
+Existing tests may establish individual cases. The gaps retain their recorded group-wide scope and do not establish a bug in every linked contract. Completion follows each contract's rules; mutable browsing carries no implied snapshot guarantee.
+
+Required by: [extent-rule/route-progression/v1](../../extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb).
+
+Exact evidence groups for this contract element:
+
+- [stove0-read-collection-progression/v1](../../../evidence/qualifications/stove0-read-collection-progression-v1/index.md)
 
 ## Maintained corroboration
 
@@ -59,28 +73,28 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 - [stove0_target_client.TargetCallbackClient.get_target_execution_inputs](../../stove0-target-client/python/stove0-target-client-targetcallbackclient-get-target-execution-inputs.md)
 
-### Referenced contract dossiers
+### Referenced contract elements
 
 - [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
 - [schemas: TargetInputPage](../http-schemas/schemas-targetinputpage.md)
 
 ## Governing policies
 
-- <a id="pa-23b18031cb"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
-- <a id="pa-88288ccf0d"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+- <a id="pa-23b18031cb"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-88288ccf0d"></a>[extent-rule/route-progression/v1](../../extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:stove0](../../../evidence/sources/authorities.md#src-52e6e32124) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
 - **Handler:** [reference/stove0/application/server/src/stove0\_api/app.py::create\_app.&lt;locals&gt;.get\_target\_execution\_inputs](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L355)
 
 ### Structural operation bindings

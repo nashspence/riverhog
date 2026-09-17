@@ -4,7 +4,9 @@
 
 Configuration Environment contract owned by stove0-nvenc-av1-opus-review-sampler.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-e67b751561) for this authority.
 
 - [STOVE0_FFMPEG_BIN](stove0-ffmpeg-bin.md)
 - [STOVE0_NVENC_AV1_OPUS_REVIEW_SAMPLER_HOST](stove0-nvenc-av1-opus-review-sampler-host.md)

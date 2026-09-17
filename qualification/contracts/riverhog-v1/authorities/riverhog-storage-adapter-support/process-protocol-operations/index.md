@@ -4,7 +4,7 @@
 
 Callable operations in an independently deployed process protocol; method and path describe that protocol binding, not a product/service HTTP API.
 
-## Semantic dossiers
+## Contract elements
 
 - [GET /v1/adapter](get-v1-adapter.md)
 - [POST /v1/objects/delete](post-v1-objects-delete.md)

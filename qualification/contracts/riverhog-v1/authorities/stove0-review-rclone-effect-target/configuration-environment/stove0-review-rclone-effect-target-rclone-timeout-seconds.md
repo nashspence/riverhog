@@ -4,7 +4,7 @@
 
 <!-- contract-element: configuration-environment:stove0-review-rclone-effect-target:stove0-review-rclone-effect-target-rclone-a2dc4f3a37:d3e26dda03 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -26,7 +26,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+#### [extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="STOVE0_REVIEW_RCLONE_EFFECT_TARGET_RCLONE_TIMEOUT_SECONDS"; consumers=["stove0-review-rclone-effect-target"]; maximum=null; reason="operator-configured-capacity"
 
@@ -36,20 +36,20 @@ Shared facts for every subject below: configuration="STOVE0_REVIEW_RCLONE_EFFECT
 
 ## Governing policies
 
-- <a id="pa-9e5cbf7c11"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-981dec5ebe"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-9e5cbf7c11"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-981dec5ebe"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f50)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make unit](../../../evidence/sources/commands.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:stove0-review-rclone-effect-target:STOVE0_REVIEW_RCLONE_EFFECT_TARGET_RCLONE_TIMEOUT_SECONDS](../../../evidence/sources.md#src-7f004c5323) — [reference/stove0/targets/review/rclone-effect-target/src/stove0\_review\_rclone\_effect\_target/app.py::\_effect\_destination](../../../../../../reference/stove0/targets/review/rclone-effect-target/src/stove0_review_rclone_effect_target/app.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [configuration-environment:stove0-review-rclone-effect-target:STOVE0_REVIEW_RCLONE_EFFECT_TARGET_RCLONE_TIMEOUT_SECONDS](../../../evidence/sources/authorities.md#src-7f004c5323) — [reference/stove0/targets/review/rclone-effect-target/src/stove0\_review\_rclone\_effect\_target/app.py::\_effect\_destination](../../../../../../reference/stove0/targets/review/rclone-effect-target/src/stove0_review_rclone_effect_target/app.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 

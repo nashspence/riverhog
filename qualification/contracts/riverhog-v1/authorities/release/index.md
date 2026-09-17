@@ -8,6 +8,8 @@ Contract elements: **119** · Extent decisions: **0**
 
 ## Interfaces
 
+[Publication policies](../../policies/publication/index.md) — promises owned directly by release policy records.
+
 - [Runtime Images](runtime-images/index.md) (13)
 - [Python Distributions](python-distributions/index.md) (71)
 - [Installation Roots](installation-roots/index.md) (4)

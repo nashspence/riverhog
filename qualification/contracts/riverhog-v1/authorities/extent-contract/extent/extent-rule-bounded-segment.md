@@ -4,7 +4,7 @@
 
 <!-- contract-element: extent:extent-contract:extent-rule-bounded-segment:6e947b7583 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -12,6 +12,9 @@ Exact externally visible contract owned by this semantic dossier.
 | Interface | [Extent Contract](index.md) |
 
 ## External contract
+
+<a id="p-2b3f3f1594"></a>
+[Where this policy applies](../../../policies/extent-rule-bounded-segment-v1/applications.md)
 
 <a id="s-cc8243a831"></a>
 
@@ -25,19 +28,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-4c868cde0f"></a>[extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594)
+- <a id="pa-4c868cde0f"></a>[extent-rule/bounded-segment/v1](#p-2b3f3f1594)
 
 ## Evidence
 
 ### Qualification
 
-- [make contract-freeze](../../../evidence/sources.md#q-8c74349e71)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make contract-freeze](../../../evidence/sources/commands.md#q-8c74349e71)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [extent:extent-contract](../../../evidence/sources.md#src-5ac94d0a12) — [scripts/extent\_contract.py::extent\_projection](../../../../../../scripts/extent_contract.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [extent:extent-contract](../../../evidence/sources/authorities.md#src-5ac94d0a12) — [scripts/extent\_contract.py::extent\_projection](../../../../../../scripts/extent_contract.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

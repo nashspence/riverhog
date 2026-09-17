@@ -4,7 +4,7 @@
 
 External verification mechanisms for published artifacts.
 
-## Semantic dossiers
+## Contract elements
 
 | Exact unit | Classification |
 |---|---|

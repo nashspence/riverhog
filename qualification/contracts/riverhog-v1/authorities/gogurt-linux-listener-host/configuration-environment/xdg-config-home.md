@@ -4,7 +4,7 @@
 
 <!-- contract-element: configuration-environment:gogurt-linux-listener-host:xdg-config-home:21b7332408 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -26,19 +26,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-1f4679b6ad"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-1f4679b6ad"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f50)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make unit](../../../evidence/sources/commands.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:gogurt-linux-listener-host:XDG_CONFIG_HOME](../../../evidence/sources.md#src-82ea2d68db) — [reference/gogurt/listener-host/linux/src/gogurt\_linux\_listener\_host/\_\_init\_\_.py::\_default\_registration\_file](../../../../../../reference/gogurt/listener-host/linux/src/gogurt_linux_listener_host/__init__.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [configuration-environment:gogurt-linux-listener-host:XDG_CONFIG_HOME](../../../evidence/sources/authorities.md#src-82ea2d68db) — [reference/gogurt/listener-host/linux/src/gogurt\_linux\_listener\_host/\_\_init\_\_.py::\_default\_registration\_file](../../../../../../reference/gogurt/listener-host/linux/src/gogurt_linux_listener_host/__init__.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 

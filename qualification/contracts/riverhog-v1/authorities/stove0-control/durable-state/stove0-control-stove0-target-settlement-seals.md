@@ -4,7 +4,7 @@
 
 <!-- contract-element: durable-state:stove0-control:stove0-control-stove0-target-settlement-seals:12c57e519e -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -49,19 +49,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-16985abc85"></a>[compatibility/durable-state/v1](../../../policies/index.md#p-214a49c2de)
+- <a id="pa-16985abc85"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
-- [make database-qualification](../../../evidence/sources.md#q-27f281b51e)
+- [make release-check](../../../evidence/sources/commands.md#q-8d8d22d6a6)
+- [make database-qualification](../../../evidence/sources/commands.md#q-27f281b51e)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [state:stove0-control](../../../evidence/sources.md#src-45e44b17fd) — [reference/stove0/application/server/src/stove0\_core/state\_migrations/v1\_ddl.py::POSTGRESQL\_DDL](../../../../../../reference/stove0/application/server/src/stove0_core/state_migrations/v1_ddl.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [state:stove0-control](../../../evidence/sources/authorities.md#src-45e44b17fd) — [reference/stove0/application/server/src/stove0\_core/state\_migrations/v1\_ddl.py::POSTGRESQL\_DDL](../../../../../../reference/stove0/application/server/src/stove0_core/state_migrations/v1_ddl.py)
 
 ### Machine authority
 

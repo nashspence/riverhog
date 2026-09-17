@@ -4,7 +4,7 @@
 
 <!-- contract-element: python:gogurt-linux-mounted-volume:gogurt-linux-mounted-volume-mounted-volum-ae68b7a889:0baf25f1e6 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -26,19 +26,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-3c555bd80a"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+- <a id="pa-3c555bd80a"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make build](../../../evidence/sources.md#q-d1121e35fa)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources/commands.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [python:gogurt-linux-mounted-volume:gogurt_linux_mounted_volume](../../../evidence/sources.md#src-dfbc0b0c2f) — [reference/gogurt/mounted-volume/linux/src/gogurt\_linux\_mounted\_volume/\_\_init\_\_.py](../../../../../../reference/gogurt/mounted-volume/linux/src/gogurt_linux_mounted_volume/__init__.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [python:gogurt-linux-mounted-volume:gogurt_linux_mounted_volume](../../../evidence/sources/authorities.md#src-dfbc0b0c2f) — [reference/gogurt/mounted-volume/linux/src/gogurt\_linux\_mounted\_volume/\_\_init\_\_.py](../../../../../../reference/gogurt/mounted-volume/linux/src/gogurt_linux_mounted_volume/__init__.py)
 
 ### Machine authority
 

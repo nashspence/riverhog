@@ -4,7 +4,9 @@
 
 Configuration Environment contract owned by piggity.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-94906cba4a) for this authority.
 
 - [PIGGITY_LOCAL_DATABASE](piggity-local-database.md)
 - [PIGGITY_LOCAL_ROOT](piggity-local-root.md)

@@ -4,7 +4,9 @@
 
 Published Python distribution identities and artifact forms.
 
-## Semantic dossiers
+## Contract elements
+
+[Publication policies](../../../policies/publication/index.md) govern these publication units.
 
 | Exact unit | Classification |
 |---|---|

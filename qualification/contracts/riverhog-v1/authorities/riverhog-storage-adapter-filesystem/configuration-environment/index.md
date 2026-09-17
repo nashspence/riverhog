@@ -4,7 +4,9 @@
 
 Configuration Environment contract owned by riverhog-storage-adapter-filesystem.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-4d40ea7498) for this authority.
 
 - [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_HOST](riverhog-filesystem-storage-adapter-host.md)
 - [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_MINIMUM_FREE_BYTES](riverhog-filesystem-storage-adapter-minimum-free-bytes.md)

@@ -8,7 +8,7 @@ Contract elements: **76** · Extent decisions: **23**
 
 ## Interfaces
 
-Marked interfaces contain records bound to candidate witness groups with unestablished progression claims. These are group-level limitations, not failed operations or approval of unmarked records.
+**(!)** Some guarantees for work spanning pages or chunks still lack supporting evidence. Follow the marker for the affected guarantees and contracts. This records an evidence gap, not an observed bug; unmarked entries imply no approval.
 
-- [Schemas](schema/index.md) (4) — contains contracts with unestablished progression claims
+- **[Schemas](schema/index.md)** [(!)](schema/evidence-gaps.md) (4)
 - [Python](python/index.md) (72)

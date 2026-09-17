@@ -4,7 +4,7 @@
 
 <!-- contract-element: durable-state:riverhog-ftp-custody:riverhog-ftp-custody-receipt:b1010c6324 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -47,19 +47,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-9da0040fcf"></a>[compatibility/durable-state/v1](../../../policies/index.md#p-214a49c2de)
+- <a id="pa-9da0040fcf"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
-- [make database-qualification](../../../evidence/sources.md#q-27f281b51e)
+- [make release-check](../../../evidence/sources/commands.md#q-8d8d22d6a6)
+- [make database-qualification](../../../evidence/sources/commands.md#q-27f281b51e)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [state:riverhog-ftp-custody](../../../evidence/sources.md#src-54f88a3a47) — [reference/riverhog/ingress/ftp/src/riverhog\_ftp\_adapter/state\_contract.py::ftp\_custody\_state\_contract](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/state_contract.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [state:riverhog-ftp-custody](../../../evidence/sources/authorities.md#src-54f88a3a47) — [reference/riverhog/ingress/ftp/src/riverhog\_ftp\_adapter/state\_contract.py::ftp\_custody\_state\_contract](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/state_contract.py)
 
 ### Machine authority
 

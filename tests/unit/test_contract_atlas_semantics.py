@@ -41,7 +41,9 @@ def test_contract_atlas_is_an_internal_one_way_package() -> None:
         "navigation": {"model"},
         "relationships": {"discovery", "model", "navigation"},
         "dossier_rendering": {"discovery", "model", "navigation"},
+        "reference_rendering": {"dossier_rendering", "model", "navigation"},
         "rendering": {
+            "reference_rendering",
             "discovery",
             "dossier_rendering",
             "model",
@@ -234,8 +236,7 @@ def test_policy_registry_is_contract_focused_and_application_counted() -> None:
     assert checked.root["counts"]["by_policy"]
     assert applied == declared
     policy_page = checked.files["riverhog-v1/policies/index.md"].decode()
-    assert "Applications:" in policy_page
-    assert policy_page.count("- Applicability:") == len(declared)
-    assert policy_page.count("- Observable result or violation:") == len(declared)
-    assert policy_page.count("- Executable authorities:") == len(declared)
-    assert "Implementation-correctness witnesses remain outside" in policy_page
+    assert "canonical definition" in policy_page
+    assert "Application lists describe scope" in policy_page
+    for category in policies:
+        assert f"]({category}/index.md)" in policy_page

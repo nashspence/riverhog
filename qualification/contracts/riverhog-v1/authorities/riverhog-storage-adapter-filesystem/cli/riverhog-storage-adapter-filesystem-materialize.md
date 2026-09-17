@@ -4,7 +4,7 @@
 
 <!-- contract-element: cli:riverhog-storage-adapter-filesystem:riverhog-storage-adapter-filesystem-materialize:22725d19b1 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -86,7 +86,7 @@ Applies to: completed · stdout (json).
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog-storage-adapter-filesystem-materialize"}; maximum=null; reason="no-declared-semantic-maximum"; source_constraint={"field":"kind"}
 
@@ -95,7 +95,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [CLI parameter --path](#s-19fb2fab9f) | `cardinality · occurrences · operational_policy` | shared above |
 | [CLI parameter --prefix](#s-9b1cfd448a) | `cardinality · occurrences · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 Shared facts for every subject below: reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
 
@@ -110,21 +110,21 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 
 ## Governing policies
 
-- <a id="pa-783f799413"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-c191b6e90f"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
-- <a id="pa-07d672ccf9"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-783f799413"></a>[compatibility/cli/v1](../../release/compatibility-guarantees/compatibility-cli.md#p-48a89776de)
+- <a id="pa-c191b6e90f"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
+- <a id="pa-07d672ccf9"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [cli:riverhog-storage-adapter-filesystem-materialize](../../../evidence/sources.md#src-c89790480b) — [reference/riverhog/storage/filesystem/src/riverhog\_storage\_adapter\_filesystem/materialize\_cli.py::&lt;module&gt;](../../../../../../reference/riverhog/storage/filesystem/src/riverhog_storage_adapter_filesystem/materialize_cli.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [cli:riverhog-storage-adapter-filesystem-materialize](../../../evidence/sources/authorities.md#src-c89790480b) — [reference/riverhog/storage/filesystem/src/riverhog\_storage\_adapter\_filesystem/materialize\_cli.py::&lt;module&gt;](../../../../../../reference/riverhog/storage/filesystem/src/riverhog_storage_adapter_filesystem/materialize_cli.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

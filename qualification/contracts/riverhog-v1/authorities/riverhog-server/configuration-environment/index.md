@@ -4,7 +4,11 @@
 
 Configuration Environment contract owned by riverhog-server.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-6efea6f4cb) for this authority.
+
+[Compare parameterized families](../../../evidence/configuration/families.md#c-9c0b6efc83-6efea6f4cb) for this authority.
 
 - [RIVERHOG_AGE_SESSION_CACHE_ENTRIES](riverhog-age-session-cache-entries.md)
 - [RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY](riverhog-age-session-derivation-concurrency.md)

@@ -4,7 +4,7 @@
 
 CLI contract owned by stove0-review-rclone-effect-target.
 
-## Semantic dossiers
+## Contract elements
 
 Executable commands: **1** · Command groups: **0**
 

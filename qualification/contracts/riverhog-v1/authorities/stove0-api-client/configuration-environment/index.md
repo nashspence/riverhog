@@ -4,7 +4,9 @@
 
 Configuration Environment contract owned by stove0-api-client.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-d81d0dac73) for this authority.
 
 - [STOVE0_ALLOW_INSECURE_HTTP](stove0-allow-insecure-http.md)
 - [STOVE0_BASE_URL](stove0-base-url.md)

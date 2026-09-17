@@ -4,7 +4,7 @@
 
 Standalone structured-value contracts; these do not define an interaction.
 
-## Semantic dossiers
+## Contract elements
 
 - [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-backup-stream-info.json](https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-windows-b-780129ba3c.md)
 - [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-compression-state.json](https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-windows-c-de0d8dfcc7.md)

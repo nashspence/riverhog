@@ -4,7 +4,7 @@
 
 CLI contract owned by riverhog-storage-adapter-support.
 
-## Semantic dossiers
+## Contract elements
 
 Executable commands: **2** · Command groups: **0**
 

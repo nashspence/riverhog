@@ -10,14 +10,14 @@ Checked-in references form a closed, tightly scoped, maintainer-selected, nonnor
 
 ## Audit references
 
-- [Governing policies](policies/index.md) — compatibility, publication, and extent rules; applicable dossiers link exact definitions.
+- [Governing policies](policies/index.md) — compatibility, publication, and extent rules; applicable contract elements link exact definitions.
 - [Accounting checks](evidence/index.md) — closure results and reconciliation inventories.
 - [Sources and qualifications](evidence/sources.md) — source bindings, candidate tests, and unestablished obligations; no executed attestation.
 - [Configuration comparison](evidence/configuration.md) — owners, consumers, and default expressions across settings.
 - [Declared relationships](evidence/relationships.md) — exact dependency, packaging, and extension joins.
 - [Snapshot identities](evidence/identities.md) and [machine artifact](../riverhog-v1.json) — match semantic, accounting, trace, and presentation records.
 
-Entries marked below contain contracts bound to witness groups with unestablished progression claims. Follow the affected interface and element to its exact witnesses. These are group-level limitations; unmarked entries carry no implied approval.
+**(!)** Some guarantees for work spanning pages or chunks still lack supporting evidence. Follow the marker for the affected guarantees and contracts. This records an evidence gap, not an observed bug; unmarked entries imply no approval.
 
 ## Authorities and interfaces
 
@@ -89,10 +89,11 @@ Entries marked below contain contracts bound to witness groups with unestablishe
   - [Artifact Verification](authorities/release/artifact-verification/index.md) (3)
   - [Versioning and Tags](authorities/release/versioning-tags/index.md) (5)
   - [Compatibility Guarantees](authorities/release/compatibility-guarantees/index.md) (9)
+  - [Publication policies](policies/publication/index.md) — 3 policy-owned promises
 
-- [riverhog](authorities/riverhog/index.md) — The Riverhog service API and its maintained cross-interface operation parity. — contains contracts with unestablished progression claims
-  - [HTTP Operations](authorities/riverhog/http-operations/index.md) (109) — contains contracts with unestablished progression claims
-  - [HTTP Schemas](authorities/riverhog/http-schemas/index.md) (253) — contains contracts with unestablished progression claims
+- **[riverhog](authorities/riverhog/index.md)** [(!)](authorities/riverhog/evidence-gaps.md) — The Riverhog service API and its maintained cross-interface operation parity.
+  - **[HTTP Operations](authorities/riverhog/http-operations/index.md)** [(!)](authorities/riverhog/http-operations/evidence-gaps.md) (109)
+  - **[HTTP Schemas](authorities/riverhog/http-schemas/index.md)** [(!)](authorities/riverhog/http-schemas/evidence-gaps.md) (253)
   - [HTTP Service Declaration](authorities/riverhog/http-service-declaration/index.md) (1)
   - [HTTP Security Schemes](authorities/riverhog/http-security-schemes/index.md) (1)
 
@@ -102,8 +103,8 @@ Entries marked below contain contracts bound to witness groups with unestablishe
 - [riverhog-application-access](authorities/riverhog-application-access/index.md) — Public Riverhog application-access contracts and canonical grant grammar.
   - [Python](authorities/riverhog-application-access/python/index.md) (47)
 
-- [riverhog-archive-contracts](authorities/riverhog-archive-contracts/index.md) — Dependency-light immutable Riverhog archive recovery contracts. — contains contracts with unestablished progression claims
-  - [Schemas](authorities/riverhog-archive-contracts/schema/index.md) (4) — contains contracts with unestablished progression claims
+- **[riverhog-archive-contracts](authorities/riverhog-archive-contracts/index.md)** [(!)](authorities/riverhog-archive-contracts/evidence-gaps.md) — Dependency-light immutable Riverhog archive recovery contracts.
+  - **[Schemas](authorities/riverhog-archive-contracts/schema/index.md)** [(!)](authorities/riverhog-archive-contracts/schema/evidence-gaps.md) (4)
   - [Python](authorities/riverhog-archive-contracts/python/index.md) (72)
 
 - [riverhog-catalog](authorities/riverhog-catalog/index.md) — Encrypted archive management, catalog, and retrieval.
@@ -113,8 +114,8 @@ Entries marked below contain contracts bound to witness groups with unestablishe
   - [Configuration Environment](authorities/riverhog-client/configuration-environment/index.md) (12)
   - [Python](authorities/riverhog-client/python/index.md) (269)
 
-- [riverhog-ftp-adapter](authorities/riverhog-ftp-adapter/index.md) — Optional nonnormative FTP ingress reference for Riverhog. — contains contracts with unestablished progression claims
-  - [HTTP Operations](authorities/riverhog-ftp-adapter/http-operations/index.md) (5) — contains contracts with unestablished progression claims
+- **[riverhog-ftp-adapter](authorities/riverhog-ftp-adapter/index.md)** [(!)](authorities/riverhog-ftp-adapter/evidence-gaps.md) — Optional nonnormative FTP ingress reference for Riverhog.
+  - **[HTTP Operations](authorities/riverhog-ftp-adapter/http-operations/index.md)** [(!)](authorities/riverhog-ftp-adapter/http-operations/evidence-gaps.md) (5)
   - [HTTP Schemas](authorities/riverhog-ftp-adapter/http-schemas/index.md) (5)
   - [HTTP Service Declaration](authorities/riverhog-ftp-adapter/http-service-declaration/index.md) (1)
   - [HTTP Security Schemes](authorities/riverhog-ftp-adapter/http-security-schemes/index.md) (1)
@@ -134,8 +135,8 @@ Entries marked below contain contracts bound to witness groups with unestablishe
   - [Schemas](authorities/riverhog-protocol/schema/index.md) (1)
   - [Python](authorities/riverhog-protocol/python/index.md) (323)
 
-- [riverhog-provenance](authorities/riverhog-provenance/index.md) — Portable Riverhog v1 per-file provenance journals and validation. — contains contracts with unestablished progression claims
-  - [Schemas](authorities/riverhog-provenance/schema/index.md) (7) — contains contracts with unestablished progression claims
+- **[riverhog-provenance](authorities/riverhog-provenance/index.md)** [(!)](authorities/riverhog-provenance/evidence-gaps.md) — Portable Riverhog v1 per-file provenance journals and validation.
+  - **[Schemas](authorities/riverhog-provenance/schema/index.md)** [(!)](authorities/riverhog-provenance/schema/evidence-gaps.md) (7)
   - [Configuration Environment](authorities/riverhog-provenance/configuration-environment/index.md) (3)
   - [Python](authorities/riverhog-provenance/python/index.md) (105) — Defines extension: [riverhog.provenance-observers](extensions/extension-point-riverhog-provenance-observers.md).
 
@@ -188,19 +189,19 @@ Entries marked below contain contracts bound to witness groups with unestablishe
 - [riverhog-storage-adapter-s3-support](authorities/riverhog-storage-adapter-s3-support/index.md) — Optional nonnormative S3 support for Riverhog storage references.
   - [Python](authorities/riverhog-storage-adapter-s3-support/python/index.md) (24)
 
-- [riverhog-storage-adapter-support](authorities/riverhog-storage-adapter-support/index.md) — HTTP binding and conformance support for Riverhog storage adapters. — contains contracts with unestablished progression claims
+- **[riverhog-storage-adapter-support](authorities/riverhog-storage-adapter-support/index.md)** [(!)](authorities/riverhog-storage-adapter-support/evidence-gaps.md) — HTTP binding and conformance support for Riverhog storage adapters.
   - [Process Protocol](authorities/riverhog-storage-adapter-support/process-protocol/index.md) (1)
   - [Process Protocol Operations](authorities/riverhog-storage-adapter-support/process-protocol-operations/index.md) (15)
-  - [Process Protocol Schemas](authorities/riverhog-storage-adapter-support/process-protocol-schemas/index.md) (23) — contains contracts with unestablished progression claims
+  - **[Process Protocol Schemas](authorities/riverhog-storage-adapter-support/process-protocol-schemas/index.md)** [(!)](authorities/riverhog-storage-adapter-support/process-protocol-schemas/evidence-gaps.md) (23)
   - [CLI](authorities/riverhog-storage-adapter-support/cli/index.md) (2)
   - [Python](authorities/riverhog-storage-adapter-support/python/index.md) (45)
 
 - [state-schema](authorities/state-schema/index.md) — Forward-only relational state schema and migration contracts.
   - [Python](authorities/state-schema/python/index.md) (58)
 
-- [stove0](authorities/stove0/index.md) — The Stove0 reference application API and its maintained cross-interface operation parity. — contains contracts with unestablished progression claims
-  - [HTTP Operations](authorities/stove0/http-operations/index.md) (33) — contains contracts with unestablished progression claims
-  - [HTTP Schemas](authorities/stove0/http-schemas/index.md) (136) — contains contracts with unestablished progression claims
+- **[stove0](authorities/stove0/index.md)** [(!)](authorities/stove0/evidence-gaps.md) — The Stove0 reference application API and its maintained cross-interface operation parity.
+  - **[HTTP Operations](authorities/stove0/http-operations/index.md)** [(!)](authorities/stove0/http-operations/evidence-gaps.md) (33)
+  - **[HTTP Schemas](authorities/stove0/http-schemas/index.md)** [(!)](authorities/stove0/http-schemas/evidence-gaps.md) (136)
   - [HTTP Service Declaration](authorities/stove0/http-service-declaration/index.md) (1)
 
 - [stove0-api-client](authorities/stove0-api-client/index.md) — Official Python client for the stove0 v1 workflow API.

@@ -4,7 +4,7 @@
 
 CLI contract owned by riverhog-ftp-adapter.
 
-## Semantic dossiers
+## Contract elements
 
 Executable commands: **7** · Command groups: **0**
 

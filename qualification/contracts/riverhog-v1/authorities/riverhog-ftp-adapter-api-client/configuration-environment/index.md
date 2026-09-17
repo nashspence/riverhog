@@ -4,7 +4,9 @@
 
 Configuration Environment contract owned by riverhog-ftp-adapter-api-client.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-0857a91fea) for this authority.
 
 - [RIVERHOG_FTP_ADAPTER_ALLOW_INSECURE_HTTP](riverhog-ftp-adapter-allow-insecure-http.md)
 - [RIVERHOG_FTP_ADAPTER_BASE_URL](riverhog-ftp-adapter-base-url.md)

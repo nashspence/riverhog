@@ -4,7 +4,7 @@
 
 Callable operations in an independently deployed process protocol; method and path describe that protocol binding, not a product/service HTTP API.
 
-## Semantic dossiers
+## Contract elements
 
 - [GET /v1/jobs/{job_id}](get-v1-jobs-job-id.md)
 - [GET /v1/target](get-v1-target.md)

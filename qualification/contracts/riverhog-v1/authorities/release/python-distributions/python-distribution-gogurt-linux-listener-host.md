@@ -30,27 +30,27 @@ Optional nonnormative Linux systemd-user listener-host reference for Gogurt.
 
 Publication preserves these existing component authorities; it does not reclassify or duplicate their interfaces.
 
-- [gogurt-linux-listener-host](../../../evidence/relationships.md#rn-81398abad2)
+- [gogurt-linux-listener-host](../../../evidence/relationships/nodes.md#rn-81398abad2)
 
 ## Governing policies
 
-- <a id="pa-796344b92e"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
-- <a id="pa-0db1c61aa6"></a>[publication/role-retention/v1](../../../policies/index.md#p-3e4dc2e851)
+- <a id="pa-796344b92e"></a>[compatibility/components/v1](../compatibility-guarantees/compatibility-components.md#p-95e9a12259)
+- <a id="pa-0db1c61aa6"></a>[publication/role-retention/v1](../../../policies/publication-role-retention-v1/index.md#p-3e4dc2e851)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make build](../../../evidence/sources.md#q-d1121e35fa)
+- [make release-check](../../../evidence/sources/commands.md#q-8d8d22d6a6)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources/commands.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [release-distribution:gogurt-linux-listener-host](../../../evidence/sources.md#src-388e655d12) — [reference/gogurt/listener-host/linux/pyproject.toml](../../../../../../reference/gogurt/listener-host/linux/pyproject.toml)
-- [release-publication:planner](../../../evidence/sources.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
-- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [release-distribution:gogurt-linux-listener-host](../../../evidence/sources/authorities.md#src-388e655d12) — [reference/gogurt/listener-host/linux/pyproject.toml](../../../../../../reference/gogurt/listener-host/linux/pyproject.toml)
+- [release-publication:planner](../../../evidence/sources/authorities.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
+- [release:release.toml](../../../evidence/sources/authorities.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
 
 ### Machine authority
 

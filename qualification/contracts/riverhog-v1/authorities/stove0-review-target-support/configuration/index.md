@@ -4,6 +4,8 @@
 
 Configuration Documents contract owned by stove0-review-target-support.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare configuration documents](../../../evidence/configuration/documents.md#c-9c0b6efc83-794b8798d7) for this authority.
 
 - [review-target-config](stove0-review-target-support-configuration-review-target-config-configuration.md)

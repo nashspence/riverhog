@@ -4,7 +4,7 @@
 
 Persisted structures, schema heads, and v1 transition obligations.
 
-## Semantic dossiers
+## Contract elements
 
 | Exact unit | Kind |
 |---|---|

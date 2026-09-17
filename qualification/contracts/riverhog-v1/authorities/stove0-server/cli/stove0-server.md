@@ -4,7 +4,7 @@
 
 <!-- contract-element: cli:stove0-server:stove0-server:a568d7d141 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -30,19 +30,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-03bffe565f"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-03bffe565f"></a>[compatibility/cli/v1](../../release/compatibility-guarantees/compatibility-cli.md#p-48a89776de)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [cli:stove0-server](../../../evidence/sources.md#src-6f5bc9f6db) — [reference/stove0/application/server/src/stove0\_api/app.py::&lt;module&gt;](../../../../../../reference/stove0/application/server/src/stove0_api/app.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [cli:stove0-server](../../../evidence/sources/authorities.md#src-6f5bc9f6db) — [reference/stove0/application/server/src/stove0\_api/app.py::&lt;module&gt;](../../../../../../reference/stove0/application/server/src/stove0_api/app.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

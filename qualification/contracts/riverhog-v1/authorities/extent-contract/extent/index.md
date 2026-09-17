@@ -4,7 +4,7 @@
 
 Extent Contract contract owned by extent-contract.
 
-## Semantic dossiers
+## Contract elements
 
 - [Extent principle: bounded work](extent-principle-bounded-work.md)
 - [Extent principle: configuration](extent-principle-configuration.md)

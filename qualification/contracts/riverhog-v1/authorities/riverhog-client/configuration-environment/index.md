@@ -4,7 +4,9 @@
 
 Configuration Environment contract owned by riverhog-client.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-813668008c) for this authority.
 
 - [RIVERHOG_ALLOW_INSECURE_HTTP](riverhog-allow-insecure-http.md)
 - [RIVERHOG_BASE_URL](riverhog-base-url.md)

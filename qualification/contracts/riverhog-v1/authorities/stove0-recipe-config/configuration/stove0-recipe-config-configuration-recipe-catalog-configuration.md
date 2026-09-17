@@ -4,7 +4,7 @@
 
 <!-- contract-element: configuration:stove0-recipe-config:stove0-recipe-config-configuration-recipe-60aec4b96f:9fbd1881e8 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -361,7 +361,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e5)
+#### [extent-rule/configuration-composition/v1](../../extent-contract/extent/extent-rule-configuration-composition.md#p-dcd344e8e5)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0-recipe-config:configuration:recipe-catalog"}; maximum=null; reason="validated-deployment-composition"
 
@@ -399,7 +399,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [field operations](#s-5ef17985fb) | `cardinality · items · operational_policy` | shared above |
 | [field recipes](#s-ab7cd11b07) | `cardinality · items · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
@@ -414,21 +414,21 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ## Governing policies
 
-- <a id="pa-d0c3694e90"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-bdcbfcfe05"></a>[extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e5)
-- <a id="pa-e9e4492790"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-d0c3694e90"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-bdcbfcfe05"></a>[extent-rule/configuration-composition/v1](../../extent-contract/extent/extent-rule-configuration-composition.md#p-dcd344e8e5)
+- <a id="pa-e9e4492790"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f50)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make unit](../../../evidence/sources/commands.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration:stove0-recipe-config:configuration:recipe-catalog](../../../evidence/sources.md#src-28686050a7) — [reference/stove0/packages/recipe-config/src/stove0\_recipe\_config/models.py::RecipeCatalog](../../../../../../reference/stove0/packages/recipe-config/src/stove0_recipe_config/models.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [configuration:stove0-recipe-config:configuration:recipe-catalog](../../../evidence/sources/authorities.md#src-28686050a7) — [reference/stove0/packages/recipe-config/src/stove0\_recipe\_config/models.py::RecipeCatalog](../../../../../../reference/stove0/packages/recipe-config/src/stove0_recipe_config/models.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

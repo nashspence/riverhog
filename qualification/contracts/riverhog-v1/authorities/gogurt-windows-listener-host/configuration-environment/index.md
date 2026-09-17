@@ -4,7 +4,9 @@
 
 Configuration Environment contract owned by gogurt-windows-listener-host.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-d47ba443f1) for this authority.
 
 - [LOCALAPPDATA](localappdata.md)
 - [PATHEXT](pathext.md)

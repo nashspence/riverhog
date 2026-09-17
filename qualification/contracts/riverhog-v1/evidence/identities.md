@@ -1,8 +1,8 @@
-# Identity domains
+# Snapshot identities
 
-[Atlas](../index.md) · [Freeze evidence](index.md)
+[Atlas](../index.md) · [Reference navigation](index.md)
 
-These independent identities distinguish frozen semantics, discovery coverage, proof trace, and the replaceable human representation.
+These independent identities distinguish contract semantics, discovery coverage, source trace, and the generated human representation.
 
 | Identity domain | SHA-256 |
 |---|---|
@@ -13,4 +13,4 @@ These independent identities distinguish frozen semantics, discovery coverage, p
 | <a id="i-d374a59a6c"></a>`coverage_sha256` | `8d7ce9eda63ae193a317ecae52be69614f2b913d65f18ebe4fe717d69dddb2da` |
 | <a id="i-b201ae62f3"></a>`trace_sha256` | `4015f3efc1c8dbe07916e952b9e1180841e698535b8dfc468831835c4f727a49` |
 
-<a id="i-af23736723"></a>The byte-exact `atlas_representation_sha256` is recorded at `/identities/atlas_representation_sha256` in the [machine closure](../../riverhog-v1.json). It cannot be embedded inside the document bytes that it identifies.
+<a id="i-af23736723"></a>The byte-exact `atlas_representation_sha256` is recorded at `/identities/atlas_representation_sha256` in the [machine artifact](../../riverhog-v1.json). It cannot be embedded inside the document bytes that it identifies.

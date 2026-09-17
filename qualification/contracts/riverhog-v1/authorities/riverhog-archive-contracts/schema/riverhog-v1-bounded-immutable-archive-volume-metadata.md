@@ -4,7 +4,7 @@
 
 <!-- contract-element: schema:riverhog-archive-contracts:riverhog-v1-bounded-immutable-archive-vol-a08fdea82e:d34e83129d -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -143,7 +143,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594)
+#### [extent-rule/bounded-segment/v1](../../extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594)
 
 Shared facts for every subject below: maximum=1024; minimum=1; progression={"progression":"ordered-archive-volume-sequence"}; reason="bounded-archive-volume-parts"
 
@@ -152,7 +152,7 @@ Shared facts for every subject below: maximum=1024; minimum=1; progression={"pro
 | [definition pack · field parts](#s-441b6efdf7) | `cardinality · items · segmented_no_total_max` | shared above |
 | [definition segment · field parts](#s-a600910b20) | `cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json"}; maximum=null; reason="no-declared-semantic-maximum"
 
@@ -168,7 +168,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [definition segment_file · field file_bytes](#s-dd97b15ddc) | `value · schema-value · operational_policy` | shared above |
 | [definition segment_file · field offset](#s-bccb340a33) | `value · schema-value · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
@@ -176,30 +176,44 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [definition sequence](#s-b18c6e158b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition sha256](#s-ddfc70e987) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
-### Progression evidence and open obligations
+### Evidence gaps
 
-These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+The named contract groups have recorded evidence gaps in the following guarantees. Each group's page identifies its exact open guarantees and candidate tests:
 
-- [riverhog-archive-volume-part-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-a01ca2b113)
+- Each step stays within its declared limits.
+- Continuing the work makes progress toward its declared completion.
+- The operation works across multiple pages or chunks.
+- Required data or work is not silently left out.
+- Work can resume after a restart as its contract requires.
+
+These guarantees let large tasks proceed in smaller steps: a limit on one page or chunk must not become a hidden limit on the whole task. Returning a first page correctly does not establish that continuation or recovery works. Capacity may explicitly reject, defer, or throttle work; it must not silently omit work.
+
+Existing tests may establish individual cases. The gaps retain their recorded group-wide scope and do not establish a bug in every linked contract. Completion follows each contract's rules; mutable browsing carries no implied snapshot guarantee.
+
+Required by: [extent-rule/bounded-segment/v1](../../extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594).
+
+Exact evidence groups for this contract element:
+
+- [riverhog-archive-volume-part-progression/v1](../../../evidence/qualifications/riverhog-archive-volume-part-progression-v1/index.md)
 
 ## Governing policies
 
-- <a id="pa-a267938e80"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
-- <a id="pa-dcfd3160a7"></a>[extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594)
-- <a id="pa-595032d4f7"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
-- <a id="pa-d57db52fb0"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-a267938e80"></a>[compatibility/components/v1](../../release/compatibility-guarantees/compatibility-components.md#p-95e9a12259)
+- <a id="pa-dcfd3160a7"></a>[extent-rule/bounded-segment/v1](../../extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594)
+- <a id="pa-595032d4f7"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
+- <a id="pa-d57db52fb0"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make build](../../../evidence/sources.md#q-d1121e35fa)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources/commands.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json](../../../evidence/sources.md#src-c83e346f06) — [packages/riverhog-archive-contracts/schemas/collection-archive-volume-v1.schema.json](../../../../../../packages/riverhog-archive-contracts/schemas/collection-archive-volume-v1.schema.json)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json](../../../evidence/sources/authorities.md#src-c83e346f06) — [packages/riverhog-archive-contracts/schemas/collection-archive-volume-v1.schema.json](../../../../../../packages/riverhog-archive-contracts/schemas/collection-archive-volume-v1.schema.json)
 
 ### Machine authority
 

@@ -33,7 +33,7 @@ One bounded continuation step through an immutable artifact selection.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+#### [extent-rule/route-progression/v1](../../extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb)
 
 Shared facts for every subject below: maximum=256; progression={"authority":"artifact-selection","authority_parameter":"selection_sha256","cursor_parameter":"continuation","fixed_limit":256,"kind":"exact-authority-page"}; reason="bounded-route-page"
 
@@ -41,7 +41,7 @@ Shared facts for every subject below: maximum=256; progression={"authority":"art
 |---|---|---|
 | [field artifacts](#s-4fcf66d85f) | `cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
@@ -50,36 +50,50 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 | <a id="s-96cb858d39"></a>[field continuation · string value](#s-dbf38f6d33) | `length · characters · fixed` | shared above |
 | <a id="s-cd4fa13c3b"></a>[field next_continuation · string value](#s-b2798753b1) | `length · characters · fixed` | shared above |
 
-### Progression evidence and open obligations
+### Evidence gaps
 
-These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+The named contract groups have recorded evidence gaps in the following guarantees. Each group's page identifies its exact open guarantees and candidate tests:
 
-- [stove0-read-collection-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-34931f753b)
+- Each step stays within its declared limits.
+- Continuing the work makes progress toward its declared completion.
+- The operation works across multiple pages or chunks.
+- Required data or work is not silently left out.
+- Work can resume after a restart as its contract requires.
+
+These guarantees let large tasks proceed in smaller steps: a limit on one page or chunk must not become a hidden limit on the whole task. Returning a first page correctly does not establish that continuation or recovery works. Capacity may explicitly reject, defer, or throttle work; it must not silently omit work.
+
+Existing tests may establish individual cases. The gaps retain their recorded group-wide scope and do not establish a bug in every linked contract. Completion follows each contract's rules; mutable browsing carries no implied snapshot guarantee.
+
+Required by: [extent-rule/route-progression/v1](../../extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb).
+
+Exact evidence groups for this contract element:
+
+- [stove0-read-collection-progression/v1](../../../evidence/qualifications/stove0-read-collection-progression-v1/index.md)
 
 ## Maintained corroboration
 
-### Referenced contract dossiers
+### Referenced contract elements
 
 - [ArtifactSelectionRef](schemas-artifactselectionref.md)
 - [ArtifactSubject](schemas-artifactsubject.md)
 
 ## Governing policies
 
-- <a id="pa-91c712fd92"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
-- <a id="pa-2cf9b11648"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
-- <a id="pa-c2eef5ed57"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-91c712fd92"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-2cf9b11648"></a>[extent-rule/route-progression/v1](../../extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb)
+- <a id="pa-c2eef5ed57"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:stove0](../../../evidence/sources/authorities.md#src-52e6e32124) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 
 ### Machine authority
 

@@ -4,7 +4,7 @@
 
 Discrete files published with a coordinated release.
 
-## Semantic dossiers
+## Contract elements
 
 | Exact unit | Classification |
 |---|---|

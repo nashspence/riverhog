@@ -4,7 +4,7 @@
 
 <!-- contract-element: extent:extent-contract:extent-principle-operational-capacity:bf93940c4b -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -13,6 +13,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
+<a id="p-fac1e46f10"></a>
+[Where this policy applies](../../../policies/extent-principle-operational-capacity-v1/applications.md)
+
 
 | Field | Value |
 |---|---|
@@ -20,19 +23,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-26b5dc19df"></a>[extent-principle/operational-capacity/v1](../../../policies/index.md#p-fac1e46f10)
+- <a id="pa-26b5dc19df"></a>[extent-principle/operational-capacity/v1](#p-fac1e46f10)
 
 ## Evidence
 
 ### Qualification
 
-- [make contract-freeze](../../../evidence/sources.md#q-8c74349e71)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make contract-freeze](../../../evidence/sources/commands.md#q-8c74349e71)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [extent:extent-contract](../../../evidence/sources.md#src-5ac94d0a12) — [scripts/extent\_contract.py::extent\_projection](../../../../../../scripts/extent_contract.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [extent:extent-contract](../../../evidence/sources/authorities.md#src-5ac94d0a12) — [scripts/extent\_contract.py::extent\_projection](../../../../../../scripts/extent_contract.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

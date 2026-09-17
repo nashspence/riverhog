@@ -1,12 +1,16 @@
-# Freeze evidence
+# Accounting checks
 
-[Atlas](../index.md)
+[Atlas](../index.md) · [Reference navigation](../index.md)
 
-This layer answers whether the discovered external universe was accounted for exactly. Machine closure does not assert that the contract is minimal, desirable, or freeze-ready; that remains the human audit decision.
+These checks reconcile the discovered external contract. Discovery means inclusion. Complete accounting does not establish behavioral proof, freeze approval, or release readiness.
 
-Discovery identifies externally exposed contract surfaces. Every discovered candidate is included automatically; no separate acceptance decision is required.
+- [Authority reconciliation](authorities.md)
+- [Configuration comparison and reconciliation](configuration.md)
+- [Sources, fixtures, and qualifications](sources.md)
+- [Declared relationships](relationships.md)
+- [Snapshot identities](identities.md)
 
-## What the machine proves
+## Closure checks
 
 | Check | Result |
 |---|---:|
@@ -17,22 +21,16 @@ Discovery identifies externally exposed contract surfaces. Every discovered cand
 | multiply disposed | pass |
 | multiply represented | pass |
 
-## Closure totals
+## Reconciliation totals
 
-| Measure | Value |
+The following stages count the same discovered universe; their equality is a closure check, not independent corroboration.
+
+| Stage | Records |
 |---|---:|
-| Detected constructs | 4192 |
-| Exact resolutions | 4192 |
-| Resolved candidates | 4192 |
-| Included candidates | 4192 |
+| Detected | 4192 |
+| Resolved | 4192 |
+| Candidates | 4192 |
+| Included | 4192 |
 | Contract elements | 4192 |
 | Extent decisions | 2057 |
 | Source authorities | 475 |
-
-## Exact evidence
-
-- [Authority reconciliation](authorities.md)
-- [Configuration ownership registry](configuration.md)
-- [Source and qualification inventory](sources.md)
-- [Relationship-edge inventory](relationships.md)
-- [Identity domains](identities.md)

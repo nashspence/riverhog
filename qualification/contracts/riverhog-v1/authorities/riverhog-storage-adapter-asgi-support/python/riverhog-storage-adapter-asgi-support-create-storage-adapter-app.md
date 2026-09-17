@@ -4,7 +4,7 @@
 
 <!-- contract-element: python:riverhog-storage-adapter-asgi-support:riverhog-storage-adapter-asgi-support-cre-f8e940e4d2:9d2eabb8b4 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -26,19 +26,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-4f30976f88"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+- <a id="pa-4f30976f88"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make build](../../../evidence/sources.md#q-d1121e35fa)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources/commands.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [python:riverhog-storage-adapter-asgi-support:riverhog_storage_adapter_asgi_support](../../../evidence/sources.md#src-faaefe65d4) — [packages/riverhog-storage-adapter-asgi-support/src/riverhog\_storage\_adapter\_asgi\_support/\_\_init\_\_.py](../../../../../../packages/riverhog-storage-adapter-asgi-support/src/riverhog_storage_adapter_asgi_support/__init__.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [python:riverhog-storage-adapter-asgi-support:riverhog_storage_adapter_asgi_support](../../../evidence/sources/authorities.md#src-faaefe65d4) — [packages/riverhog-storage-adapter-asgi-support/src/riverhog\_storage\_adapter\_asgi\_support/\_\_init\_\_.py](../../../../../../packages/riverhog-storage-adapter-asgi-support/src/riverhog_storage_adapter_asgi_support/__init__.py)
 
 ### Machine authority
 

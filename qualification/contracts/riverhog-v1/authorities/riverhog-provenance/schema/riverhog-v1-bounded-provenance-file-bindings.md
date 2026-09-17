@@ -4,7 +4,7 @@
 
 <!-- contract-element: schema:riverhog-provenance:riverhog-v1-bounded-provenance-file-bindings:92d731b00b -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -89,7 +89,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594)
+#### [extent-rule/bounded-segment/v1](../../extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594)
 
 Shared facts for every subject below: maximum=512; minimum=1; progression={"progression":"ordered-provenance-volume-sequence"}; reason="bounded-provenance-binding-volume"
 
@@ -97,7 +97,7 @@ Shared facts for every subject below: maximum=512; minimum=1; progression={"prog
 |---|---|---|
 | [field files](#s-f6fb3fdf31) | `cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-bindings-v1.schema.json"}; maximum=null; reason="no-declared-semantic-maximum"
 
@@ -106,7 +106,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [definition file · field bytes](#s-ba7ec24ff1) | `value · schema-value · operational_policy` | shared above |
 | [field first_file_order](#s-809fd78862) | `value · schema-value · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
@@ -114,30 +114,44 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 |---|---|---|
 | [definition sha256](#s-8a9c94c093) | `length · characters · fixed` | shared above |
 
-### Progression evidence and open obligations
+### Evidence gaps
 
-These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+The named contract groups have recorded evidence gaps in the following guarantees. Each group's page identifies its exact open guarantees and candidate tests:
 
-- [riverhog-provenance-volume-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-8577e11c6a)
+- Each step stays within its declared limits.
+- Continuing the work makes progress toward its declared completion.
+- The operation works across multiple pages or chunks.
+- Required data or work is not silently left out.
+- Work can resume after a restart as its contract requires.
+
+These guarantees let large tasks proceed in smaller steps: a limit on one page or chunk must not become a hidden limit on the whole task. Returning a first page correctly does not establish that continuation or recovery works. Capacity may explicitly reject, defer, or throttle work; it must not silently omit work.
+
+Existing tests may establish individual cases. The gaps retain their recorded group-wide scope and do not establish a bug in every linked contract. Completion follows each contract's rules; mutable browsing carries no implied snapshot guarantee.
+
+Required by: [extent-rule/bounded-segment/v1](../../extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594).
+
+Exact evidence groups for this contract element:
+
+- [riverhog-provenance-volume-progression/v1](../../../evidence/qualifications/riverhog-provenance-volume-progression-v1/index.md)
 
 ## Governing policies
 
-- <a id="pa-8a37471c01"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
-- <a id="pa-87d7c4bb1e"></a>[extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594)
-- <a id="pa-64e1afdd8d"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
-- <a id="pa-f6bc343394"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-8a37471c01"></a>[compatibility/components/v1](../../release/compatibility-guarantees/compatibility-components.md#p-95e9a12259)
+- <a id="pa-87d7c4bb1e"></a>[extent-rule/bounded-segment/v1](../../extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594)
+- <a id="pa-64e1afdd8d"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
+- <a id="pa-f6bc343394"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make build](../../../evidence/sources.md#q-d1121e35fa)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources/commands.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-bindings-v1.schema.json](../../../evidence/sources.md#src-c8e0251dd9) — [packages/riverhog-provenance/src/riverhog\_provenance/schemas/riverhog-provenance-bindings-v1.schema.json](../../../../../../packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-bindings-v1.schema.json)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-bindings-v1.schema.json](../../../evidence/sources/authorities.md#src-c8e0251dd9) — [packages/riverhog-provenance/src/riverhog\_provenance/schemas/riverhog-provenance-bindings-v1.schema.json](../../../../../../packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-bindings-v1.schema.json)
 
 ### Machine authority
 

@@ -4,7 +4,7 @@
 
 <!-- contract-element: configuration:gogurt-core:gogurt-core-configuration-gogurt-routes-s-d97ec4db50:6d9f164337 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -49,7 +49,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e5)
+#### [extent-rule/configuration-composition/v1](../../extent-contract/extent/extent-rule-configuration-composition.md#p-dcd344e8e5)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"gogurt-core:configuration:gogurt-routes-schema"}; maximum=null; reason="validated-deployment-composition"
 
@@ -60,20 +60,20 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ## Governing policies
 
-- <a id="pa-48db652310"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-c6a5b8bc5d"></a>[extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e5)
+- <a id="pa-48db652310"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-c6a5b8bc5d"></a>[extent-rule/configuration-composition/v1](../../extent-contract/extent/extent-rule-configuration-composition.md#p-dcd344e8e5)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f50)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make unit](../../../evidence/sources/commands.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration:gogurt-core:configuration:gogurt-routes-schema](../../../evidence/sources.md#src-75f9616966) — [reference/gogurt/packages/core/src/gogurt\_core/core.py::GOGURT\_ROUTES\_SCHEMA](../../../../../../reference/gogurt/packages/core/src/gogurt_core/core.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [configuration:gogurt-core:configuration:gogurt-routes-schema](../../../evidence/sources/authorities.md#src-75f9616966) — [reference/gogurt/packages/core/src/gogurt\_core/core.py::GOGURT\_ROUTES\_SCHEMA](../../../../../../reference/gogurt/packages/core/src/gogurt_core/core.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

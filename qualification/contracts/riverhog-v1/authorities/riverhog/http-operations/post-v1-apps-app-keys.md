@@ -52,7 +52,7 @@ Create App Key
 - [piggity app key create](../../piggity/cli/piggity-app-key-create.md)
 - [riverhog_client.ApiClient.create_app_key](../../riverhog-client/python/riverhog-client-apiclient-create-app-key.md)
 
-### Referenced contract dossiers
+### Referenced contract elements
 
 - [schemas: AppKeyCreatedOut](../http-schemas/schemas-appkeycreatedout.md)
 - [schemas: CreateAppKeyRequest](../http-schemas/schemas-createappkeyrequest.md)
@@ -60,20 +60,20 @@ Create App Key
 
 ## Governing policies
 
-- <a id="pa-ee1ce7f1e6"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-ee1ce7f1e6"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
 - **Handler:** [riverhog/src/riverhog\_api/routers/apps.py::create\_app\_key](../../../../../../riverhog/src/riverhog_api/routers/apps.py#L86)
 
 ### Structural operation bindings

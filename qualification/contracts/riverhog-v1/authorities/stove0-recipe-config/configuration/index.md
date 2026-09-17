@@ -4,6 +4,8 @@
 
 Configuration Documents contract owned by stove0-recipe-config.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare configuration documents](../../../evidence/configuration/documents.md#c-9c0b6efc83-47b7ff6467) for this authority.
 
 - [recipe-catalog](stove0-recipe-config-configuration-recipe-catalog-configuration.md)

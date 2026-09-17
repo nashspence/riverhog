@@ -4,7 +4,7 @@
 
 <!-- contract-element: cli:stove0-review-planning:stove0-review-planning:d83ce63aee -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -189,19 +189,19 @@ Applies to: reported · stdout (json).
 
 ## Governing policies
 
-- <a id="pa-cfaa1d3c31"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-cfaa1d3c31"></a>[compatibility/cli/v1](../../release/compatibility-guarantees/compatibility-cli.md#p-48a89776de)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [cli:stove0-review-planning](../../../evidence/sources.md#src-ae789ab860) — [reference/stove0/targets/review/planning/src/stove0\_review\_planning/conformance.py::&lt;module&gt;](../../../../../../reference/stove0/targets/review/planning/src/stove0_review_planning/conformance.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [cli:stove0-review-planning](../../../evidence/sources/authorities.md#src-ae789ab860) — [reference/stove0/targets/review/planning/src/stove0\_review\_planning/conformance.py::&lt;module&gt;](../../../../../../reference/stove0/targets/review/planning/src/stove0_review_planning/conformance.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

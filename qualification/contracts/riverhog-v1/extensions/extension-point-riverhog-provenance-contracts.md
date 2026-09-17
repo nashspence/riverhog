@@ -1,12 +1,12 @@
 # riverhog.provenance-contracts
 
-[Atlas](../index.md) · [Relationship evidence](../evidence/relationships.md#rn-0855733167)
+[Atlas](../index.md) · [Relationship evidence](../evidence/relationships/nodes.md#rn-0855733167)
 
 Entry-point extension boundary owned by riverhog-provenance-contracts.
 
 - Identity: `extension-point:riverhog.provenance-contracts`
 - Mechanism: Python entry-point extension
-- Owner: [riverhog-provenance-contracts](../authorities/riverhog-provenance-contracts/index.md) ([exact relationship](../evidence/relationships.md#re-c60cd1b522))
+- Owner: [riverhog-provenance-contracts](../authorities/riverhog-provenance-contracts/index.md) ([exact relationship](../evidence/relationships/edges.md#re-c60cd1b522))
 
 ## Semantic interfaces
 
@@ -14,6 +14,6 @@ Entry-point extension boundary owned by riverhog-provenance-contracts.
 
 ## Checked-in nonnormative implementations
 
-- [riverhog-provenance-linux-contracts](../evidence/relationships.md#re-93d7304e4e) — Optional nonnormative Linux observation-contract reference for Riverhog provenance.
-- [riverhog-provenance-macos-contracts](../evidence/relationships.md#re-33a1c904bb) — Optional nonnormative macOS observation-contract reference for Riverhog provenance.
-- [riverhog-provenance-windows-contracts](../evidence/relationships.md#re-e086123a37) — Optional nonnormative Windows observation-contract reference for Riverhog provenance.
+- [riverhog-provenance-linux-contracts](../evidence/relationships/edges.md#re-93d7304e4e) — Optional nonnormative Linux observation-contract reference for Riverhog provenance.
+- [riverhog-provenance-macos-contracts](../evidence/relationships/edges.md#re-33a1c904bb) — Optional nonnormative macOS observation-contract reference for Riverhog provenance.
+- [riverhog-provenance-windows-contracts](../evidence/relationships/edges.md#re-e086123a37) — Optional nonnormative Windows observation-contract reference for Riverhog provenance.

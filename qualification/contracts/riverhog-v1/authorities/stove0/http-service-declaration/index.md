@@ -4,6 +4,6 @@
 
 The HTTP service format and identity declaration; this is not a callable operation.
 
-## Semantic dossiers
+## Contract elements
 
 - [Service declaration](stove0-http-service.md)

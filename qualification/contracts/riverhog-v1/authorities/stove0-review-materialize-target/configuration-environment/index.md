@@ -4,7 +4,9 @@
 
 Configuration Environment contract owned by stove0-review-materialize-target.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-8e7ca9b459) for this authority.
 
 - [STOVE0_REVIEW_MATERIALIZE_TARGET_HOST](stove0-review-materialize-target-host.md)
 - [STOVE0_REVIEW_MATERIALIZE_TARGET_IMAGE_DIGEST](stove0-review-materialize-target-image-digest.md)

@@ -4,7 +4,9 @@
 
 Configuration Environment contract owned by stove0-review-rclone-effect-target.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-f5b7370fed) for this authority.
 
 - [STOVE0_REVIEW_RCLONE_EFFECT_TARGET_DESTINATION_IDENTITY](stove0-review-rclone-effect-target-destination-identity.md)
 - [STOVE0_REVIEW_RCLONE_EFFECT_TARGET_HOST](stove0-review-rclone-effect-target-host.md)

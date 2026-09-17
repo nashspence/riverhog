@@ -4,7 +4,7 @@
 
 Standalone structured-value contracts; these do not define an interaction.
 
-## Semantic dossiers
+## Contract elements
 
 - [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json](https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-file-stat-json.md)
 - [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fs-flags.json](https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-fs-flags-json.md)

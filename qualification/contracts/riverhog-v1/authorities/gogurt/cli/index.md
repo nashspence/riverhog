@@ -4,7 +4,7 @@
 
 CLI contract owned by gogurt.
 
-## Semantic dossiers
+## Contract elements
 
 Executable commands: **16** · Command groups: **5**
 

@@ -45,7 +45,7 @@ List App Keys
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+#### [extent-rule/route-progression/v1](../../extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb)
 
 Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-progression"
 
@@ -53,7 +53,7 @@ Shared facts for every subject below: progression={"default_page_size":25,"kind"
 |---|---|---|
 | [GET /v1/apps/{app}/keys](#s-7a534771ed) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
 
@@ -61,11 +61,25 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 |---|---|---|
 | <a id="s-256e4110c4"></a>[parameter page_size](#s-5bc25a2b4d) | `value · schema-value · contract_max` | shared above |
 
-### Progression evidence and open obligations
+### Evidence gaps
 
-These are candidate test bindings. Group-wide progression claims remain unestablished; inspect the test scopes before applying a result to this contract.
+The named contract groups have recorded evidence gaps in the following guarantees. Each group's page identifies its exact open guarantees and candidate tests:
 
-- [riverhog-read-collection-progression/v1](../../../evidence/sources.md#e-5707b3a2d3-1536c4a29a)
+- Each step stays within its declared limits.
+- Continuing the work makes progress toward its declared completion.
+- The operation works across multiple pages or chunks.
+- Required data or work is not silently left out.
+- Work can resume after a restart as its contract requires.
+
+These guarantees let large tasks proceed in smaller steps: a limit on one page or chunk must not become a hidden limit on the whole task. Returning a first page correctly does not establish that continuation or recovery works. Capacity may explicitly reject, defer, or throttle work; it must not silently omit work.
+
+Existing tests may establish individual cases. The gaps retain their recorded group-wide scope and do not establish a bug in every linked contract. Completion follows each contract's rules; mutable browsing carries no implied snapshot guarantee.
+
+Required by: [extent-rule/route-progression/v1](../../extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb).
+
+Exact evidence groups for this contract element:
+
+- [riverhog-read-collection-progression/v1](../../../evidence/qualifications/riverhog-read-collection-progression-v1/index.md)
 
 ## Maintained corroboration
 
@@ -74,7 +88,7 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 - [piggity app key list](../../piggity/cli/piggity-app-key-list.md)
 - [riverhog_client.ApiClient.list_app_keys](../../riverhog-client/python/riverhog-client-apiclient-list-app-keys.md)
 
-### Referenced contract dossiers
+### Referenced contract elements
 
 - [schemas: AppKeyListOut](../http-schemas/schemas-appkeylistout.md)
 - [schemas: ApplicationKeySort](../http-schemas/schemas-applicationkeysort.md)
@@ -85,22 +99,22 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ## Governing policies
 
-- <a id="pa-c94c2688cc"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
-- <a id="pa-6c484fd5a1"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
-- <a id="pa-1ffd76d5ac"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-c94c2688cc"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-6c484fd5a1"></a>[extent-rule/route-progression/v1](../../extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb)
+- <a id="pa-1ffd76d5ac"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
 - **Handler:** [riverhog/src/riverhog\_api/routers/apps.py::list\_app\_keys](../../../../../../riverhog/src/riverhog_api/routers/apps.py#L239)
 
 ### Structural operation bindings

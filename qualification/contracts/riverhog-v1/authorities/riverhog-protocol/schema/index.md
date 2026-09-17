@@ -4,6 +4,6 @@
 
 Standalone structured-value contracts; these do not define an interaction.
 
-## Semantic dossiers
+## Contract elements
 
 - [Riverhog collection description document v1](riverhog-collection-description-document-v1.md)

@@ -4,7 +4,7 @@
 
 <!-- contract-element: configuration:riverhog-ftp-adapter:riverhog-ftp-adapter-configuration-ftp-ad-b7d9b2cbf8:5c5d6022e9 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -88,7 +88,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e5)
+#### [extent-rule/configuration-composition/v1](../../extent-contract/extent/extent-rule-configuration-composition.md#p-dcd344e8e5)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog-ftp-adapter:configuration:ftp-adapter-config"}; maximum=null; reason="validated-deployment-composition"
 
@@ -97,7 +97,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [definition SourceConfig · field tags](#s-779c3d2f99) | `cardinality · items · operational_policy` | shared above |
 | [field sources](#s-c96e3a57ab) | `cardinality · items · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
@@ -117,21 +117,21 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ## Governing policies
 
-- <a id="pa-80f8050bfa"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-9634b80f62"></a>[extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e5)
-- <a id="pa-91e400356e"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-80f8050bfa"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-9634b80f62"></a>[extent-rule/configuration-composition/v1](../../extent-contract/extent/extent-rule-configuration-composition.md#p-dcd344e8e5)
+- <a id="pa-91e400356e"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f50)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make unit](../../../evidence/sources/commands.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration:riverhog-ftp-adapter:configuration:ftp-adapter-config](../../../evidence/sources.md#src-cf8c44826f) — [reference/riverhog/ingress/ftp/src/riverhog\_ftp\_adapter/config.py::FtpAdapterConfig](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/config.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [configuration:riverhog-ftp-adapter:configuration:ftp-adapter-config](../../../evidence/sources/authorities.md#src-cf8c44826f) — [reference/riverhog/ingress/ftp/src/riverhog\_ftp\_adapter/config.py::FtpAdapterConfig](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/config.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

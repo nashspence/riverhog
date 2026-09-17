@@ -4,7 +4,9 @@
 
 Configuration Environment contract owned by stove0-exiftool-observer.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-742840e4d4) for this authority.
 
 - [STOVE0_EXIFTOOL_BIN](stove0-exiftool-bin.md)
 - [STOVE0_EXIFTOOL_OBSERVER_HOST](stove0-exiftool-observer-host.md)

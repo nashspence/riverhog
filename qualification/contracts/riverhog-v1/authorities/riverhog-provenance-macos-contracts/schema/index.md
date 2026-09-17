@@ -4,7 +4,7 @@
 
 Standalone structured-value contracts; these do not define an interaction.
 
-## Semantic dossiers
+## Contract elements
 
 - [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-attributes.json](https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-darwin-fi-cda5d58e04.md)
 - [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-flags.json](https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-darwin-fi-3861688670.md)

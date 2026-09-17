@@ -4,7 +4,7 @@
 
 <!-- contract-element: cli:riverhog-recover:riverhog-recover:568929d061 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -130,7 +130,7 @@ Applies to: tags-recovered · stdout (json).
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 Shared facts for every subject below: source_constraint={"field":"nargs"}
 
@@ -145,20 +145,20 @@ Shared facts for every subject below: source_constraint={"field":"nargs"}
 
 ## Governing policies
 
-- <a id="pa-23fb9963f8"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
-- <a id="pa-ef8a531856"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-23fb9963f8"></a>[compatibility/cli/v1](../../release/compatibility-guarantees/compatibility-cli.md#p-48a89776de)
+- <a id="pa-ef8a531856"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make operation-qualification](../../../evidence/sources/commands.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [cli:riverhog-recover](../../../evidence/sources.md#src-375119d633) — [reference/riverhog/recovery/src/riverhog\_recover/cli.py::&lt;module&gt;](../../../../../../reference/riverhog/recovery/src/riverhog_recover/cli.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [cli:riverhog-recover](../../../evidence/sources/authorities.md#src-375119d633) — [reference/riverhog/recovery/src/riverhog\_recover/cli.py::&lt;module&gt;](../../../../../../reference/riverhog/recovery/src/riverhog_recover/cli.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

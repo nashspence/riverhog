@@ -4,7 +4,9 @@
 
 Configuration Environment contract owned by riverhog-storage-adapter-aws.
 
-## Semantic dossiers
+## Contract elements
+
+[Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-2d739361eb) for this authority.
 
 - [RIVERHOG_AWS_STORAGE_ADAPTER_ACCESS_KEY_ID](riverhog-aws-storage-adapter-access-key-id.md)
 - [RIVERHOG_AWS_STORAGE_ADAPTER_ACCESS_KEY_ID_FILE](riverhog-aws-storage-adapter-access-key-id-file.md)

@@ -4,6 +4,6 @@
 
 Supporting HTTP authorization definitions; these are not callable operations.
 
-## Semantic dossiers
+## Contract elements
 
 - [HTTPBearer](securityschemes-httpbearer.md)

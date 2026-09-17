@@ -1,0 +1,34 @@
+# Where compatibility/python-api/v1 applies
+
+[Atlas](../../../index.md) · [Reference navigation](../applications.md)
+
+Definition: [compatibility/python-api/v1](../../../authorities/release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5).
+
+These are the exact recorded policy applications. Each link reaches the policy application on its contract element page; a definition location is not an application or an executed test result.
+
+| Authority | Contract element |
+|---|---|
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MEDIA_FACT_PROJECTION_FIELDS](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-media-fact-projection-fields.md#pa-ab6d03f131) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MEDIA_PROJECTION_FORMAT](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-media-projection-format.md#pa-92933ac2be) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MediaArchiveProjection](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-mediaarchiveprojection.md#pa-284debfb35) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MediaArchiveProjection.canonical_members](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-mediaarchiveprojection-canonical-members.md#pa-1a3422b514) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MediaArchiveProjection.item_for](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-mediaarchiveprojection-item-for.md#pa-bd2d5dd345) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MediaArchiveProjection.seal](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-mediaarchiveprojection-seal.md#pa-4e886b4973) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MediaArchiveProjection.validate_plan_evidence](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-mediaarchiveprojection-validate-plan-evidence.md#pa-73301b8a4b) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MediaArchiveProjection.verify_digest](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-mediaarchiveprojection-verify-digest.md#pa-a925171357) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MediaArchiveProjectionPayload](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-mediaarchiveprojectionpayload.md#pa-ff35b15178) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MediaArchiveProjectionPayload.canonical_members](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-mediaarchiveprojectionpayload-canonical-members.md#pa-b7deec6430) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MediaProjectedValue](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-mediaprojectedvalue.md#pa-a2fad9707f) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MediaProjectedValue.bind_source](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-mediaprojectedvalue-bind-source.md#pa-d9d1bab96d) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MediaProjectedValue.canonical_evidence](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-mediaprojectedvalue-canonical-evidence.md#pa-3152eccae3) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MediaProjectionItem](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-mediaprojectionitem.md#pa-d7cda3ce73) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MediaProjectionItem.canonical_evidence](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-mediaprojectionitem-canonical-evidence.md#pa-e07c0f791b) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MediaProjectionItem.canonical_path](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-mediaprojectionitem-canonical-path.md#pa-c69bee97ec) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MediaProjectionItem.canonical_sidecars](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-mediaprojectionitem-canonical-sidecars.md#pa-36586ff6f3) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.MediaProjectionItem.derived_from](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-mediaprojectionitem-derived-from.md#pa-7601146f1a) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.RetainedXmpSidecar](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-retainedxmpsidecar.md#pa-066b6a65a8) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.RetainedXmpSidecar.canonical_path](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-retainedxmpsidecar-canonical-path.md#pa-885129a3ef) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.ffmpeg_container_metadata_args](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-ffmpeg-container-metadata-args.md#pa-1c42ca514f) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.render_projection_xmp](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-render-projection-xmp.md#pa-a6f97de044) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.resolve_media_archive_preflight_projection](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-resolve-media-archive-preflight-projection.md#pa-dcead77e30) |
+| `stove0-media-archive-target-support` | [stove0_media_archive_target_support.resolve_media_archive_projection](../../../authorities/stove0-media-archive-target-support/python/stove0-media-archive-target-support-resolve-media-archive-projection.md#pa-82c8e8eac1) |

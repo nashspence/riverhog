@@ -4,7 +4,7 @@
 
 Supporting HTTP data definitions; these are not callable operations.
 
-## Semantic dossiers
+## Contract elements
 
 - [ErrorBody](schemas-errorbody.md)
 - [ErrorResponse](schemas-errorresponse.md)

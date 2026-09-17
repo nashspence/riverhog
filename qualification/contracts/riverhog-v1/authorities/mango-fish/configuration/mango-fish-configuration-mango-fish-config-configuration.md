@@ -4,7 +4,7 @@
 
 <!-- contract-element: configuration:mango-fish:mango-fish-configuration-mango-fish-confi-23883d4fd8:833944d1e0 -->
 
-Exact externally visible contract owned by this semantic dossier.
+Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
@@ -53,7 +53,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e5)
+#### [extent-rule/configuration-composition/v1](../../extent-contract/extent/extent-rule-configuration-composition.md#p-dcd344e8e5)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"mango-fish:configuration:mango-fish-config"}; maximum=null; reason="validated-deployment-composition"
 
@@ -61,7 +61,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 |---|---|---|
 | [field sources](#s-bbb230564e) | `cardinality · items · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
 
@@ -71,21 +71,21 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ## Governing policies
 
-- <a id="pa-019b1e9ee4"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-915f82c123"></a>[extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e5)
-- <a id="pa-61ff6dd44d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+- <a id="pa-019b1e9ee4"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-915f82c123"></a>[extent-rule/configuration-composition/v1](../../extent-contract/extent/extent-rule-configuration-composition.md#p-dcd344e8e5)
+- <a id="pa-61ff6dd44d"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f50)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+- [make unit](../../../evidence/sources/commands.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources/commands.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration:mango-fish:configuration:mango-fish-config](../../../evidence/sources.md#src-fead015e98) — [reference/riverhog/applications/mango-fish/src/mango\_fish/relay.py::MangoFishConfig](../../../../../../reference/riverhog/applications/mango-fish/src/mango_fish/relay.py)
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [configuration:mango-fish:configuration:mango-fish-config](../../../evidence/sources/authorities.md#src-fead015e98) — [reference/riverhog/applications/mango-fish/src/mango\_fish/relay.py::MangoFishConfig](../../../../../../reference/riverhog/applications/mango-fish/src/mango_fish/relay.py)
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

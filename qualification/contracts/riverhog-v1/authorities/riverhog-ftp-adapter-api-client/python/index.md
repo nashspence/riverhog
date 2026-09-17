@@ -4,7 +4,7 @@
 
 Declared public imports and their selected exact structural contracts.
 
-## Semantic dossiers
+## Contract elements
 
 ### `riverhog_ftp_adapter_api_client`
 
