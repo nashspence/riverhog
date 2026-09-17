@@ -13,7 +13,7 @@ import re
 import sys
 import tomllib
 from collections import Counter, defaultdict
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Iterator, Mapping, Sequence
 from dataclasses import MISSING, asdict, fields, is_dataclass
 from enum import Enum
 from functools import cache
@@ -1553,6 +1553,31 @@ def _apply_cli_occurrence_authorities(
     return root
 
 
+def _cli_parsers() -> dict[str, Any]:
+    parsers = {
+        "gogurt": get_command(gogurt_app),
+        "mango-fish": mango_fish_parser(),
+        "piggity": get_command(piggity_app),
+        "riverhog-ftp-adapter": ftp_adapter_parser(),
+        "riverhog-recover": recovery_parser(),
+        "riverhog-storage-adapter-conformance": storage_conformance_parser(),
+        "riverhog-storage-adapter-filesystem-materialize": filesystem_materialize_parser(),
+        "riverhog-storage-adapter-schemas": storage_schemas_parser(),
+        "stove0": get_command(stove0_app),
+        "stove0-observer-conformance": observer_conformance_parser(),
+        "stove0-observer-schemas": observer_schemas_parser(),
+        "stove0-review-planning": review_planning_parser(),
+        "stove0-review-sampler-conformance": sampler_conformance_parser(),
+        "stove0-review-sampler-schemas": sampler_schemas_parser(),
+        "stove0-target-conformance": target_conformance_parser(),
+        "stove0-target-schemas": target_schemas_parser(),
+    }
+    for name in sorted(set(CLI_MODULES) - set(parsers)):
+        module = importlib.import_module(CLI_MODULES[name])
+        parsers[name] = module._parser()
+    return parsers
+
+
 def _cli_surfaces(
     operations: Sequence[operation_qualification.Operation] | None = None,
     openapi: Mapping[str, object] | None = None,
@@ -1564,28 +1589,11 @@ def _cli_surfaces(
     resolved_openapi = _openapi_surfaces() if openapi is None else openapi
     resolved_schemas = _schema_documents() if schema_documents is None else schema_documents
     surfaces = {
-        "gogurt": _click_command(get_command(gogurt_app), name="gogurt"),
-        "mango-fish": _argparse_command(mango_fish_parser()),
-        "piggity": _click_command(get_command(piggity_app), name="piggity"),
-        "riverhog-ftp-adapter": _argparse_command(ftp_adapter_parser()),
-        "riverhog-recover": _argparse_command(recovery_parser()),
-        "riverhog-storage-adapter-conformance": _argparse_command(storage_conformance_parser()),
-        "riverhog-storage-adapter-filesystem-materialize": _argparse_command(
-            filesystem_materialize_parser()
-        ),
-        "riverhog-storage-adapter-schemas": _argparse_command(storage_schemas_parser()),
-        "stove0": _click_command(get_command(stove0_app), name="stove0"),
-        "stove0-observer-conformance": _argparse_command(observer_conformance_parser()),
-        "stove0-observer-schemas": _argparse_command(observer_schemas_parser()),
-        "stove0-review-planning": _argparse_command(review_planning_parser()),
-        "stove0-review-sampler-conformance": _argparse_command(sampler_conformance_parser()),
-        "stove0-review-sampler-schemas": _argparse_command(sampler_schemas_parser()),
-        "stove0-target-conformance": _argparse_command(target_conformance_parser()),
-        "stove0-target-schemas": _argparse_command(target_schemas_parser()),
+        name: _argparse_command(parser)
+        if isinstance(parser, argparse.ArgumentParser)
+        else _click_command(parser, name=name)
+        for name, parser in _cli_parsers().items()
     }
-    for name in sorted(set(CLI_MODULES) - set(surfaces)):
-        module = importlib.import_module(CLI_MODULES[name])
-        surfaces[name] = _argparse_command(module._parser())
     return {
         authority: _apply_cli_occurrence_authorities(
             authority,
@@ -2075,6 +2083,45 @@ def _linked_source_ref(value: object) -> dict[str, object]:
     return source
 
 
+def _parser_callbacks(parser: Any, path: tuple[str, ...] = ()) -> Iterator[tuple[str, object]]:
+    if isinstance(parser, argparse.ArgumentParser):
+        callback = parser.get_default("func")
+        children = {
+            name: child
+            for action in parser._actions
+            if isinstance(action, argparse._SubParsersAction)
+            for name, child in action.choices.items()
+        }
+    else:
+        callback = parser.callback
+        children = getattr(parser, "commands", {})
+    if callback is not None:
+        yield " ".join(path), callback
+    for name, child in sorted(children.items()):
+        yield from _parser_callbacks(child, (*path, name))
+
+
+def _cli_callback_targets(
+    external: Mapping[str, object],
+) -> dict[tuple[str, bytes], list[dict[str, str]]]:
+    """Join the live parser callback to its already frozen command/result identity."""
+    targets: dict[tuple[str, bytes], list[dict[str, str]]] = defaultdict(list)
+    cli = cast(Mapping[str, Mapping[str, object]], external["cli"])
+    for executable, parser in _cli_parsers().items():
+        for command, callback in _parser_callbacks(parser):
+            node = cli[executable]
+            for part in command.split():
+                node = cast(Mapping[str, Mapping[str, object]], node["commands"])[part]
+            result = node.get("result_contract")
+            if not isinstance(result, Mapping):
+                continue
+            key = (command, canonical_bytes(_linked_source_ref(callback)))
+            targets[key].append(
+                {"executable": executable, "result_identity": str(result["identity"])}
+            )
+    return targets
+
+
 def _operation_trace(external: Mapping[str, object]) -> list[dict[str, object]]:
     """Bind discovered operations to actual exported clients and command callbacks."""
 
@@ -2086,6 +2133,7 @@ def _operation_trace(external: Mapping[str, object]) -> list[dict[str, object]]:
         and cast(Mapping[str, object], item["contract"])["kind"] == "class"
     }
     surfaces = {surface.name: surface for surface in operation_qualification.application_surfaces()}
+    cli_targets = _cli_callback_targets(external)
     records: list[dict[str, object]] = []
     for operation in operation_qualification.operation_matrix():
         record = asdict(operation)
@@ -2126,11 +2174,19 @@ def _operation_trace(external: Mapping[str, object]) -> list[dict[str, object]]:
                     f"{operation.application}:{operation.operation_id}:{operation.client}"
                 )
         record["client_bindings"] = client_bindings
-        record["cli_bindings"] = [
-            {"command": command, "source": _linked_source_ref(callback)}
-            for command, callback, _has_json in surface.cli_commands
-            if command in operation.cli_commands
-        ]
+        cli_bindings: list[dict[str, object]] = []
+        for command, callback, _has_json in surface.cli_commands:
+            if command not in operation.cli_commands:
+                continue
+            source = _linked_source_ref(callback)
+            targets = cli_targets.get((command, canonical_bytes(source)), ())
+            if len(targets) != 1:
+                raise ContractFreezeError(
+                    f"operation callback has no unique installed CLI identity: "
+                    f"{operation.application}:{command}: {len(targets)} candidates"
+                )
+            cli_bindings.append({"command": command, "source": source, **targets[0]})
+        record["cli_bindings"] = cli_bindings
         records.append(record)
     return records
 
@@ -2155,7 +2211,11 @@ def _openapi_trace() -> list[dict[str, object]]:
         traced.append(
             {
                 "id": f"openapi:{surface.name}",
-                "source": _source_ref(type(surface.app)),
+                "source": _linked_source_ref(operation_qualification.application_surfaces),
+                "framework": {
+                    "module": type(surface.app).__module__,
+                    "symbol": type(surface.app).__qualname__,
+                },
                 "routes": sorted(
                     routes,
                     key=lambda item: (str(item["path"]), str(item["operation_id"])),

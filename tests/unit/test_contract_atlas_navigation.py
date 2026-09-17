@@ -138,7 +138,9 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
     assert atlas._reachable_atlas_documents(
         root["atlas"]["root"],
         checked.files,
-        repository_sources=atlas_navigation._repository_source_targets(root["trace"]),
+        repository_sources=atlas_navigation._repository_source_targets(
+            root["trace"], root["sources"]
+        ),
     ) == set(checked.files)
     assert not any(path.startswith("riverhog-v1/relationships/") for path in checked.files)
 

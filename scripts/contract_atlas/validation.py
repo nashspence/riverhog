@@ -57,6 +57,7 @@ from .navigation import (
     _relative_link,
     _repository_source_targets,
     _source_anchor,
+    _source_location_links,
     _subject_anchor,
 )
 from .relationships import _relationship_model
@@ -135,7 +136,8 @@ def _reachable_atlas_documents(
             if resolved not in files:
                 if resolved == f"{ATLAS_DIRECTORY}.json" and not separator:
                     continue
-                if separator and f"{resolved}#{fragment}" in repository_sources:
+                repository_target = f"{resolved}#{fragment}" if separator else resolved
+                if repository_target in repository_sources:
                     continue
                 raise ContractAtlasError(
                     f"atlas document has an unresolved local link: {source} -> {target}"
@@ -558,7 +560,9 @@ def validate_atlas(
     if f"](../{ATLAS_DIRECTORY}.json)" not in root_page:
         raise ContractAtlasError("atlas root omits its exact machine artifact")
     reachable_documents = _reachable_atlas_documents(
-        root_path, atlas.files, repository_sources=_repository_source_targets(trace_value)
+        root_path,
+        atlas.files,
+        repository_sources=_repository_source_targets(trace_value, list(source_index.values())),
     )
     if reachable_documents != set(atlas.files):
         unreachable = sorted(set(atlas.files) - reachable_documents)
@@ -590,13 +594,18 @@ def validate_atlas(
         ):
             raise ContractAtlasError(f"human evidence index omits route: {route}")
     for source_id, source in source_index.items():
-        location = cast(Mapping[str, object], source.get("source", {}))
-        rendered = str(location.get("path", location.get("module", source_id)))
-        symbol = f"::{location['symbol']}" if "symbol" in location else ""
+        rows = [
+            line
+            for line in source_evidence_page.splitlines()
+            if f'id="{_source_anchor(source_id)}"' in line
+        ]
         if (
-            f"`{source_id}`" not in source_evidence_page
-            or f"`{rendered}{symbol}`" not in source_evidence_page
-            or source_evidence_page.count(f'id="{_source_anchor(source_id)}"') != 1
+            len(rows) != 1
+            or f"`{source_id}`" not in rows[0]
+            or any(
+                link not in rows[0]
+                for link in _source_location_links(f"{ATLAS_DIRECTORY}/evidence/sources.md", source)
+            )
         ):
             raise ContractAtlasError(f"human evidence index omits source: {source_id}")
 

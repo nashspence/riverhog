@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import hashlib
 import posixpath
+import re
 from collections import defaultdict
 from collections.abc import Callable, Mapping, Sequence
+from html import escape
 from pathlib import PurePosixPath
 from typing import cast
 from urllib.parse import quote
@@ -81,30 +83,34 @@ def _repository_source_target(location: Mapping[str, object]) -> str:
         or PurePosixPath(path).is_absolute()
         or ".." in PurePosixPath(path).parts
         or PurePosixPath(path).parts[0] in {".venv", ".git"}
-        or not isinstance(line, int)
-        or isinstance(line, bool)
-        or line < 1
+        or (
+            "line" in location and (not isinstance(line, int) or isinstance(line, bool) or line < 1)
+        )
     ):
         raise ContractAtlasError(f"invalid repository source location: {location}")
     # Atlas paths are relative to qualification/contracts. Relative repository
     # links retain the revision currently being viewed on GitHub.
-    return f"../../{quote(path, safe='/')}#L{line}"
+    fragment = f"#L{line}" if line is not None else ""
+    return f"../../{quote(path, safe='/')}{fragment}"
 
 
 def _repository_source_link(document: str, location: Mapping[str, object], label: str) -> str:
     # These targets leave qualification/contracts. Keep their parent traversal
     # lexical: relpath would resolve it against the checkout's current directory.
     parents = "../" * len(PurePosixPath(document).parent.parts)
-    return f"[{_md(label)}]({parents}{_repository_source_target(location)})"
+    literal = re.sub(r"([\\`*_\[\]])", r"\\\1", escape(label, quote=False))
+    return f"[{_md(literal)}]({parents}{_repository_source_target(location)})"
 
 
-def _repository_source_targets(trace: Mapping[str, object]) -> set[str]:
+def _repository_source_targets(
+    trace: Mapping[str, object], sources: Sequence[Mapping[str, object]]
+) -> set[str]:
     targets: set[str] = set()
 
     def visit(value: object) -> None:
         if isinstance(value, Mapping):
             source = value.get("source")
-            if isinstance(source, Mapping) and "line" in source:
+            if isinstance(source, Mapping) and "path" in source:
                 targets.add(_repository_source_target(source))
             for child in value.values():
                 visit(child)
@@ -113,7 +119,34 @@ def _repository_source_targets(trace: Mapping[str, object]) -> set[str]:
                 visit(child)
 
     visit(trace)
+    for record in sources:
+        for location in _source_locations(record):
+            targets.add(_repository_source_target(location))
+        for fixture in cast(Sequence[Mapping[str, object]], record.get("fixtures", ())):
+            targets.add(_repository_source_target(fixture))
     return targets
+
+
+def _source_locations(record: Mapping[str, object]) -> list[Mapping[str, object]]:
+    """Keep every recorded declaration/consumer route, without first-binding shortcuts."""
+    source = record.get("source")
+    locations = [source] if isinstance(source, Mapping) and "path" in source else []
+    for key in ("declarations", "bindings"):
+        locations.extend(cast(Sequence[Mapping[str, object]], record.get(key, ())))
+    return locations
+
+
+def _source_location_links(document: str, record: Mapping[str, object]) -> list[str]:
+    links = []
+    for location in _source_locations(record):
+        label = str(location["path"])
+        symbol = location.get("symbol", location.get("scope"))
+        if symbol:
+            label += f"::{symbol}"
+        link = _repository_source_link(document, location, label)
+        if link not in links:
+            links.append(link)
+    return links
 
 
 def _anchor_id(kind: str, identity: str) -> str:

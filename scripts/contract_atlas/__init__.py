@@ -121,7 +121,7 @@ def build_atlas(
     normalized_trace = cast(dict[str, object], encoded_trace)
     elements = _external_elements(normalized_projection, normalized_trace)
     _attach_extent_decisions(elements, normalized_projection)
-    _link_operation_qualification(elements, normalized_trace)
+    _link_operation_qualification(elements, normalized_trace, normalized_projection)
     noncontractual_projection = _validate_authority_registry(
         elements, normalized_projection, normalized_trace
     )

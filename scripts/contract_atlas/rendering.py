@@ -38,6 +38,7 @@ from .navigation import (
     _relative_link,
     _repository_source_link,
     _source_anchor,
+    _source_location_links,
 )
 from .relationships import _relationship_model
 
@@ -723,28 +724,17 @@ def _render_atlas(
     for source_id in source_index:
         count = source_counts.get(source_id, 0)
         source_record = source_index[source_id]
-        location = cast(Mapping[str, object], source_record.get("source", {}))
-        bindings = cast(Sequence[Mapping[str, object]], source_record.get("bindings", ()))
-        declarations = cast(Sequence[Mapping[str, object]], source_record.get("declarations", ()))
-        rendered = str(
-            location.get(
-                "path",
-                location.get(
-                    "module",
-                    bindings[0]["path"]
-                    if bindings
-                    else declarations[0]["path"]
-                    if declarations
-                    else source_id,
-                ),
+        links = _source_location_links(source_evidence_path, source_record)
+        framework = source_record.get("framework")
+        if isinstance(framework, Mapping):
+            links.append(
+                f"Framework mechanism: `{_md(framework['module'])}.{_md(framework['symbol'])}`; "
+                "the linked application construction supplies this OpenAPI document."
             )
-        )
-        if len(bindings) > 1:
-            rendered += f" (+{len(bindings) - 1} binding)"
-        symbol = f"::{location['symbol']}" if "symbol" in location else ""
         source_lines.append(
             f"| {_html_anchor(_source_anchor(source_id))}`{_md(source_id)}` | {count} | "
-            f"`{_md(rendered + symbol)}` |"
+            + "<br>".join(links)
+            + " |"
         )
     state_sources = [
         source
@@ -757,7 +747,8 @@ def _render_atlas(
                 "",
                 "## Durable-state fixture evidence",
                 "",
-                "Fixtures prove restart and introspection behavior; component declarations "
+                "Fixture paths and hashes identify the recorded state baseline. They do not "
+                "record executed restart or introspection results; component declarations "
                 "above remain the semantic structure authorities.",
                 "",
                 "| State authority | Fixture | SHA-256 |",
@@ -766,9 +757,11 @@ def _render_atlas(
         )
         for state_source in state_sources:
             for fixture in cast(Sequence[Mapping[str, object]], state_source["fixtures"]):
+                fixture_link = _repository_source_link(
+                    source_evidence_path, fixture, str(fixture["path"])
+                )
                 source_lines.append(
-                    f"| `{_md(state_source['id'])}` | `{_md(fixture['path'])}` | "
-                    f"`{_md(fixture['sha256'])}` |"
+                    f"| `{_md(state_source['id'])}` | {fixture_link} | `{_md(fixture['sha256'])}` |"
                 )
     witnesses = cast(Sequence[Mapping[str, object]], trace["segmented_extent_witnesses"])
     source_lines.extend(
