@@ -24,6 +24,110 @@ from .model import (
     canonical_sha256,
 )
 
+SOURCE_AUTHORITIES_PATH = f"{ATLAS_DIRECTORY}/evidence/sources/authorities.md"
+QUALIFICATION_ROUTES_PATH = f"{ATLAS_DIRECTORY}/evidence/sources/commands.md"
+FIXTURES_PATH = f"{ATLAS_DIRECTORY}/evidence/sources/fixtures.md"
+QUALIFICATIONS_PATH = f"{ATLAS_DIRECTORY}/evidence/qualifications/index.md"
+RELATIONSHIP_NODES_PATH = f"{ATLAS_DIRECTORY}/evidence/relationships/nodes.md"
+RELATIONSHIP_EDGES_PATH = f"{ATLAS_DIRECTORY}/evidence/relationships/edges.md"
+CONFIGURATION_SETTINGS_PATH = f"{ATLAS_DIRECTORY}/evidence/configuration/settings.md"
+CONFIGURATION_FAMILIES_PATH = f"{ATLAS_DIRECTORY}/evidence/configuration/families.md"
+CONFIGURATION_DOCUMENTS_PATH = f"{ATLAS_DIRECTORY}/evidence/configuration/documents.md"
+
+
+def _policy_definition_elements(
+    elements: Sequence[Mapping[str, object]],
+) -> dict[str, Mapping[str, object]]:
+    definitions = {}
+    for item in elements:
+        if item["interface"] not in {"extent", "compatibility-guarantees"}:
+            continue
+        ids = cast(Sequence[str], item["policy_ids"])
+        if len(ids) != 1 or ids[0] in definitions:
+            raise ContractAtlasError(f"policy has no unique definition dossier: {item['id']}")
+        definitions[ids[0]] = item
+    return definitions
+
+
+def _policy_applications_path(identity: str) -> str:
+    return f"{ATLAS_DIRECTORY}/policies/{_slug(identity)}/applications.md"
+
+
+def _policy_destination(
+    identity: str, definitions: Mapping[str, Mapping[str, object]]
+) -> tuple[str, str]:
+    if identity in definitions:
+        path = str(definitions[identity]["dossier"])
+    elif identity.startswith("publication/"):
+        path = f"{ATLAS_DIRECTORY}/policies/{_slug(identity)}/index.md"
+    else:
+        raise ContractAtlasError(f"policy lacks its definition dossier: {identity}")
+    return path, _policy_anchor(identity)
+
+
+def _witness_path(identity: str, page: str = "index") -> str:
+    return f"{ATLAS_DIRECTORY}/evidence/qualifications/{_slug(identity)}/{page}.md"
+
+
+def _policy_link(path: str, identity: str, definitions: Mapping[str, Mapping[str, object]]) -> str:
+    target, anchor = _policy_destination(identity, definitions)
+    return f"[{_md(identity)}]({_anchor_link(path, target, anchor)})"
+
+
+def _scope_qualification_path(index_path: str) -> str:
+    return index_path.removesuffix("index.md") + "evidence-gaps.md"
+
+
+def _qualified_name_link(document: str, target: str, label: str, qualification: str = "") -> str:
+    name = f"[{_md(label)}]({_relative_link(document, target)})"
+    if not qualification:
+        return name
+    return f"**{name}** [(!)]({_relative_link(document, qualification)})"
+
+
+def _qualification_legend() -> list[str]:
+    return [
+        "**(!)** Some guarantees for work spanning pages or chunks still lack supporting "
+        "evidence. Follow the marker for the affected guarantees and contracts. "
+        "This records an evidence gap, not an observed bug; unmarked entries imply no approval.",
+        "",
+    ]
+
+
+_PROGRESSION_CLAIM_LABELS = {
+    "bounded_step": "Each step stays within its declared limits.",
+    "forward_progress": "Continuing the work makes progress toward its declared completion.",
+    "multiple_segments": "The operation works across multiple pages or chunks.",
+    "no_silent_truncation": "Required data or work is not silently left out.",
+    "restart": "Work can resume after a restart as its contract requires.",
+}
+
+
+def _unverified_claim_lines(claims: Sequence[str]) -> list[str]:
+    unknown = set(claims) - _PROGRESSION_CLAIM_LABELS.keys()
+    if unknown:
+        raise ContractAtlasError(f"open claims lack a reader explanation: {sorted(unknown)}")
+    return [f"- {_PROGRESSION_CLAIM_LABELS[claim]}" for claim in sorted(set(claims))]
+
+
+def _qualification_explanation(claims: Sequence[str]) -> list[str]:
+    return [
+        "The named contract groups have recorded evidence gaps in the following guarantees. "
+        "Each group's page identifies its exact open guarantees and candidate tests:",
+        "",
+        *_unverified_claim_lines(claims),
+        "",
+        "These guarantees let large tasks proceed in smaller steps: a limit on one page or "
+        "chunk must not become a hidden limit on the whole task. Returning a first page "
+        "correctly does not establish that continuation or recovery works. Capacity may "
+        "explicitly reject, defer, or throttle work; it must not silently omit work.",
+        "",
+        "Existing tests may establish individual cases. The gaps retain their recorded "
+        "group-wide scope and do not establish a bug in every linked contract. Completion "
+        "follows each contract's rules; mutable browsing carries no implied snapshot guarantee.",
+        "",
+    ]
+
 
 def _element_progression_witnesses(
     elements: Sequence[Mapping[str, object]], trace: Mapping[str, object]
@@ -119,6 +223,11 @@ def _repository_source_targets(
                 visit(child)
 
     visit(trace)
+    for witness in cast(
+        Sequence[Mapping[str, object]], trace.get("segmented_extent_witnesses", ())
+    ):
+        for node_id in cast(Sequence[str], witness["test_node_ids"]):
+            targets.add(_repository_source_target({"path": node_id.split("::", 1)[0]}))
     for record in sources:
         for location in _source_locations(record):
             targets.add(_repository_source_target(location))

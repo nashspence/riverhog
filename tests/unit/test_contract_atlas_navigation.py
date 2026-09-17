@@ -93,28 +93,36 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
         item["id"] for item in root["discovery"]["candidates"]
     }
     assert {item["disposition"] for item in root["discovery"]["dispositions"]} == {"protected"}
-    assert "# Relationship-edge inventory" in relationships_page
-    assert "not a second navigation hierarchy" in relationships_page
-    assert "canonical authority/interface inventory" in authority_inventory
-    assert "## Declared aggregate authorities" in authority_inventory
+    assert "# Declared relationships" in relationships_page
+    for target in (
+        atlas_navigation.RELATIONSHIP_NODES_PATH,
+        atlas_navigation.RELATIONSHIP_EDGES_PATH,
+    ):
+        link = atlas._relative_link("riverhog-v1/evidence/relationships.md", target)
+        assert f"]({link})" in relationships_page
+    assert "## Declared aggregate scopes" in authority_inventory
     assert "## Non-contractual projection machinery" in authority_inventory
     assert "`contract-projection-envelope`" in authority_inventory
-    assert "`extent-contract` | Repository-wide v1 external extent" in authority_inventory
-    assert "does not own any setting's semantics" in configuration_inventory
-    assert "Environment contracts: **250**" in configuration_inventory
-    assert "Unique names: **240**" in configuration_inventory
-    assert "Raw implementation reads: **199**" in configuration_inventory
-    assert "Explicit ambiguity resolutions: **6**" in configuration_inventory
-    assert "| unowned | pass |" in configuration_inventory
-    assert "[RIVERHOG_BASE_URL]" in configuration_inventory
-    assert "`riverhog-client`" in configuration_inventory
-    assert "`riverhog-ftp-adapter`" in configuration_inventory
-    assert "`stove0-server`" in configuration_inventory
+    assert "[extent-contract](../authorities/extent-contract/index.md)" in authority_inventory
+    assert "owning contract element" in configuration_inventory
+    reconciliation = checked.files["riverhog-v1/evidence/configuration/reconciliation.md"].decode()
+    assert "Unique environment names: **240**" in reconciliation
+    assert "Implementation reads: **199**" in reconciliation
+    assert "Explicit ambiguity resolutions: **6**" in reconciliation
+    assert "| unowned | pass |" in reconciliation
+    settings = checked.files[atlas_navigation.CONFIGURATION_SETTINGS_PATH].decode()
+    assert "[RIVERHOG_BASE_URL]" in settings
+    assert all(
+        f"`{owner}`" in settings
+        for owner in ("riverhog-client", "riverhog-ftp-adapter", "stove0-server")
+    )
     assert relationship["schema"] == atlas.RELATIONSHIP_SCHEMA
     assert any(item["kind"] == "runtime-image" for item in relationship["nodes"])
     assert any(item["type"] == "implements-protocol" for item in relationship["edges"])
     exact = {item["authority"] for item in root["elements"]}
-    listed = re.findall(r"^- \[([^]]+)\]\(authorities/[^/]+/index.md\) —", root_page, re.MULTILINE)
+    listed = re.findall(
+        r"^- (?:\*\*)?\[([^]]+)\]\(authorities/[^/]+/index.md\)", root_page, re.MULTILINE
+    )
     assert listed == sorted(exact)
     assert {line for line in root_page.splitlines() if line.startswith("## ")} == {
         "## Audit references",
@@ -131,10 +139,9 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
     for authority in exact:
         target = atlas_rendering._authority_index_path(authority)
         assert root_page.count(f"]({atlas._relative_link(root['atlas']['root'], target)})") == 1
-        assert (
-            f"]({atlas._relative_link('riverhog-v1/evidence/authorities.md', target)})"
-            not in authority_inventory
-        )
+        declared = {a["id"] for a in root["trace"]["authority_registry"]["declared_authorities"]}
+        link = f"]({atlas._relative_link('riverhog-v1/evidence/authorities.md', target)})"
+        assert (link in authority_inventory) == (authority in declared)
     assert atlas._reachable_atlas_documents(
         root["atlas"]["root"],
         checked.files,
@@ -212,7 +219,12 @@ def test_authority_inventory_routes_every_interface_and_extension_without_duplic
 
     for (authority, interface), count in interface_counts.items():
         target = atlas._interface_index_path(authority, interface)
-        assert f"]({atlas._relative_link(root_path, target)}) ({count})" in root_page
+        line = next(
+            line
+            for line in root_page.splitlines()
+            if f"]({atlas._relative_link(root_path, target)})" in line
+        )
+        assert f" ({count})" in line
 
     extension_nodes = [
         item
@@ -263,7 +275,7 @@ def test_primary_semantic_path_keeps_detailed_accounting_in_reference() -> None:
             assert "Extent decisions:" not in page
             assert "| Policy | Count |" not in page
             assert "| Dossier | Extent decisions |" not in page
-            assert "## Semantic dossiers" in page
+            assert "## Contract elements" in page
         elif document["kind"] == "dossier":
             assert "| Contract elements |" not in page
             assert "| Extent decisions |" not in page
@@ -279,7 +291,7 @@ def test_interfaces_are_flat_exact_inventories_with_local_references() -> None:
     retrieval_cache = checked.files[
         "riverhog-v1/authorities/riverhog/http-operations/get-v1-retrieval-cache.md"
     ].decode()
-    assert "## Referenced contract dossiers" in retrieval_cache
+    assert "## Referenced contract elements" in retrieval_cache
     assert (
         "[schemas: RetrievalCacheStatusOut](../http-schemas/schemas-retrievalcachestatusout.md)"
         in retrieval_cache
@@ -606,24 +618,24 @@ def test_navigation_is_representation_only(
 def test_atlas_routes_policies_sources_and_relationships_to_exact_subjects() -> None:
     checked = checked_atlas()
     root = checked.root
-    policy_page = checked.files["riverhog-v1/policies/index.md"].decode()
-    source_page = checked.files["riverhog-v1/evidence/sources.md"].decode()
-    relationship_page = checked.files["riverhog-v1/evidence/relationships.md"].decode()
-
-    policy_ids = {item["id"] for category in root["policies"].values() for item in category}
-    assert all(
-        policy_page.count(f'id="{atlas._policy_anchor(identity)}"') == 1 for identity in policy_ids
-    )
+    definitions = atlas_navigation._policy_definition_elements(root["elements"])
+    for category in root["policies"].values():
+        for policy in category:
+            path, anchor = atlas_navigation._policy_destination(policy["id"], definitions)
+            assert checked.files[path].decode().count(f'id="{anchor}"') == 1
+    source_page = checked.files[atlas_navigation.SOURCE_AUTHORITIES_PATH].decode()
+    node_page = checked.files[atlas_navigation.RELATIONSHIP_NODES_PATH].decode()
+    edge_page = checked.files[atlas_navigation.RELATIONSHIP_EDGES_PATH].decode()
     assert all(
         source_page.count(f'id="{atlas._source_anchor(item["id"])}"') == 1
         for item in root["sources"]
     )
     assert all(
-        relationship_page.count(f'id="{atlas._relationship_node_anchor(item["id"])}"') == 1
+        node_page.count(f'id="{atlas._relationship_node_anchor(item["id"])}"') == 1
         for item in root["atlas"]["relationships"]["nodes"]
     )
     assert all(
-        relationship_page.count(f'id="{atlas._relationship_edge_anchor(item)}"') == 1
+        edge_page.count(f'id="{atlas._relationship_edge_anchor(item)}"') == 1
         for item in root["atlas"]["relationships"]["edges"]
     )
 
@@ -647,16 +659,12 @@ def test_every_recorded_qualification_follows_exact_ordinary_selection_paths() -
     assert sum(bool(ids) for ids in expected.values()) == 81
     root_path = root["atlas"]["root"]
     root_page = checked.files[root_path].decode()
-    witness_path = "riverhog-v1/evidence/sources.md"
-    witness_page = checked.files[witness_path].decode()
     for authority in {item["authority"] for item in elements}:
         authority_path = atlas_rendering._authority_index_path(authority)
         authority_link = atlas._relative_link(root_path, authority_path)
         root_line = next(line for line in root_page.splitlines() if f"]({authority_link})" in line)
         owned = [item for item in elements if item["authority"] == authority]
-        assert ("unestablished progression claims" in root_line) == any(
-            expected[e["id"]] for e in owned
-        )
+        assert ("[(!)](" in root_line) == any(expected[e["id"]] for e in owned)
         authority_page = checked.files[authority_path].decode()
         for interface in {item["interface"] for item in owned}:
             values = [item for item in owned if item["interface"] == interface]
@@ -667,30 +675,44 @@ def test_every_recorded_qualification_follows_exact_ordinary_selection_paths() -
             ):
                 target = atlas._relative_link(parent_path, interface_path)
                 line = next(line for line in parent_page.splitlines() if f"]({target})" in line)
-                assert ("unestablished progression claims" in line) == any(
-                    expected[e["id"]] for e in values
-                )
+                assert ("[(!)](" in line) == any(expected[e["id"]] for e in values)
             interface_page = checked.files[interface_path].decode()
             for item in values:
                 target = atlas._relative_link(interface_path, item["dossier"])
                 line = next(line for line in interface_page.splitlines() if f"]({target})" in line)
-                assert ("unestablished progression claims" in line) == bool(expected[item["id"]])
+                assert ("[(!)](" in line) == bool(expected[item["id"]])
                 for witness in expected[item["id"]]:
-                    assert f"]({target}#progression-evidence-and-open-obligations)" in line
-                    anchor = atlas._anchor_id("extent-witness", witness)
+                    assert f"]({target}#evidence-gaps)" in line
+                    witness_path = atlas_navigation._witness_path(witness)
                     dossier = checked.files[item["dossier"]].decode()
-                    assert (
-                        f"]({atlas._relative_link(item['dossier'], witness_path)}#{anchor})"
-                        in dossier
-                    )
-                    section = witness_page.split(f'id="{anchor}"', 1)[1].split("\n#### ", 1)[0]
-                    assert "Unestablished group-wide claims:" in section
+                    assert f"]({atlas._relative_link(item['dossier'], witness_path)})" in dossier
+                    witness_page = checked.files[witness_path].decode()
                     for claim in witness_by_id[witness]["unestablished_claims"]:
-                        assert claim.replace("_", " ") in section
+                        assert atlas_navigation._PROGRESSION_CLAIM_LABELS[claim] in witness_page
+                    contract_path = atlas_navigation._witness_path(witness, "contracts")
                     assert (
-                        f"]({atlas._relative_link(witness_path, item['dossier'])}"
-                        "#progression-evidence-and-open-obligations)" in section
+                        f"]({atlas._relative_link(contract_path, item['dossier'])}#evidence-gaps)"
+                        in checked.files[contract_path].decode()
                     )
+            for parent_path, parent_page in (
+                (root_path, root_page),
+                (authority_path, authority_page),
+            ):
+                target = atlas._relative_link(parent_path, interface_path)
+                line = next(line for line in parent_page.splitlines() if f"]({target})" in line)
+                affected = [item for item in values if expected[item["id"]]]
+                if affected:
+                    scope_path = atlas_navigation._scope_qualification_path(interface_path)
+                    assert f"[(!)]({atlas._relative_link(parent_path, scope_path)})" in line
+                    scope_page = checked.files[scope_path].decode()
+                    for item in values:
+                        link = (
+                            f"]({atlas._relative_link(scope_path, item['dossier'])}#evidence-gaps)"
+                        )
+                        assert (link in scope_page) == bool(expected[item["id"]])
+                    assert "first page" in scope_page
+                    assert "hidden limit" in scope_page
+                    assert "group-wide scope" in scope_page
     for node in root["atlas"]["relationships"]["nodes"]:
         if node["kind"] not in {"extension-point", "process-protocol"}:
             continue
@@ -709,7 +731,7 @@ def test_every_recorded_qualification_follows_exact_ordinary_selection_paths() -
                 if e["authority"] == interface["authority"]
                 and e["interface"] == interface["interface"]
             )
-            assert ("unestablished progression claims" in line) == affected
+            assert ("[(!)](" in line) == affected
     # An operation's related CLI/client records do not inherit its qualification.
     operation = next(
         e for e in elements if e["authority"] == "riverhog" and e["title"] == "GET /v1/collections"
@@ -754,16 +776,14 @@ def test_shared_qualification_is_scoped_once_and_mixed_entries_are_exact() -> No
     ]
     mapping = {"a": ("witness:a",), "b": ("witness:a",)}
     lines, suffixes = atlas_rendering._interface_qualifications(values, mapping, page)
-    assert "All entries below" in "\n".join(lines)
-    assert "group-level scope" in "\n".join(lines)
-    assert sum("witness:a" in line for line in lines) == 1
+    assert "All contract elements on this page" in "\n".join(lines)
+    assert "same recorded evidence gaps" in "\n".join(lines)
+    assert "[(!)](evidence-gaps.md)" in "\n".join(lines)
     assert not suffixes
     mapping["b"] = ()
     lines, suffixes = atlas_rendering._interface_qualifications(values, mapping, page)
-    assert "All entries below" not in "\n".join(lines)
-    assert suffixes == {
-        "a": " — [unestablished progression claims](a.md#progression-evidence-and-open-obligations)"
-    }
+    assert "All contract elements on this page" not in "\n".join(lines)
+    assert suffixes == {"a": " [(!)](a.md#evidence-gaps)"}
     mapping["a"] = ()
     assert atlas_rendering._interface_qualifications(values, mapping, page) == ([], {})
 

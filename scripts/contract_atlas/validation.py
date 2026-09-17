@@ -41,6 +41,10 @@ from .model import (
     reassemble_trace,
 )
 from .navigation import (
+    QUALIFICATION_ROUTES_PATH,
+    RELATIONSHIP_EDGES_PATH,
+    RELATIONSHIP_NODES_PATH,
+    SOURCE_AUTHORITIES_PATH,
     _anchor_id,
     _anchor_link,
     _dossier_navigation_labels,
@@ -49,8 +53,9 @@ from .navigation import (
     _interface_label,
     _interface_navigation_labels,
     _md,
-    _policy_anchor,
     _policy_application_anchor,
+    _policy_definition_elements,
+    _policy_destination,
     _qualification_anchor,
     _relationship_edge_anchor,
     _relationship_node_anchor,
@@ -217,8 +222,8 @@ def validate_atlas(
             )["decisions"],
         )
     }
-    policy_path = f"{ATLAS_DIRECTORY}/policies/index.md"
-    source_evidence_path = f"{ATLAS_DIRECTORY}/evidence/sources.md"
+    policy_definitions = _policy_definition_elements(elements)
+    source_evidence_path = SOURCE_AUTHORITIES_PATH
     for item in elements:
         marker = f"<!-- contract-element: {item['id']} -->".encode()
         dossier = atlas.files[str(item["dossier"])]
@@ -243,7 +248,7 @@ def validate_atlas(
         )
         for heading, targets in (
             ("Related interface records", related_elements),
-            ("Referenced contract dossiers", referenced_elements),
+            ("Referenced contract elements", referenced_elements),
         ):
             # At-use schema links may repeat a destination. The corroboration
             # inventory still lists each target exactly once in its own section.
@@ -263,7 +268,9 @@ def validate_atlas(
                 f"atlas dossier does not expose every effective policy: {item['id']}"
             )
         for policy in cast(Sequence[str], item["policy_ids"]):
-            link = _anchor_link(str(item["dossier"]), policy_path, _policy_anchor(policy))
+            link = _anchor_link(
+                str(item["dossier"]), *_policy_destination(policy, policy_definitions)
+            )
             application_anchor = _policy_application_anchor(str(item["id"]), policy)
             if (
                 f"]({link})" not in dossier_text
@@ -275,7 +282,7 @@ def validate_atlas(
         for route in cast(Sequence[str], item["qualification_routes"]):
             link = _anchor_link(
                 str(item["dossier"]),
-                source_evidence_path,
+                QUALIFICATION_ROUTES_PATH,
                 _qualification_anchor(route),
             )
             if f"]({link})" not in dossier_text:
@@ -535,9 +542,10 @@ def validate_atlas(
     }
     if not used_policy_ids <= declared_policy_ids:
         raise ContractAtlasError("contract element policy references are unresolved")
-    policy_page = atlas.files[f"{ATLAS_DIRECTORY}/policies/index.md"].decode()
     for policy_id in declared_policy_ids:
-        if policy_page.count(f'id="{_policy_anchor(policy_id)}"') != 1:
+        policy_target, anchor = _policy_destination(policy_id, policy_definitions)
+        policy_page = atlas.files[policy_target].decode()
+        if policy_page.count(f'id="{anchor}"') != 1:
             raise ContractAtlasError(f"policy definition has no stable subject: {policy_id}")
     for item in elements:
         if not set(cast(Sequence[str], item["source_authority_ids"])) <= set(source_index):
@@ -584,13 +592,24 @@ def validate_atlas(
         elif f"`{name}` | `{identity}` |" not in identity_page:
             raise ContractAtlasError(f"identity evidence omits independent identity: {name}")
 
-    source_evidence_page = atlas.files[f"{ATLAS_DIRECTORY}/evidence/sources.md"].decode()
-    for route in cast(
-        Mapping[str, object], cast(Mapping[str, object], root["counts"])["by_qualification_route"]
-    ):
+    source_evidence_page = atlas.files[SOURCE_AUTHORITIES_PATH].decode()
+    qualification_page = atlas.files[QUALIFICATION_ROUTES_PATH].decode()
+    command_routes = set(
+        cast(
+            Mapping[str, object],
+            cast(Mapping[str, object], root["counts"])["by_qualification_route"],
+        )
+    ) | {
+        route
+        for witness in cast(
+            Sequence[Mapping[str, object]], trace_value["segmented_extent_witnesses"]
+        )
+        for route in cast(Sequence[str], witness["gates"])
+    }
+    for route in command_routes:
         if (
-            f"`{route}`" not in source_evidence_page
-            or source_evidence_page.count(f'id="{_qualification_anchor(str(route))}"') != 1
+            f"`{route}`" not in qualification_page
+            or qualification_page.count(f'id="{_qualification_anchor(str(route))}"') != 1
         ):
             raise ContractAtlasError(f"human evidence index omits route: {route}")
     for source_id, source in source_index.items():
@@ -604,7 +623,7 @@ def validate_atlas(
             or f"`{source_id}`" not in rows[0]
             or any(
                 link not in rows[0]
-                for link in _source_location_links(f"{ATLAS_DIRECTORY}/evidence/sources.md", source)
+                for link in _source_location_links(SOURCE_AUTHORITIES_PATH, source)
             )
         ):
             raise ContractAtlasError(f"human evidence index omits source: {source_id}")
@@ -685,7 +704,18 @@ def validate_atlas(
                     )
     authority_registry = cast(Mapping[str, object], trace_value["authority_registry"])
     for item in cast(Sequence[Mapping[str, object]], authority_registry["declared_authorities"]):
-        if any(_md(item[key]) not in authority_inventory_page for key in ("id", "meaning")):
+        if item["id"] not in exact_authorities:
+            if _md(item["meaning"]) not in authority_inventory_page:
+                raise ContractAtlasError(
+                    f"authority evidence omits unused aggregate declaration: {item['id']}"
+                )
+            continue
+        aggregate_target = _authority_index_path(str(item["id"]))
+        if (
+            f"]({_relative_link(authority_inventory_path, aggregate_target)})"
+            not in authority_inventory_page
+            or _md(item["meaning"]) not in atlas.files[aggregate_target].decode()
+        ):
             raise ContractAtlasError(
                 f"authority evidence omits aggregate declaration: {item['id']}"
             )
@@ -701,7 +731,7 @@ def validate_atlas(
             raise ContractAtlasError(
                 f"authority evidence omits non-contractual projection: {item['id']}"
             )
-    relationship_page = atlas.files[f"{ATLAS_DIRECTORY}/evidence/relationships.md"].decode()
+    relationship_page = atlas.files[RELATIONSHIP_NODES_PATH].decode()
     for node in relationship_nodes:
         required = (node["id"], node["kind"], node["name"], node["description"])
         if (
@@ -736,6 +766,7 @@ def validate_atlas(
                     raise ContractAtlasError(
                         f"extension relationship has stale semantic navigation: {node['id']}"
                     )
+    relationship_page = atlas.files[RELATIONSHIP_EDGES_PATH].decode()
     for edge in relationship_edges:
         detail = edge.get("scope", edge.get("binding", ""))
         required = (
@@ -781,7 +812,7 @@ def validate_atlas(
                 "Contract elements",
                 "Extent decisions",
                 "## Governing policies",
-                "## Semantic dossiers",
+                "## Contract elements",
             )
         ):
             raise ContractAtlasError(
@@ -789,7 +820,7 @@ def validate_atlas(
             )
         node_link = _anchor_link(
             extension_path,
-            f"{ATLAS_DIRECTORY}/evidence/relationships.md",
+            RELATIONSHIP_NODES_PATH,
             _relationship_node_anchor(extension_id),
         )
         if (
@@ -838,7 +869,7 @@ def validate_atlas(
         for edge in [edge for edge in relationship_edges if edge["target"] == extension_id]:
             edge_link = _anchor_link(
                 extension_path,
-                f"{ATLAS_DIRECTORY}/evidence/relationships.md",
+                RELATIONSHIP_EDGES_PATH,
                 _relationship_edge_anchor(edge),
             )
             if f"]({edge_link})" not in extension_page:
@@ -855,7 +886,7 @@ def validate_atlas(
             provider = relationship_nodes_by_id[str(edge["source"])]
             edge_link = _anchor_link(
                 extension_path,
-                f"{ATLAS_DIRECTORY}/evidence/relationships.md",
+                RELATIONSHIP_EDGES_PATH,
                 _relationship_edge_anchor(edge),
             )
             if (
@@ -940,9 +971,7 @@ def validate_atlas(
         elif kind == "evidence-source-inventory":
             expected_counts = {
                 "source_authorities": len(source_index),
-                "qualification_routes": len(
-                    cast(Mapping[str, object], checked_counts["by_qualification_route"])
-                ),
+                "qualification_routes": len(command_routes),
             }
         elif kind == "evidence-relationship-inventory":
             expected_counts = {
@@ -953,6 +982,8 @@ def validate_atlas(
             expected_counts = {
                 "identity_domains": len(cast(Mapping[str, object], root["identities"]))
             }
+        elif kind == "audit-reference":
+            expected_counts = {}
         elif kind == "extension-context":
             extension_id = str(descriptor["extension_id"])
             if extension_id not in {

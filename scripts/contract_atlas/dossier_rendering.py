@@ -23,16 +23,24 @@ from .model import (
     structural_json_schema,
 )
 from .navigation import (
-    _anchor_id,
+    QUALIFICATION_ROUTES_PATH,
+    RELATIONSHIP_NODES_PATH,
+    SOURCE_AUTHORITIES_PATH,
     _anchor_link,
     _dossier_navigation_labels,
+    _element_progression_witnesses,
     _html_anchor,
     _interface_label,
     _md,
     _navigation_identity,
     _policy_anchor,
     _policy_application_anchor,
+    _policy_applications_path,
+    _policy_definition_elements,
+    _policy_destination,
+    _policy_link,
     _qualification_anchor,
+    _qualification_explanation,
     _relationship_node_anchor,
     _relative_link,
     _repository_source_link,
@@ -40,6 +48,7 @@ from .navigation import (
     _source_location_links,
     _subject_anchor,
     _subject_marker,
+    _witness_path,
 )
 
 
@@ -65,11 +74,9 @@ def _render_cli_navigation_tree(
 
     def append_path(path: tuple[str, ...], depth: int) -> None:
         item = by_path[path]
-        lines.append(
-            f"{'  ' * depth}- [{_md(path[-1])}]"
-            f"({_relative_link(interface_path, str(item['dossier']))})"
-            + (suffixes or {}).get(str(item["id"]), "")
-        )
+        suffix = (suffixes or {}).get(str(item["id"]), "")
+        name = f"[{_md(path[-1])}]({_relative_link(interface_path, str(item['dossier']))})"
+        lines.append(f"{'  ' * depth}- " + (f"**{name}**" if suffix else name) + suffix)
         children = sorted(
             candidate
             for candidate in by_path
@@ -1702,6 +1709,7 @@ def _render_dossier(
     elements_by_id: Mapping[str, Mapping[str, object]],
     *,
     primary_projection: Mapping[str, object],
+    policy_definitions: Mapping[str, Mapping[str, object]] | None = None,
 ) -> bytes:
     path = str(element["dossier"])
     authority_path = (
@@ -1712,7 +1720,9 @@ def _render_dossier(
         f"{_slug(str(element['interface']), limit=48)}/index.md"
     )
     policy_path = f"{ATLAS_DIRECTORY}/policies/index.md"
-    source_evidence_path = f"{ATLAS_DIRECTORY}/evidence/sources.md"
+    source_evidence_path = SOURCE_AUTHORITIES_PATH
+    if policy_definitions is None:
+        policy_definitions = _policy_definition_elements(list(elements_by_id.values()))
     pointers = cast(Sequence[str], element["pointers"])
     exact_values = [pointer_value(projection, pointer) for pointer in pointers]
     projection = primary_projection
@@ -1721,7 +1731,7 @@ def _render_dossier(
     source_index = _source_index(trace)
     implementation_sources = _implementation_sources(element, trace, elements_by_id, projection)
     details = cast(Mapping[str, object], element.get("details", {}))
-    purpose = "Exact externally visible contract owned by this semantic dossier."
+    purpose = "Exact externally visible contract owned by this contract element."
     if len(values) == 1 and isinstance(values[0], Mapping):
         value = cast(Mapping[str, object], values[0])
         purpose = str(value.get("summary", value.get("description", purpose))).strip() or purpose
@@ -1746,6 +1756,16 @@ def _render_dossier(
         "## External contract",
         "",
     ]
+    for identity, definition in policy_definitions.items():
+        if definition["id"] == element["id"]:
+            lines.extend(
+                [
+                    _html_anchor(_policy_anchor(identity)),
+                    "[Where this policy applies]("
+                    f"{_relative_link(path, _policy_applications_path(identity))})",
+                    "",
+                ]
+            )
     interface = str(element["interface"])
     renderer = INTERFACE_REGISTRY[interface].renderer
     if (
@@ -1811,7 +1831,7 @@ def _render_dossier(
 
     semantic_owners = cast(Sequence[str], details.get("semantic_owners", ()))
     if semantic_owners:
-        relationship_evidence = f"{ATLAS_DIRECTORY}/evidence/relationships.md"
+        relationship_evidence = RELATIONSHIP_NODES_PATH
         lines.extend(
             [
                 "## Existing ownership context",
@@ -1875,7 +1895,7 @@ def _render_dossier(
             lines.extend(
                 [
                     f"#### [{_md(rule_id)}]"
-                    f"({_anchor_link(path, policy_path, _policy_anchor(rule_id))})",
+                    f"({_anchor_link(path, *_policy_destination(rule_id, policy_definitions))})",
                     "",
                     *(
                         [f"Shared facts for every subject below: {_md(shared)}", ""]
@@ -1904,28 +1924,43 @@ def _render_dossier(
                 lines.append(f"| {subject} | `{_md(contract)}` | {rendered_bounds} |")
             lines.append("")
 
-        witness_ids = sorted(
-            {
-                str(witness_id)
+        witness_ids = _element_progression_witnesses([element], trace)[str(element["id"])]
+        if witness_ids:
+            witnesses = {
+                str(item["id"]): item
+                for item in cast(
+                    Sequence[Mapping[str, object]], trace["segmented_extent_witnesses"]
+                )
+            }
+            claims = sorted(
+                {
+                    claim
+                    for identity in witness_ids
+                    for claim in cast(Sequence[str], witnesses[identity]["unestablished_claims"])
+                }
+            )
+            bound_ids = {
+                str(link["id"])
                 for link in cast(Sequence[Mapping[str, object]], trace["extent_sources"])
                 if link["id"] in extent_ids
-                for witness_id in cast(Sequence[str], link.get("segmented_extent_witnesses", ()))
+                and set(cast(Sequence[str], link.get("segmented_extent_witnesses", ())))
+                & set(witness_ids)
             }
-        )
-        if witness_ids:
+            rules = sorted({f"extent-rule/{decisions[identity]['rule']}" for identity in bound_ids})
             lines.extend(
                 [
-                    "### Progression evidence and open obligations",
+                    "### Evidence gaps",
                     "",
-                    "These are candidate test bindings. Group-wide progression claims remain "
-                    "unestablished; inspect the test scopes before applying a result "
-                    "to this contract.",
+                    *_qualification_explanation(claims),
+                    "Required by: "
+                    + ", ".join(_policy_link(path, rule, policy_definitions) for rule in rules)
+                    + ".",
+                    "",
+                    "Exact evidence groups for this contract element:",
                     "",
                     *(
-                        f"- [{_md(witness_id)}]"
-                        f"({_anchor_link(path, source_evidence_path, witness_anchor)})"
-                        for witness_id in witness_ids
-                        for witness_anchor in (_anchor_id("extent-witness", witness_id),)
+                        f"- [{_md(identity)}]({_relative_link(path, _witness_path(identity))})"
+                        for identity in witness_ids
                     ),
                     "",
                 ]
@@ -1947,7 +1982,7 @@ def _render_dossier(
             )
         lines.append("")
     if referenced:
-        lines.extend(["### Referenced contract dossiers", ""])
+        lines.extend(["### Referenced contract elements", ""])
         referenced_labels = _dossier_navigation_labels(element, referenced)
         for owner in referenced:
             lines.append(
@@ -1962,7 +1997,7 @@ def _render_dossier(
             "",
             *(
                 f"- {_html_anchor(_policy_application_anchor(str(element['id']), policy))}"
-                f"[{_md(policy)}]({_anchor_link(path, policy_path, _policy_anchor(policy))})"
+                f"{_policy_link(path, policy, policy_definitions)}"
                 for policy in cast(Sequence[str], element["policy_ids"])
             ),
             "",
@@ -1972,7 +2007,7 @@ def _render_dossier(
             "",
             *(
                 f"- [{_md(route)}]"
-                f"({_anchor_link(path, source_evidence_path, _qualification_anchor(route))})"
+                f"({_anchor_link(path, QUALIFICATION_ROUTES_PATH, _qualification_anchor(route))})"
                 for route in cast(Sequence[str], element["qualification_routes"])
             ),
             "",

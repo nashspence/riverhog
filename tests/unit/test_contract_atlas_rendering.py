@@ -117,7 +117,7 @@ def test_durable_state_and_python_structures_are_exact_human_audit_units() -> No
     assert "#### Validated model schema" in pydantic_page
     assert "##### Fields" in pydantic_page
 
-    sources_page = checked.files["riverhog-v1/evidence/sources.md"].decode()
+    sources_page = checked.files[navigation.FIXTURES_PATH].decode()
     assert "tests/fixtures/state/v1_0001/riverhog.postgresql.sql" in sources_page
 
 
@@ -166,9 +166,11 @@ def test_collection_list_audit_exposes_scoped_tests_and_unestablished_progressio
         and item["details"]["operation_id"] == "list_collections"
     )
     page = checked.files[operation["dossier"]].decode()
-    assert "### Progression evidence and open obligations" in page
+    assert "### Evidence gaps" in page
     assert "riverhog-read-collection-progression/v1" in page
-    sources = checked.files["riverhog-v1/evidence/sources.md"].decode()
+    sources = checked.files[
+        navigation._witness_path("riverhog-read-collection-progression/v1", "tests")
+    ].decode()
     assert "no executed qualification result or CI attestation" in sources
     assert "Shared token codec" in sources
     assert "does not prove each route supplies those bindings correctly" in sources
@@ -439,8 +441,9 @@ def _linked_repository_paths(document: str, page: str) -> set[Path]:
 
 def test_source_records_and_fixtures_link_every_recorded_repository_location() -> None:
     checked = checked_atlas()
-    document = "riverhog-v1/evidence/sources.md"
+    document = navigation.SOURCE_AUTHORITIES_PATH
     page = checked.files[document].decode()
+    fixture_page = checked.files[navigation.FIXTURES_PATH].decode()
     for record in checked.root["sources"]:
         row = next(
             line
@@ -455,8 +458,10 @@ def test_source_records_and_fixtures_link_every_recorded_repository_location() -
             assert source in links, record["id"]
             assert source.is_file()
         for fixture in record.get("fixtures", []):
-            assert REPO_ROOT / fixture["path"] in _linked_repository_paths(document, page)
-    assert "do not record executed restart or introspection results" in page
+            assert REPO_ROOT / fixture["path"] in _linked_repository_paths(
+                navigation.FIXTURES_PATH, fixture_page
+            )
+    assert "executed restart or introspection results" in fixture_page
 
 
 @pytest.mark.parametrize(
