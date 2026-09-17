@@ -1760,8 +1760,8 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json](../../../evidence/sources.md#src-819610ba95) — `packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-v1-journal-entry.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json](../../../evidence/sources.md#src-819610ba95) — [packages/riverhog-provenance/src/riverhog\_provenance/schemas/riverhog-provenance-v1-journal-entry.schema.json](../../../../../../packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-v1-journal-entry.schema.json)
 
 ### Machine authority
 

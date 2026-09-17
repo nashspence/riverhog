@@ -65,9 +65,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [cli:riverhog-ftp-adapter](../../../evidence/sources.md#src-303f765bca) — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- **Command callback:** [reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::_run_command](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py#L389)
+- [cli:riverhog-ftp-adapter](../../../evidence/sources.md#src-303f765bca) — [reference/riverhog/ingress/ftp/src/riverhog\_ftp\_adapter/app.py::&lt;module&gt;](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- **Command callback:** [reference/riverhog/ingress/ftp/src/riverhog\_ftp\_adapter/app.py::\_run\_command](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py#L389)
 
 ### Machine authority
 

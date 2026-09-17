@@ -154,8 +154,8 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-manifest-v1.schema.json](../../../evidence/sources.md#src-fc0a3e3cab) — `packages/riverhog-archive-contracts/schemas/collection-archive-manifest-v1.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-manifest-v1.schema.json](../../../evidence/sources.md#src-fc0a3e3cab) — [packages/riverhog-archive-contracts/schemas/collection-archive-manifest-v1.schema.json](../../../../../../packages/riverhog-archive-contracts/schemas/collection-archive-manifest-v1.schema.json)
 
 ### Machine authority
 

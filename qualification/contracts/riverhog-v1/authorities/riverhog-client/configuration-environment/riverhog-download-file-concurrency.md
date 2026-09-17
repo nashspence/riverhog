@@ -48,16 +48,16 @@ Shared facts for every subject below: configuration="RIVERHOG_DOWNLOAD_FILE_CONC
 
 ### Executable sources
 
-- [configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_FILE_CONCURRENCY](../../../evidence/sources.md#src-bb20193981) — `packages/riverhog-client/src/riverhog_client/downloads.py`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_FILE_CONCURRENCY](../../../evidence/sources.md#src-bb20193981) — [packages/riverhog-client/src/riverhog\_client/downloads.py::configured\_download\_concurrency](../../../../../../packages/riverhog-client/src/riverhog_client/downloads.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 
-The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
+The owning implementation defines the setting. These declarations, consumer bindings, and default expressions are discovered source facts, not executed observations of effective configuration.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| parser | `riverhog-client` | `packages/riverhog-client/src/riverhog_client/downloads.py` | `environment.get('RIVERHOG_DOWNLOAD_FILE_CONCURRENCY', '')` |
+| parser | `riverhog-client` | [packages/riverhog-client/src/riverhog\_client/downloads.py](../../../../../../packages/riverhog-client/src/riverhog_client/downloads.py) | `environment.get('RIVERHOG_DOWNLOAD_FILE_CONCURRENCY', '')` |
 
 ### Machine authority
 

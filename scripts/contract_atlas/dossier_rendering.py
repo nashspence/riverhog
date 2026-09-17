@@ -7,7 +7,7 @@ from collections import defaultdict
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from typing import cast
 
-from .discovery import _source_index
+from .discovery import _cli_binding_element, _source_index
 from .model import (
     _SCHEMA_MAPPING_KEYWORDS,
     _SCHEMA_SEQUENCE_KEYWORDS,
@@ -37,6 +37,7 @@ from .navigation import (
     _relative_link,
     _repository_source_link,
     _source_anchor,
+    _source_location_links,
     _subject_anchor,
     _subject_marker,
 )
@@ -1649,6 +1650,7 @@ def _implementation_sources(
     element: Mapping[str, object],
     trace: Mapping[str, object],
     elements_by_id: Mapping[str, Mapping[str, object]],
+    projection: Mapping[str, object],
 ) -> list[tuple[str, Mapping[str, object]]]:
     details = cast(Mapping[str, object], element.get("details", {}))
     if element["interface"] == "http-operations" and not details.get("supplemental"):
@@ -1682,9 +1684,9 @@ def _implementation_sources(
                 matches = binding["public_identity"] == details["public_identity"]
                 role = "Client method"
             else:
-                command = " ".join(cast(Sequence[str], details["command_path"]))
-                matches = command == binding["command"] or command.endswith(
-                    f" {binding['command']}"
+                matches = (
+                    _cli_binding_element(binding, list(elements_by_id.values()), projection)["id"]
+                    == element["id"]
                 )
                 role = "Command callback"
             if matches:
@@ -1717,7 +1719,7 @@ def _render_dossier(
     values = [pointer_value(projection, pointer) for pointer in pointers]
     placed_subjects: set[str] = set()
     source_index = _source_index(trace)
-    implementation_sources = _implementation_sources(element, trace, elements_by_id)
+    implementation_sources = _implementation_sources(element, trace, elements_by_id, projection)
     details = cast(Mapping[str, object], element.get("details", {}))
     purpose = "Exact externally visible contract owned by this semantic dossier."
     if len(values) == 1 and isinstance(values[0], Mapping):
@@ -1979,34 +1981,11 @@ def _render_dossier(
         ]
     )
     for source_id in cast(Sequence[str], element["source_authority_ids"]):
-        if source_id.startswith("openapi:") and implementation_sources:
-            lines.append(
-                f"- **OpenAPI authority:** [{_md(source_id)}]"
-                f"({_anchor_link(path, source_evidence_path, _source_anchor(source_id))})"
-            )
-            continue
         source = source_index[source_id]
-        location = cast(Mapping[str, object], source.get("source", {}))
-        bindings = cast(Sequence[Mapping[str, object]], source.get("bindings", ()))
-        declarations = cast(Sequence[Mapping[str, object]], source.get("declarations", ()))
-        rendered = str(
-            location.get(
-                "path",
-                location.get(
-                    "module",
-                    bindings[0]["path"]
-                    if bindings
-                    else declarations[0]["path"]
-                    if declarations
-                    else source_id,
-                ),
-            )
-        )
-        symbol = f"::{location['symbol']}" if "symbol" in location else ""
         lines.append(
             f"- [{_md(source_id)}]"
             f"({_anchor_link(path, source_evidence_path, _source_anchor(source_id))}) — "
-            f"`{rendered}{symbol}`"
+            + "; ".join(_source_location_links(path, source))
         )
     for role, location in implementation_sources:
         label = f"{location['path']}::{location['symbol']}"
@@ -2057,9 +2036,9 @@ def _render_dossier(
                 "",
                 "### Configuration authority and bindings",
                 "",
-                "The owning implementation defines the setting. The parser expression records "
-                "each independently discovered consumer binding and effective default exercised "
-                "by qualification.",
+                "The owning implementation defines the setting. These declarations, consumer "
+                "bindings, and default expressions are discovered source facts, not executed "
+                "observations of effective configuration.",
                 "",
                 "| Kind | Consumer | Source | Authority |",
                 "|---|---|---|---|",
@@ -2068,12 +2047,14 @@ def _render_dossier(
         for source in configuration_sources:
             for declaration in cast(Sequence[Mapping[str, object]], source.get("declarations", ())):
                 lines.append(
-                    f"| declaration | — | `{_md(declaration['path'])}` | "
+                    f"| declaration | — | "
+                    f"{_repository_source_link(path, declaration, str(declaration['path']))} | "
                     f"`{_md(declaration['pointer'])}` |"
                 )
             for binding in cast(Sequence[Mapping[str, object]], source["bindings"]):
                 lines.append(
-                    f"| parser | `{_md(binding['consumer'])}` | `{_md(binding['path'])}` | "
+                    f"| parser | `{_md(binding['consumer'])}` | "
+                    f"{_repository_source_link(path, binding, str(binding['path']))} | "
                     f"`{_md(binding['expression'])}` |"
                 )
     lines.extend(

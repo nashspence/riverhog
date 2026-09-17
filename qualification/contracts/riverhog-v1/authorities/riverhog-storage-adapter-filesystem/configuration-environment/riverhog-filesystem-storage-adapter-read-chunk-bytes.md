@@ -48,16 +48,16 @@ Shared facts for every subject below: configuration="RIVERHOG_FILESYSTEM_STORAGE
 
 ### Executable sources
 
-- [configuration-environment:riverhog-storage-adapter-filesystem:RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_READ_CHUNK_BYTES](../../../evidence/sources.md#src-7b65a90cf1) — `reference/riverhog/storage/filesystem/src/riverhog_storage_adapter_filesystem/app.py`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:riverhog-storage-adapter-filesystem:RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_READ_CHUNK_BYTES](../../../evidence/sources.md#src-7b65a90cf1) — [reference/riverhog/storage/filesystem/src/riverhog\_storage\_adapter\_filesystem/app.py::\_optional](../../../../../../reference/riverhog/storage/filesystem/src/riverhog_storage_adapter_filesystem/app.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 
-The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
+The owning implementation defines the setting. These declarations, consumer bindings, and default expressions are discovered source facts, not executed observations of effective configuration.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| parser | `riverhog-storage-adapter-filesystem` | `reference/riverhog/storage/filesystem/src/riverhog_storage_adapter_filesystem/app.py` | `os.getenv(f'{_PREFIX}{name}', '')` |
+| parser | `riverhog-storage-adapter-filesystem` | [reference/riverhog/storage/filesystem/src/riverhog\_storage\_adapter\_filesystem/app.py](../../../../../../reference/riverhog/storage/filesystem/src/riverhog_storage_adapter_filesystem/app.py) | `os.getenv(f'{_PREFIX}{name}', '')` |
 
 ### Machine authority
 

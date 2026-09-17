@@ -37,16 +37,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:riverhog-server:RIVERHOG_BROWSE_TOKEN_LIFETIME](../../../evidence/sources.md#src-9cc099a19b) — `riverhog/src/riverhog_core/runtime_config.py`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:riverhog-server:RIVERHOG_BROWSE_TOKEN_LIFETIME](../../../evidence/sources.md#src-9cc099a19b) — [riverhog/src/riverhog\_core/runtime\_config.py::load\_runtime\_config](../../../../../../riverhog/src/riverhog_core/runtime_config.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 
-The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
+The owning implementation defines the setting. These declarations, consumer bindings, and default expressions are discovered source facts, not executed observations of effective configuration.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| parser | `riverhog-server` | `riverhog/src/riverhog_core/runtime_config.py` | `os.getenv('RIVERHOG_BROWSE_TOKEN_LIFETIME', '24h')` |
+| parser | `riverhog-server` | [riverhog/src/riverhog\_core/runtime\_config.py](../../../../../../riverhog/src/riverhog_core/runtime_config.py) | `os.getenv('RIVERHOG_BROWSE_TOKEN_LIFETIME', '24h')` |
 
 ### Machine authority
 

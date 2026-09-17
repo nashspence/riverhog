@@ -76,8 +76,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Executable sources
 
-- [cli:riverhog-storage-adapter-filesystem](../../../evidence/sources.md#src-ac98690b10) — `reference/riverhog/storage/filesystem/src/riverhog_storage_adapter_filesystem/app.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [cli:riverhog-storage-adapter-filesystem](../../../evidence/sources.md#src-ac98690b10) — [reference/riverhog/storage/filesystem/src/riverhog\_storage\_adapter\_filesystem/app.py::&lt;module&gt;](../../../../../../reference/riverhog/storage/filesystem/src/riverhog_storage_adapter_filesystem/app.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

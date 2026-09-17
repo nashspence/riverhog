@@ -123,8 +123,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 
 ### Executable sources
 
-- [cli:riverhog-storage-adapter-filesystem-materialize](../../../evidence/sources.md#src-c89790480b) — `reference/riverhog/storage/filesystem/src/riverhog_storage_adapter_filesystem/materialize_cli.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [cli:riverhog-storage-adapter-filesystem-materialize](../../../evidence/sources.md#src-c89790480b) — [reference/riverhog/storage/filesystem/src/riverhog\_storage\_adapter\_filesystem/materialize\_cli.py::&lt;module&gt;](../../../../../../reference/riverhog/storage/filesystem/src/riverhog_storage_adapter_filesystem/materialize_cli.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

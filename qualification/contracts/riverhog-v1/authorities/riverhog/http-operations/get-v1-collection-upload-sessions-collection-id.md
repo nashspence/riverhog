@@ -64,10 +64,10 @@ Get Collection Upload Session
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
-- **Handler:** [riverhog/src/riverhog_api/routers/collections.py::get_collection_upload_session](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L482)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- **Handler:** [riverhog/src/riverhog\_api/routers/collections.py::get\_collection\_upload\_session](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L482)
 
 ### Structural operation bindings
 
@@ -83,6 +83,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection upload start",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/collection/upload/start/v1",
       "source": {
         "line": 2170,
         "module": "piggity.main",
@@ -92,6 +94,8 @@ This generated record links maintained client, CLI, response-authority, and prov
     },
     {
       "command": "collection upload show",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/collection/upload/show/v1",
       "source": {
         "line": 2364,
         "module": "piggity.main",
@@ -101,6 +105,8 @@ This generated record links maintained client, CLI, response-authority, and prov
     },
     {
       "command": "collection upload watch",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/collection/upload/watch/v1",
       "source": {
         "line": 2404,
         "module": "piggity.main",

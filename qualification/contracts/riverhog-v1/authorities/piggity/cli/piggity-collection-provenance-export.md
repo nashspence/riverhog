@@ -112,9 +112,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ### Executable sources
 
-- [cli:piggity](../../../evidence/sources.md#src-094022231f) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::provenance_export_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L2675)
+- [cli:piggity](../../../evidence/sources.md#src-094022231f) — [reference/riverhog/applications/piggity/src/piggity/main.py::&lt;module&gt;](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::provenance\_export\_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L2675)
 
 ### Machine authority
 

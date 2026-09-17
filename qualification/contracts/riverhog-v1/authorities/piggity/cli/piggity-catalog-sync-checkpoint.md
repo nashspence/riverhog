@@ -83,9 +83,9 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 ### Executable sources
 
-- [cli:piggity](../../../evidence/sources.md#src-094022231f) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::catalog_sync_checkpoint_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L770)
+- [cli:piggity](../../../evidence/sources.md#src-094022231f) — [reference/riverhog/applications/piggity/src/piggity/main.py::&lt;module&gt;](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::catalog\_sync\_checkpoint\_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L770)
 
 ### Machine authority
 

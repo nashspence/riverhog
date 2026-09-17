@@ -37,16 +37,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:riverhog-server:RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE](../../../evidence/sources.md#src-d46028cd7f) — `riverhog/src/riverhog_core/pack_retrieval.py`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:riverhog-server:RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE](../../../evidence/sources.md#src-d46028cd7f) — [riverhog/src/riverhog\_core/pack\_retrieval.py::\_scoped\_env\_value](../../../../../../riverhog/src/riverhog_core/pack_retrieval.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 
-The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
+The owning implementation defines the setting. These declarations, consumer bindings, and default expressions are discovered source facts, not executed observations of effective configuration.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| parser | `riverhog-server` | `riverhog/src/riverhog_core/pack_retrieval.py` | `values.get(global_name)` |
+| parser | `riverhog-server` | [riverhog/src/riverhog\_core/pack\_retrieval.py](../../../../../../riverhog/src/riverhog_core/pack_retrieval.py) | `values.get(global_name)` |
 
 ### Machine authority
 

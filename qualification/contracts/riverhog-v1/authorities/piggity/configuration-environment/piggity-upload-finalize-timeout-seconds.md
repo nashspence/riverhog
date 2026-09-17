@@ -48,16 +48,16 @@ Shared facts for every subject below: configuration="PIGGITY_UPLOAD_FINALIZE_TIM
 
 ### Executable sources
 
-- [configuration-environment:piggity:PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS](../../../evidence/sources.md#src-40c863880d) — `reference/riverhog/applications/piggity/src/piggity/main.py`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:piggity:PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS](../../../evidence/sources.md#src-40c863880d) — [reference/riverhog/applications/piggity/src/piggity/main.py::\_upload\_finalize\_timeout\_seconds](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 
-The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
+The owning implementation defines the setting. These declarations, consumer bindings, and default expressions are discovered source facts, not executed observations of effective configuration.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| parser | `piggity` | `reference/riverhog/applications/piggity/src/piggity/main.py` | `os.getenv('PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS')` |
+| parser | `piggity` | [reference/riverhog/applications/piggity/src/piggity/main.py](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py) | `os.getenv('PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS')` |
 
 ### Machine authority
 

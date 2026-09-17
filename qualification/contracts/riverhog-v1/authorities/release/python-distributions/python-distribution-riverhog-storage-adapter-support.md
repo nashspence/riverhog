@@ -47,10 +47,10 @@ Publication preserves these existing component authorities; it does not reclassi
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [release-distribution:riverhog-storage-adapter-support](../../../evidence/sources.md#src-e3b24ac45f) — `packages/riverhog-storage-adapter-support/pyproject.toml`
-- [release-publication:planner](../../../evidence/sources.md#src-03a2f48338) — `scripts/release.py::publication_contract`
-- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [release-distribution:riverhog-storage-adapter-support](../../../evidence/sources.md#src-e3b24ac45f) — [packages/riverhog-storage-adapter-support/pyproject.toml](../../../../../../packages/riverhog-storage-adapter-support/pyproject.toml)
+- [release-publication:planner](../../../evidence/sources.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
 
 ### Machine authority
 

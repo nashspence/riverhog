@@ -62,8 +62,11 @@ def test_atlas_rollups_and_dossiers_are_exact_and_descriptive() -> None:
         item["sha256"] for item in documents if item["kind"] == "root-index"
     )
     # Presentation-quality witness, deliberately outside machine-closure validation.
+    # Link destinations are navigation syntax, not additional visible reading content.
+    # Exact destinations and their source associations have independent checks below.
     assert max(
-        len(payload.split(b"### Exact owned JSON", 1)[0]) for payload in checked.files.values()
+        len(re.sub(rb"\]\([^\s)]+\)", b"]", payload.split(b"### Exact owned JSON", 1)[0]))
+        for payload in checked.files.values()
     ) <= (atlas.AUDIT_PRIMARY_CONTENT_TARGET_BYTES)
     assert all(b"### Exact owned JSON" in checked.files[item["dossier"]] for item in elements)
 
@@ -254,7 +257,7 @@ def test_operation_client_binding_requires_a_python_member(invalid_binding: str)
         )
 
     with pytest.raises(atlas.ContractAtlasError, match="lacks a Python"):
-        discovery._link_operation_qualification(elements, trace)
+        discovery._link_operation_qualification(elements, trace, checked.root["projection"])
 
 
 def test_inherited_client_method_routes_to_http_and_its_actual_definition() -> None:
@@ -285,6 +288,205 @@ def test_inherited_client_method_routes_to_http_and_its_actual_definition() -> N
     )
 
 
+@pytest.mark.parametrize("reverse", (False, True))
+def test_operation_command_binding_uses_relative_paths_without_prefix_collisions(
+    reverse: bool,
+) -> None:
+    projection = {
+        "boundaries": {
+            "components": [
+                {
+                    "distribution": "command-owner",
+                    "path": "apps/command-owner",
+                    "console_scripts": {"piggity": "different_import.cli:main"},
+                },
+                {
+                    "distribution": "shared-callback",
+                    "path": "packages/callback",
+                    "console_scripts": {},
+                },
+            ]
+        }
+    }
+    elements = [
+        {
+            "id": name,
+            "interface": "cli",
+            "authority": "command-owner",
+            "details": {
+                "command_path": path,
+                "result_identity": name,
+            },
+        }
+        for name, path in (
+            ("short", ["piggity", "inspect"]),
+            ("nested", ["piggity", "piggity", "inspect"]),
+        )
+    ]
+    if reverse:
+        elements.reverse()
+    binding = {
+        "command": "piggity inspect",
+        "executable": "piggity",
+        "result_identity": "nested",
+        "source": {
+            "path": "packages/callback/src/different_import/cli.py",
+            "module": "different_import.cli",
+            "symbol": "inspect_nested",
+        },
+    }
+    assert discovery._cli_binding_element(binding, elements, projection)["id"] == "nested"
+    binding["command"] = "inspect"
+    binding["result_identity"] = "short"
+    assert discovery._cli_binding_element(binding, elements, projection)["id"] == "short"
+    binding["command"] = "extra inspect"
+    with pytest.raises(atlas.ContractAtlasError, match="no unique executable command"):
+        discovery._cli_binding_element(binding, elements, projection)
+    binding["command"] = "inspect"
+    elements.append(deepcopy(next(item for item in elements if item["id"] == "short")))
+    with pytest.raises(atlas.ContractAtlasError, match="2 candidates"):
+        discovery._cli_binding_element(binding, elements, projection)
+
+
+def test_cli_discovery_retains_a_subcommand_named_like_its_parent() -> None:
+    elements: list[dict[str, object]] = []
+    discovery._walk_cli(
+        elements,
+        "owner",
+        {
+            "name": "tool",
+            "commands": {
+                "tool": {"name": "tool", "commands": {"inspect": {"name": "inspect"}}},
+            },
+        },
+        "/external_contract/cli/tool",
+        (),
+        source_id="cli:tool",
+    )
+    assert [item["details"]["command_path"] for item in elements] == [
+        ["tool"],
+        ["tool", "tool"],
+        ["tool", "tool", "inspect"],
+    ]
+
+
+def test_protocol_ownership_follows_the_declared_source_project() -> None:
+    projection = deepcopy(checked_atlas().root["projection"])
+    trace = deepcopy(checked_atlas().root["trace"])
+    protocol = next(
+        item for item in trace["sources"] if item["id"].startswith("protocol:generated:")
+    )
+    location = protocol["source"]
+    expected = discovery._source_component(location, projection)
+    # Another valid component name must not steal ownership through module spelling.
+    location["module"] = "riverhog_client.schemas"
+    assert discovery._source_component(location, projection) == expected
+    owners = {
+        item["authority"]
+        for item in discovery._external_elements(projection, trace)
+        if protocol["id"] in item["source_authority_ids"]
+    }
+    assert owners == {expected}
+    component = next(
+        item for item in projection["boundaries"]["components"] if item["distribution"] == expected
+    )
+    projection["boundaries"]["components"].append({**component, "distribution": "another-owner"})
+    with pytest.raises(atlas.ContractAtlasError, match="ambiguous project ownership"):
+        discovery._external_elements(projection, trace)
+    location["path"] = "unowned/schema.py"
+    with pytest.raises(atlas.ContractAtlasError, match="no declared project owner"):
+        discovery._external_elements(projection, trace)
+
+
+@pytest.mark.parametrize("change", ("missing", "duplicate", "unowned", "executable", "result"))
+def test_operation_cli_bindings_fail_closed(change: str) -> None:
+    checked = checked_atlas()
+    trace = deepcopy(checked.root["trace"])
+    record = next(
+        item
+        for item in trace["operation_qualification"]["records"]
+        if item["application"] == "riverhog" and item["operation_id"] == "list_collections"
+    )
+    if change == "missing":
+        record["cli_bindings"] = []
+    elif change == "duplicate":
+        record["cli_bindings"].append(deepcopy(record["cli_bindings"][0]))
+    elif change == "unowned":
+        record["cli_bindings"][0]["source"]["path"] = "unowned/cli.py"
+    elif change == "executable":
+        record["cli_bindings"][0]["executable"] = "unknown-executable"
+    else:
+        record["cli_bindings"][0]["result_identity"] = "wrong-result"
+    with pytest.raises(
+        atlas.ContractAtlasError, match="exact CLI bindings|no declared project owner|no unique"
+    ):
+        discovery._link_operation_qualification(
+            deepcopy(checked.root["elements"]),
+            trace,
+            checked.root["projection"],
+        )
+
+
+def _linked_repository_paths(document: str, page: str) -> set[Path]:
+    return {
+        (REPO_ROOT / "qualification/contracts" / document)
+        .parent.joinpath(unquote(target))
+        .resolve()
+        for target in re.findall(r"\]\(([^)#]+)(?:#[^)]*)?\)", page)
+        if not target.startswith(("https:", "http:"))
+    }
+
+
+def test_source_records_and_fixtures_link_every_recorded_repository_location() -> None:
+    checked = checked_atlas()
+    document = "riverhog-v1/evidence/sources.md"
+    page = checked.files[document].decode()
+    for record in checked.root["sources"]:
+        row = next(
+            line
+            for line in page.splitlines()
+            if f'id="{atlas._source_anchor(record["id"])}"' in line
+        )
+        locations = [record["source"]] if "source" in record else []
+        locations += record.get("bindings", []) + record.get("declarations", [])
+        links = _linked_repository_paths(document, row)
+        for location in locations:
+            source = REPO_ROOT / location["path"]
+            assert source in links, record["id"]
+            assert source.is_file()
+        for fixture in record.get("fixtures", []):
+            assert REPO_ROOT / fixture["path"] in _linked_repository_paths(document, page)
+    assert "do not record executed restart or introspection results" in page
+
+
+@pytest.mark.parametrize(
+    "interface",
+    (
+        "http-schemas",
+        "configuration-environment",
+        "configuration",
+        "schema",
+        "process-protocol",
+        "durable-state",
+        "python",
+    ),
+)
+def test_non_operation_dossiers_have_direct_maintained_source_routes(interface: str) -> None:
+    checked = checked_atlas()
+    sources = {item["id"]: item for item in checked.root["sources"]}
+    element = next(item for item in checked.root["elements"] if item["interface"] == interface)
+    page = checked.files[element["dossier"]].decode()
+    links = _linked_repository_paths(element["dossier"], page)
+    for identity in element["source_authority_ids"]:
+        record = sources[identity]
+        locations = [record["source"]] if "source" in record else []
+        locations += record.get("bindings", []) + record.get("declarations", [])
+        assert locations
+        assert all(REPO_ROOT / location["path"] in links for location in locations)
+    if interface == "configuration-environment":
+        assert "discovered source facts, not executed observations" in page
+
+
 @pytest.mark.parametrize(
     "target",
     ("../../../tests/example.py#L8", "../../../tests/other.py#L7", "../../../tests/example.py"),
@@ -299,6 +501,19 @@ def test_repository_links_accept_only_trace_recorded_file_and_line(target: str) 
         atlas._reachable_atlas_documents(
             root, {root: f"[test]({target})\n".encode()}, repository_sources=allowed
         )
+
+
+def test_file_source_routes_require_the_exact_recorded_path() -> None:
+    root = "riverhog-v1/index.md"
+    allowed = {"../../tests/example.py"}
+    assert atlas._reachable_atlas_documents(
+        root, {root: b"[source](../../../tests/example.py)\n"}, repository_sources=allowed
+    ) == {root}
+    for target in ("../../../tests/other.py", "../../../tests/example.py#L7"):
+        with pytest.raises(atlas.ContractAtlasError, match="unresolved local link"):
+            atlas._reachable_atlas_documents(
+                root, {root: f"[source]({target})\n".encode()}, repository_sources=allowed
+            )
 
 
 def test_every_dossier_is_lossless_and_representative_contract_classes_are_semantics_first() -> (

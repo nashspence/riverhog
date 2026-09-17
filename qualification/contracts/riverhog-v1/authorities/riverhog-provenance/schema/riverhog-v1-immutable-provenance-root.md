@@ -76,8 +76,8 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-root-v1.schema.json](../../../evidence/sources.md#src-7c2ebe352d) — `packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-root-v1.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-root-v1.schema.json](../../../evidence/sources.md#src-7c2ebe352d) — [packages/riverhog-provenance/src/riverhog\_provenance/schemas/riverhog-provenance-root-v1.schema.json](../../../../../../packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-root-v1.schema.json)
 
 ### Machine authority
 

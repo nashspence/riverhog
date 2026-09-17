@@ -80,8 +80,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 
 ### Executable sources
 
-- [cli:stove0-review-sampler-conformance](../../../evidence/sources.md#src-5796b3dff4) — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/conformance.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [cli:stove0-review-sampler-conformance](../../../evidence/sources.md#src-5796b3dff4) — [reference/stove0/targets/review/sampler/support/src/stove0\_review\_sampler\_support/conformance.py::&lt;module&gt;](../../../../../../reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/conformance.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

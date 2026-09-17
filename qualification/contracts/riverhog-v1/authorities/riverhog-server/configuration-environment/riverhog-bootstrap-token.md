@@ -37,16 +37,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:riverhog-server:RIVERHOG_BOOTSTRAP_TOKEN](../../../evidence/sources.md#src-46bdbba342) — `riverhog/src/riverhog_api/auth.py`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:riverhog-server:RIVERHOG_BOOTSTRAP_TOKEN](../../../evidence/sources.md#src-46bdbba342) — [riverhog/src/riverhog\_api/auth.py::authenticate\_token](../../../../../../riverhog/src/riverhog_api/auth.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 
-The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
+The owning implementation defines the setting. These declarations, consumer bindings, and default expressions are discovered source facts, not executed observations of effective configuration.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| parser | `riverhog-server` | `riverhog/src/riverhog_api/auth.py` | `os.getenv(BOOTSTRAP_TOKEN_ENV, '')` |
+| parser | `riverhog-server` | [riverhog/src/riverhog\_api/auth.py](../../../../../../riverhog/src/riverhog_api/auth.py) | `os.getenv(BOOTSTRAP_TOKEN_ENV, '')` |
 
 ### Machine authority
 

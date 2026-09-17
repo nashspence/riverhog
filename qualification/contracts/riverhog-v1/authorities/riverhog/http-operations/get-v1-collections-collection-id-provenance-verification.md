@@ -63,10 +63,10 @@ Get Collection Provenance Verification
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
-- **Handler:** [riverhog/src/riverhog_api/routers/provenance.py::get_collection_provenance_verification](../../../../../../riverhog/src/riverhog_api/routers/provenance.py#L318)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- **Handler:** [riverhog/src/riverhog\_api/routers/provenance.py::get\_collection\_provenance\_verification](../../../../../../riverhog/src/riverhog_api/routers/provenance.py#L318)
 
 ### Structural operation bindings
 
@@ -82,6 +82,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection provenance verify",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/collection/provenance/verify/v1",
       "source": {
         "line": 2706,
         "module": "piggity.main",
@@ -91,6 +93,8 @@ This generated record links maintained client, CLI, response-authority, and prov
     },
     {
       "command": "collection provenance verification-show",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/collection/provenance/verification-show/v1",
       "source": {
         "line": 2725,
         "module": "piggity.main",

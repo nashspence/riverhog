@@ -56,10 +56,10 @@ Create Catalog Sync Checkpoint
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
-- **Handler:** [riverhog/src/riverhog_api/routers/catalog_sync.py::create_catalog_sync_checkpoint](../../../../../../riverhog/src/riverhog_api/routers/catalog_sync.py#L30)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- **Handler:** [riverhog/src/riverhog\_api/routers/catalog\_sync.py::create\_catalog\_sync\_checkpoint](../../../../../../riverhog/src/riverhog_api/routers/catalog_sync.py#L30)
 
 ### Structural operation bindings
 
@@ -75,6 +75,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "catalog-sync checkpoint",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/catalog-sync/checkpoint/v1",
       "source": {
         "line": 770,
         "module": "piggity.main",

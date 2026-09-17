@@ -76,8 +76,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Executable sources
 
-- [cli:stove0-opus-review-sampler](../../../evidence/sources.md#src-77383ced4a) — `reference/stove0/targets/opus/review-sampler/src/stove0_opus_review_sampler/app.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [cli:stove0-opus-review-sampler](../../../evidence/sources.md#src-77383ced4a) — [reference/stove0/targets/opus/review-sampler/src/stove0\_opus\_review\_sampler/app.py::&lt;module&gt;](../../../../../../reference/stove0/targets/opus/review-sampler/src/stove0_opus_review_sampler/app.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

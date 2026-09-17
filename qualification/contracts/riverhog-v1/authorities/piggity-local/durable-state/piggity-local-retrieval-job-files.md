@@ -59,8 +59,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [state:piggity-local](../../../evidence/sources.md#src-f6a1289f67) — `reference/riverhog/applications/piggity/src/piggity/state_migrations/v1_ddl.py`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [state:piggity-local](../../../evidence/sources.md#src-f6a1289f67) — [reference/riverhog/applications/piggity/src/piggity/state\_migrations/v1\_ddl.py::SQLITE\_DDL](../../../../../../reference/riverhog/applications/piggity/src/piggity/state_migrations/v1_ddl.py)
 
 ### Machine authority
 

@@ -97,10 +97,10 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- **OpenAPI authority:** [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29a)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
-- **Handler:** [reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::create_app.<locals>.status](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py#L270)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29a) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- **Handler:** [reference/riverhog/ingress/ftp/src/riverhog\_ftp\_adapter/app.py::create\_app.&lt;locals&gt;.status](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py#L270)
 
 ### Structural operation bindings
 
@@ -116,6 +116,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "status",
+      "executable": "riverhog-ftp-adapter",
+      "result_identity": "riverhog-ftp-adapter-cli-result/status/v1",
       "source": {
         "line": 395,
         "module": "riverhog_ftp_adapter.app",

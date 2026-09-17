@@ -47,8 +47,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [python:stove0-target-client:stove0_target_client](../../../evidence/sources.md#src-be4c80156f) — `reference/stove0/packages/target-client/src/stove0_target_client/__init__.py`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [python:stove0-target-client:stove0_target_client](../../../evidence/sources.md#src-be4c80156f) — [reference/stove0/packages/target-client/src/stove0\_target\_client/\_\_init\_\_.py](../../../../../../reference/stove0/packages/target-client/src/stove0_target_client/__init__.py)
 
 ### Machine authority
 

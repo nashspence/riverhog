@@ -43,8 +43,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-reparse-point.json](../../../evidence/sources.md#src-7b71865af2) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-reparse-point.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-reparse-point.json](../../../evidence/sources.md#src-7b71865af2) — [reference/riverhog/provenance/contracts/windows/src/riverhog\_provenance\_windows\_contracts/schemas/windows-reparse-point.schema.json](../../../../../../reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-reparse-point.schema.json)
 
 ### Machine authority
 

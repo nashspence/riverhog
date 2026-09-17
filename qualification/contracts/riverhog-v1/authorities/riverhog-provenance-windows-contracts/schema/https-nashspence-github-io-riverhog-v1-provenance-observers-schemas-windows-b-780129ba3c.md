@@ -57,8 +57,8 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-backup-stream-info.json](../../../evidence/sources.md#src-40a5d23088) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-backup-stream-info.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-backup-stream-info.json](../../../evidence/sources.md#src-40a5d23088) — [reference/riverhog/provenance/contracts/windows/src/riverhog\_provenance\_windows\_contracts/schemas/windows-backup-stream-info.schema.json](../../../../../../reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-backup-stream-info.schema.json)
 
 ### Machine authority
 

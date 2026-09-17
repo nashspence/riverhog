@@ -37,8 +37,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [python:stove0-review-planning:stove0_review_planning](../../../evidence/sources.md#src-354ae519e9) — `reference/stove0/targets/review/planning/src/stove0_review_planning/__init__.py`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [python:stove0-review-planning:stove0_review_planning](../../../evidence/sources.md#src-354ae519e9) — [reference/stove0/targets/review/planning/src/stove0\_review\_planning/\_\_init\_\_.py](../../../../../../reference/stove0/targets/review/planning/src/stove0_review_planning/__init__.py)
 
 ### Machine authority
 

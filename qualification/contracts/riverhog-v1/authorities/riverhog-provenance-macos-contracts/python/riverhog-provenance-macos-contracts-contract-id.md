@@ -37,8 +37,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [python:riverhog-provenance-macos-contracts:riverhog_provenance_macos_contracts](../../../evidence/sources.md#src-75fa891e7c) — `reference/riverhog/provenance/contracts/macos/src/riverhog_provenance_macos_contracts/__init__.py`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [python:riverhog-provenance-macos-contracts:riverhog_provenance_macos_contracts](../../../evidence/sources.md#src-75fa891e7c) — [reference/riverhog/provenance/contracts/macos/src/riverhog\_provenance\_macos\_contracts/\_\_init\_\_.py](../../../../../../reference/riverhog/provenance/contracts/macos/src/riverhog_provenance_macos_contracts/__init__.py)
 
 ### Machine authority
 

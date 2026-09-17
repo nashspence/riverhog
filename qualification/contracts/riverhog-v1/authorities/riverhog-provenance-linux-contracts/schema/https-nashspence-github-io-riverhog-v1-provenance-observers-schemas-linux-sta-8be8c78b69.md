@@ -55,8 +55,8 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json](../../../evidence/sources.md#src-ea93e415ba) — `reference/riverhog/provenance/contracts/linux/src/riverhog_provenance_linux_contracts/schemas/linux-statx-attributes.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json](../../../evidence/sources.md#src-ea93e415ba) — [reference/riverhog/provenance/contracts/linux/src/riverhog\_provenance\_linux\_contracts/schemas/linux-statx-attributes.schema.json](../../../../../../reference/riverhog/provenance/contracts/linux/src/riverhog_provenance_linux_contracts/schemas/linux-statx-attributes.schema.json)
 
 ### Machine authority
 

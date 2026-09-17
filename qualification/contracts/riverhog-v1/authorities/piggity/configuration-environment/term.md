@@ -37,16 +37,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:piggity:TERM](../../../evidence/sources.md#src-6ee2b49508) — `reference/riverhog/applications/piggity/src/piggity/cli_support.py`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:piggity:TERM](../../../evidence/sources.md#src-6ee2b49508) — [reference/riverhog/applications/piggity/src/piggity/cli\_support.py::plain\_output\_requested](../../../../../../reference/riverhog/applications/piggity/src/piggity/cli_support.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 
-The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
+The owning implementation defines the setting. These declarations, consumer bindings, and default expressions are discovered source facts, not executed observations of effective configuration.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| parser | `piggity` | `reference/riverhog/applications/piggity/src/piggity/cli_support.py` | `os.getenv('TERM')` |
+| parser | `piggity` | [reference/riverhog/applications/piggity/src/piggity/cli\_support.py](../../../../../../reference/riverhog/applications/piggity/src/piggity/cli_support.py) | `os.getenv('TERM')` |
 
 ### Machine authority
 

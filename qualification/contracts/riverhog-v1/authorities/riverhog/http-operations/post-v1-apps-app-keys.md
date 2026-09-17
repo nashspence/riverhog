@@ -71,10 +71,10 @@ Create App Key
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
-- **Handler:** [riverhog/src/riverhog_api/routers/apps.py::create_app_key](../../../../../../riverhog/src/riverhog_api/routers/apps.py#L86)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- **Handler:** [riverhog/src/riverhog\_api/routers/apps.py::create\_app\_key](../../../../../../riverhog/src/riverhog_api/routers/apps.py#L86)
 
 ### Structural operation bindings
 
@@ -90,6 +90,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "app key create",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/app/key/create/v1",
       "source": {
         "line": 1133,
         "module": "piggity.main",

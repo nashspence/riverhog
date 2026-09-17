@@ -140,8 +140,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [state:riverhog-ftp-custody](../../../evidence/sources.md#src-54f88a3a47) — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/state_contract.py`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [state:riverhog-ftp-custody](../../../evidence/sources.md#src-54f88a3a47) — [reference/riverhog/ingress/ftp/src/riverhog\_ftp\_adapter/state\_contract.py::ftp\_custody\_state\_contract](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/state_contract.py)
 
 ### Machine authority
 

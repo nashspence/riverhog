@@ -37,16 +37,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:gogurt-windows-listener-host:PATHEXT](../../../evidence/sources.md#src-3463aeca7f) — `reference/gogurt/listener-host/windows/src/gogurt_windows_listener_host/__init__.py`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:gogurt-windows-listener-host:PATHEXT](../../../evidence/sources.md#src-3463aeca7f) — [reference/gogurt/listener-host/windows/src/gogurt\_windows\_listener\_host/\_\_init\_\_.py::resolve\_listener\_executable](../../../../../../reference/gogurt/listener-host/windows/src/gogurt_windows_listener_host/__init__.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 
-The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
+The owning implementation defines the setting. These declarations, consumer bindings, and default expressions are discovered source facts, not executed observations of effective configuration.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| parser | `gogurt-windows-listener-host` | `reference/gogurt/listener-host/windows/src/gogurt_windows_listener_host/__init__.py` | `os.environ.get('PATHEXT', '.COM;.EXE;.BAT;.CMD')` |
+| parser | `gogurt-windows-listener-host` | [reference/gogurt/listener-host/windows/src/gogurt\_windows\_listener\_host/\_\_init\_\_.py](../../../../../../reference/gogurt/listener-host/windows/src/gogurt_windows_listener_host/__init__.py) | `os.environ.get('PATHEXT', '.COM;.EXE;.BAT;.CMD')` |
 
 ### Machine authority
 

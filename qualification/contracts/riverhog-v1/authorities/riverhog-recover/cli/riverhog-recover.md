@@ -157,8 +157,8 @@ Shared facts for every subject below: source_constraint={"field":"nargs"}
 
 ### Executable sources
 
-- [cli:riverhog-recover](../../../evidence/sources.md#src-375119d633) — `reference/riverhog/recovery/src/riverhog_recover/cli.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [cli:riverhog-recover](../../../evidence/sources.md#src-375119d633) — [reference/riverhog/recovery/src/riverhog\_recover/cli.py::&lt;module&gt;](../../../../../../reference/riverhog/recovery/src/riverhog_recover/cli.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

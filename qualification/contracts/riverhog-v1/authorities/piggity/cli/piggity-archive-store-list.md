@@ -94,9 +94,9 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 ### Executable sources
 
-- [cli:piggity](../../../evidence/sources.md#src-094022231f) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::archive_store_list_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L2865)
+- [cli:piggity](../../../evidence/sources.md#src-094022231f) — [reference/riverhog/applications/piggity/src/piggity/main.py::&lt;module&gt;](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::archive\_store\_list\_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L2865)
 
 ### Machine authority
 

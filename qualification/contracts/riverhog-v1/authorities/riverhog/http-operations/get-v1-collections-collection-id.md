@@ -70,10 +70,10 @@ Get Collection
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
-- **Handler:** [riverhog/src/riverhog_api/routers/collections.py::get_collection](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L622)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- **Handler:** [riverhog/src/riverhog\_api/routers/collections.py::get\_collection](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L622)
 
 ### Structural operation bindings
 
@@ -89,6 +89,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection show",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/collection/show/v1",
       "source": {
         "line": 2525,
         "module": "piggity.main",
@@ -98,6 +100,8 @@ This generated record links maintained client, CLI, response-authority, and prov
     },
     {
       "command": "collection describe",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/collection/describe/v1",
       "source": {
         "line": 2536,
         "module": "piggity.main",
@@ -107,6 +111,8 @@ This generated record links maintained client, CLI, response-authority, and prov
     },
     {
       "command": "collection tag list",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/collection/tag/list/v1",
       "source": {
         "line": 998,
         "module": "piggity.main",
@@ -116,6 +122,8 @@ This generated record links maintained client, CLI, response-authority, and prov
     },
     {
       "command": "collection tag contains",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/collection/tag/contains/v1",
       "source": {
         "line": 1030,
         "module": "piggity.main",
@@ -125,6 +133,8 @@ This generated record links maintained client, CLI, response-authority, and prov
     },
     {
       "command": "collection tag add",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/collection/tag/add/v1",
       "source": {
         "line": 1057,
         "module": "piggity.main",
@@ -134,6 +144,8 @@ This generated record links maintained client, CLI, response-authority, and prov
     },
     {
       "command": "collection tag remove",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/collection/tag/remove/v1",
       "source": {
         "line": 1086,
         "module": "piggity.main",
@@ -143,6 +155,8 @@ This generated record links maintained client, CLI, response-authority, and prov
     },
     {
       "command": "local add",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/local/add/v1",
       "source": {
         "line": 902,
         "module": "piggity.local",
@@ -152,6 +166,8 @@ This generated record links maintained client, CLI, response-authority, and prov
     },
     {
       "command": "local sync",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/local/sync/v1",
       "source": {
         "line": 1101,
         "module": "piggity.local",
@@ -161,6 +177,8 @@ This generated record links maintained client, CLI, response-authority, and prov
     },
     {
       "command": "local repair",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/local/repair/v1",
       "source": {
         "line": 1122,
         "module": "piggity.local",

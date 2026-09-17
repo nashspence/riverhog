@@ -37,17 +37,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:riverhog-ftp-adapter:RIVERHOG_FTP_ADAPTER_CONFIG](../../../evidence/sources.md#src-67c239e18e) — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/config.py`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:riverhog-ftp-adapter:RIVERHOG_FTP_ADAPTER_CONFIG](../../../evidence/sources.md#src-67c239e18e) — [reference/riverhog/ingress/ftp/src/riverhog\_ftp\_adapter/config.py::load\_config](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/config.py); [reference/riverhog/ingress/ftp/src/riverhog\_ftp\_adapter/config.py::load\_source\_config](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/config.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 
-The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
+The owning implementation defines the setting. These declarations, consumer bindings, and default expressions are discovered source facts, not executed observations of effective configuration.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| parser | `riverhog-ftp-adapter` | `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/config.py` | `os.environ.get('RIVERHOG_FTP_ADAPTER_CONFIG', '')` |
-| parser | `riverhog-ftp-adapter` | `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/config.py` | `os.environ.get('RIVERHOG_FTP_ADAPTER_CONFIG', '')` |
+| parser | `riverhog-ftp-adapter` | [reference/riverhog/ingress/ftp/src/riverhog\_ftp\_adapter/config.py](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/config.py) | `os.environ.get('RIVERHOG_FTP_ADAPTER_CONFIG', '')` |
+| parser | `riverhog-ftp-adapter` | [reference/riverhog/ingress/ftp/src/riverhog\_ftp\_adapter/config.py](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/config.py) | `os.environ.get('RIVERHOG_FTP_ADAPTER_CONFIG', '')` |
 
 ### Machine authority
 

@@ -57,8 +57,8 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-compression-state.json](../../../evidence/sources.md#src-40e7549720) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-compression-state.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-compression-state.json](../../../evidence/sources.md#src-40e7549720) — [reference/riverhog/provenance/contracts/windows/src/riverhog\_provenance\_windows\_contracts/schemas/windows-compression-state.schema.json](../../../../../../reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-compression-state.schema.json)
 
 ### Machine authority
 

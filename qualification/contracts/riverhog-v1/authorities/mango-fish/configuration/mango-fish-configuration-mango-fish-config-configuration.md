@@ -84,8 +84,8 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ### Executable sources
 
-- [configuration:mango-fish:configuration:mango-fish-config](../../../evidence/sources.md#src-fead015e98) — `reference/riverhog/applications/mango-fish/src/mango_fish/relay.py::MangoFishConfig`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [configuration:mango-fish:configuration:mango-fish-config](../../../evidence/sources.md#src-fead015e98) — [reference/riverhog/applications/mango-fish/src/mango\_fish/relay.py::MangoFishConfig](../../../../../../reference/riverhog/applications/mango-fish/src/mango_fish/relay.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

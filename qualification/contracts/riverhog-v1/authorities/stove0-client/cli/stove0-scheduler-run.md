@@ -86,9 +86,9 @@ Shared facts for every subject below: minimum=1
 
 ### Executable sources
 
-- [cli:stove0](../../../evidence/sources.md#src-6203ae7d88) — `reference/stove0/application/client/src/stove0_cli/main.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- **Command callback:** [reference/stove0/application/client/src/stove0_cli/main.py::scheduler_run](../../../../../../reference/stove0/application/client/src/stove0_cli/main.py#L495)
+- [cli:stove0](../../../evidence/sources.md#src-6203ae7d88) — [reference/stove0/application/client/src/stove0\_cli/main.py::&lt;module&gt;](../../../../../../reference/stove0/application/client/src/stove0_cli/main.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- **Command callback:** [reference/stove0/application/client/src/stove0\_cli/main.py::scheduler\_run](../../../../../../reference/stove0/application/client/src/stove0_cli/main.py#L495)
 
 ### Machine authority
 

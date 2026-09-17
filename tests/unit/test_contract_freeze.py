@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import importlib.util
 import inspect
 import json
@@ -12,8 +13,10 @@ from types import ModuleType
 from typing import Any
 
 import pytest
+import typer
 from pydantic import BaseModel, Field
 from riverhog_client import ApiClient
+from typer.main import get_command
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts/contract_freeze.py"
@@ -42,6 +45,67 @@ def test_decorated_client_source_resolves_to_its_repository_definition() -> None
     assert source["path"] == "packages/riverhog-client/src/riverhog_client/client.py"
     assert source["symbol"] == "ApiClient.stream_collection_provenance_journal"
     assert source["line"] == inspect.getsourcelines(definition)[1]
+
+
+@pytest.mark.parametrize("parser_kind", ("argparse", "typer"))
+def test_operation_trace_binds_the_actual_parser_callback_and_rejects_ambiguity(
+    monkeypatch: pytest.MonkeyPatch,
+    parser_kind: str,
+) -> None:
+    module = load_script()
+
+    def callback() -> None:
+        pass
+
+    if parser_kind == "argparse":
+        parser = argparse.ArgumentParser(prog="tool")
+        parser.add_subparsers().add_parser("inspect").set_defaults(func=callback)
+    else:
+        app = typer.Typer()
+        app.callback()(lambda: None)
+        app.command("inspect")(callback)
+        parser = get_command(app)
+    parsers = {"tool": parser}
+    monkeypatch.setattr(module, "_cli_parsers", lambda: parsers)
+    surface = module.operation_qualification.ApplicationSurface(
+        "example",
+        module.operation_qualification.FastAPI(),
+        (),
+        (("inspect", callback, False),),
+    )
+    operation = module.operation_qualification.Operation(
+        "example",
+        "inspect",
+        "GET",
+        "/inspect",
+        "http-only",
+        "http-json",
+        None,
+        ("inspect",),
+        None,
+        None,
+    )
+    monkeypatch.setattr(module.operation_qualification, "application_surfaces", lambda: (surface,))
+    monkeypatch.setattr(module.operation_qualification, "operation_matrix", lambda: (operation,))
+    external = {
+        "python": {},
+        "cli": {
+            "tool": {
+                "commands": {"inspect": {"result_contract": {"identity": "tool-result/inspect/v1"}}}
+            },
+        },
+    }
+    binding = module._operation_trace(external)[0]["cli_bindings"][0]
+    assert binding == {
+        "command": "inspect",
+        "executable": "tool",
+        "result_identity": "tool-result/inspect/v1",
+        "source": module._linked_source_ref(callback),
+    }
+    parsers["other"] = parser
+    external["cli"]["other"] = external["cli"]["tool"]
+    with pytest.raises(module.ContractFreezeError, match="no unique installed CLI identity"):
+        module._operation_trace(external)
 
 
 def test_checked_contract_freeze_matches_every_executable_authority(
@@ -711,11 +775,17 @@ def test_python_public_import_paths_and_special_methods_are_exact_units() -> Non
     "missing_identity",
     ("riverhog_client.ApiClient.list_processing_claims", "riverhog_client.ApiClient"),
 )
-def test_operation_clients_require_exported_owners_and_member_units(missing_identity: str) -> None:
+def test_operation_clients_require_exported_owners_and_member_units(
+    missing_identity: str, checked_contract_closure: dict[str, Any]
+) -> None:
     module = load_script()
     projects = module.release_contract.validate_release_contract(REPO_ROOT)
     surfaces = module._python_surfaces(projects)
-    records = module._operation_trace({"python": surfaces})
+    external = {
+        "python": surfaces,
+        "cli": checked_contract_closure["projection"]["external_contract"]["cli"],
+    }
+    records = module._operation_trace(external)
 
     for record in records:
         if record["client"] is not None:
@@ -725,7 +795,7 @@ def test_operation_clients_require_exported_owners_and_member_units(missing_iden
 
     del surfaces[missing_identity]
     with pytest.raises(module.ContractFreezeError, match="maintained operation client lacks"):
-        module._operation_trace({"python": surfaces})
+        module._operation_trace(external)
 
 
 def test_python_surface_discovery_detects_reexports_and_member_mutation(

@@ -96,8 +96,8 @@ Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-comman
 
 ### Executable sources
 
-- [cli:mango-fish](../../../evidence/sources.md#src-3dcd5eedf2) — `reference/riverhog/applications/mango-fish/src/mango_fish/cli.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [cli:mango-fish](../../../evidence/sources.md#src-3dcd5eedf2) — [reference/riverhog/applications/mango-fish/src/mango\_fish/cli.py::&lt;module&gt;](../../../../../../reference/riverhog/applications/mango-fish/src/mango_fish/cli.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

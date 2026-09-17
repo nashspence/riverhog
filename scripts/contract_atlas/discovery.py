@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import Counter, defaultdict
 from collections.abc import Iterable, Mapping, Sequence
+from pathlib import PurePosixPath
 from typing import cast
 
 from .model import (
@@ -216,9 +217,7 @@ def _walk_cli(
     source_id: str,
 ) -> None:
     name = str(node.get("name") or (command_path[-1] if command_path else authority))
-    current_path = (
-        (*command_path, name) if not command_path or command_path[-1] != name else command_path
-    )
+    current_path = (*command_path, name)
     pointers = [
         f"{pointer}/{key}"
         for key in (
@@ -272,20 +271,69 @@ def _walk_cli(
         )
 
 
-def _protocol_owner(authority: str, sources: Mapping[str, Mapping[str, object]]) -> str:
-    source = sources.get(f"protocol:{authority}", {})
-    location = cast(Mapping[str, object], source.get("source", {}))
-    module = location.get("module")
-    if isinstance(module, str) and module:
-        return module.split(".", 1)[0].replace("_", "-")
+def _source_component(location: Mapping[str, object], projection: Mapping[str, object]) -> str:
+    """Resolve a source against declared project roots, never import-name spelling."""
     path = location.get("path")
-    if isinstance(path, str):
-        if path.startswith("packages/"):
-            return path.split("/", 2)[1]
-        marker = "/src/"
-        if marker in path:
-            return path.split(marker, 1)[1].split("/", 1)[0].replace("_", "-")
-    return authority
+    if (
+        not isinstance(path, str)
+        or PurePosixPath(path).is_absolute()
+        or ".." in PurePosixPath(path).parts
+    ):
+        raise ContractAtlasError(f"source has no declared project owner: {location}")
+    boundaries = cast(Mapping[str, object], projection["boundaries"])
+    components = cast(Sequence[Mapping[str, object]], boundaries["components"])
+    candidates = [
+        component
+        for component in components
+        if path == component["path"] or path.startswith(f"{component['path']}/")
+    ]
+    if not candidates:
+        raise ContractAtlasError(f"source has no declared project owner: {location}")
+    longest = max(len(str(component["path"])) for component in candidates)
+    owners = [component for component in candidates if len(str(component["path"])) == longest]
+    if len(owners) != 1:
+        raise ContractAtlasError(f"source has ambiguous project ownership: {location}")
+    return str(owners[0]["distribution"])
+
+
+def _cli_binding_element(
+    binding: Mapping[str, object],
+    elements: Sequence[Mapping[str, object]],
+    projection: Mapping[str, object],
+) -> Mapping[str, object]:
+    """Operation-matrix commands are root-relative, as recorded by its parser walk."""
+    _source_component(cast(Mapping[str, object], binding["source"]), projection)
+    command = str(binding["command"])
+    boundaries = cast(Mapping[str, object], projection["boundaries"])
+    executable = binding.get("executable")
+    owners = [
+        str(component["distribution"])
+        for component in cast(Sequence[Mapping[str, object]], boundaries["components"])
+        if executable in cast(Mapping[str, object], component["console_scripts"])
+    ]
+    if len(owners) != 1:
+        raise ContractAtlasError(f"CLI executable has no unique declared owner: {executable}")
+    owner = owners[0]
+    candidates = []
+    for element in elements:
+        if element["interface"] != "cli" or element["authority"] != owner:
+            continue
+        details = cast(Mapping[str, object], element.get("details", {}))
+        path = cast(Sequence[str], details.get("command_path", ()))
+        if (
+            path
+            and path[0] == executable
+            and " ".join(path[1:]) == command
+            and details.get("result_identity") == binding.get("result_identity")
+            and binding.get("result_identity")
+        ):
+            candidates.append(element)
+    if len(candidates) != 1:
+        raise ContractAtlasError(
+            f"operation CLI binding has no unique executable command: {owner}: {command}: "
+            f"{len(candidates)} candidates"
+        )
+    return candidates[0]
 
 
 def _publication_classification(role: str) -> str:
@@ -618,7 +666,10 @@ def _external_elements(
     for schema_authority, document in sorted(
         cast(Mapping[str, Mapping[str, object]], external["protocol_schemas"]).items()
     ):
-        authority = _protocol_owner(schema_authority, sources)
+        authority = _source_component(
+            cast(Mapping[str, object], sources[f"protocol:{schema_authority}"]["source"]),
+            projection,
+        )
         base = f"/external_contract/protocol_schemas/{_escape_pointer(schema_authority)}"
         schemas = document.get("schemas")
         if schema_authority.startswith("generated:") and isinstance(schemas, Mapping):
@@ -904,10 +955,9 @@ def _attach_extent_decisions(
 
 
 def _link_operation_qualification(
-    elements: list[dict[str, object]], trace: Mapping[str, object]
+    elements: list[dict[str, object]], trace: Mapping[str, object], projection: Mapping[str, object]
 ) -> None:
     http: dict[tuple[str, str], dict[str, object]] = {}
-    cli: dict[tuple[str, str], dict[str, object]] = {}
     python: dict[str, dict[str, object]] = {}
     for element in elements:
         details = cast(Mapping[str, object], element.get("details", {}))
@@ -916,12 +966,6 @@ def _link_operation_qualification(
             http[(str(element["authority"]), str(operation_id))] = element
         elif element["interface"] == "python":
             python[str(details["public_identity"])] = element
-        elif element["interface"] == "cli":
-            command_parts = cast(Sequence[str], details.get("command_path", ()))
-            command = " ".join(command_parts)
-            cli[(str(element["authority"]), command)] = element
-            if len(command_parts) > 1:
-                cli[(str(element["authority"]), " ".join(command_parts[1:]))] = element
     qualification = cast(Mapping[str, object], trace["operation_qualification"])
     operation_values = cast(Sequence[Mapping[str, object]], qualification["records"])
     operation_by_id = {
@@ -929,11 +973,6 @@ def _link_operation_qualification(
     }
     if len(operation_by_id) != len(operation_values):
         raise ContractAtlasError("operation qualification repeats an application operation")
-    cli_authority = {
-        "riverhog": "piggity",
-        "riverhog-ftp-adapter": "riverhog-ftp-adapter",
-        "stove0": "stove0-client",
-    }
     for key, record in operation_by_id.items():
         http_element = http.get(key)
         if http_element is None:
@@ -962,31 +1001,16 @@ def _link_operation_qualification(
                     f"{public_identity}"
                 )
             related.append(python[public_identity])
-        for command in cast(Sequence[str], record.get("cli_commands", ())):
-            command_authority = cli_authority.get(key[0], key[0])
-            cli_element = cli.get((command_authority, command))
-            if cli_element is None:
-                candidates = [
-                    element
-                    for element in elements
-                    if element["interface"] == "cli"
-                    and element["authority"] == command_authority
-                    and " ".join(
-                        cast(
-                            Sequence[str],
-                            cast(Mapping[str, object], element.get("details", {})).get(
-                                "command_path", ()
-                            ),
-                        )
-                    ).endswith(f" {command}")
-                ]
-                if len(candidates) == 1:
-                    cli_element = candidates[0]
-            if cli_element is None:
-                raise ContractAtlasError(
-                    f"operation qualification references an unknown CLI command: {key}: {command}"
-                )
-            related.append(cli_element)
+        bindings = cast(Sequence[Mapping[str, object]], record["cli_bindings"])
+        binding_commands = Counter(str(binding["command"]) for binding in bindings)
+        if binding_commands != Counter(cast(Sequence[str], record["cli_commands"])) or any(
+            count != 1 for count in binding_commands.values()
+        ):
+            raise ContractAtlasError(f"operation qualification lacks exact CLI bindings: {key}")
+        for binding in bindings:
+            related.append(
+                cast(dict[str, object], _cli_binding_element(binding, elements, projection))
+            )
         for member in related:
             cast(list[str], member["related_element_ids"]).extend(
                 str(other["id"]) for other in related if other["interface"] != member["interface"]

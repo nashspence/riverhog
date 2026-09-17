@@ -37,16 +37,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:gogurt-linux-listener-host:XDG_CONFIG_HOME](../../../evidence/sources.md#src-82ea2d68db) — `reference/gogurt/listener-host/linux/src/gogurt_linux_listener_host/__init__.py`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:gogurt-linux-listener-host:XDG_CONFIG_HOME](../../../evidence/sources.md#src-82ea2d68db) — [reference/gogurt/listener-host/linux/src/gogurt\_linux\_listener\_host/\_\_init\_\_.py::\_default\_registration\_file](../../../../../../reference/gogurt/listener-host/linux/src/gogurt_linux_listener_host/__init__.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 
-The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
+The owning implementation defines the setting. These declarations, consumer bindings, and default expressions are discovered source facts, not executed observations of effective configuration.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| parser | `gogurt-linux-listener-host` | `reference/gogurt/listener-host/linux/src/gogurt_linux_listener_host/__init__.py` | `env.get('XDG_CONFIG_HOME', user_home / '.config')` |
+| parser | `gogurt-linux-listener-host` | [reference/gogurt/listener-host/linux/src/gogurt\_linux\_listener\_host/\_\_init\_\_.py](../../../../../../reference/gogurt/listener-host/linux/src/gogurt_linux_listener_host/__init__.py) | `env.get('XDG_CONFIG_HOME', user_home / '.config')` |
 
 ### Machine authority
 

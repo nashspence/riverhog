@@ -103,8 +103,8 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Executable sources
 
-- [configuration:stove0-operator-contracts:configuration:admission-catalog](../../../evidence/sources.md#src-c0d7e75302) — `reference/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py::AdmissionCatalog`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [configuration:stove0-operator-contracts:configuration:admission-catalog](../../../evidence/sources.md#src-c0d7e75302) — [reference/stove0/packages/operator-contracts/src/stove0\_operator\_contracts/\_\_init\_\_.py::AdmissionCatalog](../../../../../../reference/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

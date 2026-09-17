@@ -37,16 +37,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:stove0-api-client:STOVE0_BASE_URL](../../../evidence/sources.md#src-34ec96f5f9) — `reference/stove0/packages/api-client/src/stove0_api_client/client.py`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:stove0-api-client:STOVE0_BASE_URL](../../../evidence/sources.md#src-34ec96f5f9) — [reference/stove0/packages/api-client/src/stove0\_api\_client/client.py::Stove0ApiClient.\_\_init\_\_](../../../../../../reference/stove0/packages/api-client/src/stove0_api_client/client.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 
-The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
+The owning implementation defines the setting. These declarations, consumer bindings, and default expressions are discovered source facts, not executed observations of effective configuration.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| parser | `stove0-api-client` | `reference/stove0/packages/api-client/src/stove0_api_client/client.py` | `os.getenv('STOVE0_BASE_URL')` |
+| parser | `stove0-api-client` | [reference/stove0/packages/api-client/src/stove0\_api\_client/client.py](../../../../../../reference/stove0/packages/api-client/src/stove0_api_client/client.py) | `os.getenv('STOVE0_BASE_URL')` |
 
 ### Machine authority
 

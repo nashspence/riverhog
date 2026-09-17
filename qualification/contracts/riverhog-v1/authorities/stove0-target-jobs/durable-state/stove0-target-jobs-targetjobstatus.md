@@ -262,8 +262,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [state:stove0-target-jobs](../../../evidence/sources.md#src-7b4138829a) — `reference/stove0/packages/target-protocol/src/stove0_target_protocol/protocol.py`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [state:stove0-target-jobs](../../../evidence/sources.md#src-7b4138829a) — [reference/stove0/packages/target-protocol/src/stove0\_target\_protocol/protocol.py::AcceptedTargetJob](../../../../../../reference/stove0/packages/target-protocol/src/stove0_target_protocol/protocol.py); [reference/stove0/packages/target-protocol/src/stove0\_target\_protocol/protocol.py::TargetJobStatus](../../../../../../reference/stove0/packages/target-protocol/src/stove0_target_protocol/protocol.py)
 
 ### Machine authority
 

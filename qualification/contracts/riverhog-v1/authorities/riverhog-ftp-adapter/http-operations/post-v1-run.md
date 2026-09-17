@@ -64,10 +64,10 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- **OpenAPI authority:** [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29a)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
-- **Handler:** [reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::create_app.<locals>.run_pass](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py#L283)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29a) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- **Handler:** [reference/riverhog/ingress/ftp/src/riverhog\_ftp\_adapter/app.py::create\_app.&lt;locals&gt;.run\_pass](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py#L283)
 
 ### Structural operation bindings
 
@@ -83,6 +83,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "run",
+      "executable": "riverhog-ftp-adapter",
+      "result_identity": "riverhog-ftp-adapter-cli-result/run/v1",
       "source": {
         "line": 389,
         "module": "riverhog_ftp_adapter.app",

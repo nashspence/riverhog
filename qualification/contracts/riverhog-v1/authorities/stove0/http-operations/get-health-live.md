@@ -50,10 +50,10 @@ Health Live
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- **OpenAPI authority:** [openapi:stove0](../../../evidence/sources.md#src-52e6e32124)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
-- **Handler:** [reference/stove0/application/server/src/stove0_api/app.py::create_app.<locals>.health_live](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L506)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- **Handler:** [reference/stove0/application/server/src/stove0\_api/app.py::create\_app.&lt;locals&gt;.health\_live](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L506)
 
 ### Structural operation bindings
 
@@ -69,6 +69,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "health",
+      "executable": "stove0",
+      "result_identity": "stove0-cli-result/health/v1",
       "source": {
         "line": 163,
         "module": "stove0_cli.main",

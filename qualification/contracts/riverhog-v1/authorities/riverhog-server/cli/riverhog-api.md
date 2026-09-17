@@ -60,8 +60,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [cli:riverhog-api](../../../evidence/sources.md#src-18139c42dd) — `riverhog/src/riverhog_api/app.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [cli:riverhog-api](../../../evidence/sources.md#src-18139c42dd) — [riverhog/src/riverhog\_api/app.py::&lt;module&gt;](../../../../../../riverhog/src/riverhog_api/app.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

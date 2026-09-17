@@ -92,10 +92,10 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
-- **Handler:** [riverhog/src/riverhog_api/routers/catalog_sync.py::list_catalog_sync_collections](../../../../../../riverhog/src/riverhog_api/routers/catalog_sync.py#L44)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- **Handler:** [riverhog/src/riverhog\_api/routers/catalog\_sync.py::list\_catalog\_sync\_collections](../../../../../../riverhog/src/riverhog_api/routers/catalog_sync.py#L44)
 
 ### Structural operation bindings
 
@@ -111,6 +111,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "catalog-sync collections",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/catalog-sync/collections/v1",
       "source": {
         "line": 787,
         "module": "piggity.main",

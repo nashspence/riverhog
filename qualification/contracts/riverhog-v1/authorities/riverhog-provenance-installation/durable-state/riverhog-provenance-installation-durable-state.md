@@ -44,8 +44,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [state:riverhog-provenance-installation](../../../evidence/sources.md#src-080b970190) — `packages/riverhog-provenance/src/riverhog_provenance/identity.py`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [state:riverhog-provenance-installation](../../../evidence/sources.md#src-080b970190) — [packages/riverhog-provenance/src/riverhog\_provenance/identity.py::\_installation\_id\_state\_contract](../../../../../../packages/riverhog-provenance/src/riverhog_provenance/identity.py)
 
 ### Machine authority
 

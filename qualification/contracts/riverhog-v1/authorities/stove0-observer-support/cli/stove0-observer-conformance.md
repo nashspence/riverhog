@@ -90,8 +90,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Executable sources
 
-- [cli:stove0-observer-conformance](../../../evidence/sources.md#src-5719d140a8) — `reference/stove0/packages/observer-support/src/stove0_observer_support/conformance.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [cli:stove0-observer-conformance](../../../evidence/sources.md#src-5719d140a8) — [reference/stove0/packages/observer-support/src/stove0\_observer\_support/conformance.py::&lt;module&gt;](../../../../../../reference/stove0/packages/observer-support/src/stove0_observer_support/conformance.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

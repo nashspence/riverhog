@@ -49,8 +49,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [state:mango-fish-cursor](../../../evidence/sources.md#src-b1cc215b8d) — `reference/riverhog/applications/mango-fish/src/mango_fish/state_migrations/v1_ddl.py`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [state:mango-fish-cursor](../../../evidence/sources.md#src-b1cc215b8d) — [reference/riverhog/applications/mango-fish/src/mango\_fish/state\_migrations/v1\_ddl.py::SQLITE\_DDL](../../../../../../reference/riverhog/applications/mango-fish/src/mango_fish/state_migrations/v1_ddl.py)
 
 ### Machine authority
 

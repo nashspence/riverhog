@@ -59,8 +59,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [cli:stove0-review-sampler-schemas](../../../evidence/sources.md#src-a75c35f0c8) — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [cli:stove0-review-sampler-schemas](../../../evidence/sources.md#src-a75c35f0c8) — [reference/stove0/targets/review/sampler/support/src/stove0\_review\_sampler\_support/schemas.py::&lt;module&gt;](../../../../../../reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

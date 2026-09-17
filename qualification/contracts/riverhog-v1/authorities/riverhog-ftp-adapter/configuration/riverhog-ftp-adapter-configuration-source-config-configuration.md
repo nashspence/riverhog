@@ -97,8 +97,8 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Executable sources
 
-- [configuration:riverhog-ftp-adapter:configuration:source-config](../../../evidence/sources.md#src-6674ffa9af) — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/config.py::SourceConfig`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [configuration:riverhog-ftp-adapter:configuration:source-config](../../../evidence/sources.md#src-6674ffa9af) — [reference/riverhog/ingress/ftp/src/riverhog\_ftp\_adapter/config.py::SourceConfig](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/config.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

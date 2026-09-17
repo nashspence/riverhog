@@ -54,16 +54,16 @@ Shared facts for every subject below: classification=null; consumers=["riverhog-
 
 ### Executable sources
 
-- [configuration-environment-pattern:riverhog-server:RIVERHOG_RETRIEVAL_CACHE_{store}_{setting}](../../../evidence/sources.md#src-956dbca0d9) — `riverhog/src/riverhog_core/runtime_config.py`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment-pattern:riverhog-server:RIVERHOG_RETRIEVAL_CACHE_{store}_{setting}](../../../evidence/sources.md#src-956dbca0d9) — [riverhog/src/riverhog\_core/runtime\_config.py](../../../../../../riverhog/src/riverhog_core/runtime_config.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
 
-The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
+The owning implementation defines the setting. These declarations, consumer bindings, and default expressions are discovered source facts, not executed observations of effective configuration.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| parser | `riverhog-server` | `riverhog/src/riverhog_core/runtime_config.py` | `_retrieval_cache_store_environment_name` |
+| parser | `riverhog-server` | [riverhog/src/riverhog\_core/runtime\_config.py](../../../../../../riverhog/src/riverhog_core/runtime_config.py) | `_retrieval_cache_store_environment_name` |
 
 ### Machine authority
 

@@ -37,8 +37,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [python:riverhog-storage-adapter-asgi-support:riverhog_storage_adapter_asgi_support](../../../evidence/sources.md#src-faaefe65d4) — `packages/riverhog-storage-adapter-asgi-support/src/riverhog_storage_adapter_asgi_support/__init__.py`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [python:riverhog-storage-adapter-asgi-support:riverhog_storage_adapter_asgi_support](../../../evidence/sources.md#src-faaefe65d4) — [packages/riverhog-storage-adapter-asgi-support/src/riverhog\_storage\_adapter\_asgi\_support/\_\_init\_\_.py](../../../../../../packages/riverhog-storage-adapter-asgi-support/src/riverhog_storage_adapter_asgi_support/__init__.py)
 
 ### Machine authority
 

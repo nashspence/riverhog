@@ -37,8 +37,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [python:gogurt-windows-mounted-volume:gogurt_windows_mounted_volume](../../../evidence/sources.md#src-3af4750524) — `reference/gogurt/mounted-volume/windows/src/gogurt_windows_mounted_volume/__init__.py`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [python:gogurt-windows-mounted-volume:gogurt_windows_mounted_volume](../../../evidence/sources.md#src-3af4750524) — [reference/gogurt/mounted-volume/windows/src/gogurt\_windows\_mounted\_volume/\_\_init\_\_.py](../../../../../../reference/gogurt/mounted-volume/windows/src/gogurt_windows_mounted_volume/__init__.py)
 
 ### Machine authority
 

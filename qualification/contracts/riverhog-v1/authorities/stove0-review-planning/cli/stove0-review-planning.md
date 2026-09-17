@@ -200,8 +200,8 @@ Applies to: reported · stdout (json).
 
 ### Executable sources
 
-- [cli:stove0-review-planning](../../../evidence/sources.md#src-ae789ab860) — `reference/stove0/targets/review/planning/src/stove0_review_planning/conformance.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [cli:stove0-review-planning](../../../evidence/sources.md#src-ae789ab860) — [reference/stove0/targets/review/planning/src/stove0\_review\_planning/conformance.py::&lt;module&gt;](../../../../../../reference/stove0/targets/review/planning/src/stove0_review_planning/conformance.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

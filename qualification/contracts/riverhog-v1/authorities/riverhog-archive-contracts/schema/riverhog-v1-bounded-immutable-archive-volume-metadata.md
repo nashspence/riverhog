@@ -198,8 +198,8 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json](../../../evidence/sources.md#src-c83e346f06) — `packages/riverhog-archive-contracts/schemas/collection-archive-volume-v1.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json](../../../evidence/sources.md#src-c83e346f06) — [packages/riverhog-archive-contracts/schemas/collection-archive-volume-v1.schema.json](../../../../../../packages/riverhog-archive-contracts/schemas/collection-archive-volume-v1.schema.json)
 
 ### Machine authority
 

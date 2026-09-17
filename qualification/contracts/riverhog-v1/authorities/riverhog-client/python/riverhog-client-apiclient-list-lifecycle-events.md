@@ -46,9 +46,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
-- **Client method:** [packages/riverhog-client/src/riverhog_client/client.py::ApiClient.list_lifecycle_events](../../../../../../packages/riverhog-client/src/riverhog_client/client.py#L720)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — [packages/riverhog-client/src/riverhog\_client/\_\_init\_\_.py](../../../../../../packages/riverhog-client/src/riverhog_client/__init__.py)
+- **Client method:** [packages/riverhog-client/src/riverhog\_client/client.py::ApiClient.list\_lifecycle\_events](../../../../../../packages/riverhog-client/src/riverhog_client/client.py#L720)
 
 ### Machine authority
 

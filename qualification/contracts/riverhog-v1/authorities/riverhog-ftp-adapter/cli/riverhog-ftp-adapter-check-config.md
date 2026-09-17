@@ -79,8 +79,8 @@ Applies to: completed · stdout (json).
 
 ### Executable sources
 
-- [cli:riverhog-ftp-adapter](../../../evidence/sources.md#src-303f765bca) — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [cli:riverhog-ftp-adapter](../../../evidence/sources.md#src-303f765bca) — [reference/riverhog/ingress/ftp/src/riverhog\_ftp\_adapter/app.py::&lt;module&gt;](../../../../../../reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

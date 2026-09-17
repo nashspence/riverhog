@@ -81,8 +81,8 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Executable sources
 
-- [configuration:stove0-review-target-support:configuration:review-target-config](../../../evidence/sources.md#src-cca9387ce6) — `reference/stove0/targets/review/support/src/stove0_review_target_support/app.py::ReviewTargetConfig`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [configuration:stove0-review-target-support:configuration:review-target-config](../../../evidence/sources.md#src-cca9387ce6) — [reference/stove0/targets/review/support/src/stove0\_review\_target\_support/app.py::ReviewTargetConfig](../../../../../../reference/stove0/targets/review/support/src/stove0_review_target_support/app.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

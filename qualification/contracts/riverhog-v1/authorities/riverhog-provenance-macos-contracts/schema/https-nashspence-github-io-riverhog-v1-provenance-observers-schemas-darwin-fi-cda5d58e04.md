@@ -66,8 +66,8 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-attributes.json](../../../evidence/sources.md#src-8191cd2baf) — `reference/riverhog/provenance/contracts/macos/src/riverhog_provenance_macos_contracts/schemas/darwin-file-attributes.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-attributes.json](../../../evidence/sources.md#src-8191cd2baf) — [reference/riverhog/provenance/contracts/macos/src/riverhog\_provenance\_macos\_contracts/schemas/darwin-file-attributes.schema.json](../../../../../../reference/riverhog/provenance/contracts/macos/src/riverhog_provenance_macos_contracts/schemas/darwin-file-attributes.schema.json)
 
 ### Machine authority
 

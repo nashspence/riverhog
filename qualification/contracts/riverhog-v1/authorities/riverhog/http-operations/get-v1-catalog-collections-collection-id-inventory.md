@@ -104,10 +104,10 @@ These are candidate test bindings. Group-wide progression claims remain unestabl
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- **OpenAPI authority:** [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9)
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
-- **Handler:** [riverhog/src/riverhog_api/routers/portable_collections.py::get_portable_collection_inventory](../../../../../../riverhog/src/riverhog_api/routers/portable_collections.py#L22)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
+- **Handler:** [riverhog/src/riverhog\_api/routers/portable\_collections.py::get\_portable\_collection\_inventory](../../../../../../riverhog/src/riverhog_api/routers/portable_collections.py#L22)
 
 ### Structural operation bindings
 
@@ -123,6 +123,8 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "local add",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/local/add/v1",
       "source": {
         "line": 902,
         "module": "piggity.local",
@@ -132,6 +134,8 @@ This generated record links maintained client, CLI, response-authority, and prov
     },
     {
       "command": "local sync",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/local/sync/v1",
       "source": {
         "line": 1101,
         "module": "piggity.local",
@@ -141,6 +145,8 @@ This generated record links maintained client, CLI, response-authority, and prov
     },
     {
       "command": "local repair",
+      "executable": "piggity",
+      "result_identity": "piggity-cli-result/local/repair/v1",
       "source": {
         "line": 1122,
         "module": "piggity.local",

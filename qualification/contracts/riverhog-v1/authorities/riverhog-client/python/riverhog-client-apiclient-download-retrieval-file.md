@@ -47,9 +47,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
-- **Client method:** [packages/riverhog-client/src/riverhog_client/client.py::ApiClient.download_retrieval_file](../../../../../../packages/riverhog-client/src/riverhog_client/client.py#L971)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — [packages/riverhog-client/src/riverhog\_client/\_\_init\_\_.py](../../../../../../packages/riverhog-client/src/riverhog_client/__init__.py)
+- **Client method:** [packages/riverhog-client/src/riverhog\_client/client.py::ApiClient.download\_retrieval\_file](../../../../../../packages/riverhog-client/src/riverhog_client/client.py#L971)
 
 ### Machine authority
 

@@ -72,8 +72,8 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Executable sources
 
-- [configuration:gogurt-core:configuration:gogurt-routes-schema](../../../evidence/sources.md#src-75f9616966) — `reference/gogurt/packages/core/src/gogurt_core/core.py::GOGURT_ROUTES_SCHEMA`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [configuration:gogurt-core:configuration:gogurt-routes-schema](../../../evidence/sources.md#src-75f9616966) — [reference/gogurt/packages/core/src/gogurt\_core/core.py::GOGURT\_ROUTES\_SCHEMA](../../../../../../reference/gogurt/packages/core/src/gogurt_core/core.py)
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority
 

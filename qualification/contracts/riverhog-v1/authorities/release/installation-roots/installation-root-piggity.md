@@ -44,11 +44,11 @@ Publication preserves these existing component authorities; it does not reclassi
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [release-distribution:piggity](../../../evidence/sources.md#src-c6f8868ecf) — `reference/riverhog/applications/piggity/pyproject.toml`
-- [release-installation:planner](../../../evidence/sources.md#src-d1a927fc4b) — `scripts/release_installation.py::INSTALLATION_POLICY`
-- [release-publication:planner](../../../evidence/sources.md#src-03a2f48338) — `scripts/release.py::publication_contract`
-- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [release-distribution:piggity](../../../evidence/sources.md#src-c6f8868ecf) — [reference/riverhog/applications/piggity/pyproject.toml](../../../../../../reference/riverhog/applications/piggity/pyproject.toml)
+- [release-installation:planner](../../../evidence/sources.md#src-d1a927fc4b) — [scripts/release\_installation.py::INSTALLATION\_POLICY](../../../../../../scripts/release_installation.py)
+- [release-publication:planner](../../../evidence/sources.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
 
 ### Machine authority
 
