@@ -162,8 +162,10 @@ def _start(api: _SyncApi, state: _SyncState) -> _SyncBatch:
 def _step(api: _SyncApi, state: _SyncState, *, limit: int = 100) -> _SyncBatch:
     """Propose one bounded page, or checkpoint for new state; never loop/retry."""
 
-    if isinstance(limit, bool) or not isinstance(limit, int) or not (
-        1 <= limit <= CATALOG_SYNC_PAGE_SIZE_MAX
+    if (
+        isinstance(limit, bool)
+        or not isinstance(limit, int)
+        or not (1 <= limit <= CATALOG_SYNC_PAGE_SIZE_MAX)
     ):
         raise ValueError("catalog page size is outside the protocol bound")
     state = _SyncState.model_validate(state.model_dump())

@@ -97,9 +97,7 @@ class _Api:
         self._record("catalog", cursor, limit)
         return self.catalog
 
-    def list_catalog_sync_changes(
-        self, cursor: str, *, limit: int = 100
-    ) -> CatalogSyncChangePage:
+    def list_catalog_sync_changes(self, cursor: str, *, limit: int = 100) -> CatalogSyncChangePage:
         self._record("changes", cursor, limit)
         return self.changes
 
