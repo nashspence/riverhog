@@ -238,3 +238,123 @@ OBJECTIVES = (
         scope=(
                 'Paired stream cases; denominator max(returned rows, 1). Empty results '
                 'represent empty-query cost rather than per-row observations. Full-stream wall '
+                'time includes cursor/transaction cleanup, not time to first byte or end-user '
+                'request latency.'
+        ),
+        existing_use='existing-check',
+        sources=(
+            'scripts/database_qualification.py::_compare_cardinalities',
+        ),
+    ),
+    Objective(
+        id='database-http-memory-growth',
+        metric='peak traced Python allocations during client traversal',
+        unit='bytes',
+        rule='memory-growth',
+        budget='memory-growth',
+        scope=(
+                'Paired cardinalities for each of the three named HTTP traversal paths; no '
+                'averaging between paths.'
+        ),
+        existing_use='existing-check',
+        sources=(
+            'scripts/database_qualification.py::_compare_cardinalities',
+        ),
+    ),
+    Objective(
+        id='database-plan-temp-io',
+        metric='sum of reported plan-node temporary reads and writes',
+        unit='blocks',
+        rule='maximum',
+        budget='plan-temp-io',
+        scope=(
+                'Current bounded selector-plan fixtures should not spill to temporary storage. '
+                'The node sum is used only to test zero, not to estimate unique physical I/O.'
+        ),
+        existing_use='existing-check',
+        sources=(
+            'scripts/database_qualification.py::_measure_plan',
+        ),
+    ),
+    Objective(
+        id='listener-observation-peak',
+        metric='peak traced Python allocations during observe',
+        unit='bytes',
+        rule='exclusive-maximum',
+        budget='listener-observation',
+        scope=(
+                'One current unmarked mount after seeding 50000 historical mounts; seeding is '
+                'outside tracing. The ceiling is fixture-local and does not by itself prove '
+                'history-independent complexity.'
+        ),
+        existing_use='existing-check',
+        sources=(
+            (
+                'reference/gogurt/application/tests/test_listener.py::test_listener_observation'
+                '_memory_depends_on_current_mounts_not_history'
+            ),
+        ),
+    ),
+    Objective(
+        id='listener-runnable-peak',
+        metric='peak traced Python allocations during runnable selection',
+        unit='bytes',
+        rule='exclusive-maximum',
+        budget='listener-runnable',
+        scope=(
+                'Select three runnable dispatches from a fixture of 10000 queued rows. Seeding '
+                'is outside tracing.'
+        ),
+        existing_use='existing-check',
+        sources=(
+            (
+                'reference/gogurt/application/tests/test_listener.py::test_listener_runnable_se'
+                'lection_is_bounded_by_available_custody'
+            ),
+        ),
+    ),
+)
+
+# Accounting dispositions keep measurements and correctness/extent controls from
+# being mistaken for missing numerical targets. They never create thresholds.
+DISPOSITIONS = (
+    ("observation-only", "reference-recovery", "scripts/transfer_profile.py::main",
+     'Three workload labels; record completed bytes, items and elapsed time. No '
+         'existing rate target; do not manufacture one.'),
+    ("observation-only", "process-cold-cli-startup",
+        "scripts/operation_qualification.py::_cold_cli_timings",
+     'Three fresh Python processes per entrypoint by default; --help elapsed '
+         'min/median/max and output identity. '
+     "Not a cold OS filesystem cache; no existing latency ceiling."),
+    ("observation-only", "local-api-and-client-timings",
+        "scripts/operation_qualification.py::_load_operation_timings",
+     'Successful local-fixture server/client wall-time summaries joined to the '
+         'executable operation matrix. '
+     'Coverage/positive-sample requirements are not speed targets; no invented '
+         'per-endpoint budget.'),
+    ("observation-only", "stove0-scale", "scripts/test_compose_smoke.sh",
+     'Completion elapsed time, file counts, database/document bytes, target CPU '
+         'and cgroup peak memory. '
+     '128 files is a fixture size, not a capacity guarantee. Cgroup counters '
+         'cover their actual lifetime, not necessarily just the workload.'),
+    ("observation-only", "transfer-phase-telemetry", "riverhog/src/riverhog_core/throughput.py",
+     'Phase timers, bytes and bottleneck labels are diagnostics. Summed '
+         'phase/segment work can overlap or count retries; '
+     'never use those sums as unique end-to-end goodput or exclusive '
+         'elapsed-time attribution.'),
+    ("observation-only", "database-first-row-and-planning-time", _DB,
+     'Planning time, first-item time and absolute traversal durations are '
+         'retained observations; only the named objectives above carry bounds.'),
+    ("not-an-objective", "extent-and-structural-correctness", "scripts/extent_contract.py",
+     'Bounded pages, no truncation, exact results, row/query counts, '
+         'continuation, natural-plan shape and cleanup assertions '
+     'remain with their present owners. This inventory does not weaken them or '
+         'reclassify contracts.'),
+    ("not-an-objective", "runtime-capacity-and-estimates",
+        "riverhog/src/riverhog_core/throughput.py",
+     'Concurrency/chunk/memory settings, quotas and retrieval estimated latency '
+         'configure operation. '
+     "They are neither measured capacity baselines nor performance commitments."),
+    ("not-an-objective", "harness-deadlines-and-cleanup", "scripts/test_compose_smoke.sh",
+     'Wait/timeout limits bound the test harness. Empty temporary workspace '
+         'after completion is cleanup correctness, '
