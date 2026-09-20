@@ -1,0 +1,23 @@
+{
+  "base_repository": "nashspence/riverhog",
+  "base_revision": "e0413a288fe3e817db16d5e887b08622a24b3c94",
+  "delivery_status": "proposal; not applied or adopted",
+  "standalone_checker_tests": {
+    "run": 32,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "schema_validation": "passed",
+  "rendering_consistency_and_determinism": "passed",
+  "seed_records": 8,
+  "test_associations": 35,
+  "inherited_associations": 28,
+  "new_associations_with_inspected_assertions": 7,
+  "complete_checkout_reference_resolution": "not run",
+  "contract_boundary_regression": "not run",
+  "related_Riverhog_tests": "not run",
+  "repository_CI": "not run",
+  "remote_changes": false,
+  "environment_limit": "GitHub connector reads available; container clone failed DNS lookup; full checkout unavailable"
+}
