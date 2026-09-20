@@ -70,11 +70,13 @@ from tests.support.qualification.database_selector_plans import (
 )
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 
+from scripts import performance_objectives as performance
+
 SCHEMA = "riverhog-database-qualification/v1"
 CARDINALITIES = (4096, 65536)
 PAGE_STREAM_CHUNK_ROWS = 100
-MAX_PAGE_STREAM_PEAK_BYTES = 32 * 1024 * 1024
-MAX_HTTP_PEAK_BYTES = 64 * 1024 * 1024
+MAX_PAGE_STREAM_PEAK_BYTES = int(performance.limit("database-page-stream-peak"))
+MAX_HTTP_PEAK_BYTES = int(performance.limit("database-http-peak"))
 FIXTURE_ROOT = Path("tests/fixtures/state/v1_0001")
 
 
@@ -231,7 +233,7 @@ def _measure_plan(engine: Engine, case: _PlanCase, *, rows: int) -> dict[str, ob
     if case.allow_explicit_sort and "Sort" in nodes:
         reviewed_alternatives.append("derived-order-sort")
     work = _plan_work(payload)
-    if int(work["temp_read_blocks"]) or int(work["temp_written_blocks"]):
+    if not performance.within("database-plan-temp-io", int(work["temp_read_blocks"]) + int(work["temp_written_blocks"])):
         raise QualificationError(f"{case.id} natural plan spilled to temporary storage")
     return {
         "case": case.id,
@@ -879,83 +881,83 @@ def _by_identity(rows: Iterable[dict[str, object]], key: str) -> dict[str, dict[
     return {str(row[key]): row for row in rows}
 
 
+
 def _compare_cardinalities(
-    measurements: Sequence[dict[str, object]],
+    measurements: Sequence[dict[str, Any]],
     *,
     cases: Sequence[_PlanCase],
-) -> None:
+) -> list[dict[str, Any]]:
+    (
+        'Evaluate the retained fixture-local performance guards, not a public '
+        'contract.'
+    )
     if len(measurements) != 2:
         raise QualificationError("database qualification requires exactly two cardinalities")
     low, high = measurements
-    low_plans = _by_identity(cast(list[dict[str, object]], low["plans"]), "case")
-    high_plans = _by_identity(cast(list[dict[str, object]], high["plans"]), "case")
-    if set(low_plans) != set(high_plans):
-        raise QualificationError("plan identity changed between cardinalities")
-    relation_growth = int(high["rows"]) / max(int(low["rows"]), 1)
+    low_rows, high_rows = low["rows"], high["rows"]
+    if type(low_rows) is not int or type(high_rows) is not int or not 0 < low_rows < high_rows:
+        raise QualificationError("cardinalities must be positive and increasing")
+    relation_growth = high_rows / low_rows
+    results: list[dict[str, Any]] = []
+
+    def record(identity: str, value: float, *, baseline: float | None = None,
+               case: str) -> None:
+        item = performance.comparison(identity, value, low=baseline,
+                                      growth=relation_growth, case=case)
+        results.append(item)
+        if item["status"] != "met":
+            raise QualificationError(
+                f"{case} performance objective {identity} missed: "
+                f"observed={item['observed']}, limit={item['limit']}"
+            )
+
+    low_plans = _by_identity(cast(list[dict[str, Any]], low["plans"]), "case")
+    high_plans = _by_identity(cast(list[dict[str, Any]], high["plans"]), "case")
     case_contracts = {case.id: case for case in cases}
+    if (set(low_plans) != set(high_plans) or set(low_plans) != set(case_contracts)
+            or len(low_plans) != len(low["plans"]) or len(high_plans) != len(high["plans"])):
+        raise QualificationError(
+            "plan identity changed, duplicated, or is missing between cardinalities"
+        )
     for case_id, low_plan in low_plans.items():
         high_plan = high_plans[case_id]
-        low_work = float(cast(dict[str, object], low_plan["work"])["node_rows"])
-        high_work = float(cast(dict[str, object], high_plan["work"])["node_rows"])
-        expected_indexes = case_contracts[case_id].expected_indexes
-        growth_factor = 4 if expected_indexes else relation_growth * 1.5
-        if high_work + 1 > (low_work + 1) * growth_factor + 1_000:
-            raise QualificationError(
-                f"{case_id} database work regressed superlinearly: "
-                f"low={low_work}, high={high_work}, allowed_factor={growth_factor}, "
-                f"low_nodes={low_plan['node_details']}, high_nodes={high_plan['node_details']}"
-            )
-        low_execution = float(low_plan["execution_ms"])
-        high_execution = float(high_plan["execution_ms"])
-        # The work gate above is the scaling authority.  Wall-clock latency also
-        # includes cache locality and runner scheduling, so retain a wider linear
-        # envelope while still rejecting a material cardinality-driven regression.
-        latency_factor = max(8, relation_growth * 4)
-        if high_execution > low_execution * latency_factor + 100:
-            raise QualificationError(
-                f"{case_id} database latency regressed with cardinality: "
-                f"low_ms={low_execution}, high_ms={high_execution}, "
-                f"allowed_factor={latency_factor}"
-            )
+        identity = ("database-indexed-work-growth" if case_contracts[case_id].expected_indexes
+                    else "database-unindexed-work-growth")
+        record(identity, high_plan["work"]["node_rows"],
+               baseline=low_plan["work"]["node_rows"], case=case_id)
+        record("database-plan-latency-growth", high_plan["execution_ms"],
+               baseline=low_plan["execution_ms"], case=case_id)
+        for label, plan in (("low", low_plan), ("high", high_plan)):
+            record("database-plan-temp-io",
+                plan["work"]["temp_read_blocks"] + plan["work"]["temp_written_blocks"],
+                   case=f"{case_id}:{label}")
 
-    low_page_streams = _by_identity(
-        cast(list[dict[str, object]], low["page_streams"]), "statement_case"
-    )
-    high_page_streams = _by_identity(
-        cast(list[dict[str, object]], high["page_streams"]), "statement_case"
-    )
-    if set(low_page_streams) != set(high_page_streams):
-        raise QualificationError("page-stream identity changed between cardinalities")
-    for case_id, low_stream in low_page_streams.items():
-        high_stream = high_page_streams[case_id]
-        if int(high_stream["rows"]) < int(low_stream["rows"]):
+    low_streams = _by_identity(cast(list[dict[str, Any]], low["page_streams"]), "statement_case")
+    high_streams = _by_identity(cast(list[dict[str, Any]], high["page_streams"]), "statement_case")
+    if (not low_streams or set(low_streams) != set(high_streams)
+            or len(low_streams) != len(low["page_streams"]) 
+        or len(high_streams) != len(high["page_streams"])):
+        raise QualificationError("page-stream identity changed, duplicated, or is missing")
+    for case_id, low_stream in low_streams.items():
+        high_stream = high_streams[case_id]
+        if high_stream["rows"] < low_stream["rows"]:
             raise QualificationError(f"{case_id} lost rows at the larger cardinality")
-        low_peak = int(low_stream["peak_application_bytes"])
-        high_peak = int(high_stream["peak_application_bytes"])
-        if high_peak > low_peak * 4 + 8 * 1024 * 1024:
-            raise QualificationError(f"{case_id} page-stream memory grew with relation cardinality")
-        low_ms_per_row = float(low_stream["milliseconds_per_row"])
-        high_ms_per_row = float(high_stream["milliseconds_per_row"])
-        latency_factor = max(4, relation_growth * 1.5)
-        if high_ms_per_row > low_ms_per_row * latency_factor + 0.5:
-            raise QualificationError(
-                f"{case_id} page-stream latency regressed with relation cardinality: "
-                f"low_ms_per_row={low_ms_per_row}, high_ms_per_row={high_ms_per_row}, "
-                f"allowed_factor={latency_factor}"
-            )
+        for label, stream in (("low", low_stream), ("high", high_stream)):
+            record("database-page-stream-peak", stream["peak_application_bytes"],
+                case=f"{case_id}:{label}")
+        record("database-stream-memory-growth", high_stream["peak_application_bytes"],
+               baseline=low_stream["peak_application_bytes"], case=case_id)
+        record("database-stream-latency-growth", high_stream["milliseconds_per_row"],
+               baseline=low_stream["milliseconds_per_row"], case=case_id)
 
-    low_http = cast(dict[str, dict[str, object]], low["http"])
-    high_http = cast(dict[str, dict[str, object]], high["http"])
-    for key in (
-        "official_client_bounded_pages",
-        "official_client_catalog_sync",
-        "official_client_inventory",
-    ):
-        low_peak = int(low_http[key]["peak_application_bytes"])
-        high_peak = int(high_http[key]["peak_application_bytes"])
-        if high_peak > low_peak * 4 + 8 * 1024 * 1024:
-            raise QualificationError(f"{key} memory regressed with cardinality")
-
+    for key in ("official_client_bounded_pages", "official_client_catalog_sync",
+        "official_client_inventory"):
+        low_peak = low["http"][key]["peak_application_bytes"]
+        high_peak = high["http"][key]["peak_application_bytes"]
+        record("database-http-peak", low_peak, case=f"{key}:low")
+        record("database-http-peak", high_peak, case=f"{key}:high")
+        record("database-http-memory-growth", high_peak, baseline=low_peak, case=key)
+    return results
 
 def _fixture_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -968,7 +970,7 @@ def build_evidence(database_url: str, *, source_sha: str) -> dict[str, object]:
     measurements = [
         _measure_cardinality(database_url, rows=rows, cases=cases) for rows in CARDINALITIES
     ]
-    _compare_cardinalities(measurements, cases=cases)
+    performance_results = _compare_cardinalities(measurements, cases=cases)
     applications = sorted({application for application, _operation in _DATABASE_PLAN_OPERATIONS})
     return {
         "schema": SCHEMA,
@@ -990,6 +992,12 @@ def build_evidence(database_url: str, *, source_sha: str) -> dict[str, object]:
             "max_peak_application_bytes": MAX_PAGE_STREAM_PEAK_BYTES,
             "max_full_http_peak_bytes": MAX_HTTP_PEAK_BYTES,
             "consumer_delay_ms": 10,
+        },
+        "performance_objectives": {
+            "schema": performance.SCHEMA,
+            "definition_sha256": performance.definition_sha256(),
+            "standing": "non-contractual-engineering-objectives",
+            "results": performance_results,
         },
         "measurements": measurements,
         "qualification": {
