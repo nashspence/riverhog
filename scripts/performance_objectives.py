@@ -598,3 +598,123 @@ def evaluate_sample(candidate: Mapping[str, Any], reference: Mapping[str,
         if (
             row["source_start"] != row["source_finish"]
             or row["source_start"]["clean"] is not True
+            or row["source_start"]["sha"] is None
+        ):
+            result["reason"] = "source_not_clean_and_stable"
+            return result
+        if row["context"] is None:
+            result["reason"] = "comparison_context_missing"
+            return result
+    if candidate["run_id"] == reference["run_id"]:
+        result["reason"] = "self_comparison"
+        return result
+    for field in ("objective", "scenario", "workload", "context", "completed_bytes"):
+        if candidate[field] != reference[field]:
+            result["reason"] = "incomparable_" + field
+            return result
+    ratio = candidate["bytes_per_second"] / reference["bytes_per_second"]
+    result.update(status="met" if ratio >= limit(identity) else "missed",
+        reason="matched_measured_reference",
+                  reference_ratio=ratio, reference_run_id=reference["run_id"])
+    return result
+
+
+def _reference_exists(root: Path, value: str) -> bool:
+    path_text, separator, symbol = value.partition("::")
+    path = root / path_text
+    if (
+        not path.is_file()
+        or path.is_symlink()
+        or Path(path_text).is_absolute()
+        or ".." in Path(path_text).parts
+    ):
+        return False
+    if not separator:
+        return True
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+    except (OSError, SyntaxError):
+        return False
+    return any(isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) 
+        and node.name == symbol for node in tree.body)
+
+
+def validate_registry(root: Path | None = None) -> None:
+    for values in BUDGETS.values():
+        for value in values.values():
+            _number(value)
+    for item in OBJECTIVES:
+        if item.budget not in BUDGETS:
+            raise PerformanceError("missing objective budget")
+        if re.fullmatch(r"[a-z][a-z0-9-]*", item.id) is None:
+            raise PerformanceError("invalid objective identity")
+        rule_text(item)
+    dispositions = [item[1] for item in DISPOSITIONS]
+    if len(dispositions) != len(set(dispositions)):
+        raise PerformanceError("duplicate accounting disposition")
+    if any(row[0] not in {"observation-only", "not-an-objective"} for row in DISPOSITIONS):
+        raise PerformanceError("invalid accounting disposition")
+    ids = [item.id for item in OBJECTIVES]
+    if len(ids) != len(set(ids)):
+        raise PerformanceError("duplicate objective identity")
+    used = {item.budget for item in OBJECTIVES}
+    if used != BUDGETS.keys():
+        raise PerformanceError("unowned or missing budget")
+    for item in OBJECTIVES:
+        if item.existing_use not in {"report-only", "existing-check"}:
+            raise PerformanceError("invalid check classification")
+        if not item.sources or not item.scope:
+            raise PerformanceError("unscoped objective")
+        if root is not None and any(not _reference_exists(root, source) for source in item.sources):
+            raise PerformanceError(f"stale objective source: {item.id}")
+    if root is not None:
+        for _kind, identity, source, _note in DISPOSITIONS:
+            if not _reference_exists(root, source):
+                raise PerformanceError(f"stale accounting disposition: {identity}")
+
+
+def rule_text(item: Objective) -> str:
+    p = BUDGETS[item.budget]
+    rule = item.rule
+    if rule == "reference-ratio":
+        return (
+            'candidate/reference >= '
+            f"{p['minimum_reference_fraction']}"
+            ' for compatible measured completion results'
+        )
+    if rule == "maximum":
+        return f"observed <= {p['maximum']} {item.unit}"
+    if rule == "exclusive-maximum":
+        return f"observed < {p['exclusive_maximum']} {item.unit}"
+    if rule == "indexed-work":
+        return f"high + 1 <= (low + 1) * {p['indexed_factor']} + {p['slack_rows']}"
+    if rule == "linear-work":
+        return f"high + 1 <= (low + 1) * G * {p['linear_factor']} + {p['slack_rows']}"
+    if rule == "memory-growth":
+        return f"high <= low * {p['factor']} + {p['slack_bytes']} bytes"
+    if rule == "plan-latency":
+        return (
+            'high <= low * max('
+            f"{p['minimum_factor']}"
+            ', G * '
+            f"{p['growth_factor']}"
+            ') + '
+            f"{p['slack_ms']}"
+            ' ms'
+        )
+    if rule == "stream-latency":
+        return (
+            'high <= low * max('
+            f"{p['minimum_factor']}"
+            ', G * '
+            f"{p['growth_factor']}"
+            ') + '
+            f"{p['slack_ms_per_row']}"
+            ' ms/row'
+        )
+    raise PerformanceError("unrendered rule")
+
+
+def render() -> str:
+    validate_registry()
+    lines = ["# Performance objectives", "", NOTICE, "",
