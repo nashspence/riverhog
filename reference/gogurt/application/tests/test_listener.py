@@ -10,6 +10,7 @@ import sys
 import threading
 import time
 import tracemalloc
+from scripts import performance_objectives as performance
 from collections.abc import Callable, Sequence
 from contextlib import closing
 from functools import partial
@@ -932,7 +933,7 @@ def test_listener_observation_memory_depends_on_current_mounts_not_history(
     finally:
         tracemalloc.stop()
 
-    assert peak < 4 * 1024 * 1024
+    assert performance.within("listener-observation-peak", peak)
     with closing(sqlite3.connect(store.path)) as connection:
         assert connection.execute("SELECT COUNT(*) FROM observed_mounts").fetchone() == (50_001,)
 
@@ -962,7 +963,7 @@ def test_listener_runnable_selection_is_bounded_by_available_custody(
         tracemalloc.stop()
 
     assert runnable == [f"{index:064x}" for index in range(3)]
-    assert peak < 1024 * 1024
+    assert performance.within("listener-runnable-peak", peak)
 
 
 def test_listener_store_does_not_normalize_sqlite_owned_sidecars(
