@@ -118,3 +118,123 @@ OBJECTIVES = (
         ),
         existing_use='report-only',
         sources=(
+            'tests/harness/storage_adapter_goodput_probe.py::run',
+        ),
+    ),
+    Objective(
+        id='storage-read-goodput',
+        metric='verified stored-object payload / read-and-hash wall time',
+        unit='bytes/s',
+        rule='reference-ratio',
+        budget='goodput',
+        scope=(
+                'Read the just-written exact revision, including hashing and stream close. '
+                'This is a read-after-write workload, not an uncached retrieval promise. '
+                'Compare to read only; no shared upload/read baseline.'
+        ),
+        existing_use='report-only',
+        sources=(
+            'tests/harness/storage_adapter_goodput_probe.py::run',
+        ),
+    ),
+    Objective(
+        id='database-page-stream-peak',
+        metric='peak traced Python allocations during SQL stream',
+        unit='bytes',
+        rule='maximum',
+        budget='page-stream-peak',
+        scope=(
+                'Current PostgreSQL selector fixture, 100-row fetch chunks, measured at 4096 '
+                'and 65536 relation rows. tracemalloc is not RSS or database-server memory.'
+        ),
+        existing_use='existing-check',
+        sources=(
+            'scripts/database_qualification.py::_measure_page_stream',
+        ),
+    ),
+    Objective(
+        id='database-http-peak',
+        metric='peak traced Python allocations during official-client traversal',
+        unit='bytes',
+        rule='maximum',
+        budget='http-peak',
+        scope=(
+                'Current bounded-page, catalog-sync and inventory fixture paths in '
+                '_measure_http_path. Process-wide traced Python allocations, not per-request '
+                'RSS or a deployment memory allowance.'
+        ),
+        existing_use='existing-check',
+        sources=(
+            'scripts/database_qualification.py::_measure_http_path',
+        ),
+    ),
+    Objective(
+        id='database-indexed-work-growth',
+        metric='sum of plan Actual Rows x Actual Loops',
+        unit='plan-node-rows',
+        rule='indexed-work',
+        budget='plan-work',
+        scope=(
+                'Two current cardinalities for cases declaring expected_indexes. Node-row sums '
+                'count work across plan levels; they are not unique output rows. Two fixture '
+                'points are a regression check, not an asymptotic proof.'
+        ),
+        existing_use='existing-check',
+        sources=(
+            'scripts/database_qualification.py::_compare_cardinalities',
+        ),
+    ),
+    Objective(
+        id='database-unindexed-work-growth',
+        metric='sum of plan Actual Rows x Actual Loops',
+        unit='plan-node-rows',
+        rule='linear-work',
+        budget='plan-work',
+        scope=(
+                'Two current cardinalities for cases without expected_indexes. Uses actual '
+                'relation-row growth; same caveats as the indexed-work check.'
+        ),
+        existing_use='existing-check',
+        sources=(
+            'scripts/database_qualification.py::_compare_cardinalities',
+        ),
+    ),
+    Objective(
+        id='database-plan-latency-growth',
+        metric='PostgreSQL EXPLAIN ANALYZE execution time',
+        unit='milliseconds',
+        rule='plan-latency',
+        budget='plan-latency',
+        scope=(
+                'Paired cardinalities, identical plan case. Retained broad '
+                'runner/cache-sensitive regression envelope; not a user-facing latency target.'
+        ),
+        existing_use='existing-check',
+        sources=(
+            'scripts/database_qualification.py::_compare_cardinalities',
+        ),
+    ),
+    Objective(
+        id='database-stream-memory-growth',
+        metric='peak traced Python allocations during SQL stream',
+        unit='bytes',
+        rule='memory-growth',
+        budget='memory-growth',
+        scope=(
+                'Paired cardinalities, identical statement case. Relative envelope supplements '
+                'the absolute stream ceiling.'
+        ),
+        existing_use='existing-check',
+        sources=(
+            'scripts/database_qualification.py::_compare_cardinalities',
+        ),
+    ),
+    Objective(
+        id='database-stream-latency-growth',
+        metric='full stream wall time / max(returned rows, 1)',
+        unit='milliseconds/row',
+        rule='stream-latency',
+        budget='stream-latency',
+        scope=(
+                'Paired stream cases; denominator max(returned rows, 1). Empty results '
+                'represent empty-query cost rather than per-row observations. Full-stream wall '
