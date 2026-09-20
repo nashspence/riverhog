@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = Path("guidance/heuristics.toml")
 OUTPUT = Path("guidance/README.md")
 SCHEMA = "riverhog-nonbinding-guidance/v1"
-ID = re.compile(r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*\\Z")
+ID = re.compile(r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*\Z")
 NOTICE = (
     "These are guiding heuristics only: non-binding and non-contractual. "
     "Recording, adopting, using, testing, or rendering a heuristic does not create, "
