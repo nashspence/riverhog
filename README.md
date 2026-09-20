@@ -27,6 +27,8 @@ document at `/openapi.json`.
   repository layout.
 - [V1 contract atlas](qualification/contracts/riverhog-v1/index.md) provides the generated,
   human-routable view of the exact checked external contract.
+- [Performance objectives](qualification/performance/README.md) record non-contractual
+  engineering targets and untargeted measurements; it makes no external performance promise.
 - [Licensing](LICENSE.md) defines the repository's release terms.
 
 Release-level reference documentation belongs to tagged releases. The documentation on
