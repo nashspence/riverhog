@@ -1,185 +1,113 @@
 from __future__ import annotations
 
-import importlib.util
 import json
 import os
 import subprocess
-import sys
 from pathlib import Path
-from types import ModuleType
 
 import pytest
 
-REPO = Path(__file__).resolve().parents[2]
-SCRIPT = REPO / "scripts" / "transfer_profile.py"
-
-
-def load_script() -> ModuleType:
-    spec = importlib.util.spec_from_file_location("transfer_profile", SCRIPT)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
+from scripts import transfer_profile as profile
+from scripts import performance_objectives as performance
 
 
 def test_transfer_log_summary_selects_scenario_and_omits_identity() -> None:
-    module = load_script()
-    text = (
-        "ignored line\n"
-        "transfer operation=pack_write_segment identity_sha256=secret-digest "
-        "plaintext_bytes=1048576 stored_bytes=1048600 queue_seconds=0.1 "
-        "source_seconds=0.2 integrity_seconds=0.3 crypto_seconds=0.4 "
-        "processing_seconds=0.5 remote_seconds=0.6 checkpoint_seconds=0.7 "
-        "downstream_seconds=0.8 elapsed_seconds=3.6 bottleneck=downstream\n"
-        "transfer operation=pack_retrieval_range identity_sha256=other "
-        "plaintext_bytes=1 stored_bytes=2 remote_seconds=10 bottleneck=remote\n"
-    )
-
-    summary = module.summarize_transfer_log(
-        text,
-        expected_operations=module.SCENARIO_OPERATIONS["riverhog-ingress"],
-    )
-
+    text = ("transfer operation=pack_write_segment identity_sha256=secret-digest "
+            "plaintext_bytes=1048576 stored_bytes=1048600 queue_seconds=0.1 "
+            "source_seconds=0.2 integrity_seconds=0.3 crypto_seconds=0.4 "
+            "processing_seconds=0.5 remote_seconds=0.6 checkpoint_seconds=0.7 "
+                "downstream_seconds=0.8\n"
+            "transfer operation=pack_retrieval_range plaintext_bytes=1 "
+                "stored_bytes=2 remote_seconds=10\n")
+    summary = profile.summarize_transfer_log(text,
+        expected_operations=profile.SCENARIO_OPERATIONS["riverhog-ingress"])
     assert summary.records == 1
     assert summary.operations == {"pack_write_segment": 1}
-    assert summary.bottlenecks == {"downstream": 1}
     assert summary.plaintext_bytes == 1048576
     assert summary.stored_bytes == 1048600
-    assert summary.phase_seconds == {
-        "checkpoint": 0.7,
-        "crypto": 0.4,
-        "downstream": 0.8,
-        "integrity": 0.3,
-        "processing": 0.5,
-        "queue": 0.1,
-        "remote": 0.6,
-        "source": 0.2,
-    }
+    assert summary.phase_seconds["downstream"] == 0.8
     assert "secret-digest" not in repr(summary)
 
 
-def test_transfer_profile_runs_without_echoing_command(
-    monkeypatch: pytest.MonkeyPatch,
-    tmp_path: Path,
-    capsys: pytest.CaptureFixture[str],
-) -> None:
-    module = load_script()
-    log = tmp_path / "transfer.log"
-    log.write_text(
-        "transfer operation=raw_write_segment identity_sha256=private "
-        "plaintext_bytes=2097152 stored_bytes=2097200 queue_seconds=0 "
-        "source_seconds=0.1 crypto_seconds=0.2 remote_seconds=0.3 "
-        "checkpoint_seconds=0.1 downstream_seconds=0 elapsed_seconds=0.7 "
-        "bottleneck=remote\n",
-        encoding="utf-8",
-    )
-    commands: list[list[str]] = []
-
-    def run(
-        command: list[str],
-        *,
-        check: bool,
-        stdout: int,
-        stderr: int,
-    ) -> subprocess.CompletedProcess[str]:
+def simulate(monkeypatch, *, receipt=True, code=0, stale=False):
+    monkeypatch.setattr(performance, "source_identity", lambda: {"sha": "1" * 40, "clean": True})
+    ticks = iter([10.0, 12.0])
+    monkeypatch.setattr(profile.time, "perf_counter", lambda: next(ticks))
+    calls = []
+    def run(command, *, check, stdout, stderr, env):
         assert not check
-        assert stdout == subprocess.DEVNULL
-        assert stderr == subprocess.DEVNULL
-        commands.append(command)
-        return subprocess.CompletedProcess(command, 0)
+        assert stdout == stderr == subprocess.DEVNULL
+        calls.append(command)
+        if receipt:
+            Path(env["RIVERHOG_PERFORMANCE_RECEIPT"]).write_text(json.dumps({
+                "schema": "riverhog-performance-completion/v1",
+                "run_id": "stale" if stale else env["RIVERHOG_PERFORMANCE_RUN_ID"],
+                "completed_bytes": 200 * profile.MIB, "completed_items": 1, "verified": True,
+            }))
+        return subprocess.CompletedProcess(command, code)
+    monkeypatch.setattr(profile.subprocess, "run", run)
+    return calls
 
-    monkeypatch.setattr(module.subprocess, "run", run)
-    ticks = iter((10.0, 12.0))
-    monkeypatch.setattr(module.time, "perf_counter", lambda: next(ticks))
 
-    assert (
-        module.main(
-            [
-                "--scenario",
-                "riverhog-ingress",
-                "--workload",
-                "large-file",
-                "--payload-bytes",
-                str(200 * module.MIB),
-                "--baseline-mib-per-second",
-                "125",
-                "--transfer-log",
-                str(log),
-                "--",
-                "riverhog",
-                "upload",
-                "/private/input",
-            ]
-        )
-        == 0
-    )
+def arguments():
+    return ["--scenario", "riverhog-ingress", "--workload", "large-file", "--payload-bytes",
+        str(200 * profile.MIB),
+            "--", "riverhog", "upload", "/private/input"]
 
+
+def test_transfer_profile_runs_without_echoing_command(monkeypatch, capsys) -> None:
+    calls = simulate(monkeypatch)
+    assert profile.main(arguments()) == 0
     result = json.loads(capsys.readouterr().out)
-    assert commands == [["riverhog", "upload", "/private/input"]]
-    assert result["mib_per_second"] == 100.0
-    assert result["utilization"] == 0.8
-    assert result["target_utilization"] == 0.9
+    assert calls == [["riverhog", "upload", "/private/input"]]
+    assert result["mib_per_second"] == 100
+    assert result["sample"]["completion_verified"] is True
+    assert result["evaluation"]["status"] == "not_evaluated"
     assert result["items_per_second"] == 0.5
-    assert result["seconds_per_item"] == 2.0
-    assert result["transfer_log"]["operations"] == {"raw_write_segment": 1}
     assert "/private/input" not in json.dumps(result)
 
 
-def test_network_profile_requires_a_raw_baseline() -> None:
-    module = load_script()
-
-    with pytest.raises(SystemExit):
-        module.main(
-            [
-                "--scenario",
-                "archive-replication",
-                "--workload",
-                "resume",
-                "--payload-bytes",
-                "1",
-                "--",
-                "true",
-            ]
-        )
-
-
-def test_reference_recovery_profile_does_not_require_network_baseline(
-    monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture[str],
-) -> None:
-    module = load_script()
-    monkeypatch.setattr(
-        module.subprocess,
-        "run",
-        lambda command, **_kwargs: subprocess.CompletedProcess(command, 0),
-    )
-    ticks = iter((1.0, 2.0))
-    monkeypatch.setattr(module.time, "perf_counter", lambda: next(ticks))
-
-    assert (
-        module.main(
-            [
-                "--scenario",
-                "reference-recovery",
-                "--workload",
-                "many-small-files",
-                "--payload-bytes",
-                str(module.MIB),
-                "--items",
-                "20",
-                "--",
-                "riverhog-recover",
-                "archive",
-                "output",
-            ]
-        )
-        == 0
-    )
+def test_unverified_command_success_is_not_verified_goodput(monkeypatch, capsys) -> None:
+    simulate(monkeypatch, receipt=False)
+    assert profile.main(arguments()) == 0
     result = json.loads(capsys.readouterr().out)
-    assert result["baseline_mib_per_second"] is None
-    assert result["target_utilization"] is None
-    assert result["items"] == 20
-    assert result["items_per_second"] == 20.0
-    assert result["seconds_per_item"] == 0.05
-    assert os.access(SCRIPT, os.X_OK)
+    assert result["sample"]["completion_verified"] is False
+    assert result["rate_basis"] == "declared-workload-not-verified-goodput"
+
+
+def test_nominal_baselines_and_anonymous_target_overrides_are_rejected() -> None:
+    for flag in ("--baseline-mib-per-second", "--target-utilization"):
+        with pytest.raises(SystemExit):
+            profile.main([flag, "125", *arguments()])
+
+
+def test_stale_receipt_is_not_reused(monkeypatch, capsys) -> None:
+    simulate(monkeypatch, stale=True)
+    assert profile.main(arguments()) == 2
+    assert "/private/input" not in capsys.readouterr().err
+
+
+def test_child_failure_does_not_emit_a_goodput_verdict(monkeypatch, capsys) -> None:
+    simulate(monkeypatch, code=7)
+    assert profile.main(arguments()) == 7
+    assert capsys.readouterr().out == ""
+
+
+def test_reference_recovery_profile_does_not_require_network_baseline(monkeypatch, capsys) -> None:
+    simulate(monkeypatch)
+    args = arguments()
+    args[1] = "reference-recovery"
+    assert profile.main(args) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result["sample"]["objective"] is None
+    assert result["evaluation"]["reason"] == "no_target"
+    assert os.access(profile.__file__, os.X_OK)
+
+
+def test_invalid_phase_duration_is_not_published() -> None:
+    with pytest.raises(performance.PerformanceError):
+        profile.summarize_transfer_log(
+            'transfer operation=raw_write_segment plaintext_bytes=1 stored_bytes=1 '
+            'crypto_seconds=nan',
+            expected_operations=profile.SCENARIO_OPERATIONS["riverhog-ingress"],
+        )
