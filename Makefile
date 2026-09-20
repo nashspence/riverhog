@@ -86,6 +86,7 @@ MYPY_SOURCES = \
 	reference/riverhog/storage/filesystem/src \
 	scripts/implementation_policy.py \
 	scripts/operation_qualification.py \
+	scripts/performance_objectives.py \
 	scripts/contract_atlas \
 	scripts/contract_freeze.py \
 	scripts/provider_qualification.py \
@@ -154,6 +155,8 @@ help:
 		'  make stove0-scale-qualification Run the final-image lifecycle with a 128-file workload.' \
 		'  make mango-fish-smoke  Exercise the already-built final Mango Fish image.' \
 		'  make transfer-profile  Profile a supported transfer command with secret-free JSON.' \
+		'  make performance-objectives Check performance accounting and generated reference.' \
+		'  make performance-objectives-update Regenerate the non-contractual performance reference.' \
 		'  make dist              Build every Python distribution independently.' \
 		'  make dist-smoke        Install and exercise the Riverhog server and client wheels.' \
 		'  make build-riverhog    Build the Riverhog image.' \
@@ -365,3 +368,11 @@ down:
 	@./scripts/compose_down.sh
 
 test: lint unit
+
+.PHONY: performance-objectives performance-objectives-update
+
+performance-objectives:
+	$(call UV_CMD,python scripts/performance_objectives.py check)
+
+performance-objectives-update:
+	$(call UV_CMD,python scripts/performance_objectives.py update)
