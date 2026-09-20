@@ -1,0 +1,37 @@
+test_ambiguous_symbol (test_guidance.GuidanceUnitTests.test_ambiguous_symbol) ... ok
+test_async_function_and_class_methods (test_guidance.GuidanceUnitTests.test_async_function_and_class_methods) ... ok
+test_blank_text (test_guidance.GuidanceUnitTests.test_blank_text) ... ok
+test_duplicate_id (test_guidance.GuidanceUnitTests.test_duplicate_id) ... ok
+test_duplicate_link_within_one_heuristic (test_guidance.GuidanceUnitTests.test_duplicate_link_within_one_heuristic) ... ok
+test_empty_register_is_valid (test_guidance.GuidanceUnitTests.test_empty_register_is_valid) ... ok
+test_exact_shape (test_guidance.GuidanceUnitTests.test_exact_shape) ... ok
+test_guidance_change_requires_render_update (test_guidance.GuidanceUnitTests.test_guidance_change_requires_render_update) ... ok
+test_invalid_ids (test_guidance.GuidanceUnitTests.test_invalid_ids) ... ok
+test_invalid_node_shapes (test_guidance.GuidanceUnitTests.test_invalid_node_shapes) ... ok
+test_invalid_python_is_reported (test_guidance.GuidanceUnitTests.test_invalid_python_is_reported) ... ok
+test_malformed_toml (test_guidance.GuidanceUnitTests.test_malformed_toml) ... ok
+test_missing_field (test_guidance.GuidanceUnitTests.test_missing_field) ... ok
+test_missing_file (test_guidance.GuidanceUnitTests.test_missing_file) ... ok
+test_missing_relation_note (test_guidance.GuidanceUnitTests.test_missing_relation_note) ... ok
+test_missing_render_is_stale (test_guidance.GuidanceUnitTests.test_missing_render_is_stale) ... ok
+test_nested_function_does_not_count_as_collected_test (test_guidance.GuidanceUnitTests.test_nested_function_does_not_count_as_collected_test) ... ok
+test_no_contractual_classification_or_authority_field (test_guidance.GuidanceUnitTests.test_no_contractual_classification_or_authority_field) ... ok
+test_no_per_record_contractual_status (test_guidance.GuidanceUnitTests.test_no_per_record_contractual_status) ... ok
+test_no_tests_is_valid (test_guidance.GuidanceUnitTests.test_no_tests_is_valid) ... ok
+test_nonfunction_does_not_count (test_guidance.GuidanceUnitTests.test_nonfunction_does_not_count) ... ok
+test_one_test_may_relate_to_two_heuristics (test_guidance.GuidanceUnitTests.test_one_test_may_relate_to_two_heuristics) ... ok
+test_out_of_root_symlink (test_guidance.GuidanceUnitTests.test_out_of_root_symlink) ... ok
+test_output_cannot_redirect_into_contracts (test_guidance.GuidanceUnitTests.test_output_cannot_redirect_into_contracts) ... ok
+test_references_are_not_imported_or_executed (test_guidance.GuidanceUnitTests.test_references_are_not_imported_or_executed) ... ok
+test_related_tests_must_be_a_list (test_guidance.GuidanceUnitTests.test_related_tests_must_be_a_list) ... ok
+test_renamed_symbol (test_guidance.GuidanceUnitTests.test_renamed_symbol) ... ok
+test_render_is_deterministic_and_nonbinding (test_guidance.GuidanceUnitTests.test_render_is_deterministic_and_nonbinding) ... ok
+test_stale_render_is_not_silently_rewritten (test_guidance.GuidanceUnitTests.test_stale_render_is_not_silently_rewritten) ... ok
+test_update_and_check (test_guidance.GuidanceUnitTests.test_update_and_check) ... ok
+test_update_writes_only_the_render (test_guidance.GuidanceUnitTests.test_update_writes_only_the_render) ... ok
+test_wrong_schema (test_guidance.GuidanceUnitTests.test_wrong_schema) ... ok
+
+----------------------------------------------------------------------
+Ran 32 tests in 0.020s
+
+OK
