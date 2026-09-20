@@ -17,3 +17,5 @@ then-current `main` and the accepted triage decision; do not apply it
 mechanically.
 
 Topic: Candidate non-binding guidance registry and migration design.
+
+Published reference contents: candidate register, generated human view, checker/renderer, focused tests, and handoff/validation notes. The unresolved migration and contract-side disposition remain decisions for integration/triage.
