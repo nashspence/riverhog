@@ -478,3 +478,123 @@ def validate_context(value: Mapping[str, Any]) -> dict[str, Any]:
         UUID(str(value["comparison_id"]))
     except ValueError as exc:
         raise PerformanceError(
+            "comparison_id must identify one measurement session with a UUID"
+        ) from exc
+    for key in ("workload_sha256", "environment_sha256", "path_sha256"):
+        if not isinstance(value[key], str) or re.fullmatch(r"[0-9a-f]{64}", value[key]) is None:
+            raise PerformanceError(f"{key} must be an exact SHA256 fingerprint")
+    if value["byte_domain"] not in ("logical-payload", "stored-payload"):
+        raise PerformanceError("unknown byte domain")
+    if value["cache_state"] not in ("cold", "warm", "read-after-write", "mixed-declared"):
+        raise PerformanceError("unknown cache state")
+    boundary = value["completion_boundary"]
+    if not isinstance(boundary, str) or re.fullmatch(r"[a-z][a-z0-9-]{0,95}", boundary) is None:
+        raise PerformanceError("completion boundary must be a safe semantic identifier")
+    _integer(value["concurrency"], positive=True)
+    return dict(value)
+
+
+def source_identity(root: Path = ROOT) -> dict[str, Any]:
+    try:
+        head = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"], check=True,
+            capture_output=True, text=True)
+        state = subprocess.run(["git", "-C", str(root), "status", "--porcelain",
+                "--untracked-files=all"], check=True, capture_output=True, text=True)
+        sha = head.stdout.strip()
+        if re.fullmatch(r"[0-9a-f]{40}", sha) is None:
+            raise ValueError("invalid SHA")
+        return {"sha": sha, "clean": not state.stdout.strip()}
+    except (OSError, subprocess.SubprocessError, ValueError):
+        return {"sha": None, "clean": False}
+
+
+
+def _validate_scope(identity: str | None, scenario: str, workload: str) -> None:
+    if identity == "transfer-goodput":
+        valid = scenario in NETWORK_SCENARIOS and workload in WORKLOADS
+    elif identity in {"storage-upload-goodput", "storage-read-goodput"}:
+        valid = (re.fullmatch(r"storage-adapter-sequential-segment-[1-9][0-9]*",
+                scenario) is not None
+                 and workload == "synthetic-one-object-read-after-write")
+    else:
+        valid = identity is None and scenario == "reference-recovery" and workload in WORKLOADS
+    if not valid:
+        raise PerformanceError("sample does not belong to a registered benchmark scope")
+
+def sample(*, identity: str | None, scenario: str, workload: str, completed_bytes: int,
+           elapsed_seconds: float, verified: bool, context: Mapping[str, Any] | None,
+           source_start: Mapping[str, Any], source_finish: Mapping[str, Any],
+    run_id: str) -> dict[str, Any]:
+    if identity is not None and objective(identity).rule != "reference-ratio":
+        raise PerformanceError("sample objective is not a goodput objective")
+    _validate_scope(identity, scenario, workload)
+    count = _integer(completed_bytes, positive=True)
+    seconds = _number(elapsed_seconds, positive=True)
+    if type(verified) is not bool:
+        raise PerformanceError("verification flag must be boolean")
+    UUID(run_id)
+    return {"schema": RESULT_SCHEMA, "objective": identity,
+        "definition_sha256": definition_sha256(),
+            "run_id": run_id, "scenario": scenario, "workload": workload,
+            "context": validate_context(context) if context is not None else None,
+            "source_start": dict(source_start), "source_finish": dict(source_finish),
+            "completed_bytes": count, "elapsed_seconds": seconds,
+            "bytes_per_second": count / seconds, "completion_verified": verified}
+
+
+def _validate_sample(value: Mapping[str, Any]) -> None:
+    keys = {"schema", "objective", "definition_sha256", "run_id", "scenario", "workload", "context",
+            "source_start", "source_finish", "completed_bytes", "elapsed_seconds",
+        "bytes_per_second", "completion_verified"}
+    if set(value) != keys or value.get("schema") != RESULT_SCHEMA:
+        raise PerformanceError("sample fields or schema do not match")
+    _validate_scope(value["objective"], value["scenario"], value["workload"])
+    count = _integer(value["completed_bytes"], positive=True)
+    seconds = _number(value["elapsed_seconds"], positive=True)
+    rate = _number(value["bytes_per_second"], positive=True)
+    if not math.isclose(rate, count / seconds, rel_tol=1e-12):
+        raise PerformanceError("sample rate disagrees with its numerator and duration")
+    try:
+        UUID(str(value["run_id"]))
+    except ValueError as exc:
+        raise PerformanceError("invalid sample identity") from exc
+    if type(value["completion_verified"]) is not bool:
+        raise PerformanceError("invalid verification flag")
+    if value["context"] is not None:
+        validate_context(value["context"])
+    for boundary in ("source_start", "source_finish"):
+        source = value[boundary]
+        if not isinstance(source, dict) or set(source) != {"sha",
+            "clean"} or type(source["clean"]) is not bool:
+            raise PerformanceError("invalid source identity")
+        if source["sha"] is not None and (not isinstance(source["sha"], str) 
+            or re.fullmatch(r"[0-9a-f]{40}", source["sha"]) is None):
+            raise PerformanceError("invalid source SHA")
+
+
+def evaluate_sample(candidate: Mapping[str, Any], reference: Mapping[str,
+        Any] | None) -> dict[str, Any]:
+    _validate_sample(candidate)
+    identity = candidate["objective"]
+    result: dict[str, Any] = {"objective": identity, "status": "not_evaluated",
+        "reason": "no_target",
+                              "reference_ratio": None, "minimum_reference_fraction": None}
+    if identity is None:
+        return result
+    if objective(identity).rule != "reference-ratio":
+        raise PerformanceError("not a goodput objective")
+    result["minimum_reference_fraction"] = limit(identity)
+    if reference is None:
+        result["reason"] = "no_measured_reference"
+        return result
+    _validate_sample(reference)
+    for row in (candidate, reference):
+        if row["definition_sha256"] != definition_sha256():
+            result["reason"] = "definition_changed"
+            return result
+        if row["completion_verified"] is not True:
+            result["reason"] = "completion_unverified"
+            return result
+        if (
+            row["source_start"] != row["source_finish"]
+            or row["source_start"]["clean"] is not True
