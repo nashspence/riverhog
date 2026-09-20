@@ -358,3 +358,123 @@ DISPOSITIONS = (
     ("not-an-objective", "harness-deadlines-and-cleanup", "scripts/test_compose_smoke.sh",
      'Wait/timeout limits bound the test harness. Empty temporary workspace '
          'after completion is cleanup correctness, '
+     "not a zero-working-memory objective."),
+)
+
+
+class PerformanceError(ValueError):
+    """Invalid bookkeeping or incomparable performance input."""
+
+
+def _number(value: object, *, positive: bool = False) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise PerformanceError("measurement must be a finite number")
+    number = float(value)
+    if not math.isfinite(number) or number < 0 or (positive and number == 0):
+        raise PerformanceError(
+            "measurement must be finite and nonnegative (positive for rates/times)"
+        )
+    return number
+
+
+def _integer(value: object, *, positive: bool = False) -> int:
+    if type(value) is not int or value < 0 or (positive and value == 0):
+        raise PerformanceError("count must be a nonnegative integer (positive when required)")
+    return value
+
+
+def objective(identity: str) -> Objective:
+    for item in OBJECTIVES:
+        if item.id == identity:
+            return item
+    raise PerformanceError(f"unknown performance objective: {identity}")
+
+
+def limit(identity: str, *, low: float | None = None, growth: float | None = None) -> float:
+    item = objective(identity)
+    p = BUDGETS[item.budget]
+    if item.rule == "reference-ratio":
+        return float(p["minimum_reference_fraction"])
+    if item.rule == "maximum":
+        return float(p["maximum"])
+    if item.rule == "exclusive-maximum":
+        return float(p["exclusive_maximum"])
+    baseline = _number(low)
+    if item.rule == "memory-growth":
+        return baseline * p["factor"] + p["slack_bytes"]
+    if item.rule == "indexed-work":
+        return (baseline + 1) * p["indexed_factor"] + p["slack_rows"] - 1
+    multiplier = _number(growth, positive=True)
+    if multiplier <= 1:
+        raise PerformanceError("cardinality growth must be greater than one")
+    if item.rule == "linear-work":
+        return (baseline + 1) * multiplier * p["linear_factor"] + p["slack_rows"] - 1
+    if item.rule == "plan-latency":
+        return baseline * max(p["minimum_factor"], multiplier * p["growth_factor"]) + p["slack_ms"]
+    if item.rule == "stream-latency":
+        return baseline * max(p["minimum_factor"],
+            multiplier * p["growth_factor"]) + p["slack_ms_per_row"]
+    raise PerformanceError(f"unknown rule: {item.rule}")
+
+
+def within(identity: str, value: float, *, low: float | None = None,
+    growth: float | None = None) -> bool:
+    observed = _number(value)
+    bound = limit(identity, low=low, growth=growth)
+    rule = objective(identity).rule
+    if rule == "reference-ratio":
+        raise PerformanceError(
+            "goodput requires evaluate_sample, not an unqualified scalar comparison"
+        )
+    return observed < bound if rule == "exclusive-maximum" else observed <= bound
+
+
+
+def comparison(identity: str, value: float, *, low: float | None = None,
+               growth: float | None = None, case: str | None = None) -> dict[str, Any]:
+    (
+        "Record the exact retained check, without changing its caller's failure "
+        'policy.'
+    )
+    return {"objective": identity, "case": case, "observed": _number(value),
+            "limit": limit(identity, low=low, growth=growth),
+            "status": "met" if within(identity, value, low=low, growth=growth) else "missed"}
+
+def definition_sha256() -> str:
+    # Includes evaluator and benchmark-dimension semantics, not only target scalars.
+    return hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+
+
+def _pairs(items: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in items:
+        if key in result:
+            raise PerformanceError(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
+def read_json(path: Path) -> dict[str, Any]:
+    def reject(token: str) -> None:
+        raise PerformanceError(f"nonfinite JSON number: {token}")
+    try:
+        result = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=_pairs,
+            parse_constant=reject)
+    except (OSError, json.JSONDecodeError) as exc:
+        raise PerformanceError("unable to read valid measurement JSON") from exc
+    if not isinstance(result, dict):
+        raise PerformanceError("measurement document must be an object")
+    return result
+
+
+_CONTEXT_KEYS = {"schema", "comparison_id", "workload_sha256", "environment_sha256", "path_sha256",
+                 "byte_domain", "completion_boundary", "cache_state", "concurrency"}
+
+
+def validate_context(value: Mapping[str, Any]) -> dict[str, Any]:
+    if set(value) != _CONTEXT_KEYS or value.get("schema") != CONTEXT_SCHEMA:
+        raise PerformanceError("comparison context fields or schema do not match")
+    try:
+        UUID(str(value["comparison_id"]))
+    except ValueError as exc:
+        raise PerformanceError(
