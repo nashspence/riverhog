@@ -164,6 +164,122 @@ def _boundary_canonical_sha256(boundaries: Mapping[str, object]) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
+def _protected_boundary(
+    boundaries: Mapping[str, object], freeze: Mapping[str, object]
+) -> dict[str, object]:
+    """Keep existing coordinates exact while admitting new publication coordinates.
+
+    Existing component and runtime-image records retain links to protected
+    coordinates. Links to new coordinates and providers owned by new
+    distributions are omitted from this view. Extension topology stays
+    exhaustive, and the complete boundary keeps its own changing identity.
+    """
+
+    def protected_names(key: str) -> set[str]:
+        names = freeze.get(key)
+        if (
+            not isinstance(names, list)
+            or any(not isinstance(name, str) or not name for name in names)
+            or len(names) != len(set(names))
+        ):
+            raise ContractFreezeError(f"boundary freeze has invalid {key}")
+        return set(names)
+
+    component_names = protected_names("protected_components")
+    image_names = protected_names("protected_runtime_images")
+    components = cast(Sequence[Mapping[str, object]], boundaries["components"])
+    actual_components = {str(item["distribution"]) for item in components}
+    if not component_names <= actual_components:
+        raise ContractFreezeError(
+            "protected component coordinates disappeared: "
+            f"{sorted(component_names - actual_components)}"
+        )
+    images = cast(Mapping[str, object], boundaries["runtime_images"])
+    runtime = cast(Mapping[str, object], images["runtime"])
+    if not image_names <= set(runtime):
+        raise ContractFreezeError(
+            f"protected runtime image coordinates disappeared: {sorted(image_names - set(runtime))}"
+        )
+
+    entry_points = []
+    for point in cast(Sequence[Mapping[str, object]], boundaries["entry_point_extensions"]):
+        entry_points.append(
+            {
+                **point,
+                "providers": [
+                    provider
+                    for provider in cast(Sequence[Mapping[str, object]], point["providers"])
+                    if provider["distribution"] in component_names
+                ],
+            }
+        )
+    process_points = []
+    for point in cast(Sequence[Mapping[str, object]], boundaries["process_extensions"]):
+        process_points.append(
+            {
+                **point,
+                "providers": [
+                    {
+                        **provider,
+                        "images": [
+                            image
+                            for image in cast(Sequence[str], provider["images"])
+                            if image in image_names
+                        ],
+                    }
+                    for provider in cast(Sequence[Mapping[str, object]], point["providers"])
+                    if provider["distribution"] in component_names
+                ],
+            }
+        )
+    return {
+        "schema": "riverhog-protected-boundary/v1",
+        "contract_authorities": boundaries["contract_authorities"],
+        "role_kinds": boundaries["role_kinds"],
+        "components": [
+            {
+                **item,
+                "dependencies": [
+                    dependency
+                    for dependency in cast(Sequence[str], item["dependencies"])
+                    if dependency in component_names
+                ],
+                "optional_dependencies": {
+                    extra: [
+                        dependency
+                        for dependency in cast(Sequence[str], dependencies)
+                        if dependency in component_names
+                    ]
+                    for extra, dependencies in cast(
+                        Mapping[str, object], item["optional_dependencies"]
+                    ).items()
+                },
+            }
+            for item in components
+            if item["distribution"] in component_names
+        ],
+        "runtime_images": {
+            **images,
+            "runtime": {
+                name: {
+                    **cast(Mapping[str, object], runtime[name]),
+                    "distributions": [
+                        distribution
+                        for distribution in cast(
+                            Sequence[str],
+                            cast(Mapping[str, object], runtime[name])["distributions"],
+                        )
+                        if distribution in component_names
+                    ],
+                }
+                for name in sorted(image_names)
+            },
+        },
+        "entry_point_extensions": entry_points,
+        "process_extensions": process_points,
+    }
+
+
 def _semantic_symbol_id(value: str) -> str:
     words = re.sub(r"(.)([A-Z][a-z]+)", r"\1-\2", value)
     words = re.sub(r"([a-z0-9])([A-Z])", r"\1-\2", words)
@@ -175,8 +291,8 @@ def _require_declared_boundary_freeze(
 ) -> None:
     governance = cast(Mapping[str, object], config["governance"])
     freeze = cast(Mapping[str, object], governance["boundary_freeze"])
-    expected = str(freeze["boundary_canonical_sha256"])
-    observed = _boundary_canonical_sha256(boundaries)
+    expected = str(freeze["protected_boundary_sha256"])
+    observed = _boundary_canonical_sha256(_protected_boundary(boundaries, freeze))
     if observed != expected:
         raise ContractFreezeError(
             "the executable v1 authority boundary differs from the maintainer-declared "
@@ -2819,6 +2935,8 @@ def contract_projection() -> dict[str, object]:
     external_contract["extents"] = extent_contract.extent_projection(external_contract)
     boundaries: dict[str, object] = {
         "reference_policy": config["references"]["policy"],
+        "contract_authorities": config["contract_authorities"],
+        "role_kinds": list(release_contract.RELEASE_ROLES),
         "components": components,
         "runtime_images": config["images"],
         "entry_point_extensions": _extension_points(projects),

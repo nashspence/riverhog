@@ -205,7 +205,12 @@ GOVERNANCE_SECTION_KEYS = {
         "provider_qualification_provisioning",
         "provider_qualification_runtime",
     },
-    "boundary_freeze": {"status", "boundary_canonical_sha256"},
+    "boundary_freeze": {
+        "status",
+        "protected_boundary_sha256",
+        "protected_components",
+        "protected_runtime_images",
+    },
 }
 VERSION_RE = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+")
 PROJECT_VERSION_RE = re.compile(r'(?m)^version = "(?P<version>[^"]+)"$')
@@ -627,11 +632,20 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
     if (
         re.fullmatch(
             r"[0-9a-f]{64}",
-            str(boundary_freeze["boundary_canonical_sha256"]),
+            str(boundary_freeze["protected_boundary_sha256"]),
         )
         is None
     ):
         raise ReleaseError("the v1 authority-boundary freeze must name one SHA-256 identity")
+    for key in ("protected_components", "protected_runtime_images"):
+        names = boundary_freeze[key]
+        if (
+            not isinstance(names, list)
+            or not names
+            or any(not isinstance(name, str) or not name for name in names)
+            or len(names) != len(set(names))
+        ):
+            raise ReleaseError(f"the v1 authority-boundary freeze has invalid {key}")
     if governance["tags"]["release_candidate"] != "v{version}-rc.{candidate}":
         raise ReleaseError("release-candidate tags must use v{version}-rc.{candidate}")
     if governance["tags"]["final"] != config["tag_template"]:
