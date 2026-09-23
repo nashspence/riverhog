@@ -169,7 +169,20 @@ def test_every_repo_query_selector_is_classified_and_every_database_selector_is_
     representatives: dict[str, tuple[str, str]] = {}
     filter_names = {"key": "key_id", "collection": "collection"}
     for key, prefix in DATABASE_PLAN_OPERATIONS.items():
-        selectors = observed[key]
+        selectors = set(observed[key])
+        if key == ("riverhog", "list_collections"):
+            request = operations[key]["requestBody"]
+            assert isinstance(request, dict)
+            content = request["content"]
+            assert isinstance(content, dict)
+            body = content["application/json"]
+            assert isinstance(body, dict)
+            assert body["schema"] == {"$ref": "#/components/schemas/SearchCollectionsRequest"}
+            request_schema = schemas["riverhog"]["components"]["schemas"][
+                "SearchCollectionsRequest"
+            ]
+            assert set(request_schema["properties"]) == {"tags"}
+            selectors.add("tags")
         expected_selectors = set(DATABASE_FILTER_SELECTORS[prefix])
         if "sort" in selectors or "order" in selectors:
             expected_selectors |= {"order", "sort"}
