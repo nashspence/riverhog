@@ -4,7 +4,7 @@
 
 This generated snapshot accounts for the externally exposed surfaces discovered from this repository revision. Discovery means inclusion; no separate acceptance decision is required.
 
-Included contract elements: **4210** · Extent decisions: **2003**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
+Included contract elements: **4209** · Extent decisions: **2003**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
 
 ## Audit references
 
@@ -227,11 +227,11 @@ Included contract elements: **4210** · Extent decisions: **2003**. Complete acc
 
 - [riverhog-client](authorities/riverhog-client/index.md) — Typed generic Riverhog client and capability-scoped collection-processing runtime.
   - [Configuration Environment](authorities/riverhog-client/configuration-environment/index.md) (12)
-  - [Python](authorities/riverhog-client/python/index.md) (269)
+  - [Python](authorities/riverhog-client/python/index.md) (268)
 
 - [riverhog-protocol](authorities/riverhog-protocol/index.md) — Canonical Riverhog wire and identity contracts.
   - [Schemas](authorities/riverhog-protocol/schema/index.md) (1)
-  - [Python](authorities/riverhog-protocol/python/index.md) (323)
+  - [Python](authorities/riverhog-protocol/python/index.md) (324)
 
 - **[riverhog-provenance](authorities/riverhog-provenance/index.md)** [📦](authorities/riverhog-provenance/evidence-gaps.md) — Portable Riverhog v1 per-file provenance journals and validation.
   - **[Schemas](authorities/riverhog-provenance/schema/index.md)** [📦](authorities/riverhog-provenance/schema/evidence-gaps.md) (7)
@@ -269,7 +269,7 @@ Included contract elements: **4210** · Extent decisions: **2003**. Complete acc
 
 - **[stove0](authorities/stove0/index.md)** [📦](authorities/stove0/evidence-gaps.md) — The Stove0 application API and its maintained cross-interface operation parity.
   - **[HTTP Operations](authorities/stove0/http-operations/index.md)** [📦](authorities/stove0/http-operations/evidence-gaps.md) (33)
-  - **[HTTP Schemas](authorities/stove0/http-schemas/index.md)** [📦](authorities/stove0/http-schemas/evidence-gaps.md) (136)
+  - **[HTTP Schemas](authorities/stove0/http-schemas/index.md)** [📦](authorities/stove0/http-schemas/evidence-gaps.md) (137)
   - [HTTP Service Declaration](authorities/stove0/http-service-declaration/index.md) (1)
 
 - [stove0-api-client](authorities/stove0-api-client/index.md) — Official Python client for the Stove0 v1 workflow API.
@@ -327,7 +327,7 @@ Included contract elements: **4210** · Extent decisions: **2003**. Complete acc
   - [Durable State](authorities/stove0-target-jobs/durable-state/index.md) (3)
 
 - [stove0-target-protocol](authorities/stove0-target-protocol/index.md) — Dependency-light public contracts for external Stove0 targets.
-  - [Python](authorities/stove0-target-protocol/python/index.md) (137) — Defines protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
+  - [Python](authorities/stove0-target-protocol/python/index.md) (136) — Defines protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
 
 - [stove0-target-support](authorities/stove0-target-support/index.md) — Hardware-neutral target protocol, runtime, and conformance support for Stove0.
   - [Process Protocol](authorities/stove0-target-support/process-protocol/index.md) (1)
@@ -335,4 +335,4 @@ Included contract elements: **4210** · Extent decisions: **2003**. Complete acc
   - [Process Protocol Schemas](authorities/stove0-target-support/process-protocol-schemas/index.md) (8)
   - [CLI](authorities/stove0-target-support/cli/index.md) (2)
   - [Configuration Environment](authorities/stove0-target-support/configuration-environment/index.md) (1)
-  - [Python](authorities/stove0-target-support/python/index.md) (152)
+  - [Python](authorities/stove0-target-support/python/index.md) (151)

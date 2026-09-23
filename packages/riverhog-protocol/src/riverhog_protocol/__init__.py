@@ -21,6 +21,7 @@ from riverhog_protocol.errors import (
     error_type_for_code,
 )
 from riverhog_protocol.http_errors import RIVERHOG_HTTP_ERROR_AUTHORITY
+from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 
 __all__ = [
     "BadRequest",
@@ -413,6 +414,7 @@ __all__ += [
     "CollectionUploadSort",
     "CollectionUploadState",
     "DownloadQuotaSort",
+    "DeclaredWorkspaceProtection",
     "ProvenanceSort",
     "ProvenanceStatus",
     "RetrievalCacheProtection",

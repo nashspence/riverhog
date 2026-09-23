@@ -45,8 +45,8 @@ Choose an authority to inspect this policy's indexed contract-element applicatio
 | [riverhog-application-access](applications/riverhog-application-access.md) | 47 |
 | [riverhog-archive-contracts](applications/riverhog-archive-contracts.md) | 72 |
 | [riverhog-canonical-json](applications/riverhog-canonical-json.md) | 13 |
-| [riverhog-client](applications/riverhog-client.md) | 269 |
-| [riverhog-protocol](applications/riverhog-protocol.md) | 323 |
+| [riverhog-client](applications/riverhog-client.md) | 268 |
+| [riverhog-protocol](applications/riverhog-protocol.md) | 324 |
 | [riverhog-provenance](applications/riverhog-provenance.md) | 105 |
 | [riverhog-provenance-contracts](applications/riverhog-provenance-contracts.md) | 16 |
 | [riverhog-storage-adapter-asgi-support](applications/riverhog-storage-adapter-asgi-support.md) | 1 |
@@ -67,5 +67,5 @@ Choose an authority to inspect this policy's indexed contract-element applicatio
 | [stove0-recipe-config](applications/stove0-recipe-config.md) | 30 |
 | [stove0-server](applications/stove0-server.md) | 324 |
 | [stove0-target-client](applications/stove0-target-client.md) | 15 |
-| [stove0-target-protocol](applications/stove0-target-protocol.md) | 137 |
-| [stove0-target-support](applications/stove0-target-support.md) | 152 |
+| [stove0-target-protocol](applications/stove0-target-protocol.md) | 136 |
+| [stove0-target-support](applications/stove0-target-support.md) | 151 |

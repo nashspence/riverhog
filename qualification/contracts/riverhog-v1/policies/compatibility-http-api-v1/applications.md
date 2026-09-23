@@ -458,6 +458,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: CoordinationChildSettlementRef](../../authorities/stove0/http-schemas/schemas-coordinationchildsettlementref.md#pa-ef0e05b6f1) |
 | `stove0` | [schemas: CoordinationCollectionResult](../../authorities/stove0/http-schemas/schemas-coordinationcollectionresult.md#pa-97467c11f8) |
 | `stove0` | [schemas: CoordinationSettlement](../../authorities/stove0/http-schemas/schemas-coordinationsettlement.md#pa-209aaa37c3) |
+| `stove0` | [schemas: DeclaredWorkspaceProtection](../../authorities/stove0/http-schemas/schemas-declaredworkspaceprotection.md#pa-2a754fa1ca) |
 | `stove0` | [schemas: EffectPlan](../../authorities/stove0/http-schemas/schemas-effectplan.md#pa-876162ce67) |
 | `stove0` | [schemas: ErrorBody](../../authorities/stove0/http-schemas/schemas-errorbody.md#pa-e4546c1b48) |
 | `stove0` | [schemas: ErrorResponse](../../authorities/stove0/http-schemas/schemas-errorresponse.md#pa-df98bf48f8) |

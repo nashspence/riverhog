@@ -45,6 +45,7 @@ Supporting HTTP data definitions; these are not callable operations.
 - [CoordinationChildSettlementRef](schemas-coordinationchildsettlementref.md)
 - [CoordinationCollectionResult](schemas-coordinationcollectionresult.md)
 - [CoordinationSettlement](schemas-coordinationsettlement.md)
+- [DeclaredWorkspaceProtection](schemas-declaredworkspaceprotection.md)
 - [EffectPlan](schemas-effectplan.md)
 - [ErrorBody](schemas-errorbody.md)
 - [ErrorResponse](schemas-errorresponse.md)

@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-a40ea62101"></a>`kind`: `"class"`
-- <a id="s-1dbacd25ce"></a>`signature`: `"\"(root: 'Path', execution_id: 'str', assurance: 'WorkspaceAssurance') -> None\""`
+- <a id="s-1dbacd25ce"></a>`signature`: `"\"(root: 'Path', execution_id: 'str', declared_protection: 'DeclaredWorkspaceProtection') -> None\""`
 
 #### Dataclass fields
 
@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 |---|---|---|
 | <a id="s-6db8a21458"></a>`root` | `'Path'` | `required` |
 | <a id="s-ddbe6f07e9"></a>`execution_id` | `'str'` | `required` |
-| <a id="s-fa68e4e302"></a>`assurance` | `'WorkspaceAssurance'` | `required` |
+| <a id="s-fa68e4e302"></a>`declared_protection` | `'DeclaredWorkspaceProtection'` | `required` |
 
 ## Maintained corroboration
 
@@ -69,7 +69,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5418831922a3e113fa2d956ecaf548ed30b4d75e8dcf025d6a99a53cf0e3f82e -->
+<!-- exact-contract-value: a235d5a6a098516fff41cd829bdbd855c0de2de18bd0867bf3eeab0cd96671a3 -->
 
 ```json
 {
@@ -87,12 +87,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       {
         "default": "required",
-        "name": "assurance",
-        "type": "'WorkspaceAssurance'"
+        "name": "declared_protection",
+        "type": "'DeclaredWorkspaceProtection'"
       }
     ],
     "kind": "class",
-    "signature": "\"(root: 'Path', execution_id: 'str', assurance: 'WorkspaceAssurance') -> None\""
+    "signature": "\"(root: 'Path', execution_id: 'str', declared_protection: 'DeclaredWorkspaceProtection') -> None\""
   },
   "distribution": "riverhog-client",
   "module": "riverhog_client.transform",

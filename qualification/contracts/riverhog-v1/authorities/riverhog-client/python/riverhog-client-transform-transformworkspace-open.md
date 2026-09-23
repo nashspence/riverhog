@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-90fde96ae6"></a>`kind`: `"classmethod"`
-- <a id="s-7d71359fa6"></a>`signature`: `"\"(cls, root: 'Path', *, execution_id: 'str', assurance: 'WorkspaceAssurance') -> 'TransformWorkspace'\""`
+- <a id="s-7d71359fa6"></a>`signature`: `"\"(cls, root: 'Path', *, execution_id: 'str', declared_protection: 'DeclaredWorkspaceProtection') -> 'TransformWorkspace'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f883e79ff7767c257475cf84102e270c3ac11b77fca3dc89823dfefbb1402d8c -->
+<!-- exact-contract-value: 9fd2e8b1920e8bb3364717db2674bd813aed4d79006bd6d76e25968267b355e6 -->
 
 ```json
 {
   "contract": {
     "kind": "classmethod",
-    "signature": "\"(cls, root: 'Path', *, execution_id: 'str', assurance: 'WorkspaceAssurance') -> 'TransformWorkspace'\""
+    "signature": "\"(cls, root: 'Path', *, execution_id: 'str', declared_protection: 'DeclaredWorkspaceProtection') -> 'TransformWorkspace'\""
   },
   "distribution": "riverhog-client",
   "module": "riverhog_client.transform",

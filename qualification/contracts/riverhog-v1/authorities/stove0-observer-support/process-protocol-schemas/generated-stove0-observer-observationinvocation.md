@@ -35,6 +35,7 @@ Fence-bound invocation authority excluded from semantic request identity.
 - [ArtifactSubject](#s-6ecabdecfa)
 - [CollectionId](#s-90dcdf64ae)
 - [CollectionRootRef](#s-ad3843b90a)
+- [DeclaredWorkspaceProtection](#s-386d79f3ae)
 - [JsonValue](#s-95de9a9e67)
 - [ObservationRequest](#s-47065fc11b)
 - [ObserverRuntimeAuthority](#s-f89907f0ff)
@@ -83,6 +84,12 @@ Fence-bound invocation authority excluded from semantic request identity.
 | <a id="s-890e5f35a9"></a>`collection_id` | yes | [CollectionId](#s-90dcdf64ae) |  |
 | <a id="s-13ae4d5efc"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
 
+### <a id="s-386d79f3ae"></a>definition `DeclaredWorkspaceProtection`
+
+- <a id="s-1a1fdd1a32"></a>`type`: `"string"`
+- <a id="s-fca36c1838"></a>`enum`: `["encrypted-at-rest","memory-backed"]`
+- <a id="s-0053bfb6fc"></a>`description`: `"Deployment declaration for plaintext workspace storage. Memory-backed storage requires no unencrypted swap. The runtime does not verify the mount or swap policy."`
+
 ### <a id="s-95de9a9e67"></a>definition `JsonValue`
 
 - Accepts: any JSON value.
@@ -116,7 +123,7 @@ Fence-bound invocation authority excluded from semantic request identity.
 - <a id="s-23bb705710"></a>`type`: `"object"`
 - <a id="s-45ce1d1f88"></a>`additionalProperties`: `false`
 - <a id="s-9ad56379bc"></a>`description`: `"Secret-bearing invocation material excluded from durable request identity."`
-- <a id="s-bc2d59cca4"></a>`required`: `["riverhog_base_url","capability_token","workspace_assurance"]`
+- <a id="s-bc2d59cca4"></a>`required`: `["riverhog_base_url","capability_token","declared_workspace_protection"]`
 - <a id="s-aafcde42a8"></a>`title`: `"ObserverRuntimeAuthority"`
 
 #### Fields
@@ -125,9 +132,9 @@ Fence-bound invocation authority excluded from semantic request identity.
 |---|---:|---|---|
 | <a id="s-3208b3767d"></a>`allow_insecure_http` | no | type="boolean"; default=false; title="Allow Insecure Http" |  |
 | <a id="s-a17c050adb"></a>`capability_token` | yes | type="string"; maxLength=4096; minLength=1; title="Capability Token" |  |
+| <a id="s-8d0e201517"></a>`declared_workspace_protection` | yes | [DeclaredWorkspaceProtection](#s-386d79f3ae) |  |
 | <a id="s-aea2c68d3e"></a>`riverhog_base_url` | yes | type="string"; maxLength=2048; minLength=1; title="Riverhog Base Url" |  |
 | <a id="s-d285880be0"></a>`transport` | no | type="string"; const="riverhog-capability/v1"; default="riverhog-capability/v1"; title="Transport" |  |
-| <a id="s-5a67beef1e"></a>`workspace_assurance` | yes | type="string"; enum=["encrypted","ephemeral"]; title="Workspace Assurance" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -197,7 +204,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: dcc85384eb9f0358fe7190843535b2acb12d43b9a285e0a02be4c86d01251dda -->
+<!-- exact-contract-value: 06b440adbec5f4a9e096d5c8d468a1b39fbda5dff5d26b6bc74f98833adf40aa -->
 
 ```json
 {
@@ -297,6 +304,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "title": "CollectionRootRef",
       "type": "object"
+    },
+    "DeclaredWorkspaceProtection": {
+      "description": "Deployment declaration for plaintext workspace storage. Memory-backed storage requires no unencrypted swap. The runtime does not verify the mount or swap policy.",
+      "enum": [
+        "encrypted-at-rest",
+        "memory-backed"
+      ],
+      "type": "string"
     },
     "JsonValue": {},
     "ObservationRequest": {
@@ -404,6 +419,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Capability Token",
           "type": "string"
         },
+        "declared_workspace_protection": {
+          "$ref": "#/$defs/DeclaredWorkspaceProtection"
+        },
         "riverhog_base_url": {
           "maxLength": 2048,
           "minLength": 1,
@@ -415,20 +433,12 @@ The following JSON is the complete value owned at each machine-authority pointer
           "default": "riverhog-capability/v1",
           "title": "Transport",
           "type": "string"
-        },
-        "workspace_assurance": {
-          "enum": [
-            "encrypted",
-            "ephemeral"
-          ],
-          "title": "Workspace Assurance",
-          "type": "string"
         }
       },
       "required": [
         "riverhog_base_url",
         "capability_token",
-        "workspace_assurance"
+        "declared_workspace_protection"
       ],
       "title": "ObserverRuntimeAuthority",
       "type": "object"

@@ -46,6 +46,7 @@ Exact externally visible contract owned by this contract element.
 - [ArtifactSubject](#s-a6a9f9a8cd)
 - [CollectionId](#s-9d6c2f9f38)
 - [CollectionRootRef](#s-52bea440ad)
+- [DeclaredWorkspaceProtection](#s-a41011dced)
 - [JsonValue](#s-3c9822b86f)
 - [ObservationRequest](#s-957e246dd2)
 - [ObserverRuntimeAuthority](#s-9875058c01)
@@ -92,6 +93,11 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-af16933782"></a>`collection_id` | yes | [CollectionId](#s-9d6c2f9f38) |  |
 | <a id="s-c6e424916a"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
+##### <a id="s-a41011dced"></a>definition `DeclaredWorkspaceProtection`
+
+- <a id="s-495d199b0c"></a>`type`: `"string"`
+- <a id="s-a15f7d2536"></a>`enum`: `["encrypted-at-rest","memory-backed"]`
+
 ##### <a id="s-3c9822b86f"></a>definition `JsonValue`
 
 - Accepts: any JSON value.
@@ -123,7 +129,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-5fde14d9e7"></a>`type`: `"object"`
 - <a id="s-fdea5b7ab6"></a>`additionalProperties`: `false`
-- <a id="s-37489ed37a"></a>`required`: `["riverhog_base_url","capability_token","workspace_assurance"]`
+- <a id="s-37489ed37a"></a>`required`: `["riverhog_base_url","capability_token","declared_workspace_protection"]`
 
 ###### Fields
 
@@ -131,9 +137,9 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-0cceaee2c7"></a>`allow_insecure_http` | no | type="boolean"; default=false |  |
 | <a id="s-924a8acb24"></a>`capability_token` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-eb28039b80"></a>`declared_workspace_protection` | yes | [DeclaredWorkspaceProtection](#s-a41011dced) |  |
 | <a id="s-93b095a72f"></a>`riverhog_base_url` | yes | type="string"; maxLength=2048; minLength=1 |  |
 | <a id="s-332a21d897"></a>`transport` | no | type="string"; const="riverhog-capability/v1"; default="riverhog-capability/v1" |  |
-| <a id="s-6b4313a6aa"></a>`workspace_assurance` | yes | type="string"; enum=["encrypted","ephemeral"] |  |
 
 ## Maintained corroboration
 
@@ -168,7 +174,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b3d3190f9fbb64150532b7459a9715c0264368c106ed7d428a00569ae1a4c470 -->
+<!-- exact-contract-value: 161739844fb24612fb10b0608bc1de6e99e766265f321d1d521f12269032a2bc -->
 
 ```json
 {
@@ -262,6 +268,13 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
+        "DeclaredWorkspaceProtection": {
+          "enum": [
+            "encrypted-at-rest",
+            "memory-backed"
+          ],
+          "type": "string"
+        },
         "JsonValue": {},
         "ObservationRequest": {
           "additionalProperties": false,
@@ -352,6 +365,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "minLength": 1,
               "type": "string"
             },
+            "declared_workspace_protection": {
+              "$ref": "#/$defs/DeclaredWorkspaceProtection"
+            },
             "riverhog_base_url": {
               "maxLength": 2048,
               "minLength": 1,
@@ -361,19 +377,12 @@ The following JSON is the complete value owned at each machine-authority pointer
               "const": "riverhog-capability/v1",
               "default": "riverhog-capability/v1",
               "type": "string"
-            },
-            "workspace_assurance": {
-              "enum": [
-                "encrypted",
-                "ephemeral"
-              ],
-              "type": "string"
             }
           },
           "required": [
             "riverhog_base_url",
             "capability_token",
-            "workspace_assurance"
+            "declared_workspace_protection"
           ],
           "type": "object"
         }

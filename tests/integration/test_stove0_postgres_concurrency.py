@@ -331,7 +331,7 @@ def _active_target_work(
         fence=1,
         controller_evidence=record.controller_evidence,
         plan=plan,
-        workspace_assurance="ephemeral",
+        declared_workspace_protection="memory-backed",
     )
     request = TargetJobRequest.seal(
         declaration,
@@ -557,7 +557,7 @@ def _active_effect_work(
             fence=1,
             controller_evidence=record.controller_evidence,
             plan=plan,
-            workspace_assurance="ephemeral",
+            declared_workspace_protection="memory-backed",
         ),
         TargetRuntimeAuthority(
             riverhog_base_url="https://riverhog.invalid",

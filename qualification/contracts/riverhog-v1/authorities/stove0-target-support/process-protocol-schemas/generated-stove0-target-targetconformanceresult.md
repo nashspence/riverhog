@@ -41,6 +41,7 @@ Exact externally visible contract owned by this contract element.
 - [CollectionId](#s-40a59539e2)
 - [CollectionRootRef](#s-3b0dd8e93b)
 - [ControllerEvidence](#s-b707894e8c)
+- [DeclaredWorkspaceProtection](#s-7c36dc1beb)
 - [EffectPlan](#s-ef86be7809)
 - [EvaluationBinding](#s-06c04695a5)
 - [ExecutionEnvelope](#s-3c944b74fe)
@@ -211,6 +212,12 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-bd2dec1b4b"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Controller Evidence Sha256" |  |
 | <a id="s-719a9ae4ab"></a>`execution_envelope` | yes | [ExecutionEnvelope](#s-3c944b74fe) |  |
 | <a id="s-b887d63886"></a>`format` | no | type="string"; const="stove0-controller-evidence/v1"; default="stove0-controller-evidence/v1"; title="Format" |  |
+
+### <a id="s-7c36dc1beb"></a>definition `DeclaredWorkspaceProtection`
+
+- <a id="s-2b63659e11"></a>`type`: `"string"`
+- <a id="s-66fe9829ef"></a>`enum`: `["encrypted-at-rest","memory-backed"]`
+- <a id="s-c13d59f09e"></a>`description`: `"Deployment declaration for plaintext workspace storage. Memory-backed storage requires no unencrypted swap. The runtime does not verify the mount or swap policy."`
 
 ### <a id="s-ef86be7809"></a>definition `EffectPlan`
 
@@ -745,7 +752,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-221470735b"></a>`type`: `"object"`
 - <a id="s-d9ff4ea7a3"></a>`additionalProperties`: `false`
-- <a id="s-59b95c727b"></a>`required`: `["job_id","claim_id","fence","controller_evidence","plan","workspace_assurance"]`
+- <a id="s-59b95c727b"></a>`required`: `["job_id","claim_id","fence","controller_evidence","plan","declared_workspace_protection"]`
 - <a id="s-6ed85100a6"></a>`title`: `"TargetJobDeclaration"`
 
 #### Fields
@@ -754,10 +761,10 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-d518182a9c"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1; title="Claim Id" |  |
 | <a id="s-b457950183"></a>`controller_evidence` | yes | [ControllerEvidence](#s-b707894e8c) |  |
+| <a id="s-f46eff8d33"></a>`declared_workspace_protection` | yes | [DeclaredWorkspaceProtection](#s-7c36dc1beb) |  |
 | <a id="s-ed1ee3dac8"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
 | <a id="s-09a9d64cdc"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Job Id" |  |
 | <a id="s-10ef2039bb"></a>`plan` | yes | discriminator={"mapping":{"stove0-effect-target/v1":"#/$defs/EffectPlan","stove0-transform-target/v1":"#/$defs/TransformPlan"},"propertyName":"protocol"}; oneOf=[([TransformPlan](#s-db60c65572)); ([EffectPlan](#s-ef86be7809))]; title="Plan" |  |
-| <a id="s-281216dc41"></a>`workspace_assurance` | yes | type="string"; enum=["encrypted","ephemeral"]; title="Workspace Assurance" |  |
 
 ### <a id="s-ef307f8c14"></a>definition `TargetJobStatus`
 
@@ -1206,7 +1213,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 84fcb100fd23113c62fbf065e3461c62df16cd72151d69174fa2d4368a2db114 -->
+<!-- exact-contract-value: 08c05415af3a2c0335e2881c6533420e35b69d6d09dad70c119a5eda87d63cf3 -->
 
 ```json
 {
@@ -1448,6 +1455,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "title": "ControllerEvidence",
       "type": "object"
+    },
+    "DeclaredWorkspaceProtection": {
+      "description": "Deployment declaration for plaintext workspace storage. Memory-backed storage requires no unencrypted swap. The runtime does not verify the mount or swap policy.",
+      "enum": [
+        "encrypted-at-rest",
+        "memory-backed"
+      ],
+      "type": "string"
     },
     "EffectPlan": {
       "additionalProperties": false,
@@ -2763,6 +2778,9 @@ The following JSON is the complete value owned at each machine-authority pointer
         "controller_evidence": {
           "$ref": "#/$defs/ControllerEvidence"
         },
+        "declared_workspace_protection": {
+          "$ref": "#/$defs/DeclaredWorkspaceProtection"
+        },
         "fence": {
           "minimum": 1,
           "title": "Fence",
@@ -2790,14 +2808,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             }
           ],
           "title": "Plan"
-        },
-        "workspace_assurance": {
-          "enum": [
-            "encrypted",
-            "ephemeral"
-          ],
-          "title": "Workspace Assurance",
-          "type": "string"
         }
       },
       "required": [
@@ -2806,7 +2816,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "fence",
         "controller_evidence",
         "plan",
-        "workspace_assurance"
+        "declared_workspace_protection"
       ],
       "title": "TargetJobDeclaration",
       "type": "object"

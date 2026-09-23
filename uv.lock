@@ -2820,6 +2820,7 @@ dependencies = [
     { name = "pydantic" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-client" },
+    { name = "riverhog-protocol" },
     { name = "stove0-observer-client" },
     { name = "stove0-observer-protocol" },
 ]
@@ -2831,6 +2832,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-client", editable = "packages/riverhog-client" },
+    { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "stove0-observer-client", editable = "some-implementations/stove0/packages/observer-client" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
 ]

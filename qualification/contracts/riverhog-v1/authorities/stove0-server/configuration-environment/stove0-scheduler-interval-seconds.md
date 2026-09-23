@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-server:stove0-scheduler-interval-seconds:fa5752e04b -->
+<!-- contract-element: configuration-environment:stove0-server:stove0-scheduler-interval-seconds:33705ef953 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,16 +13,16 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-f1434e7972"></a>
+<a id="s-704a0f2188"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-8b1bac247a"></a>`consumers` | `["stove0-server"]` |
-| <a id="s-7885b7d9a8"></a>`default_expressions` | `["str(default)"]` |
-| <a id="s-cd0ba82178"></a>`id` | `"stove0-server:environment:STOVE0_SCHEDULER_INTERVAL_SECONDS"` |
-| <a id="s-cf63d91846"></a>`input_shape` | `"environment-string"` |
-| <a id="s-3e0815658c"></a>`name` | `"STOVE0_SCHEDULER_INTERVAL_SECONDS"` |
-| <a id="s-4651ce2447"></a>`owner` | `"stove0-server"` |
+| <a id="s-a976fdbf26"></a>`consumers` | `["stove0-server"]` |
+| <a id="s-c44939a0ce"></a>`default_expressions` | `["str(default)"]` |
+| <a id="s-cf1d980c19"></a>`id` | `"stove0-server:environment:STOVE0_SCHEDULER_INTERVAL_SECONDS"` |
+| <a id="s-80e58005d1"></a>`input_shape` | `"environment-string"` |
+| <a id="s-6ced135eba"></a>`name` | `"STOVE0_SCHEDULER_INTERVAL_SECONDS"` |
+| <a id="s-8c5a0f1546"></a>`owner` | `"stove0-server"` |
 
 ### Progression, limits, and lifecycle
 
@@ -32,14 +32,14 @@ Shared facts for every subject below: configuration="STOVE0_SCHEDULER_INTERVAL_S
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [STOVE0_SCHEDULER_INTERVAL_SECONDS](#s-f1434e7972) | `value · configured-value · operational_policy` | shared above |
+| [STOVE0_SCHEDULER_INTERVAL_SECONDS](#s-704a0f2188) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-1330e662a2"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
-- <a id="pa-5a1d00743c"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
+- <a id="pa-e0a5cbad8d"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-4b9e839259"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -63,7 +63,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/241`
+- `/external_contract/configuration_environment/242`
 
 ### Exact owned JSON
 

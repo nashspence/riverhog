@@ -22,14 +22,14 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-0b9a0cec77"></a>`kind`: `"class"`
-- <a id="s-4302ea9d23"></a>`signature`: `"\"(runtime: 'TargetRuntimeAuthority', workspace_assurance: 'WorkspaceAssurance') -> None\""`
+- <a id="s-4302ea9d23"></a>`signature`: `"\"(runtime: 'TargetRuntimeAuthority', declared_workspace_protection: 'DeclaredWorkspaceProtection') -> None\""`
 
 #### Dataclass fields
 
 | Field | Type | Default |
 |---|---|---|
 | <a id="s-2ef66a97b7"></a>`runtime` | `'TargetRuntimeAuthority'` | `required` |
-| <a id="s-279d26143b"></a>`workspace_assurance` | `'WorkspaceAssurance'` | `required` |
+| <a id="s-279d26143b"></a>`declared_workspace_protection` | `'DeclaredWorkspaceProtection'` | `required` |
 
 ## Governing policies
 
@@ -58,7 +58,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: cf63f20ecfa8a84ea6aab33c628b93cf7ac1788e0e939766f709fc527b2bac6c -->
+<!-- exact-contract-value: a8b8b7ea1db9447e2514cafb8f7f7fb7fa2ea2560e7ca80f53920ae66abbf8a5 -->
 
 ```json
 {
@@ -71,12 +71,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       {
         "default": "required",
-        "name": "workspace_assurance",
-        "type": "'WorkspaceAssurance'"
+        "name": "declared_workspace_protection",
+        "type": "'DeclaredWorkspaceProtection'"
       }
     ],
     "kind": "class",
-    "signature": "\"(runtime: 'TargetRuntimeAuthority', workspace_assurance: 'WorkspaceAssurance') -> None\""
+    "signature": "\"(runtime: 'TargetRuntimeAuthority', declared_workspace_protection: 'DeclaredWorkspaceProtection') -> None\""
   },
   "distribution": "stove0-server",
   "module": "stove0_core",

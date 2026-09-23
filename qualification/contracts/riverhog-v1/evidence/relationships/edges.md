@@ -188,6 +188,7 @@ Each row is one declared relationship. Its endpoints link to their exact node re
 | <a id="re-35fbec38d5"></a>[stove0-observer-support](nodes.md#rn-50ccd8c774) | `depends-on` | [http-api-contracts](nodes.md#rn-f59c7f4102) | `required` |
 | <a id="re-b7aa970a46"></a>[stove0-observer-support](nodes.md#rn-50ccd8c774) | `depends-on` | [riverhog-canonical-json](nodes.md#rn-f55ab6c77b) | `required` |
 | <a id="re-e92028077f"></a>[stove0-observer-support](nodes.md#rn-50ccd8c774) | `depends-on` | [riverhog-client](nodes.md#rn-8e5274344f) | `required` |
+| <a id="re-4859f47089"></a>[stove0-observer-support](nodes.md#rn-50ccd8c774) | `depends-on` | [riverhog-protocol](nodes.md#rn-20dbb0d5c0) | `required` |
 | <a id="re-52c0cc110b"></a>[stove0-observer-support](nodes.md#rn-50ccd8c774) | `depends-on` | [stove0-observer-client](nodes.md#rn-21b6164c9f) | `required` |
 | <a id="re-e51c285aa5"></a>[stove0-observer-support](nodes.md#rn-50ccd8c774) | `depends-on` | [stove0-observer-protocol](nodes.md#rn-bac58a079c) | `required` |
 | <a id="re-112204aa68"></a>[stove0-operator-contracts](nodes.md#rn-7c400ebb83) | `depends-on` | [http-api-contracts](nodes.md#rn-f59c7f4102) | `required` |

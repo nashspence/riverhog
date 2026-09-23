@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import secrets
 from collections.abc import Iterable, Mapping, Sequence
-from typing import Any, Literal, Protocol
+from typing import Any, Protocol
 
 from riverhog_protocol import Conflict, NotFound
 from riverhog_protocol.collection_workflow_transport import (
@@ -37,6 +37,7 @@ from riverhog_protocol.collection_workflows import (
     canonical_json_sha256 as riverhog_canonical_json_sha256,
 )
 from riverhog_protocol.portable_collection import PortableCollectionInventoryPage
+from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_observer_protocol import ObservationRequest, ObserverRuntimeAuthority
 from stove0_protocol import (
     ArtifactSubject,
@@ -72,8 +73,6 @@ from stove0_core.work_state import (
     WorkRecord,
     WorkStore,
 )
-
-WorkspaceAssurance = Literal["encrypted", "ephemeral"]
 
 
 class RiverhogApi(Protocol):
@@ -265,15 +264,15 @@ class Stove0RiverhogClient:
         *,
         claim_lease_seconds: int = 30 * 60,
         capability_ttl_seconds: int = 15 * 60,
-        workspace_assurance: WorkspaceAssurance = "encrypted",
+        declared_workspace_protection: DeclaredWorkspaceProtection,
         claim_purpose: str = "stove0-collection-work/v1",
         state: WorkStore | None = None,
         authority_batch_size: int = 100,
     ) -> None:
         if claim_lease_seconds < 30 or capability_ttl_seconds < 30:
             raise ValueError("Riverhog claim and capability lifetimes must be at least 30 seconds")
-        if workspace_assurance not in {"encrypted", "ephemeral"}:
-            raise ValueError("stove0 workspace assurance is invalid")
+        if declared_workspace_protection not in {"encrypted-at-rest", "memory-backed"}:
+            raise ValueError("stove0 workspace protection declaration is invalid")
         purpose = claim_purpose.strip()
         if not purpose:
             raise ValueError("Riverhog claim purpose must be visible")
@@ -284,7 +283,7 @@ class Stove0RiverhogClient:
         self.api = api
         self.claim_lease_seconds = claim_lease_seconds
         self.capability_ttl_seconds = capability_ttl_seconds
-        self.workspace_assurance = workspace_assurance
+        self.declared_workspace_protection = declared_workspace_protection
         self.claim_purpose = purpose
         self.state = state
         self.authority_batch_size = authority_batch_size
@@ -435,7 +434,7 @@ class Stove0RiverhogClient:
             riverhog_base_url=self.api.base_url,
             capability_token=_token(capability),
             allow_insecure_http=bool(self.api.allow_insecure_http),
-            workspace_assurance=self.workspace_assurance,
+            declared_workspace_protection=self.declared_workspace_protection,
         )
 
     def seal_execution(
@@ -513,7 +512,7 @@ class Stove0RiverhogClient:
                 capability_token=_token(capability),
                 allow_insecure_http=bool(self.api.allow_insecure_http),
             ),
-            workspace_assurance=self.workspace_assurance,
+            declared_workspace_protection=self.declared_workspace_protection,
         )
 
     def verify_and_settle(
@@ -991,4 +990,4 @@ def _positive_int(value: object, label: str) -> int:
     return parsed
 
 
-__all__ = ["RiverhogApi", "Stove0RiverhogClient", "WorkspaceAssurance"]
+__all__ = ["RiverhogApi", "Stove0RiverhogClient"]

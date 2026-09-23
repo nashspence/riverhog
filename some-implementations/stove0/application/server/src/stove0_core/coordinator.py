@@ -12,6 +12,7 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from typing import Literal, Protocol
 
+from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_observer_client import ContentObserverClient
 from stove0_observer_protocol import (
     ObservationEvidence,
@@ -62,13 +63,11 @@ from stove0_core.work_state import (
     WorkRecord,
 )
 
-WorkspaceAssurance = Literal["encrypted", "ephemeral"]
-
 
 @dataclass(frozen=True, slots=True)
 class TargetInvocationAuthority:
     runtime: TargetRuntimeAuthority
-    workspace_assurance: WorkspaceAssurance
+    declared_workspace_protection: DeclaredWorkspaceProtection
 
 
 @dataclass(frozen=True, slots=True)
@@ -748,7 +747,7 @@ class Stove0Coordinator:
             fence=record.claim.fence,
             controller_evidence=record.controller_evidence,
             plan=record.target_plan,
-            workspace_assurance=authority.workspace_assurance,
+            declared_workspace_protection=authority.declared_workspace_protection,
         )
         callback_access = self.target_callbacks.issue_access(
             record,

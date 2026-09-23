@@ -29,6 +29,7 @@ from riverhog_protocol.collection_workflows import (
     RecipeIdentity,
 )
 from riverhog_protocol.paths import CollectionId, normalize_relpath
+from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 
 from stove0_protocol.jcs import canonical_json_bytes, canonical_json_sha256
 
@@ -503,7 +504,7 @@ class ObserverRuntimeAuthority(Stove0ProtocolModel):
     riverhog_base_url: str = Field(min_length=1, max_length=2048)
     capability_token: str = Field(min_length=1, max_length=4096, repr=False)
     allow_insecure_http: bool = False
-    workspace_assurance: Literal["encrypted", "ephemeral"]
+    declared_workspace_protection: DeclaredWorkspaceProtection
 
 
 class ObservationInvocation(Stove0ProtocolModel):

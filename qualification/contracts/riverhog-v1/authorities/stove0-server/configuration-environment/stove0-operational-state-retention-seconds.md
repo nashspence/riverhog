@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-server:stove0-operational-state-retention-seconds:6c314ec0c1 -->
+<!-- contract-element: configuration-environment:stove0-server:stove0-operational-state-retention-seconds:febe2daa59 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,16 +13,16 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-a6b78ccc35"></a>
+<a id="s-19236d188c"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-baa03590c9"></a>`consumers` | `["stove0-server"]` |
-| <a id="s-b93146a195"></a>`default_expressions` | `["str(default)"]` |
-| <a id="s-9426f68511"></a>`id` | `"stove0-server:environment:STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS"` |
-| <a id="s-583946b8e7"></a>`input_shape` | `"environment-string"` |
-| <a id="s-a3b971cdef"></a>`name` | `"STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS"` |
-| <a id="s-9d68c87baf"></a>`owner` | `"stove0-server"` |
+| <a id="s-3e86e0e209"></a>`consumers` | `["stove0-server"]` |
+| <a id="s-77a8d1d65a"></a>`default_expressions` | `["str(default)"]` |
+| <a id="s-7fd78e78b0"></a>`id` | `"stove0-server:environment:STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS"` |
+| <a id="s-8081c6a9e7"></a>`input_shape` | `"environment-string"` |
+| <a id="s-4ebbcd1f29"></a>`name` | `"STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS"` |
+| <a id="s-ae9d0d044f"></a>`owner` | `"stove0-server"` |
 
 ### Progression, limits, and lifecycle
 
@@ -32,14 +32,14 @@ Shared facts for every subject below: configuration="STOVE0_OPERATIONAL_STATE_RE
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS](#s-a6b78ccc35) | `value · configured-value · operational_policy` | shared above |
+| [STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS](#s-19236d188c) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-93d40f9011"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
-- <a id="pa-6d376549d7"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
+- <a id="pa-9f4e8d30b3"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-df4e87860c"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -63,7 +63,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/239`
+- `/external_contract/configuration_environment/240`
 
 ### Exact owned JSON
 

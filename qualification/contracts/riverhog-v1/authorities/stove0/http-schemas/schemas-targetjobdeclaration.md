@@ -17,7 +17,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-bf09248a14"></a>`type`: `"object"`
 - <a id="s-57a41e0e2a"></a>`additionalProperties`: `false`
-- <a id="s-de75b6bdaf"></a>`required`: `["job_id","claim_id","fence","controller_evidence","plan","workspace_assurance"]`
+- <a id="s-de75b6bdaf"></a>`required`: `["job_id","claim_id","fence","controller_evidence","plan","declared_workspace_protection"]`
 - <a id="s-bc26bbec89"></a>`title`: `"TargetJobDeclaration"`
 
 ### Fields
@@ -26,10 +26,10 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-6237b2a272"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1; title="Claim Id" |  |
 | <a id="s-06c9d16d27"></a>`controller_evidence` | yes | [ControllerEvidence](schemas-controllerevidence.md) |  |
+| <a id="s-4e8b19a52d"></a>`declared_workspace_protection` | yes | [DeclaredWorkspaceProtection](schemas-declaredworkspaceprotection.md) |  |
 | <a id="s-8d3f7e4ac2"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
 | <a id="s-6d4cfafa98"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Job Id" |  |
 | <a id="s-4db92bdd23"></a>`plan` | yes | discriminator={"mapping":{"stove0-effect-target/v1":"#/components/schemas/EffectPlan","stove0-transform-target/v1":"#/components/schemas/TransformPlan"},"propertyName":"protocol"}; oneOf=[([TransformPlan](schemas-transformplan.md)); ([EffectPlan](schemas-effectplan.md))]; title="Plan" |  |
-| <a id="s-c03dc9589f"></a>`workspace_assurance` | yes | type="string"; enum=["encrypted","ephemeral"]; title="Workspace Assurance" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -45,6 +45,7 @@ Exact externally visible contract owned by this contract element.
 ### Referenced contract elements
 
 - [ControllerEvidence](schemas-controllerevidence.md)
+- [DeclaredWorkspaceProtection](schemas-declaredworkspaceprotection.md)
 - [EffectPlan](schemas-effectplan.md)
 - [TransformPlan](schemas-transformplan.md)
 
@@ -78,7 +79,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 931894652141910434181fada4867f2288433e65db2fa98abec088e78533ef4a -->
+<!-- exact-contract-value: 0c27d8d8577f1d8adfbe840fe80aebc311fbe6325f33a124a120027d4ec9cda8 -->
 
 ```json
 {
@@ -92,6 +93,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     "controller_evidence": {
       "$ref": "#/components/schemas/ControllerEvidence"
+    },
+    "declared_workspace_protection": {
+      "$ref": "#/components/schemas/DeclaredWorkspaceProtection"
     },
     "fence": {
       "minimum": 1,
@@ -120,14 +124,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ],
       "title": "Plan"
-    },
-    "workspace_assurance": {
-      "enum": [
-        "encrypted",
-        "ephemeral"
-      ],
-      "title": "Workspace Assurance",
-      "type": "string"
     }
   },
   "required": [
@@ -136,7 +132,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "fence",
     "controller_evidence",
     "plan",
-    "workspace_assurance"
+    "declared_workspace_protection"
   ],
   "title": "TargetJobDeclaration",
   "type": "object"

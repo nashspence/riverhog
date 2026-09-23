@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-27b721241f"></a>`kind`: `"class"`
-- <a id="s-7065095398"></a>`signature`: `"'(database_url: \\'str\\', api_token: \\'str \| None\\', riverhog_base_url: \\'str\\', riverhog_token: \\'str\\', riverhog_allow_insecure_http: \\'bool\\', recipes_path: \\'Path\\', observers: \\'dict[str, EndpointRegistration]\\', targets: \\'dict[str, EndpointRegistration]\\', target_callback_base_url: \\'str\\', target_callback_allow_insecure_http: \\'bool\\', target_callback_signing_key: \\'str\\', target_authority_batch_size: \\'int\\', workspace_assurance: \"Literal[\\'encrypted\\', \\'ephemeral\\']\", claim_lease_seconds: \\'int\\', capability_ttl_seconds: \\'int\\', scheduler_interval_seconds: \\'float\\', operational_state_retention_seconds: \\'int\\', browse_token_signing_key: \\'str\\', admissions: \\'AdmissionCatalog\\' = AdmissionCatalog(format=\\'stove0-admissions/v1\\', policies=()), browse_token_lifetime_seconds: \\'int\\' = 86400) -> None'"`
+- <a id="s-7065095398"></a>`signature`: `"\"(database_url: 'str', api_token: 'str \| None', riverhog_base_url: 'str', riverhog_token: 'str', riverhog_allow_insecure_http: 'bool', recipes_path: 'Path', observers: 'dict[str, EndpointRegistration]', targets: 'dict[str, EndpointRegistration]', target_callback_base_url: 'str', target_callback_allow_insecure_http: 'bool', target_callback_signing_key: 'str', target_authority_batch_size: 'int', declared_workspace_protection: 'DeclaredWorkspaceProtection', claim_lease_seconds: 'int', capability_ttl_seconds: 'int', scheduler_interval_seconds: 'float', operational_state_retention_seconds: 'int', browse_token_signing_key: 'str', admissions: 'AdmissionCatalog' = AdmissionCatalog(format='stove0-admissions/v1', policies=()), browse_token_lifetime_seconds: 'int' = 86400) -> None\""`
 
 #### Dataclass fields
 
@@ -40,7 +40,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-9cbe66812a"></a>`target_callback_allow_insecure_http` | `'bool'` | `required` |
 | <a id="s-8000246d58"></a>`target_callback_signing_key` | `'str'` | `required` |
 | <a id="s-12cf879f0d"></a>`target_authority_batch_size` | `'int'` | `required` |
-| <a id="s-da2857413f"></a>`workspace_assurance` | `"Literal['encrypted', 'ephemeral']"` | `required` |
+| <a id="s-da2857413f"></a>`declared_workspace_protection` | `'DeclaredWorkspaceProtection'` | `required` |
 | <a id="s-c6d71379fa"></a>`claim_lease_seconds` | `'int'` | `required` |
 | <a id="s-a8de851b2c"></a>`capability_ttl_seconds` | `'int'` | `required` |
 | <a id="s-8e3863b3e5"></a>`scheduler_interval_seconds` | `'float'` | `required` |
@@ -82,7 +82,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e286a4bd2966f13bf4b76bdcf851cd3b8d4029024dd90c6472d9ea25154aaf44 -->
+<!-- exact-contract-value: 49b87e4e64199838611ccf25e6a940a0394b1e87e7b11593039c9a69db194d11 -->
 
 ```json
 {
@@ -150,8 +150,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       {
         "default": "required",
-        "name": "workspace_assurance",
-        "type": "\"Literal['encrypted', 'ephemeral']\""
+        "name": "declared_workspace_protection",
+        "type": "'DeclaredWorkspaceProtection'"
       },
       {
         "default": "required",
@@ -190,7 +190,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       }
     ],
     "kind": "class",
-    "signature": "'(database_url: \\'str\\', api_token: \\'str | None\\', riverhog_base_url: \\'str\\', riverhog_token: \\'str\\', riverhog_allow_insecure_http: \\'bool\\', recipes_path: \\'Path\\', observers: \\'dict[str, EndpointRegistration]\\', targets: \\'dict[str, EndpointRegistration]\\', target_callback_base_url: \\'str\\', target_callback_allow_insecure_http: \\'bool\\', target_callback_signing_key: \\'str\\', target_authority_batch_size: \\'int\\', workspace_assurance: \"Literal[\\'encrypted\\', \\'ephemeral\\']\", claim_lease_seconds: \\'int\\', capability_ttl_seconds: \\'int\\', scheduler_interval_seconds: \\'float\\', operational_state_retention_seconds: \\'int\\', browse_token_signing_key: \\'str\\', admissions: \\'AdmissionCatalog\\' = AdmissionCatalog(format=\\'stove0-admissions/v1\\', policies=()), browse_token_lifetime_seconds: \\'int\\' = 86400) -> None'"
+    "signature": "\"(database_url: 'str', api_token: 'str | None', riverhog_base_url: 'str', riverhog_token: 'str', riverhog_allow_insecure_http: 'bool', recipes_path: 'Path', observers: 'dict[str, EndpointRegistration]', targets: 'dict[str, EndpointRegistration]', target_callback_base_url: 'str', target_callback_allow_insecure_http: 'bool', target_callback_signing_key: 'str', target_authority_batch_size: 'int', declared_workspace_protection: 'DeclaredWorkspaceProtection', claim_lease_seconds: 'int', capability_ttl_seconds: 'int', scheduler_interval_seconds: 'float', operational_state_retention_seconds: 'int', browse_token_signing_key: 'str', admissions: 'AdmissionCatalog' = AdmissionCatalog(format='stove0-admissions/v1', policies=()), browse_token_lifetime_seconds: 'int' = 86400) -> None\""
   },
   "distribution": "stove0-server",
   "module": "stove0_core",

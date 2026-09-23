@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-server:stove0-target-callback-signing-key-file:566d5f5371 -->
+<!-- contract-element: configuration-environment:stove0-server:stove0-target-callback-signing-key-file:2e65588800 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-26cdcb3641"></a>
+<a id="s-ebe4e2c29d"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-7a2799cdd1"></a>`consumers` | `["stove0-server"]` |
-| <a id="s-be7eda3a49"></a>`default_expressions` | `["''"]` |
-| <a id="s-7d993e43a5"></a>`id` | `"stove0-server:environment:STOVE0_TARGET_CALLBACK_SIGNING_KEY_FILE"` |
-| <a id="s-cb19d25862"></a>`input_shape` | `"environment-string"` |
-| <a id="s-05bafeff55"></a>`name` | `"STOVE0_TARGET_CALLBACK_SIGNING_KEY_FILE"` |
-| <a id="s-1128090f70"></a>`owner` | `"stove0-server"` |
+| <a id="s-411d524a1d"></a>`consumers` | `["stove0-server"]` |
+| <a id="s-0e69a309d8"></a>`default_expressions` | `["''"]` |
+| <a id="s-50362410c1"></a>`id` | `"stove0-server:environment:STOVE0_TARGET_CALLBACK_SIGNING_KEY_FILE"` |
+| <a id="s-6aa24ea604"></a>`input_shape` | `"environment-string"` |
+| <a id="s-a759ad44ac"></a>`name` | `"STOVE0_TARGET_CALLBACK_SIGNING_KEY_FILE"` |
+| <a id="s-ebd0787666"></a>`owner` | `"stove0-server"` |
 
 ## Governing policies
 
-- <a id="pa-0273201c1d"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-e9201617d7"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/247`
+- `/external_contract/configuration_environment/248`
 
 ### Exact owned JSON
 

@@ -191,7 +191,7 @@ class Stove0Composition:
             riverhog_api,
             claim_lease_seconds=config.claim_lease_seconds,
             capability_ttl_seconds=config.capability_ttl_seconds,
-            workspace_assurance=config.workspace_assurance,
+            declared_workspace_protection=config.declared_workspace_protection,
             state=state,
             authority_batch_size=config.target_authority_batch_size,
         )

@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable, Iterator, Sequence
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Literal, Protocol, Self, cast
+from typing import Any, Protocol, Self
 
 from riverhog_client import ApiClient
 from riverhog_client.transform import (
@@ -15,6 +15,7 @@ from riverhog_client.transform import (
     ClaimedRetrieval,
     TransformWorkspace,
 )
+from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_observer_protocol import (
     ArtifactSubject,
     FactsSemanticValidator,
@@ -52,7 +53,7 @@ class ObservationRuntime:
         fence: int,
         cancellation_check: CancellationCheck | None = None,
         heartbeat: Heartbeat | None = None,
-        workspace_assurance: str = "ephemeral",
+        declared_workspace_protection: DeclaredWorkspaceProtection,
         owned_api: bool = False,
     ) -> None:
         self.api = (
@@ -67,9 +68,9 @@ class ObservationRuntime:
             raise ValueError("observation runtime requires a live claim generation")
         self.cancellation_check = cancellation_check
         self.external_heartbeat = heartbeat
-        if workspace_assurance not in {"encrypted", "ephemeral"}:
-            raise ValueError("observer workspace must be encrypted or ephemeral")
-        self.workspace_assurance = cast(Literal["encrypted", "ephemeral"], workspace_assurance)
+        if declared_workspace_protection not in {"encrypted-at-rest", "memory-backed"}:
+            raise ValueError("observer workspace protection declaration is invalid")
+        self.declared_workspace_protection = declared_workspace_protection
         roots = tuple(sorted({subject.collection.to_identity() for subject in request.subjects}))
         self.reader = ClaimedCollectionReader(
             self.api,
@@ -102,7 +103,7 @@ class ObservationRuntime:
             fence=invocation.fence,
             cancellation_check=cancellation_check,
             heartbeat=heartbeat,
-            workspace_assurance=authority.workspace_assurance,
+            declared_workspace_protection=authority.declared_workspace_protection,
             owned_api=True,
         )
 
@@ -204,13 +205,13 @@ class ObservationRuntime:
             return retrieval.read_bytes(artifact, maximum_bytes=maximum_bytes)
 
     def open_workspace(self, root: Path) -> TransformWorkspace:
-        """Open a request-bound encrypted or ephemeral observer workspace."""
+        """Open a request-bound workspace under its declared protection."""
 
         self.heartbeat()
         return TransformWorkspace.open(
             root,
             execution_id=self.request.request_id,
-            assurance=self.workspace_assurance,
+            declared_protection=self.declared_workspace_protection,
         )
 
     def materialize(

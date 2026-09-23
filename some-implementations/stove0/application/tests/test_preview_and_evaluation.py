@@ -373,7 +373,7 @@ class PreviewRiverhog:
         return ObserverRuntimeAuthority(
             riverhog_base_url="https://riverhog.invalid",
             capability_token=f"read-only-{claim.fence}",
-            workspace_assurance="ephemeral",
+            declared_workspace_protection="memory-backed",
         )
 
     def abandon_preview_claim(self, request: object, claim: ClaimBinding) -> None:

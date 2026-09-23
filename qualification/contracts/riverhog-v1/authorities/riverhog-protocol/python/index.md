@@ -166,6 +166,7 @@ Declared public imports and their selected exact structural contracts.
 - [DERIVATION_EVIDENCE_ORDINAL_HEX_WIDTH](riverhog-protocol-derivation-evidence-ordinal-hex-width.md)
 - [DERIVATION_EVIDENCE_PATH](riverhog-protocol-derivation-evidence-path.md)
 - [DERIVATION_OUTPUT_EVIDENCE_PREFIX](riverhog-protocol-derivation-output-evidence-prefix.md)
+- [DeclaredWorkspaceProtection](riverhog-protocol-declaredworkspaceprotection.md)
 - [DownloadAllowanceExceeded](riverhog-protocol-downloadallowanceexceeded.md)
 - [DownloadQuotaSort](riverhog-protocol-downloadquotasort.md)
 - [FileProvenanceBinding](riverhog-protocol-fileprovenancebinding.md)

@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-9fdd048e57"></a>`kind`: `"class"`
-- <a id="s-557a2c6c21"></a>`signature`: `"\"(api: 'Any', *, request: 'ObservationRequest', claim_id: 'str', fence: 'int', cancellation_check: 'CancellationCheck \| None' = None, heartbeat: 'Heartbeat \| None' = None, workspace_assurance: 'str' = 'ephemeral', owned_api: 'bool' = False) -> 'None'\""`
+- <a id="s-557a2c6c21"></a>`signature`: `"\"(api: 'Any', *, request: 'ObservationRequest', claim_id: 'str', fence: 'int', cancellation_check: 'CancellationCheck \| None' = None, heartbeat: 'Heartbeat \| None' = None, declared_workspace_protection: 'DeclaredWorkspaceProtection', owned_api: 'bool' = False) -> 'None'\""`
 
 ## Maintained corroboration
 
@@ -68,13 +68,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4d0dac2584e17aafa6226028a2dffc01acde6208f8a6aca9b9bc9b8a0ac221a5 -->
+<!-- exact-contract-value: af1fc55e0d66d32fe3ca362da361192ef802a6d14c34b32a36c3fc93ad204bc7 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "signature": "\"(api: 'Any', *, request: 'ObservationRequest', claim_id: 'str', fence: 'int', cancellation_check: 'CancellationCheck | None' = None, heartbeat: 'Heartbeat | None' = None, workspace_assurance: 'str' = 'ephemeral', owned_api: 'bool' = False) -> 'None'\""
+    "signature": "\"(api: 'Any', *, request: 'ObservationRequest', claim_id: 'str', fence: 'int', cancellation_check: 'CancellationCheck | None' = None, heartbeat: 'Heartbeat | None' = None, declared_workspace_protection: 'DeclaredWorkspaceProtection', owned_api: 'bool' = False) -> 'None'\""
   },
   "distribution": "stove0-observer-support",
   "module": "stove0_observer_support",

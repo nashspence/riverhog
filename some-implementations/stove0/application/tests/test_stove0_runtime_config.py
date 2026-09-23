@@ -13,6 +13,7 @@ def _environment(recipes: Path) -> dict[str, str]:
         "RIVERHOG_BASE_URL": "https://riverhog.invalid",
         "RIVERHOG_TOKEN": "role-specific-riverhog-token",
         "STOVE0_RECIPES_PATH": str(recipes),
+        "STOVE0_DECLARED_WORKSPACE_PROTECTION": "encrypted-at-rest",
         "STOVE0_BROWSE_TOKEN_SIGNING_KEY": "stove0-test-browse-token-signing-key-v1",
     }
 
@@ -27,6 +28,15 @@ def test_scheduler_configuration_does_not_require_operator_api_secret(
 
     assert config.api_token is None
     assert config.riverhog_token == "role-specific-riverhog-token"
+    assert config.declared_workspace_protection == "encrypted-at-rest"
+
+
+def test_runtime_requires_a_workspace_protection_declaration(tmp_path: Path) -> None:
+    environment = _environment(tmp_path / "recipes.yaml")
+    environment.pop("STOVE0_DECLARED_WORKSPACE_PROTECTION")
+
+    with pytest.raises(ValueError, match="STOVE0_DECLARED_WORKSPACE_PROTECTION is required"):
+        Stove0RuntimeConfig.from_environment(environment, require_api_token=False)
 
 
 def test_runtime_configuration_connects_every_control_plane_setting(tmp_path: Path) -> None:
@@ -44,7 +54,7 @@ def test_runtime_configuration_connects_every_control_plane_setting(tmp_path: Pa
         {
             "STOVE0_API_TOKEN": "operator-token",
             "RIVERHOG_ALLOW_INSECURE_HTTP": "true",
-            "STOVE0_WORKSPACE_ASSURANCE": "ephemeral",
+            "STOVE0_DECLARED_WORKSPACE_PROTECTION": "memory-backed",
             "STOVE0_CLAIM_LEASE_SECONDS": "240",
             "STOVE0_CAPABILITY_TTL_SECONDS": "120",
             "STOVE0_SCHEDULER_INTERVAL_SECONDS": "0.5",
@@ -83,7 +93,7 @@ def test_runtime_configuration_connects_every_control_plane_setting(tmp_path: Pa
     assert config.target_callback_allow_insecure_http is True
     assert config.target_callback_signing_key == "target-callback-signing-key"
     assert config.target_authority_batch_size == 17
-    assert config.workspace_assurance == "ephemeral"
+    assert config.declared_workspace_protection == "memory-backed"
     assert config.claim_lease_seconds == 240
     assert config.capability_ttl_seconds == 120
     assert config.scheduler_interval_seconds == 0.5

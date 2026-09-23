@@ -275,5 +275,4 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-client` | [riverhog_client.transform.TransformWorkspace.open](../../../authorities/riverhog-client/python/riverhog-client-transform-transformworkspace-open.md#pa-d8f61fce6f) |
 | `riverhog-client` | [riverhog_client.transform.TransformWorkspace.release](../../../authorities/riverhog-client/python/riverhog-client-transform-transformworkspace-release.md#pa-5f84694ed6) |
 | `riverhog-client` | [riverhog_client.transform.TransformWorkspace.resolve](../../../authorities/riverhog-client/python/riverhog-client-transform-transformworkspace-resolve.md#pa-6bb84682c4) |
-| `riverhog-client` | [riverhog_client.transform.WorkspaceAssurance](../../../authorities/riverhog-client/python/riverhog-client-transform-workspaceassurance.md#pa-b32863cc58) |
 | `riverhog-client` | [riverhog_client.upload_collection_units](../../../authorities/riverhog-client/python/riverhog-client-upload-collection-units.md#pa-254df210b5) |

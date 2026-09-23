@@ -166,6 +166,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-protocol` | [riverhog_protocol.DERIVATION_EVIDENCE_ORDINAL_HEX_WIDTH](../../../authorities/riverhog-protocol/python/riverhog-protocol-derivation-evidence-ordinal-hex-width.md#pa-debdfd7699) |
 | `riverhog-protocol` | [riverhog_protocol.DERIVATION_EVIDENCE_PATH](../../../authorities/riverhog-protocol/python/riverhog-protocol-derivation-evidence-path.md#pa-2a3421bd29) |
 | `riverhog-protocol` | [riverhog_protocol.DERIVATION_OUTPUT_EVIDENCE_PREFIX](../../../authorities/riverhog-protocol/python/riverhog-protocol-derivation-output-evidence-prefix.md#pa-0b069c8818) |
+| `riverhog-protocol` | [riverhog_protocol.DeclaredWorkspaceProtection](../../../authorities/riverhog-protocol/python/riverhog-protocol-declaredworkspaceprotection.md#pa-960bb181dd) |
 | `riverhog-protocol` | [riverhog_protocol.DownloadAllowanceExceeded](../../../authorities/riverhog-protocol/python/riverhog-protocol-downloadallowanceexceeded.md#pa-34822964b2) |
 | `riverhog-protocol` | [riverhog_protocol.DownloadQuotaSort](../../../authorities/riverhog-protocol/python/riverhog-protocol-downloadquotasort.md#pa-9712a65e3e) |
 | `riverhog-protocol` | [riverhog_protocol.FileProvenanceBinding](../../../authorities/riverhog-protocol/python/riverhog-protocol-fileprovenancebinding.md#pa-e68608dfd0) |

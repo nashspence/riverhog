@@ -279,4 +279,3 @@ Declared public imports and their selected exact structural contracts.
   - [open](riverhog-client-transform-transformworkspace-open.md)
   - [release](riverhog-client-transform-transformworkspace-release.md)
   - [resolve](riverhog-client-transform-transformworkspace-resolve.md)
-- [WorkspaceAssurance](riverhog-client-transform-workspaceassurance.md)

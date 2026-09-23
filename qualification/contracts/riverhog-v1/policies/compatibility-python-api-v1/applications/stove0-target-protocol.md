@@ -135,7 +135,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-target-protocol` | [stove0_target_protocol.TransformPlan.verify_digest](../../../authorities/stove0-target-protocol/python/stove0-target-protocol-transformplan-verify-digest.md#pa-714b050a7d) |
 | `stove0-target-protocol` | [stove0_target_protocol.TransformPlanPayload](../../../authorities/stove0-target-protocol/python/stove0-target-protocol-transformplanpayload.md#pa-891637f40b) |
 | `stove0-target-protocol` | [stove0_target_protocol.TransformPlanPayload.canonical_observation_results](../../../authorities/stove0-target-protocol/python/stove0-target-protocol-transformplanpayload-canonical-observation-results.md#pa-36a2fdcd0f) |
-| `stove0-target-protocol` | [stove0_target_protocol.WorkspaceAssurance](../../../authorities/stove0-target-protocol/python/stove0-target-protocol-workspaceassurance.md#pa-51867044d3) |
 | `stove0-target-protocol` | [stove0_target_protocol.canonical_json_bytes](../../../authorities/stove0-target-protocol/python/stove0-target-protocol-canonical-json-bytes.md#pa-a4a1d62776) |
 | `stove0-target-protocol` | [stove0_target_protocol.canonical_json_sha256](../../../authorities/stove0-target-protocol/python/stove0-target-protocol-canonical-json-sha256.md#pa-770380e888) |
 | `stove0-target-protocol` | [stove0_target_protocol.update_input_disposition_commitment](../../../authorities/stove0-target-protocol/python/stove0-target-protocol-update-input-disposition-commitment.md#pa-c7166224cb) |

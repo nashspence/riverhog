@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-1c0c05238e"></a>`kind`: `"class"`
-- <a id="s-4c7369adc7"></a>`signature`: `"\"(api: 'RiverhogApi', *, claim_lease_seconds: 'int' = 1800, capability_ttl_seconds: 'int' = 900, workspace_assurance: 'WorkspaceAssurance' = 'encrypted', claim_purpose: 'str' = 'stove0-collection-work/v1', state: 'WorkStore \| None' = None, authority_batch_size: 'int' = 100) -> 'None'\""`
+- <a id="s-4c7369adc7"></a>`signature`: `"\"(api: 'RiverhogApi', *, claim_lease_seconds: 'int' = 1800, capability_ttl_seconds: 'int' = 900, declared_workspace_protection: 'DeclaredWorkspaceProtection', claim_purpose: 'str' = 'stove0-collection-work/v1', state: 'WorkStore \| None' = None, authority_batch_size: 'int' = 100) -> 'None'\""`
 
 ## Maintained corroboration
 
@@ -73,13 +73,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 870d8d2dd62f6712a3157dec805d6227cc064e2fb923044f5db9f62fa3fcca2f -->
+<!-- exact-contract-value: e4b6421f8a1fed8cfd33f25ba444747cca0917b125d84ff3386cfbf1ebf78599 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "signature": "\"(api: 'RiverhogApi', *, claim_lease_seconds: 'int' = 1800, capability_ttl_seconds: 'int' = 900, workspace_assurance: 'WorkspaceAssurance' = 'encrypted', claim_purpose: 'str' = 'stove0-collection-work/v1', state: 'WorkStore | None' = None, authority_batch_size: 'int' = 100) -> 'None'\""
+    "signature": "\"(api: 'RiverhogApi', *, claim_lease_seconds: 'int' = 1800, capability_ttl_seconds: 'int' = 900, declared_workspace_protection: 'DeclaredWorkspaceProtection', claim_purpose: 'str' = 'stove0-collection-work/v1', state: 'WorkStore | None' = None, authority_batch_size: 'int' = 100) -> 'None'\""
   },
   "distribution": "stove0-server",
   "module": "stove0_core",

@@ -23,6 +23,7 @@ from riverhog_protocol.collection_workflows import (
     canonical_json_sha256 as riverhog_canonical_json_sha256,
 )
 from riverhog_protocol.paths import CollectionId
+from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
     RIVERHOG_CAPABILITY_TRANSPORT,
@@ -61,7 +62,6 @@ TargetJobState = Literal[
     "failed",
     "canceled",
 ]
-WorkspaceAssurance = Literal["encrypted", "ephemeral"]
 InputDisposition = Literal["transformed", "preserved", "omitted", "rejected"]
 TargetProtocol = Literal["stove0-transform-target/v1", "stove0-effect-target/v1"]
 TargetResultKind = OperationResultKind
@@ -659,7 +659,7 @@ class TargetJobDeclaration(TargetProtocolModel):
     fence: int = Field(ge=1)
     controller_evidence: ControllerEvidence
     plan: TargetPlan
-    workspace_assurance: WorkspaceAssurance
+    declared_workspace_protection: DeclaredWorkspaceProtection
 
     @field_validator("claim_id")
     @classmethod
@@ -1209,7 +1209,6 @@ __all__ = [
     "TargetDeclaration",
     "TransformPlan",
     "TransformPlanPayload",
-    "WorkspaceAssurance",
     "validate_declaration_against_operation",
     "validate_preflight_response_against_request",
     "validate_status_against_request",

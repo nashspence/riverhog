@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-41beee1ad7"></a>`kind`: `"method"`
-- <a id="s-77f654d393"></a>`signature`: `"\"(self, root: 'Path', *, assurance: 'WorkspaceAssurance') -> 'TransformWorkspace'\""`
+- <a id="s-77f654d393"></a>`signature`: `"\"(self, root: 'Path', *, declared_protection: 'DeclaredWorkspaceProtection') -> 'TransformWorkspace'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9069b927904938e2cf7a44258ebc58bcbc8e7dc54c69037a6b7f857c9dfba554 -->
+<!-- exact-contract-value: 160bae9578ee71564022369413f5230e6e5d86fe720473f3ef7470e16fd1db22 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, root: 'Path', *, assurance: 'WorkspaceAssurance') -> 'TransformWorkspace'\""
+    "signature": "\"(self, root: 'Path', *, declared_protection: 'DeclaredWorkspaceProtection') -> 'TransformWorkspace'\""
   },
   "distribution": "riverhog-client",
   "module": "riverhog_client.transform",

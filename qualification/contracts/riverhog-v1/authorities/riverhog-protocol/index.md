@@ -4,9 +4,9 @@
 
 Canonical Riverhog wire and identity contracts.
 
-Contract elements: **324** · Extent decisions: **5**
+Contract elements: **325** · Extent decisions: **5**
 
 ## Interfaces
 
 - [Schemas](schema/index.md) (1)
-- [Python](python/index.md) (323)
+- [Python](python/index.md) (324)

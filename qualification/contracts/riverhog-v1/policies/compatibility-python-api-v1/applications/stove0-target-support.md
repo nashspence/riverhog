@@ -151,7 +151,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-target-support` | [stove0_target_support.TransformPlan.verify_digest](../../../authorities/stove0-target-support/python/stove0-target-support-transformplan-verify-digest.md#pa-2bedb2b490) |
 | `stove0-target-support` | [stove0_target_support.TransformPlanPayload](../../../authorities/stove0-target-support/python/stove0-target-support-transformplanpayload.md#pa-e30b3b6df6) |
 | `stove0-target-support` | [stove0_target_support.TransformPlanPayload.canonical_observation_results](../../../authorities/stove0-target-support/python/stove0-target-support-transformplanpayload-canonical-observation-results.md#pa-9f1f91be3c) |
-| `stove0-target-support` | [stove0_target_support.WorkspaceAssurance](../../../authorities/stove0-target-support/python/stove0-target-support-workspaceassurance.md#pa-f8a6dd17b3) |
 | `stove0-target-support` | [stove0_target_support.canonical_json_bytes](../../../authorities/stove0-target-support/python/stove0-target-support-canonical-json-bytes.md#pa-92f4577e92) |
 | `stove0-target-support` | [stove0_target_support.canonical_json_sha256](../../../authorities/stove0-target-support/python/stove0-target-support-canonical-json-sha256.md#pa-cce202d7dc) |
 | `stove0-target-support` | [stove0_target_support.conformance_report](../../../authorities/stove0-target-support/python/stove0-target-support-conformance-report.md#pa-75bd6e8ad5) |

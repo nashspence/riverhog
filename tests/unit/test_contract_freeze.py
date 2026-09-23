@@ -321,10 +321,10 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     )
     assert configuration["counts"] == {
         "contracts": 250,
-        "detections": 199,
+        "detections": 198,
         "patterns": 2,
         "resolution_exceptions": 6,
-        "resolved_detections": 199,
+        "resolved_detections": 198,
         "unique_environment_names": 240,
         "by_owner": {
             "a-gogurt-linux-listener": 2,

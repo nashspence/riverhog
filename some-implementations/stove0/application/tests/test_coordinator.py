@@ -1102,7 +1102,7 @@ class FixtureRiverhog:
         return ObserverRuntimeAuthority(
             riverhog_base_url="https://riverhog.invalid",
             capability_token="observer-secret",
-            workspace_assurance="ephemeral",
+            declared_workspace_protection="memory-backed",
         )
 
     def seal_execution(
@@ -1130,7 +1130,7 @@ class FixtureRiverhog:
                 riverhog_base_url="https://riverhog.invalid",
                 capability_token=f"target-secret-{self.target_authorities}",
             ),
-            workspace_assurance="ephemeral",
+            declared_workspace_protection="memory-backed",
         )
 
     def verify_and_settle(

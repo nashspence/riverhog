@@ -16,7 +16,7 @@ from riverhog_client.transform.runtime import (
     ClaimedCollectionRuntime,
     CollectionTransformRuntime,
 )
-from riverhog_client.transform.workspace import TransformWorkspace, WorkspaceAssurance
+from riverhog_client.transform.workspace import TransformWorkspace
 from riverhog_client.transform.writer import (
     DerivedCollectionWriter,
     IncrementalDerivedCollectionWriter,
@@ -38,5 +38,4 @@ __all__ = [
     "IncrementalDerivedCollectionWriter",
     "Heartbeat",
     "TransformWorkspace",
-    "WorkspaceAssurance",
 ]

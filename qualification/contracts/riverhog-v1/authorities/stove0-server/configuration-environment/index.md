@@ -22,6 +22,7 @@ Configuration Environment contract owned by stove0-server.
 - [STOVE0_CLAIM_LEASE_SECONDS](stove0-claim-lease-seconds.md)
 - [STOVE0_DATABASE_URL](stove0-database-url.md)
 - [STOVE0_DATABASE_URL_FILE](stove0-database-url-file.md)
+- [STOVE0_DECLARED_WORKSPACE_PROTECTION](stove0-declared-workspace-protection.md)
 - [STOVE0_OBSERVERS_JSON](stove0-observers-json.md)
 - [STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS](stove0-operational-state-retention-seconds.md)
 - [STOVE0_RECIPES_PATH](stove0-recipes-path.md)
@@ -32,4 +33,3 @@ Configuration Environment contract owned by stove0-server.
 - [STOVE0_TARGET_CALLBACK_BASE_URL](stove0-target-callback-base-url.md)
 - [STOVE0_TARGET_CALLBACK_SIGNING_KEY](stove0-target-callback-signing-key.md)
 - [STOVE0_TARGET_CALLBACK_SIGNING_KEY_FILE](stove0-target-callback-signing-key-file.md)
-- [STOVE0_WORKSPACE_ASSURANCE](stove0-workspace-assurance.md)

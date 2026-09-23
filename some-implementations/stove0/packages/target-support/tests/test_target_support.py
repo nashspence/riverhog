@@ -311,7 +311,7 @@ def _request_for(
         fence=2,
         controller_evidence=evidence,
         plan=plan,
-        workspace_assurance="ephemeral",
+        declared_workspace_protection="memory-backed",
     )
     request = TargetJobRequest.seal(
         declaration,
@@ -426,7 +426,7 @@ def _effect_request() -> tuple[OperationContract, TargetContract, TargetJobReque
             fence=2,
             controller_evidence=evidence,
             plan=plan,
-            workspace_assurance="ephemeral",
+            declared_workspace_protection="memory-backed",
         ),
         TargetRuntimeAuthority(
             riverhog_base_url="https://riverhog.invalid",

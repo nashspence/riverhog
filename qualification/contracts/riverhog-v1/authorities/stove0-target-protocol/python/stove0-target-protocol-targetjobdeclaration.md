@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-f7b9ebbd76"></a>`kind`: `"class"`
-- <a id="s-ea7cf8962a"></a>`signature`: `"\"(*, job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], claim_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], fence: Annotated[int, Ge(ge=1)], controller_evidence: stove0_protocol.models.ControllerEvidence, plan: stove0_target_protocol.protocol.TransformPlan \| stove0_target_protocol.protocol.EffectPlan, workspace_assurance: Literal['encrypted', 'ephemeral']) -> None\""`
+- <a id="s-ea7cf8962a"></a>`signature`: `"\"(*, job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], claim_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], fence: Annotated[int, Ge(ge=1)], controller_evidence: stove0_protocol.models.ControllerEvidence, plan: stove0_target_protocol.protocol.TransformPlan \| stove0_target_protocol.protocol.EffectPlan, declared_workspace_protection: DeclaredWorkspaceProtection) -> None\""`
 
 #### Validated model schema
 
@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-26871dd052"></a>`type`: `"object"`
 - <a id="s-6a178ac9c3"></a>`additionalProperties`: `false`
-- <a id="s-65309fe31e"></a>`required`: `["job_id","claim_id","fence","controller_evidence","plan","workspace_assurance"]`
+- <a id="s-65309fe31e"></a>`required`: `["job_id","claim_id","fence","controller_evidence","plan","declared_workspace_protection"]`
 
 ##### Fields
 
@@ -38,10 +38,10 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-3b6b2c1dd8"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-f6cb68963e"></a>`controller_evidence` | yes | [ControllerEvidence](#s-401c4f214d) |  |
+| <a id="s-836cb1bcb0"></a>`declared_workspace_protection` | yes | [DeclaredWorkspaceProtection](#s-4102136397) |  |
 | <a id="s-5495edbda6"></a>`fence` | yes | type="integer"; minimum=1 |  |
 | <a id="s-ca02ced9cd"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-2f8a403305"></a>`plan` | yes | discriminator={"mapping":{"stove0-effect-target/v1":"#/$defs/EffectPlan","stove0-transform-target/v1":"#/$defs/TransformPlan"},"propertyName":"protocol"}; oneOf=[([TransformPlan](#s-09a73a8dd3)); ([EffectPlan](#s-a8d66a8931))] |  |
-| <a id="s-d0852b78cb"></a>`workspace_assurance` | yes | type="string"; enum=["encrypted","ephemeral"] |  |
 
 ##### Definitions
 
@@ -51,6 +51,7 @@ Exact externally visible contract owned by this contract element.
 - [CollectionId](#s-43d5ee965e)
 - [CollectionRootRef](#s-73ca68eb5d)
 - [ControllerEvidence](#s-401c4f214d)
+- [DeclaredWorkspaceProtection](#s-4102136397)
 - [EffectPlan](#s-a8d66a8931)
 - [EvaluationBinding](#s-2873677e36)
 - [ExecutionEnvelope](#s-29a8c5340a)
@@ -158,6 +159,11 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-24d97ac75c"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-ea85b9f6cd"></a>`execution_envelope` | yes | [ExecutionEnvelope](#s-29a8c5340a) |  |
 | <a id="s-1fde012713"></a>`format` | no | type="string"; const="stove0-controller-evidence/v1"; default="stove0-controller-evidence/v1" |  |
+
+##### <a id="s-4102136397"></a>definition `DeclaredWorkspaceProtection`
+
+- <a id="s-24aa92730d"></a>`type`: `"string"`
+- <a id="s-e6f433776d"></a>`enum`: `["encrypted-at-rest","memory-backed"]`
 
 ##### <a id="s-a8d66a8931"></a>definition `EffectPlan`
 
@@ -533,7 +539,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9cb915219825d831fcd33e3fbbd84e2276761b0cde401dac04fbf686d4742b75 -->
+<!-- exact-contract-value: 7396a8c5bf9260c9d90ce1bfd1693067a6967e2170512f916e058368da8a44e3 -->
 
 ```json
 {
@@ -704,6 +710,13 @@ The following JSON is the complete value owned at each machine-authority pointer
             "controller_evidence_sha256"
           ],
           "type": "object"
+        },
+        "DeclaredWorkspaceProtection": {
+          "enum": [
+            "encrypted-at-rest",
+            "memory-backed"
+          ],
+          "type": "string"
         },
         "EffectPlan": {
           "additionalProperties": false,
@@ -1575,6 +1588,9 @@ The following JSON is the complete value owned at each machine-authority pointer
         "controller_evidence": {
           "$ref": "#/$defs/ControllerEvidence"
         },
+        "declared_workspace_protection": {
+          "$ref": "#/$defs/DeclaredWorkspaceProtection"
+        },
         "fence": {
           "minimum": 1,
           "type": "integer"
@@ -1599,13 +1615,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "$ref": "#/$defs/EffectPlan"
             }
           ]
-        },
-        "workspace_assurance": {
-          "enum": [
-            "encrypted",
-            "ephemeral"
-          ],
-          "type": "string"
         }
       },
       "required": [
@@ -1614,11 +1623,11 @@ The following JSON is the complete value owned at each machine-authority pointer
         "fence",
         "controller_evidence",
         "plan",
-        "workspace_assurance"
+        "declared_workspace_protection"
       ],
       "type": "object"
     },
-    "signature": "\"(*, job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], claim_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], fence: Annotated[int, Ge(ge=1)], controller_evidence: stove0_protocol.models.ControllerEvidence, plan: stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, workspace_assurance: Literal['encrypted', 'ephemeral']) -> None\""
+    "signature": "\"(*, job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], claim_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], fence: Annotated[int, Ge(ge=1)], controller_evidence: stove0_protocol.models.ControllerEvidence, plan: stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, declared_workspace_protection: DeclaredWorkspaceProtection) -> None\""
   },
   "distribution": "stove0-target-protocol",
   "module": "stove0_target_protocol",

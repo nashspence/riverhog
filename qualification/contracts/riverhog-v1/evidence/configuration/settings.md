@@ -244,6 +244,7 @@ Recorded consumer and default facts come from discovery. Use the contract elemen
 | `stove0-server` | [STOVE0_CLAIM_LEASE_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-claim-lease-seconds.md) | `stove0-server` | `str(default)` |
 | `stove0-server` | [STOVE0_DATABASE_URL](../../authorities/stove0-server/configuration-environment/stove0-database-url.md) | `stove0-server` | `''` |
 | `stove0-server` | [STOVE0_DATABASE_URL_FILE](../../authorities/stove0-server/configuration-environment/stove0-database-url-file.md) | `stove0-server` | `''` |
+| `stove0-server` | [STOVE0_DECLARED_WORKSPACE_PROTECTION](../../authorities/stove0-server/configuration-environment/stove0-declared-workspace-protection.md) | `stove0-server` | `''` |
 | `stove0-server` | [STOVE0_OBSERVERS_JSON](../../authorities/stove0-server/configuration-environment/stove0-observers-json.md) | `stove0-server` | `'{}'` |
 | `stove0-server` | [STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-operational-state-retention-seconds.md) | `stove0-server` | `str(default)` |
 | `stove0-server` | [STOVE0_RECIPES_PATH](../../authorities/stove0-server/configuration-environment/stove0-recipes-path.md) | `stove0-server` | `''` |
@@ -254,5 +255,4 @@ Recorded consumer and default facts come from discovery. Use the contract elemen
 | `stove0-server` | [STOVE0_TARGET_CALLBACK_BASE_URL](../../authorities/stove0-server/configuration-environment/stove0-target-callback-base-url.md) | `stove0-server` | `''` |
 | `stove0-server` | [STOVE0_TARGET_CALLBACK_SIGNING_KEY](../../authorities/stove0-server/configuration-environment/stove0-target-callback-signing-key.md) | `stove0-server` | `''` |
 | `stove0-server` | [STOVE0_TARGET_CALLBACK_SIGNING_KEY_FILE](../../authorities/stove0-server/configuration-environment/stove0-target-callback-signing-key-file.md) | `stove0-server` | `''` |
-| `stove0-server` | [STOVE0_WORKSPACE_ASSURANCE](../../authorities/stove0-server/configuration-environment/stove0-workspace-assurance.md) | `stove0-server` | `'encrypted'` |
 | <a id="c-9c0b6efc83-a23132e889"></a>`stove0-target-support` | [STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS](../../authorities/stove0-target-support/configuration-environment/stove0-target-terminal-state-retention-seconds.md) | `stove0-target-support` | `str(DEFAULT_TERMINAL_STATE_RETENTION_SECONDS)` |

@@ -151,7 +151,6 @@ Declared public imports and their selected exact structural contracts.
   - [verify_digest](stove0-target-support-transformplan-verify-digest.md)
 - [TransformPlanPayload](stove0-target-support-transformplanpayload.md)
   - [canonical_observation_results](stove0-target-support-transformplanpayload-canonical-observation-results.md)
-- [WorkspaceAssurance](stove0-target-support-workspaceassurance.md)
 - [canonical_json_bytes](stove0-target-support-canonical-json-bytes.md)
 - [canonical_json_sha256](stove0-target-support-canonical-json-sha256.md)
 - [conformance_report](stove0-target-support-conformance-report.md)

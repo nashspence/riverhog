@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Reference navigation](../configuration.md)
 
-Unique environment names: **240** · Implementation reads: **199** · Explicit ambiguity resolutions: **6**
+Unique environment names: **240** · Implementation reads: **198** · Explicit ambiguity resolutions: **6**
 
 | Check | Result |
 |---|---:|

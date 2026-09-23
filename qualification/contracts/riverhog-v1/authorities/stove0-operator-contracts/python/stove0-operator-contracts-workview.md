@@ -78,6 +78,7 @@ Exact externally visible contract owned by this contract element.
 - [CoordinationChildSettlementRef](#s-a2dcd47a50)
 - [CoordinationCollectionResult](#s-d545cb9313)
 - [CoordinationSettlement](#s-1d102c88d4)
+- [DeclaredWorkspaceProtection](#s-2cfe70e1d2)
 - [EffectPlan](#s-014776d0e1)
 - [EvaluationBinding](#s-80d3264a22)
 - [ExecutionEnvelope](#s-fce11dc92f)
@@ -335,6 +336,11 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-e9968643db"></a>`format` | no | type="string"; const="stove0-coordination-settlement/v1"; default="stove0-coordination-settlement/v1" |  |
 | <a id="s-2d7acce4e1"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-2000c99227"></a>`work` | yes | [WorkIdentity](#s-9c239c9b47) |  |
+
+##### <a id="s-2cfe70e1d2"></a>definition `DeclaredWorkspaceProtection`
+
+- <a id="s-9ef3bd5ecf"></a>`type`: `"string"`
+- <a id="s-142fc254b6"></a>`enum`: `["encrypted-at-rest","memory-backed"]`
 
 ##### <a id="s-014776d0e1"></a>definition `EffectPlan`
 
@@ -800,7 +806,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-63ce409e42"></a>`type`: `"object"`
 - <a id="s-eb6193b66d"></a>`additionalProperties`: `false`
-- <a id="s-6af507fca1"></a>`required`: `["job_id","claim_id","fence","controller_evidence","plan","workspace_assurance"]`
+- <a id="s-6af507fca1"></a>`required`: `["job_id","claim_id","fence","controller_evidence","plan","declared_workspace_protection"]`
 
 ###### Fields
 
@@ -808,10 +814,10 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-7113ff8e93"></a>`claim_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-ebc598f038"></a>`controller_evidence` | yes | [ControllerEvidence](#s-8b01483f06) |  |
+| <a id="s-92c34b1833"></a>`declared_workspace_protection` | yes | [DeclaredWorkspaceProtection](#s-2cfe70e1d2) |  |
 | <a id="s-ae29e9b9b5"></a>`fence` | yes | type="integer"; minimum=1 |  |
 | <a id="s-e9141da4d3"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-431fa94f0b"></a>`plan` | yes | discriminator={"mapping":{"stove0-effect-target/v1":"#/$defs/EffectPlan","stove0-transform-target/v1":"#/$defs/TransformPlan"},"propertyName":"protocol"}; oneOf=[([TransformPlan](#s-e6d9103d68)); ([EffectPlan](#s-014776d0e1))] |  |
-| <a id="s-19f9510e8c"></a>`workspace_assurance` | yes | type="string"; enum=["encrypted","ephemeral"] |  |
 
 ##### <a id="s-a1c5d06fa9"></a>definition `TargetJobStatus`
 
@@ -1085,7 +1091,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3f53b38460730c86173714b32845182d272bcb0347d43da53408e529e165cff4 -->
+<!-- exact-contract-value: 34b19b5842ebfc52d03d454435ed4e61ea5926f3ebf0b1d3dc220e3329075ee4 -->
 
 ```json
 {
@@ -1553,6 +1559,13 @@ The following JSON is the complete value owned at each machine-authority pointer
             "settlement_sha256"
           ],
           "type": "object"
+        },
+        "DeclaredWorkspaceProtection": {
+          "enum": [
+            "encrypted-at-rest",
+            "memory-backed"
+          ],
+          "type": "string"
         },
         "EffectPlan": {
           "additionalProperties": false,
@@ -2579,6 +2592,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             "controller_evidence": {
               "$ref": "#/$defs/ControllerEvidence"
             },
+            "declared_workspace_protection": {
+              "$ref": "#/$defs/DeclaredWorkspaceProtection"
+            },
             "fence": {
               "minimum": 1,
               "type": "integer"
@@ -2603,13 +2619,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "$ref": "#/$defs/EffectPlan"
                 }
               ]
-            },
-            "workspace_assurance": {
-              "enum": [
-                "encrypted",
-                "ephemeral"
-              ],
-              "type": "string"
             }
           },
           "required": [
@@ -2618,7 +2627,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             "fence",
             "controller_evidence",
             "plan",
-            "workspace_assurance"
+            "declared_workspace_protection"
           ],
           "type": "object"
         },
