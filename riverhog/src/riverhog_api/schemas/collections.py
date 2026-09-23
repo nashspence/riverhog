@@ -492,6 +492,10 @@ class CollectionTagMembershipOut(RiverhogModel):
     present: bool
 
 
+class CollectionTagMembershipRequest(RiverhogModel):
+    tag: CollectionTag
+
+
 class TagSummaryOut(RiverhogModel):
     tag: CollectionTag
     collection_count: int = Field(ge=1, strict=True)
@@ -514,6 +518,10 @@ class ListCollectionsResponse(RiverhogModel):
     passphrase_id: str | None
     tags: CollectionTagSelectorBatch
     collections: list[CollectionSummaryOut]
+
+
+class SearchCollectionsRequest(RiverhogModel):
+    tags: CollectionTagSelectorBatch
 
 
 class CollectionArchiveCopyListOut(RiverhogModel):

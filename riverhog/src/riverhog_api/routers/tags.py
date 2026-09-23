@@ -4,7 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query
 from http_api_contracts import exact_authority_page_operation, mutable_browse_operation
-from riverhog_protocol import CollectionIdParameter, CollectionTag
+from riverhog_protocol import CollectionIdParameter
 
 from riverhog_api.auth import CatalogReader, CollectionTagManager
 from riverhog_api.browse import (
@@ -18,6 +18,7 @@ from riverhog_api.deps import ContainerDep
 from riverhog_api.schemas.collections import (
     CollectionTagListOut,
     CollectionTagMembershipOut,
+    CollectionTagMembershipRequest,
     CollectionTagMutationOut,
     CollectionTagMutationRequest,
     TagListOut,
@@ -113,22 +114,22 @@ def list_collection_tags(
     )
 
 
-@router.get(
+@router.post(
     "/collections/{collection_id}/tags:contains",
     response_model=CollectionTagMembershipOut,
 )
 def collection_contains_tag(
     collection_id: CollectionIdParameter,
+    selection: CollectionTagMembershipRequest,
     container: ContainerDep,
     principal: CatalogReader,
-    tag: Annotated[CollectionTag, Query()],
     revision: Annotated[int, Query(ge=1)],
     tag_set_identity: Annotated[str, Query(pattern=r"^[0-9a-f]{64}$")],
 ) -> CollectionTagMembershipOut:
     return CollectionTagMembershipOut.model_validate(
         container.collection_tags.contains(
             collection_id,
-            tag=tag,
+            tag=selection.tag,
             revision=revision,
             tag_set_identity=tag_set_identity,
             principal=principal,

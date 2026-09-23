@@ -57,12 +57,11 @@ def test_cli_occurrence_authorities_must_resolve_to_discovered_inputs(
     monkeypatch.setattr(piggity.main, "_CLI_OCCURRENCE_AUTHORITIES", bindings)
     openapi = module._openapi_surfaces()
     if stale == "query-shape":
-        query = next(
-            parameter
-            for parameter in openapi["riverhog"]["paths"]["/v1/collections"]["get"]["parameters"]
-            if parameter["name"] == "tags"
-        )
-        query["schema"] = {"type": "object", "properties": {"tags": query["schema"]}}
+        schema = openapi["riverhog"]["components"]["schemas"]["SearchCollectionsRequest"]
+        schema["properties"]["tags"] = {
+            "type": "object",
+            "properties": {"tags": schema["properties"]["tags"]},
+        }
     with pytest.raises(module.ContractFreezeError, match="CLI occurrence"):
         module._apply_cli_occurrence_authorities(
             "piggity",

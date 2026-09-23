@@ -50,7 +50,6 @@ from riverhog_api.schemas.collections import (
     CollectionDeletionResultOut,
     CollectionDescriptionOut,
     CollectionSummaryOut,
-    CollectionTagSelectorBatch,
     CollectionUploadDiscardPlanOut,
     CollectionUploadDiscardResultOut,
     CollectionUploadProvenanceJournalOut,
@@ -68,6 +67,7 @@ from riverhog_api.schemas.collections import (
     ListCollectionUploadSessionsResponse,
     RegisterCollectionUploadSessionFilesRequest,
     ReplaceCollectionDescriptionRequest,
+    SearchCollectionsRequest,
 )
 
 router = APIRouter(tags=["collections"])
@@ -110,12 +110,13 @@ _CLIENT_PROVENANCE_BINARY_OPERATION = {
 }
 
 
-@router.get(
-    "/collections",
+@router.post(
+    "/collections:search",
     response_model=ListCollectionsResponse,
     openapi_extra=mutable_browse_operation(response_items_field="collections"),
 )
 def list_collections(
+    selection: SearchCollectionsRequest,
     container: ContainerDep,
     principal: CatalogReader,
     page_size: int = Query(25, ge=1, le=100),
@@ -125,7 +126,6 @@ def list_collections(
     order: Annotated[SortOrder, Query()] = "asc",
     encryption_format: str | None = Query(None),
     passphrase_id: str | None = Query(None),
-    tags: Annotated[CollectionTagSelectorBatch | None, Query()] = None,
 ) -> ListCollectionsResponse:
     selectors = canonical_selectors(
         q=q,
@@ -133,7 +133,7 @@ def list_collections(
         order=order,
         encryption_format=encryption_format,
         passphrase_id=passphrase_id,
-        tags=tags or [],
+        tags=selection.tags,
     )
     summary = container.collections.list(
         page_size=page_size,
@@ -147,7 +147,7 @@ def list_collections(
         q=q,
         encryption_format=encryption_format,
         passphrase_id=passphrase_id,
-        tags=tags or [],
+        tags=selection.tags,
         sort=sort,
         order=order,
         principal=principal,

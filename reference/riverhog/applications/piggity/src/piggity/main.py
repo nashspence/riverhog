@@ -179,7 +179,7 @@ app = typer.Typer(
     add_completion=False,
 )
 
-# These repeated options pass their complete batch to the named HTTP selector through ApiClient.
+# These repeated options pass their complete batch to the named HTTP input through ApiClient.
 _CLI_OCCURRENCE_AUTHORITIES = {
     "collection list": {"tag": {"operation_id": "list_collections", "parameter": "tags"}},
 }

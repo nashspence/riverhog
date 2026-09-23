@@ -1521,19 +1521,47 @@ def _apply_cli_occurrence_authorities(
             )
             inputs = [
                 index
-                for index, item in enumerate(cast(list[dict[str, object]], document["parameters"]))
+                for index, item in enumerate(
+                    cast(list[dict[str, object]], document.get("parameters", []))
+                )
                 if item.get("in") == "query" and item.get("name") == binding["parameter"]
             ]
-            if len(inputs) != 1:
+            schema_pointers = [f"{operation_pointer}/parameters/{index}/schema" for index in inputs]
+            request_body = document.get("requestBody")
+            if isinstance(request_body, Mapping):
+                content = request_body.get("content")
+                media = content.get("application/json") if isinstance(content, Mapping) else None
+                body_schema = media.get("schema") if isinstance(media, Mapping) else None
+                if isinstance(body_schema, Mapping):
+                    body_pointer = (
+                        f"{operation_pointer}/requestBody/content/application~1json/schema"
+                    )
+                    reference = body_schema.get("$ref")
+                    if isinstance(reference, str) and reference.startswith("#/components/schemas/"):
+                        body_pointer = (
+                            f"/external_contract/http_openapi/{operation.application}"
+                            f"{reference[1:]}"
+                        )
+                        body_schema = cast(
+                            Mapping[str, object],
+                            pointer_value(
+                                {"external_contract": {"http_openapi": openapi}},
+                                body_pointer,
+                            ),
+                        )
+                    properties = body_schema.get("properties")
+                    if isinstance(properties, Mapping) and binding["parameter"] in properties:
+                        schema_pointers.append(f"{body_pointer}/properties/{binding['parameter']}")
+            if len(schema_pointers) != 1:
                 raise ContractFreezeError(
-                    f"CLI occurrence binding has no unique HTTP query parameter: {command}: {name}"
+                    f"CLI occurrence binding has no unique HTTP input: {command}: {name}"
                 )
-            schema_pointer = f"{operation_pointer}/parameters/{inputs[0]}/schema"
+            schema_pointer = schema_pointers[0]
             schema = cast(
                 Mapping[str, object],
                 pointer_value({"external_contract": {"http_openapi": openapi}}, schema_pointer),
             )
-            # A repeated scalar option supplies the entire query array, never a nested member.
+            # A repeated scalar option supplies the entire HTTP array, never a nested member.
             variants = [(schema_pointer, schema)]
             if "anyOf" in schema:
                 variants = [

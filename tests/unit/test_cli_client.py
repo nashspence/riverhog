@@ -915,9 +915,12 @@ def test_client_manages_collection_tags() -> None:
             {"params": {"page_size": 25, "revision": 3, "tag_set_identity": identity}},
         ),
         (
-            "GET",
+            "POST",
             "/v1/collections/42/tags:contains",
-            {"params": {"tag": "photos", "revision": 3, "tag_set_identity": identity}},
+            {
+                "params": {"revision": 3, "tag_set_identity": identity},
+                "json": {"tag": "photos"},
+            },
         ),
         (
             "POST",

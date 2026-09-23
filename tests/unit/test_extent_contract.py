@@ -198,7 +198,7 @@ def test_collection_list_separates_logical_total_page_carrier_and_selector_batch
 def test_route_page_binding_rejects_ambiguous_stale_or_conflicting_authority(failure: str) -> None:
     module = load_script().extent_contract
     openapi = copy.deepcopy(_checked_projection()["external_contract"]["http_openapi"]["riverhog"])
-    operation = openapi["paths"]["/v1/collections"]["get"]
+    operation = openapi["paths"]["/v1/collections:search"]["post"]
     read = operation["x-riverhog-read-collection"]
     if failure == "ambiguous":
         del read["response_items_field"]

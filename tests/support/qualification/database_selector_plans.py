@@ -183,7 +183,7 @@ _NON_PLAN_QUERY_OPERATIONS = {
         "revision",
         "tag_set_identity",
     },
-    ("riverhog", "collection_contains_tag"): {"revision", "tag", "tag_set_identity"},
+    ("riverhog", "collection_contains_tag"): {"revision", "tag_set_identity"},
     ("riverhog", "list_collection_provenance_journal_agents"): {
         "page_size",
         "page_token",
