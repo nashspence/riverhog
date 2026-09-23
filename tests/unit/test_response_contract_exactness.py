@@ -135,10 +135,10 @@ def test_terminal_job_responses_require_their_evidence() -> None:
         "initiated_by_app": "operator",
         "initiated_by_key_id": None,
         "state": "completed",
-        "requested_at": None,
+        "requested_at": "2026-08-25T00:00:00.000000Z",
         "ready_at": None,
         "expires_at": None,
-        "completed_at": None,
+        "finished_at": None,
         "failure": None,
     }
     retrieval_job = {
@@ -159,8 +159,17 @@ def test_terminal_job_responses_require_their_evidence() -> None:
         "requires_restore": False,
     }
 
-    with pytest.raises(ValidationError, match="completed_at"):
+    with pytest.raises(ValidationError, match="finished_at"):
         ArchiveCopyJobOut.model_validate(archive_job)
+    failed_archive_job = {
+        **archive_job,
+        "state": "failed",
+        "finished_at": "2026-08-25T00:00:01.000000Z",
+        "failure": "transfer failed",
+    }
+    assert ArchiveCopyJobOut.model_validate(failed_archive_job).state == "failed"
+    with pytest.raises(ValidationError, match="finished_at"):
+        ArchiveCopyJobOut.model_validate({**failed_archive_job, "finished_at": None})
     with pytest.raises(ValidationError, match="failure evidence"):
         RetrievalJobOut.model_validate(retrieval_job)
 
@@ -176,10 +185,10 @@ def test_operational_responses_reject_contradictory_state_evidence() -> None:
         "requested_at": "2026-08-25T00:00:00.000000Z",
         "ready_at": None,
         "expires_at": None,
-        "completed_at": "2026-08-25T00:00:01.000000Z",
+        "finished_at": "2026-08-25T00:00:01.000000Z",
         "failure": None,
     }
-    with pytest.raises(ValidationError, match="completed_at"):
+    with pytest.raises(ValidationError, match="finished_at"):
         ArchiveCopyJobOut.model_validate(archive_job)
 
     retrieval_job = {

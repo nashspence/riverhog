@@ -26,8 +26,9 @@ from riverhog_core.ports.archive_objects import (
 from riverhog_core.ports.archive_store import ArchiveObjectIdentity, ArchiveReadStatus
 from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission
 from riverhog_core.runtime_config import RuntimeConfig
-from riverhog_core.services.archive_copies import SqlAlchemyArchiveCopyService
+from riverhog_core.services.archive_copy_jobs import SqlAlchemyArchiveCopyJobService
 from riverhog_core.services.lifecycle_events import SqlAlchemyLifecycleEventService
+from riverhog_protocol.errors import Conflict
 from sqlalchemy import select
 
 from tests.unit.archive_object_fixtures import (
@@ -146,7 +147,7 @@ def _service(
     FixtureArchive,
     MemoryArchiveStore,
     MemoryArchiveStore,
-    SqlAlchemyArchiveCopyService,
+    SqlAlchemyArchiveCopyJobService,
 ]:
     config, archive = seed_archive_copy(path, FILES, archive=archive)
     b2_config = replace(
@@ -160,7 +161,7 @@ def _service(
     )
     source = MemoryArchiveStore(archive, ready=source_ready)
     destination = destination or MemoryArchiveStore(new_archive_prefix="archives/b2/new-copy")
-    service = SqlAlchemyArchiveCopyService(
+    service = SqlAlchemyArchiveCopyJobService(
         config,
         ArchiveStoreRegistry(
             {
@@ -220,7 +221,7 @@ def test_archive_copy_preserves_the_independent_object_manifest(
         job = session.get(ArchiveCopyJobRecord, (COLLECTION_ID, "b2"))
         assert job is not None
         assert job.state == "completed"
-        assert job.completed_at is not None
+        assert job.finished_at is not None
     shown = service.get(COLLECTION_ID, destination_store="b2")
     listed = service.list(
         page_size=25,
@@ -231,7 +232,16 @@ def test_archive_copy_preserves_the_independent_object_manifest(
     )
     assert shown["state"] == "completed"
     assert shown["initiated_by_app"] == "operator"
-    assert listed["copies"] == [shown]
+    assert (
+        service.create_or_resume(
+            COLLECTION_ID,
+            source_store="deep",
+            destination_store="b2",
+            initiator=INITIATOR,
+        )
+        == shown
+    )
+    assert listed["jobs"] == [shown]
     events = (
         SqlAlchemyLifecycleEventService(config)
         .page(
@@ -251,6 +261,66 @@ def test_archive_copy_preserves_the_independent_object_manifest(
     assert sum("operation=archive_copy_object" in message for message in transfer_messages) == 4
     assert all("integrity_seconds=" in message for message in transfer_messages)
     assert all(PACK_ID not in message for message in transfer_messages)
+
+
+def test_existing_stored_copy_without_job_cannot_create_a_synthetic_job(
+    tmp_path: Path,
+) -> None:
+    _config, _archive, _source, _destination, service = _service(tmp_path / "catalog.sqlite3")
+
+    with pytest.raises(Conflict, match="already has an uploaded archive copy"):
+        service.create_or_resume(
+            COLLECTION_ID,
+            source_store="b2",
+            destination_store="deep",
+            initiator=INITIATOR,
+        )
+
+
+def test_failed_archive_copy_job_has_terminal_evidence_and_can_restart(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    config, _archive, _source, _destination, service = _service(tmp_path / "catalog.sqlite3")
+    service.create_or_resume(
+        COLLECTION_ID,
+        source_store="deep",
+        destination_store="b2",
+        initiator=INITIATOR,
+    )
+
+    def fail_copy(*, collection_id: int, destination_store: str) -> None:
+        assert collection_id == COLLECTION_ID
+        assert destination_store == "b2"
+        raise RuntimeError("test transfer failure")
+
+    monkeypatch.setattr(service, "_process_one", fail_copy)
+    with caplog.at_level(logging.ERROR, logger="riverhog_core.services.archive_copy_jobs"):
+        assert service.process_due(limit=1) == 1
+    failed = service.get(COLLECTION_ID, destination_store="b2")
+    assert failed["state"] == "failed"
+    assert failed["finished_at"] is not None
+    assert failed["failure"] == "RuntimeError: test transfer failure"
+    events = (
+        SqlAlchemyLifecycleEventService(config)
+        .page(owner_app="operator", after=None, limit=100)
+        .events
+    )
+    assert [event.type.rsplit(".", 1)[-1] for event in events] == [
+        "requested",
+        "failed",
+    ]
+
+    restarted = service.create_or_resume(
+        COLLECTION_ID,
+        source_store="deep",
+        destination_store="b2",
+        initiator=INITIATOR,
+    )
+    assert restarted["state"] == "requested"
+    assert restarted["finished_at"] is None
+    assert restarted["failure"] is None
 
 
 def test_archive_copy_pipelines_source_parts_into_parallel_destination_requests(
@@ -402,7 +472,7 @@ def test_archive_copy_to_restore_required_store_writes_final_custody(
         read_mode="restore_required",
     )
     cache = _ArchiveCopyCache()
-    service = SqlAlchemyArchiveCopyService(
+    service = SqlAlchemyArchiveCopyJobService(
         config,
         ArchiveStoreRegistry(
             {
@@ -470,7 +540,7 @@ def test_restore_required_copy_uses_archive_only_when_new_archive_cache_is_disab
         new_archive_prefix="archives/deep/new-copy",
         read_mode="restore_required",
     )
-    service = SqlAlchemyArchiveCopyService(
+    service = SqlAlchemyArchiveCopyJobService(
         config,
         ArchiveStoreRegistry(
             {
@@ -592,7 +662,7 @@ def test_archive_copy_cancellation_closes_waiting_job_and_discards_prefix(
     canceled = service.cancel(COLLECTION_ID, destination_store="b2")
 
     assert canceled["state"] == "canceled"
-    assert canceled["completed_at"] is not None
+    assert canceled["finished_at"] is not None
     assert source.cleaned == [
         (
             PACK_ID,
@@ -612,7 +682,7 @@ def test_archive_copy_cancellation_closes_waiting_job_and_discards_prefix(
         order="desc",
     )
     assert filtered["filters"] == {"state": "canceled"}
-    assert filtered["copies"] == [canceled]
+    assert filtered["jobs"] == [canceled]
     events = (
         SqlAlchemyLifecycleEventService(config)
         .page(
@@ -673,7 +743,7 @@ def test_archive_copy_cancellation_stops_an_active_transfer_before_commit(
 
     canceled = service.get(COLLECTION_ID, destination_store="b2")
     assert canceled["state"] == "canceled"
-    assert canceled["completed_at"] is not None
+    assert canceled["finished_at"] is not None
     assert destination.objects == {}
     assert destination._writes == {}
     assert destination.discarded_uploads == ["archives/b2/new-copy"]
@@ -698,7 +768,7 @@ def test_startup_resumes_a_claimed_archive_copy(
         assert job is not None
         job.state = interrupted_state
 
-    assert service.requeue_interrupted_copies_for_startup() == 1
+    assert service.requeue_interrupted_jobs_for_startup() == 1
     with session_scope(factory) as session:
         job = session.get(ArchiveCopyJobRecord, (COLLECTION_ID, "b2"))
         assert job is not None

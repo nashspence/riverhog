@@ -16,16 +16,17 @@ from pydantic import (
     model_validator,
 )
 
+from riverhog_protocol.list_controls import ArchiveCopyJobState
 from riverhog_protocol.paths import CollectionId, normalize_collection_id
 from riverhog_protocol.storage_names import ArchiveStoreName
 
 RIVERHOG_EVENT_TYPE_PREFIX = "io.riverhog.riverhog."
 COLLECTION_FINALIZED = RIVERHOG_EVENT_TYPE_PREFIX + "collection.finalized"
 COLLECTION_DELETED = RIVERHOG_EVENT_TYPE_PREFIX + "collection.deleted"
-ARCHIVE_COPY_REQUESTED = RIVERHOG_EVENT_TYPE_PREFIX + "archive_copy.requested"
-ARCHIVE_COPY_COMPLETED = RIVERHOG_EVENT_TYPE_PREFIX + "archive_copy.completed"
-ARCHIVE_COPY_ISSUE = RIVERHOG_EVENT_TYPE_PREFIX + "archive_copy.issue"
-ARCHIVE_COPY_CANCELED = RIVERHOG_EVENT_TYPE_PREFIX + "archive_copy.canceled"
+ARCHIVE_COPY_JOB_REQUESTED = RIVERHOG_EVENT_TYPE_PREFIX + "archive_copy_job.requested"
+ARCHIVE_COPY_JOB_COMPLETED = RIVERHOG_EVENT_TYPE_PREFIX + "archive_copy_job.completed"
+ARCHIVE_COPY_JOB_FAILED = RIVERHOG_EVENT_TYPE_PREFIX + "archive_copy_job.failed"
+ARCHIVE_COPY_JOB_CANCELED = RIVERHOG_EVENT_TYPE_PREFIX + "archive_copy_job.canceled"
 RETRIEVAL_REQUESTED = RIVERHOG_EVENT_TYPE_PREFIX + "retrieval.requested"
 RETRIEVAL_READY = RIVERHOG_EVENT_TYPE_PREFIX + "retrieval.ready"
 RETRIEVAL_RENEWED = RIVERHOG_EVENT_TYPE_PREFIX + "retrieval.renewed"
@@ -39,10 +40,10 @@ RIVERHOG_EVENT_TYPES = frozenset(
     {
         COLLECTION_FINALIZED,
         COLLECTION_DELETED,
-        ARCHIVE_COPY_REQUESTED,
-        ARCHIVE_COPY_COMPLETED,
-        ARCHIVE_COPY_ISSUE,
-        ARCHIVE_COPY_CANCELED,
+        ARCHIVE_COPY_JOB_REQUESTED,
+        ARCHIVE_COPY_JOB_COMPLETED,
+        ARCHIVE_COPY_JOB_FAILED,
+        ARCHIVE_COPY_JOB_CANCELED,
         RETRIEVAL_REQUESTED,
         RETRIEVAL_READY,
         RETRIEVAL_RENEWED,
@@ -128,38 +129,26 @@ class CollectionDeletedData(CollectionEventData):
     remote_storage_bytes: int = Field(ge=0)
 
 
-ArchiveCopyState = Literal[
-    "requested",
-    "waiting",
-    "checking",
-    "copying",
-    "canceling",
-    "completed",
-    "failed",
-    "canceled",
-]
-
-
-class ArchiveCopyEventData(CollectionEventData):
+class ArchiveCopyJobEventData(CollectionEventData):
     source_store: ArchiveStoreName
     destination_store: ArchiveStoreName
-    state: ArchiveCopyState
+    state: ArchiveCopyJobState
 
 
-class ArchiveCopyRequestedData(ArchiveCopyEventData):
+class ArchiveCopyJobRequestedData(ArchiveCopyJobEventData):
     state: Literal["requested"]
 
 
-class ArchiveCopyCompletedData(ArchiveCopyEventData):
+class ArchiveCopyJobCompletedData(ArchiveCopyJobEventData):
     state: Literal["completed"]
 
 
-class ArchiveCopyIssueData(ArchiveCopyEventData):
+class ArchiveCopyJobFailedData(ArchiveCopyJobEventData):
     state: Literal["failed"]
     error: str = Field(min_length=1, max_length=16384)
 
 
-class ArchiveCopyCanceledData(ArchiveCopyEventData):
+class ArchiveCopyJobCanceledData(ArchiveCopyJobEventData):
     state: Literal["canceled"]
 
 
@@ -251,24 +240,24 @@ class CollectionDeletedEvent(RiverhogCloudEvent):
     data: CollectionDeletedData
 
 
-class ArchiveCopyRequestedEvent(RiverhogCloudEvent):
-    type: Literal["io.riverhog.riverhog.archive_copy.requested"]
-    data: ArchiveCopyRequestedData
+class ArchiveCopyJobRequestedEvent(RiverhogCloudEvent):
+    type: Literal["io.riverhog.riverhog.archive_copy_job.requested"]
+    data: ArchiveCopyJobRequestedData
 
 
-class ArchiveCopyCompletedEvent(RiverhogCloudEvent):
-    type: Literal["io.riverhog.riverhog.archive_copy.completed"]
-    data: ArchiveCopyCompletedData
+class ArchiveCopyJobCompletedEvent(RiverhogCloudEvent):
+    type: Literal["io.riverhog.riverhog.archive_copy_job.completed"]
+    data: ArchiveCopyJobCompletedData
 
 
-class ArchiveCopyIssueEvent(RiverhogCloudEvent):
-    type: Literal["io.riverhog.riverhog.archive_copy.issue"]
-    data: ArchiveCopyIssueData
+class ArchiveCopyJobFailedEvent(RiverhogCloudEvent):
+    type: Literal["io.riverhog.riverhog.archive_copy_job.failed"]
+    data: ArchiveCopyJobFailedData
 
 
-class ArchiveCopyCanceledEvent(RiverhogCloudEvent):
-    type: Literal["io.riverhog.riverhog.archive_copy.canceled"]
-    data: ArchiveCopyCanceledData
+class ArchiveCopyJobCanceledEvent(RiverhogCloudEvent):
+    type: Literal["io.riverhog.riverhog.archive_copy_job.canceled"]
+    data: ArchiveCopyJobCanceledData
 
 
 class RetrievalRequestedEvent(RiverhogCloudEvent):
@@ -314,10 +303,10 @@ class RetrievalFailedEvent(RiverhogCloudEvent):
 type RiverhogLifecycleEvent = Annotated[
     CollectionFinalizedEvent
     | CollectionDeletedEvent
-    | ArchiveCopyRequestedEvent
-    | ArchiveCopyCompletedEvent
-    | ArchiveCopyIssueEvent
-    | ArchiveCopyCanceledEvent
+    | ArchiveCopyJobRequestedEvent
+    | ArchiveCopyJobCompletedEvent
+    | ArchiveCopyJobFailedEvent
+    | ArchiveCopyJobCanceledEvent
     | RetrievalRequestedEvent
     | RetrievalReadyEvent
     | RetrievalRenewedEvent
@@ -370,10 +359,10 @@ def collection_id_for_event(value: CloudEvent | dict[str, Any]) -> int:
 
 
 __all__ = [
-    "ARCHIVE_COPY_CANCELED",
-    "ARCHIVE_COPY_COMPLETED",
-    "ARCHIVE_COPY_ISSUE",
-    "ARCHIVE_COPY_REQUESTED",
+    "ARCHIVE_COPY_JOB_CANCELED",
+    "ARCHIVE_COPY_JOB_COMPLETED",
+    "ARCHIVE_COPY_JOB_FAILED",
+    "ARCHIVE_COPY_JOB_REQUESTED",
     "COLLECTION_DELETED",
     "COLLECTION_FINALIZED",
     "COLLECTION_WAKE_EVENT_TYPES",

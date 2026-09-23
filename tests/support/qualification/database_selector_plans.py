@@ -18,7 +18,7 @@ from riverhog_core.services.app_keys import (
     _app_list_statement,
     _key_list_statement,
 )
-from riverhog_core.services.archive_copies import _archive_copy_list_statement
+from riverhog_core.services.archive_copy_jobs import _archive_copy_job_list_statement
 from riverhog_core.services.catalog_sync import (
     _catalog_change_revision_statement,
     _catalog_collection_page_statement,
@@ -35,7 +35,7 @@ from riverhog_protocol import (
     ApplicationAccessSort,
     ApplicationKeySort,
     ApplicationSort,
-    ArchiveCopySort,
+    ArchiveCopyJobSort,
     CollectionSort,
     CollectionUploadSort,
     DownloadQuotaSort,
@@ -105,7 +105,7 @@ _DATABASE_PLAN_OPERATIONS = {
     ("riverhog", "list_app_key_access"): "application-access",
     ("riverhog", "list_app_keys"): "application-keys",
     ("riverhog", "list_apps"): "applications",
-    ("riverhog", "list_archive_copy_jobs"): "archive-copies",
+    ("riverhog", "list_archive_copy_jobs"): "archive-copy-jobs",
     ("riverhog", "list_collection_provenance"): "provenance",
     ("riverhog", "list_collection_upload_sessions"): "uploads",
     ("riverhog", "list_collections"): "collections",
@@ -122,7 +122,7 @@ _DATABASE_FILTER_SELECTORS = {
     "application-access": {"active", "app", "key", "permission", "q", "resource"},
     "application-keys": {"active", "q"},
     "applications": {"active", "q"},
-    "archive-copies": {"q", "state"},
+    "archive-copy-jobs": {"q", "state"},
     "collections": {"encryption_format", "passphrase_id", "q", "tags"},
     "download-quotas": {"active", "app", "q"},
     "processing-claims": {"state"},
@@ -782,10 +782,10 @@ def _plan_cases() -> tuple[_PlanCase, ...]:
         "state": "ix_archive_copy_jobs_state",
         "requested_at": "ix_archive_copy_jobs_requested",
     }
-    for sort in sorted(closed_literal_values(ArchiveCopySort)):
+    for sort in sorted(closed_literal_values(ArchiveCopyJobSort)):
         for order in ("asc", "desc"):
             statement = _riverhog_plan_statement(
-                _archive_copy_list_statement(
+                _archive_copy_job_list_statement(
                     q=None,
                     state=None,
                     sort=sort,
@@ -796,7 +796,7 @@ def _plan_cases() -> tuple[_PlanCase, ...]:
             )
             cases.append(
                 _PlanCase(
-                    f"archive-copies.sort.{sort}.{order}",
+                    f"archive-copy-jobs.sort.{sort}.{order}",
                     statement,
                     frozenset({archive_copy_indexes[sort]}),
                 )
@@ -804,9 +804,9 @@ def _plan_cases() -> tuple[_PlanCase, ...]:
     cases.extend(
         (
             _PlanCase(
-                "archive-copies.filter.q",
+                "archive-copy-jobs.filter.q",
                 _riverhog_plan_statement(
-                    _archive_copy_list_statement(
+                    _archive_copy_job_list_statement(
                         q="65536",
                         state=None,
                         sort="collection_id",
@@ -818,9 +818,9 @@ def _plan_cases() -> tuple[_PlanCase, ...]:
                 frozenset({"ix_archive_copy_jobs_search_trgm"}),
             ),
             _PlanCase(
-                "archive-copies.filter.state",
+                "archive-copy-jobs.filter.state",
                 _riverhog_plan_statement(
-                    _archive_copy_list_statement(
+                    _archive_copy_job_list_statement(
                         q=None,
                         state="requested",
                         sort="collection_id",

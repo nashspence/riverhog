@@ -31,7 +31,7 @@ from riverhog_core.runtime_config import (
     load_runtime_config,
 )
 from riverhog_core.services.app_keys import SqlAlchemyAppKeyService
-from riverhog_core.services.archive_copies import SqlAlchemyArchiveCopyService
+from riverhog_core.services.archive_copy_jobs import SqlAlchemyArchiveCopyJobService
 from riverhog_core.services.archive_copy_retirements import (
     SqlAlchemyArchiveCopyRetirementService,
 )
@@ -46,8 +46,8 @@ from riverhog_core.services.collections import SqlAlchemyCollectionService
 from riverhog_core.services.download_allowances import SqlAlchemyDownloadAllowance
 from riverhog_core.services.interfaces import (
     AppKeyService,
+    ArchiveCopyJobService,
     ArchiveCopyRetirementService,
-    ArchiveCopyService,
     ArchiveStoreService,
     CatalogSyncService,
     CollectionDeletionService,
@@ -90,7 +90,7 @@ class ServiceContainer:
     collection_deletions: CollectionDeletionService
     catalog_sync: CatalogSyncService
     search: SearchService
-    archive_copies: ArchiveCopyService
+    archive_copy_jobs: ArchiveCopyJobService
     archive_copy_retirements: ArchiveCopyRetirementService
     archive_stores: ArchiveStoreService
     retrieval: RetrievalService
@@ -243,7 +243,7 @@ def _build_default_container(
             session_factory=session_factory,
         ),
         search=SqlAlchemySearchService(config, session_factory=session_factory),
-        archive_copies=SqlAlchemyArchiveCopyService(
+        archive_copy_jobs=SqlAlchemyArchiveCopyJobService(
             config,
             archive_stores,
             retrieval_cache=retrieval_cache,

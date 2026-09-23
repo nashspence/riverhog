@@ -53,7 +53,7 @@ from riverhog_core.catalog_workflow_models import CollectionProcessingClaimRecor
 from riverhog_core.ports.archive_store import ArchiveObjectIdentity
 from riverhog_core.ports.retrieval_cache import RetrievalCache
 from riverhog_core.runtime_config import RuntimeConfig
-from riverhog_core.services.archive_copy_states import ARCHIVE_COPY_BLOCKING_STATES
+from riverhog_core.services.archive_copy_job_states import ARCHIVE_COPY_JOB_BLOCKING_STATES
 from riverhog_core.services.archive_records import (
     archive_copy_aggregates,
     archive_copy_is_complete,
@@ -889,7 +889,7 @@ def _active_blockers(
             select(ArchiveCopyJobRecord.source_store, ArchiveCopyJobRecord.destination_store)
             .where(
                 ArchiveCopyJobRecord.collection_id == collection_id,
-                ArchiveCopyJobRecord.state.in_(ARCHIVE_COPY_BLOCKING_STATES),
+                ArchiveCopyJobRecord.state.in_(ARCHIVE_COPY_JOB_BLOCKING_STATES),
             )
             .order_by(ArchiveCopyJobRecord.destination_store)
             .limit(COLLECTION_DELETION_BLOCKER_CATEGORY_SAMPLE_MAX + 1)

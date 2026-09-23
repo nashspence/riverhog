@@ -2806,7 +2806,7 @@ def _wait_archive_copy(
     destination: str,
     source: str,
 ) -> dict[str, Any]:
-    api.create_or_resume_archive_copy(
+    api.create_or_resume_archive_copy_job(
         collection_id,
         destination_store=destination,
         source_store=source,
@@ -2825,7 +2825,7 @@ def _wait_archive_copy(
                     page_token=page_token,
                     q=destination,
                 )
-                for item in result.get("copies", []):
+                for item in result.get("jobs", []):
                     if (
                         int(item.get("collection_id", 0)) == collection_id
                         and item.get("destination_store") == destination
@@ -3549,7 +3549,7 @@ def _retire_copy(api: Any, collection_id: int, store: str) -> None:
 
 
 def _cancel_archive_copy(api: Any, collection_id: int, destination: str, source: str) -> None:
-    api.create_or_resume_archive_copy(
+    api.create_or_resume_archive_copy_job(
         collection_id,
         destination_store=destination,
         source_store=source,
@@ -3695,7 +3695,11 @@ def operate_qualification(
             )
             _assert_lifecycle_events(
                 api,
-                {"archive_copy.requested", "archive_copy.canceled", "archive_copy.completed"},
+                {
+                    "archive_copy_job.requested",
+                    "archive_copy_job.canceled",
+                    "archive_copy_job.completed",
+                },
             )
             checkpoint = advance_checkpoint(
                 checkpoint,

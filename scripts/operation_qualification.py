@@ -616,7 +616,7 @@ def _provider_evidence(application: str, operation_id: str) -> str | None:
         "cancel_collection_upload",
         "cancel_retrieval_",
         "complete_collection_upload",
-        "create_or_resume_archive_copy",
+        "create_or_resume_archive_copy_job",
         "create_or_resume_collection_upload",
         "create_retrieval_",
         "delete_collection",

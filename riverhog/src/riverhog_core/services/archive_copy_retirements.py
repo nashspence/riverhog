@@ -38,7 +38,7 @@ from riverhog_core.catalog_models import (
 )
 from riverhog_core.ports.archive_store import ArchiveVerificationError
 from riverhog_core.runtime_config import RuntimeConfig
-from riverhog_core.services.archive_copy_states import ARCHIVE_COPY_BLOCKING_STATES
+from riverhog_core.services.archive_copy_job_states import ARCHIVE_COPY_JOB_BLOCKING_STATES
 from riverhog_core.services.archive_records import (
     archive_copy_aggregates,
     archive_copy_identity,
@@ -355,7 +355,7 @@ class SqlAlchemyArchiveCopyRetirementService:
                     ArchiveCopyJobRecord.destination_store,
                 ).where(
                     ArchiveCopyJobRecord.collection_id == collection_id,
-                    ArchiveCopyJobRecord.state.in_(ARCHIVE_COPY_BLOCKING_STATES),
+                    ArchiveCopyJobRecord.state.in_(ARCHIVE_COPY_JOB_BLOCKING_STATES),
                 )
             ).all()
             if copy_jobs:
@@ -583,7 +583,7 @@ def _build_plan(
         )
         .where(
             ArchiveCopyJobRecord.collection_id == collection_id,
-            ArchiveCopyJobRecord.state.in_(ARCHIVE_COPY_BLOCKING_STATES),
+            ArchiveCopyJobRecord.state.in_(ARCHIVE_COPY_JOB_BLOCKING_STATES),
         )
         .order_by(ArchiveCopyJobRecord.destination_store)
     ).all()

@@ -6,8 +6,8 @@ from fastapi import Query
 from http_api_contracts import mutable_browse_operation
 from riverhog_core.app_permissions import ARCHIVES_MANAGE
 from riverhog_protocol import (
-    ArchiveCopySort,
-    ArchiveCopyState,
+    ArchiveCopyJobSort,
+    ArchiveCopyJobState,
     ArchiveStoreName,
     ArchiveStoreSort,
     CollectionIdParameter,
@@ -31,7 +31,7 @@ from riverhog_api.schemas.archive import (
     ArchiveCopyRetirementPlanOut,
     ArchiveCopyRetirementRequest,
     ArchiveCopyRetirementResultOut,
-    CreateArchiveCopyRequest,
+    CreateArchiveCopyJobRequest,
     RetireArchiveCopyRequest,
 )
 from riverhog_api.schemas.archive_stores import ArchiveStoreListOut, ArchiveStoreOut
@@ -39,15 +39,15 @@ from riverhog_api.schemas.archive_stores import ArchiveStoreListOut, ArchiveStor
 router = RiverhogRouter(tags=["archive"])
 
 
-@router.post("/archive/copies", response_model=ArchiveCopyJobOut)
-def create_or_resume_archive_copy(
-    request: CreateArchiveCopyRequest,
+@router.post("/archive/copy-jobs", response_model=ArchiveCopyJobOut)
+def create_or_resume_archive_copy_job(
+    request: CreateArchiveCopyJobRequest,
     container: ContainerDep,
     principal: ArchiveManager,
 ) -> ArchiveCopyJobOut:
     container.collection_access.require(principal, ARCHIVES_MANAGE, request.collection_id)
     return ArchiveCopyJobOut.model_validate(
-        container.archive_copies.create_or_resume(
+        container.archive_copy_jobs.create_or_resume(
             request.collection_id,
             destination_store=request.destination_store,
             source_store=request.source_store,
@@ -58,7 +58,7 @@ def create_or_resume_archive_copy(
 
 
 @router.get(
-    "/archive/copies",
+    "/archive/copy-jobs",
     response_model=ArchiveCopyJobListOut,
     openapi_extra=mutable_browse_operation(),
 )
@@ -68,8 +68,8 @@ def list_archive_copy_jobs(
     page_size: int = Query(25, ge=1, le=100),
     page_token: BrowsePageTokenQuery = None,
     q: BrowseQueryParameter = None,
-    state: Annotated[ArchiveCopyState | None, Query()] = None,
-    sort: Annotated[ArchiveCopySort, Query()] = "requested_at",
+    state: Annotated[ArchiveCopyJobState | None, Query()] = None,
+    sort: Annotated[ArchiveCopyJobSort, Query()] = "requested_at",
     order: Annotated[SortOrder, Query()] = "desc",
 ) -> ArchiveCopyJobListOut:
     selectors = canonical_selectors(q=q, state=state, sort=sort, order=order)
@@ -82,7 +82,7 @@ def list_archive_copy_jobs(
     )
     return ArchiveCopyJobListOut.model_validate(
         page_payload(
-            container.archive_copies.list(
+            container.archive_copy_jobs.list(
                 page_size=page_size,
                 position=position,
                 q=q,
@@ -100,7 +100,7 @@ def list_archive_copy_jobs(
 
 
 @router.delete(
-    "/archive/copies/{collection_id}/{destination_store}",
+    "/archive/copy-jobs/{collection_id}/{destination_store}",
     response_model=ArchiveCopyJobOut,
 )
 def cancel_archive_copy_job(
@@ -111,7 +111,7 @@ def cancel_archive_copy_job(
 ) -> ArchiveCopyJobOut:
     container.collection_access.require(principal, ARCHIVES_MANAGE, collection_id)
     return ArchiveCopyJobOut.model_validate(
-        container.archive_copies.cancel(
+        container.archive_copy_jobs.cancel(
             collection_id,
             destination_store=destination_store,
             principal=principal,
@@ -120,7 +120,7 @@ def cancel_archive_copy_job(
 
 
 @router.get(
-    "/archive/copies/{collection_id}/{destination_store}",
+    "/archive/copy-jobs/{collection_id}/{destination_store}",
     response_model=ArchiveCopyJobOut,
 )
 def get_archive_copy_job(
@@ -131,7 +131,7 @@ def get_archive_copy_job(
 ) -> ArchiveCopyJobOut:
     container.collection_access.require(principal, ARCHIVES_MANAGE, collection_id)
     return ArchiveCopyJobOut.model_validate(
-        container.archive_copies.get(
+        container.archive_copy_jobs.get(
             collection_id,
             destination_store=destination_store,
             principal=principal,

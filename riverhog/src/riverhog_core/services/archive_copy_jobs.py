@@ -15,7 +15,7 @@ from typing import Any
 from http_api_contracts import closed_literal_values
 from riverhog_age import UploadState
 from riverhog_canonical_json import format_scalar
-from riverhog_protocol import ArchiveCopySort, SortOrder
+from riverhog_protocol import ArchiveCopyJobSort, SortOrder
 from riverhog_protocol.errors import BadRequest, Conflict, InvalidState, NotFound
 from riverhog_protocol.paths import PathNormalizationError, normalize_collection_id
 from sqlalchemy import asc, delete, desc, exists, func, or_, select
@@ -58,9 +58,9 @@ from riverhog_core.ports.archive_store import (
 from riverhog_core.ports.retrieval_cache import RetrievalCache, RetrievalCacheReceipt
 from riverhog_core.raw_upload import RAW_VOLUME_CONTENT_TYPE
 from riverhog_core.runtime_config import RuntimeConfig
-from riverhog_core.services.archive_copy_states import (
-    ARCHIVE_COPY_STATES,
-    ARCHIVE_COPY_TRANSFER_STATES,
+from riverhog_core.services.archive_copy_job_states import (
+    ARCHIVE_COPY_JOB_STATES,
+    ARCHIVE_COPY_JOB_TRANSFER_STATES,
 )
 from riverhog_core.services.archive_records import archive_copy_is_complete
 from riverhog_core.services.collection_descriptions import (
@@ -85,7 +85,7 @@ from riverhog_core.throughput import (
 from riverhog_core.write_segments import WriteSegmentPlan, iter_write_segments
 
 _LOG = logging.getLogger(__name__)
-_SORT_FIELDS = closed_literal_values(ArchiveCopySort)
+_SORT_FIELDS = closed_literal_values(ArchiveCopyJobSort)
 _SORT_ORDERS = closed_literal_values(SortOrder)
 _COPY_OBJECT_KINDS = frozenset(
     {
@@ -149,7 +149,7 @@ class _ArchivePartReservation:
             self._resources.upload_bytes.release(self._stored_bytes)
 
 
-class SqlAlchemyArchiveCopyService:
+class SqlAlchemyArchiveCopyJobService:
     def __init__(
         self,
         config: RuntimeConfig,
@@ -173,7 +173,7 @@ class SqlAlchemyArchiveCopyService:
             session_factory=self._session_factory,
         )
 
-    def requeue_interrupted_copies_for_startup(self, *, limit: int = 100) -> int:
+    def requeue_interrupted_jobs_for_startup(self, *, limit: int = 100) -> int:
         if limit < 1:
             return 0
         current_text = format_utc_timestamp(utc_now())
@@ -231,15 +231,17 @@ class SqlAlchemyArchiveCopyService:
                 CollectionArchiveCopyRecord,
                 (normalized_collection_id, destination),
             )
+            job = session.get(ArchiveCopyJobRecord, (normalized_collection_id, destination))
             if existing is not None and archive_copy_is_complete(existing):
-                return _completed_payload(existing)
+                if job is not None and job.state == "completed":
+                    return _job_payload(job)
+                raise Conflict("destination already has an uploaded archive copy")
             source_copy = _select_source_copy(
                 collection,
                 config=self._config,
                 destination_store=destination,
                 source_store=source,
             )
-            job = session.get(ArchiveCopyJobRecord, (normalized_collection_id, destination))
             if job is None:
                 job = ArchiveCopyJobRecord(
                     collection_id=normalized_collection_id,
@@ -256,8 +258,8 @@ class SqlAlchemyArchiveCopyService:
                     next_attempt_at=current_text,
                 )
                 session.add(job)
-                self._emit(job, type="archive_copy.requested", session=session)
-            elif job.state not in ARCHIVE_COPY_TRANSFER_STATES:
+                self._emit(job, type="archive_copy_job.requested", session=session)
+            elif job.state not in ARCHIVE_COPY_JOB_TRANSFER_STATES:
                 if job.state == "canceling":
                     raise Conflict("archive copy cancellation cleanup is still in progress")
                 job.source_store = source_copy.store
@@ -267,7 +269,7 @@ class SqlAlchemyArchiveCopyService:
                 job.state = "requested"
                 job.requested_at = current_text
                 job.next_attempt_at = current_text
-                job.completed_at = None
+                job.finished_at = None
                 job.failure = None
                 job.read_requested_at = None
                 job.ready_at = None
@@ -275,7 +277,7 @@ class SqlAlchemyArchiveCopyService:
                 job.batch_start_order = None
                 job.batch_end_order = None
                 job.destination_discarded_at = None
-                self._emit(job, type="archive_copy.requested", session=session)
+                self._emit(job, type="archive_copy_job.requested", session=session)
             return _job_payload(job)
 
     def cancel(
@@ -310,13 +312,13 @@ class SqlAlchemyArchiveCopyService:
                 return _job_payload(job)
             if job.state == "canceling":
                 return _job_payload(job)
-            if job.state not in ARCHIVE_COPY_TRANSFER_STATES:
+            if job.state not in ARCHIVE_COPY_JOB_TRANSFER_STATES:
                 raise InvalidState(f"archive copy cannot be canceled in state {job.state}")
             copying = job.state in {"checking", "copying"}
             job.state = "canceling"
             job.next_attempt_at = None
             job.failure = None
-            job.completed_at = None
+            job.finished_at = None
         if not copying:
             self._cleanup_source_read(
                 collection_id=normalized_collection_id,
@@ -375,7 +377,7 @@ class SqlAlchemyArchiveCopyService:
             raise BadRequest(f"sort must be one of {', '.join(sorted(_SORT_FIELDS))}")
         if order not in _SORT_ORDERS:
             raise BadRequest("order must be asc or desc")
-        query, normalized_state, _, statement, key_columns = _archive_copy_list_statement(
+        query, normalized_state, _, statement, key_columns = _archive_copy_job_list_statement(
             q=q,
             state=state,
             sort=sort,
@@ -396,7 +398,7 @@ class SqlAlchemyArchiveCopyService:
                     )
                 ),
                 page_size=page_size,
-                position_of=lambda job: _archive_copy_list_position(job, sort=sort),
+                position_of=lambda job: _archive_copy_job_list_position(job, sort=sort),
             )
         return {
             "page_size": page_size,
@@ -405,7 +407,7 @@ class SqlAlchemyArchiveCopyService:
             "order": order,
             "query": query,
             "filters": ({"state": normalized_state} if normalized_state is not None else {}),
-            "copies": [_job_payload(job) for job in records],
+            "jobs": [_job_payload(job) for job in records],
         }
 
     def iter_jobs(
@@ -417,7 +419,7 @@ class SqlAlchemyArchiveCopyService:
         state: str | None = None,
         principal: ApplicationPrincipal | None = None,
     ) -> Iterator[dict[str, object]]:
-        _, _, _, statement, key_columns = _archive_copy_list_statement(
+        _, _, _, statement, key_columns = _archive_copy_job_list_statement(
             q=q,
             state=state,
             sort=sort,
@@ -1574,10 +1576,10 @@ class SqlAlchemyArchiveCopyService:
                 store_name=destination.store,
             )
             job.state = "completed"
-            job.completed_at = format_utc_timestamp(utc_now())
+            job.finished_at = format_utc_timestamp(utc_now())
             job.next_attempt_at = None
             job.failure = None
-            self._emit(job, type="archive_copy.completed", terminal=True, session=session)
+            self._emit(job, type="archive_copy_job.completed", terminal=True, session=session)
 
     def _record_failure(
         self,
@@ -1593,9 +1595,10 @@ class SqlAlchemyArchiveCopyService:
             job.state = "failed"
             job.next_attempt_at = None
             job.failure = f"{type(exc).__name__}: {exc}"
+            job.finished_at = format_utc_timestamp(utc_now())
             self._emit(
                 job,
-                type="archive_copy.issue",
+                type="archive_copy_job.failed",
                 terminal=True,
                 details={"error": job.failure},
                 session=session,
@@ -1746,13 +1749,13 @@ class SqlAlchemyArchiveCopyService:
             if destination_copy is not None:
                 session.delete(destination_copy)
             job.state = "canceled"
-            job.completed_at = format_utc_timestamp(utc_now())
+            job.finished_at = format_utc_timestamp(utc_now())
             job.batch_start_order = None
             job.batch_end_order = None
             job.read_requested_at = None
             job.ready_at = None
             job.expires_at = None
-            self._emit(job, type="archive_copy.canceled", terminal=True, session=session)
+            self._emit(job, type="archive_copy_job.canceled", terminal=True, session=session)
 
     def _configured_store(self, value: str) -> str:
         try:
@@ -2001,7 +2004,7 @@ def _normalize_collection_id(value: str | int) -> int:
         raise BadRequest(str(exc)) from exc
 
 
-def _archive_copy_list_statement(
+def _archive_copy_job_list_statement(
     *,
     q: str | None,
     state: str | None,
@@ -2015,8 +2018,8 @@ def _archive_copy_list_statement(
         raise BadRequest("order must be asc or desc")
     query = q.strip().casefold() if q and q.strip() else None
     normalized_state = state.strip().casefold() if state and state.strip() else None
-    if normalized_state is not None and normalized_state not in ARCHIVE_COPY_STATES:
-        raise BadRequest(f"state must be one of {', '.join(sorted(ARCHIVE_COPY_STATES))}")
+    if normalized_state is not None and normalized_state not in ARCHIVE_COPY_JOB_STATES:
+        raise BadRequest(f"state must be one of {', '.join(sorted(ARCHIVE_COPY_JOB_STATES))}")
     filters = [
         collection_access_filter(
             ArchiveCopyJobRecord.collection_id,
@@ -2055,7 +2058,7 @@ def _archive_copy_list_statement(
     )
 
 
-def _archive_copy_list_position(
+def _archive_copy_job_list_position(
     job: ArchiveCopyJobRecord,
     *,
     sort: str,
@@ -2086,22 +2089,6 @@ def _job_payload(job: ArchiveCopyJobRecord) -> dict[str, object]:
         "requested_at": job.requested_at,
         "ready_at": job.ready_at,
         "expires_at": job.expires_at,
-        "completed_at": job.completed_at,
+        "finished_at": job.finished_at,
         "failure": job.failure,
-    }
-
-
-def _completed_payload(copy: CollectionArchiveCopyRecord) -> dict[str, object]:
-    return {
-        "collection_id": format_scalar("sequence63", copy.collection_id),
-        "source_store": None,
-        "destination_store": copy.store,
-        "initiated_by_app": None,
-        "initiated_by_key_id": None,
-        "state": "completed",
-        "requested_at": None,
-        "ready_at": copy.last_verified_at,
-        "expires_at": None,
-        "completed_at": copy.last_verified_at,
-        "failure": None,
     }

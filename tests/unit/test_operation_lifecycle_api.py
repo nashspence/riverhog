@@ -17,7 +17,7 @@ from riverhog_core.catalog_models import CollectionUploadRecord
 from riverhog_core.collection_access import SqlAlchemyCollectionAccessService
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.app_keys import SqlAlchemyAppKeyService
-from riverhog_core.services.archive_copies import SqlAlchemyArchiveCopyService
+from riverhog_core.services.archive_copy_jobs import SqlAlchemyArchiveCopyJobService
 from riverhog_core.services.archive_copy_retirements import (
     SqlAlchemyArchiveCopyRetirementService,
 )
@@ -133,7 +133,7 @@ def _container(tmp_path: Path) -> ServiceContainer:
             session_factory=session_factory,
         ),
         search=SqlAlchemySearchService(config, session_factory=session_factory),
-        archive_copies=SqlAlchemyArchiveCopyService(
+        archive_copy_jobs=SqlAlchemyArchiveCopyJobService(
             config,
             stores,
             session_factory=session_factory,
@@ -250,13 +250,15 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     operator = _api(transport, operator_token, observer=observer)
 
     missing_archive_source = transport.post(
-        "/v1/archive/copies",
+        "/v1/archive/copy-jobs",
         headers=operator_headers,
         json={"collection_id": "999", "destination_store": "secondary"},
     )
     assert missing_archive_source.status_code == 404
     assert missing_archive_source.json()["error"]["code"] == "not_found"
-    archive_copy_errors = application.openapi()["paths"]["/v1/archive/copies"]["post"]["responses"]
+    archive_copy_errors = application.openapi()["paths"]["/v1/archive/copy-jobs"]["post"][
+        "responses"
+    ]
     assert "not_found" in archive_copy_errors["404"]["x-riverhog-error-codes"]
     provenance_verify_errors = application.openapi()["paths"][
         "/v1/collections/{collection_id}/provenance/verification"
@@ -660,7 +662,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         == "discarded"
     )
 
-    copy = operator.create_or_resume_archive_copy(
+    copy = operator.create_or_resume_archive_copy_job(
         collection_id,
         destination_store="secondary",
         source_store="primary",
@@ -669,7 +671,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         operator.get_archive_copy_job(collection_id, destination_store="secondary")["state"]
         == "requested"
     )
-    assert len(operator.list_archive_copy_jobs(page_size=100, page_token=None)["copies"]) == 1
+    assert len(operator.list_archive_copy_jobs(page_size=100, page_token=None)["jobs"]) == 1
     assert (
         operator.cancel_archive_copy_job(collection_id, destination_store="secondary")["state"]
         == "canceled"

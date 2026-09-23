@@ -40,7 +40,7 @@ def test_archive_maintenance_sweep_recovers_and_processes_collection_finalizatio
         reap_expired_custody_transfers=Mock(return_value=1),
     )
     archive_copies = SimpleNamespace(
-        requeue_interrupted_copies_for_startup=Mock(return_value=0),
+        requeue_interrupted_jobs_for_startup=Mock(return_value=0),
         process_due=Mock(return_value=0),
     )
     collection_workflows = SimpleNamespace(
@@ -72,7 +72,7 @@ def test_archive_maintenance_sweep_recovers_and_processes_collection_finalizatio
         SimpleNamespace(
             collection_uploads=collection_uploads,
             collection_workflows=collection_workflows,
-            archive_copies=archive_copies,
+            archive_copy_jobs=archive_copies,
             collection_deletions=collection_deletions,
             collection_descriptions=collection_descriptions,
             collection_tags=collection_tags,
@@ -128,8 +128,8 @@ def test_archive_maintenance_drains_bounded_progress_before_idle_interval() -> N
                     process_due_disposition_sets=zero,
                     process_due_outcome_sets=zero,
                 ),
-                archive_copies=SimpleNamespace(
-                    requeue_interrupted_copies_for_startup=zero,
+                archive_copy_jobs=SimpleNamespace(
+                    requeue_interrupted_jobs_for_startup=zero,
                     process_due=zero,
                 ),
                 collection_deletions=SimpleNamespace(process_due=zero),

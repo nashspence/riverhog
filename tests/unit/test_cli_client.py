@@ -650,7 +650,7 @@ def test_client_rejects_noncanonical_resource_identities_before_transport() -> N
     with pytest.raises(BadRequest, match="archive store"):
         client.get_archive_store("Deep Archive")
     with pytest.raises(BadRequest, match="must differ"):
-        client.create_or_resume_archive_copy(
+        client.create_or_resume_archive_copy_job(
             1,
             destination_store="archive",
             source_store="archive",
