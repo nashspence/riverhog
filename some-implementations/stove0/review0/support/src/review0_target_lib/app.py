@@ -15,6 +15,7 @@ from fastapi.security import HTTPBearer
 from http_api_contracts import ErrorResponse, HealthResponse, error_payload, operation_openapi
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from review0_sampler_client import ReviewSamplerClient
+from stove0_protocol import OciImageId
 from stove0_target_support import TARGET_HTTP_OPERATIONS, TargetHttpBinding
 
 from review0_target_lib.target import SamplerRegistration
@@ -37,7 +38,7 @@ class SamplerConfig(BaseModel):
     token_file: Path
     allow_insecure_http: bool = False
     descriptor_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    image_digest: str = Field(pattern=r"^[0-9a-f]{64}$")
+    image_id: OciImageId
 
     @field_validator("token_file")
     @classmethod
@@ -81,7 +82,7 @@ def parse_sampler_registrations(document: str) -> tuple[SamplerRegistration, ...
                     allow_insecure_http=item.allow_insecure_http,
                 ),
                 descriptor_sha256=item.descriptor_sha256,
-                image_digest=item.image_digest,
+                image_id=item.image_id,
             )
         )
     return tuple(registrations)

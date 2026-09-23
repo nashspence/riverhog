@@ -90,7 +90,7 @@ class ExiftoolObserver:
         exiftool: str = "exiftool",
         workspace_root: Path | None = None,
         source_revision: str = "unknown",
-        image_digest: str,
+        image_id: str,
     ) -> None:
         self.exiftool = exiftool
         self.workspace_root = (workspace_root or Path("/run/a-stove0-exiftool-observer")).resolve()
@@ -99,7 +99,7 @@ class ExiftoolObserver:
                 implementation_id="a-stove0-exiftool-observer/v1",
                 implementation_version=_version(),
                 source_revision=source_revision,
-                image_digest=image_digest,
+                image_id=image_id,
                 contracts=(
                     ObserverContractSupport.from_contract(MEDIA_METADATA_OBSERVER_CONTRACT),
                 ),

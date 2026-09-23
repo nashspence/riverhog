@@ -165,10 +165,17 @@ def _descriptor(contract: ObserverContract) -> ObserverDescriptor:
             implementation_id="fixture.camera-probe/v1",
             implementation_version="1.2.3",
             source_revision="fixture-revision",
-            image_digest=_sha("9"),
+            image_id="sha256:" + _sha("9"),
             contracts=(ObserverContractSupport.from_contract(contract),),
         )
     )
+
+
+def test_observer_descriptor_requires_an_oci_image_id() -> None:
+    payload = _descriptor(_contract()).model_dump(mode="json", exclude={"descriptor_sha256"})
+    payload["image_id"] = _sha("9")
+    with pytest.raises(ValidationError, match="image_id"):
+        ObserverDescriptorPayload.model_validate(payload)
 
 
 def _subject() -> ArtifactSubject:

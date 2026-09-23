@@ -206,7 +206,7 @@ def target_main(argv: Sequence[str] | None = None) -> int:
         ),
         ffmpeg=os.getenv("STOVE0_FFMPEG_BIN", "ffmpeg"),
         source_revision=os.getenv(f"{prefix}_SOURCE_REVISION", "unknown"),
-        image_digest=_image_digest(prefix),
+        image_id=_image_id(prefix),
         terminal_state_retention_seconds=terminal_state_retention_seconds(),
     )
     token = _secret(prefix)
@@ -216,10 +216,14 @@ def target_main(argv: Sequence[str] | None = None) -> int:
     return 0
 
 
-def _image_digest(prefix: str) -> str:
-    value = os.getenv(f"{prefix}_IMAGE_DIGEST", "").strip()
-    if len(value) != 64 or any(character not in "0123456789abcdef" for character in value):
-        raise ValueError(f"{prefix}_IMAGE_DIGEST must be a lowercase SHA-256")
+def _image_id(prefix: str) -> str:
+    value = os.getenv(f"{prefix}_IMAGE_ID", "").strip()
+    if not (
+        len(value) == 71
+        and value.startswith("sha256:")
+        and all(character in "0123456789abcdef" for character in value[7:])
+    ):
+        raise ValueError(f"{prefix}_IMAGE_ID must be an OCI ImageID (sha256:<64 lowercase hex>)")
     return value
 
 

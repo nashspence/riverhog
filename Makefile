@@ -4,6 +4,7 @@ SHELL := bash
 MISE_BIN ?= mise
 FILES ?= .
 TESTS ?= packages some-implementations riverhog tests/unit
+UNIT_PYTEST_ARGS ?= -n 4 --dist=loadscope --durations=30 --durations-min=0.25
 POSTGRES_TESTS ?= tests/integration/test_catalog_schema_postgres.py tests/integration/test_collection_deletion_concurrency.py tests/integration/test_collection_upload_custody_concurrency.py tests/integration/test_download_allowance_concurrency.py tests/integration/test_lifecycle_event_concurrency.py tests/integration/test_public_selector_plans_postgres.py tests/integration/test_retrieval_cache_admission_concurrency.py tests/integration/test_stove0_postgres_concurrency.py
 PYTHON_PATHS ?= packages some-implementations riverhog scripts tests
 RELEASE_VERSION ?= 1.0.0
@@ -91,6 +92,7 @@ MYPY_SOURCES = \
 	scripts/contract_freeze.py \
 	scripts/provider_qualification.py \
 	scripts/release.py \
+	scripts/runtime_image_identity.py \
 	scripts/release_installation.py \
 	scripts/test_a_riverhog_event_relay_image.py \
 	scripts/qualify_installation.py \
@@ -219,7 +221,7 @@ compile:
 	$(call UV_CMD,python -m compileall -q $(PYTHON_PATHS))
 
 unit:
-	$(call UV_CMD,python -m pytest -q $(TESTS) $(args))
+	$(call UV_CMD,python -m pytest -q $(UNIT_PYTEST_ARGS) $(TESTS) $(args))
 
 dependency-readiness:
 	$(call UV_CMD,python scripts/check_dependency_readiness.py $(args))

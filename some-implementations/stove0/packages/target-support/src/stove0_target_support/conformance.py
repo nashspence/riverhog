@@ -345,7 +345,7 @@ def _single_operation_report(
         "implementation_id": descriptor.implementation_id,
         "implementation_version": descriptor.implementation_version,
         "source_revision": descriptor.source_revision,
-        "image_digest": descriptor.image_digest,
+        "image_id": descriptor.image_id,
         "target_descriptor_sha256": descriptor.descriptor_sha256,
         "transport": descriptor.transport,
         "operations": operation_reports,

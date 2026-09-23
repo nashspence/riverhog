@@ -207,7 +207,7 @@ def _fork_join_target(
             implementation_id="fixture.fork-join-target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
-            image_digest=_sha("8"),
+            image_id="sha256:" + _sha("8"),
             operations=tuple(
                 TargetOperationSupport(
                     operation_id=operation.id,
@@ -229,7 +229,7 @@ def _target(operation: OperationContract) -> TargetDescriptor:
             implementation_id="fixture.target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
-            image_digest=_sha("9"),
+            image_id="sha256:" + _sha("9"),
             operations=(
                 TargetOperationSupport(
                     operation_id=operation.id,
@@ -280,7 +280,7 @@ def _observer() -> tuple[ObserverContract, ObserverDescriptor]:
             implementation_id="fixture.observer/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
-            image_digest=_sha("9"),
+            image_id="sha256:" + _sha("9"),
             contracts=(ObserverContractSupport.from_contract(contract),),
         )
     )

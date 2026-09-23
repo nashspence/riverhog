@@ -54,7 +54,7 @@ PUBLICATION_SCHEMA = "riverhog-release-publication/v1"
 PUBLICATION_POLICY_KEYS = {
     "role_retention",
     "platform_scope",
-    "image_digest_scope",
+    "image_identity_scope",
 }
 CONTRACT_AUTHORITIES = {
     "extent-contract": "Repository-wide v1 external extent principles and rules.",

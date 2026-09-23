@@ -7,7 +7,7 @@ from typing import Any, Literal, Self
 from http_api_contracts import HttpErrorContract, HttpOperationContract
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, field_validator, model_validator
 from riverhog_protocol.paths import normalize_relpath
-from stove0_protocol import JsonSchemaValidationProfile, canonical_json_sha256
+from stove0_protocol import JsonSchemaValidationProfile, OciImageId, canonical_json_sha256
 
 SAMPLER_PROTOCOL: Literal["review0-sampler/v1"] = "review0-sampler/v1"
 SHA256_PATTERN = r"^[0-9a-f]{64}$"
@@ -24,7 +24,7 @@ class SamplerDescriptorPayload(SamplerModel):
     implementation_id: str = Field(pattern=SEMANTIC_ID_PATTERN)
     implementation_version: str = Field(min_length=1, max_length=120)
     source_revision: str = Field(min_length=1, max_length=200)
-    image_digest: str = Field(pattern=SHA256_PATTERN)
+    image_id: OciImageId
     primary_operation_id: str = Field(pattern=SEMANTIC_ID_PATTERN)
     primary_operation_contract_sha256: str = Field(pattern=SHA256_PATTERN)
     portable_intent_schema: JsonSchemaValidationProfile

@@ -183,7 +183,7 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
 
     publication_policies = {item["id"]: item for item in root["policies"]["publication"]}
     assert {key: len(value["applies_to"]) for key, value in publication_policies.items()} == {
-        "publication/image-digest-scope/v1": 13,
+        "publication/image-identity-scope/v1": 13,
         "publication/platform-scope/v1": 17,
         "publication/role-retention/v1": 89,
     }
@@ -194,7 +194,7 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
         if policy.startswith("publication/")
     )
     assert policy_counts == {
-        "publication/image-digest-scope/v1": 13,
+        "publication/image-identity-scope/v1": 13,
         "publication/platform-scope/v1": 17,
         "publication/role-retention/v1": 89,
     }

@@ -44,19 +44,19 @@ def test_paired_opus_roles_share_image_identity_but_not_runtime_contracts(
     tmp_path: Path,
     monkeypatch: Any,
 ) -> None:
-    image_digest = _sha("9")
+    image_id = "sha256:" + _sha("9")
     workspace_root = tmp_path / "review-workspace"
     workspace_root.mkdir(mode=0o700)
     sampler = OpusReviewSampler(
         workspace_root=workspace_root,
         source_revision="fixture",
-        image_digest=image_digest,
+        image_id=image_id,
     )
     target = OpusTargetService(
         state_root=tmp_path / "target-state",
         workspace_root=tmp_path / "target-workspace",
         source_revision="fixture",
-        image_digest=image_digest,
+        image_id=image_id,
     )
     request = _request(workspace_root, sampler)
 
@@ -72,12 +72,12 @@ def test_paired_opus_roles_share_image_identity_but_not_runtime_contracts(
     target_payload = json.loads(target_response.body)
     sampler_payload = json.loads(sampler_response.body)
     assert target_response.status == 200
-    assert target_payload["image_digest"] == image_digest
+    assert target_payload["image_id"] == image_id
     assert [item["operation_id"] for item in target_payload["operations"]] == [
         AUDIO_ARCHIVE_OPERATION.id
     ]
     assert sampler_response.status == 200
-    assert sampler_payload["image_digest"] == image_digest
+    assert sampler_payload["image_id"] == image_id
     assert sampled.status == 200
     assert json.loads(sampled.body)["state"] == "succeeded"
     assert {
@@ -100,7 +100,7 @@ def test_paired_opus_roles_share_image_identity_but_not_runtime_contracts(
 def test_opus_target_uses_configured_ffmpeg(monkeypatch: Any) -> None:
     configured: dict[str, object] = {}
     monkeypatch.setenv("STOVE0_FFMPEG_BIN", "fixture-ffmpeg")
-    monkeypatch.setattr(opus_app, "_image_digest", lambda _prefix: _sha("9"))
+    monkeypatch.setattr(opus_app, "_image_id", lambda _prefix: "sha256:" + _sha("9"))
     monkeypatch.setattr(opus_app, "_secret", lambda _prefix: "fixture-secret")
 
     class ConfiguredTarget:
@@ -123,7 +123,7 @@ def test_opus_preflight_fixes_exact_unbounded_metadata_projection(tmp_path: Path
         state_root=tmp_path / "state",
         workspace_root=tmp_path / "workspace",
         source_revision="fixture",
-        image_digest=_sha("9"),
+        image_id="sha256:" + _sha("9"),
     )
     intent = {
         "codec": "opus",
@@ -192,12 +192,11 @@ def test_opus_execution_identity_is_the_canonical_semantic_result() -> None:
         {
             "format": "a-stove0-opus-target-execution/v1",
             "plan_sha256": _sha("1"),
-            "image_digest": _sha("2"),
             "outputs": [output.model_dump(mode="json")],
         }
     )
 
-    assert opus_target._execution_sha256(_sha("1"), _sha("2"), (output,)) == expected
+    assert opus_target._execution_sha256(_sha("1"), (output,)) == expected
 
 
 def _request(workspace_root: Path, sampler: OpusReviewSampler) -> SamplerRequest:

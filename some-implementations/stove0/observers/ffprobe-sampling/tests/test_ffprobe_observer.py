@@ -69,7 +69,7 @@ def test_ffprobe_observer_reports_contract_facts_and_exact_image(
         ffprobe="fixture-ffprobe",
         workspace_root=tmp_path / "observer-workspace",
         source_revision="fixture",
-        image_digest=_sha("9"),
+        image_id="sha256:" + _sha("9"),
     )
     descriptor = observer.descriptor()
     support = descriptor.contracts[0]
@@ -117,7 +117,7 @@ def test_ffprobe_observer_reports_contract_facts_and_exact_image(
     runtime = FixtureRuntime(tmp_path / "request")
     result = observer.observe(request, cast(ContentObservationRuntime, runtime))
 
-    assert descriptor.image_digest == _sha("9")
+    assert descriptor.image_id == "sha256:" + _sha("9")
     assert support.contract_id == MEDIA_SAMPLING_OBSERVER_CONTRACT.id
     assert result.state == "observed"
     assert result.facts == {
@@ -138,7 +138,7 @@ def test_ffprobe_observer_reports_contract_facts_and_exact_image(
 def test_observer_process_exposes_only_observer_contract() -> None:
     observer = FfprobeSamplingObserver(
         source_revision="fixture",
-        image_digest=_sha("9"),
+        image_id="sha256:" + _sha("9"),
     )
     client = TestClient(create_app(token="observer-secret", observer=observer))
     response = client.get(
@@ -175,7 +175,7 @@ def test_observer_process_environment_is_connected(
         str(tmp_path / "workspace"),
     )
     monkeypatch.setenv("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_SOURCE_REVISION", "fixture-revision")
-    monkeypatch.setenv("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_DIGEST", _sha("8"))
+    monkeypatch.setenv("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID", "sha256:" + _sha("8"))
     created: dict[str, object] = {}
 
     class ConfiguredObserver:
@@ -195,7 +195,7 @@ def test_observer_process_environment_is_connected(
         "ffprobe": "fixture-ffprobe",
         "workspace_root": tmp_path / "workspace",
         "source_revision": "fixture-revision",
-        "image_digest": _sha("8"),
+        "image_id": "sha256:" + _sha("8"),
         "host": "127.0.0.7",
         "port": 8177,
     }

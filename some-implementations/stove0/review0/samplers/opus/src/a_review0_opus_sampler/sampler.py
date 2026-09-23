@@ -42,7 +42,7 @@ class OpusReviewSampler:
         workspace_root: Path,
         ffmpeg: str = "ffmpeg",
         source_revision: str = "unknown",
-        image_digest: str,
+        image_id: str,
     ) -> None:
         self.workspace_root = workspace_root.resolve()
         self.ffmpeg = ffmpeg
@@ -51,7 +51,7 @@ class OpusReviewSampler:
                 implementation_id="a-review0-opus-sampler/v1",
                 implementation_version=_version(),
                 source_revision=source_revision,
-                image_digest=image_digest,
+                image_id=image_id,
                 primary_operation_id=AUDIO_ARCHIVE_OPERATION.id,
                 primary_operation_contract_sha256=AUDIO_ARCHIVE_OPERATION.contract_sha256,
                 portable_intent_schema=AUDIO_ARCHIVE_OPERATION.intent_schema,
@@ -164,7 +164,6 @@ class OpusReviewSampler:
                 inapplicable=inapplicable,
                 execution_evidence={
                     "ffmpeg": tool_version(self.ffmpeg),
-                    "image_digest": self._descriptor.image_digest,
                 },
             )
         )

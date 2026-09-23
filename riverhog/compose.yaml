@@ -98,7 +98,7 @@ services:
 
   filesystem-cache-adapter:
     profiles: ["development"]
-    image: a-riverhog-filesystem-store:dev
+    image: ${A_RIVERHOG_FILESYSTEM_STORE_IMAGE_REF:-a-riverhog-filesystem-store:dev}
     build:
       context: ..
       dockerfile: some-implementations/riverhog/storage/filesystem/Dockerfile
@@ -168,7 +168,7 @@ services:
       - ./postgres-init/10-riverhog-prerequisites.sql:/docker-entrypoint-initdb.d/10-riverhog-prerequisites.sql:ro
 
   state:
-    image: riverhog-app:dev
+    image: ${RIVERHOG_IMAGE_REF:-riverhog-app:dev}
     build:
       context: ..
       dockerfile: riverhog/Dockerfile
@@ -189,7 +189,7 @@ services:
     command: ["state", "upgrade"]
 
   app:
-    image: riverhog-app:dev
+    image: ${RIVERHOG_IMAGE_REF:-riverhog-app:dev}
     build:
       context: ..
       dockerfile: riverhog/Dockerfile

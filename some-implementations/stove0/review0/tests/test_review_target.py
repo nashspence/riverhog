@@ -120,7 +120,7 @@ def _sampler() -> tuple[SamplerRegistration, FixtureSamplerClient]:
             implementation_id="fixture.sampler/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
-            image_digest=_sha("8"),
+            image_id="sha256:" + _sha("8"),
             primary_operation_id="stove0.media.audio-archive/v1",
             primary_operation_contract_sha256=_sha("7"),
             portable_intent_schema=JsonSchemaValidationProfile.from_schema(
@@ -141,7 +141,7 @@ def _sampler() -> tuple[SamplerRegistration, FixtureSamplerClient]:
             id="opus",
             client=cast(ReviewSamplerClient, client),
             descriptor_sha256=descriptor.descriptor_sha256,
-            image_digest=descriptor.image_digest,
+            image_id=descriptor.image_id,
         ),
         client,
     )
@@ -156,7 +156,7 @@ def test_review_preflight_seals_exact_sampler_identity_and_one_operation(
         workspace_root=tmp_path / "workspace",
         samplers=(registration,),
         source_revision="fixture",
-        image_digest=_sha("9"),
+        image_id="sha256:" + _sha("9"),
         implementation_version="0.1.0",
     )
     try:
@@ -189,14 +189,13 @@ def test_review_preflight_seals_exact_sampler_identity_and_one_operation(
         )
         preflight = target.preflight(request)
 
-        assert target.descriptor().image_digest == _sha("9")
+        assert target.descriptor().image_id == "sha256:" + _sha("9")
         assert [item.operation_id for item in target.descriptor().operations] == [
             REVIEW_MATERIALIZE_OPERATION.id
         ]
         assert preflight.plan.target_options == {
             "sampler_registration_id": "opus",
             "sampler_descriptor_sha256": registration.descriptor_sha256,
-            "sampler_image_digest": registration.image_digest,
         }
         invalid_intent = request.intent.copy()
         invalid_plan = dict(invalid_intent["sample_plan"])
@@ -204,13 +203,13 @@ def test_review_preflight_seals_exact_sampler_identity_and_one_operation(
         invalid_intent["sample_plan"] = invalid_plan
         with pytest.raises(TargetServiceError, match="intent is invalid"):
             target.preflight(request.model_copy(update={"intent": invalid_intent}))
-        with pytest.raises(TargetServiceError, match="sampler_image_digest") as exc_info:
+        with pytest.raises(TargetServiceError, match="sampler_descriptor_sha256") as exc_info:
             target.preflight(
                 request.model_copy(
                     update={
                         "target_options": {
                             **request.target_options,
-                            "sampler_image_digest": _sha("6"),
+                            "sampler_descriptor_sha256": _sha("6"),
                         }
                     }
                 )
@@ -228,7 +227,7 @@ def test_review_process_exposes_only_target_descriptor(tmp_path: Path) -> None:
         workspace_root=tmp_path / "workspace",
         samplers=(registration,),
         source_revision="fixture",
-        image_digest=_sha("9"),
+        image_id="sha256:" + _sha("9"),
         implementation_version="0.1.0",
     )
     with TestClient(create_app(token="review-secret", target=target)) as client:
@@ -298,7 +297,6 @@ def test_review_execution_identity_is_the_canonical_semantic_result() -> None:
         {
             "format": "review0-target-execution/v1",
             "plan_sha256": _sha("1"),
-            "image_digest": _sha("2"),
             "sampler_result_sha256": _sha("3"),
             "outputs": [output.model_dump(mode="json")],
         }
@@ -307,7 +305,6 @@ def test_review_execution_identity_is_the_canonical_semantic_result() -> None:
     assert (
         review_support._execution_sha256(
             _sha("1"),
-            _sha("2"),
             _sha("3"),
             (output,),
         )
@@ -346,7 +343,7 @@ def test_review_process_environment_is_connected(
     monkeypatch.setenv("A_REVIEW0_MATERIALIZER_STATE_ROOT", str(tmp_path / "state"))
     monkeypatch.setenv("A_REVIEW0_MATERIALIZER_WORKSPACE", str(tmp_path / "workspace"))
     monkeypatch.setenv("A_REVIEW0_MATERIALIZER_SOURCE_REVISION", "fixture-revision")
-    monkeypatch.setenv("A_REVIEW0_MATERIALIZER_IMAGE_DIGEST", _sha("9"))
+    monkeypatch.setenv("A_REVIEW0_MATERIALIZER_IMAGE_ID", "sha256:" + _sha("9"))
     configured: dict[str, object] = {}
 
     class ConfiguredTarget:
@@ -372,7 +369,7 @@ def test_review_process_environment_is_connected(
         "workspace_root": tmp_path / "workspace",
         "samplers": registrations,
         "source_revision": "fixture-revision",
-        "image_digest": _sha("9"),
+        "image_id": "sha256:" + _sha("9"),
         "implementation_version": "0.1.0",
         "terminal_state_retention_seconds": 2_592_000,
         "host": "127.0.0.8",
@@ -387,7 +384,7 @@ def test_review_support_registration_count_is_defined_by_deployment(tmp_path: Pa
             base_url=f"https://sampler-{index:03}.invalid",
             token_file=tmp_path / f"sampler-{index:03}.token",
             descriptor_sha256=_sha("1"),
-            image_digest=_sha("2"),
+            image_id="sha256:" + _sha("2"),
         )
         for index in range(33)
     )
@@ -406,7 +403,7 @@ def test_review_effect_deployment_has_one_fixed_effect_contract(tmp_path: Path) 
         workspace_root=tmp_path / "workspace",
         samplers=(registration,),
         source_revision="fixture",
-        image_digest=_sha("9"),
+        image_id="sha256:" + _sha("9"),
         implementation_version="0.1.0",
         destination=destination,
     )
@@ -550,7 +547,7 @@ def test_review_effect_executes_sampling_delivery_and_canonical_receipt_end_to_e
         id="opus",
         client=cast(ReviewSamplerClient, sampler_client),
         descriptor_sha256=descriptor.descriptor_sha256,
-        image_digest=descriptor.image_digest,
+        image_id=descriptor.image_id,
     )
     destination = RcloneReviewDestination(identity=_sha("d"), remote="fixture:review")
     target = ReviewRcloneEffectTargetService(
@@ -558,7 +555,7 @@ def test_review_effect_executes_sampling_delivery_and_canonical_receipt_end_to_e
         workspace_root=workspace_root,
         samplers=(registration,),
         source_revision="fixture",
-        image_digest=_sha("9"),
+        image_id="sha256:" + _sha("9"),
         implementation_version="0.1.0",
         destination=destination,
     )

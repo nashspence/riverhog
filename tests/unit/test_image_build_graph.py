@@ -445,6 +445,8 @@ def test_av1_source_builds_verify_the_exact_requested_commits() -> None:
 
 def test_compose_build_services_match_the_canonical_bake_graph() -> None:
     graph = _bake_graph()
+    release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
+    runtime_images = release["images"]["runtime"]
 
     for name, contract in IMAGE_CONTRACTS.items():
         target = graph["target"][name]
@@ -460,7 +462,13 @@ def test_compose_build_services_match_the_canonical_bake_graph() -> None:
 
             assert compose_context == target_context
             assert compose_dockerfile == target_dockerfile
-            assert service["image"] == contract.get("compose_tag", contract["tag"])
+            local_tag = contract.get("compose_tag", contract["tag"])
+            expected_image = (
+                f"${{{name.upper().replace('-', '_')}_IMAGE_REF:-{local_tag}}}"
+                if name in runtime_images
+                else local_tag
+            )
+            assert service["image"] == expected_image
             assert build["args"] == {"SOURCE_REVISION": "${SOURCE_REVISION:-unknown}"}
             assert build.get("target") == contract.get("compose_target")
 

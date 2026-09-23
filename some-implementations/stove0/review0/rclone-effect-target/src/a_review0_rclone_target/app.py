@@ -49,10 +49,14 @@ def _secret() -> str:
     return value.strip()
 
 
-def _image_digest() -> str:
-    value = os.getenv(f"{PREFIX}_IMAGE_DIGEST", "").strip()
-    if len(value) != 64 or any(character not in "0123456789abcdef" for character in value):
-        raise ValueError(f"{PREFIX}_IMAGE_DIGEST must be a lowercase SHA-256")
+def _image_id() -> str:
+    value = os.getenv(f"{PREFIX}_IMAGE_ID", "").strip()
+    if not (
+        len(value) == 71
+        and value.startswith("sha256:")
+        and all(character in "0123456789abcdef" for character in value[7:])
+    ):
+        raise ValueError(f"{PREFIX}_IMAGE_ID must be an OCI ImageID (sha256:<64 lowercase hex>)")
     return value
 
 
@@ -137,7 +141,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         samplers=_sampler_registrations(),
         destination=_effect_destination(),
         source_revision=os.getenv(f"{PREFIX}_SOURCE_REVISION", "unknown"),
-        image_digest=_image_digest(),
+        image_id=_image_id(),
         implementation_version=version,
         terminal_state_retention_seconds=terminal_state_retention_seconds(),
     )

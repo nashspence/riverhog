@@ -112,7 +112,7 @@ def test_exiftool_observer_preserves_conflicting_exact_field_evidence(
         exiftool="fixture-exiftool",
         workspace_root=tmp_path / "observer-workspace",
         source_revision="fixture",
-        image_digest=_sha("9"),
+        image_id="sha256:" + _sha("9"),
     )
 
     probe_commands: list[list[str]] = []
@@ -158,7 +158,7 @@ def test_exiftool_observer_preserves_conflicting_exact_field_evidence(
     result = observer.observe(_request(observer), cast(ContentObservationRuntime, runtime))
     facts = MediaMetadataFacts.model_validate(result.facts)
 
-    assert observer.descriptor().image_digest == _sha("9")
+    assert observer.descriptor().image_id == "sha256:" + _sha("9")
     assert observer.descriptor().contracts[0].contract_id == MEDIA_METADATA_OBSERVER_CONTRACT.id
     assert result.state == "observed"
     assert [item.artifact_id for item in facts.artifacts] == [
@@ -197,7 +197,7 @@ def test_exiftool_observer_preserves_conflicting_exact_field_evidence(
 
 
 def test_observer_process_exposes_only_media_metadata_observer_contract() -> None:
-    observer = ExiftoolObserver(source_revision="fixture", image_digest=_sha("9"))
+    observer = ExiftoolObserver(source_revision="fixture", image_id="sha256:" + _sha("9"))
     client = TestClient(create_app(token="observer-secret", observer=observer))
 
     response = client.get(
@@ -236,7 +236,7 @@ def test_observer_process_environment_is_connected(
         str(tmp_path / "workspace"),
     )
     monkeypatch.setenv("A_STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION", "fixture-revision")
-    monkeypatch.setenv("A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST", _sha("8"))
+    monkeypatch.setenv("A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID", "sha256:" + _sha("8"))
     created: dict[str, object] = {}
 
     class ConfiguredObserver:
@@ -256,7 +256,7 @@ def test_observer_process_environment_is_connected(
         "exiftool": "fixture-exiftool",
         "workspace_root": tmp_path / "workspace",
         "source_revision": "fixture-revision",
-        "image_digest": _sha("8"),
+        "image_id": "sha256:" + _sha("8"),
         "host": "127.0.0.7",
         "port": 8177,
     }

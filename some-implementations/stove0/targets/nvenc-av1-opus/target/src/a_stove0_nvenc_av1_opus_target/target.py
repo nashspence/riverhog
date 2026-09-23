@@ -87,20 +87,19 @@ class NvencAv1OpusTargetService(PersistentTargetService):
         workspace_root: Path,
         ffmpeg: str = "ffmpeg",
         source_revision: str = "unknown",
-        image_digest: str,
+        image_id: str,
         terminal_state_retention_seconds: int = DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
     ) -> None:
         self.workspace_root = workspace_root.resolve()
         self.workspace_root.mkdir(mode=0o700, parents=True, exist_ok=True)
         os.chmod(self.workspace_root, 0o700)
         self.ffmpeg = ffmpeg
-        self.image_digest = image_digest
         descriptor = TargetDescriptor.seal(
             TargetDescriptorPayload(
                 implementation_id="a-stove0-nvenc-av1-opus-target/v1",
                 implementation_version=_version(),
                 source_revision=source_revision,
-                image_digest=image_digest,
+                image_id=image_id,
                 operations=(
                     TargetOperationSupport(
                         operation_id=AV1_OPUS_ARCHIVE_OPERATION.id,
@@ -355,7 +354,6 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                     execution.declare_disposition(input_id, "transformed")
                 execution_sha256 = _execution_sha256(
                     request.declaration.plan.plan_sha256,
-                    self.image_digest,
                     declared,
                 )
                 return publication.finish_success(
@@ -364,7 +362,6 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                     attempt=attempt,
                     runtime_evidence={
                         "ffmpeg": tool_version(self.ffmpeg),
-                        "image_digest": self.image_digest,
                     },
                 )
             finally:
@@ -427,7 +424,6 @@ class NvencAv1OpusTargetService(PersistentTargetService):
 
 def _execution_sha256(
     plan_sha256: str,
-    image_digest: str,
     outputs: Sequence[OutputArtifact],
 ) -> str:
     """Identify exact AV1/Opus execution semantics independently of an attempt."""
@@ -436,7 +432,6 @@ def _execution_sha256(
         {
             "format": "a-stove0-nvenc-av1-opus-target-execution/v1",
             "plan_sha256": plan_sha256,
-            "image_digest": image_digest,
             "outputs": [item.model_dump(mode="json") for item in outputs],
         }
     )

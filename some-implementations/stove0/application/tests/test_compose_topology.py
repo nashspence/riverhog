@@ -141,24 +141,30 @@ def test_sampler_containers_share_only_ephemeral_workspace_and_no_authority() ->
     assert workspace["driver_opts"]["type"] == "tmpfs"
 
 
-def test_paired_target_and_sampler_roles_bind_the_same_image_digest() -> None:
+def test_paired_target_and_sampler_roles_bind_the_same_manifest_and_image_id() -> None:
     payload = yaml.safe_load(COMPOSE.read_text(encoding="utf-8"))
     services = payload["services"]
     assert services["a-stove0-opus-target"]["image"] == services["a-review0-opus-sampler"]["image"]
+    assert services["a-stove0-opus-target"]["image"].startswith(
+        "${A_STOVE0_OPUS_TARGET_IMAGE_REF:-"
+    )
     assert (
-        services["a-stove0-opus-target"]["environment"]["A_STOVE0_OPUS_TARGET_IMAGE_DIGEST"]
-        == services["a-review0-opus-sampler"]["environment"]["A_REVIEW0_OPUS_SAMPLER_IMAGE_DIGEST"]
+        services["a-stove0-opus-target"]["environment"]["A_STOVE0_OPUS_TARGET_IMAGE_ID"]
+        == services["a-review0-opus-sampler"]["environment"]["A_REVIEW0_OPUS_SAMPLER_IMAGE_ID"]
     )
     assert (
         services["a-stove0-nvenc-av1-opus-target"]["image"]
         == services["a-review0-nvenc-av1-opus-sampler"]["image"]
     )
+    assert services["a-stove0-nvenc-av1-opus-target"]["image"].startswith(
+        "${A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_REF:-"
+    )
     assert (
         services["a-stove0-nvenc-av1-opus-target"]["environment"][
-            "A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_DIGEST"
+            "A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID"
         ]
         == services["a-review0-nvenc-av1-opus-sampler"]["environment"][
-            "A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_IMAGE_DIGEST"
+            "A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_IMAGE_ID"
         ]
     )
     assert (

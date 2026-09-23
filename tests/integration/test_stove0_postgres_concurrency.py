@@ -251,7 +251,7 @@ def _target_models() -> tuple[OperationContract, TargetDescriptor, TransformPlan
             implementation_id="fixture.target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
-            image_digest="9" * 64,
+            image_id="sha256:" + "9" * 64,
             operations=(
                 TargetOperationSupport(
                     operation_id=operation.id,
@@ -482,7 +482,7 @@ def _active_effect_work(
             implementation_id="fixture.external-index-target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
-            image_digest="9" * 64,
+            image_id="sha256:" + "9" * 64,
             operations=(
                 TargetOperationSupport(
                     operation_id=operation.id,

@@ -116,9 +116,9 @@ def _policy_registry(projection: Mapping[str, object]) -> dict[str, object]:
                 "applies_to": [*image_pointers, *installation_pointers],
             },
             {
-                "id": "publication/image-digest-scope/v1",
-                "meaning": publication_policies["image_digest_scope"],
-                "definition_pointer": f"{publication_base}/policy/image_digest_scope",
+                "id": "publication/image-identity-scope/v1",
+                "meaning": publication_policies["image_identity_scope"],
+                "definition_pointer": f"{publication_base}/policy/image_identity_scope",
                 "applies_to": image_pointers,
             },
         ],
@@ -428,7 +428,7 @@ def _release_elements(elements: list[dict[str, object]], release: Mapping[str, o
         elements[-1]["policy_ids"] = sorted(
             {
                 *cast(Sequence[str], elements[-1]["policy_ids"]),
-                "publication/image-digest-scope/v1",
+                "publication/image-identity-scope/v1",
                 "publication/platform-scope/v1",
                 "publication/role-retention/v1",
             }
@@ -1570,7 +1570,7 @@ def _validate_release_units(
     publication_policy_ids = {
         "publication/role-retention/v1",
         "publication/platform-scope/v1",
-        "publication/image-digest-scope/v1",
+        "publication/image-identity-scope/v1",
     }
     for pointer, item in actual.items():
         details = cast(Mapping[str, object], item.get("details", {}))
