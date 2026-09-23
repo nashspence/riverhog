@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import importlib.util
 import inspect
 import json
@@ -125,9 +126,11 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     boundaries = projection["boundaries"]
     assert set(boundaries) == {
         "components",
+        "contract_authorities",
         "entry_point_extensions",
         "process_extensions",
         "reference_policy",
+        "role_kinds",
         "runtime_images",
     }
     components = boundaries["components"]
@@ -391,10 +394,18 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     assert not any(path.endswith(".json") for path in checked.files)
     assert root["identities"]["boundary_legacy_sha256"] == trace["boundary_canonical_sha256"]
     release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
-    assert release["governance"]["boundary_freeze"] == {
-        "status": "frozen",
-        "boundary_canonical_sha256": root["identities"]["boundary_legacy_sha256"],
+    freeze = release["governance"]["boundary_freeze"]
+    protected_boundaries = module.reassemble_projection(checked)["boundaries"]
+    assert freeze["status"] == "frozen"
+    assert freeze["protected_boundary_sha256"] == module._boundary_canonical_sha256(
+        module._protected_boundary(protected_boundaries, freeze)
+    )
+    assert set(freeze["protected_components"]) <= {
+        item["distribution"] for item in protected_boundaries["components"]
     }
+    assert set(freeze["protected_runtime_images"]) <= set(
+        protected_boundaries["runtime_images"]["runtime"]
+    )
 
 
 def test_contract_regeneration_cannot_bless_undeclared_boundary_drift(
@@ -411,6 +422,116 @@ def test_contract_regeneration_cannot_bless_undeclared_boundary_drift(
     monkeypatch.setattr(module, "_component_boundaries", changed_component_boundaries)
     with pytest.raises(module.ContractFreezeError, match="maintainer-declared freeze"):
         module.contract_projection()
+
+
+def test_boundary_freeze_allows_new_coordinates_but_protects_existing_topology() -> None:
+    module = load_script()
+    freeze = {
+        "protected_components": ["owner", "provider"],
+        "protected_runtime_images": ["existing-image"],
+    }
+    boundaries: dict[str, Any] = {
+        "contract_authorities": {"repository": "repository authority"},
+        "role_kinds": ["reusable_library", "component"],
+        "components": [
+            {
+                "distribution": "owner",
+                "role": "reusable_library",
+                "dependencies": [],
+                "optional_dependencies": {},
+            },
+            {
+                "distribution": "provider",
+                "role": "component",
+                "dependencies": ["owner"],
+                "optional_dependencies": {"feature": ["owner"]},
+            },
+        ],
+        "runtime_images": {
+            "platforms": ["linux/amd64"],
+            "runtime": {
+                "existing-image": {"role": "implementation", "distributions": ["provider"]}
+            },
+            "test_only": {},
+        },
+        "entry_point_extensions": [
+            {
+                "group": "example.providers",
+                "owner": "owner",
+                "providers": [
+                    {"distribution": "provider", "name": "existing", "value": "provider:load"}
+                ],
+            }
+        ],
+        "process_extensions": [
+            {
+                "name": "example-process",
+                "contract_owner": "owner",
+                "providers": [{"distribution": "provider", "images": ["existing-image"]}],
+            }
+        ],
+    }
+    protected = module._protected_boundary(boundaries, freeze)
+    baseline = module._boundary_canonical_sha256(protected)
+
+    additive = copy.deepcopy(boundaries)
+    additive["components"].append(
+        {"distribution": "new-provider", "role": "component", "dependencies": ["owner"]}
+    )
+    additive["components"][1]["dependencies"].append("new-provider")
+    additive["components"][1]["optional_dependencies"]["feature"].append("new-provider")
+    additive["runtime_images"]["runtime"]["new-image"] = {
+        "role": "implementation",
+        "distributions": ["new-provider"],
+    }
+    additive["runtime_images"]["runtime"]["existing-image"]["distributions"].append("new-provider")
+    additive["entry_point_extensions"][0]["providers"].append(
+        {"distribution": "new-provider", "name": "new", "value": "new_provider:load"}
+    )
+    additive["process_extensions"][0]["providers"].append(
+        {"distribution": "new-provider", "images": ["new-image"]}
+    )
+    assert (
+        module._boundary_canonical_sha256(module._protected_boundary(additive, freeze)) == baseline
+    )
+    assert module._boundary_canonical_sha256(additive) != module._boundary_canonical_sha256(
+        boundaries
+    )
+
+    changed_role = copy.deepcopy(additive)
+    changed_role["components"][1]["role"] = "application"
+    assert (
+        module._boundary_canonical_sha256(module._protected_boundary(changed_role, freeze))
+        != baseline
+    )
+    removed_existing_dependency = copy.deepcopy(additive)
+    removed_existing_dependency["components"][1]["dependencies"].remove("owner")
+    assert (
+        module._boundary_canonical_sha256(
+            module._protected_boundary(removed_existing_dependency, freeze)
+        )
+        != baseline
+    )
+    new_authority = copy.deepcopy(additive)
+    new_authority["contract_authorities"]["other"] = "another authority"
+    assert (
+        module._boundary_canonical_sha256(module._protected_boundary(new_authority, freeze))
+        != baseline
+    )
+    new_extension = copy.deepcopy(additive)
+    new_extension["entry_point_extensions"].append(
+        {"group": "new.group", "owner": "owner", "providers": []}
+    )
+    assert (
+        module._boundary_canonical_sha256(module._protected_boundary(new_extension, freeze))
+        != baseline
+    )
+    removed = copy.deepcopy(additive)
+    removed["components"].pop(1)
+    with pytest.raises(
+        module.ContractFreezeError, match="protected component coordinates disappeared"
+    ):
+        module._protected_boundary(removed, freeze)
 
 
 def test_configuration_resolution_fails_closed_on_an_owner_outside_the_frozen_topology(
