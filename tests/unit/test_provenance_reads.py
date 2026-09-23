@@ -359,7 +359,7 @@ def test_provenance_verification_job_persists_terminal_result(tmp_path: Path) ->
     assert completed["state"] == "succeeded"
     assert completed["attempts"] == 1
     assert completed["result"] == {
-        "collection_id": 1,
+        "collection_id": "1",
         "valid": True,
         "provenance_mode": "omitted",
         "provenance_identity": None,

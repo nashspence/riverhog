@@ -8,11 +8,13 @@ from contextlib import AbstractContextManager, contextmanager
 from pathlib import Path
 from typing import Any, Literal, Protocol, Self
 
+from pydantic import TypeAdapter
 from riverhog_protocol.collection_workflows import (
     DERIVATION_EVIDENCE_PATH,
     PRODUCER_EVIDENCE_PATH,
     CollectionRootIdentity,
 )
+from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from riverhog_protocol.paths import CollectionId
 from riverhog_protocol.portable_collection import PortableCollectionInventoryPage
 
@@ -300,7 +302,7 @@ class ClaimedCollectionReader:
     def _verify_root(self, expected: CollectionRootIdentity) -> None:
         payload = self.api.get_collection(expected.collection_id)
         actual = CollectionRootIdentity(
-            collection_id=_positive_int(payload.get("id"), "collection id"),
+            collection_id=_wire_collection_id(payload.get("id"), "collection id"),
             archive_root_sha256=str(payload.get("archive_root_sha256") or ""),
             content_identity=str(payload.get("content_identity") or ""),
         )
@@ -522,7 +524,7 @@ def _verify_plan_files(
         if not isinstance(row, Mapping):
             raise RuntimeError("Riverhog retrieval plan file is invalid")
         key = (
-            _positive_int(row.get("collection_id"), "plan collection id"),
+            _wire_collection_id(row.get("collection_id"), "plan collection id"),
             str(row.get("path") or ""),
         )
         if key in actual:
@@ -556,10 +558,18 @@ def _positive_int(value: object, label: str) -> int:
     return value
 
 
+def _wire_collection_id(value: object, label: str) -> int:
+    try:
+        return TypeAdapter(CollectionId).validate_python(value)
+    except ValueError as exc:
+        raise RuntimeError(f"{label} is invalid") from exc
+
+
 def _nonnegative_int(value: object, label: str) -> int:
-    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
-        raise RuntimeError(f"{label} is invalid")
-    return value
+    try:
+        return TypeAdapter(NonnegativeDecimal).validate_python(value)
+    except ValueError as exc:
+        raise RuntimeError(f"{label} is invalid") from exc
 
 
 __all__ = [

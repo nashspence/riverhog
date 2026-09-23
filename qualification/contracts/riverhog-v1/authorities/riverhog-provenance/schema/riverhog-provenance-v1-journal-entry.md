@@ -39,17 +39,17 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 | <a id="s-6bd89aa5b2"></a>`recorded_by_agent_id` | yes | [urnUuid](#s-b9f9301bba) |  |
 | <a id="s-b6dfb2d331"></a>`recording_environment_id` | no | [urnUuid](#s-b9f9301bba) |  |
 | <a id="s-93c9c7970e"></a>`schema_version` | yes | const="1.0.0" |  |
-| <a id="s-a755e6074e"></a>`sequence` | yes | type="integer"; minimum=0; maximum=9223372036854775807 |  |
+| <a id="s-a755e6074e"></a>`sequence` | yes | [sequence63](#s-762245deab) |  |
 | <a id="s-788bc03ace"></a>`type` | yes | const="riverhog_provenance_journal_entry" |  |
 
 ### All must match (`allOf`)
 
 | Rule | If schema matches | Then must match | Otherwise must match |
 |---|---|---|---|
-| <a id="s-4b6f2de7a8"></a>1 | properties={entry_kind: (const="journal_init")}; required=["entry_kind"] | not=(required=["previous_entry"]); properties={body: ([journalInitBody](#s-8b0ea68958)); sequence: (const=0)} | no additional constraint |
-| <a id="s-e3af1d9566"></a>2 | properties={entry_kind: (const="assertion")}; required=["entry_kind"] | properties={body: ([assertionBody](#s-d348c1e871)); sequence: (minimum=1)}; required=["previous_entry"] | no additional constraint |
-| <a id="s-a41fcbe302"></a>3 | properties={entry_kind: (const="correction")}; required=["entry_kind"] | properties={body: ([correctionBody](#s-9293f3fd5e)); sequence: (minimum=1)}; required=["previous_entry"] | no additional constraint |
-| <a id="s-3373b688c7"></a>4 | properties={entry_kind: (const="checkpoint")}; required=["entry_kind"] | properties={body: ([checkpointBody](#s-edbb3f1265)); sequence: (minimum=1)}; required=["previous_entry"] | no additional constraint |
+| <a id="s-4b6f2de7a8"></a>1 | properties={entry_kind: (const="journal_init")}; required=["entry_kind"] | not=(required=["previous_entry"]); properties={body: ([journalInitBody](#s-8b0ea68958)); sequence: (const="0")} | no additional constraint |
+| <a id="s-e3af1d9566"></a>2 | properties={entry_kind: (const="assertion")}; required=["entry_kind"] | properties={body: ([assertionBody](#s-d348c1e871)); sequence: (not=(const="0"))}; required=["previous_entry"] | no additional constraint |
+| <a id="s-a41fcbe302"></a>3 | properties={entry_kind: (const="correction")}; required=["entry_kind"] | properties={body: ([correctionBody](#s-9293f3fd5e)); sequence: (not=(const="0"))}; required=["previous_entry"] | no additional constraint |
+| <a id="s-3373b688c7"></a>4 | properties={entry_kind: (const="checkpoint")}; required=["entry_kind"] | properties={body: ([checkpointBody](#s-edbb3f1265)); sequence: (not=(const="0"))}; required=["previous_entry"] | no additional constraint |
 
 ### Definitions
 
@@ -120,6 +120,7 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 - [relationRole](#s-e8775f45df)
 - [runtime](#s-a011de07f6)
 - [semanticAssertion](#s-2d2165b5a6)
+- [sequence63](#s-762245deab)
 - [sha256Hex](#s-1ceccb1b61)
 - [softwareAgent](#s-e4f49d8758)
 - [sourceDescriptor](#s-6bcbe0dfe1)
@@ -248,7 +249,7 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-20d5f4d688"></a>`byte_length` | yes | type="integer"; minimum=0; maximum=9223372036854775807 |  |
+| <a id="s-20d5f4d688"></a>`byte_length` | yes | [sequence63](#s-762245deab) |  |
 | <a id="s-151598ca05"></a>`data` | yes | type="string"; pattern="^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==\|[A-Za-z0-9+/]{3}=)?$" |  |
 | <a id="s-ebc2a4d88d"></a>`digests` | no | type="array"; items=([digest](#s-1e1e5e54b0)); minItems=1; uniqueItems=true |  |
 | <a id="s-cf5d847cda"></a>`encoding` | yes | const="base64" |  |
@@ -264,7 +265,7 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d7fe9175c0"></a>`byte_length` | yes | type="integer"; minimum=0; maximum=9223372036854775807 |  |
+| <a id="s-d7fe9175c0"></a>`byte_length` | yes | [sequence63](#s-762245deab) |  |
 | <a id="s-1e58518787"></a>`data` | yes | type="string"; pattern="^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==\|[A-Za-z0-9+/]{3}=)?$" |  |
 | <a id="s-4426948ec3"></a>`digests` | no | type="array"; items=([digest](#s-1e1e5e54b0)); minItems=1; uniqueItems=true |  |
 | <a id="s-68230546c4"></a>`encoding` | yes | const="base64" |  |
@@ -370,12 +371,12 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-92b955b86b"></a>`activities` | no | type="integer"; minimum=0; maximum=9223372036854775807 |  |
-| <a id="s-fd70682b59"></a>`captures` | no | type="integer"; minimum=0; maximum=9223372036854775807 |  |
-| <a id="s-c697031463"></a>`entries` | yes | type="integer"; minimum=1; maximum=9223372036854775807 |  |
-| <a id="s-c3f33d3b72"></a>`lineages` | no | type="integer"; minimum=0; maximum=9223372036854775807 |  |
-| <a id="s-e41cbc72e4"></a>`relations` | no | type="integer"; minimum=0; maximum=9223372036854775807 |  |
-| <a id="s-917de38a38"></a>`states` | no | type="integer"; minimum=0; maximum=9223372036854775807 |  |
+| <a id="s-92b955b86b"></a>`activities` | no | [sequence63](#s-762245deab) |  |
+| <a id="s-fd70682b59"></a>`captures` | no | [sequence63](#s-762245deab) |  |
+| <a id="s-c697031463"></a>`entries` | yes | [sequence63](#s-762245deab); not=(const="0") |  |
+| <a id="s-c3f33d3b72"></a>`lineages` | no | [sequence63](#s-762245deab) |  |
+| <a id="s-e41cbc72e4"></a>`relations` | no | [sequence63](#s-762245deab) |  |
+| <a id="s-917de38a38"></a>`states` | no | [sequence63](#s-762245deab) |  |
 
 ### <a id="s-956f3fc8b8"></a>definition `comparisonDimension`
 
@@ -426,7 +427,7 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `digests` | yes | [See definition `contentDescription` · field `digests`](#s-d8a3c25d9d) |  |
-| <a id="s-26c2b67719"></a>`size_bytes` | yes | type="integer"; minimum=0; maximum=9223372036854775807 |  |
+| <a id="s-26c2b67719"></a>`size_bytes` | yes | [sequence63](#s-762245deab) |  |
 
 ### <a id="s-7cf5239b36"></a>definition `continuityBasis`
 
@@ -615,7 +616,7 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c7446adbb4"></a>`byte_length` | yes | type="integer"; minimum=0; maximum=9223372036854775807 |  |
+| <a id="s-c7446adbb4"></a>`byte_length` | yes | [sequence63](#s-762245deab) |  |
 | <a id="s-bf0abcdad0"></a>`digests` | yes | type="array"; items=([digest](#s-1e1e5e54b0)); minItems=1; uniqueItems=true |  |
 | <a id="s-8ce3458134"></a>`type` | yes | const="digest" |  |
 
@@ -645,7 +646,7 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 |---|---:|---|---|
 | <a id="s-6d5bc1dc9b"></a>`entry_id` | yes | [urnUuid](#s-b9f9301bba) |  |
 | <a id="s-0a4a983200"></a>`json_sha256` | yes | [sha256Hex](#s-1ceccb1b61) |  |
-| <a id="s-f4eef91776"></a>`sequence` | yes | type="integer"; minimum=0; maximum=9223372036854775807 |  |
+| <a id="s-f4eef91776"></a>`sequence` | yes | [sequence63](#s-762245deab) |  |
 
 ### <a id="s-20b7cca542"></a>definition `environment`
 
@@ -1043,7 +1044,7 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 | <a id="s-208d9c80d2"></a>`name_source_encoding` | no | [nonEmptyString](#s-ddcf450d4d) |  |
 | <a id="s-e081154ca2"></a>`namespace` | no | [nonEmptyString](#s-ddcf450d4d) |  |
 | <a id="s-d68af5217c"></a>`note` | no | [nonEmptyString](#s-ddcf450d4d) |  |
-| <a id="s-b98cbebd2e"></a>`observed_byte_length` | no | type="integer"; minimum=0; maximum=9223372036854775807 |  |
+| <a id="s-b98cbebd2e"></a>`observed_byte_length` | no | [sequence63](#s-762245deab) |  |
 | <a id="s-fe33cc8571"></a>`sensitivity` | yes | type="string"; enum=["public","personal","security_sensitive","secret","unknown"] |  |
 | <a id="s-9e9ce60318"></a>`source` | yes | [sourceDescriptor](#s-6bcbe0dfe1) |  |
 | <a id="s-ee0882dca1"></a>`value` | no | [typedValue](#s-de01b50b5c) |  |
@@ -1356,6 +1357,11 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 | <a id="s-190196f926"></a>`type` | yes | const="semantic_assertion" |  |
 | <a id="s-34e06a66f9"></a>`value` | yes | [typedValue](#s-de01b50b5c) |  |
 
+### <a id="s-762245deab"></a>definition `sequence63`
+
+- <a id="s-907fadd880"></a>`type`: `"string"`
+- <a id="s-973ce1628b"></a>`pattern`: `"^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])"`
+
 ### <a id="s-1ceccb1b61"></a>definition `sha256Hex`
 
 - <a id="s-df01b1d0bb"></a>`type`: `"string"`
@@ -1453,7 +1459,7 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8748aa219f"></a>`byte_length` | no | type="integer"; minimum=0; maximum=9223372036854775807 |  |
+| <a id="s-8748aa219f"></a>`byte_length` | no | [sequence63](#s-762245deab) |  |
 | <a id="s-45c3bb6a66"></a>`data` | yes | [portableString](#s-94d0b65f81) |  |
 | <a id="s-c00970494c"></a>`language` | no | type="string"; pattern="^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*$" |  |
 | <a id="s-8a58123f1d"></a>`media_type` | no | [nonEmptyString](#s-ddcf450d4d) |  |
@@ -1478,7 +1484,7 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 | <a id="s-dba7da7015"></a>`raw_unit` | no | type="string"; enum=["seconds","milliseconds","microseconds","nanoseconds","ticks_100ns","days","other"] |  |
 | <a id="s-77cd9ff22d"></a>`raw_unit_name` | no | [nonEmptyString](#s-ddcf450d4d) |  |
 | <a id="s-fe863721b6"></a>`raw_value` | no | [nonEmptyString](#s-ddcf450d4d) |  |
-| <a id="s-f82ef2c615"></a>`resolution_ns` | no | type="integer"; minimum=1; maximum=9223372036854775807 |  |
+| <a id="s-f82ef2c615"></a>`resolution_ns` | no | [sequence63](#s-762245deab); not=(const="0") |  |
 | <a id="s-68c0817af3"></a>`source` | yes | [fieldSourceDescriptor](#s-dd3ca68abf) |  |
 | <a id="s-c4bdf83334"></a>`value` | no | [utcDateTime](#s-57f05b370e) |  |
 | <a id="s-1ca1a2cf47"></a>`value_status` | yes | type="string"; enum=["exact","assumed","unresolved"] |  |
@@ -1504,7 +1510,7 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-49986e656e"></a>`data` | yes | [utcDateTime](#s-57f05b370e) |  |
-| <a id="s-d37b49c394"></a>`resolution_ns` | no | type="integer"; minimum=1; maximum=9223372036854775807 |  |
+| <a id="s-d37b49c394"></a>`resolution_ns` | no | [sequence63](#s-762245deab); not=(const="0") |  |
 | <a id="s-d04569613e"></a>`type` | yes | const="timestamp" |  |
 
 ### <a id="s-95e37398de"></a>definition `transitionActivity`
@@ -1719,31 +1725,15 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [definition accessMetadata · field posix_mode](#s-3d49292458) | `length · characters · fixed` | maximum=4; minimum=4; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-7]{4}$"} |
-| [definition byteString · field byte_length](#s-20d5f4d688) | `value · schema-value · contract_max` | maximum=9223372036854775807; minimum=0; reason="schema-maximum" |
-| [definition bytesValue · field byte_length](#s-d7fe9175c0) | `value · schema-value · contract_max` | maximum=9223372036854775807; minimum=0; reason="schema-maximum" |
-| [definition checkpointCounts · field activities](#s-92b955b86b) | `value · schema-value · contract_max` | maximum=9223372036854775807; minimum=0; reason="schema-maximum" |
-| [definition checkpointCounts · field captures](#s-fd70682b59) | `value · schema-value · contract_max` | maximum=9223372036854775807; minimum=0; reason="schema-maximum" |
-| [definition checkpointCounts · field entries](#s-c697031463) | `value · schema-value · contract_max` | maximum=9223372036854775807; minimum=1; reason="schema-maximum" |
-| [definition checkpointCounts · field lineages](#s-c3f33d3b72) | `value · schema-value · contract_max` | maximum=9223372036854775807; minimum=0; reason="schema-maximum" |
-| [definition checkpointCounts · field relations](#s-e41cbc72e4) | `value · schema-value · contract_max` | maximum=9223372036854775807; minimum=0; reason="schema-maximum" |
-| [definition checkpointCounts · field states](#s-917de38a38) | `value · schema-value · contract_max` | maximum=9223372036854775807; minimum=0; reason="schema-maximum" |
-| [definition contentDescription · field size_bytes](#s-26c2b67719) | `value · schema-value · contract_max` | maximum=9223372036854775807; minimum=0; reason="schema-maximum" |
 | [definition diagnostic · field code](#s-aca6a83557) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
 | <a id="s-1ab9b3b9fb"></a>[definition digest · allOf alternative 1 · then · field value](#s-993f370b79) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | <a id="s-0cc851c7dd"></a>[definition digest · allOf alternative 2 · then · field value](#s-765441b45e) | `length · characters · fixed` | maximum=128; minimum=128; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{128}$"} |
-| [definition digestOnlyValue · field byte_length](#s-c7446adbb4) | `value · schema-value · contract_max` | maximum=9223372036854775807; minimum=0; reason="schema-maximum" |
-| [definition entryReference · field sequence](#s-f4eef91776) | `value · schema-value · contract_max` | maximum=9223372036854775807; minimum=0; reason="schema-maximum" |
 | [definition filesystem · field type](#s-9f1b983483) | `length · characters · contract_max` | maximum=128; minimum=1; reason="schema-maximum" |
 | <a id="s-59c007d25a"></a>[definition identifier · allOf alternative 1 · then · field value](#s-86b21d23fb) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition identifier · field scheme](#s-7b8bf71694) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
-| [definition nativeMetadata · field observed_byte_length](#s-b98cbebd2e) | `value · schema-value · contract_max` | maximum=9223372036854775807; minimum=0; reason="schema-maximum" |
 | <a id="s-11be07c333"></a>[definition observedIdentifier · allOf alternative 1 · then · field value](#s-5ed40337a8) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition observedIdentifier · field scheme](#s-7ffa2e848b) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
 | [definition sha256Hex](#s-1ceccb1b61) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [definition textValue · field byte_length](#s-8748aa219f) | `value · schema-value · contract_max` | maximum=9223372036854775807; minimum=0; reason="schema-maximum" |
-| [definition timestampObservation · field resolution_ns](#s-f82ef2c615) | `value · schema-value · contract_max` | maximum=9223372036854775807; minimum=1; reason="schema-maximum" |
-| [definition timestampValue · field resolution_ns](#s-d37b49c394) | `value · schema-value · contract_max` | maximum=9223372036854775807; minimum=1; reason="schema-maximum" |
-| [field sequence](#s-a755e6074e) | `value · schema-value · contract_max` | maximum=9223372036854775807; minimum=0; reason="schema-maximum" |
 
 ## Governing policies
 
@@ -1776,9 +1766,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-Large integers appear as decimal strings in this machine representation. The machine artifact's `projection_unsafe_integer_paths` identifies them; primary content displays the recovered numeric values.
-
-<!-- exact-contract-value: 84e0f16e6c1b4d2d9cdddd4c8b809d3433c08c42a3c6fedc5cffca1a62d43b4c -->
+<!-- exact-contract-value: e3c5f07c4c12cee037e14c2a5f8a4433c5ffefb9d54df76d178182eb34194183 -->
 
 ```json
 {
@@ -2049,9 +2037,7 @@ Large integers appear as decimal strings in this machine representation. The mac
       "additionalProperties": false,
       "properties": {
         "byte_length": {
-          "maximum": "9223372036854775807",
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/sequence63"
         },
         "data": {
           "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$",
@@ -2083,9 +2069,7 @@ Large integers appear as decimal strings in this machine representation. The mac
       "additionalProperties": false,
       "properties": {
         "byte_length": {
-          "maximum": "9223372036854775807",
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/sequence63"
         },
         "data": {
           "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$",
@@ -2376,34 +2360,25 @@ Large integers appear as decimal strings in this machine representation. The mac
       "additionalProperties": false,
       "properties": {
         "activities": {
-          "maximum": "9223372036854775807",
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/sequence63"
         },
         "captures": {
-          "maximum": "9223372036854775807",
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/sequence63"
         },
         "entries": {
-          "maximum": "9223372036854775807",
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/sequence63",
+          "not": {
+            "const": "0"
+          }
         },
         "lineages": {
-          "maximum": "9223372036854775807",
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/sequence63"
         },
         "relations": {
-          "maximum": "9223372036854775807",
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/sequence63"
         },
         "states": {
-          "maximum": "9223372036854775807",
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/sequence63"
         }
       },
       "required": [
@@ -2562,9 +2537,7 @@ Large integers appear as decimal strings in this machine representation. The mac
           "uniqueItems": true
         },
         "size_bytes": {
-          "maximum": "9223372036854775807",
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/sequence63"
         }
       },
       "required": [
@@ -3098,9 +3071,7 @@ Large integers appear as decimal strings in this machine representation. The mac
       "additionalProperties": false,
       "properties": {
         "byte_length": {
-          "maximum": "9223372036854775807",
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/sequence63"
         },
         "digests": {
           "items": {
@@ -3148,9 +3119,7 @@ Large integers appear as decimal strings in this machine representation. The mac
           "$ref": "#/$defs/sha256Hex"
         },
         "sequence": {
-          "maximum": "9223372036854775807",
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/sequence63"
         }
       },
       "required": [
@@ -4372,9 +4341,7 @@ Large integers appear as decimal strings in this machine representation. The mac
           "$ref": "#/$defs/nonEmptyString"
         },
         "observed_byte_length": {
-          "maximum": "9223372036854775807",
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/sequence63"
         },
         "sensitivity": {
           "enum": [
@@ -5224,6 +5191,10 @@ Large integers appear as decimal strings in this machine representation. The mac
       ],
       "type": "object"
     },
+    "sequence63": {
+      "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+      "type": "string"
+    },
     "sha256Hex": {
       "pattern": "^[0-9a-f]{64}$",
       "type": "string"
@@ -5464,9 +5435,7 @@ Large integers appear as decimal strings in this machine representation. The mac
       },
       "properties": {
         "byte_length": {
-          "maximum": "9223372036854775807",
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/sequence63"
         },
         "data": {
           "$ref": "#/$defs/portableString"
@@ -5638,9 +5607,10 @@ Large integers appear as decimal strings in this machine representation. The mac
           "$ref": "#/$defs/nonEmptyString"
         },
         "resolution_ns": {
-          "maximum": "9223372036854775807",
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/sequence63",
+          "not": {
+            "const": "0"
+          }
         },
         "source": {
           "$ref": "#/$defs/fieldSourceDescriptor"
@@ -5671,9 +5641,10 @@ Large integers appear as decimal strings in this machine representation. The mac
           "$ref": "#/$defs/utcDateTime"
         },
         "resolution_ns": {
-          "maximum": "9223372036854775807",
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/sequence63",
+          "not": {
+            "const": "0"
+          }
         },
         "type": {
           "const": "timestamp"
@@ -5902,7 +5873,7 @@ Large integers appear as decimal strings in this machine representation. The mac
             "$ref": "#/$defs/journalInitBody"
           },
           "sequence": {
-            "const": 0
+            "const": "0"
           }
         }
       }
@@ -5924,7 +5895,9 @@ Large integers appear as decimal strings in this machine representation. The mac
             "$ref": "#/$defs/assertionBody"
           },
           "sequence": {
-            "minimum": 1
+            "not": {
+              "const": "0"
+            }
           }
         },
         "required": [
@@ -5949,7 +5922,9 @@ Large integers appear as decimal strings in this machine representation. The mac
             "$ref": "#/$defs/correctionBody"
           },
           "sequence": {
-            "minimum": 1
+            "not": {
+              "const": "0"
+            }
           }
         },
         "required": [
@@ -5974,7 +5949,9 @@ Large integers appear as decimal strings in this machine representation. The mac
             "$ref": "#/$defs/checkpointBody"
           },
           "sequence": {
-            "minimum": 1
+            "not": {
+              "const": "0"
+            }
           }
         },
         "required": [
@@ -6033,9 +6010,7 @@ Large integers appear as decimal strings in this machine representation. The mac
       "const": "1.0.0"
     },
     "sequence": {
-      "maximum": "9223372036854775807",
-      "minimum": 0,
-      "type": "integer"
+      "$ref": "#/$defs/sequence63"
     },
     "type": {
       "const": "riverhog_provenance_journal_entry"

@@ -25,7 +25,7 @@ List Collection Archive Copies
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-048e4c0841"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-048e4c0841"></a>`collection_id` | path | yes | not declared | allOf=[(type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])"); (not=(const="0"))]; title="Collection Id" |
 | <a id="s-ad146b6b78"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
 | <a id="s-8c902e89d2"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
 
@@ -110,7 +110,7 @@ Exact evidence groups for this contract element:
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/collections.py::list\_collection\_archive\_copies](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L166)
+- **Handler:** [riverhog/src/riverhog\_api/routers/collections.py::list\_collection\_archive\_copies](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L168)
 
 ### Structural operation bindings
 
@@ -144,7 +144,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.list_collection_archive_copies",
       "source": {
-        "line": 1604,
+        "line": 1606,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.list_collection_archive_copies"
@@ -180,7 +180,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8b1c26f6427d66bd5db062d2ef649ac27bd6fa19347f0c763ce001d219072a5f -->
+<!-- exact-contract-value: 10e59340c7d95af78789a4b81293ec7956eceeea87eebf65caa698569d5f6811 -->
 
 ```json
 {
@@ -191,9 +191,18 @@ The following JSON is the complete value owned at each machine-authority pointer
       "name": "collection_id",
       "required": true,
       "schema": {
-        "minimum": 1,
-        "title": "Collection Id",
-        "type": "integer"
+        "allOf": [
+          {
+            "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+            "type": "string"
+          },
+          {
+            "not": {
+              "const": "0"
+            }
+          }
+        ],
+        "title": "Collection Id"
       }
     },
     {

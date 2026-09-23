@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-8a2f15880b"></a>`kind`: `"class"`
-- <a id="s-15b08e67cd"></a>`signature`: `"'(*, fence: Annotated[int, Ge(ge=1)], output_collection_id: CollectionId, derivation: riverhog_protocol.collection_workflow_transport.CollectionDerivationDocument, outcome: riverhog_protocol.collection_workflow_transport.ProcessingOutcomeBindingDocument \| None = None) -> None'"`
+- <a id="s-15b08e67cd"></a>`signature`: `"'(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], output_collection_id: CollectionId, derivation: riverhog_protocol.collection_workflow_transport.CollectionDerivationDocument, outcome: riverhog_protocol.collection_workflow_transport.ProcessingOutcomeBindingDocument \| None = None) -> None'"`
 
 #### Validated model schema
 
@@ -37,7 +37,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-dd4b96785f"></a>`derivation` | yes | [CollectionDerivationDocument](#s-2bd8d62893) |  |
-| <a id="s-011a82f456"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-011a82f456"></a>`fence` | yes | [NonnegativeDecimal](#s-6685cd38c3); ge=1 |  |
 | <a id="s-84a0f0c6d4"></a>`outcome` | no | anyOf=[([ProcessingOutcomeBindingDocument](#s-c7e96fccf8)); (type="null")]; default=null |  |
 | <a id="s-67ff0b4dc2"></a>`output_collection_id` | yes | [CollectionId](#s-e37ce6215f) |  |
 
@@ -47,6 +47,7 @@ Exact externally visible contract owned by this contract element.
 - [ClaimFenceDocument](#s-adf64e03c7)
 - [CollectionDerivationDocument](#s-2bd8d62893)
 - [CollectionId](#s-e37ce6215f)
+- [NonnegativeDecimal](#s-6685cd38c3)
 - [OperationIdentityDocument](#s-769008a64e)
 - [ProcessingOutcomeBindingDocument](#s-c7e96fccf8)
 - [RecipeIdentityDocument](#s-7b57800bfc)
@@ -61,9 +62,9 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6ebf0c7298"></a>`disposition_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-729ed387ef"></a>`output_artifact_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-c9ad170317"></a>`output_edge_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-6ebf0c7298"></a>`disposition_count` | yes | [NonnegativeDecimal](#s-6685cd38c3); ge=1 |  |
+| <a id="s-729ed387ef"></a>`output_artifact_count` | yes | [NonnegativeDecimal](#s-6685cd38c3); ge=1 |  |
+| <a id="s-c9ad170317"></a>`output_edge_count` | yes | [NonnegativeDecimal](#s-6685cd38c3); ge=1 |  |
 | <a id="s-330f18cf95"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-adf64e03c7"></a>definition `ClaimFenceDocument`
@@ -76,7 +77,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-504601e9c3"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-504601e9c3"></a>`fence` | yes | [NonnegativeDecimal](#s-6685cd38c3); ge=1 |  |
 | <a id="s-f57273e012"></a>`id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-2bd8d62893"></a>definition `CollectionDerivationDocument`
@@ -104,8 +105,18 @@ Exact externally visible contract owned by this contract element.
 
 ##### <a id="s-e37ce6215f"></a>definition `CollectionId`
 
-- <a id="s-7bf946aec7"></a>`type`: `"integer"`
-- <a id="s-100ac3d0cb"></a>`minimum`: `1`
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-0ffda7b8b2"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-09f433d518"></a>2 | not=(const="0") |
+
+##### <a id="s-6685cd38c3"></a>definition `NonnegativeDecimal`
+
+- <a id="s-9bfdbae07b"></a>`type`: `"string"`
+- <a id="s-3bc385e8b2"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-769008a64e"></a>definition `OperationIdentityDocument`
 
@@ -131,7 +142,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-aee45cd2fa"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-e5b7c1ecfe"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-e5b7c1ecfe"></a>`fence` | yes | [NonnegativeDecimal](#s-6685cd38c3); ge=1 |  |
 | <a id="s-f13c90ff3a"></a>`outcome_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ##### <a id="s-7b57800bfc"></a>definition `RecipeIdentityDocument`
@@ -145,7 +156,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-7a850eb03a"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-74b5c5fe67"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-74b5c5fe67"></a>`revision` | yes | [NonnegativeDecimal](#s-6685cd38c3); ge=1 |  |
 | <a id="s-ccde48c239"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
@@ -182,7 +193,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 662882a209eba0ffed6abd726c6e20deff54eedcd23b1beb827023b4adc7f752 -->
+<!-- exact-contract-value: 71d62ada274b2d2079c94bcf012d519f690b8f261d42ef16659c46bc01afe837 -->
 
 ```json
 {
@@ -194,16 +205,16 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "disposition_count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "output_artifact_count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "output_edge_count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
@@ -222,8 +233,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "fence": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "id": {
               "pattern": "^[0-9a-f]{64}$",
@@ -306,8 +317,21 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "CollectionId": {
-          "minimum": 1,
-          "type": "integer"
+          "allOf": [
+            {
+              "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+              "type": "string"
+            },
+            {
+              "not": {
+                "const": "0"
+              }
+            }
+          ]
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         },
         "OperationIdentityDocument": {
           "additionalProperties": false,
@@ -335,8 +359,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "fence": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "outcome_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
@@ -358,8 +382,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "revision": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
@@ -380,8 +404,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "$ref": "#/$defs/CollectionDerivationDocument"
         },
         "fence": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "outcome": {
           "anyOf": [
@@ -405,7 +429,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "'(*, fence: Annotated[int, Ge(ge=1)], output_collection_id: CollectionId, derivation: riverhog_protocol.collection_workflow_transport.CollectionDerivationDocument, outcome: riverhog_protocol.collection_workflow_transport.ProcessingOutcomeBindingDocument | None = None) -> None'"
+    "signature": "'(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], output_collection_id: CollectionId, derivation: riverhog_protocol.collection_workflow_transport.CollectionDerivationDocument, outcome: riverhog_protocol.collection_workflow_transport.ProcessingOutcomeBindingDocument | None = None) -> None'"
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

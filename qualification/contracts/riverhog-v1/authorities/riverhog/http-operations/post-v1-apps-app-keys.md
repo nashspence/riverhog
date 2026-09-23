@@ -74,7 +74,7 @@ Create App Key
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/apps.py::create\_app\_key](../../../../../../riverhog/src/riverhog_api/routers/apps.py#L86)
+- **Handler:** [riverhog/src/riverhog\_api/routers/apps.py::create\_app\_key](../../../../../../riverhog/src/riverhog_api/routers/apps.py#L87)
 
 ### Structural operation bindings
 
@@ -108,7 +108,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.create_app_key",
       "source": {
-        "line": 2088,
+        "line": 2090,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.create_app_key"

@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-7732489520"></a>`kind`: `"class"`
-- <a id="s-fe913c20e8"></a>`signature`: `"\"(*, fence: Annotated[int, Ge(ge=1)], retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0) -> None\""`
+- <a id="s-fe913c20e8"></a>`signature`: `"\"(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = <factory>) -> None\""`
 
 #### Validated model schema
 
@@ -38,9 +38,13 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-25bd6cd690"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-f582d95d9d"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-25bd6cd690"></a>`fence` | yes | [NonnegativeDecimal](#s-888b24baa5); ge=1 |  |
+| <a id="s-f582d95d9d"></a>`retirement_grace_seconds` | no | [NonnegativeDecimal](#s-888b24baa5); ge=0 |  |
 | <a id="s-75cba9ffc1"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
+
+##### Definitions
+
+- [NonnegativeDecimal](#s-888b24baa5)
 
 ##### <a id="s-de20edc671"></a>`if`
 
@@ -58,7 +62,12 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c1710db3f2"></a>`retirement_grace_seconds` | no | const=0 |  |
+| <a id="s-c1710db3f2"></a>`retirement_grace_seconds` | no | const="0" |  |
+
+##### <a id="s-888b24baa5"></a>definition `NonnegativeDecimal`
+
+- <a id="s-c0ddb43ea4"></a>`type`: `"string"`
+- <a id="s-f2090386e4"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -95,13 +104,19 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2ef9c253ca9a7cb7769a3e2d62198195c4844981bcc240a2d2f36119ac1a66fc -->
+<!-- exact-contract-value: 52ae1ef9655c09ef8c3f327bc696a3eb7caf16615753b57e7a224999957ed83c -->
 
 ```json
 {
   "contract": {
     "kind": "class",
     "schema": {
+      "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        }
+      },
       "additionalProperties": false,
       "if": {
         "properties": {
@@ -112,13 +127,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "properties": {
         "fence": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "retirement_grace_seconds": {
-          "default": 0,
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 0
         },
         "retirement_policy": {
           "default": "retain",
@@ -135,13 +149,13 @@ The following JSON is the complete value owned at each machine-authority pointer
       "then": {
         "properties": {
           "retirement_grace_seconds": {
-            "const": 0
+            "const": "0"
           }
         }
       },
       "type": "object"
     },
-    "signature": "\"(*, fence: Annotated[int, Ge(ge=1)], retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0) -> None\""
+    "signature": "\"(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = <factory>) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

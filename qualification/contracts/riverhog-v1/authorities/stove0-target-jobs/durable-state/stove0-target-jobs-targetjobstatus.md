@@ -84,8 +84,13 @@ Exact externally visible contract owned by this contract element.
 
 #### <a id="s-090ac9d376"></a>definition `CollectionId`
 
-- <a id="s-8f0be9ee35"></a>`type`: `"integer"`
-- <a id="s-05bed2fdb1"></a>`minimum`: `1`
+
+##### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-a53ba4f16c"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-89c51abb37"></a>2 | not=(const="0") |
 
 #### <a id="s-26a5e8c3b1"></a>definition `ExternalEffectReceipt`
 
@@ -276,7 +281,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 88691d8e5fc7229865708347d4ad12582b9eec7c0dbeb258b9d89e0bc8db1f0c -->
+<!-- exact-contract-value: f4582065aa88b994e0c8ce7c83353e05b81fa45ee47e18096b84e71290734e6e -->
 
 ```json
 {
@@ -313,8 +318,17 @@ The following JSON is the complete value owned at each machine-authority pointer
         "type": "object"
       },
       "CollectionId": {
-        "minimum": 1,
-        "type": "integer"
+        "allOf": [
+          {
+            "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+            "type": "string"
+          },
+          {
+            "not": {
+              "const": "0"
+            }
+          }
+        ]
       },
       "ExternalEffectReceipt": {
         "additionalProperties": false,

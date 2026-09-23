@@ -148,7 +148,7 @@ def test_mocked_large_resource_fork_is_digest_only(tmp_path: Path, urn_factory) 
         if row["kind"] == "resource_fork"
     )
     assert fork["capture_status"] == "digest_only"
-    assert fork["value"]["byte_length"] == 128
+    assert fork["value"]["byte_length"] == "128"
     validate_graph_fragment(result.graph_fragment())
 
 

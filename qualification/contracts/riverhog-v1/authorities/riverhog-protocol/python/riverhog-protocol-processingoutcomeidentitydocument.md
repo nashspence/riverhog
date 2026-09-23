@@ -48,8 +48,13 @@ Exact externally visible contract owned by this contract element.
 
 ##### <a id="s-3475778270"></a>definition `CollectionId`
 
-- <a id="s-8b96604ed7"></a>`type`: `"integer"`
-- <a id="s-1aff3d4026"></a>`minimum`: `1`
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-e7c3142235"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-8f7b524f29"></a>2 | not=(const="0") |
 
 ##### <a id="s-7aa06b3d4f"></a>definition `CollectionRootIdentityDocument`
 
@@ -100,7 +105,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2a3829064aaeee18225864d4caad9aa114641223634a72ecc20fa14c954bccbd -->
+<!-- exact-contract-value: 9eb493235c8c77d4d5e8e4734705a9b3fd227fcee326f3137c97029cac46ea90 -->
 
 ```json
 {
@@ -109,8 +114,17 @@ The following JSON is the complete value owned at each machine-authority pointer
     "schema": {
       "$defs": {
         "CollectionId": {
-          "minimum": 1,
-          "type": "integer"
+          "allOf": [
+            {
+              "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+              "type": "string"
+            },
+            {
+              "not": {
+                "const": "0"
+              }
+            }
+          ]
         },
         "CollectionRootIdentityDocument": {
           "additionalProperties": false,

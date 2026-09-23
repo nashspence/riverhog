@@ -27,7 +27,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-66e7037bf1"></a>`outcomes` | yes | [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md) |  |
-| <a id="s-c9a1869ba6"></a>`retirement_grace_seconds` | yes | type="integer"; minimum=0; title="Retirement Grace Seconds" |  |
+| <a id="s-c9a1869ba6"></a>`retirement_grace_seconds` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 | <a id="s-ca68cd4ae2"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"]; title="Retirement Policy" |  |
 
 ### <a id="s-7bb79833a6"></a>`if`
@@ -46,13 +46,14 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8157a34385"></a>`retirement_grace_seconds` | no | const=0 |  |
+| <a id="s-8157a34385"></a>`retirement_grace_seconds` | no | const="0" |  |
 
 ## Maintained corroboration
 
 ### Referenced contract elements
 
 - [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -81,7 +82,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 80797ec5debdb6aa1dc3e41984cbbe33be59aad57827c3211c7c54b55be29e1e -->
+<!-- exact-contract-value: 374b6cb66f7f56a5497355e6ac97e63745f83b8b4b23e7ea5c820e2666be00b4 -->
 
 ```json
 {
@@ -98,9 +99,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$ref": "#/components/schemas/ExactSetAuthorityDocument"
     },
     "retirement_grace_seconds": {
-      "minimum": 0,
-      "title": "Retirement Grace Seconds",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
     },
     "retirement_policy": {
       "enum": [
@@ -119,7 +119,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "then": {
     "properties": {
       "retirement_grace_seconds": {
-        "const": 0
+        "const": "0"
       }
     }
   },

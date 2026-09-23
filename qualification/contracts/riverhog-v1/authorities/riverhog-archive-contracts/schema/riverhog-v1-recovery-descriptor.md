@@ -54,18 +54,10 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-46a6ba0c8e"></a>`path` | yes | const="manifest.json.age" |  |
-| <a id="s-abd13e34a1"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-abd13e34a1"></a>`stored_bytes` | yes | type="string"; pattern="^[1-9][0-9]*(?![\\s\\S])" |  |
 | <a id="s-b3eb015b6d"></a>`stored_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
-
-#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [field root · field stored_bytes](#s-abd13e34a1) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -80,7 +72,6 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
 - <a id="pa-a0f0183050"></a>[compatibility/components/v1](../../release/compatibility-guarantees/compatibility-components.md#p-95e9a12259)
-- <a id="pa-7dbe077ea6"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 - <a id="pa-20497f1ec0"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
@@ -106,7 +97,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 70e187d12431366bc3f4ef919e9afca355e3ec4ca9ba8a7cb1a98a393ed034fb -->
+<!-- exact-contract-value: 7b1d9088abe193eddafd6d9e715dda240c61f7f241650c4e91de4f4a6ad37720 -->
 
 ```json
 {
@@ -138,8 +129,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "const": "manifest.json.age"
         },
         "stored_bytes": {
-          "minimum": 1,
-          "type": "integer"
+          "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+          "type": "string"
         },
         "stored_sha256": {
           "pattern": "^[0-9a-f]{64}$",

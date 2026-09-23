@@ -8,9 +8,10 @@ import json
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, cast
+from typing import cast
 
-import rfc8785
+from riverhog_canonical_json import CanonicalJsonError
+from riverhog_canonical_json import canonical_json_bytes as jcs_bytes
 
 ROOT_SCHEMA = "riverhog-contract-machine-closure/v1"
 ATLAS_SCHEMA = "riverhog-contract-human-atlas/v1"
@@ -168,9 +169,16 @@ def structural_json_schema(schema: object) -> object:
 def canonical_bytes(value: object) -> bytes:
     """Return RFC 8785 canonical JSON bytes."""
 
+    def json_value(current: object) -> object:
+        if isinstance(current, Mapping):
+            return {key: json_value(child) for key, child in current.items()}
+        if isinstance(current, (list, tuple)):
+            return [json_value(child) for child in current]
+        return current
+
     try:
-        return rfc8785.dumps(cast(Any, value))
-    except (rfc8785.CanonicalizationError, TypeError) as exc:
+        return jcs_bytes(json_value(value))
+    except CanonicalJsonError as exc:
         raise ContractAtlasError(f"value is not RFC 8785 canonicalizable: {exc}") from exc
 
 

@@ -25,31 +25,19 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-9aafbb77a1"></a>`authority` | no | anyOf=[([ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)); (type="null")] |  |
-| <a id="s-7af5ab6592"></a>`count` | yes | type="integer"; minimum=0; title="Count" |  |
+| <a id="s-7af5ab6592"></a>`count` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 | <a id="s-9d3a07ed65"></a>`state` | yes | type="string"; enum=["receiving","sealed"]; title="State" |  |
-
-### Progression, limits, and lifecycle
-
-#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [field count](#s-7af5ab6592) | `value · schema-value · operational_policy` | shared above |
 
 ## Maintained corroboration
 
 ### Referenced contract elements
 
 - [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
-[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
-
 - <a id="pa-0475fe42f5"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-eb9e52cc19"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 
 ## Evidence
 
@@ -74,7 +62,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: bdae856bb3b833bd968c3093868c21529535df0ab22642823b261aeb4d63f282 -->
+<!-- exact-contract-value: c4519c908c9238d57f3cff69d41a759ee47e6ad7e90b2c5eda4cd82da6bb2c90 -->
 
 ```json
 {
@@ -91,9 +79,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       ]
     },
     "count": {
-      "minimum": 0,
-      "title": "Count",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
     },
     "state": {
       "enum": [

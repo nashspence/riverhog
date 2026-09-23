@@ -47,6 +47,7 @@ Exact externally visible contract owned by this contract element.
 - [CanonicalRelPath](#s-859b45e2c0)
 - [CollectionId](#s-75898504ca)
 - [ImmutableFileIdentityDocument](#s-9185aadd43)
+- [NonnegativeDecimal](#s-dc6fca6e7f)
 - [PortableCollectionHeader](#s-c2615d6cd5)
 - [PortableCollectionInventoryAuthority](#s-58d933375e)
 
@@ -68,8 +69,13 @@ Exact externally visible contract owned by this contract element.
 
 ##### <a id="s-75898504ca"></a>definition `CollectionId`
 
-- <a id="s-58b3433b8e"></a>`type`: `"integer"`
-- <a id="s-826fa8b10e"></a>`minimum`: `1`
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-afe46d8bb6"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-2fc15c7778"></a>2 | not=(const="0") |
 
 ##### <a id="s-9185aadd43"></a>definition `ImmutableFileIdentityDocument`
 
@@ -81,9 +87,14 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2f0d8b60b0"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-2f0d8b60b0"></a>`bytes` | yes | [NonnegativeDecimal](#s-dc6fca6e7f) |  |
 | <a id="s-335b811df3"></a>`path` | yes | [CanonicalRelPath](#s-859b45e2c0) |  |
 | <a id="s-76d39360f5"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-dc6fca6e7f"></a>definition `NonnegativeDecimal`
+
+- <a id="s-67f1407dfa"></a>`type`: `"string"`
+- <a id="s-f3c5103785"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-c2615d6cd5"></a>definition `PortableCollectionHeader`
 
@@ -113,8 +124,8 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b53a6f0d2e"></a>`file_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-a1d85e04cc"></a>`file_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-b53a6f0d2e"></a>`file_bytes` | yes | [NonnegativeDecimal](#s-dc6fca6e7f) |  |
+| <a id="s-a1d85e04cc"></a>`file_count` | yes | [NonnegativeDecimal](#s-dc6fca6e7f); ge=1 |  |
 | <a id="s-8b7a816e50"></a>`header` | yes | [PortableCollectionHeader](#s-c2615d6cd5) |  |
 | <a id="s-d75447da31"></a>`inventory_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
@@ -151,7 +162,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2cfad62b1e57a4b3781eb4338941550f960a122d23a4dcceb2a2e5ee180ba2c3 -->
+<!-- exact-contract-value: 7d384bba3765222675bf9f01d64b71616c11da42a604319255719dc1959d888a -->
 
 ```json
 {
@@ -180,15 +191,23 @@ The following JSON is the complete value owned at each machine-authority pointer
           "x-unicode-normalization": "NFC"
         },
         "CollectionId": {
-          "minimum": 1,
-          "type": "integer"
+          "allOf": [
+            {
+              "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+              "type": "string"
+            },
+            {
+              "not": {
+                "const": "0"
+              }
+            }
+          ]
         },
         "ImmutableFileIdentityDocument": {
           "additionalProperties": false,
           "properties": {
             "bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal"
             },
             "path": {
               "$ref": "#/$defs/CanonicalRelPath"
@@ -204,6 +223,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sha256"
           ],
           "type": "object"
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         },
         "PortableCollectionHeader": {
           "additionalProperties": false,
@@ -262,12 +285,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "file_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal"
             },
             "file_count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "header": {
               "$ref": "#/$defs/PortableCollectionHeader"

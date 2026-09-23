@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Header, Query, Response
+from fastapi import Header, Query, Response
 from http_api_contracts import (
     QuotedSha256Identity,
     exact_set_page_operation,
@@ -15,8 +15,9 @@ from riverhog_protocol.errors import PreconditionRequired
 
 from riverhog_api.auth import CatalogReader
 from riverhog_api.deps import ContainerDep
+from riverhog_api.routing import RiverhogRouter
 
-router = APIRouter(tags=["catalog"])
+router = RiverhogRouter(tags=["catalog"])
 
 
 @router.get(

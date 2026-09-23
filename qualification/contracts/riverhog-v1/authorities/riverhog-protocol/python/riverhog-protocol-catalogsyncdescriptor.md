@@ -62,8 +62,13 @@ Exact externally visible contract owned by this contract element.
 
 ##### <a id="s-45d9f823fc"></a>definition `CollectionId`
 
-- <a id="s-0f445ff36e"></a>`type`: `"integer"`
-- <a id="s-a635191fd1"></a>`minimum`: `1`
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-83cdfa35fe"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-8668a6d13d"></a>2 | not=(const="0") |
 
 ## Governing policies
 
@@ -92,7 +97,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 56ac87b11d976aacacb42ca478f9f8328d1721ce3c268d6f829413353b72aeab -->
+<!-- exact-contract-value: 8eb400e434498d00972d7ecbe93839d8d7519e1264577ac67771b2a7e2cc75d1 -->
 
 ```json
 {
@@ -112,8 +117,17 @@ The following JSON is the complete value owned at each machine-authority pointer
           "x-unicode-normalization": "NFC"
         },
         "CollectionId": {
-          "minimum": 1,
-          "type": "integer"
+          "allOf": [
+            {
+              "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+              "type": "string"
+            },
+            {
+              "not": {
+                "const": "0"
+              }
+            }
+          ]
         }
       },
       "additionalProperties": false,

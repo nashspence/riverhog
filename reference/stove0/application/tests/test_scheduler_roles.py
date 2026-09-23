@@ -13,7 +13,7 @@ def _identity(index: int) -> WorkIdentity:
             recipe=RecipeRef(id="fixture/v1", revision=1, sha256="a" * 64),
             inputs=(
                 CollectionRootRef(
-                    collection_id=index,
+                    collection_id=str(index),
                     archive_root_sha256=f"{index:064x}",
                     content_identity="b" * 64,
                 ),

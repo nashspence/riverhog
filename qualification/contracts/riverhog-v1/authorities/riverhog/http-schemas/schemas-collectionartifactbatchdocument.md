@@ -25,8 +25,8 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-1c0906aa0f"></a>`artifacts` | yes | type="array"; items=([CollectionArtifactIdentityDocument](schemas-collectionartifactidentitydocument.md)); maxItems=128; minItems=1; title="Artifacts"; uniqueItems=true; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"start_ordinal","reason":"bounded-authority-append"} |  |
-| <a id="s-1c82d23b05"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
-| <a id="s-7ef1e1094b"></a>`start_ordinal` | yes | type="integer"; minimum=0; title="Start Ordinal" |  |
+| <a id="s-1c82d23b05"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
+| <a id="s-7ef1e1094b"></a>`start_ordinal` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -63,6 +63,7 @@ Exact evidence groups for this contract element:
 ### Referenced contract elements
 
 - [CollectionArtifactIdentityDocument](schemas-collectionartifactidentitydocument.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -94,7 +95,7 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 469c71d8d60e04f3a4aca348b18563579dcf35173ecb0758d55bb914324e21f3 -->
+<!-- exact-contract-value: daa573db09ea59f1b9f8c6889364f59e9740e957246785d1c0e454cffa2403c1 -->
 
 ```json
 {
@@ -116,14 +117,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       }
     },
     "fence": {
-      "minimum": 1,
-      "title": "Fence",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "start_ordinal": {
-      "minimum": 0,
-      "title": "Start Ordinal",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
     }
   },
   "required": [

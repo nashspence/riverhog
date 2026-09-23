@@ -25,8 +25,8 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-63f2f80203"></a>`ordered_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Ordered Sha256" |  |
-| <a id="s-f5f8f9f00b"></a>`part_count` | yes | type="integer"; minimum=1; title="Part Count" |  |
-| <a id="s-ad73d85dc2"></a>`part_plaintext_bytes` | yes | type="integer"; minimum=65536; title="Part Plaintext Bytes" |  |
+| <a id="s-f5f8f9f00b"></a>`part_count` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
+| <a id="s-ad73d85dc2"></a>`part_plaintext_bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=65536 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -37,6 +37,12 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [field ordered_sha256](#s-63f2f80203) | `length · characters · fixed` | shared above |
+
+## Maintained corroboration
+
+### Referenced contract elements
+
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -68,7 +74,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 76ccb435180670cd87a5f21b23e35a4dfbc75f28f4535248bc6671c05f6a8baf -->
+<!-- exact-contract-value: 189e7d45dcf1cd06ec8078e560f8c5d9410eb17b8fe427808a820503bb5147cd -->
 
 ```json
 {
@@ -80,14 +86,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "part_count": {
-      "minimum": 1,
-      "title": "Part Count",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "part_plaintext_bytes": {
-      "minimum": 65536,
-      "title": "Part Plaintext Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 65536
     }
   },
   "required": [

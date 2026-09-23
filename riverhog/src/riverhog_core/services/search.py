@@ -4,6 +4,7 @@ from collections.abc import Iterator
 from typing import Any
 
 from http_api_contracts import BrowseScalar, closed_literal_values
+from riverhog_canonical_json import format_scalar
 from riverhog_protocol import SearchSort, SortOrder
 from riverhog_protocol.errors import BadRequest
 from riverhog_protocol.paths import (
@@ -91,7 +92,11 @@ class SqlAlchemySearchService:
 
         return {
             "query": query,
-            "collection": normalized_collection,
+            "collection": (
+                None
+                if normalized_collection is None
+                else format_scalar("sequence63", normalized_collection)
+            ),
             "page_size": page_size,
             "_next_position": next_position,
             "sort": sort,
@@ -99,9 +104,9 @@ class SqlAlchemySearchService:
             "files": [
                 {
                     "file_ref": f"{row.collection_id}/{row.path}",
-                    "collection_id": row.collection_id,
+                    "collection_id": format_scalar("sequence63", row.collection_id),
                     "path": row.path,
-                    "bytes": row.bytes,
+                    "bytes": format_scalar("nonnegative", row.bytes),
                     "sha256": row.sha256,
                 }
                 for row in rows
@@ -137,9 +142,9 @@ class SqlAlchemySearchService:
             for row in session.execute(statement):
                 yield {
                     "file_ref": f"{row.collection_id}/{row.path}",
-                    "collection_id": row.collection_id,
+                    "collection_id": format_scalar("sequence63", row.collection_id),
                     "path": row.path,
-                    "bytes": row.bytes,
+                    "bytes": format_scalar("nonnegative", row.bytes),
                     "sha256": row.sha256,
                 }
 

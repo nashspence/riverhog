@@ -118,8 +118,13 @@ Secret-bearing target invocation; never store this document durably.
 
 ### <a id="s-78cd023b68"></a>definition `CollectionId`
 
-- <a id="s-9b5bce369a"></a>`type`: `"integer"`
-- <a id="s-858cabbff0"></a>`minimum`: `1`
+
+#### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-9a6e8c499b"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-f38b54a213"></a>2 | not=(const="0") |
 
 ### <a id="s-082053253d"></a>definition `CollectionRootRef`
 
@@ -615,7 +620,7 @@ Secret-bearing target invocation; never store this document durably.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8a6dd5486d3610d9b9b0bead301224116222b94987dee58d3377f939f1fcb333 -->
+<!-- exact-contract-value: a41ef5039e3f2088512f967edee9320661975f3144dfe351b7c32c160507c4ca -->
 
 ```json
 {
@@ -747,8 +752,17 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "object"
     },
     "CollectionId": {
-      "minimum": 1,
-      "type": "integer"
+      "allOf": [
+        {
+          "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+          "type": "string"
+        },
+        {
+          "not": {
+            "const": "0"
+          }
+        }
+      ]
     },
     "CollectionRootRef": {
       "additionalProperties": false,

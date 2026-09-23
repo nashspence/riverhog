@@ -25,7 +25,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-f07e8a5b5d"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
-| <a id="s-ad7ed5d2c1"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
+| <a id="s-ad7ed5d2c1"></a>`revision` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-e06a4072d5"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
@@ -37,6 +37,12 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [field sha256](#s-e06a4072d5) | `length · characters · fixed` | shared above |
+
+## Maintained corroboration
+
+### Referenced contract elements
+
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -68,7 +74,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 81bbe8a24ba76905f82e67de9251e42afc958acd711d9c908bc8802d921fe544 -->
+<!-- exact-contract-value: 2f640af406b39e957a57b604f139b815d0108c2a93f98112cc6dcc21e1c9debc -->
 
 ```json
 {
@@ -80,9 +86,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "revision": {
-      "minimum": 1,
-      "title": "Revision",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "sha256": {
       "pattern": "^[0-9a-f]{64}$",

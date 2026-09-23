@@ -105,7 +105,7 @@ def _sha(character: str) -> str:
 
 def _root() -> CollectionRootRef:
     return CollectionRootRef(
-        collection_id=1,
+        collection_id=str(1),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
     )
@@ -856,7 +856,7 @@ def _successful_target_status(
         progress=TargetProgress(phase="done", completed=1, total=1),
         production=production,
         output_collection=OutputCollectionRef(
-            collection_id=collection_id,
+            collection_id=str(collection_id),
             archive_root_sha256=archive_root_sha256,
             content_identity=content_identity,
             derivation_sha256=derivation.sha256,

@@ -157,7 +157,7 @@ def _authorities(
             recipe=RecipeRef(id="fixture.recipe/v1", revision=1, sha256=_sha("1")),
             inputs=(
                 CollectionRootRef(
-                    collection_id=1,
+                    collection_id=str(1),
                     archive_root_sha256=_sha("2"),
                     content_identity=_sha("3"),
                 ),
@@ -375,7 +375,7 @@ class FixtureApi:
     def get_collection(self, collection_id: int) -> dict[str, Any]:
         assert self.derivation is not None
         return {
-            "id": collection_id,
+            "id": str(collection_id),
             "archive_root_sha256": _sha("7"),
             "content_identity": _sha("8"),
         }
@@ -385,9 +385,9 @@ class FixtureApi:
         return ArtifactDispositionSetDocument(
             claim_id=claim_id,
             state="sealed",
-            disposition_count=identity.disposition_count,
-            output_edge_count=identity.output_edge_count,
-            output_artifact_count=identity.output_artifact_count,
+            disposition_count=str(identity.disposition_count),
+            output_edge_count=str(identity.output_edge_count),
+            output_artifact_count=str(identity.output_artifact_count),
             identity=ArtifactDispositionSetIdentityDocument.model_validate(identity.as_dict()),
         )
 
@@ -405,20 +405,20 @@ class FixtureApi:
         return PortableCollectionInventoryPage(
             authority=PortableCollectionInventoryAuthority(
                 header=PortableCollectionHeader(
-                    collection=collection_id,
+                    collection=str(collection_id),
                     content_identity=_sha("8"),
                     encryption_format="age/v1",
                     passphrase_id="fixture-passphrase",
                     provenance_mode="omitted",
                 ),
                 inventory_identity=_sha("5"),
-                file_count=1,
-                file_bytes=12,
+                file_count="1",
+                file_bytes="12",
             ),
             files=[
                 ImmutableFileIdentityDocument(
                     path="output/result.bin",
-                    bytes=12,
+                    bytes="12",
                     sha256=_sha("9"),
                 )
             ],
@@ -428,7 +428,7 @@ class FixtureApi:
     def get_collection_derivation(self, collection_id: int) -> dict[str, Any]:
         assert self.derivation is not None
         return {
-            "collection_id": collection_id,
+            "collection_id": str(collection_id),
             "document_sha256": self.derivation.sha256,
             "derivation": self.derivation.as_dict(),
         }
@@ -469,15 +469,15 @@ class PagedInventoryFixtureApi(FixtureApi):
         assert limit == 1
         authority = PortableCollectionInventoryAuthority(
             header=PortableCollectionHeader(
-                collection=collection_id,
+                collection=str(collection_id),
                 content_identity=_sha("8"),
                 encryption_format="age/v1",
                 passphrase_id="fixture-passphrase",
                 provenance_mode="omitted",
             ),
             inventory_identity=_sha("5"),
-            file_count=2,
-            file_bytes=13,
+            file_count="2",
+            file_bytes="13",
         )
         if cursor is None:
             assert inventory_identity is None
@@ -486,7 +486,7 @@ class PagedInventoryFixtureApi(FixtureApi):
                 files=[
                     ImmutableFileIdentityDocument(
                         path="riverhog/derivation.json",
-                        bytes=1,
+                        bytes="1",
                         sha256=_sha("1"),
                     )
                 ],
@@ -500,7 +500,7 @@ class PagedInventoryFixtureApi(FixtureApi):
             files=[
                 ImmutableFileIdentityDocument(
                     path="output/result.bin",
-                    bytes=12,
+                    bytes="12",
                     sha256=_sha("9"),
                 )
             ],
@@ -532,7 +532,7 @@ def _verifying_record(
         disposition_set=disposition_set,
     )
     output_ref = OutputCollectionRef(
-        collection_id=7,
+        collection_id=str(7),
         archive_root_sha256=_sha("7"),
         content_identity=_sha("8"),
         derivation_sha256=derivation.sha256,
@@ -710,7 +710,7 @@ def test_riverhog_adapter_closes_only_the_exact_generic_outcome_set() -> None:
         selections={source_selection.selection_sha256: source_selection},
     )
     output_root = CollectionRootRef(
-        collection_id=7,
+        collection_id=str(7),
         archive_root_sha256=_sha("7"),
         content_identity=_sha("8"),
     )

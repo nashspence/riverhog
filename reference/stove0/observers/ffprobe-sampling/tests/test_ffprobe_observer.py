@@ -85,7 +85,7 @@ def test_ffprobe_observer_reports_contract_facts_and_exact_image(
                     id="camera-source",
                     role="stove0.review.source/v1",
                     collection=CollectionRootRef(
-                        collection_id=1,
+                        collection_id=str(1),
                         archive_root_sha256=_sha("2"),
                         content_identity=_sha("3"),
                     ),

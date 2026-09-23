@@ -25,7 +25,7 @@ One append-only bounded slice of a registered raw source digest sequence.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-65e7a28bb3"></a>`first_part` | yes | type="integer"; minimum=0; title="First Part" |  |
+| <a id="s-65e7a28bb3"></a>`first_part` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md) |  |
 | <a id="s-a0efbe2329"></a>`path` | yes | type="string"; title="Path" |  |
 | <a id="s-2c06441938"></a>`sha256s` | yes | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$"); maxItems=1024; minItems=1; title="Sha256S"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"first_part","reason":"bounded-raw-digest-append"} |  |
 
@@ -67,6 +67,12 @@ Exact evidence groups for this contract element:
 
 - [riverhog-raw-digest-progression/v1](../../../evidence/qualifications/riverhog-raw-digest-progression-v1/index.md)
 
+## Maintained corroboration
+
+### Referenced contract elements
+
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
+
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
@@ -98,7 +104,7 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b3e9c783bf5afec4ecfc01d05a15564e73cead5a37ad60e657d59c0a4e586f01 -->
+<!-- exact-contract-value: 68d5612ce14eb80e255f82ab8ebf12deb3ce6e9862349341c8bddb985c7019e7 -->
 
 ```json
 {
@@ -106,9 +112,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "description": "One append-only bounded slice of a registered raw source digest sequence.",
   "properties": {
     "first_part": {
-      "minimum": 0,
-      "title": "First Part",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal"
     },
     "path": {
       "title": "Path",

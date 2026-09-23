@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-200c736c5f"></a>`kind`: `"class"`
-- <a id="s-1717b69867"></a>`signature`: `"\"(*, unit: Annotated[int, Ge(ge=0)], payload_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], plaintext_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], sources: Annotated[list[riverhog_protocol.collection_upload_transport.CollectionUploadUnitSourceDocument], MaxLen(max_length=1000)], state: Literal['pending', 'committed']) -> None\""`
+- <a id="s-1717b69867"></a>`signature`: `"\"(*, unit: NonnegativeDecimal, payload_bytes: NonnegativeDecimal, plaintext_bytes: NonnegativeDecimal, sources: Annotated[list[riverhog_protocol.collection_upload_transport.CollectionUploadUnitSourceDocument], MaxLen(max_length=1000)], state: Literal['pending', 'committed']) -> None\""`
 
 #### Validated model schema
 
@@ -36,15 +36,16 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f093d62ec0"></a>`payload_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-04dad5124f"></a>`plaintext_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-f093d62ec0"></a>`payload_bytes` | yes | [NonnegativeDecimal](#s-b6f25afbd2) |  |
+| <a id="s-04dad5124f"></a>`plaintext_bytes` | yes | [NonnegativeDecimal](#s-b6f25afbd2) |  |
 | <a id="s-a58e9ea803"></a>`sources` | yes | type="array"; items=([CollectionUploadUnitSourceDocument](#s-daf8b1a175)); maxItems=1000; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"collection-volume-sequence","reason":"bounded-upload-unit-source-map"} |  |
 | <a id="s-bd038539c2"></a>`state` | yes | type="string"; enum=["pending","committed"] |  |
-| <a id="s-e998ea77d3"></a>`unit` | yes | type="integer"; minimum=0 |  |
+| <a id="s-e998ea77d3"></a>`unit` | yes | [NonnegativeDecimal](#s-b6f25afbd2) |  |
 
 ##### Definitions
 
 - [CollectionUploadUnitSourceDocument](#s-daf8b1a175)
+- [NonnegativeDecimal](#s-b6f25afbd2)
 
 ##### <a id="s-daf8b1a175"></a>definition `CollectionUploadUnitSourceDocument`
 
@@ -57,9 +58,14 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-25ac0f4560"></a>`artifact_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-41ffda13fa"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-cd4891b241"></a>`offset` | yes | type="integer"; minimum=0 |  |
+| <a id="s-41ffda13fa"></a>`bytes` | yes | [NonnegativeDecimal](#s-b6f25afbd2) |  |
+| <a id="s-cd4891b241"></a>`offset` | yes | [NonnegativeDecimal](#s-b6f25afbd2) |  |
 | <a id="s-5a0d3f2128"></a>`path` | yes | type="string" |  |
+
+##### <a id="s-b6f25afbd2"></a>definition `NonnegativeDecimal`
+
+- <a id="s-a8dd772fde"></a>`type`: `"string"`
+- <a id="s-9e3e9f3656"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -94,7 +100,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e3c6c3703efaf28ac07ef9220ce1cf4969b2d5f44ed97da99b7ee868cc70fe5b -->
+<!-- exact-contract-value: 02b9fb6121d98f0f11330c04f3eb79420524a1a29ff1a16a72587641852317ed -->
 
 ```json
 {
@@ -110,12 +116,10 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal"
             },
             "offset": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal"
             },
             "path": {
               "type": "string"
@@ -128,17 +132,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "artifact_sha256"
           ],
           "type": "object"
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         }
       },
       "additionalProperties": false,
       "properties": {
         "payload_bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         "plaintext_bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         "sources": {
           "items": {
@@ -160,8 +166,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "unit": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         }
       },
       "required": [
@@ -173,7 +178,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, unit: Annotated[int, Ge(ge=0)], payload_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], plaintext_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], sources: Annotated[list[riverhog_protocol.collection_upload_transport.CollectionUploadUnitSourceDocument], MaxLen(max_length=1000)], state: Literal['pending', 'committed']) -> None\""
+    "signature": "\"(*, unit: NonnegativeDecimal, payload_bytes: NonnegativeDecimal, plaintext_bytes: NonnegativeDecimal, sources: Annotated[list[riverhog_protocol.collection_upload_transport.CollectionUploadUnitSourceDocument], MaxLen(max_length=1000)], state: Literal['pending', 'committed']) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

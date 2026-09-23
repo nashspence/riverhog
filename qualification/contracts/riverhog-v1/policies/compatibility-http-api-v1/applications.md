@@ -273,6 +273,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: MixedCollectionFileProvenancePage](../../authorities/riverhog/http-schemas/schemas-mixedcollectionfileprovenancepage.md#pa-cca877fbd7) |
 | `riverhog` | [schemas: MonthlyDownloadQuotaBytes](../../authorities/riverhog/http-schemas/schemas-monthlydownloadquotabytes.md#pa-df395aa289) |
 | `riverhog` | [schemas: MutateAppAccessRequest](../../authorities/riverhog/http-schemas/schemas-mutateappaccessrequest.md#pa-bab1265349) |
+| `riverhog` | [schemas: NonnegativeDecimal](../../authorities/riverhog/http-schemas/schemas-nonnegativedecimal.md#pa-a19baaa0de) |
 | `riverhog` | [schemas: OmittedCollectionFileProvenanceDetailOut](../../authorities/riverhog/http-schemas/schemas-omittedcollectionfileprovenancedetailout.md#pa-2f76d90c3d) |
 | `riverhog` | [schemas: OmittedCollectionFileProvenanceOut](../../authorities/riverhog/http-schemas/schemas-omittedcollectionfileprovenanceout.md#pa-8460693fcf) |
 | `riverhog` | [schemas: OmittedCollectionFileProvenancePage](../../authorities/riverhog/http-schemas/schemas-omittedcollectionfileprovenancepage.md#pa-0918f4a4e1) |
@@ -363,6 +364,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: SearchFileOut](../../authorities/riverhog/http-schemas/schemas-searchfileout.md#pa-3fbb8d040d) |
 | `riverhog` | [schemas: SearchResponse](../../authorities/riverhog/http-schemas/schemas-searchresponse.md#pa-31d7b26630) |
 | `riverhog` | [schemas: SearchSort](../../authorities/riverhog/http-schemas/schemas-searchsort.md#pa-37f3ec8211) |
+| `riverhog` | [schemas: Sequence256Hex](../../authorities/riverhog/http-schemas/schemas-sequence256hex.md#pa-a654a3fc91) |
 | `riverhog` | [schemas: SetKeyDownloadQuotaRequest](../../authorities/riverhog/http-schemas/schemas-setkeydownloadquotarequest.md#pa-eff3481a49) |
 | `riverhog` | [schemas: SortOrder](../../authorities/riverhog/http-schemas/schemas-sortorder.md#pa-06d33399f2) |
 | `riverhog` | [schemas: TagListOut](../../authorities/riverhog/http-schemas/schemas-taglistout.md#pa-02587bdb94) |

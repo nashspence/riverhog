@@ -101,7 +101,7 @@ def test_recovery_tool_is_independent_and_advertised() -> None:
             encoding="utf-8"
         )
     )
-    assert contracts["project"]["dependencies"] == []
+    assert contracts["project"]["dependencies"] == ["riverhog-canonical-json>=0.1,<0.2"]
     assert contracts["project"]["license"] == "Apache-2.0"
     assert config["project"]["scripts"] == {"riverhog-recover": "riverhog_recover.cli:main"}
     assert "permissively licensed independent recovery tool" in architecture

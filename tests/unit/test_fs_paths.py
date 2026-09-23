@@ -25,10 +25,11 @@ def test_normalize_collection_id_accepts_canonical_integer() -> None:
 
 
 def test_collection_id_transport_projections_are_exact() -> None:
-    assert TypeAdapter(CollectionId).validate_python(42) == 42
+    assert TypeAdapter(CollectionId).validate_python("42") == 42
+    assert TypeAdapter(CollectionId).dump_json(42) == b'"42"'
     assert TypeAdapter(CollectionIdParameter).validate_python("42") == 42
 
-    for value in ("42", True, 0, -1):
+    for value in (42, True, "0", "-1"):
         with pytest.raises(ValidationError):
             TypeAdapter(CollectionId).validate_python(value)
     for value in ("01", "0", "-1", " 1"):

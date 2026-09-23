@@ -24,21 +24,13 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2eda695e01"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-2eda695e01"></a>`bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md) |  |
 | <a id="s-57decd2dfa"></a>`custody_receipt` | no | anyOf=[([CollectionUploadArtifactCustodyReceiptDocument](schemas-collectionuploadartifactcustodyreceiptdocument.md)); (type="null")] |  |
 | <a id="s-e476e99a4f"></a>`path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
 | <a id="s-954031ac14"></a>`provenance` | no | anyOf=[(discriminator={"mapping":{"captured":"#/components/schemas/CapturedFileProvenanceBinding","omitted":"#/components/schemas/OmittedFileProvenanceBinding"},"propertyName":"status"}; oneOf=[([CapturedFileProvenanceBinding](schemas-capturedfileprovenancebinding.md)); ([OmittedFileProvenanceBinding](schemas-omittedfileprovenancebinding.md))]); (type="null")]; title="Provenance" |  |
 | <a id="s-e71d2c6050"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
-
-#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [field bytes](#s-2eda695e01) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -55,6 +47,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - [CanonicalRelPath](schemas-canonicalrelpath.md)
 - [CapturedFileProvenanceBinding](schemas-capturedfileprovenancebinding.md)
 - [CollectionUploadArtifactCustodyReceiptDocument](schemas-collectionuploadartifactcustodyreceiptdocument.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 - [OmittedFileProvenanceBinding](schemas-omittedfileprovenancebinding.md)
 
 ## Governing policies
@@ -62,7 +55,6 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
 - <a id="pa-04fed07023"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-d22b8b1edc"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 - <a id="pa-fbf0cf30ce"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
@@ -88,16 +80,14 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1cff73a0c8a8a45230c37d8bceb1313519ef87900f6a5cc798d446c3fd8ed7ff -->
+<!-- exact-contract-value: ab1f75468ec6d444c70b3ba04d5c400ef63ff471c634056d1dd1ec17ddeee449 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
     "bytes": {
-      "minimum": 0,
-      "title": "Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal"
     },
     "custody_receipt": {
       "anyOf": [

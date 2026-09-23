@@ -29,9 +29,9 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-bbf8920793"></a>`controller_evidence` | yes | type="object"; additionalProperties=(any JSON value); title="Controller Evidence"; x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
 | <a id="s-2b58360cd0"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Controller Evidence Sha256" |  |
 | <a id="s-d28fb67370"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Execution Id" |  |
-| <a id="s-58a14c2ad6"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-58a14c2ad6"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-36b7aad560"></a>`operation` | yes | [OperationIdentityDocument](schemas-operationidentitydocument.md) |  |
-| <a id="s-e7d70e2eb2"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Retirement Grace Seconds" |  |
+| <a id="s-e7d70e2eb2"></a>`retirement_grace_seconds` | no | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 | <a id="s-d32887c144"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Retirement Policy" |  |
 
 ### <a id="s-f21f1cdca7"></a>`if`
@@ -50,7 +50,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8b233fc625"></a>`retirement_grace_seconds` | no | const=0 |  |
+| <a id="s-8b233fc625"></a>`retirement_grace_seconds` | no | const="0" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -74,6 +74,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract elements
 
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 - [OperationIdentityDocument](schemas-operationidentitydocument.md)
 
 ## Governing policies
@@ -107,7 +108,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 019f4d09832c4a7a45a7a4c9af885f747cd565fca4fa700b5359bf03646121f1 -->
+<!-- exact-contract-value: cf2e36652e74bacd284a32bafabbd3aa7e81b53fb50d372157a677a5c71a19fb -->
 
 ```json
 {
@@ -141,18 +142,15 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "fence": {
-      "minimum": 1,
-      "title": "Fence",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "operation": {
       "$ref": "#/components/schemas/OperationIdentityDocument"
     },
     "retirement_grace_seconds": {
-      "default": 0,
-      "minimum": 0,
-      "title": "Retirement Grace Seconds",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
     },
     "retirement_policy": {
       "default": "retain",
@@ -174,7 +172,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "then": {
     "properties": {
       "retirement_grace_seconds": {
-        "const": 0
+        "const": "0"
       }
     }
   },

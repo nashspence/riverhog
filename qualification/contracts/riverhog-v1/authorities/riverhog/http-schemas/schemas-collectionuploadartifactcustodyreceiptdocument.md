@@ -25,9 +25,9 @@ Exact safe-release evidence for one artifact in construction state.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a0567d04d6"></a>`archive_object_count` | yes | type="integer"; minimum=1; title="Archive Object Count" |  |
+| <a id="s-a0567d04d6"></a>`archive_object_count` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-652d1bb86c"></a>`archive_object_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Object Set Sha256" |  |
-| <a id="s-5ff22aaac2"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-5ff22aaac2"></a>`bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md) |  |
 | <a id="s-48eeb34d30"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
 | <a id="s-db6cbedc39"></a>`format` | no | type="string"; const="riverhog-artifact-custody-receipt/v1"; default="riverhog-artifact-custody-receipt/v1"; title="Format" |  |
 | <a id="s-478a27e2aa"></a>`path` | yes | type="string"; title="Path" |  |
@@ -35,14 +35,6 @@ Exact safe-release evidence for one artifact in construction state.
 | <a id="s-c54e529e15"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
-
-#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [field bytes](#s-5ff22aaac2) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -59,13 +51,13 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 ### Referenced contract elements
 
 - [CollectionId](schemas-collectionid.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
 - <a id="pa-4dcb128901"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-bb2f779aa7"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 - <a id="pa-17d33ba70c"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
@@ -91,7 +83,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: cbed166882210f398141b295acf49805b9bc31439d54644fefc2289dbf88a8cb -->
+<!-- exact-contract-value: 95cce9400e0d3b0ecf773ddf324b378868ea1b99dfd2fa40726123cb267fa6e4 -->
 
 ```json
 {
@@ -99,9 +91,8 @@ The following JSON is the complete value owned at each machine-authority pointer
   "description": "Exact safe-release evidence for one artifact in construction state.",
   "properties": {
     "archive_object_count": {
-      "minimum": 1,
-      "title": "Archive Object Count",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "archive_object_set_sha256": {
       "pattern": "^[0-9a-f]{64}$",
@@ -109,9 +100,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "bytes": {
-      "minimum": 0,
-      "title": "Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal"
     },
     "collection_id": {
       "$ref": "#/components/schemas/CollectionId"

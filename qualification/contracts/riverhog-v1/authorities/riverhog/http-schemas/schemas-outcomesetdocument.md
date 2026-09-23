@@ -25,19 +25,11 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-8b98c68813"></a>`authority` | no | anyOf=[([ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)); (type="null")] |  |
-| <a id="s-c3431dbb24"></a>`count` | yes | type="integer"; minimum=0; title="Count" |  |
+| <a id="s-c3431dbb24"></a>`count` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 | <a id="s-102c3f6916"></a>`failure` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; title="Failure" |  |
 | <a id="s-da0eeee06e"></a>`state` | yes | type="string"; enum=["receiving","sealing","sealed","failed"]; title="State" |  |
 
 ### Progression, limits, and lifecycle
-
-#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [field count](#s-c3431dbb24) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -52,13 +44,13 @@ Shared facts for every subject below: maximum=1000; minimum=1; reason="schema-ma
 ### Referenced contract elements
 
 - [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
 - <a id="pa-d8752f353e"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-aa2e2eb903"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 - <a id="pa-27e15b31ed"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
@@ -84,7 +76,7 @@ Shared facts for every subject below: maximum=1000; minimum=1; reason="schema-ma
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8576ac8304a0301e16f6f81bd65ae1e818011299bdb236ea4db30959d6365dc5 -->
+<!-- exact-contract-value: 4d893950dba1c2cf398ccaaf1de5eb924444fbec6280bf904aa87ae3fdf2b6be -->
 
 ```json
 {
@@ -101,9 +93,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       ]
     },
     "count": {
-      "minimum": 0,
-      "title": "Count",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
     },
     "failure": {
       "anyOf": [

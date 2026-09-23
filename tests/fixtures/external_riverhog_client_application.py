@@ -62,7 +62,7 @@ class ReadApi:
     def get_collection(self, collection_id: int) -> dict[str, object]:
         assert collection_id == INPUT_ROOT.collection_id
         return {
-            "id": collection_id,
+            "id": str(collection_id),
             "archive_root_sha256": INPUT_ROOT.archive_root_sha256,
             "content_identity": INPUT_ROOT.content_identity,
         }
@@ -78,20 +78,20 @@ class ReadApi:
             {
                 "authority": {
                     "header": {
-                        "collection": 1,
+                        "collection": "1",
                         "content_identity": INPUT_ROOT.content_identity,
                         "encryption_format": "age-v1-scrypt",
                         "passphrase_id": "external-archive-key-v1",
                         "provenance_mode": "omitted",
                     },
                     "inventory_identity": "6" * 64,
-                    "file_count": 1,
-                    "file_bytes": len(INPUT_CONTENT),
+                    "file_count": "1",
+                    "file_bytes": str(len(INPUT_CONTENT)),
                 },
                 "files": [
                     {
                         "path": "input.bin",
-                        "bytes": len(INPUT_CONTENT),
+                        "bytes": str(len(INPUT_CONTENT)),
                         "sha256": INPUT_SHA256,
                     }
                 ],
@@ -112,9 +112,9 @@ class ReadApi:
             "start_ordinal": kwargs["start_ordinal"],
             "files": [
                 {
-                    "collection_id": 1,
+                    "collection_id": "1",
                     "path": "input.bin",
-                    "bytes": len(INPUT_CONTENT),
+                    "bytes": str(len(INPUT_CONTENT)),
                     "sha256": INPUT_SHA256,
                 }
             ],
@@ -175,11 +175,11 @@ class UploadApi:
         return ArtifactDispositionPageDocument.model_validate(
             {
                 "authority": DISPOSITIONS.as_dict(),
-                "start_ordinal": start_ordinal,
+                "start_ordinal": str(start_ordinal),
                 "dispositions": [
                     {
                         "input": {
-                            "collection_id": 1,
+                            "collection_id": "1",
                             "archive_root_sha256": INPUT_ROOT.archive_root_sha256,
                             "path": "input.bin",
                         },
@@ -196,11 +196,11 @@ class UploadApi:
         return ArtifactDispositionOutputPageDocument.model_validate(
             {
                 "authority": DISPOSITIONS.as_dict(),
-                "start_ordinal": start_ordinal,
+                "start_ordinal": str(start_ordinal),
                 "outputs": [
                     {
                         "input": {
-                            "collection_id": 1,
+                            "collection_id": "1",
                             "archive_root_sha256": INPUT_ROOT.archive_root_sha256,
                             "path": "input.bin",
                         },
@@ -214,12 +214,12 @@ class UploadApi:
         self, *_args: Any, **_kwargs: Any
     ) -> dict[str, object]:
         return {
-            "collection_id": 2,
+            "collection_id": "2",
             "resumed": False,
             "state": "open",
             "registration_constraints": {
-                "pack_member_bytes": 1024,
-                "raw_part_plaintext_bytes": 65536,
+                "pack_member_bytes": "1024",
+                "raw_part_plaintext_bytes": "65536",
             },
         }
 
@@ -251,12 +251,14 @@ class UploadApi:
     ) -> CollectionUploadWorkBatchDocument:
         assignment = None if not self.discovery_closed or self.committed else self._assignment()
         return CollectionUploadWorkBatchDocument(
-            collection_id=collection_id,
+            collection_id=str(collection_id),
             planning_complete=self.discovery_closed,
             complete=self.discovery_closed and assignment is None,
-            committed_payload_bytes=sum(int(item["bytes"]) for item in self.registered.values())
-            if self.committed
-            else 0,
+            committed_payload_bytes=str(
+                sum(int(item["bytes"]) for item in self.registered.values())
+                if self.committed
+                else 0
+            ),
             work=([] if assignment is None else [assignment])[:limit],
         )
 
@@ -264,7 +266,7 @@ class UploadApi:
         sources = [
             {
                 "path": item["path"],
-                "offset": 0,
+                "offset": "0",
                 "bytes": item["bytes"],
                 "artifact_sha256": item["sha256"],
             }
@@ -273,12 +275,12 @@ class UploadApi:
         size = sum(int(item["bytes"]) for item in sources)
         return CollectionUploadUnitAssignmentDocument.model_validate(
             {
-                "volume": {"volume_id": "pack-" + "0" * 64, "sequence": 0, "kind": "pack"},
+                "volume": {"volume_id": "pack-" + "0" * 64, "sequence": "0" * 64, "kind": "pack"},
                 "plan_sha256": "c" * 64,
                 "unit": {
-                    "unit": 0,
-                    "payload_bytes": size,
-                    "plaintext_bytes": size,
+                    "unit": "0",
+                    "payload_bytes": str(size),
+                    "plaintext_bytes": str(size),
                     "sources": sources,
                     "state": "pending",
                 },
@@ -309,7 +311,7 @@ class UploadApi:
             "state": "finalized",
             "content_identity": self.content_identity,
             "collection": {
-                "id": 2,
+                "id": "2",
                 "archive_root_sha256": "d" * 64,
                 "content_identity": self.content_identity,
             },
@@ -349,13 +351,13 @@ def main() -> None:
     session = create_or_resume_with_initial_collection_tags(
         ("source:external", "workflow:fixture"),
         create_or_resume=lambda first, _identity: {
-            "collection_id": 2,
+            "collection_id": "2",
             "state": "open",
             "first": staged_tags.extend(first),
         },
         add_tags=lambda _collection_id, batch: staged_tags.extend(batch),
     )
-    assert session["collection_id"] == 2
+    assert session["collection_id"] == "2"
     assert staged_tags == ["source:external", "workflow:fixture"]
 
     first = ReadApi()

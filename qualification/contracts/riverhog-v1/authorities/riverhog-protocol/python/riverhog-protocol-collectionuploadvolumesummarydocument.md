@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-dff4d3736d"></a>`kind`: `"class"`
-- <a id="s-e7769164e0"></a>`signature`: `"\"(*, volume_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^(?:pack\|segment)-[0-9a-f]{64}$', ascii_only=None)], sequence: Annotated[int, Strict(strict=True), Ge(ge=0)], kind: Literal['pack', 'segment']) -> None\""`
+- <a id="s-e7769164e0"></a>`signature`: `"\"(*, volume_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^(?:pack\|segment)-[0-9a-f]{64}$', ascii_only=None)], sequence: Sequence256Hex, kind: Literal['pack', 'segment']) -> None\""`
 
 #### Validated model schema
 
@@ -37,8 +37,17 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-2eca180978"></a>`kind` | yes | type="string"; enum=["pack","segment"] |  |
-| <a id="s-de746b69ba"></a>`sequence` | yes | type="integer"; minimum=0 |  |
+| <a id="s-de746b69ba"></a>`sequence` | yes | [Sequence256Hex](#s-bdccaccef6) |  |
 | <a id="s-516fc5994f"></a>`volume_id` | yes | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$" |  |
+
+##### Definitions
+
+- [Sequence256Hex](#s-bdccaccef6)
+
+##### <a id="s-bdccaccef6"></a>definition `Sequence256Hex`
+
+- <a id="s-fa785fbee3"></a>`type`: `"string"`
+- <a id="s-c48ff8cb5d"></a>`pattern`: `"^[0-9a-f]{64}(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -73,13 +82,19 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b89be7030f55536ebab8348edc08f3081b61af588bb0f23a2a054ada4bc8fd6a -->
+<!-- exact-contract-value: 29e8c0c5a38f9d64bec84b4a2d8cdc4d4bde5ab38aea9971fb3d5390b425fae9 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
     "schema": {
+      "$defs": {
+        "Sequence256Hex": {
+          "pattern": "^[0-9a-f]{64}(?![\\s\\S])",
+          "type": "string"
+        }
+      },
       "additionalProperties": false,
       "properties": {
         "kind": {
@@ -90,8 +105,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "sequence": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/Sequence256Hex"
         },
         "volume_id": {
           "pattern": "^(?:pack|segment)-[0-9a-f]{64}$",
@@ -105,7 +119,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, volume_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^(?:pack|segment)-[0-9a-f]{64}$', ascii_only=None)], sequence: Annotated[int, Strict(strict=True), Ge(ge=0)], kind: Literal['pack', 'segment']) -> None\""
+    "signature": "\"(*, volume_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^(?:pack|segment)-[0-9a-f]{64}$', ascii_only=None)], sequence: Sequence256Hex, kind: Literal['pack', 'segment']) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

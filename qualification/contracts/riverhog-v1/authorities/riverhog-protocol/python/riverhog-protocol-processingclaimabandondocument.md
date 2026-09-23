@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-b2de200749"></a>`kind`: `"class"`
-- <a id="s-429fb78411"></a>`signature`: `"'(*, fence: Annotated[int, Ge(ge=1)], reason: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None'"`
+- <a id="s-429fb78411"></a>`signature`: `"'(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], reason: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None'"`
 
 #### Validated model schema
 
@@ -36,8 +36,17 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a8233096bd"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-a8233096bd"></a>`fence` | yes | [NonnegativeDecimal](#s-15376f9e56); ge=1 |  |
 | <a id="s-929d3be474"></a>`reason` | yes | type="string"; maxLength=1000; minLength=1 |  |
+
+##### Definitions
+
+- [NonnegativeDecimal](#s-15376f9e56)
+
+##### <a id="s-15376f9e56"></a>definition `NonnegativeDecimal`
+
+- <a id="s-feecce8071"></a>`type`: `"string"`
+- <a id="s-a8dc1a4d02"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -73,18 +82,24 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ed8e8424e76221eee47aa6d0053cdb3ed95288c4b34384ee5125b42395503ffd -->
+<!-- exact-contract-value: 28f13a25771dfce2f33061f8873ef127b3e21b6be042b42f638a8ff7105b7e26 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
     "schema": {
+      "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        }
+      },
       "additionalProperties": false,
       "properties": {
         "fence": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "reason": {
           "maxLength": 1000,
@@ -98,7 +113,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "'(*, fence: Annotated[int, Ge(ge=1)], reason: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None'"
+    "signature": "'(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], reason: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None'"
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

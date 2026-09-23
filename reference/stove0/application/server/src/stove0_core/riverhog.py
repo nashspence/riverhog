@@ -557,14 +557,16 @@ class Stove0RiverhogClient:
         verified = CollectionDerivation.from_mapping(stored_document)
         if verified != derivation or stored.get("document_sha256") != derivation.sha256:
             raise RuntimeError("Riverhog derivation differs from the target publication evidence")
-        output = OutputCollectionRef(
-            collection_id=_positive_int(collection.get("id"), "collection id"),
-            archive_root_sha256=_text(
-                collection.get("archive_root_sha256"),
-                "archive-root identity",
-            ),
-            content_identity=_text(collection.get("content_identity"), "content identity"),
-            derivation_sha256=derivation.sha256,
+        output = OutputCollectionRef.model_validate(
+            {
+                "collection_id": str(_positive_int(collection.get("id"), "collection id")),
+                "archive_root_sha256": _text(
+                    collection.get("archive_root_sha256"),
+                    "archive-root identity",
+                ),
+                "content_identity": _text(collection.get("content_identity"), "content identity"),
+                "derivation_sha256": derivation.sha256,
+            }
         )
         if output != target_output:
             raise RuntimeError("Riverhog output root differs from the target publication receipt")

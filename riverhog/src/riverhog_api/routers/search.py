@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated, cast
 
-from fastapi import APIRouter, Query
+from fastapi import Query
 from http_api_contracts import mutable_browse_operation
 from riverhog_protocol import CollectionIdParameter, SearchSort, SortOrder
 
@@ -15,9 +15,10 @@ from riverhog_api.browse import (
     page_position,
 )
 from riverhog_api.deps import ContainerDep
+from riverhog_api.routing import RiverhogRouter
 from riverhog_api.schemas.search import SearchFileOut, SearchResponse
 
-router = APIRouter(tags=["search"])
+router = RiverhogRouter(tags=["search"])
 
 
 @router.get(

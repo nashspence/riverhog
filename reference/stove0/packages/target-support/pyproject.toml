@@ -22,6 +22,7 @@ dependencies = [
   "http-api-contracts>=0.1,<0.2",
   "jsonschema>=4.25,<5.0",
   "pydantic>=2.7,<3.0",
+  "riverhog-canonical-json>=0.1,<0.2",
   "riverhog-client>=0.1,<0.2",
   "riverhog-protocol>=0.1,<0.2",
   "stove0-target-client>=0.1,<0.2",
@@ -34,6 +35,7 @@ stove0-target-schemas = "stove0_target_support.schemas:main"
 
 [tool.uv.sources]
 http-api-contracts = { workspace = true }
+riverhog-canonical-json = { workspace = true }
 riverhog-client = { workspace = true }
 riverhog-protocol = { workspace = true }
 stove0-target-client = { workspace = true }

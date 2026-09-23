@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import Any, cast
 
+from riverhog_canonical_json import format_scalar
 from riverhog_protocol import (
     COLLECTION_TAG_PAGE_UTF8_BYTES_MAX,
     MAX_COLLECTION_TAG_REVISION,
@@ -1213,7 +1214,7 @@ class SqlAlchemyCollectionTagService:
                 used += encoded_bytes
             next_position = (collection_tag_sha256(page[-1]),) if page and has_more else None
             return {
-                "collection_id": normalized,
+                "collection_id": format_scalar("sequence63", normalized),
                 "revision": revision.revision,
                 "tag_set_identity": revision.tag_set_identity,
                 "tags": page,
@@ -1275,7 +1276,7 @@ class SqlAlchemyCollectionTagService:
             )
             present = tags.contains(canonical)
             return {
-                "collection_id": normalized,
+                "collection_id": format_scalar("sequence63", normalized),
                 "revision": authority.revision,
                 "tag_set_identity": authority.tag_set_identity,
                 "tag": canonical,
@@ -1618,7 +1619,7 @@ def _require_same_mutation(
 
 def _mutation_payload(record: CollectionTagMutationRecord) -> dict[str, object]:
     return {
-        "collection_id": record.collection_id,
+        "collection_id": format_scalar("sequence63", record.collection_id),
         "operation_id": record.operation_id,
         "action": record.action,
         "tag": record.tag,

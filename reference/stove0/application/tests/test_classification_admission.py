@@ -16,7 +16,7 @@ from riverhog_protocol import (
 from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from stove0_core import ClassificationAdmissionService, SqlAlchemyStateStore
-from stove0_core.persistence import _AdmissionPolicyRow
+from stove0_core.persistence import _AdmissionCandidateRow, _AdmissionPolicyRow
 from stove0_operator_contracts import AdmissionCatalog, AdmissionIntent, AdmissionPolicy
 from stove0_protocol import (
     ArtifactSelection,
@@ -46,7 +46,7 @@ def _descriptor(
     collection_id: int = 7,
 ) -> CatalogSyncDescriptor:
     return CatalogSyncDescriptor(
-        collection_id=collection_id,
+        collection_id=str(collection_id),
         archive_root_sha256="1" * 64,
         content_identity="2" * 64,
         description=None,
@@ -373,7 +373,7 @@ def test_stale_upsert_cannot_resurrect_a_deleted_catalog_revision() -> None:
     service.advance(limit=1)
     service.advance(limit=1)
 
-    deleted = CatalogSyncDelete(collection_id=7, revision="3")
+    deleted = CatalogSyncDelete(collection_id="7", revision="3")
     delete_page = CatalogSyncChangePage(
         source_identity=api.source_identity,
         authorization_view_identity=api.view_identity,
@@ -492,6 +492,10 @@ def test_failed_lowest_candidate_is_delayed_and_does_not_starve_the_next() -> No
         policy_row.phase = "reset_required"
         for descriptor in descriptors:
             service._record_intent(session, policy, descriptor)  # noqa: SLF001
+        for intent in intents:
+            row = session.get(_AdmissionCandidateRow, intent.admission_id)
+            assert row is not None
+            row.next_attempt_at = "2020-01-01T00:00:00.000000Z"
 
     first = service.advance(limit=1)
     assert [failure.event_id for failure in first.failures] == [f"admission:{failing.admission_id}"]
@@ -547,7 +551,7 @@ def test_explicit_backfill_advances_through_restart_safe_preview_and_work_bindin
         preview=_Preview(),
         coordinator=coordinator,
     )
-    restarted.advance(limit=1)
+    assert restarted.advance(limit=1).failures == ()
     assert restarted.get_admission(intent.intent.admission_id).state == "previewed"
 
     restarted_again = _service(
@@ -591,7 +595,7 @@ def test_policy_identity_is_evidence_but_semantic_work_converges() -> None:
         first.recipe_id,
         (
             CollectionRootRef(
-                collection_id=descriptor.collection_id,
+                collection_id=str(descriptor.collection_id),
                 archive_root_sha256=descriptor.archive_root_sha256,
                 content_identity=descriptor.content_identity,
             ),
@@ -617,7 +621,7 @@ def test_committed_admission_survives_later_policy_edit() -> None:
     original = _policy()
     initial = _service(state=state, api=api, policy=original)
     initial.rebaseline(original.id, mode="backfill")
-    initial.advance(limit=1)
+    assert initial.advance(limit=1).failures == ()
 
     edited = AdmissionPolicy(
         id=original.id,

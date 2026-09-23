@@ -28,7 +28,7 @@ def test_server_upload_creation_identity_is_not_public_protocol() -> None:
 def _file(path: str) -> dict[str, object]:
     return {
         "path": path,
-        "bytes": 1,
+        "bytes": "1",
         "sha256": "a" * 64,
         "provenance": {
             "status": "omitted",
@@ -37,18 +37,18 @@ def _file(path: str) -> dict[str, object]:
     }
 
 
-def _constraints(*, pack_member_bytes: int = 1024, raw_part_bytes: int = 65536) -> dict[str, int]:
+def _constraints(*, pack_member_bytes: int = 1024, raw_part_bytes: int = 65536) -> dict[str, str]:
     return {
-        "pack_member_bytes": pack_member_bytes,
-        "raw_part_plaintext_bytes": raw_part_bytes,
+        "pack_member_bytes": str(pack_member_bytes),
+        "raw_part_plaintext_bytes": str(raw_part_bytes),
     }
 
 
 def _raw_parts(*sha256s: str, part_plaintext_bytes: int = 65536) -> dict[str, object]:
     count, commitment = ordered_raw_part_commitment(sha256s)
     return {
-        "part_plaintext_bytes": part_plaintext_bytes,
-        "part_count": count,
+        "part_plaintext_bytes": str(part_plaintext_bytes),
+        "part_count": str(count),
         "ordered_sha256": commitment,
     }
 
@@ -137,7 +137,7 @@ def test_artifact_custody_receipt_seals_exact_recovering_objects() -> None:
             CollectionUploadFileIn.model_validate(
                 {
                     **_file("video/source/archive.mkv"),
-                    "bytes": 123,
+                    "bytes": "123",
                 }
             ),
             receipt,
@@ -147,7 +147,7 @@ def test_artifact_custody_receipt_seals_exact_recovering_objects() -> None:
     artifact = CollectionUploadFileIn.model_validate(
         {
             **_file("video/source/archive.mkv"),
-            "bytes": 123,
+            "bytes": "123",
         }
     )
     mismatches = (
@@ -175,7 +175,7 @@ def test_direct_ingress_batch_rejects_duplicate_file_paths() -> None:
 def test_direct_ingress_registration_constraints_bind_raw_part_declarations() -> None:
     raw = {
         **_file("video.bin"),
-        "bytes": 65537,
+        "bytes": "65537",
         "raw_parts": _raw_parts("b" * 64, "c" * 64),
     }
     batch = CollectionUploadFileBatchDocument.model_validate({"files": [raw]})
@@ -203,19 +203,19 @@ def test_server_planned_upload_work_uses_protocol_owned_exact_identities() -> No
     assignment = CollectionUploadUnitAssignmentDocument(
         volume={
             "volume_id": "pack-" + "0" * 63 + "3",
-            "sequence": 3,
+            "sequence": "0" * 63 + "3",
             "kind": "pack",
         },
         plan_sha256="b" * 64,
         unit={
-            "unit": 0,
-            "payload_bytes": 5,
-            "plaintext_bytes": 2048,
+            "unit": "0",
+            "payload_bytes": "5",
+            "plaintext_bytes": "2048",
             "sources": [
                 {
                     "path": "camera/clip.mp4",
-                    "offset": 0,
-                    "bytes": 5,
+                    "offset": "0",
+                    "bytes": "5",
                     "artifact_sha256": "a" * 64,
                 }
             ],
@@ -230,7 +230,7 @@ def test_server_planned_upload_work_uses_protocol_owned_exact_identities() -> No
     assert assignment.unit.sources[0].path == "camera/clip.mp4"
 
     changed = assignment.model_dump(mode="python")
-    changed["unit"]["payload_bytes"] = 4
+    changed["unit"]["payload_bytes"] = "4"
     with pytest.raises(ValidationError, match="source bytes"):
         CollectionUploadUnitAssignmentDocument.model_validate(changed)
 
@@ -240,19 +240,19 @@ def test_bounded_upload_work_batch_binds_assignment_and_checkpoint_state() -> No
         {
             "volume": {
                 "volume_id": "pack-" + "0" * 64,
-                "sequence": 0,
+                "sequence": "0" * 64,
                 "kind": "pack",
             },
             "plan_sha256": "b" * 64,
             "unit": {
-                "unit": 0,
-                "payload_bytes": 5,
-                "plaintext_bytes": 5,
+                "unit": "0",
+                "payload_bytes": "5",
+                "plaintext_bytes": "5",
                 "sources": [
                     {
                         "path": "camera/clip.mp4",
-                        "offset": 0,
-                        "bytes": 5,
+                        "offset": "0",
+                        "bytes": "5",
                         "artifact_sha256": "a" * 64,
                     }
                 ],
@@ -261,10 +261,10 @@ def test_bounded_upload_work_batch_binds_assignment_and_checkpoint_state() -> No
         }
     )
     batch = CollectionUploadWorkBatchDocument(
-        collection_id=7,
+        collection_id="7",
         planning_complete=False,
         complete=False,
-        committed_payload_bytes=0,
+        committed_payload_bytes="0",
         work=[assignment],
     )
 
@@ -305,15 +305,15 @@ def test_direct_ingress_rejects_unsatisfiable_raw_part_constraints(
     "file_payload",
     (
         {**_file("small.bin"), "raw_parts": _raw_parts("b" * 64)},
-        {**_file("large.bin"), "bytes": 1024},
+        {**_file("large.bin"), "bytes": "1024"},
         {
             **_file("large.bin"),
-            "bytes": 1024,
+            "bytes": "1024",
             "raw_parts": _raw_parts("b" * 64, part_plaintext_bytes=131072),
         },
         {
             **_file("large.bin"),
-            "bytes": 65537,
+            "bytes": "65537",
             "raw_parts": _raw_parts("b" * 64),
         },
     ),

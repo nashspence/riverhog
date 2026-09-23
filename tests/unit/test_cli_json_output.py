@@ -24,7 +24,7 @@ def test_collection_list_json_emits_the_api_response_without_a_second_model(
         "tags": [],
         "collections": [
             {
-                "id": 42,
+                "id": "42",
                 "created_at": "2026-07-26T18:43:00.000000Z",
                 "description": "Morning footage — camera seven",
                 "description_identity": "a" * 64,
@@ -67,7 +67,7 @@ def test_collection_list_json_emits_the_api_response_without_a_second_model(
 
 def test_collection_show_human_and_json_use_one_identical_api_response(monkeypatch) -> None:
     payload = {
-        "id": 42,
+        "id": "42",
         "created_at": "2026-07-26T18:43:00.000000Z",
         "description": "Morning footage — camera seven",
         "description_identity": "a" * 64,

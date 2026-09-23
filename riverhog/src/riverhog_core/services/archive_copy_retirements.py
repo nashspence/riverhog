@@ -5,6 +5,7 @@ import secrets
 from datetime import datetime
 from typing import cast
 
+from riverhog_canonical_json import format_scalar
 from riverhog_protocol.errors import (
     BadRequest,
     Conflict,
@@ -700,7 +701,7 @@ def _build_plan(
     )
     return {
         "status": "blocked" if blockers else "ready",
-        "collection_id": collection_id,
+        "collection_id": format_scalar("sequence63", collection_id),
         "store": store,
         "warning": _RETIREMENT_WARNING,
         "expires_at": format_utc_timestamp(expires_at),
@@ -733,7 +734,7 @@ def _build_plan(
 
 def _absent_plan(collection_id: int, store: str) -> dict[str, object]:
     return {
-        "collection_id": collection_id,
+        "collection_id": format_scalar("sequence63", collection_id),
         "store": store,
         "target_copy": {"remote_storage_bytes": 0},
     }

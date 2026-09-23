@@ -25,7 +25,7 @@ List Collection Provenance
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-4334a88c2f"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-4334a88c2f"></a>`collection_id` | path | yes | not declared | allOf=[(type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])"); (not=(const="0"))]; title="Collection Id" |
 | <a id="s-6bd3c9f5e2"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
 | <a id="s-b30ca9f421"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
 | <a id="s-c72e496235"></a>`q` | query | no | not declared | anyOf=[([BrowseQuery](../http-schemas/schemas-browsequery.md)); (type="null")]; title="Q" |
@@ -118,7 +118,7 @@ Exact evidence groups for this contract element:
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/provenance.py::list\_collection\_provenance](../../../../../../riverhog/src/riverhog_api/routers/provenance.py#L78)
+- **Handler:** [riverhog/src/riverhog\_api/routers/provenance.py::list\_collection\_provenance](../../../../../../riverhog/src/riverhog_api/routers/provenance.py#L79)
 
 ### Structural operation bindings
 
@@ -152,7 +152,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.list_collection_provenance",
       "source": {
-        "line": 1618,
+        "line": 1620,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.list_collection_provenance"
@@ -188,7 +188,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0cd13c7dd9ee0c7788f3d36d9ccaa1055271f71467e778d9c521b777e123ff4f -->
+<!-- exact-contract-value: 943a63ed6b6675bf19283acf2967a96923f5118dca33f2f91932f4978f4dbd48 -->
 
 ```json
 {
@@ -199,9 +199,18 @@ The following JSON is the complete value owned at each machine-authority pointer
       "name": "collection_id",
       "required": true,
       "schema": {
-        "minimum": 1,
-        "title": "Collection Id",
-        "type": "integer"
+        "allOf": [
+          {
+            "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+            "type": "string"
+          },
+          {
+            "not": {
+              "const": "0"
+            }
+          }
+        ],
+        "title": "Collection Id"
       }
     },
     {

@@ -20,10 +20,12 @@ classifiers = [
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
 dependencies = [
   "pydantic>=2.7,<3.0",
+  "riverhog-canonical-json>=0.1,<0.2",
   "time-formats>=0.1,<0.2",
 ]
 
 [tool.uv.sources]
+riverhog-canonical-json = { workspace = true }
 time-formats = { workspace = true }
 
 [tool.hatch.build.targets.wheel]

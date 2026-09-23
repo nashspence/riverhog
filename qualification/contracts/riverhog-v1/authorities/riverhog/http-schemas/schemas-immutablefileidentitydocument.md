@@ -25,19 +25,11 @@ The exact path, length, and plaintext digest shared by file projections.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-61eaa756b8"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-61eaa756b8"></a>`bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md) |  |
 | <a id="s-a970aa6e53"></a>`path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
 | <a id="s-7a011aa8fc"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
-
-#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [field bytes](#s-61eaa756b8) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -52,13 +44,13 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 ### Referenced contract elements
 
 - [CanonicalRelPath](schemas-canonicalrelpath.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
 - <a id="pa-c8ada22945"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-6969daf27f"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 - <a id="pa-52de4da534"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
@@ -84,7 +76,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8c2805986926e29a6c406c80c224e37296c6bd56550bcb6c78776369f757a75c -->
+<!-- exact-contract-value: eeaa8d043ebe8f0003d4de21f05056dc6cd4864a7b7ab90b15eeacb75b3ec2fe -->
 
 ```json
 {
@@ -92,9 +84,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "description": "The exact path, length, and plaintext digest shared by file projections.",
   "properties": {
     "bytes": {
-      "minimum": 0,
-      "title": "Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal"
     },
     "path": {
       "$ref": "#/components/schemas/CanonicalRelPath"

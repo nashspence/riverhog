@@ -22,7 +22,7 @@ def test_riverhog_event_list_has_human_and_json_output(monkeypatch) -> None:  # 
                 "data": {
                     "actor": {"app": "riverhog-client"},
                     "initiator": {"app": "riverhog-client"},
-                    "collection_id": 41,
+                    "collection_id": "41",
                     "collection_created_at": "2026-08-24T00:00:00.000000Z",
                     "files_total": 1,
                     "bytes_total": 2,

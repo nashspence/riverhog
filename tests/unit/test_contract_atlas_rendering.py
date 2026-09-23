@@ -131,7 +131,7 @@ def test_http_semantics_are_owned_once_and_operation_bindings_remain_structural(
 
     assert len(records) == len(http_operations) == len(qualified) == 147
     assert not any(item["interface"] == "operation" for item in elements)
-    assert root["counts"]["by_authority"]["riverhog"] == 366
+    assert root["counts"]["by_authority"]["riverhog"] == 368
     assert (
         sum(
             item["authority"] == "riverhog" and item["interface"] == "http-operations"
@@ -144,7 +144,7 @@ def test_http_semantics_are_owned_once_and_operation_bindings_remain_structural(
             item["authority"] == "riverhog" and item["interface"] == "http-schemas"
             for item in elements
         )
-        == 255
+        == 257
     )
     assert len(root["projection"]["external_contract"]["http_route_supplements"]) == 2
     assert set(qualified) == {(item["application"], item["operation_id"]) for item in records}
@@ -1027,22 +1027,24 @@ def test_nested_definition_links_resolve_to_primary_constraints() -> None:
     assert '`revision` | yes | type="integer"; minimum=1' in section
 
 
-def test_large_integer_bounds_are_numeric_in_primary_content_and_exact_in_fallback() -> None:
+def test_provenance_sequence_uses_the_exact_string_domain_in_primary_and_fallback() -> None:
     checked = checked_atlas()
     element, primary = _primary_contract(
         "riverhog-provenance", "Riverhog provenance v1 journal entry"
     )
-    pointer = f"{element['pointers'][0]}/properties/sequence/maximum"
-    assert pointer in checked.root["projection_unsafe_integer_paths"]
-    encoded = atlas.pointer_value(checked.root["projection"], pointer)
-    assert encoded == "9223372036854775807"
-    assert atlas.pointer_value(atlas.reassemble_projection(checked), pointer) == 9223372036854775807
+    pointer = f"{element['pointers'][0]}/properties/sequence"
+    assert atlas.pointer_value(checked.root["projection"], pointer) == {
+        "$ref": "#/$defs/sequence63"
+    }
+    assert not any(
+        path.startswith(element["pointers"][0])
+        for path in checked.root["projection_unsafe_integer_paths"]
+    )
     row = next(line for line in primary.splitlines() if "</a>`sequence`" in line)
-    assert "maximum=9223372036854775807" in row
-    assert 'maximum="9223372036854775807"' not in row
+    assert "[sequence63]" in row
     fallback = checked.files[element["dossier"]].decode().split("### Exact owned JSON", 1)[1]
-    assert '"maximum": "9223372036854775807"' in fallback
-    assert "projection_unsafe_integer_paths" in fallback
+    assert '"$ref": "#/$defs/sequence63"' in fallback
+    assert '"type": "string"' in fallback
 
 
 @pytest.mark.parametrize("default", [False, 0, "", [], {}, None])

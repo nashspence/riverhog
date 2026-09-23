@@ -25,11 +25,11 @@ One exact unit and its durable upload checkpoint state.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-5bbbdc396e"></a>`payload_bytes` | yes | type="integer"; minimum=0; title="Payload Bytes" |  |
-| <a id="s-16c47a39dd"></a>`plaintext_bytes` | yes | type="integer"; minimum=0; title="Plaintext Bytes" |  |
+| <a id="s-5bbbdc396e"></a>`payload_bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md) |  |
+| <a id="s-16c47a39dd"></a>`plaintext_bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md) |  |
 | <a id="s-1922dd6481"></a>`sources` | yes | type="array"; items=([CollectionUploadUnitSourceDocument](schemas-collectionuploadunitsourcedocument.md)); maxItems=1000; title="Sources"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"collection-volume-sequence","reason":"bounded-upload-unit-source-map"} |  |
 | <a id="s-c2d6a23375"></a>`state` | yes | type="string"; enum=["pending","committed"]; title="State" |  |
-| <a id="s-df608cbe0c"></a>`unit` | yes | type="integer"; minimum=0; title="Unit" |  |
+| <a id="s-df608cbe0c"></a>`unit` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md) |  |
 
 ### Progression, limits, and lifecycle
 
@@ -66,6 +66,7 @@ Exact evidence groups for this contract element:
 ### Referenced contract elements
 
 - [CollectionUploadUnitSourceDocument](schemas-collectionuploadunitsourcedocument.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -97,7 +98,7 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 48b2f9a9abca13bad3e86663409b1fd07c2e03c86481f225818208887b2ac196 -->
+<!-- exact-contract-value: 50e4db910410e14cf1245f537ff3fab9ee100bfba73eecbe7eefe22ef00f605b -->
 
 ```json
 {
@@ -105,14 +106,10 @@ The following JSON is the complete value owned at each machine-authority pointer
   "description": "One exact unit and its durable upload checkpoint state.",
   "properties": {
     "payload_bytes": {
-      "minimum": 0,
-      "title": "Payload Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal"
     },
     "plaintext_bytes": {
-      "minimum": 0,
-      "title": "Plaintext Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal"
     },
     "sources": {
       "items": {
@@ -136,9 +133,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "unit": {
-      "minimum": 0,
-      "title": "Unit",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal"
     }
   },
   "required": [

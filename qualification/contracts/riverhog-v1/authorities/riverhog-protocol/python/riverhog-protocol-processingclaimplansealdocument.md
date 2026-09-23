@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-e30f6c29f8"></a>`kind`: `"class"`
-- <a id="s-b97d8a7237"></a>`signature`: `"\"(*, fence: Annotated[int, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], controller_evidence: dict[str, typing.Any], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0) -> None\""`
+- <a id="s-b97d8a7237"></a>`signature`: `"\"(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], controller_evidence: dict[str, typing.Any], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = <factory>) -> None\""`
 
 #### Validated model schema
 
@@ -41,13 +41,14 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-24f056ab1a"></a>`controller_evidence` | yes | type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
 | <a id="s-bae704d1c6"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-18261de791"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-6fbb64b834"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-6fbb64b834"></a>`fence` | yes | [NonnegativeDecimal](#s-6d9026fe45); ge=1 |  |
 | <a id="s-2549d87071"></a>`operation` | yes | [OperationIdentityDocument](#s-fa7d9bfff2) |  |
-| <a id="s-3a0b445d63"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-3a0b445d63"></a>`retirement_grace_seconds` | no | [NonnegativeDecimal](#s-6d9026fe45); ge=0 |  |
 | <a id="s-e1c4c56d90"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
 
 ##### Definitions
 
+- [NonnegativeDecimal](#s-6d9026fe45)
 - [OperationIdentityDocument](#s-fa7d9bfff2)
 
 ##### <a id="s-1c58018aaa"></a>`if`
@@ -66,7 +67,12 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e6ecc4b8c2"></a>`retirement_grace_seconds` | no | const=0 |  |
+| <a id="s-e6ecc4b8c2"></a>`retirement_grace_seconds` | no | const="0" |  |
+
+##### <a id="s-6d9026fe45"></a>definition `NonnegativeDecimal`
+
+- <a id="s-c0723d8a7c"></a>`type`: `"string"`
+- <a id="s-81153d2858"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-fa7d9bfff2"></a>definition `OperationIdentityDocument`
 
@@ -116,7 +122,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e1761f489d43d41758fbc6172a0c5784ddb3e3864f5f7a7b813147b127197a52 -->
+<!-- exact-contract-value: 231a5f0bbd1aae39c7a3eb8f8d2ab45494decc8abc1adae69728480d601aa4f0 -->
 
 ```json
 {
@@ -124,6 +130,10 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
         "OperationIdentityDocument": {
           "additionalProperties": false,
           "properties": {
@@ -170,16 +180,15 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "fence": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "operation": {
           "$ref": "#/$defs/OperationIdentityDocument"
         },
         "retirement_grace_seconds": {
-          "default": 0,
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 0
         },
         "retirement_policy": {
           "default": "retain",
@@ -200,13 +209,13 @@ The following JSON is the complete value owned at each machine-authority pointer
       "then": {
         "properties": {
           "retirement_grace_seconds": {
-            "const": 0
+            "const": "0"
           }
         }
       },
       "type": "object"
     },
-    "signature": "\"(*, fence: Annotated[int, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], controller_evidence: dict[str, typing.Any], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0) -> None\""
+    "signature": "\"(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], controller_evidence: dict[str, typing.Any], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = <factory>) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

@@ -22,6 +22,7 @@ Choose an authority to inspect this policy's indexed contract-element applicatio
 | [riverhog-age](applications/riverhog-age.md) | 34 |
 | [riverhog-application-access](applications/riverhog-application-access.md) | 47 |
 | [riverhog-archive-contracts](applications/riverhog-archive-contracts.md) | 72 |
+| [riverhog-canonical-json](applications/riverhog-canonical-json.md) | 13 |
 | [riverhog-client](applications/riverhog-client.md) | 269 |
 | [riverhog-ftp-adapter](applications/riverhog-ftp-adapter.md) | 13 |
 | [riverhog-ftp-adapter-api-client](applications/riverhog-ftp-adapter-api-client.md) | 11 |

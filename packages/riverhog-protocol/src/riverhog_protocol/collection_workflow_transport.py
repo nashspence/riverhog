@@ -8,10 +8,11 @@ derivation documents are Riverhog contracts and are represented exactly here.
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Annotated, Any, Literal, Self
+from typing import Annotated, Any, Literal, Self, cast
 
 from http_api_contracts import BrowsePageToken
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from riverhog_canonical_json import format_scalar, scalar_schema
 
 from riverhog_protocol.collection_workflows import (
     ArtifactDisposition,
@@ -27,6 +28,7 @@ from riverhog_protocol.collection_workflows import (
     canonical_json_bytes,
     canonical_json_sha256,
 )
+from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from riverhog_protocol.list_controls import ClaimState, ProcessingClaimSort, SortOrder
 from riverhog_protocol.paths import CanonicalRelPath, CollectionId
 
@@ -109,7 +111,7 @@ class CollectionRootIdentityDocument(RiverhogWorkflowDocument):
 class CollectionArtifactIdentityDocument(RiverhogWorkflowDocument):
     collection: CollectionRootIdentityDocument
     path: CanonicalRelPath
-    bytes: int = Field(ge=0)
+    bytes: NonnegativeDecimal
     sha256: SHA256
 
     @model_validator(mode="after")
@@ -121,17 +123,17 @@ class CollectionArtifactIdentityDocument(RiverhogWorkflowDocument):
 class ExactSetAuthorityDocument(RiverhogWorkflowDocument):
     """Small immutable identity for an exact canonically ordered logical set."""
 
-    count: int = Field(ge=1)
+    count: NonnegativeDecimal = Field(ge=1)
     sha256: SHA256
 
 
 class ArtifactSetAuthorityDocument(ExactSetAuthorityDocument):
-    total_bytes: int = Field(ge=0)
+    total_bytes: NonnegativeDecimal = Field(ge=0)
 
 
 class ReceivingSetDocument(RiverhogWorkflowDocument):
     state: Literal["receiving", "sealed"]
-    count: int = Field(ge=0)
+    count: NonnegativeDecimal = Field(ge=0)
     authority: ExactSetAuthorityDocument | None = None
 
     @model_validator(mode="after")
@@ -145,7 +147,7 @@ class ReceivingSetDocument(RiverhogWorkflowDocument):
 
 class OutcomeSetDocument(RiverhogWorkflowDocument):
     state: Literal["receiving", "sealing", "sealed", "failed"]
-    count: int = Field(ge=0)
+    count: NonnegativeDecimal = Field(ge=0)
     authority: ExactSetAuthorityDocument | None = None
     failure: str | None = Field(default=None, min_length=1, max_length=1000)
 
@@ -162,8 +164,8 @@ class OutcomeSetDocument(RiverhogWorkflowDocument):
 
 class ArtifactReceivingSetDocument(RiverhogWorkflowDocument):
     state: Literal["receiving", "sealed"]
-    count: int = Field(ge=0)
-    total_bytes: int = Field(ge=0)
+    count: NonnegativeDecimal = Field(ge=0)
+    total_bytes: NonnegativeDecimal = Field(ge=0)
     authority: ArtifactSetAuthorityDocument | None = None
 
     @model_validator(mode="after")
@@ -178,8 +180,8 @@ class ArtifactReceivingSetDocument(RiverhogWorkflowDocument):
 
 
 class CollectionRootBatchDocument(RiverhogWorkflowDocument):
-    fence: int = Field(ge=1)
-    start_ordinal: int = Field(ge=0)
+    fence: NonnegativeDecimal = Field(ge=1)
+    start_ordinal: NonnegativeDecimal = Field(ge=0)
     inputs: list[CollectionRootIdentityDocument] = Field(
         min_length=1,
         max_length=WORKFLOW_SET_BATCH_MAX,
@@ -196,8 +198,8 @@ class CollectionRootBatchDocument(RiverhogWorkflowDocument):
 
 class CollectionRootPageDocument(RiverhogWorkflowDocument):
     authority: ExactSetAuthorityDocument
-    start_ordinal: int = Field(ge=0)
-    next_ordinal: int | None = Field(default=None, ge=1)
+    start_ordinal: NonnegativeDecimal = Field(ge=0)
+    next_ordinal: NonnegativeDecimal | None = Field(default=None, ge=1)
     inputs: list[CollectionRootIdentityDocument] = Field(
         max_length=WORKFLOW_SET_BATCH_MAX,
         json_schema_extra={
@@ -211,8 +213,8 @@ class CollectionRootPageDocument(RiverhogWorkflowDocument):
 
 
 class CollectionArtifactBatchDocument(RiverhogWorkflowDocument):
-    fence: int = Field(ge=1)
-    start_ordinal: int = Field(ge=0)
+    fence: NonnegativeDecimal = Field(ge=1)
+    start_ordinal: NonnegativeDecimal = Field(ge=0)
     artifacts: list[CollectionArtifactIdentityDocument] = Field(
         min_length=1,
         max_length=WORKFLOW_SET_BATCH_MAX,
@@ -229,8 +231,8 @@ class CollectionArtifactBatchDocument(RiverhogWorkflowDocument):
 
 class CollectionArtifactPageDocument(RiverhogWorkflowDocument):
     authority: ArtifactSetAuthorityDocument
-    start_ordinal: int = Field(ge=0)
-    next_ordinal: int | None = Field(default=None, ge=1)
+    start_ordinal: NonnegativeDecimal = Field(ge=0)
+    next_ordinal: NonnegativeDecimal | None = Field(default=None, ge=1)
     artifacts: list[CollectionArtifactIdentityDocument] = Field(
         max_length=WORKFLOW_SET_BATCH_MAX,
         json_schema_extra={
@@ -245,8 +247,8 @@ class CollectionArtifactPageDocument(RiverhogWorkflowDocument):
 
 class ProcessingOutcomePageDocument(RiverhogWorkflowDocument):
     authority: ExactSetAuthorityDocument
-    start_ordinal: int = Field(ge=0)
-    next_ordinal: int | None = Field(default=None, ge=1)
+    start_ordinal: NonnegativeDecimal = Field(ge=0)
+    next_ordinal: NonnegativeDecimal | None = Field(default=None, ge=1)
     outcomes: list[ProcessingOutcomeIdentityDocument] = Field(
         max_length=WORKFLOW_SET_BATCH_MAX,
         json_schema_extra={
@@ -271,7 +273,7 @@ class OperationIdentityDocument(RiverhogWorkflowDocument):
 
 class RecipeIdentityDocument(RiverhogWorkflowDocument):
     id: SemanticId
-    revision: int = Field(ge=1)
+    revision: NonnegativeDecimal = Field(ge=1)
     sha256: SHA256
 
     @model_validator(mode="after")
@@ -345,7 +347,7 @@ class ArtifactDispositionOutputDocument(RiverhogWorkflowDocument):
 
 
 class ArtifactDispositionBatchDocument(RiverhogWorkflowDocument):
-    fence: int = Field(ge=1)
+    fence: NonnegativeDecimal = Field(ge=1)
     dispositions: list[ArtifactDispositionDocument] = Field(
         min_length=1,
         max_length=DISPOSITION_BATCH_MAX,
@@ -361,7 +363,7 @@ class ArtifactDispositionBatchDocument(RiverhogWorkflowDocument):
 
 
 class ArtifactDispositionOutputBatchDocument(RiverhogWorkflowDocument):
-    fence: int = Field(ge=1)
+    fence: NonnegativeDecimal = Field(ge=1)
     outputs: list[ArtifactDispositionOutputDocument] = Field(
         min_length=1,
         max_length=DISPOSITION_BATCH_MAX,
@@ -377,9 +379,9 @@ class ArtifactDispositionOutputBatchDocument(RiverhogWorkflowDocument):
 
 
 class ArtifactDispositionSetIdentityDocument(RiverhogWorkflowDocument):
-    disposition_count: int = Field(ge=1)
-    output_edge_count: int = Field(ge=1)
-    output_artifact_count: int = Field(ge=1)
+    disposition_count: NonnegativeDecimal = Field(ge=1)
+    output_edge_count: NonnegativeDecimal = Field(ge=1)
+    output_artifact_count: NonnegativeDecimal = Field(ge=1)
     sha256: SHA256
 
     @model_validator(mode="after")
@@ -391,9 +393,9 @@ class ArtifactDispositionSetIdentityDocument(RiverhogWorkflowDocument):
 class ArtifactDispositionSetDocument(RiverhogWorkflowDocument):
     claim_id: ProcessingClaimId
     state: Literal["receiving", "sealing", "sealed", "failed"]
-    disposition_count: int = Field(ge=0)
-    output_edge_count: int = Field(ge=0)
-    output_artifact_count: int = Field(ge=0)
+    disposition_count: NonnegativeDecimal = Field(ge=0)
+    output_edge_count: NonnegativeDecimal = Field(ge=0)
+    output_artifact_count: NonnegativeDecimal = Field(ge=0)
     identity: ArtifactDispositionSetIdentityDocument | None = None
     failure: str | None = Field(default=None, min_length=1, max_length=1000)
 
@@ -414,8 +416,8 @@ class ArtifactDispositionSetDocument(RiverhogWorkflowDocument):
 
 class ArtifactDispositionPageDocument(RiverhogWorkflowDocument):
     authority: ArtifactDispositionSetIdentityDocument
-    start_ordinal: int = Field(ge=0)
-    next_ordinal: int | None = Field(default=None, ge=1)
+    start_ordinal: NonnegativeDecimal = Field(ge=0)
+    next_ordinal: NonnegativeDecimal | None = Field(default=None, ge=1)
     dispositions: list[ArtifactDispositionDocument] = Field(
         max_length=DISPOSITION_BATCH_MAX,
         json_schema_extra={
@@ -430,8 +432,8 @@ class ArtifactDispositionPageDocument(RiverhogWorkflowDocument):
 
 class ArtifactDispositionOutputPageDocument(RiverhogWorkflowDocument):
     authority: ArtifactDispositionSetIdentityDocument
-    start_ordinal: int = Field(ge=0)
-    next_ordinal: int | None = Field(default=None, ge=1)
+    start_ordinal: NonnegativeDecimal = Field(ge=0)
+    next_ordinal: NonnegativeDecimal | None = Field(default=None, ge=1)
     outputs: list[ArtifactDispositionOutputDocument] = Field(
         max_length=DISPOSITION_BATCH_MAX,
         json_schema_extra={
@@ -446,7 +448,7 @@ class ArtifactDispositionOutputPageDocument(RiverhogWorkflowDocument):
 
 class ClaimFenceDocument(RiverhogWorkflowDocument):
     id: ProcessingClaimId
-    fence: int = Field(ge=1)
+    fence: NonnegativeDecimal = Field(ge=1)
 
 
 class CollectionDerivationDocument(RiverhogWorkflowDocument):
@@ -494,7 +496,7 @@ class ProcessingClaimCreateDocument(RiverhogWorkflowDocument):
 
 
 class ProcessingClaimRenewDocument(RiverhogWorkflowDocument):
-    fence: int = Field(ge=1)
+    fence: NonnegativeDecimal = Field(ge=1)
     lease_seconds: int = Field(default=1800, ge=30, le=86400)
 
 
@@ -506,17 +508,17 @@ class ProcessingClaimPlanSealDocument(RiverhogWorkflowDocument):
     model_config = ConfigDict(
         json_schema_extra={
             "if": {"properties": {"retirement_policy": {"const": "retain"}}},
-            "then": {"properties": {"retirement_grace_seconds": {"const": 0}}},
+            "then": {"properties": {"retirement_grace_seconds": {"const": "0"}}},
         }
     )
 
-    fence: int = Field(ge=1)
+    fence: NonnegativeDecimal = Field(ge=1)
     execution_id: SHA256
     controller_evidence: ControllerEvidenceDocument
     controller_evidence_sha256: SHA256
     operation: OperationIdentityDocument
     retirement_policy: RetirementPolicy = "retain"
-    retirement_grace_seconds: int = Field(default=0, ge=0)
+    retirement_grace_seconds: NonnegativeDecimal = Field(default_factory=lambda: 0, ge=0)
 
     @model_validator(mode="after")
     def validate_plan(self) -> Self:
@@ -536,7 +538,7 @@ def _default_capability_actions() -> list[CapabilityAction]:
 
 
 class TransformCapabilityCreateDocument(RiverhogWorkflowDocument):
-    fence: int = Field(ge=1)
+    fence: NonnegativeDecimal = Field(ge=1)
     audience: str = Field(pattern=r"^[a-z0-9][a-z0-9._:/-]{0,299}$")
     actions: list[CapabilityAction] = Field(
         default_factory=_default_capability_actions,
@@ -563,12 +565,12 @@ class TransformCapabilityCreateDocument(RiverhogWorkflowDocument):
 
 class ProcessingOutcomeBindingDocument(RiverhogWorkflowDocument):
     claim_id: ProcessingClaimId
-    fence: int = Field(ge=1)
+    fence: NonnegativeDecimal = Field(ge=1)
     outcome_id: SemanticId
 
 
 class ProcessingClaimSettleDocument(RiverhogWorkflowDocument):
-    fence: int = Field(ge=1)
+    fence: NonnegativeDecimal = Field(ge=1)
     output_collection_id: CollectionId
     derivation: CollectionDerivationDocument
     outcome: ProcessingOutcomeBindingDocument | None = None
@@ -578,13 +580,13 @@ class ProcessingClaimOutcomesSettleDocument(RiverhogWorkflowDocument):
     model_config = ConfigDict(
         json_schema_extra={
             "if": {"properties": {"retirement_policy": {"const": "retain"}}},
-            "then": {"properties": {"retirement_grace_seconds": {"const": 0}}},
+            "then": {"properties": {"retirement_grace_seconds": {"const": "0"}}},
         }
     )
 
-    fence: int = Field(ge=1)
+    fence: NonnegativeDecimal = Field(ge=1)
     retirement_policy: RetirementPolicy = "retain"
-    retirement_grace_seconds: int = Field(default=0, ge=0)
+    retirement_grace_seconds: NonnegativeDecimal = Field(default_factory=lambda: 0, ge=0)
 
     @model_validator(mode="after")
     def validate_outcomes(self) -> Self:
@@ -594,7 +596,7 @@ class ProcessingClaimOutcomesSettleDocument(RiverhogWorkflowDocument):
 
 
 class ProcessingClaimFenceDocument(RiverhogWorkflowDocument):
-    fence: int = Field(ge=1)
+    fence: NonnegativeDecimal = Field(ge=1)
 
 
 class ProcessingClaimAbandonDocument(ProcessingClaimFenceDocument):
@@ -610,7 +612,7 @@ class ProcessingClaimPlanDocument(RiverhogWorkflowDocument):
     model_config = ConfigDict(
         json_schema_extra={
             "if": {"properties": {"retirement_policy": {"const": "retain"}}},
-            "then": {"properties": {"retirement_grace_seconds": {"const": 0}}},
+            "then": {"properties": {"retirement_grace_seconds": {"const": "0"}}},
         }
     )
 
@@ -621,19 +623,23 @@ class ProcessingClaimPlanDocument(RiverhogWorkflowDocument):
     inputs: ExactSetAuthorityDocument
     artifacts: ArtifactSetAuthorityDocument
     retirement_policy: RetirementPolicy
-    retirement_grace_seconds: int = Field(ge=0)
+    retirement_grace_seconds: NonnegativeDecimal = Field(ge=0)
     sealed_at: Timestamp
 
     @model_validator(mode="after")
     def validate_plan(self) -> Self:
-        ProcessingClaimPlanSealDocument(
-            fence=1,
-            execution_id=self.execution_id,
-            controller_evidence=self.controller_evidence,
-            controller_evidence_sha256=self.controller_evidence_sha256,
-            operation=self.operation,
-            retirement_policy=self.retirement_policy,
-            retirement_grace_seconds=self.retirement_grace_seconds,
+        ProcessingClaimPlanSealDocument.model_validate(
+            {
+                "fence": "1",
+                "execution_id": self.execution_id,
+                "controller_evidence": self.controller_evidence,
+                "controller_evidence_sha256": self.controller_evidence_sha256,
+                "operation": self.operation.model_dump(mode="json"),
+                "retirement_policy": self.retirement_policy,
+                "retirement_grace_seconds": format_scalar(
+                    "nonnegative", self.retirement_grace_seconds
+                ),
+            }
         )
         return self
 
@@ -642,13 +648,13 @@ class ProcessingClaimOutcomeSettlementDocument(RiverhogWorkflowDocument):
     model_config = ConfigDict(
         json_schema_extra={
             "if": {"properties": {"retirement_policy": {"const": "retain"}}},
-            "then": {"properties": {"retirement_grace_seconds": {"const": 0}}},
+            "then": {"properties": {"retirement_grace_seconds": {"const": "0"}}},
         }
     )
 
     outcomes: ExactSetAuthorityDocument
     retirement_policy: RetirementPolicy
-    retirement_grace_seconds: int = Field(ge=0)
+    retirement_grace_seconds: NonnegativeDecimal = Field(ge=0)
 
     @model_validator(mode="after")
     def validate_retirement(self) -> Self:
@@ -666,7 +672,7 @@ class RetirementClaimReferenceDocument(RiverhogWorkflowDocument):
                 {
                     "properties": {
                         "execution_id": {"type": "string"},
-                        "output_collection_id": {"type": "integer"},
+                        "output_collection_id": cast(Any, scalar_schema("sequence63")),
                         "outcomes": {"type": "null"},
                     },
                     "required": ["execution_id", "output_collection_id"],
@@ -684,7 +690,7 @@ class RetirementClaimReferenceDocument(RiverhogWorkflowDocument):
     )
 
     claim_id: ProcessingClaimId
-    fence: int = Field(ge=1)
+    fence: NonnegativeDecimal = Field(ge=1)
     work_id: SHA256
     execution_id: SHA256 | None = None
     output_collection_id: CollectionId | None = None
@@ -749,7 +755,7 @@ class ProcessingClaimDocument(RiverhogWorkflowDocument):
     consumer: ProcessingClaimConsumerDocument
     purpose: str = Field(min_length=1, max_length=160)
     state: ClaimState
-    fence: int = Field(ge=1)
+    fence: NonnegativeDecimal = Field(ge=1)
     expires_at: Timestamp
     created_at: Timestamp
     updated_at: Timestamp
@@ -827,7 +833,7 @@ class TransformCapabilityDocument(RiverhogWorkflowDocument):
     format: Literal["riverhog-transform-capability/v1"]
     id: str = Field(min_length=1, max_length=160)
     claim_id: ProcessingClaimId
-    fence: int = Field(ge=1)
+    fence: NonnegativeDecimal = Field(ge=1)
     audience: str = Field(pattern=r"^[a-z0-9][a-z0-9._:/-]{0,299}$")
     actions: list[CapabilityAction] = Field(
         min_length=1,
@@ -846,10 +852,12 @@ class TransformCapabilityDocument(RiverhogWorkflowDocument):
 
     @model_validator(mode="after")
     def validate_capability(self) -> Self:
-        TransformCapabilityCreateDocument(
-            fence=self.fence,
-            audience=self.audience,
-            actions=self.actions,
+        TransformCapabilityCreateDocument.model_validate(
+            {
+                "fence": format_scalar("nonnegative", self.fence),
+                "audience": self.audience,
+                "actions": self.actions,
+            }
         )
         return self
 

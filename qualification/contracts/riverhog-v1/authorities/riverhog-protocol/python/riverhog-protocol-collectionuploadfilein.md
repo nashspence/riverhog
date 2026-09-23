@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-f7ee9ce2f4"></a>`kind`: `"class"`
-- <a id="s-650f7668c9"></a>`signature`: `"\"(*, path: CanonicalRelPath, bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], raw_parts: riverhog_protocol.collection_upload_transport.CollectionUploadRawPartsIn \| None = None, provenance: Optional[Annotated[riverhog_protocol.collection_upload_transport.CapturedFileProvenanceBinding \| riverhog_protocol.collection_upload_transport.OmittedFileProvenanceBinding, FieldInfo(annotation=NoneType, required=True, discriminator='status')]] = None) -> None\""`
+- <a id="s-650f7668c9"></a>`signature`: `"\"(*, path: CanonicalRelPath, bytes: NonnegativeDecimal, sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], raw_parts: riverhog_protocol.collection_upload_transport.CollectionUploadRawPartsIn \| None = None, provenance: Optional[Annotated[riverhog_protocol.collection_upload_transport.CapturedFileProvenanceBinding \| riverhog_protocol.collection_upload_transport.OmittedFileProvenanceBinding, FieldInfo(annotation=NoneType, required=True, discriminator='status')]] = None) -> None\""`
 
 #### Validated model schema
 
@@ -36,7 +36,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8ef0950b9b"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-8ef0950b9b"></a>`bytes` | yes | [NonnegativeDecimal](#s-7ad69fda15) |  |
 | <a id="s-7e7965894e"></a>`path` | yes | [CanonicalRelPath](#s-2c127c38b4) |  |
 | <a id="s-f6526b2622"></a>`provenance` | no | anyOf=[(discriminator={"mapping":{"captured":"#/$defs/CapturedFileProvenanceBinding","omitted":"#/$defs/OmittedFileProvenanceBinding"},"propertyName":"status"}; oneOf=[([CapturedFileProvenanceBinding](#s-e4b2dfa1c2)); ([OmittedFileProvenanceBinding](#s-774afcbe22))]); (type="null")]; default=null |  |
 | <a id="s-d708f72f7f"></a>`raw_parts` | no | anyOf=[([CollectionUploadRawPartsIn](#s-9617869a96)); (type="null")]; default=null |  |
@@ -47,6 +47,7 @@ Exact externally visible contract owned by this contract element.
 - [CanonicalRelPath](#s-2c127c38b4)
 - [CapturedFileProvenanceBinding](#s-e4b2dfa1c2)
 - [CollectionUploadRawPartsIn](#s-9617869a96)
+- [NonnegativeDecimal](#s-7ad69fda15)
 - [OmittedFileProvenanceBinding](#s-774afcbe22)
 - [ProvenanceJournalId](#s-71d9f30b54)
 - [ProvenanceStateId](#s-31a410e8a3)
@@ -92,8 +93,13 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-9caff934d7"></a>`ordered_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1c9e32d236"></a>`part_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-74bf523b87"></a>`part_plaintext_bytes` | yes | type="integer"; minimum=65536 |  |
+| <a id="s-1c9e32d236"></a>`part_count` | yes | [NonnegativeDecimal](#s-7ad69fda15); ge=1 |  |
+| <a id="s-74bf523b87"></a>`part_plaintext_bytes` | yes | [NonnegativeDecimal](#s-7ad69fda15); ge=65536 |  |
+
+##### <a id="s-7ad69fda15"></a>definition `NonnegativeDecimal`
+
+- <a id="s-9254b8e668"></a>`type`: `"string"`
+- <a id="s-dd4f0c71f7"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-774afcbe22"></a>definition `OmittedFileProvenanceBinding`
 
@@ -145,7 +151,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3664ca7a6914a0b33af38ab7513047cd77d2920878a23e08fff5544fa8252679 -->
+<!-- exact-contract-value: e4c33f991fcc19fe7aa4bb397596d5bcde3625a77af7178fe17ec770cb92c3b5 -->
 
 ```json
 {
@@ -202,12 +208,12 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "part_count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "part_plaintext_bytes": {
-              "minimum": 65536,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 65536
             }
           },
           "required": [
@@ -216,6 +222,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "ordered_sha256"
           ],
           "type": "object"
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         },
         "OmittedFileProvenanceBinding": {
           "additionalProperties": false,
@@ -248,8 +258,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "additionalProperties": false,
       "properties": {
         "bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         "path": {
           "$ref": "#/$defs/CanonicalRelPath"
@@ -302,7 +311,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, path: CanonicalRelPath, bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], raw_parts: riverhog_protocol.collection_upload_transport.CollectionUploadRawPartsIn | None = None, provenance: Optional[Annotated[riverhog_protocol.collection_upload_transport.CapturedFileProvenanceBinding | riverhog_protocol.collection_upload_transport.OmittedFileProvenanceBinding, FieldInfo(annotation=NoneType, required=True, discriminator='status')]] = None) -> None\""
+    "signature": "\"(*, path: CanonicalRelPath, bytes: NonnegativeDecimal, sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], raw_parts: riverhog_protocol.collection_upload_transport.CollectionUploadRawPartsIn | None = None, provenance: Optional[Annotated[riverhog_protocol.collection_upload_transport.CapturedFileProvenanceBinding | riverhog_protocol.collection_upload_transport.OmittedFileProvenanceBinding, FieldInfo(annotation=NoneType, required=True, discriminator='status')]] = None) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

@@ -6,6 +6,7 @@ from collections.abc import Iterator
 from typing import Any, cast
 
 from http_api_contracts import BrowseScalar, closed_literal_values
+from riverhog_canonical_json import format_scalar
 from riverhog_protocol import (
     ProvenanceSort,
     ProvenanceStatus,
@@ -145,7 +146,7 @@ class SqlAlchemyProvenanceService:
                 "order": order,
                 "query": q,
                 "status": status,
-                "collection_id": collection_id,
+                "collection_id": format_scalar("sequence63", collection_id),
                 "provenance_mode": collection.provenance_mode,
                 "provenance_identity": collection.provenance_identity,
                 "files": [_file_payload(file, binding, collection) for file, binding in rows],
@@ -395,7 +396,7 @@ class SqlAlchemyProvenanceService:
                 position_of=lambda agent_id: (agent_id,),
             )
             return {
-                "collection_id": collection_id,
+                "collection_id": format_scalar("sequence63", collection_id),
                 "journal_id": journal_id,
                 "page_size": page_size,
                 "_next_position": next_position,
@@ -1659,7 +1660,7 @@ def _verification_result(
 ) -> dict[str, Any]:
     checkpoint = _verification_checkpoint(record)
     return {
-        "collection_id": record.collection_id,
+        "collection_id": format_scalar("sequence63", record.collection_id),
         "valid": True,
         "provenance_mode": collection.provenance_mode,
         "provenance_identity": collection.provenance_identity,
@@ -2207,9 +2208,9 @@ def _file_payload(
             "omission_reason": binding.omission_reason,
         }
     return {
-        "collection_id": file.collection_id,
+        "collection_id": format_scalar("sequence63", file.collection_id),
         "path": file.path,
-        "bytes": file.bytes,
+        "bytes": format_scalar("nonnegative", file.bytes),
         "sha256": file.sha256,
         "provenance": provenance,
     }
@@ -2235,7 +2236,7 @@ def _journal_payload(
 def _verification_payload(record: CollectionProvenanceVerificationRecord) -> dict[str, Any]:
     result = json.loads(record.result_json) if record.result_json is not None else None
     return {
-        "collection_id": record.collection_id,
+        "collection_id": format_scalar("sequence63", record.collection_id),
         "state": record.state,
         "requested_at": record.requested_at,
         "started_at": record.started_at,

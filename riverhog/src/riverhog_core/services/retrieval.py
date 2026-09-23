@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from typing import Any, Literal, cast
 
 from http_api_contracts import canonical_json_bytes, closed_literal_values
+from riverhog_canonical_json import format_scalar
 from riverhog_protocol import (
     RETRIEVAL_FILE_BATCH_MAX,
     ImmutableFileIdentityDocument,
@@ -221,16 +222,18 @@ class SqlAlchemyRetrievalService:
             if collection is None:
                 raise NotFound(f"collection not found: {normalized_id}")
             require_collection_access(session, principal, CATALOG_READ, normalized_id)
-            header = PortableCollectionHeader(
-                collection=normalized_id,
-                content_identity=collection.content_identity,
-                encryption_format=collection.encryption_format,
-                passphrase_id=collection.passphrase_id,
-                provenance_mode=cast(
-                    Literal["captured", "mixed", "omitted"],
-                    collection.provenance_mode,
-                ),
-                provenance_identity=collection.provenance_identity,
+            header = PortableCollectionHeader.model_validate(
+                dict(
+                    collection=format_scalar("sequence63", normalized_id),
+                    content_identity=collection.content_identity,
+                    encryption_format=collection.encryption_format,
+                    passphrase_id=collection.passphrase_id,
+                    provenance_mode=cast(
+                        Literal["captured", "mixed", "omitted"],
+                        collection.provenance_mode,
+                    ),
+                    provenance_identity=collection.provenance_identity,
+                )
             )
             file_count = int(collection.file_count)
             file_bytes = int(collection.file_bytes)
@@ -294,16 +297,18 @@ class SqlAlchemyRetrievalService:
             if cursor_identity is not None and cursor_identity != inventory_identity:
                 raise PreconditionFailed("collection inventory cursor is stale")
 
-            header = PortableCollectionHeader(
-                collection=normalized_id,
-                content_identity=collection.content_identity,
-                encryption_format=collection.encryption_format,
-                passphrase_id=collection.passphrase_id,
-                provenance_mode=cast(
-                    Literal["captured", "mixed", "omitted"],
-                    collection.provenance_mode,
-                ),
-                provenance_identity=collection.provenance_identity,
+            header = PortableCollectionHeader.model_validate(
+                dict(
+                    collection=format_scalar("sequence63", normalized_id),
+                    content_identity=collection.content_identity,
+                    encryption_format=collection.encryption_format,
+                    passphrase_id=collection.passphrase_id,
+                    provenance_mode=cast(
+                        Literal["captured", "mixed", "omitted"],
+                        collection.provenance_mode,
+                    ),
+                    provenance_identity=collection.provenance_identity,
+                )
             )
             file_count = int(collection.file_count)
             file_bytes = int(collection.file_bytes)
@@ -326,10 +331,12 @@ class SqlAlchemyRetrievalService:
         has_more = len(rows) > limit
         selected = rows[:limit]
         files = [
-            ImmutableFileIdentityDocument(
-                path=str(path),
-                bytes=int(byte_count),
-                sha256=str(sha256),
+            ImmutableFileIdentityDocument.model_validate(
+                {
+                    "path": str(path),
+                    "bytes": str(int(byte_count)),
+                    "sha256": str(sha256),
+                }
             )
             for path, byte_count, sha256 in selected
         ]
@@ -343,11 +350,13 @@ class SqlAlchemyRetrievalService:
             else None
         )
         return PortableCollectionInventoryPage(
-            authority=PortableCollectionInventoryAuthority(
-                header=header,
-                inventory_identity=inventory_identity,
-                file_count=file_count,
-                file_bytes=file_bytes,
+            authority=PortableCollectionInventoryAuthority.model_validate(
+                dict(
+                    header=header,
+                    inventory_identity=inventory_identity,
+                    file_count=format_scalar("nonnegative", file_count),
+                    file_bytes=format_scalar("nonnegative", file_bytes),
+                )
             ),
             files=files,
             next_cursor=next_cursor,
@@ -787,9 +796,9 @@ class SqlAlchemyRetrievalService:
                 plan.file_commitment_sha256 = _chain_commitment(
                     plan.file_commitment_sha256,
                     {
-                        "collection_id": collection_id,
+                        "collection_id": format_scalar("sequence63", collection_id),
                         "path": path,
-                        "bytes": file_record.bytes,
+                        "bytes": format_scalar("nonnegative", file_record.bytes),
                         "sha256": file_record.sha256,
                     },
                 )
@@ -911,21 +920,23 @@ class SqlAlchemyRetrievalService:
                 plan.segment_commitment_sha256 = _chain_commitment(
                     plan.segment_commitment_sha256,
                     {
-                        "file_order": plan_file.file_order,
+                        "file_order": format_scalar("nonnegative", plan_file.file_order),
                         "sequence": str(placement.sequence),
-                        "collection_id": collection_id,
+                        "collection_id": format_scalar("sequence63", collection_id),
                         "path": path,
                         "object_order": str(planned_object.object_order),
                         "object_id": planned_object.object_id,
                         "kind": planned_object.kind,
-                        "plaintext_bytes": planned_object.plaintext_bytes,
-                        "stored_bytes": planned_object.stored_bytes,
+                        "plaintext_bytes": format_scalar(
+                            "nonnegative", planned_object.plaintext_bytes
+                        ),
+                        "stored_bytes": format_scalar("nonnegative", planned_object.stored_bytes),
                         "sha256": planned_object.sha256,
                         "read_mode": planned_object.read_mode,
                         "cache_store": planned_object.cache_store,
-                        "file_offset": placement.file_offset,
-                        "object_offset": placement.object_offset,
-                        "bytes": placement.bytes,
+                        "file_offset": format_scalar("nonnegative", placement.file_offset),
+                        "object_offset": format_scalar("nonnegative", placement.object_offset),
+                        "bytes": format_scalar("nonnegative", placement.bytes),
                         "member": placement.member,
                     },
                 )
@@ -989,12 +1000,12 @@ class SqlAlchemyRetrievalService:
     @staticmethod
     def _seal_plan(plan: RetrievalPlanRecord, *, file_count: int) -> None:
         plan.etag = hashlib.sha256(
-            _canonical_json(
+            canonical_json_bytes(
                 {
                     "format": "riverhog-retrieval-plan-authority/v1",
                     "lease_seconds": plan.lease_seconds,
                     "restore_policy": plan.restore_policy,
-                    "file_count": file_count,
+                    "file_count": format_scalar("nonnegative", file_count),
                     "file_identity": plan.file_commitment_sha256,
                     "segment_identity": plan.segment_commitment_sha256,
                     "object_count": str(plan.object_count),
@@ -2125,10 +2136,6 @@ class SqlAlchemyRetrievalService:
             _release_job_reservation(session, job.id)
 
 
-def _canonical_json(payload: object) -> bytes:
-    return json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
-
-
 class _CachedArchiveRangeStore:
     def __init__(
         self,
@@ -2234,7 +2241,8 @@ def _normalize_file_refs(files: Sequence[tuple[int, str]]) -> tuple[tuple[int, s
         document = RetrievalFileReferenceSetDocument.model_validate(
             {
                 "files": [
-                    {"collection_id": collection_id, "path": path} for collection_id, path in files
+                    {"collection_id": format_scalar("sequence63", collection_id), "path": path}
+                    for collection_id, path in files
                 ]
             }
         )
@@ -2625,9 +2633,9 @@ def _normalize_plan_idempotency_key(value: str) -> str:
 
 def _plan_file_payload(record: RetrievalPlanFileRecord) -> dict[str, object]:
     return {
-        "collection_id": record.collection_id,
+        "collection_id": format_scalar("sequence63", record.collection_id),
         "path": record.path,
-        "bytes": record.bytes,
+        "bytes": format_scalar("nonnegative", record.bytes),
         "sha256": record.sha256,
         "requires_restore": record.requires_restore,
     }

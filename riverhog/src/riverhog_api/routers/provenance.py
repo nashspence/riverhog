@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Header, Query, Request, Response
+from fastapi import Header, Query, Request, Response
 from http_api_contracts import (
     mutable_browse_operation,
     operation_interface,
@@ -24,6 +24,7 @@ from riverhog_api.browse import (
     page_position,
 )
 from riverhog_api.deps import ContainerDep
+from riverhog_api.routing import RiverhogRouter
 from riverhog_api.schemas.provenance import (
     CollectionFileProvenanceDetailOut,
     CollectionFileProvenanceTraceOut,
@@ -32,7 +33,7 @@ from riverhog_api.schemas.provenance import (
     ListProvenanceJournalAgentsResponse,
 )
 
-router = APIRouter(tags=["provenance"])
+router = RiverhogRouter(tags=["provenance"])
 
 _PROVENANCE_JOURNAL_RESPONSE: dict[int | str, dict[str, Any]] = {
     200: {

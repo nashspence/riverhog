@@ -175,14 +175,10 @@ class CollectionRootRef(Stove0ProtocolModel):
 
     @classmethod
     def from_identity(cls, value: CollectionRootIdentity) -> CollectionRootRef:
-        return cls(
-            collection_id=value.collection_id,
-            archive_root_sha256=value.archive_root_sha256,
-            content_identity=value.content_identity,
-        )
+        return cls.model_validate(value.as_dict())
 
     def to_identity(self) -> CollectionRootIdentity:
-        return CollectionRootIdentity(**self.model_dump(mode="python"))
+        return CollectionRootIdentity.from_mapping(self.model_dump(mode="json"))
 
 
 class RecipeRef(Stove0ProtocolModel):

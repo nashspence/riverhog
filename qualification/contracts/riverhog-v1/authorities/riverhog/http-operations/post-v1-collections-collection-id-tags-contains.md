@@ -24,7 +24,7 @@ Collection Contains Tag
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-a129ba3380"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-a129ba3380"></a>`collection_id` | path | yes | not declared | allOf=[(type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])"); (not=(const="0"))]; title="Collection Id" |
 | <a id="s-bebcedd560"></a>`revision` | query | yes | not declared | type="integer"; minimum=1; title="Revision" |
 | <a id="s-04b471c6e6"></a>`tag_set_identity` | query | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Tag Set Identity" |
 
@@ -90,7 +90,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/tags.py::collection\_contains\_tag](../../../../../../riverhog/src/riverhog_api/routers/tags.py#L117)
+- **Handler:** [riverhog/src/riverhog\_api/routers/tags.py::collection\_contains\_tag](../../../../../../riverhog/src/riverhog_api/routers/tags.py#L118)
 
 ### Structural operation bindings
 
@@ -124,7 +124,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.collection_contains_tag",
       "source": {
-        "line": 2269,
+        "line": 2271,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.collection_contains_tag"
@@ -153,7 +153,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0fb6dcfc372ad8bcba50ada9b7ffd75c028c33ff1e115798130677e44ec7596e -->
+<!-- exact-contract-value: 9f8cc3b480bd6774cdb1fcb66374d60b03902f4d75a186ec30c9beb57a38cae2 -->
 
 ```json
 {
@@ -164,9 +164,18 @@ The following JSON is the complete value owned at each machine-authority pointer
       "name": "collection_id",
       "required": true,
       "schema": {
-        "minimum": 1,
-        "title": "Collection Id",
-        "type": "integer"
+        "allOf": [
+          {
+            "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+            "type": "string"
+          },
+          {
+            "not": {
+              "const": "0"
+            }
+          }
+        ],
+        "title": "Collection Id"
       }
     },
     {

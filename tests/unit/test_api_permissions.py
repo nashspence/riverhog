@@ -182,7 +182,7 @@ def test_collection_description_replacement_parses_condition_and_returns_identit
             assert expected_identity == "a" * 64
             assert principal.app == "editor"
             return {
-                "collection_id": 42,
+                "collection_id": "42",
                 "description": description,
                 "description_revision": 7,
                 "description_identity": "b" * 64,
@@ -213,7 +213,7 @@ def test_collection_description_replacement_parses_condition_and_returns_identit
             assert response.status_code == 200
             assert response.headers["ETag"] == '"' + "b" * 64 + '"'
             assert response.json() == {
-                "collection_id": 42,
+                "collection_id": "42",
                 "description": "Updated description",
                 "description_revision": 7,
                 "description_identity": "b" * 64,
@@ -286,14 +286,14 @@ def test_collection_upload_unit_accepts_the_documented_binary_body() -> None:
         def get_unit(self, collection_id: int, volume_id: str, unit: int) -> dict[str, object]:
             assert (collection_id, volume_id, unit) == (42, f"pack-{0:064x}", 0)
             return {
-                "unit": 0,
-                "payload_bytes": 3,
-                "plaintext_bytes": 3,
+                "unit": "0",
+                "payload_bytes": "3",
+                "plaintext_bytes": "3",
                 "sources": [
                     {
                         "path": "camera/clip.bin",
-                        "offset": 0,
-                        "bytes": 3,
+                        "offset": "0",
+                        "bytes": "3",
                         "artifact_sha256": "b" * 64,
                     }
                 ],
@@ -313,14 +313,14 @@ def test_collection_upload_unit_accepts_the_documented_binary_body() -> None:
             assert plan_sha256 == "a" * 64
             self.content = content
             return {
-                "unit": 0,
-                "payload_bytes": 3,
-                "plaintext_bytes": 3,
+                "unit": "0",
+                "payload_bytes": "3",
+                "plaintext_bytes": "3",
                 "sources": [
                     {
                         "path": "camera/clip.bin",
-                        "offset": 0,
-                        "bytes": 3,
+                        "offset": "0",
+                        "bytes": "3",
                         "artifact_sha256": "b" * 64,
                     }
                 ],

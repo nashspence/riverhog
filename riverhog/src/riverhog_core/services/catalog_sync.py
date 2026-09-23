@@ -10,6 +10,7 @@ from datetime import timedelta
 from typing import Any, Literal, cast
 
 from http_api_contracts import canonical_json_bytes
+from riverhog_canonical_json import format_scalar
 from riverhog_protocol import (
     CATALOG_SYNC_CURSOR_BYTES_MAX,
     CATALOG_SYNC_PAGE_SIZE_MAX,
@@ -338,23 +339,27 @@ class SqlAlchemyCatalogSyncService:
                     raise RuntimeError("published catalog event has no revision")
                 if projected == "deleted":
                     changes.append(
-                        CatalogSyncDelete(
-                            collection_id=event.collection_id,
-                            revision=str(event.revision),
+                        CatalogSyncDelete.model_validate(
+                            dict(
+                                collection_id=format_scalar("sequence63", event.collection_id),
+                                revision=str(event.revision),
+                            )
                         )
                     )
                 else:
                     changes.append(
-                        CatalogSyncUpsert(
-                            collection_id=event.collection_id,
-                            archive_root_sha256=event.archive_root_sha256,
-                            content_identity=event.content_identity,
-                            description=event.description,
-                            description_revision=event.description_revision,
-                            description_identity=event.description_identity,
-                            tag_revision=event.tag_revision,
-                            tag_set_identity=event.tag_set_identity,
-                            revision=str(event.revision),
+                        CatalogSyncUpsert.model_validate(
+                            dict(
+                                collection_id=format_scalar("sequence63", event.collection_id),
+                                archive_root_sha256=event.archive_root_sha256,
+                                content_identity=event.content_identity,
+                                description=event.description,
+                                description_revision=event.description_revision,
+                                description_identity=event.description_identity,
+                                tag_revision=event.tag_revision,
+                                tag_set_identity=event.tag_set_identity,
+                                revision=str(event.revision),
+                            )
                         )
                     )
             bootstrap = bool(payload.get("bootstrap"))
@@ -995,7 +1000,7 @@ def _authorization_view(principal: ApplicationPrincipal) -> str:
     return hashlib.sha256(
         canonical_json_bytes(
             {
-                "access": sorted((item.permission, item.resource) for item in principal.access),
+                "access": sorted([[item.permission, item.resource] for item in principal.access]),
                 "app": principal.app,
                 "key_id": principal.key_id,
             }
@@ -1047,16 +1052,18 @@ def _descriptor(
 ) -> CatalogSyncDescriptor:
     if archive_root_sha256 is None or revision is None:
         raise RuntimeError("published collection has no synchronization identity")
-    return CatalogSyncDescriptor(
-        collection_id=collection_id,
-        archive_root_sha256=archive_root_sha256,
-        content_identity=content_identity,
-        description=description,
-        description_revision=description_revision,
-        description_identity=description_identity,
-        tag_revision=tag_revision,
-        tag_set_identity=tag_set_identity,
-        revision=str(revision),
+    return CatalogSyncDescriptor.model_validate(
+        dict(
+            collection_id=format_scalar("sequence63", collection_id),
+            archive_root_sha256=archive_root_sha256,
+            content_identity=content_identity,
+            description=description,
+            description_revision=description_revision,
+            description_identity=description_identity,
+            tag_revision=tag_revision,
+            tag_set_identity=tag_set_identity,
+            revision=str(revision),
+        )
     )
 
 

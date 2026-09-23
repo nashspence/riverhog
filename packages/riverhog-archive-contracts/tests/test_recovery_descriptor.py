@@ -43,6 +43,20 @@ def test_descriptor_is_canonical_and_matches_formal_schema() -> None:
     jsonschema.validate(json.loads(content), schema)
 
 
+def test_descriptor_preserves_exact_unbounded_stored_size() -> None:
+    descriptor = RecoveryDescriptor(
+        encryption=_descriptor().encryption,
+        root=ArchiveRootCiphertextIdentity(
+            path="manifest.json.age",
+            stored_bytes=2**100 + 1,
+            stored_sha256="a" * 64,
+        ),
+    )
+    encoded = descriptor.to_json_bytes()
+    assert json.loads(encoded)["root"]["stored_bytes"] == str(2**100 + 1)
+    assert RecoveryDescriptor.from_json_bytes(encoded) == descriptor
+
+
 @pytest.mark.parametrize(
     "payload",
     [

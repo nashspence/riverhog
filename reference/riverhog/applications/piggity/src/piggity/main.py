@@ -1961,7 +1961,7 @@ def _upload_collection_via_session(
         provenance_mode="omitted" if omit_provenance is not None else "captured",
         provenance_omission_reason=omit_provenance,
     )
-    collection_id = cast(int, session_payload["collection_id"])
+    collection_id = normalize_collection_id(session_payload["collection_id"])
     if session_payload.get("state") == "finalized":
         _log_upload(f"Collection {collection_id} already finalized for this retry key")
         return session_payload

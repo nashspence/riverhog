@@ -39,7 +39,7 @@ EMPTY_TAG_SET_IDENTITY = collection_tag_set_identity(None)
 def _collection_deletion(status: str, challenge: str | None, blockers: list[str]) -> dict[str, Any]:
     return {
         "status": status,
-        "collection_id": 1,
+        "collection_id": "1",
         "warning": "warning",
         "expires_at": "2026-08-25T00:00:00.000000Z",
         "challenge": challenge,
@@ -59,7 +59,7 @@ def _collection_deletion(status: str, challenge: str | None, blockers: list[str]
 def _retirement(status: str, challenge: str | None, blockers: list[str]) -> dict[str, Any]:
     return {
         "status": status,
-        "collection_id": 1,
+        "collection_id": "1",
         "store": "archive",
         "warning": "warning",
         "expires_at": "2026-08-25T00:00:00.000000Z",
@@ -81,7 +81,7 @@ def _retirement(status: str, challenge: str | None, blockers: list[str]) -> dict
 def test_upload_discard_readiness_requires_orphaned_custody_but_orphans_may_be_blocked() -> None:
     payload = {
         "status": "ready",
-        "collection_id": 1,
+        "collection_id": "1",
         "warning": "warning",
         "expires_at": "2026-08-25T00:00:00.000000Z",
         "challenge": "challenge",
@@ -129,7 +129,7 @@ def test_destructive_plans_reject_impossible_challenge_blocker_states(
 
 def test_terminal_job_responses_require_their_evidence() -> None:
     archive_job = {
-        "collection_id": 1,
+        "collection_id": "1",
         "source_store": "archive",
         "destination_store": "replica",
         "initiated_by_app": "operator",
@@ -167,7 +167,7 @@ def test_terminal_job_responses_require_their_evidence() -> None:
 
 def test_operational_responses_reject_contradictory_state_evidence() -> None:
     archive_job = {
-        "collection_id": 1,
+        "collection_id": "1",
         "source_store": "archive",
         "destination_store": "replica",
         "initiated_by_app": "operator",
@@ -232,7 +232,7 @@ def test_operational_responses_reject_contradictory_state_evidence() -> None:
 
 def test_finalized_upload_sessions_require_immutable_evidence() -> None:
     payload = {
-        "collection_id": 1,
+        "collection_id": "1",
         "created_at": "2026-08-25T00:00:00.000000Z",
         "ingest_source": None,
         "description": None,
@@ -276,8 +276,8 @@ def test_finalized_upload_sessions_require_immutable_evidence() -> None:
             "state": "open",
             "content_identity": "a" * 64,
             "registration_constraints": {
-                "pack_member_bytes": 1,
-                "raw_part_plaintext_bytes": 65536,
+                "pack_member_bytes": "1",
+                "raw_part_plaintext_bytes": "65536",
             },
         }
     )
@@ -389,7 +389,7 @@ def test_finalized_upload_sessions_require_immutable_evidence() -> None:
             "tag_set_identity": EMPTY_TAG_SET_IDENTITY,
             "tag_publication": "current",
             "collection": {
-                "id": 1,
+                "id": "1",
                 "created_at": "2026-08-25T00:00:00.000000Z",
                 "description": None,
                 "description_revision": 0,
@@ -544,7 +544,7 @@ def test_upload_session_list_states_reject_impossible_custody_lifecycles(
     changes: dict[str, object],
 ) -> None:
     payload: dict[str, object] = {
-        "collection_id": 1,
+        "collection_id": "1",
         "created_at": "2026-08-25T00:00:00.000000Z",
         "ingest_source": None,
         "description": None,
@@ -578,7 +578,7 @@ def test_upload_session_list_states_reject_impossible_custody_lifecycles(
 
 def test_file_registration_response_has_one_reachable_state() -> None:
     payload = {
-        "collection_id": 1,
+        "collection_id": "1",
         "ingest_source": None,
         "archive_store": "archive",
         "encryption_format": "age-x25519/v1",
@@ -617,7 +617,7 @@ def test_upload_session_list_states_accept_reachable_custody_lifecycles(
     changes: dict[str, object],
 ) -> None:
     payload: dict[str, object] = {
-        "collection_id": 1,
+        "collection_id": "1",
         "created_at": "2026-08-25T00:00:00.000000Z",
         "ingest_source": None,
         "description": None,
@@ -656,7 +656,7 @@ def test_upload_session_list_complete_states_require_complete_custody(
     changes: dict[str, object],
 ) -> None:
     payload: dict[str, object] = {
-        "collection_id": 1,
+        "collection_id": "1",
         "created_at": "2026-08-25T00:00:00.000000Z",
         "ingest_source": None,
         "description": None,
@@ -770,7 +770,12 @@ def test_archive_copy_projection_accepts_each_reachable_evidence_state() -> None
 def test_provenance_read_projections_preserve_captured_mixed_and_omitted_truth() -> None:
     journal_id = "urn:uuid:00000000-0000-4000-8000-000000000001"
     state_id = "urn:uuid:00000000-0000-4000-8000-000000000002"
-    file_identity = {"collection_id": 1, "path": "camera/clip.mp4", "bytes": 42, "sha256": "a" * 64}
+    file_identity = {
+        "collection_id": "1",
+        "path": "camera/clip.mp4",
+        "bytes": "42",
+        "sha256": "a" * 64,
+    }
     captured = {
         **file_identity,
         "provenance": {
@@ -791,7 +796,7 @@ def test_provenance_read_projections_preserve_captured_mixed_and_omitted_truth()
         "order": "asc",
         "query": None,
         "status": None,
-        "collection_id": 1,
+        "collection_id": "1",
     }
     pages = (
         {
@@ -866,7 +871,7 @@ def test_provenance_read_projections_preserve_captured_mixed_and_omitted_truth()
     assert (
         CollectionProvenanceVerificationOut.model_validate(
             {
-                "collection_id": 1,
+                "collection_id": "1",
                 "valid": True,
                 "provenance_mode": "omitted",
                 "provenance_identity": None,
@@ -880,7 +885,7 @@ def test_provenance_read_projections_preserve_captured_mixed_and_omitted_truth()
     assert (
         CollectionProvenanceVerificationOut.model_validate(
             {
-                "collection_id": 1,
+                "collection_id": "1",
                 "valid": True,
                 "provenance_mode": "mixed",
                 "provenance_identity": "b" * 64,
@@ -894,7 +899,7 @@ def test_provenance_read_projections_preserve_captured_mixed_and_omitted_truth()
 
 
 def test_file_and_access_set_responses_reuse_their_canonical_owners() -> None:
-    identity = {"path": "camera/clip.mp4", "bytes": 42, "sha256": "a" * 64}
+    identity = {"path": "camera/clip.mp4", "bytes": "42", "sha256": "a" * 64}
     assert (
         CollectionUploadFileOut.model_validate(
             {
@@ -909,13 +914,13 @@ def test_file_and_access_set_responses_reuse_their_canonical_owners() -> None:
     )
     assert (
         RetrievalPlanFileOut.model_validate(
-            {**identity, "collection_id": 1, "requires_restore": False}
+            {**identity, "collection_id": "1", "requires_restore": False}
         ).bytes
         == 42
     )
     assert (
         SearchFileOut.model_validate(
-            {**identity, "collection_id": 1, "file_ref": "1/camera/clip.mp4"}
+            {**identity, "collection_id": "1", "file_ref": "1/camera/clip.mp4"}
         ).sha256
         == identity["sha256"]
     )

@@ -21,8 +21,8 @@ Exact externally visible contract owned by this contract element.
 
 ### Declared structure
 
-- <a id="s-a65ab9fef3"></a>`kind`: `"object"`
-- <a id="s-b7cd22456f"></a>`type`: `"typing._AnnotatedAlias"`
+- <a id="s-a65ab9fef3"></a>`kind`: `"type-alias"`
+- <a id="s-fe9da6c991"></a>`value`: `"typing.Annotated[int, BeforeValidator(func=<function NonnegativeDecimal.<locals>.<lambda>>, json_schema_input_type=PydanticUndefined), PlainSerializer(func=<function NonnegativeDecimal.<locals>.<lambda>>, return_type=<class 'str'>, when_used='always'), WithJsonSchema(json_schema={'type': 'string', 'pattern': '^(?:0\|[1-9][0-9]*)(?![\\\\s\\\\S])'}, mode=None)]"`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 13d70d9e40f5585912ddc332276a2d6ba3c802682bab874244b8130168c924f0 -->
+<!-- exact-contract-value: f5c81bfd491f45b7f014ce71fcc5c20a3ef05223c6324562d5753e38d331fa03 -->
 
 ```json
 {
   "contract": {
-    "kind": "object",
-    "type": "typing._AnnotatedAlias"
+    "kind": "type-alias",
+    "value": "typing.Annotated[int, BeforeValidator(func=<function NonnegativeDecimal.<locals>.<lambda>>, json_schema_input_type=PydanticUndefined), PlainSerializer(func=<function NonnegativeDecimal.<locals>.<lambda>>, return_type=<class 'str'>, when_used='always'), WithJsonSchema(json_schema={'type': 'string', 'pattern': '^(?:0|[1-9][0-9]*)(?![\\\\s\\\\S])'}, mode=None)]"
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

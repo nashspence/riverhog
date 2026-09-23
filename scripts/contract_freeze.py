@@ -48,6 +48,7 @@ from jsonschema import Draft202012Validator
 from mango_fish.cli import parser as mango_fish_parser
 from piggity.main import app as piggity_app
 from pydantic import BaseModel
+from riverhog_canonical_json import canonical_json_bytes as jcs_bytes
 from riverhog_core.runtime_config import (
     ARCHIVE_STORE_ENVIRONMENT_SETTINGS,
     ARCHIVE_STORE_ENVIRONMENT_TEMPLATE,
@@ -160,7 +161,7 @@ class ContractFreezeError(RuntimeError):
 
 
 def _boundary_canonical_sha256(boundaries: Mapping[str, object]) -> str:
-    payload = json.dumps(boundaries, separators=(",", ":"), sort_keys=True).encode()
+    payload = jcs_bytes(dict(boundaries))
     return hashlib.sha256(payload).hexdigest()
 
 
@@ -2763,7 +2764,6 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
     external = cast(Mapping[str, object], projection["external_contract"])
     extents = cast(Mapping[str, object], external["extents"])
     decisions = cast(list[dict[str, object]], extents["decisions"])
-    semantic_payload = json.dumps(projection, separators=(",", ":"), sort_keys=True).encode()
     rendered_payload = (json.dumps(projection, indent=2, sort_keys=True) + "\n").encode()
     projects = release_contract.validate_release_contract(ROOT)
     surface_registries = _release_surface_registries(projects, projection)
@@ -2850,7 +2850,6 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
         "schema": TRACE_SCHEMA,
         "contract_schema": projection["schema"],
         "boundary_canonical_sha256": _boundary_canonical_sha256(boundaries),
-        "contract_canonical_sha256": hashlib.sha256(semantic_payload).hexdigest(),
         "contract_projection_sha256": hashlib.sha256(rendered_payload).hexdigest(),
         "sources": sources,
         "segmented_extent_witnesses": segmented_extent_witnesses,

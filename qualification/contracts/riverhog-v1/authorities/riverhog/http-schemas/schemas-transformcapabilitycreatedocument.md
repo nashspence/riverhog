@@ -26,7 +26,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-97683ba1b7"></a>`actions` | no | type="array"; items=(type="string"; enum=["read-inputs","write-output"]); minItems=1; oneOf=[(const=["read-inputs"]); (const=["read-inputs","write-output"])]; title="Actions" |  |
 | <a id="s-bdff65438d"></a>`audience` | yes | type="string"; pattern="^[a-z0-9][a-z0-9._:/-]{0,299}$"; title="Audience" |  |
-| <a id="s-6b1157a1fa"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-6b1157a1fa"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-706e86c697"></a>`ttl_seconds` | no | type="integer"; minimum=30; maximum=86400; default=900; title="Ttl Seconds" |  |
 
 ### Progression, limits, and lifecycle
@@ -46,6 +46,12 @@ Shared facts for every subject below: maximum=86400; minimum=30; reason="schema-
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [field ttl_seconds](#s-706e86c697) | `value · schema-value · contract_max` | shared above |
+
+## Maintained corroboration
+
+### Referenced contract elements
+
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -78,7 +84,7 @@ Shared facts for every subject below: maximum=86400; minimum=30; reason="schema-
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 017e09367938982b92e94f62bb0ccb5a6249b1f8a8ecf328be4883bbd0b76738 -->
+<!-- exact-contract-value: 23f61cc76940f438162a244be43fb258b9cc2b573f428d7f52fb1550992ebeae -->
 
 ```json
 {
@@ -115,9 +121,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "fence": {
-      "minimum": 1,
-      "title": "Fence",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "ttl_seconds": {
       "default": 900,

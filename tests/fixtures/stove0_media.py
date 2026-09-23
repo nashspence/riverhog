@@ -46,7 +46,7 @@ def media_preflight_request(
     target_options: dict[str, object] | None = None,
 ) -> TargetPreflightRequest:
     root = CollectionRootRef(
-        collection_id=11,
+        collection_id="11",
         archive_root_sha256=sha("1"),
         content_identity=sha("2"),
     )

@@ -49,6 +49,7 @@ Exact externally visible contract owned by this contract element.
 - [BrowsePageToken](#s-45f0983f59)
 - [CollectionId](#s-40fd4aa997)
 - [ExactSetAuthorityDocument](#s-b87ccb9da7)
+- [NonnegativeDecimal](#s-e156ec829d)
 - [OperationIdentityDocument](#s-e05dec9278)
 - [OutcomeSetDocument](#s-5b13a97ed1)
 - [ProcessingClaimConsumerDocument](#s-4bf8bbae51)
@@ -70,9 +71,9 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-16242acb45"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-16242acb45"></a>`count` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=1 |  |
 | <a id="s-1379dcee7e"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-68a4257eeb"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-68a4257eeb"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=0 |  |
 
 ##### <a id="s-45f0983f59"></a>definition `BrowsePageToken`
 
@@ -82,8 +83,13 @@ Exact externally visible contract owned by this contract element.
 
 ##### <a id="s-40fd4aa997"></a>definition `CollectionId`
 
-- <a id="s-102416988b"></a>`type`: `"integer"`
-- <a id="s-1879a55693"></a>`minimum`: `1`
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-4f6e0514c8"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-afc133e6d1"></a>2 | not=(const="0") |
 
 ##### <a id="s-b87ccb9da7"></a>definition `ExactSetAuthorityDocument`
 
@@ -95,8 +101,13 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-74779b7eb3"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-74779b7eb3"></a>`count` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=1 |  |
 | <a id="s-0fb46c9599"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-e156ec829d"></a>definition `NonnegativeDecimal`
+
+- <a id="s-74b4172077"></a>`type`: `"string"`
+- <a id="s-e0fa30edae"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-e05dec9278"></a>definition `OperationIdentityDocument`
 
@@ -122,7 +133,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-1fda72619f"></a>`authority` | no | anyOf=[([ExactSetAuthorityDocument](#s-b87ccb9da7)); (type="null")]; default=null |  |
-| <a id="s-1386701376"></a>`count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-1386701376"></a>`count` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=0 |  |
 | <a id="s-37fca3d541"></a>`failure` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; default=null |  |
 | <a id="s-df1f0694f5"></a>`state` | yes | type="string"; enum=["receiving","sealing","sealed","failed"] |  |
 
@@ -154,7 +165,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-2eb7221fd6"></a>`consumer` | yes | [ProcessingClaimConsumerDocument](#s-4bf8bbae51) |  |
 | <a id="s-11983e0a3f"></a>`created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
 | <a id="s-dc73b48a31"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1 |  |
-| <a id="s-9e52be538b"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-9e52be538b"></a>`fence` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=1 |  |
 | <a id="s-ab4ec9779c"></a>`format` | yes | type="string"; const="riverhog-processing-claim/v1" |  |
 | <a id="s-1d896f1cd1"></a>`id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-00eb886074"></a>`inputs` | yes | [ReceivingSetDocument](#s-4631ed20b1) |  |
@@ -203,7 +214,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-dec0678355"></a>`outcomes` | yes | [ExactSetAuthorityDocument](#s-b87ccb9da7) |  |
-| <a id="s-5fd1474596"></a>`retirement_grace_seconds` | yes | type="integer"; minimum=0 |  |
+| <a id="s-5fd1474596"></a>`retirement_grace_seconds` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=0 |  |
 | <a id="s-d4fe79f988"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"] |  |
 
 ##### <a id="s-3bbf0a4010"></a>definition `ProcessingClaimPlanDocument`
@@ -224,7 +235,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-a62dcfe550"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-8a3e1bf0b7"></a>`inputs` | yes | [ExactSetAuthorityDocument](#s-b87ccb9da7) |  |
 | <a id="s-c54d1d1aa2"></a>`operation` | yes | [OperationIdentityDocument](#s-e05dec9278) |  |
-| <a id="s-b7d410c8ce"></a>`retirement_grace_seconds` | yes | type="integer"; minimum=0 |  |
+| <a id="s-b7d410c8ce"></a>`retirement_grace_seconds` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=0 |  |
 | <a id="s-dc68417f6b"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"] |  |
 | <a id="s-42cee0c720"></a>`sealed_at` | yes | type="string"; maxLength=64; minLength=1 |  |
 
@@ -244,7 +255,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-76cc034fdd"></a>`authority` | no | anyOf=[([ExactSetAuthorityDocument](#s-b87ccb9da7)); (type="null")]; default=null |  |
-| <a id="s-7c1b19f001"></a>`count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-7c1b19f001"></a>`count` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=0 |  |
 | <a id="s-2e3cdf0cb5"></a>`state` | yes | type="string"; enum=["receiving","sealed"] |  |
 
 ##### <a id="s-8b46b0fee4"></a>definition `SortOrder`
@@ -268,7 +279,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-556e5cc943"></a>`retirement_grace_seconds` | no | const=0 |  |
+| <a id="s-556e5cc943"></a>`retirement_grace_seconds` | no | const="0" |  |
 
 ##### <a id="s-57c5c26786"></a>definition `ProcessingClaimPlanDocument` · `if`
 
@@ -286,7 +297,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f16a2b9bd4"></a>`retirement_grace_seconds` | no | const=0 |  |
+| <a id="s-f16a2b9bd4"></a>`retirement_grace_seconds` | no | const="0" |  |
 
 ## Maintained corroboration
 
@@ -322,7 +333,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a3b7ef2cf9406984581c0a3a9efbd6954e5b5ac99d5d5a0ae8f3e245aec712ce -->
+<!-- exact-contract-value: bea7db99ea4653abd29f2f57bfbe6a6aca7f2ae9e41fada537b9fe68d94af705 -->
 
 ```json
 {
@@ -334,16 +345,16 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [
@@ -359,15 +370,24 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "CollectionId": {
-          "minimum": 1,
-          "type": "integer"
+          "allOf": [
+            {
+              "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+              "type": "string"
+            },
+            {
+              "not": {
+                "const": "0"
+              }
+            }
+          ]
         },
         "ExactSetAuthorityDocument": {
           "additionalProperties": false,
           "properties": {
             "count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
@@ -379,6 +399,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sha256"
           ],
           "type": "object"
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         },
         "OperationIdentityDocument": {
           "additionalProperties": false,
@@ -413,8 +437,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "count": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "failure": {
               "anyOf": [
@@ -605,8 +629,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "fence": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "format": {
               "const": "riverhog-processing-claim/v1",
@@ -775,8 +799,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "$ref": "#/$defs/ExactSetAuthorityDocument"
             },
             "retirement_grace_seconds": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "retirement_policy": {
               "enum": [
@@ -794,7 +818,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "then": {
             "properties": {
               "retirement_grace_seconds": {
-                "const": 0
+                "const": "0"
               }
             }
           },
@@ -837,8 +861,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "$ref": "#/$defs/OperationIdentityDocument"
             },
             "retirement_grace_seconds": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "retirement_policy": {
               "enum": [
@@ -867,7 +891,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "then": {
             "properties": {
               "retirement_grace_seconds": {
-                "const": 0
+                "const": "0"
               }
             }
           },
@@ -899,8 +923,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "count": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "state": {
               "enum": [

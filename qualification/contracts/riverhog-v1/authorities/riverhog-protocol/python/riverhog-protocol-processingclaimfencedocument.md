@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-6e4f5a087f"></a>`kind`: `"class"`
-- <a id="s-fd249713d4"></a>`signature`: `"'(*, fence: Annotated[int, Ge(ge=1)]) -> None'"`
+- <a id="s-fd249713d4"></a>`signature`: `"'(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)]) -> None'"`
 
 #### Validated model schema
 
@@ -36,7 +36,16 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-9eaab391aa"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-9eaab391aa"></a>`fence` | yes | [NonnegativeDecimal](#s-3bf82409e2); ge=1 |  |
+
+##### Definitions
+
+- [NonnegativeDecimal](#s-3bf82409e2)
+
+##### <a id="s-3bf82409e2"></a>definition `NonnegativeDecimal`
+
+- <a id="s-d20e42f75c"></a>`type`: `"string"`
+- <a id="s-7e14f160e1"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -72,18 +81,24 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b602a87fd9041146a8dbc6a4cd27ae3a284f144a7a825974150f7a4a67a48041 -->
+<!-- exact-contract-value: b202107050d1c57f9d849ec9e00030fdb8d02d15a3bdf3bdf9d4b2602acbfcd6 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
     "schema": {
+      "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        }
+      },
       "additionalProperties": false,
       "properties": {
         "fence": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         }
       },
       "required": [
@@ -91,7 +106,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "'(*, fence: Annotated[int, Ge(ge=1)]) -> None'"
+    "signature": "'(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)]) -> None'"
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

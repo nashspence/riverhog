@@ -19,6 +19,7 @@ from riverhog_provenance.common import (
     bytes_value,
     diagnostic,
     digest_assertion,
+    format_provenance_count,
     identifier,
     locator_from_path,
     make_sparse_map_row,
@@ -698,7 +699,7 @@ class MacOSBackend(PlatformBackend):
                         "name": "FinderInfo",
                         "capture_status": "captured",
                         "source": source("macos", "fgetattrlist(2)", "ATTR_CMN_FNDRINFO"),
-                        "observed_byte_length": len(finder_info),
+                        "observed_byte_length": format_provenance_count(len(finder_info)),
                         "value": bytes_value(
                             finder_info,
                             agent_id=request.observer_agent_id or DEFAULT_OBSERVER_AGENT_ID,
@@ -898,7 +899,7 @@ class MacOSBackend(PlatformBackend):
                     observed_length, data = self.api.get_xattr(
                         fd, name, request.policy.maximum_native_value_bytes
                     )
-                    row["observed_byte_length"] = observed_length
+                    row["observed_byte_length"] = format_provenance_count(observed_length)
                     if data is None:
                         if request.policy.large_value_disposition is LargeValueDisposition.FAIL:
                             raise NativeObservationError(
@@ -953,7 +954,7 @@ class MacOSBackend(PlatformBackend):
     ) -> None:
         agent_id = request.observer_agent_id or DEFAULT_OBSERVER_AGENT_ID
         size = self.api.xattr_size(fd, name)
-        row["observed_byte_length"] = size
+        row["observed_byte_length"] = format_provenance_count(size)
         if size <= request.policy.inline_native_value_bytes:
             _, data = self.api.get_xattr(fd, name, request.policy.maximum_native_value_bytes)
             if data is None:
@@ -971,11 +972,11 @@ class MacOSBackend(PlatformBackend):
         observed, sha256 = self.api.digest_resource_fork(
             fd, name, chunk_bytes=request.policy.resource_fork_chunk_bytes
         )
-        row["observed_byte_length"] = observed
+        row["observed_byte_length"] = format_provenance_count(observed)
         row["capture_status"] = "digest_only"
         row["value"] = {
             "type": "digest",
-            "byte_length": observed,
+            "byte_length": format_provenance_count(observed),
             "digests": [
                 digest_assertion(
                     sha256,
@@ -1018,7 +1019,7 @@ class MacOSBackend(PlatformBackend):
             "name": "extended-acl",
             "capture_status": status,
             "source": source("macos", "acl_get_fd_np(3)", "ACL_TYPE_EXTENDED"),
-            "observed_byte_length": len(captured.raw),
+            "observed_byte_length": format_provenance_count(len(captured.raw)),
             "sensitivity": "security_sensitive",
         }
         if value is not None:
@@ -1034,7 +1035,7 @@ class MacOSBackend(PlatformBackend):
                         "type": "text",
                         "data": captured.text,
                         "source_encoding": "UTF-8",
-                        "byte_length": len(encoded),
+                        "byte_length": format_provenance_count(len(encoded)),
                         "media_type": "text/plain",
                     },
                     "agent_id": agent_id,

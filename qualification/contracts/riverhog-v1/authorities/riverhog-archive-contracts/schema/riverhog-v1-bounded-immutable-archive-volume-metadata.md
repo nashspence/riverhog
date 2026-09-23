@@ -35,8 +35,10 @@ Exact externally visible contract owned by this contract element.
 ### Definitions
 
 - [age_state](#s-a24d2b35e2)
+- [nonnegative_count](#s-0c8f80a93d)
 - [pack](#s-c6222c661b)
 - [part](#s-014f1ca7cd)
+- [positive_count](#s-40b2b99902)
 - [segment](#s-ebbbf2c546)
 - [segment_file](#s-e6e7129d1b)
 - [sequence](#s-b18c6e158b)
@@ -55,7 +57,12 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-0dc8d691c1"></a>`format` | yes | const="age-v1-scrypt-resumable" |  |
 | <a id="s-e0b7bf1db4"></a>`header_b64` | yes | type="string"; pattern="^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}\|[A-Za-z0-9+/]{3})$" |  |
 | <a id="s-d97100a2c2"></a>`payload_nonce_b64` | yes | type="string"; pattern="^[A-Za-z0-9+/]{21}[AQgw]$" |  |
-| <a id="s-b2649969b1"></a>`plaintext_size` | yes | type="integer"; minimum=0 |  |
+| <a id="s-b2649969b1"></a>`plaintext_size` | yes | [nonnegative_count](#s-0c8f80a93d) |  |
+
+### <a id="s-0c8f80a93d"></a>definition `nonnegative_count`
+
+- <a id="s-e16594b11f"></a>`type`: `"string"`
+- <a id="s-2ed5220f66"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ### <a id="s-c6222c661b"></a>definition `pack`
 
@@ -74,10 +81,10 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-166de2d721"></a>`kind` | yes | const="pack" |  |
 | <a id="s-441b6efdf7"></a>`parts` | yes | type="array"; items=([part](#s-014f1ca7cd)); maxItems=1024; minItems=1; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"ordered-archive-volume-sequence","reason":"bounded-archive-volume-parts"} |  |
 | <a id="s-490785bc32"></a>`path` | yes | type="string"; pattern="^volumes/pack-[0-9a-f]{64}\\.tar\\.age$" |  |
-| <a id="s-8ea2382826"></a>`plaintext_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-8ea2382826"></a>`plaintext_bytes` | yes | [nonnegative_count](#s-0c8f80a93d) |  |
 | <a id="s-32da7b7d17"></a>`plan_sha256` | yes | [sha256](#s-ddfc70e987) |  |
 | <a id="s-1744385743"></a>`sequence` | yes | [sequence](#s-b18c6e158b) |  |
-| <a id="s-b77a5632ca"></a>`source_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-b77a5632ca"></a>`source_bytes` | yes | [nonnegative_count](#s-0c8f80a93d) |  |
 
 ### <a id="s-014f1ca7cd"></a>definition `part`
 
@@ -90,11 +97,16 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-83390965df"></a>`number` | yes | type="integer"; minimum=1 |  |
-| <a id="s-42f53b0221"></a>`plaintext_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-42f53b0221"></a>`plaintext_bytes` | yes | [nonnegative_count](#s-0c8f80a93d) |  |
 | <a id="s-f67630bc79"></a>`plaintext_sha256` | yes | [sha256](#s-ddfc70e987) |  |
-| <a id="s-fb9a0deae3"></a>`plaintext_start` | yes | type="integer"; minimum=0 |  |
-| <a id="s-b2f19d2656"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-fb9a0deae3"></a>`plaintext_start` | yes | [nonnegative_count](#s-0c8f80a93d) |  |
+| <a id="s-b2f19d2656"></a>`stored_bytes` | yes | [positive_count](#s-40b2b99902) |  |
 | <a id="s-8c4daa8978"></a>`stored_sha256` | yes | [sha256](#s-ddfc70e987) |  |
+
+### <a id="s-40b2b99902"></a>definition `positive_count`
+
+- <a id="s-ecf072baf6"></a>`type`: `"string"`
+- <a id="s-695084a2cf"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
 ### <a id="s-ebbbf2c546"></a>definition `segment`
 
@@ -112,7 +124,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-454da2ad8e"></a>`kind` | yes | const="segment" |  |
 | <a id="s-a600910b20"></a>`parts` | yes | type="array"; items=([part](#s-014f1ca7cd)); maxItems=1024; minItems=1; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"ordered-archive-volume-sequence","reason":"bounded-archive-volume-parts"} |  |
 | <a id="s-57e799246e"></a>`path` | yes | type="string"; pattern="^volumes/segment-[0-9a-f]{64}\\.bin\\.age$" |  |
-| <a id="s-bc57786779"></a>`plaintext_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-bc57786779"></a>`plaintext_bytes` | yes | [nonnegative_count](#s-0c8f80a93d) |  |
 | <a id="s-2d8923bce5"></a>`sequence` | yes | [sequence](#s-b18c6e158b) |  |
 
 ### <a id="s-e6e7129d1b"></a>definition `segment_file`
@@ -125,9 +137,9 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-bffb1edd6d"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-dd97b15ddc"></a>`file_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-bccb340a33"></a>`offset` | yes | type="integer"; minimum=0 |  |
+| <a id="s-bffb1edd6d"></a>`bytes` | yes | [nonnegative_count](#s-0c8f80a93d) |  |
+| <a id="s-dd97b15ddc"></a>`file_bytes` | yes | [nonnegative_count](#s-0c8f80a93d) |  |
+| <a id="s-bccb340a33"></a>`offset` | yes | [nonnegative_count](#s-0c8f80a93d) |  |
 | <a id="s-ff0c8b1f52"></a>`path` | yes | type="string"; pattern="^(?!/)(?!\\.riverhog/)(?!.*\\\\)(?!.*(?:^\|/)\\.\\.?(?:/\|$))[^/]+(?:/[^/]+)*$" |  |
 | <a id="s-2862954f72"></a>`sha256` | yes | [sha256](#s-ddfc70e987) |  |
 
@@ -151,22 +163,6 @@ Shared facts for every subject below: maximum=1024; minimum=1; progression={"pro
 |---|---|---|
 | [definition pack · field parts](#s-441b6efdf7) | `cardinality · items · segmented_no_total_max` | shared above |
 | [definition segment · field parts](#s-a600910b20) | `cardinality · items · segmented_no_total_max` | shared above |
-
-#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [definition age_state · field plaintext_size](#s-b2649969b1) | `value · schema-value · operational_policy` | shared above |
-| [definition pack · field plaintext_bytes](#s-8ea2382826) | `value · schema-value · operational_policy` | shared above |
-| [definition pack · field source_bytes](#s-b77a5632ca) | `value · schema-value · operational_policy` | shared above |
-| [definition part · field plaintext_bytes](#s-42f53b0221) | `value · schema-value · operational_policy` | shared above |
-| [definition part · field stored_bytes](#s-b2f19d2656) | `value · schema-value · operational_policy` | shared above |
-| [definition segment · field plaintext_bytes](#s-bc57786779) | `value · schema-value · operational_policy` | shared above |
-| [definition segment_file · field bytes](#s-bffb1edd6d) | `value · schema-value · operational_policy` | shared above |
-| [definition segment_file · field file_bytes](#s-dd97b15ddc) | `value · schema-value · operational_policy` | shared above |
-| [definition segment_file · field offset](#s-bccb340a33) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -202,7 +198,6 @@ Exact evidence groups for this contract element:
 
 - <a id="pa-a267938e80"></a>[compatibility/components/v1](../../release/compatibility-guarantees/compatibility-components.md#p-95e9a12259)
 - <a id="pa-dcfd3160a7"></a>[extent-rule/bounded-segment/v1](../../extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594)
-- <a id="pa-595032d4f7"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 - <a id="pa-d57db52fb0"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
@@ -228,7 +223,7 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9d5112f95a41ed1ffadda2d71dffc9d19931ceda73534b77f7ee4c321b951ccf -->
+<!-- exact-contract-value: 64f84e39e834d295b4e25f4858916eaa6980d9843af46873596beffaab1dea7b -->
 
 ```json
 {
@@ -249,8 +244,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "plaintext_size": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/nonnegative_count"
         }
       },
       "required": [
@@ -260,6 +254,10 @@ The following JSON is the complete value owned at each machine-authority pointer
         "plaintext_size"
       ],
       "type": "object"
+    },
+    "nonnegative_count": {
+      "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+      "type": "string"
     },
     "pack": {
       "additionalProperties": false,
@@ -300,8 +298,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "plaintext_bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/nonnegative_count"
         },
         "plan_sha256": {
           "$ref": "#/$defs/sha256"
@@ -310,8 +307,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "$ref": "#/$defs/sequence"
         },
         "source_bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/nonnegative_count"
         }
       },
       "required": [
@@ -337,19 +333,16 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "integer"
         },
         "plaintext_bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/nonnegative_count"
         },
         "plaintext_sha256": {
           "$ref": "#/$defs/sha256"
         },
         "plaintext_start": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/nonnegative_count"
         },
         "stored_bytes": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/positive_count"
         },
         "stored_sha256": {
           "$ref": "#/$defs/sha256"
@@ -364,6 +357,10 @@ The following JSON is the complete value owned at each machine-authority pointer
         "stored_sha256"
       ],
       "type": "object"
+    },
+    "positive_count": {
+      "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+      "type": "string"
     },
     "segment": {
       "additionalProperties": false,
@@ -399,8 +396,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "plaintext_bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/nonnegative_count"
         },
         "sequence": {
           "$ref": "#/$defs/sequence"
@@ -422,16 +418,13 @@ The following JSON is the complete value owned at each machine-authority pointer
       "additionalProperties": false,
       "properties": {
         "bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/nonnegative_count"
         },
         "file_bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/nonnegative_count"
         },
         "offset": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/nonnegative_count"
         },
         "path": {
           "pattern": "^(?!/)(?!\\.riverhog/)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))[^/]+(?:/[^/]+)*$",

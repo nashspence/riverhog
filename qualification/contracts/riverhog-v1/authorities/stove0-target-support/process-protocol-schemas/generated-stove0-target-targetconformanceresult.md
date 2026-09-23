@@ -174,8 +174,13 @@ Exact externally visible contract owned by this contract element.
 
 ### <a id="s-40a59539e2"></a>definition `CollectionId`
 
-- <a id="s-4d543400ed"></a>`type`: `"integer"`
-- <a id="s-0367f480b5"></a>`minimum`: `1`
+
+#### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-d7ccf76e4d"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-83db1174b0"></a>2 | not=(const="0") |
 
 ### <a id="s-3b0dd8e93b"></a>definition `CollectionRootRef`
 
@@ -1201,7 +1206,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3b21063eeacc2c94bbcc63eddb2e12c098d15c09f8b0190ef26a3fe1a1a9d685 -->
+<!-- exact-contract-value: 84fcb100fd23113c62fbf065e3461c62df16cd72151d69174fa2d4368a2db114 -->
 
 ```json
 {
@@ -1382,8 +1387,17 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "object"
     },
     "CollectionId": {
-      "minimum": 1,
-      "type": "integer"
+      "allOf": [
+        {
+          "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+          "type": "string"
+        },
+        {
+          "not": {
+            "const": "0"
+          }
+        }
+      ]
     },
     "CollectionRootRef": {
       "additionalProperties": false,

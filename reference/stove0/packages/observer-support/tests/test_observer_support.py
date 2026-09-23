@@ -78,7 +78,7 @@ class RetrievalApi:
 
     def get_collection(self, collection_id: int) -> dict[str, Any]:
         return {
-            "id": collection_id,
+            "id": str(collection_id),
             "archive_root_sha256": _sha("1"),
             "content_identity": _sha("2"),
         }
@@ -87,15 +87,15 @@ class RetrievalApi:
         return {
             "files": [
                 {
-                    "collection_id": 1,
+                    "collection_id": "1",
                     "path": PRODUCER_EVIDENCE_PATH,
-                    "bytes": 2,
+                    "bytes": "2",
                     "sha256": hashlib.sha256(b"{}").hexdigest(),
                 },
                 {
-                    "collection_id": 1,
+                    "collection_id": "1",
                     "path": "camera/input.mov",
-                    "bytes": len(self.data),
+                    "bytes": str(len(self.data)),
                     "sha256": self.sha256,
                 },
             ]
@@ -110,7 +110,7 @@ class RetrievalApi:
         files = [
             ImmutableFileIdentityDocument(
                 path=str(item["path"]),
-                bytes=int(item["bytes"]),
+                bytes=str(item["bytes"]),
                 sha256=str(item["sha256"]),
             )
             for item in sorted(
@@ -120,15 +120,15 @@ class RetrievalApi:
         return PortableCollectionInventoryPage(
             authority=PortableCollectionInventoryAuthority(
                 header=PortableCollectionHeader(
-                    collection=1,
+                    collection="1",
                     content_identity=_sha("2"),
                     encryption_format="age-v1-scrypt",
                     passphrase_id="fixture-archive-key-v1",
                     provenance_mode="omitted",
                 ),
                 inventory_identity=_sha("8"),
-                file_count=len(files),
-                file_bytes=sum(file.bytes for file in files),
+                file_count=str(len(files)),
+                file_bytes=str(sum(file.bytes for file in files)),
             ),
             files=files,
             complete=True,
@@ -137,9 +137,9 @@ class RetrievalApi:
     def _rows(self, files: Sequence[tuple[int, str]]) -> list[dict[str, object]]:
         return [
             {
-                "collection_id": collection_id,
+                "collection_id": str(collection_id),
                 "path": path,
-                "bytes": len(self.data),
+                "bytes": str(len(self.data)),
                 "sha256": self.sha256,
             }
             for collection_id, path in files
@@ -275,7 +275,7 @@ def _request(
                     id="source",
                     role="fixture.source/v1",
                     collection=CollectionRootRef(
-                        collection_id=1,
+                        collection_id=str(1),
                         archive_root_sha256=_sha("1"),
                         content_identity=_sha("2"),
                     ),
@@ -618,7 +618,7 @@ def test_subject_batch_preference_is_not_a_request_limit() -> None:
         )
     )
     root = CollectionRootRef(
-        collection_id=1,
+        collection_id=str(1),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
     )
@@ -748,6 +748,10 @@ def test_framework_neutral_observer_http_binding() -> None:
     assert result_response.status == 200
     result = ObservationResult.model_validate_json(result_response.body)
     assert result.facts == {"bytes": len(api.data)}
+    duplicate = (
+        b'{"claim_id":"claim-1",' + invocation.model_dump_json(exclude_none=True).encode()[1:]
+    )
+    assert binding.handle("POST", "/v1/observe", duplicate).status == 400
     assert binding.handle("DELETE", "/v1/observer").status == 405
 
 

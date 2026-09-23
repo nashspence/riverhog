@@ -3,7 +3,6 @@ from __future__ import annotations
 import base64
 import datetime as dt
 import hashlib
-import json
 import locale
 import os
 import secrets
@@ -16,6 +15,7 @@ from dataclasses import asdict
 from enum import Enum
 from typing import Any, cast
 
+from riverhog_canonical_json import canonical_json_bytes, format_scalar
 from riverhog_provenance_contracts import require_canonical_uuid_urn
 
 from .constants import (
@@ -37,6 +37,12 @@ from .model import (
 )
 
 UTC = dt.UTC
+
+
+def format_provenance_count(value: int) -> str:
+    """Encode a nonnegative journal count within its 63 bit domain."""
+
+    return format_scalar("sequence63", value)
 
 
 def new_urn_uuid() -> str:
@@ -136,7 +142,7 @@ def locator_from_path(
         "bytes": {
             "encoding": "base64",
             "data": base64.b64encode(raw).decode("ascii"),
-            "byte_length": len(raw),
+            "byte_length": format_scalar("sequence63", len(raw)),
         },
         "text_role": text_role,
     }
@@ -151,7 +157,7 @@ def native_name_fields(name: bytes) -> JsonObject:
     encoded = {
         "encoding": "base64",
         "data": base64.b64encode(name).decode("ascii"),
-        "byte_length": len(name),
+        "byte_length": format_scalar("sequence63", len(name)),
     }
     try:
         text = safe_portable_text(name.decode("utf-8", "strict"))
@@ -219,7 +225,7 @@ def bytes_value(data: bytes, *, agent_id: str | None = None) -> JsonObject:
         "type": "bytes",
         "encoding": "base64",
         "data": base64.b64encode(data).decode("ascii"),
-        "byte_length": len(data),
+        "byte_length": format_scalar("sequence63", len(data)),
     }
     if agent_id is not None:
         value["digests"] = [
@@ -235,7 +241,7 @@ def bytes_value(data: bytes, *, agent_id: str | None = None) -> JsonObject:
 def digest_only_value(data: bytes, *, agent_id: str) -> JsonObject:
     return {
         "type": "digest",
-        "byte_length": len(data),
+        "byte_length": format_scalar("sequence63", len(data)),
         "digests": [
             digest_assertion(
                 hashlib.sha256(data).hexdigest(),
@@ -287,7 +293,7 @@ def timestamp_observation(
         "kind": kind,
         "value_status": "exact",
         "value": format_utc_ns(epoch_ns),
-        "resolution_ns": max(1, resolution_ns),
+        "resolution_ns": format_scalar("sequence63", max(1, resolution_ns)),
         "source": source(platform, api, field),
         "raw_value": str(epoch_ns),
         "raw_unit": "nanoseconds",
@@ -811,7 +817,7 @@ class DescriptorFileStateObserver:
                     absolute, kind="absolute", authority_id=host_entity_id
                 ),
                 "content": {
-                    "size_bytes": after.size,
+                    "size_bytes": format_scalar("sequence63", after.size),
                     "digests": [
                         digest_assertion(
                             content_sha256,
@@ -951,12 +957,6 @@ class DescriptorFileStateObserver:
 
 
 def canonical_json(document: Mapping[str, Any]) -> bytes:
-    """Deterministic compact JSON useful for tests and handoff to journal tools."""
+    """Encode a provenance JSON value with the shared RFC 8785 profile."""
 
-    return json.dumps(
-        document,
-        ensure_ascii=False,
-        allow_nan=False,
-        sort_keys=True,
-        separators=(",", ":"),
-    ).encode("utf-8")
+    return canonical_json_bytes(dict(document))

@@ -27,7 +27,7 @@ Exact claim evidence authorizing one retirement deletion plan.
 |---|---:|---|---|
 | <a id="s-61665e5e9e"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |  |
 | <a id="s-c71cfa0fc9"></a>`execution_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Execution Id" |  |
-| <a id="s-77cbd0e0de"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-77cbd0e0de"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-aeaffe0495"></a>`outcomes` | no | anyOf=[([ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)); (type="null")] |  |
 | <a id="s-b4b8f49228"></a>`output_collection_id` | no | anyOf=[([CollectionId](schemas-collectionid.md)); (type="null")] |  |
 | <a id="s-e9e363aaf6"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
@@ -49,7 +49,7 @@ Exact claim evidence authorizing one retirement deletion plan.
 |---|---:|---|---|
 | <a id="s-7bcd44a05c"></a>`execution_id` | yes | type="string" |  |
 | <a id="s-12f7ce203e"></a>`outcomes` | no | type="null" |  |
-| <a id="s-39f7c3bf74"></a>`output_collection_id` | yes | type="integer" |  |
+| <a id="s-39f7c3bf74"></a>`output_collection_id` | yes | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |  |
 
 ### <a id="s-33fc5cf119"></a>`oneOf` alternative 2
 
@@ -64,14 +64,6 @@ Exact claim evidence authorizing one retirement deletion plan.
 | <a id="s-c235f69279"></a>`output_collection_id` | no | type="null" |  |
 
 ### Progression, limits, and lifecycle
-
-#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [oneOf alternative 1 · field output_collection_id](#s-39f7c3bf74) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -89,13 +81,13 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 - [CollectionId](schemas-collectionid.md)
 - [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
 - <a id="pa-3e64ab0c41"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-ae825a59f6"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 - <a id="pa-5681110271"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
@@ -121,7 +113,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b7bf2593b59150209bcbb33413d688188b7cde9cae8da595c8bbd627946da79b -->
+<!-- exact-contract-value: e631f1e8d7ccdd8ca043f074c9a257af80fdae98cae6476f800c25dccb01b335 -->
 
 ```json
 {
@@ -137,7 +129,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "null"
         },
         "output_collection_id": {
-          "type": "integer"
+          "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+          "type": "string"
         }
       },
       "required": [
@@ -181,9 +174,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Execution Id"
     },
     "fence": {
-      "minimum": 1,
-      "title": "Fence",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "outcomes": {
       "anyOf": [

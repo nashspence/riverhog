@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-575eb4c71f"></a>`kind`: `"type-alias"`
-- <a id="s-05f232b3cf"></a>`value`: `"typing.Annotated[int, FieldInfo(annotation=NoneType, required=True, metadata=[Ge(ge=1)]), BeforeValidator(func=<function validate_collection_id>, json_schema_input_type=PydanticUndefined)]"`
+- <a id="s-05f232b3cf"></a>`value`: `"typing.Annotated[int, BeforeValidator(func=<function CollectionId.<locals>.<lambda>>, json_schema_input_type=PydanticUndefined), FieldInfo(annotation=NoneType, required=True, metadata=[Ge(ge=1)]), PlainSerializer(func=<function CollectionId.<locals>.<lambda>>, return_type=<class 'str'>, when_used='always'), WithJsonSchema(json_schema={'allOf': [{'type': 'string', 'pattern': '^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\\\s\\\\S])'}, {'not': {'const': '0'}}]}, mode=None)]"`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0367a3076f8473afcee44ea9258d99a5b099960158da9aa0a0b6d0ba868c028f -->
+<!-- exact-contract-value: 5278c09860e2d8f8811942e75ca13e6b4f6de2f71012fb10e0fdf590df5cb627 -->
 
 ```json
 {
   "contract": {
     "kind": "type-alias",
-    "value": "typing.Annotated[int, FieldInfo(annotation=NoneType, required=True, metadata=[Ge(ge=1)]), BeforeValidator(func=<function validate_collection_id>, json_schema_input_type=PydanticUndefined)]"
+    "value": "typing.Annotated[int, BeforeValidator(func=<function CollectionId.<locals>.<lambda>>, json_schema_input_type=PydanticUndefined), FieldInfo(annotation=NoneType, required=True, metadata=[Ge(ge=1)]), PlainSerializer(func=<function CollectionId.<locals>.<lambda>>, return_type=<class 'str'>, when_used='always'), WithJsonSchema(json_schema={'allOf': [{'type': 'string', 'pattern': '^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\\\s\\\\S])'}, {'not': {'const': '0'}}]}, mode=None)]"
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

@@ -5,7 +5,7 @@ def test_captured_file_provenance_has_the_canonical_wire_shape() -> None:
     file = CollectionUploadFileIn.model_validate(
         {
             "path": "nested/example.bin",
-            "bytes": 4,
+            "bytes": "4",
             "sha256": "a" * 64,
             "provenance": {
                 "status": "captured",
@@ -26,7 +26,7 @@ def test_omitted_file_provenance_has_the_canonical_wire_shape() -> None:
     file = CollectionUploadFileIn.model_validate(
         {
             "path": "nested/example.bin",
-            "bytes": 4,
+            "bytes": "4",
             "sha256": "a" * 64,
             "provenance": {
                 "status": "omitted",

@@ -24,21 +24,13 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-38bb68239d"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-38bb68239d"></a>`bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md) |  |
 | <a id="s-02b7fe1b76"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
 | <a id="s-2b5bab20c8"></a>`path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
 | <a id="s-a5ea03a2ad"></a>`requires_restore` | yes | type="boolean"; title="Requires Restore" |  |
 | <a id="s-fc277b5d87"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
-
-#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [field bytes](#s-38bb68239d) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -54,13 +46,13 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 - [CanonicalRelPath](schemas-canonicalrelpath.md)
 - [CollectionId](schemas-collectionid.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
 - <a id="pa-3cd8fd46e8"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-4c9f7f3f71"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 - <a id="pa-a7fb6949ea"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
@@ -86,16 +78,14 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e691d6f9eba92c150d3318be4a56e5c404238f52d7d7703491302d2d21b01519 -->
+<!-- exact-contract-value: 234581366ed629b7041251778183bbac7b389a9656efd417dbddc93b20cd1253 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
     "bytes": {
-      "minimum": 0,
-      "title": "Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal"
     },
     "collection_id": {
       "$ref": "#/components/schemas/CollectionId"

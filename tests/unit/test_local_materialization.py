@@ -55,7 +55,7 @@ def _inventory(
     *, collection_id: int = COLLECTION_ID, byte_count: int | None = None
 ) -> tuple[PortableCollectionHeader, tuple[PortableCollectionFile, ...], str]:
     header = PortableCollectionHeader(
-        collection=collection_id,
+        collection=str(collection_id),
         content_identity=str(MANIFEST["content_identity"]),
         encryption_format=str(MANIFEST["encryption_format"]),
         passphrase_id=str(MANIFEST["passphrase_id"]),
@@ -67,7 +67,10 @@ def _inventory(
         if byte_count is not None
         else tuple(MANIFEST["files"])
     )
-    files = tuple(PortableCollectionFile.from_mapping(item) for item in source)
+    files = tuple(
+        PortableCollectionFile.from_mapping({**item, "bytes": str(item["bytes"])})
+        for item in source
+    )
     return header, files, portable_collection_inventory_identity(header, files)
 
 
@@ -168,8 +171,8 @@ class FakeApi:
             authority=PortableCollectionInventoryAuthority(
                 header=header,
                 inventory_identity=inventory_identity,
-                file_count=len(files),
-                file_bytes=sum(file.bytes for file in files),
+                file_count=str(len(files)),
+                file_bytes=str(sum(file.bytes for file in files)),
             ),
             files=[
                 ImmutableFileIdentityDocument.model_validate(file.to_mapping()) for file in files
@@ -228,7 +231,7 @@ class FakeApi:
             authorization_view_identity="d" * 64,
             collections=[
                 CatalogSyncDescriptor(
-                    collection_id=COLLECTION_ID,
+                    collection_id=str(COLLECTION_ID),
                     archive_root_sha256="e" * 64,
                     content_identity=str(MANIFEST["content_identity"]),
                     description=None,
@@ -248,7 +251,7 @@ class FakeApi:
             return CatalogSyncChangePage(
                 source_identity="c" * 64,
                 authorization_view_identity="d" * 64,
-                changes=[CatalogSyncDelete(collection_id=COLLECTION_ID, revision="2")],
+                changes=[CatalogSyncDelete(collection_id=str(COLLECTION_ID), revision="2")],
                 next_cursor="follow-2",
                 caught_up=True,
                 through_revision="2",

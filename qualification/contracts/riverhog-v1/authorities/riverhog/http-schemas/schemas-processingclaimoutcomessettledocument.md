@@ -26,8 +26,8 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f42f23efd4"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
-| <a id="s-4816a9f240"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Retirement Grace Seconds" |  |
+| <a id="s-f42f23efd4"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
+| <a id="s-4816a9f240"></a>`retirement_grace_seconds` | no | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 | <a id="s-4cb34386fa"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Retirement Policy" |  |
 
 ### <a id="s-097084343c"></a>`if`
@@ -46,7 +46,13 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f8c8918373"></a>`retirement_grace_seconds` | no | const=0 |  |
+| <a id="s-f8c8918373"></a>`retirement_grace_seconds` | no | const="0" |  |
+
+## Maintained corroboration
+
+### Referenced contract elements
+
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -75,7 +81,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 52b850839b3d9d5f6dfb73fc055199f04030f6a5c9294298c368ae3bf1550d69 -->
+<!-- exact-contract-value: b2623434e55b26acac7c35e7f74c6313d3cb500e2fd953740b59df21cb45daac -->
 
 ```json
 {
@@ -89,15 +95,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "properties": {
     "fence": {
-      "minimum": 1,
-      "title": "Fence",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "retirement_grace_seconds": {
-      "default": 0,
-      "minimum": 0,
-      "title": "Retirement Grace Seconds",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
     },
     "retirement_policy": {
       "default": "retain",
@@ -115,7 +118,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "then": {
     "properties": {
       "retirement_grace_seconds": {
-        "const": 0
+        "const": "0"
       }
     }
   },

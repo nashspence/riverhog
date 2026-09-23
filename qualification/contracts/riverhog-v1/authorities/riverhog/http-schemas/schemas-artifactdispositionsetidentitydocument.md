@@ -24,9 +24,9 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1b9abf9f70"></a>`disposition_count` | yes | type="integer"; minimum=1; title="Disposition Count" |  |
-| <a id="s-35aa7633ae"></a>`output_artifact_count` | yes | type="integer"; minimum=1; title="Output Artifact Count" |  |
-| <a id="s-82bf7da7d8"></a>`output_edge_count` | yes | type="integer"; minimum=1; title="Output Edge Count" |  |
+| <a id="s-1b9abf9f70"></a>`disposition_count` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
+| <a id="s-35aa7633ae"></a>`output_artifact_count` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
+| <a id="s-82bf7da7d8"></a>`output_edge_count` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-56209a9460"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
@@ -38,6 +38,12 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [field sha256](#s-56209a9460) | `length · characters · fixed` | shared above |
+
+## Maintained corroboration
+
+### Referenced contract elements
+
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -69,26 +75,23 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e58430ac8dbd95e932c4d52b253787a3a26e728ac17e0a7c2d640ae94904af8f -->
+<!-- exact-contract-value: c802e2bcbf207d9fc2e7510727897eadac50b51d7aedbf72e52a1f2ddde58a3d -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
     "disposition_count": {
-      "minimum": 1,
-      "title": "Disposition Count",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "output_artifact_count": {
-      "minimum": 1,
-      "title": "Output Artifact Count",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "output_edge_count": {
-      "minimum": 1,
-      "title": "Output Edge Count",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "sha256": {
       "pattern": "^[0-9a-f]{64}$",

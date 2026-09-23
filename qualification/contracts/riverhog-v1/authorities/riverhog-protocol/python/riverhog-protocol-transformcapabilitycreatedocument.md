@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-5a1a97b314"></a>`kind`: `"class"`
-- <a id="s-d171fa4ee0"></a>`signature`: `"\"(*, fence: Annotated[int, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9][a-z0-9._:/-]{0,299}$')], actions: Annotated[list[Literal['read-inputs', 'write-output']], MinLen(min_length=1)] = <factory>, ttl_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 900) -> None\""`
+- <a id="s-d171fa4ee0"></a>`signature`: `"\"(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9][a-z0-9._:/-]{0,299}$')], actions: Annotated[list[Literal['read-inputs', 'write-output']], MinLen(min_length=1)] = <factory>, ttl_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 900) -> None\""`
 
 #### Validated model schema
 
@@ -38,8 +38,17 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-7b3788c2b2"></a>`actions` | no | type="array"; items=(type="string"; enum=["read-inputs","write-output"]); minItems=1; oneOf=[(const=["read-inputs"]); (const=["read-inputs","write-output"])] |  |
 | <a id="s-3677aee9dc"></a>`audience` | yes | type="string"; pattern="^[a-z0-9][a-z0-9._:/-]{0,299}$" |  |
-| <a id="s-517200eda4"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-517200eda4"></a>`fence` | yes | [NonnegativeDecimal](#s-e026fd54cf); ge=1 |  |
 | <a id="s-fbbcc79c6e"></a>`ttl_seconds` | no | type="integer"; minimum=30; maximum=86400; default=900 |  |
+
+##### Definitions
+
+- [NonnegativeDecimal](#s-e026fd54cf)
+
+##### <a id="s-e026fd54cf"></a>definition `NonnegativeDecimal`
+
+- <a id="s-946c24b811"></a>`type`: `"string"`
+- <a id="s-2bf4816329"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -76,13 +85,19 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c6fa98c8d2a33a89d363f029347940eae45976cd3f7a6f8d4ba81b25366eeac3 -->
+<!-- exact-contract-value: b68bc3befc15a211915b530ff3332d5a3bf430ebd3cb5a4b6f877c798604a0e1 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
     "schema": {
+      "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        }
+      },
       "additionalProperties": false,
       "properties": {
         "actions": {
@@ -114,8 +129,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "fence": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "ttl_seconds": {
           "default": 900,
@@ -130,7 +145,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, fence: Annotated[int, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9][a-z0-9._:/-]{0,299}$')], actions: Annotated[list[Literal['read-inputs', 'write-output']], MinLen(min_length=1)] = <factory>, ttl_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 900) -> None\""
+    "signature": "\"(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9][a-z0-9._:/-]{0,299}$')], actions: Annotated[list[Literal['read-inputs', 'write-output']], MinLen(min_length=1)] = <factory>, ttl_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 900) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

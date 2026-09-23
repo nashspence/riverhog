@@ -14,8 +14,8 @@ def test_retrieval_reference_set_is_exact_and_canonical() -> None:
     document = RetrievalFileReferenceSetDocument.model_validate(
         {
             "files": [
-                {"collection_id": 1, "path": "a.txt"},
-                {"collection_id": 2, "path": "nested/b.txt"},
+                {"collection_id": "1", "path": "a.txt"},
+                {"collection_id": "2", "path": "nested/b.txt"},
             ]
         }
     )
@@ -30,15 +30,15 @@ def test_retrieval_reference_set_is_exact_and_canonical() -> None:
     "files",
     (
         [
-            {"collection_id": 1, "path": "a.txt"},
-            {"collection_id": 1, "path": "a.txt"},
+            {"collection_id": "1", "path": "a.txt"},
+            {"collection_id": "1", "path": "a.txt"},
         ],
         [
-            {"collection_id": 2, "path": "b.txt"},
-            {"collection_id": 1, "path": "a.txt"},
+            {"collection_id": "2", "path": "b.txt"},
+            {"collection_id": "1", "path": "a.txt"},
         ],
-        [{"collection_id": 1, "path": " a.txt"}],
-        [{"collection_id": 1, "path": "a/../b.txt"}],
+        [{"collection_id": "1", "path": " a.txt"}],
+        [{"collection_id": "1", "path": "a/../b.txt"}],
     ),
 )
 def test_retrieval_reference_set_rejects_aliases_duplicates_and_noncanonical_order(

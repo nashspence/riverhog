@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-6242748ea8"></a>`kind`: `"class"`
-- <a id="s-0e976206ae"></a>`signature`: `"\"(*, journal_id: ProvenanceJournalId, state: Literal['accepting', 'validating', 'sealed', 'failed'], bytes: Annotated[int, Strict(strict=True), Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], accepted_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], failure: str \| None = None, current_state_id: ProvenanceStateId \| None = None, current_path: str \| None = None, current_bytes: Annotated[int \| None, Strict(strict=True), Ge(ge=0)] = None, current_sha256: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')])]] = None) -> None\""`
+- <a id="s-0e976206ae"></a>`signature`: `"\"(*, journal_id: ProvenanceJournalId, state: Literal['accepting', 'validating', 'sealed', 'failed'], bytes: Annotated[NonnegativeDecimal, Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], accepted_bytes: NonnegativeDecimal, failure: str \| None = None, current_state_id: ProvenanceStateId \| None = None, current_path: str \| None = None, current_bytes: NonnegativeDecimal \| None = None, current_sha256: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')])]] = None) -> None\""`
 
 #### Validated model schema
 
@@ -36,9 +36,9 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c05f142da4"></a>`accepted_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-e0c87204a2"></a>`bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-ddef0dd98c"></a>`current_bytes` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; default=null |  |
+| <a id="s-c05f142da4"></a>`accepted_bytes` | yes | [NonnegativeDecimal](#s-76956c35fa) |  |
+| <a id="s-e0c87204a2"></a>`bytes` | yes | [NonnegativeDecimal](#s-76956c35fa); ge=1 |  |
+| <a id="s-ddef0dd98c"></a>`current_bytes` | no | anyOf=[([NonnegativeDecimal](#s-76956c35fa)); (type="null")]; default=null |  |
 | <a id="s-c34cd2178b"></a>`current_path` | no | anyOf=[(type="string"); (type="null")]; default=null |  |
 | <a id="s-7f2707a86d"></a>`current_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-232feea01f"></a>`current_state_id` | no | anyOf=[([ProvenanceStateId](#s-0e1edefe0b)); (type="null")]; default=null |  |
@@ -49,8 +49,14 @@ Exact externally visible contract owned by this contract element.
 
 ##### Definitions
 
+- [NonnegativeDecimal](#s-76956c35fa)
 - [ProvenanceJournalId](#s-941b870066)
 - [ProvenanceStateId](#s-0e1edefe0b)
+
+##### <a id="s-76956c35fa"></a>definition `NonnegativeDecimal`
+
+- <a id="s-d8a5e26999"></a>`type`: `"string"`
+- <a id="s-76bf6a1d20"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-941b870066"></a>definition `ProvenanceJournalId`
 
@@ -95,7 +101,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 38ec67178c1f9d556b73b32bd2a754c200eeb7aec8e4a3b287a25173326fb995 -->
+<!-- exact-contract-value: 2962fe02f1d1a607cea79ac2d37b0cd745e6ecda428e2513e47eaa1a791c267d -->
 
 ```json
 {
@@ -103,6 +109,10 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
         "ProvenanceJournalId": {
           "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
           "type": "string"
@@ -115,18 +125,16 @@ The following JSON is the complete value owned at each machine-authority pointer
       "additionalProperties": false,
       "properties": {
         "accepted_bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         "bytes": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "current_bytes": {
           "anyOf": [
             {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal"
             },
             {
               "type": "null"
@@ -205,7 +213,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, journal_id: ProvenanceJournalId, state: Literal['accepting', 'validating', 'sealed', 'failed'], bytes: Annotated[int, Strict(strict=True), Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], accepted_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], failure: str | None = None, current_state_id: ProvenanceStateId | None = None, current_path: str | None = None, current_bytes: Annotated[int | None, Strict(strict=True), Ge(ge=0)] = None, current_sha256: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')])]] = None) -> None\""
+    "signature": "\"(*, journal_id: ProvenanceJournalId, state: Literal['accepting', 'validating', 'sealed', 'failed'], bytes: Annotated[NonnegativeDecimal, Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], accepted_bytes: NonnegativeDecimal, failure: str | None = None, current_state_id: ProvenanceStateId | None = None, current_path: str | None = None, current_bytes: NonnegativeDecimal | None = None, current_sha256: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')])]] = None) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

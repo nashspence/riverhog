@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-4d557fcb28"></a>`kind`: `"class"`
-- <a id="s-5370ee5641"></a>`signature`: `"'(*, path: str, accepted_parts: Annotated[int, Strict(strict=True), Ge(ge=0)], expected_parts: Annotated[int, Strict(strict=True), Ge(ge=1)], complete: bool) -> None'"`
+- <a id="s-5370ee5641"></a>`signature`: `"'(*, path: str, accepted_parts: NonnegativeDecimal, expected_parts: Annotated[NonnegativeDecimal, Ge(ge=1)], complete: bool) -> None'"`
 
 #### Validated model schema
 
@@ -36,10 +36,19 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4e774600c7"></a>`accepted_parts` | yes | type="integer"; minimum=0 |  |
+| <a id="s-4e774600c7"></a>`accepted_parts` | yes | [NonnegativeDecimal](#s-6f1effc781) |  |
 | <a id="s-ca9a90315b"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-97f2b7dccc"></a>`expected_parts` | yes | type="integer"; minimum=1 |  |
+| <a id="s-97f2b7dccc"></a>`expected_parts` | yes | [NonnegativeDecimal](#s-6f1effc781); ge=1 |  |
 | <a id="s-462cb70bff"></a>`path` | yes | type="string" |  |
+
+##### Definitions
+
+- [NonnegativeDecimal](#s-6f1effc781)
+
+##### <a id="s-6f1effc781"></a>definition `NonnegativeDecimal`
+
+- <a id="s-79555c98cf"></a>`type`: `"string"`
+- <a id="s-0312c9c5ca"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -75,25 +84,30 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 26018243cefc6529cf62fb094dda274575ee193bf0e27dab6f5b442eebaca3a4 -->
+<!-- exact-contract-value: 6f5021ecb84599e098894c529bdf7dea6c4357e8bac221c32ef6ea78c1e6723f -->
 
 ```json
 {
   "contract": {
     "kind": "class",
     "schema": {
+      "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        }
+      },
       "additionalProperties": false,
       "properties": {
         "accepted_parts": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         "complete": {
           "type": "boolean"
         },
         "expected_parts": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "path": {
           "type": "string"
@@ -107,7 +121,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "'(*, path: str, accepted_parts: Annotated[int, Strict(strict=True), Ge(ge=0)], expected_parts: Annotated[int, Strict(strict=True), Ge(ge=1)], complete: bool) -> None'"
+    "signature": "'(*, path: str, accepted_parts: NonnegativeDecimal, expected_parts: Annotated[NonnegativeDecimal, Ge(ge=1)], complete: bool) -> None'"
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

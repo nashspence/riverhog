@@ -4,7 +4,7 @@
 
 Dependency-light immutable Riverhog archive recovery contracts.
 
-Contract elements: **76** · Extent decisions: **23**
+Contract elements: **76** · Extent decisions: **9**
 
 ## Interfaces
 

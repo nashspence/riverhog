@@ -9,6 +9,7 @@ from pathlib import Path
 from types import TracebackType
 from typing import Any
 
+from pydantic import TypeAdapter
 from riverhog_protocol import (
     COLLECTION_TAG_REQUEST_MEMBERS_MAX,
     CollectionTag,
@@ -18,7 +19,7 @@ from riverhog_protocol import (
     collection_tag_node_digest,
     validate_collection_tag,
 )
-from riverhog_protocol.paths import validate_collection_id
+from riverhog_protocol.paths import CollectionId
 
 
 class _SqliteTagNodeStore:
@@ -147,7 +148,7 @@ def create_or_resume_with_initial_collection_tags(
         session = dict(create_or_resume(first_batch, prepared.tag_set_identity))
         if str(session.get("state") or "") != "open":
             return session
-        collection_id = validate_collection_id(session.get("collection_id"))
+        collection_id: int = TypeAdapter(CollectionId).validate_python(session.get("collection_id"))
         for batch in batches:
             add_tags(collection_id, batch)
         return session

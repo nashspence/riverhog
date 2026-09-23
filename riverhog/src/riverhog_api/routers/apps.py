@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Query
+from fastapi import Query
 from http_api_contracts import mutable_browse_operation
 from riverhog_application_access import (
     ApplicationKeyId,
@@ -27,6 +27,7 @@ from riverhog_api.browse import (
     page_position,
 )
 from riverhog_api.deps import ContainerDep
+from riverhog_api.routing import RiverhogRouter
 from riverhog_api.schemas.apps import (
     AppAccessListOut,
     AppAccessSetOut,
@@ -39,7 +40,7 @@ from riverhog_api.schemas.apps import (
     ReplaceAppAccessRequest,
 )
 
-router = APIRouter(tags=["apps"])
+router = RiverhogRouter(tags=["apps"])
 
 
 @router.get(

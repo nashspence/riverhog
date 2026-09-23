@@ -8,7 +8,7 @@ A reviewed scope states what a test exercises. A candidate binding without a rev
 
 Candidate commands: [make unit](../../sources/commands.md#q-ce47068f50), [make postgres-concurrency](../../sources/commands.md#q-8d9f4da038), [make database-qualification](../../sources/commands.md#q-27f281b51e).
 
-- [tests/unit/test\_public\_interface\_parity.py::test\_public\_read\_collection\_selectors\_are\_bounded\_and\_frozen](../../../../../../tests/unit/test_public_interface_parity.py#L731) — Structural OpenAPI checks for bounded read selectors; no traversal is executed.
+- [tests/unit/test\_public\_interface\_parity.py::test\_public\_read\_collection\_selectors\_are\_bounded\_and\_frozen](../../../../../../tests/unit/test_public_interface_parity.py#L732) — Structural OpenAPI checks for bounded read selectors; no traversal is executed.
 - [tests/unit/test\_collection\_reads.py::test\_collection\_list\_query\_count\_is\_independent\_of\_page\_rows](../../../../../../tests/unit/test_collection_reads.py#L88) — Collection-list service query count and archive-object loading on one page; does not test traversal or restart.
 - [tests/unit/test\_collection\_reads.py::test\_collection\_encryption\_filters\_preserve\_catalog\_authorization](../../../../../../tests/unit/test_collection_reads.py#L130) — Collection-list service encryption filters and catalog authorization on one page.
 - [packages/http-api-contracts/tests/test\_browse\_tokens.py::test\_browse\_token\_round\_trips\_opaque\_binary\_position\_across\_restart](../../../../../../packages/http-api-contracts/tests/test_browse_tokens.py#L23) — Shared token codec reconstructs a position after codec recreation with the same signing configuration; does not prove route wiring or database traversal.

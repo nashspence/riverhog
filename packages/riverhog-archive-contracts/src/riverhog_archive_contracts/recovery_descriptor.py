@@ -1,9 +1,15 @@
 from __future__ import annotations
 
-import json
 import re
 from dataclasses import dataclass
 from typing import Any
+
+from riverhog_canonical_json import (
+    canonical_json_bytes,
+    format_scalar,
+    parse_scalar,
+    require_canonical_json,
+)
 
 from riverhog_archive_contracts.archive_manifest import ARCHIVE_ENCRYPTION_FORMAT
 
@@ -63,7 +69,7 @@ class RecoveryDescriptor:
             raise RecoveryDescriptorError(f"unsupported recovery schema: {self.schema!r}")
 
     def to_json_bytes(self) -> bytes:
-        return json.dumps(
+        return canonical_json_bytes(
             {
                 "schema": self.schema,
                 "encryption": {
@@ -72,22 +78,19 @@ class RecoveryDescriptor:
                 },
                 "root": {
                     "path": self.root.path,
-                    "stored_bytes": self.root.stored_bytes,
+                    "stored_bytes": format_scalar("nonnegative", self.root.stored_bytes),
                     "stored_sha256": self.root.stored_sha256,
                 },
             },
-            sort_keys=True,
-            separators=(",", ":"),
-        ).encode("utf-8")
+        )
 
     @classmethod
     def from_json_bytes(cls, content: bytes | str) -> RecoveryDescriptor:
         try:
-            if isinstance(content, bytes):
-                content = content.decode("utf-8")
-            value: Any = json.loads(content)
-        except (UnicodeError, json.JSONDecodeError) as exc:
-            raise RecoveryDescriptorError("recovery descriptor is not valid JSON") from exc
+            encoded = content if isinstance(content, bytes) else content.encode("utf-8")
+            value: Any = require_canonical_json(encoded)
+        except (UnicodeError, ValueError) as exc:
+            raise RecoveryDescriptorError("recovery descriptor JSON is not canonical") from exc
         if not isinstance(value, dict) or set(value) != {"schema", "encryption", "root"}:
             raise RecoveryDescriptorError("recovery descriptor fields are invalid")
         encryption = value.get("encryption")
@@ -100,9 +103,6 @@ class RecoveryDescriptor:
             "stored_sha256",
         }:
             raise RecoveryDescriptorError("recovery descriptor root is invalid")
-        stored_bytes = root.get("stored_bytes")
-        if not isinstance(stored_bytes, int) or isinstance(stored_bytes, bool):
-            raise RecoveryDescriptorError("recovery descriptor root bytes are invalid")
         try:
             descriptor = cls(
                 schema=str(value.get("schema", "")),
@@ -112,14 +112,14 @@ class RecoveryDescriptor:
                 ),
                 root=ArchiveRootCiphertextIdentity(
                     path=str(root.get("path", "")),
-                    stored_bytes=stored_bytes,
+                    stored_bytes=parse_scalar("nonnegative", root.get("stored_bytes")),
                     stored_sha256=str(root.get("stored_sha256", "")),
                 ),
             )
-        except (TypeError, RecoveryDescriptorError) as exc:
+        except (TypeError, ValueError) as exc:
             if isinstance(exc, RecoveryDescriptorError):
                 raise
             raise RecoveryDescriptorError("recovery descriptor values are invalid") from exc
-        if descriptor.to_json_bytes() != content.encode("utf-8"):
+        if descriptor.to_json_bytes() != encoded:
             raise RecoveryDescriptorError("recovery descriptor JSON is not canonical")
         return descriptor

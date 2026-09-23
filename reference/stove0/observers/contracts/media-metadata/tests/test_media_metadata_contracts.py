@@ -39,7 +39,7 @@ def test_media_metadata_contract_carries_exact_evidence_without_a_ceiling() -> N
     assert MEDIA_METADATA_OBSERVER_CONTRACT.id == "stove0.media.metadata/v1"
     assert (
         MEDIA_METADATA_OBSERVER_CONTRACT.contract_sha256
-        == "3ae4f44cf9f92d13e7268b346fc10de4ccab5b35360573ff0d53a77a7e0497ec"
+        == "4f9316118eb68d64154e3013e7e7d89738097881fb399ad3a3721404a47e375c"
     )
     assert facts.artifacts[0].artifact_id == "primary"
     assert (
@@ -95,7 +95,7 @@ def test_media_metadata_semantics_bind_evidence_and_exact_request_subjects() -> 
         id="primary",
         role="fixture.media/v1",
         collection=CollectionRootRef(
-            collection_id=1,
+            collection_id=str(1),
             archive_root_sha256="a" * 64,
             content_identity="b" * 64,
         ),

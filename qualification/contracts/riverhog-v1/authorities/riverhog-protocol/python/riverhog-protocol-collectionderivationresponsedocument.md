@@ -46,6 +46,7 @@ Exact externally visible contract owned by this contract element.
 - [ClaimFenceDocument](#s-1bcca920fa)
 - [CollectionDerivationDocument](#s-c39938b744)
 - [CollectionId](#s-71747045d5)
+- [NonnegativeDecimal](#s-793dd95850)
 - [OperationIdentityDocument](#s-28d97b8c2e)
 - [RecipeIdentityDocument](#s-dd912b8d9e)
 
@@ -59,9 +60,9 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c16f79c7a3"></a>`disposition_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-57bf7912bd"></a>`output_artifact_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-c7b17c0cbc"></a>`output_edge_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-c16f79c7a3"></a>`disposition_count` | yes | [NonnegativeDecimal](#s-793dd95850); ge=1 |  |
+| <a id="s-57bf7912bd"></a>`output_artifact_count` | yes | [NonnegativeDecimal](#s-793dd95850); ge=1 |  |
+| <a id="s-c7b17c0cbc"></a>`output_edge_count` | yes | [NonnegativeDecimal](#s-793dd95850); ge=1 |  |
 | <a id="s-e6b9134cd2"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-1bcca920fa"></a>definition `ClaimFenceDocument`
@@ -74,7 +75,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-13736711e9"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-13736711e9"></a>`fence` | yes | [NonnegativeDecimal](#s-793dd95850); ge=1 |  |
 | <a id="s-3221658763"></a>`id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-c39938b744"></a>definition `CollectionDerivationDocument`
@@ -102,8 +103,18 @@ Exact externally visible contract owned by this contract element.
 
 ##### <a id="s-71747045d5"></a>definition `CollectionId`
 
-- <a id="s-043b8e6f43"></a>`type`: `"integer"`
-- <a id="s-f24209f743"></a>`minimum`: `1`
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-97a628a4a9"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-fe5871219e"></a>2 | not=(const="0") |
+
+##### <a id="s-793dd95850"></a>definition `NonnegativeDecimal`
+
+- <a id="s-b786c4128a"></a>`type`: `"string"`
+- <a id="s-1157e7b81b"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-28d97b8c2e"></a>definition `OperationIdentityDocument`
 
@@ -129,7 +140,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-925a251bfc"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-9f061989f9"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-9f061989f9"></a>`revision` | yes | [NonnegativeDecimal](#s-793dd95850); ge=1 |  |
 | <a id="s-24ffacb218"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
@@ -167,7 +178,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 55208cf19c488d634660978129ed480becfa24759a64e0727eab65bbb6aacb6e -->
+<!-- exact-contract-value: 6ebbdeeda2df136ede5a776492a952e62d5aa1af92780d7309bbd5c3c65d86ed -->
 
 ```json
 {
@@ -179,16 +190,16 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "disposition_count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "output_artifact_count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "output_edge_count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
@@ -207,8 +218,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "fence": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "id": {
               "pattern": "^[0-9a-f]{64}$",
@@ -291,8 +302,21 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "CollectionId": {
-          "minimum": 1,
-          "type": "integer"
+          "allOf": [
+            {
+              "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+              "type": "string"
+            },
+            {
+              "not": {
+                "const": "0"
+              }
+            }
+          ]
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         },
         "OperationIdentityDocument": {
           "additionalProperties": false,
@@ -320,8 +344,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "revision": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",

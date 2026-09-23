@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-fca0c2e8a3"></a>`kind`: `"class"`
-- <a id="s-9ec17805fb"></a>`signature`: `"\"(*, format: Literal['riverhog-processing-claim/v1'], id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], work_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], consumer: riverhog_protocol.collection_workflow_transport.ProcessingClaimConsumerDocument, purpose: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], state: Literal['active', 'settled', 'retiring', 'abandoned', 'released'], fence: Annotated[int, Ge(ge=1)], expires_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], created_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], updated_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], settled_at: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), MaxLen(max_length=64)])]] = None, abandoned_at: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), MaxLen(max_length=64)])]] = None, abandonment_reason: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=1000)] = None, released_at: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), MaxLen(max_length=64)])]] = None, output_collection_id: CollectionId \| None = None, work_document: dict[str, typing.Any], work_document_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], inputs: riverhog_protocol.collection_workflow_transport.ReceivingSetDocument, plan: riverhog_protocol.collection_workflow_transport.ProcessingClaimPlanDocument \| None = None, outcomes: riverhog_protocol.collection_workflow_transport.OutcomeSetDocument, outcome_settlement: riverhog_protocol.collection_workflow_transport.ProcessingClaimOutcomeSettlementDocument \| None = None) -> None\""`
+- <a id="s-9ec17805fb"></a>`signature`: `"\"(*, format: Literal['riverhog-processing-claim/v1'], id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], work_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], consumer: riverhog_protocol.collection_workflow_transport.ProcessingClaimConsumerDocument, purpose: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], state: Literal['active', 'settled', 'retiring', 'abandoned', 'released'], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], expires_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], created_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], updated_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], settled_at: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), MaxLen(max_length=64)])]] = None, abandoned_at: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), MaxLen(max_length=64)])]] = None, abandonment_reason: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=1000)] = None, released_at: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), MaxLen(max_length=64)])]] = None, output_collection_id: CollectionId \| None = None, work_document: dict[str, typing.Any], work_document_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], inputs: riverhog_protocol.collection_workflow_transport.ReceivingSetDocument, plan: riverhog_protocol.collection_workflow_transport.ProcessingClaimPlanDocument \| None = None, outcomes: riverhog_protocol.collection_workflow_transport.OutcomeSetDocument, outcome_settlement: riverhog_protocol.collection_workflow_transport.ProcessingClaimOutcomeSettlementDocument \| None = None) -> None\""`
 
 #### Validated model schema
 
@@ -41,7 +41,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-53711020c5"></a>`consumer` | yes | [ProcessingClaimConsumerDocument](#s-d6d970f005) |  |
 | <a id="s-fedd7a0acb"></a>`created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
 | <a id="s-273f7eec10"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1 |  |
-| <a id="s-cfc44f9e08"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-cfc44f9e08"></a>`fence` | yes | [NonnegativeDecimal](#s-5bc4a4f1b3); ge=1 |  |
 | <a id="s-bebb4904f4"></a>`format` | yes | type="string"; const="riverhog-processing-claim/v1" |  |
 | <a id="s-90373974ca"></a>`id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-a50c2084a7"></a>`inputs` | yes | [ReceivingSetDocument](#s-9dd4ce27cb) |  |
@@ -71,6 +71,7 @@ Exact externally visible contract owned by this contract element.
 - [ArtifactSetAuthorityDocument](#s-7c0e8d7455)
 - [CollectionId](#s-896ee01c47)
 - [ExactSetAuthorityDocument](#s-52c5516811)
+- [NonnegativeDecimal](#s-5bc4a4f1b3)
 - [OperationIdentityDocument](#s-e96e2dd600)
 - [OutcomeSetDocument](#s-f7d5d1ec59)
 - [ProcessingClaimConsumerDocument](#s-d6d970f005)
@@ -88,14 +89,19 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3a29e5c523"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-3a29e5c523"></a>`count` | yes | [NonnegativeDecimal](#s-5bc4a4f1b3); ge=1 |  |
 | <a id="s-c8a3da8ac2"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-907f8811ba"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-907f8811ba"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-5bc4a4f1b3); ge=0 |  |
 
 ##### <a id="s-896ee01c47"></a>definition `CollectionId`
 
-- <a id="s-ae282ddafb"></a>`type`: `"integer"`
-- <a id="s-19ccf4f86d"></a>`minimum`: `1`
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-c93642d383"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-54a7b6864d"></a>2 | not=(const="0") |
 
 ##### <a id="s-52c5516811"></a>definition `ExactSetAuthorityDocument`
 
@@ -107,8 +113,13 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6ccadb9602"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-6ccadb9602"></a>`count` | yes | [NonnegativeDecimal](#s-5bc4a4f1b3); ge=1 |  |
 | <a id="s-7840deac21"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-5bc4a4f1b3"></a>definition `NonnegativeDecimal`
+
+- <a id="s-c66444cbff"></a>`type`: `"string"`
+- <a id="s-e37a8ccce3"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-e96e2dd600"></a>definition `OperationIdentityDocument`
 
@@ -134,7 +145,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-9f2c57fac8"></a>`authority` | no | anyOf=[([ExactSetAuthorityDocument](#s-52c5516811)); (type="null")]; default=null |  |
-| <a id="s-6f579e73cf"></a>`count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-6f579e73cf"></a>`count` | yes | [NonnegativeDecimal](#s-5bc4a4f1b3); ge=0 |  |
 | <a id="s-5d8d8f1e11"></a>`failure` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; default=null |  |
 | <a id="s-67d870ae70"></a>`state` | yes | type="string"; enum=["receiving","sealing","sealed","failed"] |  |
 
@@ -164,7 +175,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-36d27ecd02"></a>`outcomes` | yes | [ExactSetAuthorityDocument](#s-52c5516811) |  |
-| <a id="s-4410371a95"></a>`retirement_grace_seconds` | yes | type="integer"; minimum=0 |  |
+| <a id="s-4410371a95"></a>`retirement_grace_seconds` | yes | [NonnegativeDecimal](#s-5bc4a4f1b3); ge=0 |  |
 | <a id="s-cc0fa14a7d"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"] |  |
 
 ##### <a id="s-c3d365e968"></a>definition `ProcessingClaimPlanDocument`
@@ -185,7 +196,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-294035e4ba"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-058a20576f"></a>`inputs` | yes | [ExactSetAuthorityDocument](#s-52c5516811) |  |
 | <a id="s-097037e371"></a>`operation` | yes | [OperationIdentityDocument](#s-e96e2dd600) |  |
-| <a id="s-4bd5171262"></a>`retirement_grace_seconds` | yes | type="integer"; minimum=0 |  |
+| <a id="s-4bd5171262"></a>`retirement_grace_seconds` | yes | [NonnegativeDecimal](#s-5bc4a4f1b3); ge=0 |  |
 | <a id="s-d1762d6c5c"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"] |  |
 | <a id="s-86aec53513"></a>`sealed_at` | yes | type="string"; maxLength=64; minLength=1 |  |
 
@@ -200,7 +211,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-fee71b8ab3"></a>`authority` | no | anyOf=[([ExactSetAuthorityDocument](#s-52c5516811)); (type="null")]; default=null |  |
-| <a id="s-6d640da22c"></a>`count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-6d640da22c"></a>`count` | yes | [NonnegativeDecimal](#s-5bc4a4f1b3); ge=0 |  |
 | <a id="s-5d1c7d8438"></a>`state` | yes | type="string"; enum=["receiving","sealed"] |  |
 
 ##### <a id="s-c359acdbc4"></a>definition `ProcessingClaimOutcomeSettlementDocument` · `if`
@@ -219,7 +230,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ec69ee0b19"></a>`retirement_grace_seconds` | no | const=0 |  |
+| <a id="s-ec69ee0b19"></a>`retirement_grace_seconds` | no | const="0" |  |
 
 ##### <a id="s-10bc900612"></a>definition `ProcessingClaimPlanDocument` · `if`
 
@@ -237,7 +248,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-37e0041936"></a>`retirement_grace_seconds` | no | const=0 |  |
+| <a id="s-37e0041936"></a>`retirement_grace_seconds` | no | const="0" |  |
 
 ## Maintained corroboration
 
@@ -274,7 +285,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ce933f60e39e3c6d2114bd5835a9ac2e04c77240bfae2d434503349bfedbb70c -->
+<!-- exact-contract-value: aed6aee5878231593a02c84ed40de3f5ff39ac5ce64b5e5fb1d6518d192152d6 -->
 
 ```json
 {
@@ -286,16 +297,16 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [
@@ -306,15 +317,24 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "CollectionId": {
-          "minimum": 1,
-          "type": "integer"
+          "allOf": [
+            {
+              "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+              "type": "string"
+            },
+            {
+              "not": {
+                "const": "0"
+              }
+            }
+          ]
         },
         "ExactSetAuthorityDocument": {
           "additionalProperties": false,
           "properties": {
             "count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
@@ -326,6 +346,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sha256"
           ],
           "type": "object"
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         },
         "OperationIdentityDocument": {
           "additionalProperties": false,
@@ -360,8 +384,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "count": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "failure": {
               "anyOf": [
@@ -432,8 +456,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "$ref": "#/$defs/ExactSetAuthorityDocument"
             },
             "retirement_grace_seconds": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "retirement_policy": {
               "enum": [
@@ -451,7 +475,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "then": {
             "properties": {
               "retirement_grace_seconds": {
-                "const": 0
+                "const": "0"
               }
             }
           },
@@ -494,8 +518,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "$ref": "#/$defs/OperationIdentityDocument"
             },
             "retirement_grace_seconds": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "retirement_policy": {
               "enum": [
@@ -524,7 +548,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "then": {
             "properties": {
               "retirement_grace_seconds": {
-                "const": 0
+                "const": "0"
               }
             }
           },
@@ -545,8 +569,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "count": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "state": {
               "enum": [
@@ -696,8 +720,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "fence": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "format": {
           "const": "riverhog-processing-claim/v1",
@@ -828,7 +852,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, format: Literal['riverhog-processing-claim/v1'], id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], work_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], consumer: riverhog_protocol.collection_workflow_transport.ProcessingClaimConsumerDocument, purpose: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], state: Literal['active', 'settled', 'retiring', 'abandoned', 'released'], fence: Annotated[int, Ge(ge=1)], expires_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], created_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], updated_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], settled_at: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), MaxLen(max_length=64)])]] = None, abandoned_at: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), MaxLen(max_length=64)])]] = None, abandonment_reason: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=1000)] = None, released_at: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), MaxLen(max_length=64)])]] = None, output_collection_id: CollectionId | None = None, work_document: dict[str, typing.Any], work_document_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], inputs: riverhog_protocol.collection_workflow_transport.ReceivingSetDocument, plan: riverhog_protocol.collection_workflow_transport.ProcessingClaimPlanDocument | None = None, outcomes: riverhog_protocol.collection_workflow_transport.OutcomeSetDocument, outcome_settlement: riverhog_protocol.collection_workflow_transport.ProcessingClaimOutcomeSettlementDocument | None = None) -> None\""
+    "signature": "\"(*, format: Literal['riverhog-processing-claim/v1'], id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], work_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], consumer: riverhog_protocol.collection_workflow_transport.ProcessingClaimConsumerDocument, purpose: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], state: Literal['active', 'settled', 'retiring', 'abandoned', 'released'], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], expires_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], created_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], updated_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], settled_at: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), MaxLen(max_length=64)])]] = None, abandoned_at: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), MaxLen(max_length=64)])]] = None, abandonment_reason: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=1000)] = None, released_at: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), MaxLen(max_length=64)])]] = None, output_collection_id: CollectionId | None = None, work_document: dict[str, typing.Any], work_document_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], inputs: riverhog_protocol.collection_workflow_transport.ReceivingSetDocument, plan: riverhog_protocol.collection_workflow_transport.ProcessingClaimPlanDocument | None = None, outcomes: riverhog_protocol.collection_workflow_transport.OutcomeSetDocument, outcome_settlement: riverhog_protocol.collection_workflow_transport.ProcessingClaimOutcomeSettlementDocument | None = None) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

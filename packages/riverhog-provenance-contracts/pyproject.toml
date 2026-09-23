@@ -22,8 +22,11 @@ dependencies = [
   "jsonschema>=4.25,<5.0",
   "pydantic>=2.12,<3.0",
   "referencing>=0.37,<0.38",
-  "rfc8785>=0.1,<0.2",
+  "riverhog-canonical-json>=0.1,<0.2",
 ]
+
+[tool.uv.sources]
+riverhog-canonical-json = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/riverhog_provenance_contracts"]

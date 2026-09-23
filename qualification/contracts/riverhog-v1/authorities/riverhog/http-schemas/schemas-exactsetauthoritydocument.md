@@ -25,18 +25,10 @@ Small immutable identity for an exact canonically ordered logical set.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-edd753f1d8"></a>`count` | yes | type="integer"; minimum=1; title="Count" |  |
+| <a id="s-edd753f1d8"></a>`count` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-9afef3e97a"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
-
-#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [field count](#s-edd753f1d8) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -46,12 +38,17 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 |---|---|---|
 | [field sha256](#s-9afef3e97a) | `length · characters · fixed` | shared above |
 
+## Maintained corroboration
+
+### Referenced contract elements
+
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
+
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
 - <a id="pa-fd73b42066"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-44bde8af88"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 - <a id="pa-aef9b3f177"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
@@ -77,7 +74,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0e76c36b1c505c66210c9cf901dd3efa34b370a4bd6f585964942ba8d834c3db -->
+<!-- exact-contract-value: 210b90e874e1008e8664061ef9d5740a12f4f1df08272146924bbc05bb3e8642 -->
 
 ```json
 {
@@ -85,9 +82,8 @@ The following JSON is the complete value owned at each machine-authority pointer
   "description": "Small immutable identity for an exact canonically ordered logical set.",
   "properties": {
     "count": {
-      "minimum": 1,
-      "title": "Count",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "sha256": {
       "pattern": "^[0-9a-f]{64}$",

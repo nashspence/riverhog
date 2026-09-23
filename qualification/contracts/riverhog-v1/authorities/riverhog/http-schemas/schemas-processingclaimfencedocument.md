@@ -24,7 +24,13 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-399bce7731"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-399bce7731"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
+
+## Maintained corroboration
+
+### Referenced contract elements
+
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -53,16 +59,15 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: eabbed4a890891c7bfbd4c978da08de3bbd73ad40fb1a9fb9249a8a5ccf814d4 -->
+<!-- exact-contract-value: 890e8ee67213c0fadd77857f2d4849ad68fe6ea265df4568a8f10679a516c3fe -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
     "fence": {
-      "minimum": 1,
-      "title": "Fence",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     }
   },
   "required": [

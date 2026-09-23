@@ -27,6 +27,7 @@ Each row is one declared relationship. Its endpoints link to their exact node re
 | <a id="re-b64d55fb7f"></a>[gogurt-windows-listener-host](nodes.md#rn-4745107153) | `depends-on` | [gogurt-listener-runtime](nodes.md#rn-df1cdfd17c) | `required` |
 | <a id="re-41b2498de6"></a>[gogurt-windows-mounted-volume](nodes.md#rn-a05f279325) | `depends-on` | [gogurt-core](nodes.md#rn-e1d2ac7df3) | `required` |
 | <a id="re-8cd5028b76"></a>[gogurt-windows-mounted-volume](nodes.md#rn-a05f279325) | `depends-on` | [gogurt-path-volume-support](nodes.md#rn-1b4c9bf55f) | `required` |
+| <a id="re-e511d9b210"></a>[http-api-contracts](nodes.md#rn-f59c7f4102) | `depends-on` | [riverhog-canonical-json](nodes.md#rn-f55ab6c77b) | `required` |
 | <a id="re-38b61cfd5d"></a>[lifecycle-events](nodes.md#rn-30af2d1593) | `depends-on` | [time-formats](nodes.md#rn-71d1153198) | `required` |
 | <a id="re-c301dd92ae"></a>[mango-fish](nodes.md#rn-1c3900c994) | `depends-on` | [lifecycle-events](nodes.md#rn-30af2d1593) | `required` |
 | <a id="re-1ade565ccd"></a>[mango-fish](nodes.md#rn-1c3900c994) | `depends-on` | [state-schema](nodes.md#rn-b37a103e5f) | `required` |
@@ -37,7 +38,9 @@ Each row is one declared relationship. Its endpoints link to their exact node re
 | <a id="re-38d596b522"></a>[piggity](nodes.md#rn-0a279524f4) | `depends-on` | [riverhog-provenance](nodes.md#rn-728e08e7c4) | `required` |
 | <a id="re-555da3f02e"></a>[piggity](nodes.md#rn-0a279524f4) | `depends-on` | [state-schema](nodes.md#rn-b37a103e5f) | `required` |
 | <a id="re-1a926dde46"></a>[piggity](nodes.md#rn-0a279524f4) | `depends-on` | [time-formats](nodes.md#rn-71d1153198) | `required` |
+| <a id="re-da6756c35e"></a>[riverhog-age](nodes.md#rn-24025966b4) | `depends-on` | [riverhog-canonical-json](nodes.md#rn-f55ab6c77b) | `required` |
 | <a id="re-b8e003d95c"></a>[riverhog-application-access](nodes.md#rn-06ef7f89ca) | `depends-on` | [riverhog-protocol](nodes.md#rn-20dbb0d5c0) | `required` |
+| <a id="re-21d4539460"></a>[riverhog-archive-contracts](nodes.md#rn-3f00f69253) | `depends-on` | [riverhog-canonical-json](nodes.md#rn-f55ab6c77b) | `required` |
 | <a id="re-5e2f8ea9ef"></a>[riverhog-client](nodes.md#rn-8e5274344f) | `depends-on` | [http-api-contracts](nodes.md#rn-f59c7f4102) | `required` |
 | <a id="re-00d58a51b6"></a>[riverhog-client](nodes.md#rn-8e5274344f) | `depends-on` | [riverhog-application-access](nodes.md#rn-06ef7f89ca) | `required` |
 | <a id="re-846ca99987"></a>[riverhog-client](nodes.md#rn-8e5274344f) | `depends-on` | [riverhog-protocol](nodes.md#rn-20dbb0d5c0) | `required` |
@@ -50,8 +53,11 @@ Each row is one declared relationship. Its endpoints link to their exact node re
 | <a id="re-df00da2409"></a>[riverhog-ftp-adapter-api-client](nodes.md#rn-5044d995ba) | `depends-on` | [http-api-contracts](nodes.md#rn-f59c7f4102) | `required` |
 | <a id="re-c61491ded0"></a>[riverhog-protocol](nodes.md#rn-20dbb0d5c0) | `depends-on` | [http-api-contracts](nodes.md#rn-f59c7f4102) | `required` |
 | <a id="re-da95b57cd6"></a>[riverhog-protocol](nodes.md#rn-20dbb0d5c0) | `depends-on` | [lifecycle-events](nodes.md#rn-30af2d1593) | `required` |
+| <a id="re-e62fe2a24f"></a>[riverhog-protocol](nodes.md#rn-20dbb0d5c0) | `depends-on` | [riverhog-canonical-json](nodes.md#rn-f55ab6c77b) | `required` |
 | <a id="re-ce4c7df5f1"></a>[riverhog-protocol](nodes.md#rn-20dbb0d5c0) | `depends-on` | [riverhog-provenance-contracts](nodes.md#rn-6066820038) | `required` |
+| <a id="re-def602e261"></a>[riverhog-provenance](nodes.md#rn-728e08e7c4) | `depends-on` | [riverhog-canonical-json](nodes.md#rn-f55ab6c77b) | `required` |
 | <a id="re-3f16a1b406"></a>[riverhog-provenance](nodes.md#rn-728e08e7c4) | `depends-on` | [riverhog-provenance-contracts](nodes.md#rn-6066820038) | `required` |
+| <a id="re-ad1c18d6a1"></a>[riverhog-provenance-contracts](nodes.md#rn-6066820038) | `depends-on` | [riverhog-canonical-json](nodes.md#rn-f55ab6c77b) | `required` |
 | <a id="re-da231e801c"></a>[riverhog-provenance-linux-contracts](nodes.md#rn-207aa064e3) | `depends-on` | [riverhog-provenance-contracts](nodes.md#rn-6066820038) | `required` |
 | <a id="re-afea557c95"></a>[riverhog-provenance-linux-observer](nodes.md#rn-f733d7aee6) | `depends-on` | [riverhog-provenance](nodes.md#rn-728e08e7c4) | `required` |
 | <a id="re-efec52e048"></a>[riverhog-provenance-linux-observer](nodes.md#rn-f733d7aee6) | `depends-on` | [riverhog-provenance-linux-contracts](nodes.md#rn-207aa064e3) | `required` |
@@ -69,6 +75,7 @@ Each row is one declared relationship. Its endpoints link to their exact node re
 | <a id="re-105f8f62a5"></a>[riverhog-server](nodes.md#rn-807c63322e) | `depends-on` | [riverhog-age](nodes.md#rn-24025966b4) | `required` |
 | <a id="re-85dac3fdd8"></a>[riverhog-server](nodes.md#rn-807c63322e) | `depends-on` | [riverhog-application-access](nodes.md#rn-06ef7f89ca) | `required` |
 | <a id="re-e18ba355b9"></a>[riverhog-server](nodes.md#rn-807c63322e) | `depends-on` | [riverhog-archive-contracts](nodes.md#rn-3f00f69253) | `required` |
+| <a id="re-f616faade2"></a>[riverhog-server](nodes.md#rn-807c63322e) | `depends-on` | [riverhog-canonical-json](nodes.md#rn-f55ab6c77b) | `required` |
 | <a id="re-b4ce2a557f"></a>[riverhog-server](nodes.md#rn-807c63322e) | `depends-on` | [riverhog-protocol](nodes.md#rn-20dbb0d5c0) | `required` |
 | <a id="re-d0509cb3f2"></a>[riverhog-server](nodes.md#rn-807c63322e) | `depends-on` | [riverhog-provenance](nodes.md#rn-728e08e7c4) | `required` |
 | <a id="re-3711a62767"></a>[riverhog-server](nodes.md#rn-807c63322e) | `depends-on` | [riverhog-provenance-contracts](nodes.md#rn-6066820038) | `required` |
@@ -88,10 +95,12 @@ Each row is one declared relationship. Its endpoints link to their exact node re
 | <a id="re-76c48494ff"></a>[riverhog-storage-adapter-filesystem](nodes.md#rn-ebe4206627) | `depends-on` | [riverhog-storage-adapter-asgi-support](nodes.md#rn-922b8ba508) | `required` |
 | <a id="re-01bad22410"></a>[riverhog-storage-adapter-filesystem](nodes.md#rn-ebe4206627) | `depends-on` | [riverhog-storage-adapter-protocol](nodes.md#rn-e65e47e332) | `required` |
 | <a id="re-a6afba71da"></a>[riverhog-storage-adapter-filesystem](nodes.md#rn-ebe4206627) | `depends-on` | [time-formats](nodes.md#rn-71d1153198) | `required` |
+| <a id="re-75b9a4d2e4"></a>[riverhog-storage-adapter-protocol](nodes.md#rn-e65e47e332) | `depends-on` | [riverhog-canonical-json](nodes.md#rn-f55ab6c77b) | `required` |
 | <a id="re-1de6cae1b5"></a>[riverhog-storage-adapter-protocol](nodes.md#rn-e65e47e332) | `depends-on` | [time-formats](nodes.md#rn-71d1153198) | `required` |
 | <a id="re-b10b6de676"></a>[riverhog-storage-adapter-s3-support](nodes.md#rn-b934a396f4) | `depends-on` | [riverhog-storage-adapter-protocol](nodes.md#rn-e65e47e332) | `required` |
 | <a id="re-076239bfcf"></a>[riverhog-storage-adapter-s3-support](nodes.md#rn-b934a396f4) | `depends-on` | [time-formats](nodes.md#rn-71d1153198) | `required` |
 | <a id="re-436c565fc2"></a>[riverhog-storage-adapter-support](nodes.md#rn-f0c3b34058) | `depends-on` | [http-api-contracts](nodes.md#rn-f59c7f4102) | `required` |
+| <a id="re-4ac3e2707c"></a>[riverhog-storage-adapter-support](nodes.md#rn-f0c3b34058) | `depends-on` | [riverhog-canonical-json](nodes.md#rn-f55ab6c77b) | `required` |
 | <a id="re-4dd3f92334"></a>[riverhog-storage-adapter-support](nodes.md#rn-f0c3b34058) | `depends-on` | [riverhog-storage-adapter-protocol](nodes.md#rn-e65e47e332) | `required` |
 | <a id="re-e93150a6a0"></a>[stove0-api-client](nodes.md#rn-0b595a9ebc) | `depends-on` | [http-api-contracts](nodes.md#rn-f59c7f4102) | `required` |
 | <a id="re-1af5d811ec"></a>[stove0-api-client](nodes.md#rn-0b595a9ebc) | `depends-on` | [stove0-operator-contracts](nodes.md#rn-7c400ebb83) | `required` |
@@ -134,6 +143,7 @@ Each row is one declared relationship. Its endpoints link to their exact node re
 | <a id="re-cd0d7c5a92"></a>[stove0-observer-protocol](nodes.md#rn-bac58a079c) | `depends-on` | [http-api-contracts](nodes.md#rn-f59c7f4102) | `required` |
 | <a id="re-5d7a67339d"></a>[stove0-observer-protocol](nodes.md#rn-bac58a079c) | `depends-on` | [stove0-protocol](nodes.md#rn-72232b7fce) | `required` |
 | <a id="re-35fbec38d5"></a>[stove0-observer-support](nodes.md#rn-50ccd8c774) | `depends-on` | [http-api-contracts](nodes.md#rn-f59c7f4102) | `required` |
+| <a id="re-b7aa970a46"></a>[stove0-observer-support](nodes.md#rn-50ccd8c774) | `depends-on` | [riverhog-canonical-json](nodes.md#rn-f55ab6c77b) | `required` |
 | <a id="re-e92028077f"></a>[stove0-observer-support](nodes.md#rn-50ccd8c774) | `depends-on` | [riverhog-client](nodes.md#rn-8e5274344f) | `required` |
 | <a id="re-52c0cc110b"></a>[stove0-observer-support](nodes.md#rn-50ccd8c774) | `depends-on` | [stove0-observer-client](nodes.md#rn-21b6164c9f) | `required` |
 | <a id="re-e51c285aa5"></a>[stove0-observer-support](nodes.md#rn-50ccd8c774) | `depends-on` | [stove0-observer-protocol](nodes.md#rn-bac58a079c) | `required` |
@@ -156,6 +166,7 @@ Each row is one declared relationship. Its endpoints link to their exact node re
 | <a id="re-e538db574a"></a>[stove0-opus-target](nodes.md#rn-313a5c450f) | `depends-on` | [stove0-media-archive-target-support](nodes.md#rn-581a2a6b70) | `required` |
 | <a id="re-0b910ba3f2"></a>[stove0-opus-target](nodes.md#rn-313a5c450f) | `depends-on` | [stove0-protocol](nodes.md#rn-72232b7fce) | `required` |
 | <a id="re-335ef9e583"></a>[stove0-opus-target](nodes.md#rn-313a5c450f) | `depends-on` | [stove0-target-support](nodes.md#rn-f8df68acc8) | `required` |
+| <a id="re-73c345280b"></a>[stove0-protocol](nodes.md#rn-72232b7fce) | `depends-on` | [riverhog-canonical-json](nodes.md#rn-f55ab6c77b) | `required` |
 | <a id="re-04733f78fd"></a>[stove0-protocol](nodes.md#rn-72232b7fce) | `depends-on` | [riverhog-protocol](nodes.md#rn-20dbb0d5c0) | `required` |
 | <a id="re-4b559d597e"></a>[stove0-recipe-config](nodes.md#rn-1f5664e176) | `depends-on` | [config-validation](nodes.md#rn-b37402f43f) | `required` |
 | <a id="re-d09b7aa1b7"></a>[stove0-recipe-config](nodes.md#rn-1f5664e176) | `depends-on` | [stove0-protocol](nodes.md#rn-72232b7fce) | `required` |
@@ -208,6 +219,7 @@ Each row is one declared relationship. Its endpoints link to their exact node re
 | <a id="re-efd7fa499f"></a>[stove0-target-protocol](nodes.md#rn-2bfbd86b00) | `depends-on` | [riverhog-protocol](nodes.md#rn-20dbb0d5c0) | `required` |
 | <a id="re-018ee5941d"></a>[stove0-target-protocol](nodes.md#rn-2bfbd86b00) | `depends-on` | [stove0-protocol](nodes.md#rn-72232b7fce) | `required` |
 | <a id="re-1f95ea127d"></a>[stove0-target-support](nodes.md#rn-f8df68acc8) | `depends-on` | [http-api-contracts](nodes.md#rn-f59c7f4102) | `required` |
+| <a id="re-c104502169"></a>[stove0-target-support](nodes.md#rn-f8df68acc8) | `depends-on` | [riverhog-canonical-json](nodes.md#rn-f55ab6c77b) | `required` |
 | <a id="re-80347e773a"></a>[stove0-target-support](nodes.md#rn-f8df68acc8) | `depends-on` | [riverhog-client](nodes.md#rn-8e5274344f) | `required` |
 | <a id="re-9b5a59b52c"></a>[stove0-target-support](nodes.md#rn-f8df68acc8) | `depends-on` | [riverhog-protocol](nodes.md#rn-20dbb0d5c0) | `required` |
 | <a id="re-1bfd3a1728"></a>[stove0-target-support](nodes.md#rn-f8df68acc8) | `depends-on` | [stove0-target-client](nodes.md#rn-2c02e88004) | `required` |

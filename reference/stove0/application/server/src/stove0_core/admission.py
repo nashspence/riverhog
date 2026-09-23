@@ -633,10 +633,12 @@ class ClassificationAdmissionService:
         work = self.planner.create_work(
             intent.recipe_id,
             (
-                CollectionRootRef(
-                    collection_id=intent.collection.collection_id,
-                    archive_root_sha256=intent.collection.archive_root_sha256,
-                    content_identity=intent.collection.content_identity,
+                CollectionRootRef.model_validate(
+                    {
+                        "collection_id": intent.collection.model_dump(mode="json")["collection_id"],
+                        "archive_root_sha256": intent.collection.archive_root_sha256,
+                        "content_identity": intent.collection.content_identity,
+                    }
                 ),
             ),
             revision=intent.recipe_revision,

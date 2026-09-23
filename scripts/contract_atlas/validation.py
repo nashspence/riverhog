@@ -1056,9 +1056,6 @@ def validate_atlas(
     boundaries = cast(Mapping[str, object], projection_value["boundaries"])
     observed_identities = {
         "boundary_canonical_sha256": canonical_sha256(boundaries),
-        "boundary_legacy_sha256": hashlib.sha256(
-            json.dumps(boundaries, separators=(",", ":"), sort_keys=True).encode()
-        ).hexdigest(),
         "external_contract_sha256": canonical_sha256(projection_value["external_contract"]),
         "semantic_contract_sha256": canonical_sha256(semantic_identity),
         "coverage_sha256": canonical_sha256(coverage_identity),

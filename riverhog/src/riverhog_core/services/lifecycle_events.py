@@ -5,6 +5,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from lifecycle_events import CloudEvent, cloud_event, normalize_event_context
+from riverhog_canonical_json import format_scalar
 from riverhog_protocol.lifecycle_events import (
     RIVERHOG_EVENT_TYPE_PREFIX,
     RiverhogEventPage,
@@ -210,7 +211,7 @@ class SqlAlchemyLifecycleEventService:
                 session=session,
             )
         data: dict[str, Any] = {
-            "collection_id": collection_id,
+            "collection_id": format_scalar("sequence63", collection_id),
             "actor": actor_data(app="riverhog"),
             "initiator": actor_data(app=owner_app, key_id=owner_key_id),
         }
@@ -256,7 +257,7 @@ class SqlAlchemyLifecycleEventService:
         )
         data: dict[str, Any] = {
             "retrieval_id": job.id,
-            "collection_ids": collection_ids,
+            "collection_ids": [format_scalar("sequence63", item) for item in collection_ids],
             "state": job.state,
             "actor": actor_data(app="riverhog"),
             "initiator": actor_data(app=job.app, key_id=job.initiated_by_key_id),
@@ -264,7 +265,7 @@ class SqlAlchemyLifecycleEventService:
         if len(collection_ids) == 1:
             collection_id = collection_ids[0]
             collection = session.get(CollectionRecord, collection_id)
-            data["collection_id"] = collection_id
+            data["collection_id"] = format_scalar("sequence63", collection_id)
             if collection is not None:
                 data["collection_created_at"] = collection.created_at
         data.update(details or {})

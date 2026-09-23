@@ -15,6 +15,7 @@ from pydantic import (
     field_validator,
     model_validator,
 )
+from riverhog_canonical_json import format_scalar
 from riverhog_provenance_contracts import (
     ProvenanceJournalId,
     ProvenanceJournalStateReference,
@@ -26,6 +27,7 @@ from riverhog_protocol.collection_workflows import (
     canonical_json_bytes,
     canonical_json_sha256,
 )
+from riverhog_protocol.exact_scalar import NonnegativeDecimal, Sequence256Hex
 from riverhog_protocol.file_identity import ImmutableFileIdentityDocument
 from riverhog_protocol.paths import (
     CollectionId,
@@ -47,7 +49,7 @@ CollectionUploadVolumeId = Annotated[
     str,
     StringConstraints(pattern=r"^(?:pack|segment)-[0-9a-f]{64}$"),
 ]
-CollectionUploadUnitNumber = Annotated[int, Field(ge=0)]
+CollectionUploadUnitNumber = NonnegativeDecimal
 CollectionUploadCustodyMode = Literal["producer-retained", "custody-transfer"]
 CollectionUploadVolumeKind = Literal["pack", "segment"]
 CollectionUploadUnitState = Literal["pending", "committed"]
@@ -90,8 +92,8 @@ FileProvenanceBinding = Annotated[
 
 
 class CollectionUploadRawPartsIn(CollectionUploadDocument):
-    part_plaintext_bytes: int = Field(ge=65536)
-    part_count: int = Field(ge=1, strict=True)
+    part_plaintext_bytes: NonnegativeDecimal = Field(ge=65536)
+    part_count: NonnegativeDecimal = Field(ge=1)
     ordered_sha256: Sha256
 
 
@@ -99,7 +101,7 @@ class CollectionUploadRawDigestBatchDocument(CollectionUploadDocument):
     """One append-only bounded slice of a registered raw source digest sequence."""
 
     path: str
-    first_part: int = Field(ge=0, strict=True)
+    first_part: NonnegativeDecimal
     sha256s: list[Sha256] = Field(
         min_length=1,
         max_length=RAW_SOURCE_DIGEST_BATCH_MAX,
@@ -120,8 +122,8 @@ class CollectionUploadRawDigestBatchDocument(CollectionUploadDocument):
 
 class CollectionUploadRawDigestProgressDocument(CollectionUploadDocument):
     path: str
-    accepted_parts: int = Field(ge=0, strict=True)
-    expected_parts: int = Field(ge=1, strict=True)
+    accepted_parts: NonnegativeDecimal
+    expected_parts: NonnegativeDecimal = Field(ge=1)
     complete: bool
 
     @field_validator("path")
@@ -139,20 +141,20 @@ class CollectionUploadRawDigestProgressDocument(CollectionUploadDocument):
 
 
 class CollectionUploadProvenanceJournalCreateDocument(CollectionUploadDocument):
-    bytes: int = Field(ge=1, strict=True)
+    bytes: NonnegativeDecimal = Field(ge=1)
     sha256: Sha256
 
 
 class CollectionUploadProvenanceJournalStatusDocument(CollectionUploadDocument):
     journal_id: ProvenanceJournalId
     state: CollectionUploadProvenanceJournalState
-    bytes: int = Field(ge=1, strict=True)
+    bytes: NonnegativeDecimal = Field(ge=1)
     sha256: Sha256
-    accepted_bytes: int = Field(ge=0, strict=True)
+    accepted_bytes: NonnegativeDecimal
     failure: str | None = None
     current_state_id: ProvenanceStateId | None = None
     current_path: str | None = None
-    current_bytes: int | None = Field(default=None, ge=0, strict=True)
+    current_bytes: NonnegativeDecimal | None = None
     current_sha256: Sha256 | None = None
 
     @model_validator(mode="after")
@@ -180,16 +182,16 @@ class CollectionUploadProvenanceJournalStatusDocument(CollectionUploadDocument):
 class CollectionUploadRegistrationConstraintsDocument(CollectionUploadDocument):
     """Producer constraints issued by Riverhog for one upload session."""
 
-    pack_member_bytes: int = Field(ge=1)
-    raw_part_plaintext_bytes: int = Field(ge=65536, multiple_of=65536)
+    pack_member_bytes: NonnegativeDecimal = Field(ge=1)
+    raw_part_plaintext_bytes: NonnegativeDecimal = Field(ge=65536, multiple_of=65536)
 
 
 class CollectionUploadUnitSourceDocument(CollectionUploadDocument):
     """One exact source range supplied in a server-planned upload unit."""
 
     path: str
-    offset: int = Field(ge=0, strict=True)
-    bytes: int = Field(ge=0, strict=True)
+    offset: NonnegativeDecimal
+    bytes: NonnegativeDecimal
     artifact_sha256: Sha256
 
     @field_validator("path")
@@ -202,8 +204,8 @@ class CollectionUploadUnitDocument(CollectionUploadDocument):
     """Protocol-owned identity of one server-planned plaintext upload unit."""
 
     unit: CollectionUploadUnitNumber
-    payload_bytes: int = Field(ge=0, strict=True)
-    plaintext_bytes: int = Field(ge=0, strict=True)
+    payload_bytes: NonnegativeDecimal
+    plaintext_bytes: NonnegativeDecimal
     sources: list[CollectionUploadUnitSourceDocument] = Field(
         max_length=COLLECTION_UPLOAD_UNIT_SOURCE_MAX,
         json_schema_extra={
@@ -229,7 +231,7 @@ class CollectionUploadVolumeSummaryDocument(CollectionUploadDocument):
     """Protocol-owned identity of one immutable collection archive volume."""
 
     volume_id: CollectionUploadVolumeId
-    sequence: int = Field(ge=0, strict=True)
+    sequence: Sequence256Hex
     kind: CollectionUploadVolumeKind
 
     @model_validator(mode="after")
@@ -262,7 +264,7 @@ class CollectionUploadWorkBatchDocument(CollectionUploadDocument):
     collection_id: CollectionId
     planning_complete: bool
     complete: bool
-    committed_payload_bytes: int = Field(ge=0, strict=True)
+    committed_payload_bytes: NonnegativeDecimal
     work: list[CollectionUploadUnitAssignmentDocument] = Field(
         max_length=COLLECTION_UPLOAD_WORK_BATCH_MAX,
         json_schema_extra={
@@ -326,9 +328,9 @@ class CollectionUploadArtifactCustodyReceiptDocument(CollectionUploadDocument):
     format: Literal["riverhog-artifact-custody-receipt/v1"] = "riverhog-artifact-custody-receipt/v1"
     collection_id: CollectionId
     path: str
-    bytes: int = Field(ge=0, strict=True)
+    bytes: NonnegativeDecimal
     sha256: Sha256
-    archive_object_count: int = Field(ge=1, strict=True)
+    archive_object_count: NonnegativeDecimal = Field(ge=1)
     archive_object_set_sha256: Sha256
     receipt_sha256: Sha256
 
@@ -374,23 +376,14 @@ class CollectionUploadArtifactCustodyReceiptDocument(CollectionUploadDocument):
             raise ValueError("custody receipt requires at least one archive object")
         payload = {
             "format": "riverhog-artifact-custody-receipt/v1",
-            "collection_id": collection_id,
+            "collection_id": format_scalar("sequence63", validate_collection_id(collection_id)),
             "path": path,
-            "bytes": bytes,
+            "bytes": format_scalar("nonnegative", bytes),
             "sha256": sha256,
-            "archive_object_count": count,
+            "archive_object_count": format_scalar("nonnegative", count),
             "archive_object_set_sha256": digest.hexdigest(),
         }
-        return cls(
-            format="riverhog-artifact-custody-receipt/v1",
-            collection_id=collection_id,
-            path=path,
-            bytes=bytes,
-            sha256=sha256,
-            archive_object_count=count,
-            archive_object_set_sha256=digest.hexdigest(),
-            receipt_sha256=canonical_json_sha256(payload),
-        )
+        return cls.model_validate({**payload, "receipt_sha256": canonical_json_sha256(payload)})
 
 
 def validate_collection_upload_artifact_custody_receipt(

@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-bb6cc5c879"></a>`kind`: `"class"`
-- <a id="s-88567d1d56"></a>`signature`: `"'(*, pack_member_bytes: Annotated[int, Ge(ge=1)], raw_part_plaintext_bytes: Annotated[int, Ge(ge=65536), MultipleOf(multiple_of=65536)]) -> None'"`
+- <a id="s-88567d1d56"></a>`signature`: `"'(*, pack_member_bytes: Annotated[NonnegativeDecimal, Ge(ge=1)], raw_part_plaintext_bytes: Annotated[NonnegativeDecimal, Ge(ge=65536), MultipleOf(multiple_of=65536)]) -> None'"`
 
 #### Validated model schema
 
@@ -36,8 +36,17 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0d0508e0dd"></a>`pack_member_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-e25641ebdd"></a>`raw_part_plaintext_bytes` | yes | type="integer"; minimum=65536; multipleOf=65536 |  |
+| <a id="s-0d0508e0dd"></a>`pack_member_bytes` | yes | [NonnegativeDecimal](#s-c74b224bcb); ge=1 |  |
+| <a id="s-e25641ebdd"></a>`raw_part_plaintext_bytes` | yes | [NonnegativeDecimal](#s-c74b224bcb); ge=65536; multiple_of=65536 |  |
+
+##### Definitions
+
+- [NonnegativeDecimal](#s-c74b224bcb)
+
+##### <a id="s-c74b224bcb"></a>definition `NonnegativeDecimal`
+
+- <a id="s-d0b02aa719"></a>`type`: `"string"`
+- <a id="s-f450c85854"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Governing policies
 
@@ -66,23 +75,29 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 339097ad6f51bd455551fe62b08149583fe5d65612a9d1f2a5d013009bb5854b -->
+<!-- exact-contract-value: 84decf914cfa93269e8e29f3b21dbc7e9dc47353b4e3426355b316f1baec6cbc -->
 
 ```json
 {
   "contract": {
     "kind": "class",
     "schema": {
+      "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        }
+      },
       "additionalProperties": false,
       "properties": {
         "pack_member_bytes": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "raw_part_plaintext_bytes": {
-          "minimum": 65536,
-          "multipleOf": 65536,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 65536,
+          "multiple_of": 65536
         }
       },
       "required": [
@@ -91,7 +106,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "'(*, pack_member_bytes: Annotated[int, Ge(ge=1)], raw_part_plaintext_bytes: Annotated[int, Ge(ge=65536), MultipleOf(multiple_of=65536)]) -> None'"
+    "signature": "'(*, pack_member_bytes: Annotated[NonnegativeDecimal, Ge(ge=1)], raw_part_plaintext_bytes: Annotated[NonnegativeDecimal, Ge(ge=65536), MultipleOf(multiple_of=65536)]) -> None'"
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

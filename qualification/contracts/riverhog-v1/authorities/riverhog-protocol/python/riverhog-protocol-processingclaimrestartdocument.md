@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-e6338ea845"></a>`kind`: `"class"`
-- <a id="s-c5be82a6f1"></a>`signature`: `"'(*, fence: Annotated[int, Ge(ge=1)], lease_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 1800) -> None'"`
+- <a id="s-c5be82a6f1"></a>`signature`: `"'(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], lease_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 1800) -> None'"`
 
 #### Validated model schema
 
@@ -36,8 +36,17 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1f8e290dab"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-1f8e290dab"></a>`fence` | yes | [NonnegativeDecimal](#s-c555f2332b); ge=1 |  |
 | <a id="s-0833ed1442"></a>`lease_seconds` | no | type="integer"; minimum=30; maximum=86400; default=1800 |  |
+
+##### Definitions
+
+- [NonnegativeDecimal](#s-c555f2332b)
+
+##### <a id="s-c555f2332b"></a>definition `NonnegativeDecimal`
+
+- <a id="s-5510370069"></a>`type`: `"string"`
+- <a id="s-66a9c00449"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -73,18 +82,24 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9e629369ff561444834c164b15ea7ca28e3b72c13b4ee9e814a5774f4de0bb96 -->
+<!-- exact-contract-value: b87bdccae28fe9d67b4da8096373d459d428ea0012bcd9edd08732ef6021a47d -->
 
 ```json
 {
   "contract": {
     "kind": "class",
     "schema": {
+      "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        }
+      },
       "additionalProperties": false,
       "properties": {
         "fence": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "lease_seconds": {
           "default": 1800,
@@ -98,7 +113,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "'(*, fence: Annotated[int, Ge(ge=1)], lease_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 1800) -> None'"
+    "signature": "'(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], lease_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 1800) -> None'"
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

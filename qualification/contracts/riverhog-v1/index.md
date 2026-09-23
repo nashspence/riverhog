@@ -4,7 +4,7 @@
 
 This generated snapshot accounts for the externally exposed surfaces discovered from this repository revision. Discovery means inclusion; no separate acceptance decision is required.
 
-Included contract elements: **4194** · Extent decisions: **2057**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
+Included contract elements: **4210** · Extent decisions: **2004**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
 
 Checked-in references form a closed, tightly scoped, maintainer-selected, nonnormative conformance set.
 
@@ -82,7 +82,7 @@ Checked-in references form a closed, tightly scoped, maintainer-selected, nonnor
 
 - [release](authorities/release/index.md) — Coordinated v1 compatibility and publication promises.
   - [Runtime Images](authorities/release/runtime-images/index.md) (13)
-  - [Python Distributions](authorities/release/python-distributions/index.md) (71)
+  - [Python Distributions](authorities/release/python-distributions/index.md) (72)
   - [Installation Roots](authorities/release/installation-roots/index.md) (4)
   - [Release Artifacts](authorities/release/release-artifacts/index.md) (12)
   - [Publication Locations](authorities/release/publication-locations/index.md) (2)
@@ -93,7 +93,7 @@ Checked-in references form a closed, tightly scoped, maintainer-selected, nonnor
 
 - **[riverhog](authorities/riverhog/index.md)** [📦](authorities/riverhog/evidence-gaps.md) — The Riverhog service API and its maintained cross-interface operation parity.
   - **[HTTP Operations](authorities/riverhog/http-operations/index.md)** [📦](authorities/riverhog/http-operations/evidence-gaps.md) (109)
-  - **[HTTP Schemas](authorities/riverhog/http-schemas/index.md)** [📦](authorities/riverhog/http-schemas/evidence-gaps.md) (255)
+  - **[HTTP Schemas](authorities/riverhog/http-schemas/index.md)** [📦](authorities/riverhog/http-schemas/evidence-gaps.md) (257)
   - [HTTP Service Declaration](authorities/riverhog/http-service-declaration/index.md) (1)
   - [HTTP Security Schemes](authorities/riverhog/http-security-schemes/index.md) (1)
 
@@ -106,6 +106,9 @@ Checked-in references form a closed, tightly scoped, maintainer-selected, nonnor
 - **[riverhog-archive-contracts](authorities/riverhog-archive-contracts/index.md)** [📦](authorities/riverhog-archive-contracts/evidence-gaps.md) — Dependency-light immutable Riverhog archive recovery contracts.
   - **[Schemas](authorities/riverhog-archive-contracts/schema/index.md)** [📦](authorities/riverhog-archive-contracts/schema/evidence-gaps.md) (4)
   - [Python](authorities/riverhog-archive-contracts/python/index.md) (72)
+
+- [riverhog-canonical-json](authorities/riverhog-canonical-json/index.md) — Shared RFC 8785 JSON value and exact-scalar contracts.
+  - [Python](authorities/riverhog-canonical-json/python/index.md) (13)
 
 - [riverhog-catalog](authorities/riverhog-catalog/index.md) — Encrypted archive management, catalog, and retrieval.
   - [Durable State](authorities/riverhog-catalog/durable-state/index.md) (91)

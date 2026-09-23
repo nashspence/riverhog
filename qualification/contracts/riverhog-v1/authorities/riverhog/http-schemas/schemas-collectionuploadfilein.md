@@ -24,21 +24,13 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-489bd23c4b"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-489bd23c4b"></a>`bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md) |  |
 | <a id="s-f0fd54920a"></a>`path` | yes | [CanonicalRelPath](schemas-canonicalrelpath.md) |  |
 | <a id="s-8ebdaac874"></a>`provenance` | no | anyOf=[(discriminator={"mapping":{"captured":"#/components/schemas/CapturedFileProvenanceBinding","omitted":"#/components/schemas/OmittedFileProvenanceBinding"},"propertyName":"status"}; oneOf=[([CapturedFileProvenanceBinding](schemas-capturedfileprovenancebinding.md)); ([OmittedFileProvenanceBinding](schemas-omittedfileprovenancebinding.md))]); (type="null")]; title="Provenance" |  |
 | <a id="s-6d8d82cd49"></a>`raw_parts` | no | anyOf=[([CollectionUploadRawPartsIn](schemas-collectionuploadrawpartsin.md)); (type="null")] |  |
 | <a id="s-b6ef046198"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
-
-#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [field bytes](#s-489bd23c4b) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -55,6 +47,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - [CanonicalRelPath](schemas-canonicalrelpath.md)
 - [CapturedFileProvenanceBinding](schemas-capturedfileprovenancebinding.md)
 - [CollectionUploadRawPartsIn](schemas-collectionuploadrawpartsin.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 - [OmittedFileProvenanceBinding](schemas-omittedfileprovenancebinding.md)
 
 ## Governing policies
@@ -62,7 +55,6 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
 - <a id="pa-c7dc0e534b"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-bd1ff3179d"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 - <a id="pa-436c79fd9e"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
@@ -88,16 +80,14 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1e7d4e892dc37bf368acdc769e28c09f91487ce087943be592b05aabcd3e6a16 -->
+<!-- exact-contract-value: 8c2e0740092663c4df23ceba3bc89148f414a94c6b3222061da0c4fbaae131be -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
     "bytes": {
-      "minimum": 0,
-      "title": "Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal"
     },
     "path": {
       "$ref": "#/components/schemas/CanonicalRelPath"

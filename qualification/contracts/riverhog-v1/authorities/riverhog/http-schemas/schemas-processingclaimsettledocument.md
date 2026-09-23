@@ -25,7 +25,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-2c33191341"></a>`derivation` | yes | [CollectionDerivationDocument](schemas-collectionderivationdocument.md) |  |
-| <a id="s-3353cd3ebf"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-3353cd3ebf"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-593c65a4f2"></a>`outcome` | no | anyOf=[([ProcessingOutcomeBindingDocument](schemas-processingoutcomebindingdocument.md)); (type="null")] |  |
 | <a id="s-bc8bb48614"></a>`output_collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
 
@@ -35,6 +35,7 @@ Exact externally visible contract owned by this contract element.
 
 - [CollectionDerivationDocument](schemas-collectionderivationdocument.md)
 - [CollectionId](schemas-collectionid.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 - [ProcessingOutcomeBindingDocument](schemas-processingoutcomebindingdocument.md)
 
 ## Governing policies
@@ -64,7 +65,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f4eaad05bdbec113776443566aec0733a8a2e4ddde45eaf7609d7cad63baebb5 -->
+<!-- exact-contract-value: b590d53ed3d41814f5fc69704c4d88fb534b9b8a8dcd3b19ea5a3ea1a7758ae8 -->
 
 ```json
 {
@@ -74,9 +75,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$ref": "#/components/schemas/CollectionDerivationDocument"
     },
     "fence": {
-      "minimum": 1,
-      "title": "Fence",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "outcome": {
       "anyOf": [

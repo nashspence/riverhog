@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-23e4e467a7"></a>`audience` | yes | type="string"; pattern="^[a-z0-9][a-z0-9._:/-]{0,299}$"; title="Audience" |  |
 | <a id="s-efc30a4fa5"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |  |
 | <a id="s-d17899e432"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1; title="Expires At" |  |
-| <a id="s-504b09c50c"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-504b09c50c"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-46d5a9e506"></a>`format` | yes | type="string"; const="riverhog-transform-capability/v1"; title="Format" |  |
 | <a id="s-359c369b8d"></a>`id` | yes | type="string"; maxLength=160; minLength=1; title="Id" |  |
 | <a id="s-932409e908"></a>`principal_app` | yes | type="string"; maxLength=300; minLength=1; title="Principal App" |  |
@@ -60,6 +60,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 ### Referenced contract elements
 
 - [ArtifactReceivingSetDocument](schemas-artifactreceivingsetdocument.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -92,7 +93,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 17e910223e622a78026a55a52e0d8af93f39c5ed7c175b4459bc71c7dc707c83 -->
+<!-- exact-contract-value: 9ddb23b4e8ef3954bcee96363bb329e0d2138fe292350bc2e4d3e519d44d68c5 -->
 
 ```json
 {
@@ -143,9 +144,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "fence": {
-      "minimum": 1,
-      "title": "Fence",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "format": {
       "const": "riverhog-transform-capability/v1",

@@ -107,7 +107,7 @@ def test_search_files_is_paginated_filtered_and_sorted(tmp_path: Path) -> None:
 
     assert payload == {
         "query": "tax",
-        "collection": 1,
+        "collection": "1",
         "page_size": 1,
         "_next_position": None,
         "sort": "path",
@@ -115,9 +115,9 @@ def test_search_files_is_paginated_filtered_and_sorted(tmp_path: Path) -> None:
         "files": [
             {
                 "file_ref": ("1/tax/receipt.pdf"),
-                "collection_id": 1,
+                "collection_id": "1",
                 "path": "tax/receipt.pdf",
-                "bytes": 21,
+                "bytes": "21",
                 "sha256": "c" * 64,
             }
         ],

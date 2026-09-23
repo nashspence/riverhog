@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-7700da86eb"></a>`kind`: `"class"`
-- <a id="s-9c54513f5e"></a>`signature`: `"\"(*, path: CanonicalRelPath, bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
+- <a id="s-9c54513f5e"></a>`signature`: `"\"(*, path: CanonicalRelPath, bytes: NonnegativeDecimal, sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
 
 #### Validated model schema
 
@@ -36,13 +36,14 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-73aa3462b8"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-73aa3462b8"></a>`bytes` | yes | [NonnegativeDecimal](#s-fcac609203) |  |
 | <a id="s-d8d372ba45"></a>`path` | yes | [CanonicalRelPath](#s-2f866a5e07) |  |
 | <a id="s-e161f15c80"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### Definitions
 
 - [CanonicalRelPath](#s-2f866a5e07)
+- [NonnegativeDecimal](#s-fcac609203)
 
 ##### <a id="s-2f866a5e07"></a>definition `CanonicalRelPath`
 
@@ -59,6 +60,11 @@ Exact externally visible contract owned by this contract element.
 |---|---|
 | <a id="s-3abb6d9b12"></a>1 | not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)") |
 | <a id="s-5d4898801b"></a>2 | not=(pattern="^\\s\|\\s$") |
+
+##### <a id="s-fcac609203"></a>definition `NonnegativeDecimal`
+
+- <a id="s-30e0786c14"></a>`type`: `"string"`
+- <a id="s-0bcb075c3f"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Governing policies
 
@@ -87,7 +93,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c1169b38591d8c577cd48939e6b914907aa1e2f07eb0a4e3e22ca447cc3813a6 -->
+<!-- exact-contract-value: 13a495e3ae6d09e49c93f6f00bcca657e59fc6aad6683570979d580143ff51fd -->
 
 ```json
 {
@@ -114,13 +120,16 @@ The following JSON is the complete value owned at each machine-authority pointer
           "pattern": "^[^/\\\\]+(?:/[^/\\\\]+)*$",
           "type": "string",
           "x-unicode-normalization": "NFC"
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         }
       },
       "additionalProperties": false,
       "properties": {
         "bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         "path": {
           "$ref": "#/$defs/CanonicalRelPath"
@@ -137,7 +146,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, path: CanonicalRelPath, bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
+    "signature": "\"(*, path: CanonicalRelPath, bytes: NonnegativeDecimal, sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

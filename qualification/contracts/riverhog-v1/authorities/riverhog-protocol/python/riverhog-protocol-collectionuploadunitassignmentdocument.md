@@ -45,6 +45,8 @@ Exact externally visible contract owned by this contract element.
 - [CollectionUploadUnitSourceDocument](#s-d12188e833)
 - [CollectionUploadUnitWorkDocument](#s-e7fc0df57a)
 - [CollectionUploadVolumeSummaryDocument](#s-a20aef8598)
+- [NonnegativeDecimal](#s-b365d4f366)
+- [Sequence256Hex](#s-3f0edf1d63)
 
 ##### <a id="s-d12188e833"></a>definition `CollectionUploadUnitSourceDocument`
 
@@ -57,8 +59,8 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-f55ec22682"></a>`artifact_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-8a834688c6"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-bb945ed89d"></a>`offset` | yes | type="integer"; minimum=0 |  |
+| <a id="s-8a834688c6"></a>`bytes` | yes | [NonnegativeDecimal](#s-b365d4f366) |  |
+| <a id="s-bb945ed89d"></a>`offset` | yes | [NonnegativeDecimal](#s-b365d4f366) |  |
 | <a id="s-1e8d3750a0"></a>`path` | yes | type="string" |  |
 
 ##### <a id="s-e7fc0df57a"></a>definition `CollectionUploadUnitWorkDocument`
@@ -71,11 +73,11 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-538ec52b7e"></a>`payload_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-2cb1770cb6"></a>`plaintext_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-538ec52b7e"></a>`payload_bytes` | yes | [NonnegativeDecimal](#s-b365d4f366) |  |
+| <a id="s-2cb1770cb6"></a>`plaintext_bytes` | yes | [NonnegativeDecimal](#s-b365d4f366) |  |
 | <a id="s-a01a88dc1b"></a>`sources` | yes | type="array"; items=([CollectionUploadUnitSourceDocument](#s-d12188e833)); maxItems=1000; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"collection-volume-sequence","reason":"bounded-upload-unit-source-map"} |  |
 | <a id="s-e7b49d9602"></a>`state` | yes | type="string"; enum=["pending","committed"] |  |
-| <a id="s-39c0575712"></a>`unit` | yes | type="integer"; minimum=0 |  |
+| <a id="s-39c0575712"></a>`unit` | yes | [NonnegativeDecimal](#s-b365d4f366) |  |
 
 ##### <a id="s-a20aef8598"></a>definition `CollectionUploadVolumeSummaryDocument`
 
@@ -88,8 +90,18 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-be0976b9b6"></a>`kind` | yes | type="string"; enum=["pack","segment"] |  |
-| <a id="s-b5eabe3bab"></a>`sequence` | yes | type="integer"; minimum=0 |  |
+| <a id="s-b5eabe3bab"></a>`sequence` | yes | [Sequence256Hex](#s-3f0edf1d63) |  |
 | <a id="s-b06857b9eb"></a>`volume_id` | yes | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$" |  |
+
+##### <a id="s-b365d4f366"></a>definition `NonnegativeDecimal`
+
+- <a id="s-730c542dd3"></a>`type`: `"string"`
+- <a id="s-c1edca1aed"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
+##### <a id="s-3f0edf1d63"></a>definition `Sequence256Hex`
+
+- <a id="s-262ef6d002"></a>`type`: `"string"`
+- <a id="s-5479a0e0db"></a>`pattern`: `"^[0-9a-f]{64}(?![\\s\\S])"`
 
 ## Governing policies
 
@@ -118,7 +130,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a14e3571948be190f2d7a5448688a15bd37fe871339d537a4aae652ef6dc9f71 -->
+<!-- exact-contract-value: 7c6be9bbbb5702244da9ed4170656deebe69b1825ff19a6a20d51c23cd140ff9 -->
 
 ```json
 {
@@ -134,12 +146,10 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal"
             },
             "offset": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal"
             },
             "path": {
               "type": "string"
@@ -157,12 +167,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "payload_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal"
             },
             "plaintext_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal"
             },
             "sources": {
               "items": {
@@ -184,8 +192,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "unit": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal"
             }
           },
           "required": [
@@ -208,8 +215,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "sequence": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/Sequence256Hex"
             },
             "volume_id": {
               "pattern": "^(?:pack|segment)-[0-9a-f]{64}$",
@@ -222,6 +228,14 @@ The following JSON is the complete value owned at each machine-authority pointer
             "kind"
           ],
           "type": "object"
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
+        "Sequence256Hex": {
+          "pattern": "^[0-9a-f]{64}(?![\\s\\S])",
+          "type": "string"
         }
       },
       "additionalProperties": false,

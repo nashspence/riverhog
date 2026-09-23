@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from riverhog_canonical_json import format_scalar
 from riverhog_core.domain.models import (
     ArchiveCopyStatus,
     ArchiveDownloadAllowance,
@@ -82,7 +83,7 @@ def map_archive_store_list(summary: ArchiveStoreListPage) -> dict[str, object]:
 
 def map_collection(summary: CollectionSummary) -> dict[str, object]:
     return {
-        "id": summary.id,
+        "id": format_scalar("sequence63", summary.id),
         "created_at": summary.created_at,
         "description": summary.description,
         "description_revision": summary.description_revision,

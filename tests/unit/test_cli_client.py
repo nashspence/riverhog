@@ -23,8 +23,8 @@ from riverhog_protocol.errors import (
 )
 
 UPLOAD_REGISTRATION_CONSTRAINTS = {
-    "pack_member_bytes": 1024,
-    "raw_part_plaintext_bytes": 65536,
+    "pack_member_bytes": "1024",
+    "raw_part_plaintext_bytes": "65536",
 }
 
 
@@ -48,20 +48,20 @@ class RecordingClient(ApiClient):
         self.calls.append((method, path, kwargs))
         payload: dict[str, Any] = {"ok": True}
         if method == "POST" and path == "/v1/collection-upload-sessions":
-            payload = {"collection_id": 1, "state": "finalized"}
+            payload = {"collection_id": "1", "state": "finalized"}
         if method == "POST" and path == "/v1/retrieval-plans":
             payload = {"id": "plan-1", "state": "ready", "etag": "a" * 64}
         if method == "PUT" and "/volumes/" in path and "/units/" in path:
             content = bytes(kwargs["content"])
             payload = {
-                "unit": int(path.rsplit("/", 1)[-1]),
-                "payload_bytes": len(content),
-                "plaintext_bytes": len(content),
+                "unit": path.rsplit("/", 1)[-1],
+                "payload_bytes": str(len(content)),
+                "plaintext_bytes": str(len(content)),
                 "sources": [
                     {
                         "path": "fixture.bin",
-                        "offset": 0,
-                        "bytes": len(content),
+                        "offset": "0",
+                        "bytes": str(len(content)),
                         "artifact_sha256": "a" * 64,
                     }
                 ],
@@ -69,7 +69,7 @@ class RecordingClient(ApiClient):
             }
         if method == "POST" and path.endswith("/files"):
             payload = {
-                "collection_id": int(path.split("/")[-2]),
+                "collection_id": path.split("/")[-2],
                 "state": "open",
                 "files": [{**item, "custody_receipt": None} for item in kwargs["json"]["files"]],
             }
@@ -320,7 +320,7 @@ def test_collection_upload_selects_archive_store_without_materialization_policy(
         [
             {
                 "path": "one.txt",
-                "bytes": 1,
+                "bytes": "1",
                 "sha256": "a" * 64,
                 "provenance": {
                     "status": "omitted",
@@ -343,7 +343,7 @@ def test_collection_upload_selects_archive_store_without_materialization_policy(
         "files": [
             {
                 "path": "one.txt",
-                "bytes": 1,
+                "bytes": "1",
                 "sha256": "a" * 64,
                 "raw_parts": None,
                 "provenance": {
@@ -403,7 +403,7 @@ def test_collection_upload_client_rejects_a_custody_receipt_for_another_artifact
             [
                 {
                     "path": "one.txt",
-                    "bytes": 1,
+                    "bytes": "1",
                     "sha256": "a" * 64,
                     "provenance": {
                         "status": "omitted",
@@ -424,7 +424,7 @@ def test_collection_upload_client_rejects_an_impossible_registration_state() -> 
             [
                 {
                     "path": "one.txt",
-                    "bytes": 1,
+                    "bytes": "1",
                     "sha256": "a" * 64,
                     "provenance": {
                         "status": "omitted",
@@ -457,7 +457,7 @@ def test_client_rejects_invalid_upload_provenance_before_transport() -> None:
             [
                 {
                     "path": "camera/../clip.mp4",
-                    "bytes": 1,
+                    "bytes": "1",
                     "sha256": "a" * 64,
                     "provenance": {
                         "status": "omitted",
@@ -534,7 +534,7 @@ def test_retrieval_plan_and_job_share_exact_file_selection() -> None:
     payload = {
         "files": [
             {
-                "collection_id": 42,
+                "collection_id": "42",
                 "path": "invoice.pdf",
             }
         ],

@@ -212,7 +212,7 @@ def _input() -> InputArtifact:
         id="source",
         role="fixture.source/v1",
         collection=CollectionRootRef(
-            collection_id=1,
+            collection_id=str(1),
             archive_root_sha256=_sha("1"),
             content_identity=_sha("2"),
         ),
@@ -533,7 +533,7 @@ def _success_status(
         progress=TargetProgress(phase="done", completed=1, total=1, unit="artifacts"),
         production=production,
         output_collection=OutputCollectionRef(
-            collection_id=7,
+            collection_id=str(7),
             archive_root_sha256=_sha("6"),
             content_identity=_sha("7"),
             derivation_sha256=derivation.sha256,
@@ -1287,6 +1287,13 @@ def test_framework_neutral_target_http_binding() -> None:
     )
     assert preflight_response.status == 200
     assert TargetPreflightResponse.model_validate_json(preflight_response.body).target == target
+    duplicate = (
+        b'{"operation_id":"'
+        + operation.id.encode()
+        + b'",'
+        + preflight_request.model_dump_json(exclude_none=True).encode()[1:]
+    )
+    assert binding.handle("POST", "/v1/preflight", duplicate).status == 400
 
     job_response = binding.handle(
         "PUT",

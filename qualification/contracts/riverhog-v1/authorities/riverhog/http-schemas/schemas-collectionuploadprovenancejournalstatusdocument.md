@@ -24,9 +24,9 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-982c4304db"></a>`accepted_bytes` | yes | type="integer"; minimum=0; title="Accepted Bytes" |  |
-| <a id="s-9cb379acc2"></a>`bytes` | yes | type="integer"; minimum=1; title="Bytes" |  |
-| <a id="s-a21edea4a5"></a>`current_bytes` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; title="Current Bytes" |  |
+| <a id="s-982c4304db"></a>`accepted_bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md) |  |
+| <a id="s-9cb379acc2"></a>`bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
+| <a id="s-a21edea4a5"></a>`current_bytes` | no | anyOf=[([NonnegativeDecimal](schemas-nonnegativedecimal.md)); (type="null")] |  |
 | <a id="s-ec0690f235"></a>`current_path` | no | anyOf=[(type="string"); (type="null")]; title="Current Path" |  |
 | <a id="s-b72a4150cb"></a>`current_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Current Sha256" |  |
 | <a id="s-60b9f44c31"></a>`current_state_id` | no | anyOf=[([ProvenanceStateId](schemas-provenancestateid.md)); (type="null")] |  |
@@ -36,14 +36,6 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-ee287dd4a9"></a>`state` | yes | type="string"; enum=["accepting","validating","sealed","failed"]; title="State" |  |
 
 ### Progression, limits, and lifecycle
-
-#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [field bytes](#s-9cb379acc2) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -58,6 +50,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract elements
 
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 - [ProvenanceJournalId](schemas-provenancejournalid.md)
 - [ProvenanceStateId](schemas-provenancestateid.md)
 
@@ -66,7 +59,6 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
 - <a id="pa-3c86ecdfab"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-da0cbef464"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 - <a id="pa-6a1f4deacc"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
@@ -92,33 +84,28 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5c7fc6e75fbd9fde5ed7dcae5ff41845ece61b2feec55575dc2a37b709bdc269 -->
+<!-- exact-contract-value: c992201f40dba3ac7f5e9844cd60fbe3b2dfdeadb685c1e777f26de27eed0d5d -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
     "accepted_bytes": {
-      "minimum": 0,
-      "title": "Accepted Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal"
     },
     "bytes": {
-      "minimum": 1,
-      "title": "Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "current_bytes": {
       "anyOf": [
         {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/components/schemas/NonnegativeDecimal"
         },
         {
           "type": "null"
         }
-      ],
-      "title": "Current Bytes"
+      ]
     },
     "current_path": {
       "anyOf": [

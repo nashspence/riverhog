@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-594e347785"></a>`kind`: `"class"`
-- <a id="s-4fa14614b2"></a>`signature`: `"\"(*, claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], fence: Annotated[int, Ge(ge=1)], work_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], execution_id: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')])]] = None, output_collection_id: CollectionId \| None = None, outcomes: riverhog_protocol.collection_workflow_transport.ExactSetAuthorityDocument \| None = None) -> None\""`
+- <a id="s-4fa14614b2"></a>`signature`: `"\"(*, claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], work_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], execution_id: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')])]] = None, output_collection_id: CollectionId \| None = None, outcomes: riverhog_protocol.collection_workflow_transport.ExactSetAuthorityDocument \| None = None) -> None\""`
 
 #### Validated model schema
 
@@ -38,7 +38,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-4040051f30"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-ebb211919a"></a>`execution_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
-| <a id="s-25792bb28a"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-25792bb28a"></a>`fence` | yes | [NonnegativeDecimal](#s-0d8a9e0a98); ge=1 |  |
 | <a id="s-8aa807b6bd"></a>`outcomes` | no | anyOf=[([ExactSetAuthorityDocument](#s-6c83c9bf2b)); (type="null")]; default=null |  |
 | <a id="s-5b8d5d0a4e"></a>`output_collection_id` | no | anyOf=[([CollectionId](#s-c5d15daa23)); (type="null")]; default=null |  |
 | <a id="s-5178cf253f"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -54,6 +54,7 @@ Exact externally visible contract owned by this contract element.
 
 - [CollectionId](#s-c5d15daa23)
 - [ExactSetAuthorityDocument](#s-6c83c9bf2b)
+- [NonnegativeDecimal](#s-0d8a9e0a98)
 
 ##### <a id="s-bf0ba16d67"></a>`oneOf` alternative 1
 
@@ -65,7 +66,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-412ece3957"></a>`execution_id` | yes | type="string" |  |
 | <a id="s-cc5632f835"></a>`outcomes` | no | type="null" |  |
-| <a id="s-dd5a2f007c"></a>`output_collection_id` | yes | type="integer" |  |
+| <a id="s-dd5a2f007c"></a>`output_collection_id` | yes | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |  |
 
 ##### <a id="s-e9d70d2c3c"></a>`oneOf` alternative 2
 
@@ -81,8 +82,13 @@ Exact externally visible contract owned by this contract element.
 
 ##### <a id="s-c5d15daa23"></a>definition `CollectionId`
 
-- <a id="s-aa72ce2de8"></a>`type`: `"integer"`
-- <a id="s-7c8e417883"></a>`minimum`: `1`
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-33ed70c73f"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-08ad80a06f"></a>2 | not=(const="0") |
 
 ##### <a id="s-6c83c9bf2b"></a>definition `ExactSetAuthorityDocument`
 
@@ -94,8 +100,13 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-28db1d9da4"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-28db1d9da4"></a>`count` | yes | [NonnegativeDecimal](#s-0d8a9e0a98); ge=1 |  |
 | <a id="s-a8e5ee4523"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-0d8a9e0a98"></a>definition `NonnegativeDecimal`
+
+- <a id="s-d90eed6f45"></a>`type`: `"string"`
+- <a id="s-1c2eedf67e"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -132,7 +143,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 402d10557aa0805be306f8b741c817a76bc988f589f30f486006a9c5b8400c4d -->
+<!-- exact-contract-value: d6230b0fe7f074ee4d8fd1fbaa98ab4a1368c41e054229c4928494227b73e568 -->
 
 ```json
 {
@@ -141,15 +152,24 @@ The following JSON is the complete value owned at each machine-authority pointer
     "schema": {
       "$defs": {
         "CollectionId": {
-          "minimum": 1,
-          "type": "integer"
+          "allOf": [
+            {
+              "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+              "type": "string"
+            },
+            {
+              "not": {
+                "const": "0"
+              }
+            }
+          ]
         },
         "ExactSetAuthorityDocument": {
           "additionalProperties": false,
           "properties": {
             "count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
@@ -161,6 +181,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sha256"
           ],
           "type": "object"
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         }
       },
       "additionalProperties": false,
@@ -174,7 +198,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             },
             "output_collection_id": {
-              "type": "integer"
+              "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+              "type": "string"
             }
           },
           "required": [
@@ -217,8 +242,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "default": null
         },
         "fence": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "outcomes": {
           "anyOf": [
@@ -254,7 +279,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], fence: Annotated[int, Ge(ge=1)], work_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], execution_id: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')])]] = None, output_collection_id: CollectionId | None = None, outcomes: riverhog_protocol.collection_workflow_transport.ExactSetAuthorityDocument | None = None) -> None\""
+    "signature": "\"(*, claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], work_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], execution_id: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')])]] = None, output_collection_id: CollectionId | None = None, outcomes: riverhog_protocol.collection_workflow_transport.ExactSetAuthorityDocument | None = None) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

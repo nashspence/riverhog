@@ -22,6 +22,7 @@ from riverhog_provenance.common import (
     DescriptorFileStateObserver,
     basic_access,
     diagnostic,
+    format_provenance_count,
     identifier,
     locator_from_path,
     make_sparse_map_row,
@@ -880,7 +881,7 @@ class LinuxBackend(PlatformBackend):
                 observed_length, data = self.api.get_xattr(
                     fd, name, request.policy.maximum_native_value_bytes
                 )
-                row["observed_byte_length"] = observed_length
+                row["observed_byte_length"] = format_provenance_count(observed_length)
                 if data is None:
                     if request.policy.large_value_disposition.value == "fail":
                         raise NativeObservationError(
@@ -960,7 +961,7 @@ class LinuxBackend(PlatformBackend):
             "name": "access-acl",
             "capture_status": status,
             "source": source("linux", "acl_get_fd(3)", "ACL_TYPE_ACCESS"),
-            "observed_byte_length": len(captured.raw),
+            "observed_byte_length": format_provenance_count(len(captured.raw)),
             "sensitivity": "security_sensitive",
         }
         if value is not None:
@@ -975,7 +976,7 @@ class LinuxBackend(PlatformBackend):
                         "type": "text",
                         "data": captured.text,
                         "source_encoding": "UTF-8",
-                        "byte_length": len(captured.text.encode("utf-8")),
+                        "byte_length": format_provenance_count(len(captured.text.encode("utf-8"))),
                         "media_type": "text/plain",
                     },
                     "agent_id": agent_id,

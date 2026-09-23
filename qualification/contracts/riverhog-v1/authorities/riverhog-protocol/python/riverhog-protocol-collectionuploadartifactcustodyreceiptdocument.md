@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-dc166b4040"></a>`kind`: `"class"`
-- <a id="s-79c6d52e85"></a>`signature`: `"\"(*, format: Literal['riverhog-artifact-custody-receipt/v1'] = 'riverhog-artifact-custody-receipt/v1', collection_id: CollectionId, path: str, bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], archive_object_count: Annotated[int, Strict(strict=True), Ge(ge=1)], archive_object_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
+- <a id="s-79c6d52e85"></a>`signature`: `"\"(*, format: Literal['riverhog-artifact-custody-receipt/v1'] = 'riverhog-artifact-custody-receipt/v1', collection_id: CollectionId, path: str, bytes: NonnegativeDecimal, sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], archive_object_count: Annotated[NonnegativeDecimal, Ge(ge=1)], archive_object_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
 
 #### Validated model schema
 
@@ -36,9 +36,9 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-5f24861dbc"></a>`archive_object_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-5f24861dbc"></a>`archive_object_count` | yes | [NonnegativeDecimal](#s-23f1bdc52d); ge=1 |  |
 | <a id="s-4697eb4666"></a>`archive_object_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-098d868844"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-098d868844"></a>`bytes` | yes | [NonnegativeDecimal](#s-23f1bdc52d) |  |
 | <a id="s-5d89499379"></a>`collection_id` | yes | [CollectionId](#s-08f619d576) |  |
 | <a id="s-cb6df9e360"></a>`format` | no | type="string"; const="riverhog-artifact-custody-receipt/v1"; default="riverhog-artifact-custody-receipt/v1" |  |
 | <a id="s-62de67a206"></a>`path` | yes | type="string" |  |
@@ -48,11 +48,22 @@ Exact externally visible contract owned by this contract element.
 ##### Definitions
 
 - [CollectionId](#s-08f619d576)
+- [NonnegativeDecimal](#s-23f1bdc52d)
 
 ##### <a id="s-08f619d576"></a>definition `CollectionId`
 
-- <a id="s-62202c7345"></a>`type`: `"integer"`
-- <a id="s-96c316f3c6"></a>`minimum`: `1`
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-d12739737c"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-6e3f3d26d2"></a>2 | not=(const="0") |
+
+##### <a id="s-23f1bdc52d"></a>definition `NonnegativeDecimal`
+
+- <a id="s-9a126fde80"></a>`type`: `"string"`
+- <a id="s-f5557be1a2"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -90,7 +101,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5b6ed5bbc78387e6b186ea77306873dad4b81831bc3d5455eb088ca2cc18b45a -->
+<!-- exact-contract-value: de48f149b9e957c8d2b7b6c4f0a0e0e09ba0f9aad5482a44d95c574e68bfbad5 -->
 
 ```json
 {
@@ -99,23 +110,35 @@ The following JSON is the complete value owned at each machine-authority pointer
     "schema": {
       "$defs": {
         "CollectionId": {
-          "minimum": 1,
-          "type": "integer"
+          "allOf": [
+            {
+              "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+              "type": "string"
+            },
+            {
+              "not": {
+                "const": "0"
+              }
+            }
+          ]
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         }
       },
       "additionalProperties": false,
       "properties": {
         "archive_object_count": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "archive_object_set_sha256": {
           "pattern": "^[0-9a-f]{64}$",
           "type": "string"
         },
         "bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         "collection_id": {
           "$ref": "#/$defs/CollectionId"
@@ -148,7 +171,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, format: Literal['riverhog-artifact-custody-receipt/v1'] = 'riverhog-artifact-custody-receipt/v1', collection_id: CollectionId, path: str, bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], archive_object_count: Annotated[int, Strict(strict=True), Ge(ge=1)], archive_object_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
+    "signature": "\"(*, format: Literal['riverhog-artifact-custody-receipt/v1'] = 'riverhog-artifact-custody-receipt/v1', collection_id: CollectionId, path: str, bytes: NonnegativeDecimal, sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], archive_object_count: Annotated[NonnegativeDecimal, Ge(ge=1)], archive_object_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

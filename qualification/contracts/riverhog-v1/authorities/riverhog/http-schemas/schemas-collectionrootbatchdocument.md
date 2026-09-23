@@ -24,9 +24,9 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-94a5c12b16"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-94a5c12b16"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-ab04ca5dfd"></a>`inputs` | yes | type="array"; items=([CollectionRootIdentityDocument](schemas-collectionrootidentitydocument.md)); maxItems=128; minItems=1; title="Inputs"; uniqueItems=true; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"start_ordinal","reason":"bounded-authority-append"} |  |
-| <a id="s-9c6772d7f8"></a>`start_ordinal` | yes | type="integer"; minimum=0; title="Start Ordinal" |  |
+| <a id="s-9c6772d7f8"></a>`start_ordinal` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -63,6 +63,7 @@ Exact evidence groups for this contract element:
 ### Referenced contract elements
 
 - [CollectionRootIdentityDocument](schemas-collectionrootidentitydocument.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -94,16 +95,15 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: acf1b1c5363045debca142fa788e0aa4a48f38956eb2841b6c5949e94253710c -->
+<!-- exact-contract-value: f0ac02f34d26738227bc06a6c2830b77dd5dab6b2c4da6288181b8c440aeb888 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
     "fence": {
-      "minimum": 1,
-      "title": "Fence",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "inputs": {
       "items": {
@@ -121,9 +121,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       }
     },
     "start_ordinal": {
-      "minimum": 0,
-      "title": "Start Ordinal",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
     }
   },
   "required": [

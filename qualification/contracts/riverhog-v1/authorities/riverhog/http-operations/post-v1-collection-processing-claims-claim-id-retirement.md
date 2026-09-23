@@ -88,7 +88,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/workflows.py::begin\_processing\_claim\_retirement](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L683)
+- **Handler:** [riverhog/src/riverhog\_api/routers/workflows.py::begin\_processing\_claim\_retirement](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L684)
 
 ### Structural operation bindings
 
@@ -108,7 +108,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.begin_processing_claim_retirement",
       "source": {
-        "line": 646,
+        "line": 672,
         "module": "riverhog_client.workflows",
         "path": "packages/riverhog-client/src/riverhog_client/workflows.py",
         "symbol": "CollectionWorkflowMethods.begin_processing_claim_retirement"

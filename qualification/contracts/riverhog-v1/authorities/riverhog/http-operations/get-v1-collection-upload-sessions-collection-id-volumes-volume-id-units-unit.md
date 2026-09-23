@@ -25,9 +25,9 @@ Get Collection Upload Session Unit
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-352d4ba0b7"></a>`collection_id` | path | yes | not declared | type="integer"; minimum=1; title="Collection Id" |
+| <a id="s-352d4ba0b7"></a>`collection_id` | path | yes | not declared | allOf=[(type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])"); (not=(const="0"))]; title="Collection Id" |
 | <a id="s-849bd3e5fa"></a>`volume_id` | path | yes | not declared | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$"; title="Volume Id" |
-| <a id="s-2dd410918c"></a>`unit` | path | yes | not declared | type="integer"; minimum=0; title="Unit" |
+| <a id="s-2dd410918c"></a>`unit` | path | yes | not declared | type="string"; pattern="^(?:0\|[1-9][0-9]*)(?![\\s\\S])"; title="Unit" |
 
 ### Responses
 
@@ -68,7 +68,7 @@ Get Collection Upload Session Unit
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/collections.py::get\_collection\_upload\_session\_unit](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L562)
+- **Handler:** [riverhog/src/riverhog\_api/routers/collections.py::get\_collection\_upload\_session\_unit](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L564)
 
 ### Structural operation bindings
 
@@ -102,7 +102,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.get_collection_upload_session_unit",
       "source": {
-        "line": 1499,
+        "line": 1501,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.get_collection_upload_session_unit"
@@ -131,7 +131,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5a057d290b21843aa6e06281d489199fa5d11d40e4faaea00f7648bef049857d -->
+<!-- exact-contract-value: c5cc16b40b6d8e6cc0946b9ce2473d94d729b6f4678ec710d7935699cfa5d8b3 -->
 
 ```json
 {
@@ -142,9 +142,18 @@ The following JSON is the complete value owned at each machine-authority pointer
       "name": "collection_id",
       "required": true,
       "schema": {
-        "minimum": 1,
-        "title": "Collection Id",
-        "type": "integer"
+        "allOf": [
+          {
+            "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+            "type": "string"
+          },
+          {
+            "not": {
+              "const": "0"
+            }
+          }
+        ],
+        "title": "Collection Id"
       }
     },
     {
@@ -162,9 +171,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "name": "unit",
       "required": true,
       "schema": {
-        "minimum": 0,
+        "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
         "title": "Unit",
-        "type": "integer"
+        "type": "string"
       }
     }
   ],

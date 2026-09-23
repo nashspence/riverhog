@@ -104,7 +104,7 @@ def test_v1_construction_vector_fixes_pack_manifest_and_root_identities() -> Non
         "e96fa53e1e9c7787171d51af47b7859e72278fe070628b5370513a4629b113bb"
     )
     assert hashlib.sha256(manifest).hexdigest() == (
-        "e0b38cd631b675c5b1d8e0ec6d312e8c27de9f6cb4c05e0345de1aa0b2c3634a"
+        "a0624b376a289c828c5715f18896ca295ef074279bfefff8580cc0b52e0ca37f"
     )
 
 
@@ -184,8 +184,8 @@ def test_manifest_validates_raw_segment_coverage_without_repeating_pack_files() 
     payload = CollectionArchiveManifest.from_json_bytes(manifest).to_mapping()
 
     assert [row.volume.kind for row in volumes] == ["pack", "segment", "segment"]
-    assert payload["tree"]["files"] == 2
-    assert payload["tree"]["bytes"] == len(small_content) + len(large_content)
+    assert payload["tree"]["files"] == "2"
+    assert payload["tree"]["bytes"] == str(len(small_content) + len(large_content))
 
 
 def test_manifest_rejects_gapped_raw_segments() -> None:

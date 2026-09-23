@@ -32,6 +32,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `release` | [Python distribution: riverhog-age](../../authorities/release/python-distributions/python-distribution-riverhog-age.md#pa-2b5725b502) |
 | `release` | [Python distribution: riverhog-application-access](../../authorities/release/python-distributions/python-distribution-riverhog-application-access.md#pa-71c52e1216) |
 | `release` | [Python distribution: riverhog-archive-contracts](../../authorities/release/python-distributions/python-distribution-riverhog-archive-contracts.md#pa-2aec1a8f1c) |
+| `release` | [Python distribution: riverhog-canonical-json](../../authorities/release/python-distributions/python-distribution-riverhog-canonical-json.md#pa-7aa5ef9bab) |
 | `release` | [Python distribution: riverhog-client](../../authorities/release/python-distributions/python-distribution-riverhog-client.md#pa-35c83822fe) |
 | `release` | [Python distribution: riverhog-ftp-adapter](../../authorities/release/python-distributions/python-distribution-riverhog-ftp-adapter.md#pa-facda61101) |
 | `release` | [Python distribution: riverhog-ftp-adapter-api-client](../../authorities/release/python-distributions/python-distribution-riverhog-ftp-adapter-api-client.md#pa-c3b2465afd) |

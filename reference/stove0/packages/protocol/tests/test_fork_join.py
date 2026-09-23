@@ -44,7 +44,7 @@ def digest(label: str) -> str:
 def root(number: int, label: str | None = None) -> CollectionRootRef:
     suffix = label or str(number)
     return CollectionRootRef(
-        collection_id=number,
+        collection_id=str(number),
         archive_root_sha256=digest(f"manifest:{suffix}"),
         content_identity=digest(f"content:{suffix}"),
     )

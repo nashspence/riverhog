@@ -26,7 +26,7 @@ A bounded acquisition step over currently actionable upload units.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-0f1e40b93b"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
-| <a id="s-86f4d750af"></a>`committed_payload_bytes` | yes | type="integer"; minimum=0; title="Committed Payload Bytes" |  |
+| <a id="s-86f4d750af"></a>`committed_payload_bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md) |  |
 | <a id="s-9c4aca2092"></a>`complete` | yes | type="boolean"; title="Complete" |  |
 | <a id="s-b5d3083403"></a>`planning_complete` | yes | type="boolean"; title="Planning Complete" |  |
 | <a id="s-4617d6f48d"></a>`work` | yes | type="array"; items=([CollectionUploadUnitAssignmentDocument](schemas-collectionuploadunitassignmentdocument.md)); maxItems=64; title="Work"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"repeated-acquisition-until-complete","reason":"bounded-actionable-work-acquisition"} |  |
@@ -67,6 +67,7 @@ Exact evidence groups for this contract element:
 
 - [CollectionId](schemas-collectionid.md)
 - [CollectionUploadUnitAssignmentDocument](schemas-collectionuploadunitassignmentdocument.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -98,7 +99,7 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1d4a81eca38f9ee605b1fa6d735fa52ca26238ca6b110b93a24ede24349ae9f2 -->
+<!-- exact-contract-value: ec08234b5831d82e84b827c2a74def679a8c158f6c78fbed9f7a9cf295832cbb -->
 
 ```json
 {
@@ -109,9 +110,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$ref": "#/components/schemas/CollectionId"
     },
     "committed_payload_bytes": {
-      "minimum": 0,
-      "title": "Committed Payload Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal"
     },
     "complete": {
       "title": "Complete",

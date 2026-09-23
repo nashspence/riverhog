@@ -13,7 +13,7 @@ from riverhog_protocol import (
 
 def test_portable_collection_inventory_owns_incremental_identity() -> None:
     header = PortableCollectionHeader(
-        collection=7,
+        collection="7",
         content_identity="a" * 64,
         encryption_format="age-v1-scrypt",
         passphrase_id="collection-test-key-v1",
@@ -31,8 +31,8 @@ def test_portable_collection_inventory_owns_incremental_identity() -> None:
         authority=PortableCollectionInventoryAuthority(
             header=header,
             inventory_identity=builder.identity,
-            file_count=2,
-            file_bytes=3,
+            file_count="2",
+            file_bytes="3",
         ),
         files=[file.to_mapping() for file in files],
         complete=True,

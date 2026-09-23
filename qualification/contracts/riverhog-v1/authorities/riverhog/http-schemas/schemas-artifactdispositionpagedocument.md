@@ -26,8 +26,8 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-0a4be28e4a"></a>`authority` | yes | [ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md) |  |
 | <a id="s-300c0e231e"></a>`dispositions` | yes | type="array"; items=([ArtifactDispositionDocument](schemas-artifactdispositiondocument.md)); maxItems=128; title="Dispositions"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
-| <a id="s-964eecf671"></a>`next_ordinal` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; title="Next Ordinal" |  |
-| <a id="s-986071d04a"></a>`start_ordinal` | yes | type="integer"; minimum=0; title="Start Ordinal" |  |
+| <a id="s-964eecf671"></a>`next_ordinal` | no | anyOf=[([NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1); (type="null")] |  |
+| <a id="s-986071d04a"></a>`start_ordinal` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -65,6 +65,7 @@ Exact evidence groups for this contract element:
 
 - [ArtifactDispositionDocument](schemas-artifactdispositiondocument.md)
 - [ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -96,7 +97,7 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: de49868fb7242eaf4c91278a54a47542b5a126d885b24423b420e2deb84be36b -->
+<!-- exact-contract-value: e4dd4a98af863e59a1a708305fdc92dafa6a1a7afda306d6a471aa72874fa596 -->
 
 ```json
 {
@@ -121,19 +122,17 @@ The following JSON is the complete value owned at each machine-authority pointer
     "next_ordinal": {
       "anyOf": [
         {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/components/schemas/NonnegativeDecimal",
+          "ge": 1
         },
         {
           "type": "null"
         }
-      ],
-      "title": "Next Ordinal"
+      ]
     },
     "start_ordinal": {
-      "minimum": 0,
-      "title": "Start Ordinal",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
     }
   },
   "required": [

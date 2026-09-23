@@ -25,8 +25,8 @@ The immutable authority shared by every bounded inventory page.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-92807b378e"></a>`file_bytes` | yes | type="integer"; minimum=0; title="File Bytes" |  |
-| <a id="s-b11180e3ba"></a>`file_count` | yes | type="integer"; minimum=1; title="File Count" |  |
+| <a id="s-92807b378e"></a>`file_bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md) |  |
+| <a id="s-b11180e3ba"></a>`file_count` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-871d5bb9ae"></a>`header` | yes | [PortableCollectionHeader](schemas-portablecollectionheader.md) |  |
 | <a id="s-fb53d903c1"></a>`inventory_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Inventory Identity" |  |
 
@@ -44,6 +44,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract elements
 
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 - [PortableCollectionHeader](schemas-portablecollectionheader.md)
 
 ## Governing policies
@@ -76,7 +77,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 98ff10220bdc7d51fc7ea37e5234aa18214324afa3fdcb4155f079fed05bc4cb -->
+<!-- exact-contract-value: 264e61ec2dea4ff4b25ccd626ef1a7820cd8660ccd7f95e745eafd2ce3997aba -->
 
 ```json
 {
@@ -84,14 +85,11 @@ The following JSON is the complete value owned at each machine-authority pointer
   "description": "The immutable authority shared by every bounded inventory page.",
   "properties": {
     "file_bytes": {
-      "minimum": 0,
-      "title": "File Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal"
     },
     "file_count": {
-      "minimum": 1,
-      "title": "File Count",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "header": {
       "$ref": "#/components/schemas/PortableCollectionHeader"

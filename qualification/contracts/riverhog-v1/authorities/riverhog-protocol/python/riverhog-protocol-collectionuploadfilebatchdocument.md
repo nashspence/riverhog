@@ -44,6 +44,7 @@ Exact externally visible contract owned by this contract element.
 - [CapturedFileProvenanceBinding](#s-e2f87c22de)
 - [CollectionUploadFileIn](#s-624087427b)
 - [CollectionUploadRawPartsIn](#s-979ba8003b)
+- [NonnegativeDecimal](#s-7b6e6f2914)
 - [OmittedFileProvenanceBinding](#s-fc35d7c3a7)
 - [ProvenanceJournalId](#s-ca7445ece9)
 - [ProvenanceStateId](#s-7998e0cad4)
@@ -88,7 +89,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e8bce37c75"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-e8bce37c75"></a>`bytes` | yes | [NonnegativeDecimal](#s-7b6e6f2914) |  |
 | <a id="s-d43a3b5f31"></a>`path` | yes | [CanonicalRelPath](#s-aedd4af0bf) |  |
 | <a id="s-ae7523361a"></a>`provenance` | no | anyOf=[(discriminator={"mapping":{"captured":"#/$defs/CapturedFileProvenanceBinding","omitted":"#/$defs/OmittedFileProvenanceBinding"},"propertyName":"status"}; oneOf=[([CapturedFileProvenanceBinding](#s-e2f87c22de)); ([OmittedFileProvenanceBinding](#s-fc35d7c3a7))]); (type="null")]; default=null |  |
 | <a id="s-ec34394539"></a>`raw_parts` | no | anyOf=[([CollectionUploadRawPartsIn](#s-979ba8003b)); (type="null")]; default=null |  |
@@ -105,8 +106,13 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-917c4b4234"></a>`ordered_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ce52c1a3df"></a>`part_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-560a9fa2aa"></a>`part_plaintext_bytes` | yes | type="integer"; minimum=65536 |  |
+| <a id="s-ce52c1a3df"></a>`part_count` | yes | [NonnegativeDecimal](#s-7b6e6f2914); ge=1 |  |
+| <a id="s-560a9fa2aa"></a>`part_plaintext_bytes` | yes | [NonnegativeDecimal](#s-7b6e6f2914); ge=65536 |  |
+
+##### <a id="s-7b6e6f2914"></a>definition `NonnegativeDecimal`
+
+- <a id="s-3d34ae8ff2"></a>`type`: `"string"`
+- <a id="s-de9a497294"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-fc35d7c3a7"></a>definition `OmittedFileProvenanceBinding`
 
@@ -164,7 +170,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 04ae8b54bf12ed225355d0ccb742c4728d2c4bbfa00a0a16c3e01d420264770f -->
+<!-- exact-contract-value: e24a7c693d625a9a43049d7c027bdb0db2a4ae36a169e5ebcbaa13c146720fc6 -->
 
 ```json
 {
@@ -217,8 +223,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal"
             },
             "path": {
               "$ref": "#/$defs/CanonicalRelPath"
@@ -279,12 +284,12 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "part_count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "part_plaintext_bytes": {
-              "minimum": 65536,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 65536
             }
           },
           "required": [
@@ -293,6 +298,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "ordered_sha256"
           ],
           "type": "object"
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         },
         "OmittedFileProvenanceBinding": {
           "additionalProperties": false,

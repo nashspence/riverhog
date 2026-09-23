@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-d31b14aa8a"></a>`kind`: `"class"`
-- <a id="s-556cbcc9d9"></a>`signature`: `"\"(*, header: riverhog_protocol.portable_collection.PortableCollectionHeader, inventory_identity: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], file_count: Annotated[int, Ge(ge=1)], file_bytes: Annotated[int, Ge(ge=0)]) -> None\""`
+- <a id="s-556cbcc9d9"></a>`signature`: `"\"(*, header: riverhog_protocol.portable_collection.PortableCollectionHeader, inventory_identity: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], file_count: Annotated[NonnegativeDecimal, Ge(ge=1)], file_bytes: NonnegativeDecimal) -> None\""`
 
 #### Validated model schema
 
@@ -36,20 +36,31 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-5a27b4f2b8"></a>`file_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-40606344be"></a>`file_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-5a27b4f2b8"></a>`file_bytes` | yes | [NonnegativeDecimal](#s-b2e284a311) |  |
+| <a id="s-40606344be"></a>`file_count` | yes | [NonnegativeDecimal](#s-b2e284a311); ge=1 |  |
 | <a id="s-42cbdd55a0"></a>`header` | yes | [PortableCollectionHeader](#s-98fff72407) |  |
 | <a id="s-925b6902ff"></a>`inventory_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### Definitions
 
 - [CollectionId](#s-d363bae8a7)
+- [NonnegativeDecimal](#s-b2e284a311)
 - [PortableCollectionHeader](#s-98fff72407)
 
 ##### <a id="s-d363bae8a7"></a>definition `CollectionId`
 
-- <a id="s-02646d607d"></a>`type`: `"integer"`
-- <a id="s-e0b4a1f722"></a>`minimum`: `1`
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-47c9fdf71b"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-a17a0dfeca"></a>2 | not=(const="0") |
+
+##### <a id="s-b2e284a311"></a>definition `NonnegativeDecimal`
+
+- <a id="s-4ccf32c5f6"></a>`type`: `"string"`
+- <a id="s-adc229a645"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-98fff72407"></a>definition `PortableCollectionHeader`
 
@@ -96,7 +107,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 18da01b0153d422d85133d0802e30fb8732e0e1f2956d9de13b8fa9a273f6b18 -->
+<!-- exact-contract-value: 73f8c95366f3c8d6d26ade1e576b76f6c2d6d3bc1eeaa5903ea39bb7f3fb3a9e -->
 
 ```json
 {
@@ -105,8 +116,21 @@ The following JSON is the complete value owned at each machine-authority pointer
     "schema": {
       "$defs": {
         "CollectionId": {
-          "minimum": 1,
-          "type": "integer"
+          "allOf": [
+            {
+              "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+              "type": "string"
+            },
+            {
+              "not": {
+                "const": "0"
+              }
+            }
+          ]
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         },
         "PortableCollectionHeader": {
           "additionalProperties": false,
@@ -165,12 +189,11 @@ The following JSON is the complete value owned at each machine-authority pointer
       "additionalProperties": false,
       "properties": {
         "file_bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         "file_count": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "header": {
           "$ref": "#/$defs/PortableCollectionHeader"
@@ -188,7 +211,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, header: riverhog_protocol.portable_collection.PortableCollectionHeader, inventory_identity: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], file_count: Annotated[int, Ge(ge=1)], file_bytes: Annotated[int, Ge(ge=0)]) -> None\""
+    "signature": "\"(*, header: riverhog_protocol.portable_collection.PortableCollectionHeader, inventory_identity: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], file_count: Annotated[NonnegativeDecimal, Ge(ge=1)], file_bytes: NonnegativeDecimal) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

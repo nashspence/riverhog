@@ -25,32 +25,20 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-b4c4f8d76c"></a>`authority` | no | anyOf=[([ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md)); (type="null")] |  |
-| <a id="s-9eed34922f"></a>`count` | yes | type="integer"; minimum=0; title="Count" |  |
+| <a id="s-9eed34922f"></a>`count` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 | <a id="s-69a169072e"></a>`state` | yes | type="string"; enum=["receiving","sealed"]; title="State" |  |
-| <a id="s-97ef4d673d"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
-
-### Progression, limits, and lifecycle
-
-#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [field count](#s-9eed34922f) | `value · schema-value · operational_policy` | shared above |
+| <a id="s-97ef4d673d"></a>`total_bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 
 ## Maintained corroboration
 
 ### Referenced contract elements
 
 - [ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
-[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
-
 - <a id="pa-b7d446ac01"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-71847460ce"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 
 ## Evidence
 
@@ -75,7 +63,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b9a5b3f9d1aeb47fe357397baeee9b1dbeb64055a21618883199489f4789bcbb -->
+<!-- exact-contract-value: f66af406cb1dafe7a60edc5a89eec2e66e324b4fe8308b0be876e9f63d52dfaa -->
 
 ```json
 {
@@ -92,9 +80,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       ]
     },
     "count": {
-      "minimum": 0,
-      "title": "Count",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
     },
     "state": {
       "enum": [
@@ -105,9 +92,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "total_bytes": {
-      "minimum": 0,
-      "title": "Total Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
     }
   },
   "required": [

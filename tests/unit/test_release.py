@@ -73,13 +73,13 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
 
     projects = module.validate_release_contract(REPO_ROOT)
 
-    assert len(projects) == 71
+    assert len(projects) == 72
     assert {project.version for project in projects} == {"0.1.0"}
     assert Counter(project.role for project in projects) == {
         "deployed_implementation": 1,
         "reference_application": 6,
         "reference_component": 37,
-        "reusable_library": 24,
+        "reusable_library": 25,
         "internal_build_unit": 3,
     }
     assert {project.name for project in projects} >= {
@@ -569,7 +569,7 @@ def test_release_plan_is_exact_sha_bound_and_excludes_the_test_image() -> None:
     assert plan["tag"] == "v1.0.0"
     assert len(plan["source_sha"]) == 40
     assert all(character in "0123456789abcdef" for character in plan["source_sha"])
-    assert len(plan["python"]) == 71
+    assert len(plan["python"]) == 72
     assert all(len(project["artifacts"]) == 2 for project in plan["python"])
     publication = module.publication_contract(REPO_ROOT)
     assert plan["publication"] == publication

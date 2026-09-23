@@ -348,10 +348,19 @@ def test_upload_state_parser_rejects_malformed_state():
         "format": "age-v1-scrypt-resumable",
         "header_b64": "AA",
         "payload_nonce_b64": "AA",
-        "plaintext_size": 123,
+        "plaintext_size": "123",
     }
     with pytest.raises(AgeFormatError, match="payload nonce"):
-        UploadState.from_json_bytes(json.dumps(bad_nonce).encode("utf-8"))
+        UploadState.from_json_bytes(
+            json.dumps(bad_nonce, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        )
+
+
+def test_upload_state_preserves_large_exact_plaintext_size():
+    state = new_test_session().export_state(plaintext_size=2**100 + 1)
+    encoded = state.to_json_bytes()
+    assert json.loads(encoded)["plaintext_size"] == str(2**100 + 1)
+    assert UploadState.from_json_bytes(encoded) == state
 
 
 def test_default_age_unit_plan_handles_70_gib_archive_shape():

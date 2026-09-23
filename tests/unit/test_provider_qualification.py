@@ -1180,7 +1180,7 @@ def test_official_upload_client_writes_directly_and_resumes_after_interruption(
 
         def communicate(self) -> tuple[str, str]:
             if self.returncode == 0:
-                return '{"collection_id": 42}', ""
+                return '{"collection_id":"42"}', ""
             return "", ""
 
         def terminate(self) -> None:
@@ -1208,7 +1208,7 @@ def test_official_upload_client_writes_directly_and_resumes_after_interruption(
     class _Api:
         def list_collection_upload_sessions(self, **_kwargs):  # type: ignore[no-untyped-def]
             return {
-                "uploads": [{"collection_id": 42, "ingest_source": resolved_root}],
+                "uploads": [{"collection_id": "42", "ingest_source": resolved_root}],
                 "page_size": 100,
                 "next_page_token": None,
                 "total": 1,
@@ -1235,27 +1235,27 @@ def test_official_upload_client_writes_directly_and_resumes_after_interruption(
         ) -> CollectionUploadWorkBatchDocument:
             return CollectionUploadWorkBatchDocument.model_validate(
                 {
-                    "collection_id": collection_id,
+                    "collection_id": str(collection_id),
                     "planning_complete": True,
                     "complete": False,
-                    "committed_payload_bytes": 1,
+                    "committed_payload_bytes": "1",
                     "work": [
                         {
                             "volume": {
                                 "volume_id": "pack-" + "0" * 64,
-                                "sequence": 0,
+                                "sequence": "0" * 64,
                                 "kind": "pack",
                             },
                             "plan_sha256": "a" * 64,
                             "unit": {
-                                "unit": 0,
-                                "payload_bytes": 1,
-                                "plaintext_bytes": 1,
+                                "unit": "0",
+                                "payload_bytes": "1",
+                                "plaintext_bytes": "1",
                                 "sources": [
                                     {
                                         "path": "file.txt",
-                                        "offset": 0,
-                                        "bytes": 1,
+                                        "offset": "0",
+                                        "bytes": "1",
                                         "artifact_sha256": "b" * 64,
                                     }
                                 ],

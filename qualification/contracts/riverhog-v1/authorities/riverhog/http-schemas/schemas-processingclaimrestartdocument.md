@@ -24,7 +24,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ba697e32c4"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-ba697e32c4"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-68ed410eac"></a>`lease_seconds` | no | type="integer"; minimum=30; maximum=86400; default=1800; title="Lease Seconds" |  |
 
 ### Progression, limits, and lifecycle
@@ -36,6 +36,12 @@ Shared facts for every subject below: maximum=86400; minimum=30; reason="schema-
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [field lease_seconds](#s-68ed410eac) | `value · schema-value · contract_max` | shared above |
+
+## Maintained corroboration
+
+### Referenced contract elements
+
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -67,16 +73,15 @@ Shared facts for every subject below: maximum=86400; minimum=30; reason="schema-
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a1567d5ffa38a300b1cbcb6ae7cf2fc435dc07e4f6a6b18d2578795929f17619 -->
+<!-- exact-contract-value: 787f00f1321a3de05b79a1cc09a6af73caccb136ce9eee6ab9f42c16125f001b -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
     "fence": {
-      "minimum": 1,
-      "title": "Fence",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "lease_seconds": {
       "default": 1800,

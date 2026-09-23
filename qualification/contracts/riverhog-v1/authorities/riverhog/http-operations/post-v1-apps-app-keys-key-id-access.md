@@ -89,7 +89,7 @@ Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-publ
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/apps.py::add\_app\_key\_access](../../../../../../riverhog/src/riverhog_api/routers/apps.py#L198)
+- **Handler:** [riverhog/src/riverhog\_api/routers/apps.py::add\_app\_key\_access](../../../../../../riverhog/src/riverhog_api/routers/apps.py#L199)
 
 ### Structural operation bindings
 
@@ -123,7 +123,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.add_app_key_access",
       "source": {
-        "line": 2204,
+        "line": 2206,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.add_app_key_access"

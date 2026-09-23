@@ -64,12 +64,12 @@ class _CustodyApi:
         self.initial_tag_set_identity = str(kwargs["initial_tag_set_identity"])
         self.session_calls += 1
         return {
-            "collection_id": 42,
+            "collection_id": "42",
             "resumed": self.session_calls > 1,
             "state": "open",
             "registration_constraints": {
-                "pack_member_bytes": 1024,
-                "raw_part_plaintext_bytes": 65536,
+                "pack_member_bytes": "1024",
+                "raw_part_plaintext_bytes": "65536",
             },
         }
 
@@ -80,7 +80,7 @@ class _CustodyApi:
     ) -> dict[str, object]:
         batch = tuple(tags)
         self.tag_batches.append(batch)
-        return {"collection_id": 42, "added": len(batch), "tag_count": len(batch)}
+        return {"collection_id": "42", "added": len(batch), "tag_count": len(batch)}
 
     def heartbeat_collection_upload_session(self, _collection_id: int) -> dict[str, object]:
         self.heartbeats += 1
@@ -130,10 +130,10 @@ class _CustodyApi:
     ) -> CollectionUploadWorkBatchDocument:
         del limit
         return CollectionUploadWorkBatchDocument(
-            collection_id=collection_id,
+            collection_id=str(collection_id),
             planning_complete=True,
             complete=True,
-            committed_payload_bytes=0,
+            committed_payload_bytes="0",
             work=[],
         )
 

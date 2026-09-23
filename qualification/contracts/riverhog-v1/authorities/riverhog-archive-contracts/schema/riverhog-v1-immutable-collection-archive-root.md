@@ -36,6 +36,8 @@ Exact externally visible contract owned by this contract element.
 
 ### Definitions
 
+- [nonnegative_count](#s-8d2ec15c3e)
+- [positive_count](#s-d9f1da74ca)
 - [provenance](#s-7606eb291c)
 - [provenance_root](#s-d91794edfc)
 - [sha256](#s-e2bfff1bf6)
@@ -68,6 +70,16 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-01983c97a3"></a>`sha256` | yes | [sha256](#s-e2bfff1bf6) |  |
 
+### <a id="s-8d2ec15c3e"></a>definition `nonnegative_count`
+
+- <a id="s-6ea7ae8039"></a>`type`: `"string"`
+- <a id="s-c7de713964"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
+### <a id="s-d9f1da74ca"></a>definition `positive_count`
+
+- <a id="s-2c7c77b10b"></a>`type`: `"string"`
+- <a id="s-892f71da82"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
+
 ### <a id="s-7606eb291c"></a>definition `provenance`
 
 - <a id="s-7b216361af"></a>`type`: `"object"`
@@ -94,9 +106,9 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-e27fe3e8f6"></a>`id` | yes | const="provenance-root" |  |
 | <a id="s-2e4cc4be97"></a>`kind` | yes | const="provenance-root" |  |
 | <a id="s-d55eebfc87"></a>`path` | yes | const="provenance/root.json.age" |  |
-| <a id="s-034a2d82de"></a>`plaintext_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-034a2d82de"></a>`plaintext_bytes` | yes | [positive_count](#s-d9f1da74ca) |  |
 | <a id="s-4ae17b1c80"></a>`sha256` | yes | [sha256](#s-e2bfff1bf6) |  |
-| <a id="s-cf7e974cb4"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-cf7e974cb4"></a>`stored_bytes` | yes | [positive_count](#s-d9f1da74ca) |  |
 | <a id="s-12cdea5673"></a>`stored_sha256` | yes | [sha256](#s-e2bfff1bf6) |  |
 
 ### <a id="s-e2bfff1bf6"></a>definition `sha256`
@@ -114,22 +126,11 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b8c328ddc3"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-77bf49c805"></a>`files` | yes | type="integer"; minimum=1 |  |
+| <a id="s-b8c328ddc3"></a>`bytes` | yes | [nonnegative_count](#s-8d2ec15c3e) |  |
+| <a id="s-77bf49c805"></a>`files` | yes | [positive_count](#s-d9f1da74ca) |  |
 | <a id="s-b87d90fcbb"></a>`sha256` | yes | [sha256](#s-e2bfff1bf6) |  |
 
 ### Progression, limits, and lifecycle
-
-#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"https://nashspence.github.io/riverhog/v1/schemas/collection-archive-manifest-v1.schema.json"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [definition provenance_root · field plaintext_bytes](#s-034a2d82de) | `value · schema-value · operational_policy` | shared above |
-| [definition provenance_root · field stored_bytes](#s-cf7e974cb4) | `value · schema-value · operational_policy` | shared above |
-| [definition tree · field bytes](#s-b8c328ddc3) | `value · schema-value · operational_policy` | shared above |
-| [definition tree · field files](#s-77bf49c805) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -144,7 +145,6 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
 - <a id="pa-58615ad0c1"></a>[compatibility/components/v1](../../release/compatibility-guarantees/compatibility-components.md#p-95e9a12259)
-- <a id="pa-10fa131df9"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 - <a id="pa-545116de4c"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
@@ -170,12 +170,20 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d4717825d249f0b6484c03aedc9c2d41d25dd99a15b6a9c895c8b300fe6f1156 -->
+<!-- exact-contract-value: 99705c651b1d19738b5c330dff862ed820e6961a086c06bb9c6c22fa4b744b08 -->
 
 ```json
 {
   "$comment": "This schema is the structural projection. riverhog_archive_contracts.CollectionArchiveManifest is the canonical semantic, identity, and canonical-JSON authority.",
   "$defs": {
+    "nonnegative_count": {
+      "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+      "type": "string"
+    },
+    "positive_count": {
+      "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+      "type": "string"
+    },
     "provenance": {
       "additionalProperties": false,
       "properties": {
@@ -205,15 +213,13 @@ The following JSON is the complete value owned at each machine-authority pointer
           "const": "provenance/root.json.age"
         },
         "plaintext_bytes": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/positive_count"
         },
         "sha256": {
           "$ref": "#/$defs/sha256"
         },
         "stored_bytes": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/positive_count"
         },
         "stored_sha256": {
           "$ref": "#/$defs/sha256"
@@ -238,12 +244,10 @@ The following JSON is the complete value owned at each machine-authority pointer
       "additionalProperties": false,
       "properties": {
         "bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/nonnegative_count"
         },
         "files": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/positive_count"
         },
         "sha256": {
           "$ref": "#/$defs/sha256"

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Query
+from fastapi import Query
 from http_api_contracts import mutable_browse_operation
 from riverhog_core.app_permissions import ARCHIVES_MANAGE
 from riverhog_protocol import (
@@ -24,6 +24,7 @@ from riverhog_api.browse import (
 )
 from riverhog_api.deps import ContainerDep
 from riverhog_api.mappers import map_archive_store, map_archive_store_list
+from riverhog_api.routing import RiverhogRouter
 from riverhog_api.schemas.archive import (
     ArchiveCopyJobListOut,
     ArchiveCopyJobOut,
@@ -35,7 +36,7 @@ from riverhog_api.schemas.archive import (
 )
 from riverhog_api.schemas.archive_stores import ArchiveStoreListOut, ArchiveStoreOut
 
-router = APIRouter(tags=["archive"])
+router = RiverhogRouter(tags=["archive"])
 
 
 @router.post("/archive/copies", response_model=ArchiveCopyJobOut)

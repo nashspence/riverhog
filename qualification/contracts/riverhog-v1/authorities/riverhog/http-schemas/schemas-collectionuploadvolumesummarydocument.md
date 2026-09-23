@@ -26,8 +26,14 @@ Protocol-owned identity of one immutable collection archive volume.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-7130580c64"></a>`kind` | yes | type="string"; enum=["pack","segment"]; title="Kind" |  |
-| <a id="s-34ae7e2e00"></a>`sequence` | yes | type="integer"; minimum=0; title="Sequence" |  |
+| <a id="s-34ae7e2e00"></a>`sequence` | yes | [Sequence256Hex](schemas-sequence256hex.md) |  |
 | <a id="s-1329a434a5"></a>`volume_id` | yes | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$"; title="Volume Id" |  |
+
+## Maintained corroboration
+
+### Referenced contract elements
+
+- [Sequence256Hex](schemas-sequence256hex.md)
 
 ## Governing policies
 
@@ -56,7 +62,7 @@ Protocol-owned identity of one immutable collection archive volume.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1ac7efaa0bbffcab4fff943fbbab4f3ed050c499a9fe1520ac38e1ccb0e6d859 -->
+<!-- exact-contract-value: 972a6d63bd342dc5ee15fd86187faaab19ec45e306358b94acb6455cff8e8113 -->
 
 ```json
 {
@@ -72,9 +78,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "sequence": {
-      "minimum": 0,
-      "title": "Sequence",
-      "type": "integer"
+      "$ref": "#/components/schemas/Sequence256Hex"
     },
     "volume_id": {
       "pattern": "^(?:pack|segment)-[0-9a-f]{64}$",

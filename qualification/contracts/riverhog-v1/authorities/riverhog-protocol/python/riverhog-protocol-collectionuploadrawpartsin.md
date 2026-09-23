@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-20939c8aa6"></a>`kind`: `"class"`
-- <a id="s-4c88f3668f"></a>`signature`: `"\"(*, part_plaintext_bytes: Annotated[int, Ge(ge=65536)], part_count: Annotated[int, Strict(strict=True), Ge(ge=1)], ordered_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
+- <a id="s-4c88f3668f"></a>`signature`: `"\"(*, part_plaintext_bytes: Annotated[NonnegativeDecimal, Ge(ge=65536)], part_count: Annotated[NonnegativeDecimal, Ge(ge=1)], ordered_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
 
 #### Validated model schema
 
@@ -37,8 +37,17 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-69aaeec32c"></a>`ordered_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-eef617ea2c"></a>`part_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-414ee80a09"></a>`part_plaintext_bytes` | yes | type="integer"; minimum=65536 |  |
+| <a id="s-eef617ea2c"></a>`part_count` | yes | [NonnegativeDecimal](#s-ffc3894411); ge=1 |  |
+| <a id="s-414ee80a09"></a>`part_plaintext_bytes` | yes | [NonnegativeDecimal](#s-ffc3894411); ge=65536 |  |
+
+##### Definitions
+
+- [NonnegativeDecimal](#s-ffc3894411)
+
+##### <a id="s-ffc3894411"></a>definition `NonnegativeDecimal`
+
+- <a id="s-fd51d5a93c"></a>`type`: `"string"`
+- <a id="s-981fc36adb"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Governing policies
 
@@ -67,13 +76,19 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 31b0c3ed207451ba099846f1a88a9bb22c35aa9c4c108db1207f7094298bb7ac -->
+<!-- exact-contract-value: 013d00798b254d27b89d0c40264dd019657c9073f8828cb5cdbf5cbee25d81e0 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
     "schema": {
+      "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        }
+      },
       "additionalProperties": false,
       "properties": {
         "ordered_sha256": {
@@ -81,12 +96,12 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "part_count": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "part_plaintext_bytes": {
-          "minimum": 65536,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 65536
         }
       },
       "required": [
@@ -96,7 +111,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, part_plaintext_bytes: Annotated[int, Ge(ge=65536)], part_count: Annotated[int, Strict(strict=True), Ge(ge=1)], ordered_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
+    "signature": "\"(*, part_plaintext_bytes: Annotated[NonnegativeDecimal, Ge(ge=65536)], part_count: Annotated[NonnegativeDecimal, Ge(ge=1)], ordered_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

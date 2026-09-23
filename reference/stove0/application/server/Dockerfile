@@ -25,6 +25,7 @@ COPY reference/stove0/application/server reference/stove0/application/server
 COPY packages/riverhog-application-access packages/riverhog-application-access
 COPY packages/config-validation packages/config-validation
 COPY packages/http-api-contracts packages/http-api-contracts
+COPY packages/riverhog-canonical-json packages/riverhog-canonical-json
 COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-client packages/riverhog-client
 COPY packages/riverhog-protocol packages/riverhog-protocol

@@ -4,7 +4,6 @@ import argparse
 import copy
 import hashlib
 import importlib.util
-import json
 import re
 import sys
 from pathlib import Path
@@ -13,6 +12,7 @@ from typing import Any, cast
 
 import pytest
 from jsonschema import Draft202012Validator
+from riverhog_canonical_json import canonical_json_bytes
 from typer._click.core import Context
 from typer._click.exceptions import UsageError
 from typer.core import TyperArgument, TyperCommand, TyperOption
@@ -65,9 +65,7 @@ def _resolve_pointer(document: object, pointer: str) -> object:
 
 
 def _canonical_sha256(value: object) -> str:
-    return hashlib.sha256(
-        json.dumps(value, separators=(",", ":"), sort_keys=True).encode()
-    ).hexdigest()
+    return hashlib.sha256(canonical_json_bytes(value)).hexdigest()
 
 
 def test_extent_projection_is_exhaustive_source_linked_and_self_identifying() -> None:
@@ -622,9 +620,7 @@ def test_trace_index_covers_every_extent_and_only_current_source_paths() -> None
     decisions = projection["external_contract"]["extents"]["decisions"]
     links = trace["extent_sources"]
 
-    boundary_payload = json.dumps(
-        projection["boundaries"], separators=(",", ":"), sort_keys=True
-    ).encode()
+    boundary_payload = canonical_json_bytes(projection["boundaries"])
     assert trace["boundary_canonical_sha256"] == hashlib.sha256(boundary_payload).hexdigest()
     assert {link["id"] for link in links} == {decision["id"] for decision in decisions}
     assert len(links) == len(decisions)

@@ -24,7 +24,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a5863a315d"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-a5863a315d"></a>`bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md) |  |
 | <a id="s-ce32f13faa"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
 | <a id="s-6736d431c3"></a>`items` | yes | type="array"; items=([ProvenanceTraceItemOut](schemas-provenancetraceitemout.md)); title="Items" |  |
 | <a id="s-4a71d3cab5"></a>`journal` | yes | [ProvenanceJournalOut](schemas-provenancejournalout.md) |  |
@@ -42,7 +42,6 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field bytes](#s-a5863a315d) | `value · schema-value · operational_policy` | shared above |
 | [field items](#s-6736d431c3) | `cardinality · items · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
@@ -60,6 +59,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - [CanonicalRelPath](schemas-canonicalrelpath.md)
 - [CapturedFileProvenanceBinding](schemas-capturedfileprovenancebinding.md)
 - [CollectionId](schemas-collectionid.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 - [ProvenanceJournalOut](schemas-provenancejournalout.md)
 - [ProvenanceTraceItemOut](schemas-provenancetraceitemout.md)
 
@@ -94,16 +94,14 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 26200295e7920d8776fa0775f15e88e74b063ce70d2f3f13ed398e12b98671b2 -->
+<!-- exact-contract-value: 5535501084d78ff2594e336c284235fc026b6e1d202ef75f7343d140e2dfadc7 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
     "bytes": {
-      "minimum": 0,
-      "title": "Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal"
     },
     "collection_id": {
       "$ref": "#/components/schemas/CollectionId"

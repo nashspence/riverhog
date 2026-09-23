@@ -6,7 +6,7 @@ from collections.abc import Iterable, Iterator, Mapping, Sequence
 from typing import TYPE_CHECKING, Any
 
 from http_api_contracts import closed_literal_values
-from pydantic import TypeAdapter, ValidationError
+from pydantic import BaseModel, TypeAdapter, ValidationError
 from riverhog_protocol import (
     ClaimState,
     CollectionId,
@@ -54,6 +54,7 @@ from riverhog_protocol.collection_workflow_transport import (
 )
 from riverhog_protocol.collection_workflows import RetirementPolicy
 from riverhog_protocol.errors import BadRequest
+from riverhog_protocol.paths import normalize_collection_id
 
 RootInput = CollectionRootIdentityDocument | Mapping[str, Any]
 ArtifactInput = CollectionArtifactIdentityDocument | Mapping[str, Any]
@@ -61,11 +62,21 @@ OutcomeInput = ProcessingOutcomeIdentityDocument | Mapping[str, Any]
 DerivationInput = CollectionDerivationDocument | Mapping[str, Any]
 DispositionInput = ArtifactDispositionDocument | Mapping[str, Any]
 DispositionOutputInput = ArtifactDispositionOutputDocument | Mapping[str, Any]
-_COLLECTION_ID: TypeAdapter[int] = TypeAdapter(CollectionId)
 _PROCESSING_CLAIM_ID: TypeAdapter[str] = TypeAdapter(ProcessingClaimId)
 _CLAIM_SORTS = closed_literal_values(ProcessingClaimSort)
 _CLAIM_STATES = closed_literal_values(ClaimState)
 _SORT_ORDERS = closed_literal_values(SortOrder)
+
+
+def _exact_request[TDocument: BaseModel](
+    document_type: type[TDocument], /, **fields: object
+) -> TDocument:
+    """Encode only declared exact scalar request fields from Python integers."""
+
+    for name in ("fence", "start_ordinal", "retirement_grace_seconds"):
+        if name in fields and fields[name] is not None:
+            fields[name] = str(fields[name])
+    return document_type.model_validate(fields)
 
 
 def _one_of(value: str, allowed: frozenset[str], label: str) -> str:
@@ -165,7 +176,8 @@ class CollectionWorkflowMethods:
         start_ordinal: int,
         inputs: Sequence[RootInput],
     ) -> ReceivingSetDocument:
-        request = CollectionRootBatchDocument(
+        request = _exact_request(
+            CollectionRootBatchDocument,
             fence=fence,
             start_ordinal=start_ordinal,
             inputs=[CollectionRootIdentityDocument.model_validate(item) for item in inputs],
@@ -190,7 +202,7 @@ class CollectionWorkflowMethods:
                 "seal_processing_claim_inputs",
                 "POST",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/inputs/seal",
-                json=_dump(ProcessingClaimFenceDocument(fence=fence)),
+                json=_dump(_exact_request(ProcessingClaimFenceDocument, fence=fence)),
             )
         )
 
@@ -257,7 +269,9 @@ class CollectionWorkflowMethods:
         fence: int,
         lease_seconds: int = 1800,
     ) -> ProcessingClaimDocument:
-        request = ProcessingClaimRenewDocument(fence=fence, lease_seconds=lease_seconds)
+        request = _exact_request(
+            ProcessingClaimRenewDocument, fence=fence, lease_seconds=lease_seconds
+        )
         return self._claim_response("renew_processing_claim", claim_id, "renew", request)
 
     def restart_processing_claim(
@@ -267,7 +281,9 @@ class CollectionWorkflowMethods:
         fence: int,
         lease_seconds: int = 1800,
     ) -> ProcessingClaimDocument:
-        request = ProcessingClaimRestartDocument(fence=fence, lease_seconds=lease_seconds)
+        request = _exact_request(
+            ProcessingClaimRestartDocument, fence=fence, lease_seconds=lease_seconds
+        )
         return self._claim_response("restart_processing_claim", claim_id, "restart", request)
 
     def abandon_processing_claim(
@@ -281,7 +297,7 @@ class CollectionWorkflowMethods:
             "abandon_processing_claim",
             claim_id,
             "abandon",
-            ProcessingClaimAbandonDocument(fence=fence, reason=reason),
+            _exact_request(ProcessingClaimAbandonDocument, fence=fence, reason=reason),
         )
 
     def seal_processing_claim_plan(
@@ -309,7 +325,8 @@ class CollectionWorkflowMethods:
             )
             artifact_ordinal = staged_artifacts.count
         self.seal_processing_claim_artifacts(claim_id, fence=fence)
-        request = ProcessingClaimPlanSealDocument(
+        request = _exact_request(
+            ProcessingClaimPlanSealDocument,
             fence=fence,
             execution_id=execution_id,
             controller_evidence=dict(controller_evidence),
@@ -328,7 +345,8 @@ class CollectionWorkflowMethods:
         start_ordinal: int,
         artifacts: Sequence[ArtifactInput],
     ) -> ArtifactReceivingSetDocument:
-        request = CollectionArtifactBatchDocument(
+        request = _exact_request(
+            CollectionArtifactBatchDocument,
             fence=fence,
             start_ordinal=start_ordinal,
             artifacts=[
@@ -355,7 +373,7 @@ class CollectionWorkflowMethods:
                 "seal_processing_claim_artifacts",
                 "POST",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/plan/artifacts/seal",
-                json=_dump(ProcessingClaimFenceDocument(fence=fence)),
+                json=_dump(_exact_request(ProcessingClaimFenceDocument, fence=fence)),
             )
         )
 
@@ -388,7 +406,8 @@ class CollectionWorkflowMethods:
         artifacts: Iterable[ArtifactInput],
         ttl_seconds: int = 900,
     ) -> TransformCapabilityDocument:
-        request = TransformCapabilityCreateDocument(
+        request = _exact_request(
+            TransformCapabilityCreateDocument,
             fence=fence,
             audience=audience,
             actions=list(actions),
@@ -428,7 +447,8 @@ class CollectionWorkflowMethods:
         start_ordinal: int,
         artifacts: Sequence[ArtifactInput],
     ) -> ArtifactReceivingSetDocument:
-        request = CollectionArtifactBatchDocument(
+        request = _exact_request(
+            CollectionArtifactBatchDocument,
             fence=fence,
             start_ordinal=start_ordinal,
             artifacts=[
@@ -458,7 +478,7 @@ class CollectionWorkflowMethods:
                 "POST",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}"
                 f"/capabilities/{capability_id}/artifacts/seal",
-                json=_dump(ProcessingClaimFenceDocument(fence=fence)),
+                json=_dump(_exact_request(ProcessingClaimFenceDocument, fence=fence)),
             )
         )
 
@@ -477,16 +497,19 @@ class CollectionWorkflowMethods:
         if any(item is not None for item in (outcome_claim_id, outcome_fence, outcome_id)):
             if outcome_claim_id is None or outcome_fence is None or outcome_id is None:
                 raise ValueError("processing outcome binding is incomplete")
-            outcome = ProcessingOutcomeBindingDocument(
+            outcome = _exact_request(
+                ProcessingOutcomeBindingDocument,
                 claim_id=outcome_claim_id,
                 fence=outcome_fence,
                 outcome_id=outcome_id,
             )
-        request = ProcessingClaimSettleDocument(
-            fence=fence,
-            output_collection_id=output_collection_id,
-            derivation=CollectionDerivationDocument.model_validate(derivation),
-            outcome=outcome,
+        request = ProcessingClaimSettleDocument.model_validate(
+            {
+                "fence": str(fence),
+                "output_collection_id": str(normalize_collection_id(output_collection_id)),
+                "derivation": CollectionDerivationDocument.model_validate(derivation),
+                "outcome": outcome,
+            }
         )
         return self._claim_response("settle_processing_claim", claim_id, "settle", request)
 
@@ -500,7 +523,8 @@ class CollectionWorkflowMethods:
         values = list(dispositions)
         if not values or len(values) > DISPOSITION_BATCH_MAX:
             raise ValueError(f"disposition batch must contain 1 to {DISPOSITION_BATCH_MAX} facts")
-        request = ArtifactDispositionBatchDocument(
+        request = _exact_request(
+            ArtifactDispositionBatchDocument,
             fence=fence,
             dispositions=[ArtifactDispositionDocument.model_validate(item) for item in values],
         )
@@ -544,7 +568,8 @@ class CollectionWorkflowMethods:
             raise ValueError(
                 f"disposition output batch must contain 1 to {DISPOSITION_BATCH_MAX} edges"
             )
-        request = ArtifactDispositionOutputBatchDocument(
+        request = _exact_request(
+            ArtifactDispositionOutputBatchDocument,
             fence=fence,
             outputs=[ArtifactDispositionOutputDocument.model_validate(item) for item in values],
         )
@@ -582,7 +607,7 @@ class CollectionWorkflowMethods:
         *,
         fence: int,
     ) -> ArtifactDispositionSetDocument:
-        request = ProcessingClaimFenceDocument(fence=fence)
+        request = _exact_request(ProcessingClaimFenceDocument, fence=fence)
         return ArtifactDispositionSetDocument.model_validate(
             self._json(
                 "seal_processing_claim_dispositions",
@@ -612,7 +637,8 @@ class CollectionWorkflowMethods:
         retirement_policy: RetirementPolicy = "retain",
         retirement_grace_seconds: int = 0,
     ) -> ProcessingClaimDocument:
-        request = ProcessingClaimOutcomesSettleDocument(
+        request = _exact_request(
+            ProcessingClaimOutcomesSettleDocument,
             fence=fence,
             retirement_policy=retirement_policy,
             retirement_grace_seconds=retirement_grace_seconds,
@@ -653,7 +679,7 @@ class CollectionWorkflowMethods:
             "begin_processing_claim_retirement",
             claim_id,
             "retirement",
-            ProcessingClaimFenceDocument(fence=fence),
+            _exact_request(ProcessingClaimFenceDocument, fence=fence),
         )
 
     def release_processing_claim(
@@ -666,7 +692,7 @@ class CollectionWorkflowMethods:
             "release_processing_claim",
             claim_id,
             "release",
-            ProcessingClaimFenceDocument(fence=fence),
+            _exact_request(ProcessingClaimFenceDocument, fence=fence),
         )
 
     def get_collection_derivation(
@@ -674,8 +700,8 @@ class CollectionWorkflowMethods:
         collection_id: CollectionId,
     ) -> CollectionDerivationResponseDocument:
         try:
-            normalized_id = _COLLECTION_ID.validate_python(collection_id)
-        except ValidationError as exc:
+            normalized_id = normalize_collection_id(collection_id)
+        except ValueError as exc:
             raise BadRequest("collection id must be a positive integer") from exc
         return CollectionDerivationResponseDocument.model_validate(
             self._json(

@@ -328,7 +328,7 @@ def _upload_provenance_journal(
         collection_id,
         journal_id,
         CollectionUploadProvenanceJournalCreateDocument(
-            bytes=len(content),
+            bytes=str(len(content)),
             sha256=sha256,
         ),
     )
@@ -373,7 +373,7 @@ def test_provenance_append_persists_next_ordinal_across_retry_and_restart(
         collection_id,
         journal_id,
         CollectionUploadProvenanceJournalCreateDocument(
-            bytes=len(content),
+            bytes=str(len(content)),
             sha256=hashlib.sha256(content).hexdigest(),
         ),
     )
@@ -400,7 +400,7 @@ def test_provenance_append_persists_next_ordinal_across_retry_and_restart(
         offset=len(chunks[0]),
         content=chunks[1],
     )
-    assert replay["accepted_bytes"] == len(content)
+    assert replay["accepted_bytes"] == str(len(content))
     with session_scope(make_session_factory(config.database_url)) as session:
         journal = session.get(
             CollectionUploadProvenanceJournalRecord,
@@ -551,7 +551,7 @@ def test_upload_resume_keeps_its_frozen_key_generation_after_rotation(tmp_path: 
     collection_id = int(first["collection_id"])
     rotated.register_files(
         collection_id,
-        ({"path": "file.txt", "bytes": len(content), "sha256": sha256},),
+        ({"path": "file.txt", "bytes": str(len(content)), "sha256": sha256},),
     )
     rotated.complete(collection_id)
     volume = rotated.list_volumes(collection_id)["volumes"][0]
@@ -588,7 +588,7 @@ def test_upload_resume_keeps_its_frozen_key_generation_after_rotation(tmp_path: 
     reencrypted_collection_id = int(after_rotation["collection_id"])
     rotated.register_files(
         reencrypted_collection_id,
-        ({"path": "file.txt", "bytes": len(content), "sha256": sha256},),
+        ({"path": "file.txt", "bytes": str(len(content)), "sha256": sha256},),
     )
     rotated.complete(reencrypted_collection_id)
     reencrypted_volume = rotated.list_volumes(reencrypted_collection_id)["volumes"][0]
@@ -656,7 +656,7 @@ def test_restore_required_ingress_commits_encrypted_cache_with_initial_lease(
     collection_id = int(opened["collection_id"])
     service.register_files(
         collection_id,
-        ({"path": "document.txt", "bytes": len(content), "sha256": sha256},),
+        ({"path": "document.txt", "bytes": str(len(content)), "sha256": sha256},),
     )
     service.complete(collection_id)
     volume = service.list_volumes(collection_id)["volumes"][0]
@@ -779,7 +779,7 @@ def test_captured_and_omitted_file_provenance_is_one_immutable_mixed_archive(
         journal,
         summary.journal_sha256,
     )
-    assert staged["accepted_bytes"] == len(journal)
+    assert staged["accepted_bytes"] == str(len(journal))
     assert staged["sha256"] == summary.journal_sha256
     assert staged["current_state_id"] == summary.current_state_id
     with session_scope(make_session_factory(config.database_url)) as session:
@@ -799,7 +799,7 @@ def test_captured_and_omitted_file_provenance_is_one_immutable_mixed_archive(
         tuple(
             {
                 "path": binding.path,
-                "bytes": binding.bytes,
+                "bytes": str(binding.bytes),
                 "sha256": binding.sha256,
                 "provenance": {
                     "status": binding.status,
@@ -1096,7 +1096,7 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
         )
     registered = service.register_files(
         collection_id,
-        ({"path": "document.txt", "bytes": len(content), "sha256": sha256},),
+        ({"path": "document.txt", "bytes": str(len(content)), "sha256": sha256},),
     )
     assert registered["volumes"] == []
     with session_scope(make_session_factory(config.database_url)) as session:
@@ -1115,8 +1115,8 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
     assert unit["sources"] == [
         {
             "path": "document.txt",
-            "offset": 0,
-            "bytes": len(content),
+            "offset": "0",
+            "bytes": str(len(content)),
             "artifact_sha256": sha256,
         }
     ]
@@ -1225,7 +1225,7 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
         provenance_omission_reason="fixture does not exercise source observation",
         custody_mode=custody_mode,
     )
-    assert resumed["collection_id"] == collection_id
+    assert resumed["collection_id"] == str(collection_id)
     assert resumed["state"] == "finalized"
     changed_custody_mode = (
         "custody-transfer" if custody_mode == "producer-retained" else "producer-retained"
@@ -1295,7 +1295,7 @@ def test_closed_custody_transfer_keeps_lease_until_final_tail_is_custodied(
     collection_id = int(opened["collection_id"])
     service.register_files(
         collection_id,
-        ({"path": "tail.txt", "bytes": len(content), "sha256": sha256},),
+        ({"path": "tail.txt", "bytes": str(len(content)), "sha256": sha256},),
     )
     closing = service.complete(collection_id)
     assert closing["state"] == "closing"
@@ -1375,7 +1375,7 @@ def test_custody_transfer_receipt_orphan_resume_and_guarded_discard(
             (
                 {
                     "path": path,
-                    "bytes": len(content),
+                    "bytes": str(len(content)),
                     "sha256": hashlib.sha256(content).hexdigest(),
                 },
             ),
@@ -1502,7 +1502,7 @@ def test_custody_transfer_receipt_orphan_resume_and_guarded_discard(
     result = service.discard_orphan(collection_id, challenge=str(plan["challenge"]))
     assert result == {
         "status": "discarded",
-        "collection_id": collection_id,
+        "collection_id": str(collection_id),
         "files": 2,
         "bytes": 11,
         "custody": {"state": "pending", "files": 1, "bytes": 5},
@@ -1569,7 +1569,7 @@ def test_completion_defers_canonical_identity_to_bounded_server_finalization(
     files = tuple(
         {
             "path": f"many/file-{index:04d}.txt",
-            "bytes": index,
+            "bytes": str(index),
             "sha256": hashlib.sha256(f"payload-{index}".encode()).hexdigest(),
         }
         for index in range(513)
@@ -1628,7 +1628,7 @@ def test_server_owned_membership_is_independent_of_registration_order(
                 (
                     {
                         "path": path,
-                        "bytes": len(content),
+                        "bytes": str(len(content)),
                         "sha256": hashlib.sha256(content).hexdigest(),
                     },
                 ),
@@ -1698,7 +1698,7 @@ def test_completion_requires_volume_plans_to_match_registered_file_identities(
     collection_id = int(opened["collection_id"])
     service.register_files(
         collection_id,
-        ({"path": "document.txt", "bytes": len(content), "sha256": sha256},),
+        ({"path": "document.txt", "bytes": str(len(content)), "sha256": sha256},),
     )
     with session_scope(make_session_factory(config.database_url)) as session:
         upload = session.get(CollectionUploadRecord, collection_id)
@@ -1750,11 +1750,11 @@ def test_raw_upload_units_expose_the_registered_source_identity(tmp_path: Path) 
         (
             {
                 "path": "media.bin",
-                "bytes": len(content),
+                "bytes": str(len(content)),
                 "sha256": sha256,
                 "raw_parts": {
-                    "part_plaintext_bytes": part_bytes,
-                    "part_count": part_count,
+                    "part_plaintext_bytes": str(part_bytes),
+                    "part_count": str(part_count),
                     "ordered_sha256": part_commitment,
                 },
             },
@@ -1764,7 +1764,7 @@ def test_raw_upload_units_expose_the_registered_source_identity(tmp_path: Path) 
         collection_id,
         CollectionUploadRawDigestBatchDocument(
             path="media.bin",
-            first_part=0,
+            first_part="0",
             sha256s=[sha256],
         ),
     )
@@ -1775,8 +1775,8 @@ def test_raw_upload_units_expose_the_registered_source_identity(tmp_path: Path) 
     assert volume["units"][0]["sources"] == [
         {
             "path": "media.bin",
-            "offset": 0,
-            "bytes": len(content),
+            "offset": "0",
+            "bytes": str(len(content)),
             "artifact_sha256": sha256,
         }
     ]
@@ -1800,7 +1800,7 @@ def test_startup_reconciles_interrupted_finalization_from_its_durable_checkpoint
     collection_id = int(opened["collection_id"])
     service.register_files(
         collection_id,
-        ({"path": "document.txt", "bytes": len(content), "sha256": sha256},),
+        ({"path": "document.txt", "bytes": str(len(content)), "sha256": sha256},),
     )
     service.complete(collection_id)
     volume = service.list_volumes(collection_id)["volumes"][0]

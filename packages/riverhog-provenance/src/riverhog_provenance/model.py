@@ -247,6 +247,8 @@ class ObservationResult:
         remain the responsibility of the Riverhog provenance journal writer.
         """
 
+        from riverhog_canonical_json import format_scalar
+
         from .common import new_urn_uuid, utc_now
         from .constants import PROVENANCE_ENTRY_SCHEMA, PROVENANCE_PROFILE
 
@@ -261,7 +263,7 @@ class ObservationResult:
             "id": entry_id or new_urn_uuid(),
             "type": "riverhog_provenance_journal_entry",
             "journal_id": journal_id,
-            "sequence": sequence,
+            "sequence": format_scalar("sequence63", sequence),
             "recorded_at": recorded_at or utc_now(),
             "recorded_by_agent_id": recorded_by_agent_id
             or self.capture["associations"][0]["agent_id"],
@@ -269,7 +271,7 @@ class ObservationResult:
             "entry_kind": "assertion",
             "previous_entry": {
                 "entry_id": previous_entry_id,
-                "sequence": previous_sequence,
+                "sequence": format_scalar("sequence63", previous_sequence),
                 "json_sha256": previous_entry_json_sha256,
             },
             "body": self.assertion_body(omit_object_ids=omit_object_ids),

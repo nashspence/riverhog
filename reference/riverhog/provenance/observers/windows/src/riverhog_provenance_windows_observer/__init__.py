@@ -29,6 +29,7 @@ from riverhog_provenance.common import (
     bytes_value,
     diagnostic,
     digest_assertion,
+    format_provenance_count,
     identifier,
     merge_coverage,
     observed_identifier,
@@ -473,7 +474,7 @@ def _filetime_observation(kind: str, ticks: int, field: str) -> JsonObject:
         "kind": kind,
         "value_status": "exact",
         "value": _format_filetime(ticks),
-        "resolution_ns": 100,
+        "resolution_ns": "100",
         "source": source("windows", "GetFileInformationByHandleEx", field),
         "raw_value": str(ticks),
         "raw_unit": "ticks_100ns",
@@ -504,7 +505,7 @@ def windows_locator(
         "bytes": {
             "encoding": "base64",
             "data": base64.b64encode(raw).decode("ascii"),
-            "byte_length": len(raw),
+            "byte_length": format_provenance_count(len(raw)),
         },
         "text_role": role,
     }
@@ -523,7 +524,7 @@ def _windows_name_fields(name: str) -> JsonObject:
         "name_bytes": {
             "encoding": "base64",
             "data": base64.b64encode(raw).decode("ascii"),
-            "byte_length": len(raw),
+            "byte_length": format_provenance_count(len(raw)),
         },
         "name_role": role,
     }
@@ -596,7 +597,7 @@ def _native_row(
     if interpretations:
         row["interpretations"] = list(interpretations)
     if observed_byte_length is not None:
-        row["observed_byte_length"] = observed_byte_length
+        row["observed_byte_length"] = format_provenance_count(observed_byte_length)
     return row
 
 
@@ -2376,7 +2377,7 @@ class WindowsBackend(PlatformBackend):
         if capture.capture_status == "digest_only" and capture.sha256:
             return {
                 "type": "digest",
-                "byte_length": capture.size,
+                "byte_length": format_provenance_count(capture.size),
                 "digests": [
                     digest_assertion(
                         capture.sha256,
@@ -2633,7 +2634,7 @@ class WindowsBackend(PlatformBackend):
             row["name_bytes"] = {
                 "encoding": "base64",
                 "data": base64.b64encode(name_raw).decode("ascii"),
-                "byte_length": len(name_raw),
+                "byte_length": format_provenance_count(len(name_raw)),
             }
             row["name_role"] = role
             if role == "exact":

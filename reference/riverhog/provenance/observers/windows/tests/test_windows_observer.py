@@ -272,7 +272,7 @@ def test_mocked_windows_observation_contract(tmp_path: Path, urn_factory) -> Non
     fragment = result.graph_fragment()
     validate_graph_fragment(fragment)
 
-    assert result.state["content"]["size_bytes"] == len(content)
+    assert result.state["content"]["size_bytes"] == str(len(content))
     assert result.state["content"]["digests"][0]["value"] == hashlib.sha256(content).hexdigest()
     assert result.state["locator"]["syntax"] == "windows"
     assert result.state["locator"]["source_encoding"] == "UTF-16LE"

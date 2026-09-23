@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import struct
 import unicodedata
 from collections.abc import Iterator, Sequence
@@ -18,6 +17,7 @@ from pydantic import (
     StringConstraints,
     model_validator,
 )
+from riverhog_canonical_json import canonical_json_bytes, parse_identity_json
 
 COLLECTION_TAG_HEAD_FORMAT: Literal["riverhog-collection-tag-head/v1"] = (
     "riverhog-collection-tag-head/v1"
@@ -74,7 +74,12 @@ def validate_collection_tag(value: str) -> str:
         raise ValueError("collection tag exceeds its UTF-8 byte limit")
     for character in value:
         codepoint = ord(character)
-        if codepoint <= 0x1F or 0x7F <= codepoint <= 0x9F:
+        if (
+            codepoint <= 0x1F
+            or 0x7F <= codepoint <= 0x9F
+            or 0xFDD0 <= codepoint <= 0xFDEF
+            or codepoint & 0xFFFF >= 0xFFFE
+        ):
             raise ValueError("collection tag contains a control character")
     return value
 
@@ -584,7 +589,7 @@ def collection_tag_head_identity(
     if root_sha256 is not None:
         _validate_sha256(root_sha256, label="tag root SHA-256")
     _validate_sha256(tag_set_identity, label="tag-set identity")
-    payload = json.dumps(
+    payload = canonical_json_bytes(
         {
             "archive_root_sha256": archive_root_sha256,
             "format": COLLECTION_TAG_HEAD_FORMAT,
@@ -592,9 +597,7 @@ def collection_tag_head_identity(
             "root_sha256": root_sha256,
             "tag_set_identity": tag_set_identity,
         },
-        sort_keys=True,
-        separators=(",", ":"),
-    ).encode("ascii")
+    )
     return hashlib.sha256(_TAG_HEAD_IDENTITY_DOMAIN + payload).hexdigest()
 
 
@@ -648,17 +651,13 @@ class CollectionTagHeadDocument(BaseModel):
         )
 
     def to_json_bytes(self) -> bytes:
-        return json.dumps(
-            self.model_dump(mode="json"),
-            sort_keys=True,
-            separators=(",", ":"),
-        ).encode("ascii")
+        return canonical_json_bytes(self.model_dump(mode="json"))
 
     @classmethod
     def from_json_bytes(cls, content: bytes | str) -> CollectionTagHeadDocument:
-        encoded = content if isinstance(content, bytes) else content.encode("ascii")
+        encoded = content if isinstance(content, bytes) else content.encode("utf-8")
         try:
-            document = cls.model_validate_json(encoded)
+            document = cls.model_validate(parse_identity_json(encoded))
         except (UnicodeError, ValueError) as exc:
             raise ValueError("collection tag-head document is invalid") from exc
         if document.to_json_bytes() != encoded:

@@ -157,12 +157,12 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
         "compatibility-guarantees": 9,
         "installation-roots": 4,
         "publication-locations": 2,
-        "python-distributions": 71,
+        "python-distributions": 72,
         "release-artifacts": 12,
         "runtime-images": 13,
         "versioning-tags": 5,
     }
-    assert len(release_elements) == 119
+    assert len(release_elements) == 120
     assert Counter(item["interface"] for item in release_elements) == expected_interfaces
     assert "release" not in {item["interface"] for item in release_elements}
     assert "riverhog-v1/authorities/release/release/index.md" not in checked.files
@@ -187,7 +187,7 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
     assert {key: len(value["applies_to"]) for key, value in publication_policies.items()} == {
         "publication/image-digest-scope/v1": 13,
         "publication/platform-scope/v1": 17,
-        "publication/role-retention/v1": 88,
+        "publication/role-retention/v1": 89,
     }
     policy_counts = Counter(
         policy
@@ -198,7 +198,7 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
     assert policy_counts == {
         "publication/image-digest-scope/v1": 13,
         "publication/platform-scope/v1": 17,
-        "publication/role-retention/v1": 88,
+        "publication/role-retention/v1": 89,
     }
     assert "`release-publication-envelope`" in authority_inventory
 
@@ -575,7 +575,6 @@ def test_navigation_is_representation_only(
     original = atlas_navigation._NAVIGATION_FUNCTIONS["atomic"]
     semantic_identity_names = {
         "boundary_canonical_sha256",
-        "boundary_legacy_sha256",
         "external_contract_sha256",
         "semantic_contract_sha256",
         "coverage_sha256",

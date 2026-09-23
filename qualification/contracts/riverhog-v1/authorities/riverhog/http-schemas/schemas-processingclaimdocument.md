@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-8bfc846875"></a>`consumer` | yes | [ProcessingClaimConsumerDocument](schemas-processingclaimconsumerdocument.md) |  |
 | <a id="s-9d922404c4"></a>`created_at` | yes | type="string"; maxLength=64; minLength=1; title="Created At" |  |
 | <a id="s-672a29cfd8"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1; title="Expires At" |  |
-| <a id="s-32f010eb31"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-32f010eb31"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-4eff6e6056"></a>`format` | yes | type="string"; const="riverhog-processing-claim/v1"; title="Format" |  |
 | <a id="s-b60202a68b"></a>`id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Id" |  |
 | <a id="s-dd008f3e61"></a>`inputs` | yes | [ReceivingSetDocument](schemas-receivingsetdocument.md) |  |
@@ -86,6 +86,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 ### Referenced contract elements
 
 - [CollectionId](schemas-collectionid.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 - [OutcomeSetDocument](schemas-outcomesetdocument.md)
 - [ProcessingClaimConsumerDocument](schemas-processingclaimconsumerdocument.md)
 - [ProcessingClaimOutcomeSettlementDocument](schemas-processingclaimoutcomesettlementdocument.md)
@@ -123,7 +124,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4c659a523c955b07ee9225a1168e104782d855dd98607cf1648705c659a69381 -->
+<!-- exact-contract-value: 545fc6826422cffb711ce119319054ebb6eb6526f3781794adfaffcadd783373 -->
 
 ```json
 {
@@ -262,9 +263,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "fence": {
-      "minimum": 1,
-      "title": "Fence",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "format": {
       "const": "riverhog-processing-claim/v1",

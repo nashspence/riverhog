@@ -131,7 +131,7 @@ def test_review_evaluation_expands_one_normal_work_per_variant() -> None:
         recipe=RecipeRef(id="review.encode/v1", revision=1, sha256=_sha("a")),
         inputs=(
             CollectionRootRef(
-                collection_id=1,
+                collection_id=str(1),
                 archive_root_sha256=_sha("b"),
                 content_identity=_sha("c"),
             ),
@@ -172,7 +172,7 @@ def test_materialized_trial_requires_exactly_one_variant() -> None:
             recipe=RecipeRef(id="review.encode/v1", revision=1, sha256=_sha("a")),
             inputs=(
                 CollectionRootRef(
-                    collection_id=1,
+                    collection_id=str(1),
                     archive_root_sha256=_sha("b"),
                     content_identity=_sha("c"),
                 ),

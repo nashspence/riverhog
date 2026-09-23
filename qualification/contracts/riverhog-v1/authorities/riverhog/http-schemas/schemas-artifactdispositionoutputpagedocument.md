@@ -25,9 +25,9 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-38a8152364"></a>`authority` | yes | [ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md) |  |
-| <a id="s-ec50ac8374"></a>`next_ordinal` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; title="Next Ordinal" |  |
+| <a id="s-ec50ac8374"></a>`next_ordinal` | no | anyOf=[([NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1); (type="null")] |  |
 | <a id="s-e1fedbe99d"></a>`outputs` | yes | type="array"; items=([ArtifactDispositionOutputDocument](schemas-artifactdispositionoutputdocument.md)); maxItems=128; title="Outputs"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
-| <a id="s-3b4b64fa8a"></a>`start_ordinal` | yes | type="integer"; minimum=0; title="Start Ordinal" |  |
+| <a id="s-3b4b64fa8a"></a>`start_ordinal` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -65,6 +65,7 @@ Exact evidence groups for this contract element:
 
 - [ArtifactDispositionOutputDocument](schemas-artifactdispositionoutputdocument.md)
 - [ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -96,7 +97,7 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7fd3a513c6f8ce999a747fd64b7cf8d921fbccea66aa2295b85c0ed7540d3ac6 -->
+<!-- exact-contract-value: 353a472f5576d6e5548fe45e01ebb156c0e8241f87ad60c5ac9d5305cd5c7af5 -->
 
 ```json
 {
@@ -108,14 +109,13 @@ The following JSON is the complete value owned at each machine-authority pointer
     "next_ordinal": {
       "anyOf": [
         {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/components/schemas/NonnegativeDecimal",
+          "ge": 1
         },
         {
           "type": "null"
         }
-      ],
-      "title": "Next Ordinal"
+      ]
     },
     "outputs": {
       "items": {
@@ -131,9 +131,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       }
     },
     "start_ordinal": {
-      "minimum": 0,
-      "title": "Start Ordinal",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
     }
   },
   "required": [

@@ -34,7 +34,7 @@ class _Client:
             authorization_view_identity="b" * 64,
             collections=[
                 CatalogSyncDescriptor(
-                    collection_id=7,
+                    collection_id="7",
                     archive_root_sha256="c" * 64,
                     content_identity="d" * 64,
                     description="Field notes",
@@ -55,7 +55,7 @@ class _Client:
             authorization_view_identity="b" * 64,
             changes=[
                 CatalogSyncUpsert(
-                    collection_id=7,
+                    collection_id="7",
                     archive_root_sha256="c" * 64,
                     content_identity="d" * 64,
                     description=None,

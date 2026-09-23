@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-106002169d"></a>`kind`: `"class"`
-- <a id="s-b092a380f0"></a>`signature`: `"\"(*, path: str, offset: Annotated[int, Strict(strict=True), Ge(ge=0)], bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], artifact_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
+- <a id="s-b092a380f0"></a>`signature`: `"\"(*, path: str, offset: NonnegativeDecimal, bytes: NonnegativeDecimal, artifact_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
 
 #### Validated model schema
 
@@ -37,9 +37,18 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-4d7d590e2b"></a>`artifact_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-c10dc15699"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-390f55d49f"></a>`offset` | yes | type="integer"; minimum=0 |  |
+| <a id="s-c10dc15699"></a>`bytes` | yes | [NonnegativeDecimal](#s-60b0a4443a) |  |
+| <a id="s-390f55d49f"></a>`offset` | yes | [NonnegativeDecimal](#s-60b0a4443a) |  |
 | <a id="s-86048297b7"></a>`path` | yes | type="string" |  |
+
+##### Definitions
+
+- [NonnegativeDecimal](#s-60b0a4443a)
+
+##### <a id="s-60b0a4443a"></a>definition `NonnegativeDecimal`
+
+- <a id="s-c14bb153e4"></a>`type`: `"string"`
+- <a id="s-82e7d07563"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -74,13 +83,19 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6c3b23f5d656a74142da55815050b1f3429869705e501fe8863f71b910f80adf -->
+<!-- exact-contract-value: 7ab60e51b00511f62bd0cff971e9332baee7568708bac396ad9a0403e836c0fb -->
 
 ```json
 {
   "contract": {
     "kind": "class",
     "schema": {
+      "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        }
+      },
       "additionalProperties": false,
       "properties": {
         "artifact_sha256": {
@@ -88,12 +103,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         "offset": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         "path": {
           "type": "string"
@@ -107,7 +120,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, path: str, offset: Annotated[int, Strict(strict=True), Ge(ge=0)], bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], artifact_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
+    "signature": "\"(*, path: str, offset: NonnegativeDecimal, bytes: NonnegativeDecimal, artifact_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

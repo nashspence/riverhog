@@ -351,7 +351,7 @@ def _seed_collection(
     for path, content in sorted(files.items()):
         entry: dict[str, object] = {
             "path": path,
-            "bytes": len(content),
+            "bytes": str(len(content)),
             "sha256": hashlib.sha256(content).hexdigest(),
         }
         if raw:
@@ -362,8 +362,8 @@ def _seed_collection(
                 part_plaintext_bytes=policy.raw_part_plaintext_bytes,
             )
             entry["raw_parts"] = {
-                "part_plaintext_bytes": digests.summary.part_plaintext_bytes,
-                "part_count": digests.summary.part_count,
+                "part_plaintext_bytes": str(digests.summary.part_plaintext_bytes),
+                "part_count": str(digests.summary.part_count),
                 "ordered_sha256": digests.summary.ordered_part_sha256,
             }
             entry["raw_digest_spool"] = digests
@@ -384,7 +384,7 @@ def _seed_collection(
                 collection_id,
                 CollectionUploadRawDigestBatchDocument(
                     path=str(entry["path"]),
-                    first_part=first_part,
+                    first_part=str(first_part),
                     sha256s=list(sha256s),
                 ),
             )
@@ -574,9 +574,9 @@ def test_retrieval_plan_accepts_the_exact_capability_artifact(tmp_path: Path) ->
     )
     assert page["files"] == [
         {
-            "collection_id": collection_id,
+            "collection_id": str(collection_id),
             "path": "selected.bin",
-            "bytes": len(files["selected.bin"]),
+            "bytes": str(len(files["selected.bin"])),
             "sha256": hashlib.sha256(files["selected.bin"]).hexdigest(),
             "requires_restore": False,
         }

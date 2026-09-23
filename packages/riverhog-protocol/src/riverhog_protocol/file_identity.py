@@ -6,6 +6,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from riverhog_protocol.paths import CanonicalRelPath
 
 Sha256 = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
@@ -17,7 +18,7 @@ class ImmutableFileIdentityDocument(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
 
     path: CanonicalRelPath
-    bytes: int = Field(ge=0)
+    bytes: NonnegativeDecimal
     sha256: Sha256
 
 

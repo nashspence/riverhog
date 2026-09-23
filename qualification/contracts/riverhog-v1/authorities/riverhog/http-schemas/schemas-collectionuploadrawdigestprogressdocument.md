@@ -24,10 +24,16 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-357edf47b9"></a>`accepted_parts` | yes | type="integer"; minimum=0; title="Accepted Parts" |  |
+| <a id="s-357edf47b9"></a>`accepted_parts` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md) |  |
 | <a id="s-d4a25895d4"></a>`complete` | yes | type="boolean"; title="Complete" |  |
-| <a id="s-87d83509ec"></a>`expected_parts` | yes | type="integer"; minimum=1; title="Expected Parts" |  |
+| <a id="s-87d83509ec"></a>`expected_parts` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-1e7da99a8e"></a>`path` | yes | type="string"; title="Path" |  |
+
+## Maintained corroboration
+
+### Referenced contract elements
+
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -56,25 +62,22 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 65617a770d19d14c6eaf53cf21c753767836d93c430135b0465dcfe6d6f219bd -->
+<!-- exact-contract-value: 1d9e8da190d28b3ccb7d962d5a124d7efce8f17ecc6c6adba1bdefc15cc6d013 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
     "accepted_parts": {
-      "minimum": 0,
-      "title": "Accepted Parts",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal"
     },
     "complete": {
       "title": "Complete",
       "type": "boolean"
     },
     "expected_parts": {
-      "minimum": 1,
-      "title": "Expected Parts",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "path": {
       "title": "Path",

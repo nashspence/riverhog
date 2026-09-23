@@ -33,13 +33,15 @@
   },
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nonnegative_count": {"type": "string", "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])"},
+    "positive_count": {"type": "string", "pattern": "^[1-9][0-9]*(?![\\s\\S])"},
     "tree": {
       "type": "object",
       "additionalProperties": false,
       "required": ["files", "bytes", "sha256"],
       "properties": {
-        "files": {"type": "integer", "minimum": 1},
-        "bytes": {"type": "integer", "minimum": 0},
+        "files": {"$ref": "#/$defs/positive_count"},
+        "bytes": {"$ref": "#/$defs/nonnegative_count"},
         "sha256": {"$ref": "#/$defs/sha256"}
       }
     },
@@ -51,9 +53,9 @@
         "id": {"const": "provenance-root"},
         "kind": {"const": "provenance-root"},
         "path": {"const": "provenance/root.json.age"},
-        "plaintext_bytes": {"type": "integer", "minimum": 1},
+        "plaintext_bytes": {"$ref": "#/$defs/positive_count"},
         "sha256": {"$ref": "#/$defs/sha256"},
-        "stored_bytes": {"type": "integer", "minimum": 1},
+        "stored_bytes": {"$ref": "#/$defs/positive_count"},
         "stored_sha256": {"$ref": "#/$defs/sha256"}
       }
     },

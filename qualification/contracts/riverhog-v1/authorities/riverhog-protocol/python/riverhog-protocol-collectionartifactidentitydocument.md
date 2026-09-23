@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-795f655a4a"></a>`kind`: `"class"`
-- <a id="s-934645b5d4"></a>`signature`: `"\"(*, collection: riverhog_protocol.collection_workflow_transport.CollectionRootIdentityDocument, path: CanonicalRelPath, bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
+- <a id="s-934645b5d4"></a>`signature`: `"\"(*, collection: riverhog_protocol.collection_workflow_transport.CollectionRootIdentityDocument, path: CanonicalRelPath, bytes: NonnegativeDecimal, sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""`
 
 #### Validated model schema
 
@@ -36,7 +36,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-57e3627403"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-57e3627403"></a>`bytes` | yes | [NonnegativeDecimal](#s-81414545f4) |  |
 | <a id="s-8bc6c9ef5a"></a>`collection` | yes | [CollectionRootIdentityDocument](#s-6b0a0a299b) |  |
 | <a id="s-1e37004564"></a>`path` | yes | [CanonicalRelPath](#s-36e7ee4bca) |  |
 | <a id="s-bba78bc748"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -46,6 +46,7 @@ Exact externally visible contract owned by this contract element.
 - [CanonicalRelPath](#s-36e7ee4bca)
 - [CollectionId](#s-1dc1d018d5)
 - [CollectionRootIdentityDocument](#s-6b0a0a299b)
+- [NonnegativeDecimal](#s-81414545f4)
 
 ##### <a id="s-36e7ee4bca"></a>definition `CanonicalRelPath`
 
@@ -65,8 +66,13 @@ Exact externally visible contract owned by this contract element.
 
 ##### <a id="s-1dc1d018d5"></a>definition `CollectionId`
 
-- <a id="s-4437a99e67"></a>`type`: `"integer"`
-- <a id="s-c5dc484541"></a>`minimum`: `1`
+
+###### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-3e1378c515"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-e9ef88ea65"></a>2 | not=(const="0") |
 
 ##### <a id="s-6b0a0a299b"></a>definition `CollectionRootIdentityDocument`
 
@@ -81,6 +87,11 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-939988ac85"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-05fb14f443"></a>`collection_id` | yes | [CollectionId](#s-1dc1d018d5) |  |
 | <a id="s-29a68e9f99"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-81414545f4"></a>definition `NonnegativeDecimal`
+
+- <a id="s-9b135e3463"></a>`type`: `"string"`
+- <a id="s-fd2ed0f03a"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -117,7 +128,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0e93476172ab2132154f6795f00f535f628c7c46f8b12251a739c86dabde5a27 -->
+<!-- exact-contract-value: 8ab04f5a52dd648a5efbd9e0f7388f60851e6de29b2468752280b82b1031c06b -->
 
 ```json
 {
@@ -146,8 +157,17 @@ The following JSON is the complete value owned at each machine-authority pointer
           "x-unicode-normalization": "NFC"
         },
         "CollectionId": {
-          "minimum": 1,
-          "type": "integer"
+          "allOf": [
+            {
+              "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+              "type": "string"
+            },
+            {
+              "not": {
+                "const": "0"
+              }
+            }
+          ]
         },
         "CollectionRootIdentityDocument": {
           "additionalProperties": false,
@@ -170,13 +190,16 @@ The following JSON is the complete value owned at each machine-authority pointer
             "content_identity"
           ],
           "type": "object"
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         }
       },
       "additionalProperties": false,
       "properties": {
         "bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         "collection": {
           "$ref": "#/$defs/CollectionRootIdentityDocument"
@@ -197,7 +220,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, collection: riverhog_protocol.collection_workflow_transport.CollectionRootIdentityDocument, path: CanonicalRelPath, bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
+    "signature": "\"(*, collection: riverhog_protocol.collection_workflow_transport.CollectionRootIdentityDocument, path: CanonicalRelPath, bytes: NonnegativeDecimal, sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

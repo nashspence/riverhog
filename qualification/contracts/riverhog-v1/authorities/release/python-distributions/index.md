@@ -28,6 +28,7 @@ Published Python distribution identities and artifact forms.
 | [riverhog-age](python-distribution-riverhog-age.md) | `reusable_library` |
 | [riverhog-application-access](python-distribution-riverhog-application-access.md) | `reusable_library` |
 | [riverhog-archive-contracts](python-distribution-riverhog-archive-contracts.md) | `reusable_library` |
+| [riverhog-canonical-json](python-distribution-riverhog-canonical-json.md) | `reusable_library` |
 | [riverhog-client](python-distribution-riverhog-client.md) | `reusable_library` |
 | [riverhog-ftp-adapter](python-distribution-riverhog-ftp-adapter.md) | `reference_component` |
 | [riverhog-ftp-adapter-api-client](python-distribution-riverhog-ftp-adapter-api-client.md) | `reference_component` |

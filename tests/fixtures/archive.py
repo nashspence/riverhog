@@ -3,6 +3,8 @@ from __future__ import annotations
 import base64
 import json
 
+from riverhog_canonical_json import format_scalar
+
 
 def age_state_json(plaintext_bytes: int) -> str:
     if plaintext_bytes < 0:
@@ -11,7 +13,7 @@ def age_state_json(plaintext_bytes: int) -> str:
         "format": "age-v1-scrypt-resumable",
         "header_b64": _b64(b"\xfb\xfffixture-age-header"),
         "payload_nonce_b64": _b64(b"\xfb\xfffixture-nonce-"),
-        "plaintext_size": plaintext_bytes,
+        "plaintext_size": format_scalar("nonnegative", plaintext_bytes),
     }
     return json.dumps(payload, sort_keys=True, separators=(",", ":"))
 

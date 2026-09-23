@@ -54,12 +54,12 @@ def test_initial_tag_continuation_never_mutates_a_non_open_session(state: str) -
     result = create_or_resume_with_initial_collection_tags(
         tags,
         create_or_resume=lambda first, identity: (
-            opened.append((tuple(first), identity)) or {"collection_id": 17, "state": state}
+            opened.append((tuple(first), identity)) or {"collection_id": "17", "state": state}
         ),
         add_tags=lambda collection_id, batch: added.append((collection_id, tuple(batch))),
     )
 
-    assert result == {"collection_id": 17, "state": state}
+    assert result == {"collection_id": "17", "state": state}
     assert opened[0][0] == tags[:COLLECTION_TAG_REQUEST_MEMBERS_MAX]
     assert len(opened[0][1]) == 64
     assert added == []
@@ -72,7 +72,7 @@ def test_initial_tag_continuation_stages_every_remaining_bounded_open_batch() ->
     create_or_resume_with_initial_collection_tags(
         reversed(tags),
         create_or_resume=lambda first, _identity: {
-            "collection_id": 17,
+            "collection_id": "17",
             "state": "open",
         },
         add_tags=lambda collection_id, batch: added.append((collection_id, tuple(batch))),

@@ -358,16 +358,18 @@ class CatalogReplica:
                 parameters,
             ).fetchall()
             return [
-                CatalogSyncDescriptor(
-                    collection_id=int(row["collection_id"]),
-                    revision=str(row["revision"]),
-                    archive_root_sha256=str(row["archive_root_sha256"]),
-                    content_identity=str(row["content_identity"]),
-                    description=row["description"],
-                    description_revision=int(row["description_revision"]),
-                    description_identity=str(row["description_identity"]),
-                    tag_revision=int(row["tag_revision"]),
-                    tag_set_identity=str(row["tag_set_identity"]),
+                CatalogSyncDescriptor.model_validate(
+                    dict(
+                        collection_id=str(row["collection_id"]),
+                        revision=str(row["revision"]),
+                        archive_root_sha256=str(row["archive_root_sha256"]),
+                        content_identity=str(row["content_identity"]),
+                        description=row["description"],
+                        description_revision=int(row["description_revision"]),
+                        description_identity=str(row["description_identity"]),
+                        tag_revision=int(row["tag_revision"]),
+                        tag_set_identity=str(row["tag_set_identity"]),
+                    )
                 )
                 for row in rows
             ]
@@ -445,16 +447,18 @@ class CatalogReplica:
             ).fetchone()
             if row is None:
                 return None
-            return CatalogSyncDescriptor(
-                collection_id=int(row["collection_id"]),
-                revision=str(row["revision"]),
-                archive_root_sha256=str(row["archive_root_sha256"]),
-                content_identity=str(row["content_identity"]),
-                description=row["description"],
-                description_revision=int(row["description_revision"]),
-                description_identity=str(row["description_identity"]),
-                tag_revision=int(row["tag_revision"]),
-                tag_set_identity=str(row["tag_set_identity"]),
+            return CatalogSyncDescriptor.model_validate(
+                dict(
+                    collection_id=str(row["collection_id"]),
+                    revision=str(row["revision"]),
+                    archive_root_sha256=str(row["archive_root_sha256"]),
+                    content_identity=str(row["content_identity"]),
+                    description=row["description"],
+                    description_revision=int(row["description_revision"]),
+                    description_identity=str(row["description_identity"]),
+                    tag_revision=int(row["tag_revision"]),
+                    tag_set_identity=str(row["tag_set_identity"]),
+                )
             )
 
     def reclaim(self, *, limit: int = 100) -> int:

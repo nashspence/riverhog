@@ -345,8 +345,8 @@ def test_disposition_batch_counts_shared_sources_once(
         principal=_principal(),
     )
 
-    assert state["output_edge_count"] == 2
-    assert state["output_artifact_count"] == 2
+    assert state["output_edge_count"] == "2"
+    assert state["output_artifact_count"] == "2"
     with factory() as session:
         counters = session.get_one(CollectionProcessingDispositionSetRecord, claim_id)
         assert counters.transformed_count == 1
@@ -632,7 +632,7 @@ def test_fenced_restart_advances_generation_revokes_capabilities_and_clears_plan
     )
 
     assert restarted["state"] == "active"
-    assert restarted["fence"] == 2
+    assert restarted["fence"] == "2"
     assert restarted["plan"] is None
     assert service.authenticate_capability(str(capability["token"])) is None
     with pytest.raises(Conflict, match="fence is stale"):
@@ -776,7 +776,7 @@ def test_expired_execution_upload_remains_a_deletion_blocker(
         lease_seconds=600,
         principal=_principal(),
     )
-    assert renewed["fence"] == 1
+    assert renewed["fence"] == "1"
     capability = _issue_capability(
         service,
         claim_id,
@@ -882,7 +882,7 @@ def test_expired_claim_abandonment_is_fenced_against_a_restarted_generation(
         work_document_sha256=digest,
         principal=_principal(),
     )
-    assert restarted["fence"] == 2
+    assert restarted["fence"] == "2"
     with pytest.raises(Conflict, match="fence is stale"):
         service.abandon_claim(
             claim_id,

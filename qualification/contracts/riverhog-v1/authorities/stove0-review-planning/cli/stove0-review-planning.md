@@ -57,7 +57,7 @@ Applies to: reported · stdout (json).
 | Field | Value |
 |---|---|
 | <a id="s-b884c01d55"></a>`format` | `"stove0-review-contract-report/v1"` |
-| <a id="s-326bc1f814"></a>`observer_contract · contract_sha256` | `"0e0cdebd908511848dc7953a045587ac141c689bbd64c831403f531bb70371c6"` |
+| <a id="s-326bc1f814"></a>`observer_contract · contract_sha256` | `"4c87a019d77b91d70e5c8cb08313f634b949a8049a220de53b14fca5060b3298"` |
 | <a id="s-9cf66b7af3"></a>`observer_contract · facts_schema · dialect` | `"https://json-schema.org/draft/2020-12/schema"` |
 | <a id="s-16c24f5c2c"></a>`observer_contract · facts_schema · document · $schema` | `"https://json-schema.org/draft/2020-12/schema"` |
 | <a id="s-82b0a95fe3"></a>`observer_contract · facts_schema · document · additionalProperties` | `false` |
@@ -84,9 +84,9 @@ Applies to: reported · stdout (json).
 | <a id="s-3238c8ac66"></a>`observer_contract · facts_schema · format_policy` | `"annotation-only"` |
 | <a id="s-41199aa23f"></a>`observer_contract · facts_schema · id` | `"stove0.review.media-sampling-facts/v1"` |
 | <a id="s-2db503e01c"></a>`observer_contract · facts_schema · profile_sha256` | `"730e1fcd4a831bad9707814fe65fb59861359795bcf336ed65f72670c725f71a"` |
-| <a id="s-0aa83751b3"></a>`observer_contract · facts_semantics · conformance_vectors_sha256` | `"7fa8220ce785a840b854d24a70b9c4b6da99c853ab0b6eba4100d89ae1fb23f8"` |
+| <a id="s-0aa83751b3"></a>`observer_contract · facts_semantics · conformance_vectors_sha256` | `"90d8dd72fda59c7a5006d59119d8a3fcf9d569a7875ae4d9f5ef4ada5aaa33c4"` |
 | <a id="s-8ad269b184"></a>`observer_contract · facts_semantics · id` | `"stove0.review.media-sampling-facts-semantics/v1"` |
-| <a id="s-eaeaba3b35"></a>`observer_contract · facts_semantics · profile_sha256` | `"6f91eaa38e4152a6db4d9d7f6c157295ac7d30fc412fef92ebcd5120de8fce7e"` |
+| <a id="s-eaeaba3b35"></a>`observer_contract · facts_semantics · profile_sha256` | `"7db5bb14ea7b0126ed8b58d12fe169ba4eff7f7f8b7650c5ac5be0b07b6b2d2f"` |
 | <a id="s-b57e4650eb"></a>`observer_contract · facts_semantics · rules` | `["stove0.review.media-sampling-facts.complete-request-subjects/v1","stove0.review.media-sampling-facts.nonoverlapping-bounded-ranges/v1"]` |
 | <a id="s-1808a27b84"></a>`observer_contract · id` | `"stove0.review.media-sampling/v1"` |
 | <a id="s-4e8642a6b6"></a>`observer_contract · maximum_result_bytes` | `262144` |
@@ -244,7 +244,7 @@ true
 
 ### `/external_contract/cli/stove0-review-planning/result_contract`
 
-<!-- exact-contract-value: c8fb5d26723189cc16b7faef256cd58d312663dc855c01de3500e63466175e8a -->
+<!-- exact-contract-value: 66f6f0619edcb49babfedbbe9a351138ac8f71eef4b0024dddb861381b0b60a4 -->
 
 ```json
 {
@@ -282,7 +282,7 @@ true
           "document": {
             "format": "stove0-review-contract-report/v1",
             "observer_contract": {
-              "contract_sha256": "0e0cdebd908511848dc7953a045587ac141c689bbd64c831403f531bb70371c6",
+              "contract_sha256": "4c87a019d77b91d70e5c8cb08313f634b949a8049a220de53b14fca5060b3298",
               "facts_schema": {
                 "dialect": "https://json-schema.org/draft/2020-12/schema",
                 "document": {
@@ -345,9 +345,9 @@ true
                 "profile_sha256": "730e1fcd4a831bad9707814fe65fb59861359795bcf336ed65f72670c725f71a"
               },
               "facts_semantics": {
-                "conformance_vectors_sha256": "7fa8220ce785a840b854d24a70b9c4b6da99c853ab0b6eba4100d89ae1fb23f8",
+                "conformance_vectors_sha256": "90d8dd72fda59c7a5006d59119d8a3fcf9d569a7875ae4d9f5ef4ada5aaa33c4",
                 "id": "stove0.review.media-sampling-facts-semantics/v1",
-                "profile_sha256": "6f91eaa38e4152a6db4d9d7f6c157295ac7d30fc412fef92ebcd5120de8fce7e",
+                "profile_sha256": "7db5bb14ea7b0126ed8b58d12fe169ba4eff7f7f8b7650c5ac5be0b07b6b2d2f",
                 "rules": [
                   "stove0.review.media-sampling-facts.complete-request-subjects/v1",
                   "stove0.review.media-sampling-facts.nonoverlapping-bounded-ranges/v1"

@@ -16,7 +16,7 @@ The ordinary atlas map owns the authority/interface inventory and its scope desc
 | `durable-state` | 137 |
 | `extent` | 12 |
 | `http-operations` | 147 |
-| `http-schemas` | 396 |
+| `http-schemas` | 398 |
 | `http-security-schemes` | 2 |
 | `http-service-declaration` | 3 |
 | `installation-roots` | 4 |
@@ -24,8 +24,8 @@ The ordinary atlas map owns the authority/interface inventory and its scope desc
 | `process-protocol-operations` | 24 |
 | `process-protocol-schemas` | 43 |
 | `publication-locations` | 2 |
-| `python` | 2827 |
-| `python-distributions` | 71 |
+| `python` | 2840 |
+| `python-distributions` | 72 |
 | `release-artifacts` | 12 |
 | `runtime-images` | 13 |
 | `schema` | 31 |

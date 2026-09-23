@@ -4,7 +4,7 @@
 
 Portable Riverhog v1 per-file provenance journals and validation.
 
-Contract elements: **115** · Extent decisions: **101**
+Contract elements: **115** · Extent decisions: **85**
 
 ## Interfaces
 

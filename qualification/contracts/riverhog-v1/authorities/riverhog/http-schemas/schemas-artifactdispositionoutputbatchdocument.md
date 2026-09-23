@@ -24,7 +24,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-261db41370"></a>`fence` | yes | type="integer"; minimum=1; title="Fence" |  |
+| <a id="s-261db41370"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-c4cb257ac3"></a>`outputs` | yes | type="array"; items=([ArtifactDispositionOutputDocument](schemas-artifactdispositionoutputdocument.md)); maxItems=128; minItems=1; title="Outputs"; uniqueItems=true; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"sealed-disposition-authority","reason":"bounded-disposition-append"} |  |
 
 ### Progression, limits, and lifecycle
@@ -62,6 +62,7 @@ Exact evidence groups for this contract element:
 ### Referenced contract elements
 
 - [ArtifactDispositionOutputDocument](schemas-artifactdispositionoutputdocument.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -93,16 +94,15 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9a8553cb62301ed415596ad8bfe5a4c99594157b30d5ee67a82bc913a7e4f211 -->
+<!-- exact-contract-value: 2d206baf9ac3e99026ab323c85b7896ee0eaaa6e900b67815f95cade3d7aaa51 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
     "fence": {
-      "minimum": 1,
-      "title": "Fence",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "outputs": {
       "items": {

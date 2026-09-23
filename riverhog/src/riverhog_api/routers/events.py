@@ -2,15 +2,16 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import HTTPException, Query
 from http_api_contracts import cursor_feed_operation
 from riverhog_core.app_permissions import EVENTS_READ_ALL
 from riverhog_protocol.lifecycle_events import LifecycleEventCursor, RiverhogEventPage
 
 from riverhog_api.auth import EventsReader
 from riverhog_api.deps import ContainerDep
+from riverhog_api.routing import RiverhogRouter
 
-router = APIRouter(tags=["events"])
+router = RiverhogRouter(tags=["events"])
 
 
 @router.get(

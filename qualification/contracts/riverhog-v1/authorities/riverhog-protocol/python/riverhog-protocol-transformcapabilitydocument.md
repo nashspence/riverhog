@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-c2eaf2e993"></a>`kind`: `"class"`
-- <a id="s-2277ae5e7d"></a>`signature`: `"\"(*, format: Literal['riverhog-transform-capability/v1'], id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], fence: Annotated[int, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9][a-z0-9._:/-]{0,299}$')], actions: Annotated[list[Literal['read-inputs', 'write-output']], MinLen(min_length=1)], state: Literal['receiving', 'active'], principal_app: Annotated[str, MinLen(min_length=1), MaxLen(max_length=300)], expires_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], artifacts: riverhog_protocol.collection_workflow_transport.ArtifactReceivingSetDocument, token: Annotated[str, _PydanticGeneralMetadata(pattern='^rhc_[A-Za-z0-9_-]+$')]) -> None\""`
+- <a id="s-2277ae5e7d"></a>`signature`: `"\"(*, format: Literal['riverhog-transform-capability/v1'], id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9][a-z0-9._:/-]{0,299}$')], actions: Annotated[list[Literal['read-inputs', 'write-output']], MinLen(min_length=1)], state: Literal['receiving', 'active'], principal_app: Annotated[str, MinLen(min_length=1), MaxLen(max_length=300)], expires_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], artifacts: riverhog_protocol.collection_workflow_transport.ArtifactReceivingSetDocument, token: Annotated[str, _PydanticGeneralMetadata(pattern='^rhc_[A-Za-z0-9_-]+$')]) -> None\""`
 
 #### Validated model schema
 
@@ -41,7 +41,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-0ea541ef21"></a>`audience` | yes | type="string"; pattern="^[a-z0-9][a-z0-9._:/-]{0,299}$" |  |
 | <a id="s-be290c9233"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-5338f570fa"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1 |  |
-| <a id="s-ca39ae8afe"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-ca39ae8afe"></a>`fence` | yes | [NonnegativeDecimal](#s-23fa00047a); ge=1 |  |
 | <a id="s-71303d8f5c"></a>`format` | yes | type="string"; const="riverhog-transform-capability/v1" |  |
 | <a id="s-1ecd9f3954"></a>`id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-2758f46f2a"></a>`principal_app` | yes | type="string"; maxLength=300; minLength=1 |  |
@@ -52,6 +52,7 @@ Exact externally visible contract owned by this contract element.
 
 - [ArtifactReceivingSetDocument](#s-12e03bb1bc)
 - [ArtifactSetAuthorityDocument](#s-6a2b19199e)
+- [NonnegativeDecimal](#s-23fa00047a)
 
 ##### <a id="s-12e03bb1bc"></a>definition `ArtifactReceivingSetDocument`
 
@@ -64,9 +65,9 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-4e7fe48037"></a>`authority` | no | anyOf=[([ArtifactSetAuthorityDocument](#s-6a2b19199e)); (type="null")]; default=null |  |
-| <a id="s-56adc08a7d"></a>`count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-56adc08a7d"></a>`count` | yes | [NonnegativeDecimal](#s-23fa00047a); ge=0 |  |
 | <a id="s-415ecd6ca4"></a>`state` | yes | type="string"; enum=["receiving","sealed"] |  |
-| <a id="s-a45e9e7b9d"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-a45e9e7b9d"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-23fa00047a); ge=0 |  |
 
 ##### <a id="s-6a2b19199e"></a>definition `ArtifactSetAuthorityDocument`
 
@@ -78,9 +79,14 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ee5ab19b33"></a>`count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-ee5ab19b33"></a>`count` | yes | [NonnegativeDecimal](#s-23fa00047a); ge=1 |  |
 | <a id="s-640267e39e"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-247e9891d1"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-247e9891d1"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-23fa00047a); ge=0 |  |
+
+##### <a id="s-23fa00047a"></a>definition `NonnegativeDecimal`
+
+- <a id="s-932eb4c290"></a>`type`: `"string"`
+- <a id="s-8552a413dd"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -117,7 +123,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3c21fdc91dd382badc27dc1a5476b3153c9d3e511f0faeae42e333ef53689aa0 -->
+<!-- exact-contract-value: fd8701c40cd1a7f557402119334f01efc81c92386ac517c028a8dddf2c8c050c -->
 
 ```json
 {
@@ -140,8 +146,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "count": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "state": {
               "enum": [
@@ -151,8 +157,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [
@@ -166,16 +172,16 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [
@@ -184,6 +190,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "total_bytes"
           ],
           "type": "object"
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         }
       },
       "additionalProperties": false,
@@ -229,8 +239,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "fence": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "format": {
           "const": "riverhog-transform-capability/v1",
@@ -273,7 +283,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, format: Literal['riverhog-transform-capability/v1'], id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], fence: Annotated[int, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9][a-z0-9._:/-]{0,299}$')], actions: Annotated[list[Literal['read-inputs', 'write-output']], MinLen(min_length=1)], state: Literal['receiving', 'active'], principal_app: Annotated[str, MinLen(min_length=1), MaxLen(max_length=300)], expires_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], artifacts: riverhog_protocol.collection_workflow_transport.ArtifactReceivingSetDocument, token: Annotated[str, _PydanticGeneralMetadata(pattern='^rhc_[A-Za-z0-9_-]+$')]) -> None\""
+    "signature": "\"(*, format: Literal['riverhog-transform-capability/v1'], id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9][a-z0-9._:/-]{0,299}$')], actions: Annotated[list[Literal['read-inputs', 'write-output']], MinLen(min_length=1)], state: Literal['receiving', 'active'], principal_app: Annotated[str, MinLen(min_length=1), MaxLen(max_length=300)], expires_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], artifacts: riverhog_protocol.collection_workflow_transport.ArtifactReceivingSetDocument, token: Annotated[str, _PydanticGeneralMetadata(pattern='^rhc_[A-Za-z0-9_-]+$')]) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

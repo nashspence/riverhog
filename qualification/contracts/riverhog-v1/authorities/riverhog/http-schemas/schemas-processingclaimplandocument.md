@@ -32,7 +32,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-68f89f7550"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Execution Id" |  |
 | <a id="s-6449700174"></a>`inputs` | yes | [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md) |  |
 | <a id="s-b014f9416d"></a>`operation` | yes | [OperationIdentityDocument](schemas-operationidentitydocument.md) |  |
-| <a id="s-6904c65b63"></a>`retirement_grace_seconds` | yes | type="integer"; minimum=0; title="Retirement Grace Seconds" |  |
+| <a id="s-6904c65b63"></a>`retirement_grace_seconds` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 | <a id="s-d49cde6da8"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"]; title="Retirement Policy" |  |
 | <a id="s-0c58a348ae"></a>`sealed_at` | yes | type="string"; maxLength=64; minLength=1; title="Sealed At" |  |
 
@@ -52,7 +52,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6486c94aa7"></a>`retirement_grace_seconds` | no | const=0 |  |
+| <a id="s-6486c94aa7"></a>`retirement_grace_seconds` | no | const="0" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -79,6 +79,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 - [ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md)
 - [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 - [OperationIdentityDocument](schemas-operationidentitydocument.md)
 
 ## Governing policies
@@ -112,7 +113,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c782ec1e7e9f82a2050027187b4f010e5c02d15a1518bc4a009c6856fb7dd042 -->
+<!-- exact-contract-value: a86b24a085e8d9bb433017fe0ea050bf21ff76164c18d296432b997512b7cdfd -->
 
 ```json
 {
@@ -155,9 +156,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$ref": "#/components/schemas/OperationIdentityDocument"
     },
     "retirement_grace_seconds": {
-      "minimum": 0,
-      "title": "Retirement Grace Seconds",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
     },
     "retirement_policy": {
       "enum": [
@@ -188,7 +188,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "then": {
     "properties": {
       "retirement_grace_seconds": {
-        "const": 0
+        "const": "0"
       }
     }
   },

@@ -53,6 +53,7 @@ Exact externally visible contract owned by this contract element.
 
 - [ArtifactDispositionSetIdentityDocument](#s-d963af221e)
 - [ClaimFenceDocument](#s-6a641731d6)
+- [NonnegativeDecimal](#s-8148f4158e)
 - [OperationIdentityDocument](#s-339962015a)
 - [RecipeIdentityDocument](#s-d4dc3b83ad)
 
@@ -66,9 +67,9 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6d943ebe54"></a>`disposition_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-c127472d97"></a>`output_artifact_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-f7a52663bd"></a>`output_edge_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-6d943ebe54"></a>`disposition_count` | yes | [NonnegativeDecimal](#s-8148f4158e); ge=1 |  |
+| <a id="s-c127472d97"></a>`output_artifact_count` | yes | [NonnegativeDecimal](#s-8148f4158e); ge=1 |  |
+| <a id="s-f7a52663bd"></a>`output_edge_count` | yes | [NonnegativeDecimal](#s-8148f4158e); ge=1 |  |
 | <a id="s-290ad89110"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-6a641731d6"></a>definition `ClaimFenceDocument`
@@ -81,8 +82,13 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0274162345"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-0274162345"></a>`fence` | yes | [NonnegativeDecimal](#s-8148f4158e); ge=1 |  |
 | <a id="s-7ad1a3f55d"></a>`id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-8148f4158e"></a>definition `NonnegativeDecimal`
+
+- <a id="s-a963cef138"></a>`type`: `"string"`
+- <a id="s-354daf37b4"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-339962015a"></a>definition `OperationIdentityDocument`
 
@@ -108,7 +114,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-7fed8eecad"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-4e5c3e2bc7"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-4e5c3e2bc7"></a>`revision` | yes | [NonnegativeDecimal](#s-8148f4158e); ge=1 |  |
 | <a id="s-ab5a353fd6"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
@@ -146,7 +152,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 67c34cffa63818732a0c702f0f622b2b53aa27a56588b90db47864398093c961 -->
+<!-- exact-contract-value: 761db7f83b8d15a8b0189aa1c4efef21a736d16ff9a726048316b8041e88a34d -->
 
 ```json
 {
@@ -158,16 +164,16 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "disposition_count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "output_artifact_count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "output_edge_count": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
@@ -186,8 +192,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "fence": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "id": {
               "pattern": "^[0-9a-f]{64}$",
@@ -199,6 +205,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "fence"
           ],
           "type": "object"
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         },
         "OperationIdentityDocument": {
           "additionalProperties": false,
@@ -226,8 +236,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "revision": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
