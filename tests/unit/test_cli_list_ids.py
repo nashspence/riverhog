@@ -27,7 +27,9 @@ def test_collection_list_tag_batch_preserves_the_client_acceptance_boundary(
 
     def handle(request: httpx.Request) -> httpx.Response:
         requests.append(request)
-        assert request.url.params.get_list("tags") == tags
+        assert request.method == "POST"
+        assert request.url.path == "/v1/collections:search"
+        assert json.loads(request.content)["tags"] == tags
         payload = ListCollectionsResponse(
             collections=[],
             page_size=25,

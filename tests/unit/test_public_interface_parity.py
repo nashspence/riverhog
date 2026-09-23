@@ -567,7 +567,7 @@ PUBLIC_QUERY_SELECTORS = {
             "revision",
             "tag_set_identity",
         },
-        "collection_contains_tag": {"revision", "tag", "tag_set_identity"},
+        "collection_contains_tag": {"revision", "tag_set_identity"},
         "list_collection_upload_session_files": {"page_size", "page_token"},
         "list_collection_upload_sessions": {
             "order",
@@ -585,7 +585,6 @@ PUBLIC_QUERY_SELECTORS = {
             "page_token",
             "q",
             "sort",
-            "tags",
         },
         "list_download_quotas": {
             "active",

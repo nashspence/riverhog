@@ -4,7 +4,7 @@
 
 This generated snapshot accounts for the externally exposed surfaces discovered from this repository revision. Discovery means inclusion; no separate acceptance decision is required.
 
-Included contract elements: **4192** · Extent decisions: **2057**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
+Included contract elements: **4194** · Extent decisions: **2057**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
 
 Checked-in references form a closed, tightly scoped, maintainer-selected, nonnormative conformance set.
 
@@ -93,7 +93,7 @@ Checked-in references form a closed, tightly scoped, maintainer-selected, nonnor
 
 - **[riverhog](authorities/riverhog/index.md)** [📦](authorities/riverhog/evidence-gaps.md) — The Riverhog service API and its maintained cross-interface operation parity.
   - **[HTTP Operations](authorities/riverhog/http-operations/index.md)** [📦](authorities/riverhog/http-operations/evidence-gaps.md) (109)
-  - **[HTTP Schemas](authorities/riverhog/http-schemas/index.md)** [📦](authorities/riverhog/http-schemas/evidence-gaps.md) (253)
+  - **[HTTP Schemas](authorities/riverhog/http-schemas/index.md)** [📦](authorities/riverhog/http-schemas/evidence-gaps.md) (255)
   - [HTTP Service Declaration](authorities/riverhog/http-service-declaration/index.md) (1)
   - [HTTP Security Schemes](authorities/riverhog/http-security-schemes/index.md) (1)
 

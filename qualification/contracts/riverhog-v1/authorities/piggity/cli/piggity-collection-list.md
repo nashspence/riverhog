@@ -35,7 +35,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | <a id="s-593c3b8401"></a>`ids`<br>`--ids` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 | <a id="s-18939bbec9"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
-Repeated `tag` accepts at most **100** occurrences, through [GET /v1/collections · tags](../../riverhog/http-operations/get-v1-collections.md#s-c928d33a4d).
+Repeated `tag` accepts at most **100** occurrences, through [schemas: SearchCollectionsRequest · tags](../../riverhog/http-schemas/schemas-searchcollectionsrequest.md#s-8e397508fa).
 
 ### Terminating controls
 
@@ -54,7 +54,7 @@ Repeated `tag` accepts at most **100** occurrences, through [GET /v1/collections
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-b476fbf87e"></a>`completed` | <a id="s-2e8745f698"></a>`{"kind":"command-completed"}` | <a id="s-2483b5cd92"></a>`0` | <a id="s-170c0fde72"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP list_collections response 200](../../riverhog/http-operations/get-v1-collections.md#s-64bfaf8f5a) | <a id="s-6b61c6be5c"></a>all: `"empty"` |
+| <a id="s-b476fbf87e"></a>`completed` | <a id="s-2e8745f698"></a>`{"kind":"command-completed"}` | <a id="s-2483b5cd92"></a>`0` | <a id="s-170c0fde72"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP list_collections response 200](../../riverhog/http-operations/post-v1-collections-search.md#s-578e72ed26) | <a id="s-6b61c6be5c"></a>all: `"empty"` |
 
 #### Failure outcomes
 
@@ -79,14 +79,14 @@ Repeated `tag` accepts at most **100** occurrences, through [GET /v1/collections
 | [CLI parameter --passphrase-id](#s-366a7487de) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
 | [CLI parameter --query](#s-3ed58f0f21) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
 | [CLI parameter --sort](#s-06860e4c41) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
-| [CLI parameter --tag](#s-951ed89fcc) | `cardinality · occurrences · contract_max` | maximum=100; reason="bounded-exact-tag-selector-batch"; source_constraint={"pointer":"/external_contract/http_openapi/riverhog/paths/~1v1~1collections/get/parameters/7/schema/anyOf/0"} |
+| [CLI parameter --tag](#s-951ed89fcc) | `cardinality · occurrences · contract_max` | maximum=100; reason="bounded-exact-tag-selector-batch"; source_constraint={"pointer":"/external_contract/http_openapi/riverhog/components/schemas/SearchCollectionsRequest/properties/tags"} |
 | [CLI parameter --tag](#s-951ed89fcc) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"} |
 
 ## Maintained corroboration
 
 ### Related interface records
 
-- [GET /v1/collections](../../riverhog/http-operations/get-v1-collections.md)
+- [POST /v1/collections:search](../../riverhog/http-operations/post-v1-collections-search.md)
 - [riverhog_client.ApiClient.list_collections](../../riverhog-client/python/riverhog-client-apiclient-list-collections.md)
 
 ## Governing policies
@@ -160,7 +160,7 @@ false
 
 ### `/external_contract/cli/piggity/commands/collection/commands/list/parameters`
 
-<!-- exact-contract-value: b7b93799a471c42a7f29f5cf28b2a2ba9cbc3f90c04255080599cd0addab7db2 -->
+<!-- exact-contract-value: 9505a286e12e2111a756825c68f072c44aa673979d39a910507d0dbf0da64e8f -->
 
 ```json
 [
@@ -307,7 +307,7 @@ false
     "multiple": true,
     "name": "tag",
     "nargs": 1,
-    "occurrences_authority": "/external_contract/http_openapi/riverhog/paths/~1v1~1collections/get/parameters/7/schema/anyOf/0",
+    "occurrences_authority": "/external_contract/http_openapi/riverhog/components/schemas/SearchCollectionsRequest/properties/tags",
     "options": [
       "--tag"
     ],
@@ -361,7 +361,7 @@ false
 
 ### `/external_contract/cli/piggity/commands/collection/commands/list/result_contract`
 
-<!-- exact-contract-value: 8b134129c60641ca9469fe3cc554c615e1368d39719e1c4650087d8beb4d7fb8 -->
+<!-- exact-contract-value: ba6fe3dd006483514a52d7a79bc8acf906f64d25a69547c524a8f7362ca1414e -->
 
 ```json
 {
@@ -466,9 +466,9 @@ false
         "json": {
           "application": "riverhog",
           "kind": "http-operation-response",
-          "method": "GET",
+          "method": "POST",
           "operation_id": "list_collections",
-          "path": "/v1/collections",
+          "path": "/v1/collections:search",
           "schema": {
             "$ref": "#/components/schemas/ListCollectionsResponse"
           },

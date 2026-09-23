@@ -2019,13 +2019,17 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         if q is not None:
             params["q"] = q
         normalized_tags = _collection_tags(tags)
-        if normalized_tags:
-            params["tags"] = normalized_tags
         if encryption_format:
             params["encryption_format"] = encryption_format
         if passphrase_id:
             params["passphrase_id"] = passphrase_id
-        return self._json("list_collections", "GET", "/v1/collections", params=params)
+        return self._json(
+            "list_collections",
+            "POST",
+            "/v1/collections:search",
+            params=params,
+            json={"tags": normalized_tags},
+        )
 
     def list_archive_stores(
         self,
@@ -2272,13 +2276,13 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
     ) -> dict[str, Any]:
         return self._json(
             "collection_contains_tag",
-            "GET",
+            "POST",
             f"/v1/collections/{_collection_id(collection_id)}/tags:contains",
             params={
-                "tag": _collection_tags((tag,), allow_empty=False)[0],
                 "revision": revision,
                 "tag_set_identity": _sha256_identity(tag_set_identity, "tag-set identity"),
             },
+            json={"tag": _collection_tags((tag,), allow_empty=False)[0]},
         )
 
     def add_collection_tag(

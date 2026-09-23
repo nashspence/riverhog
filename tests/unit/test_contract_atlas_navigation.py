@@ -367,7 +367,7 @@ def test_cli_dossiers_expose_exact_result_and_failure_contracts() -> None:
     list_page = checked.files[collection_list["dossier"]].decode()
     assert (
         "json: [HTTP list_collections response 200]"
-        "(../../riverhog/http-operations/get-v1-collections.md#" in list_page
+        "(../../riverhog/http-operations/post-v1-collections-search.md#" in list_page
     )
     assert (
         "json: [http-api-contracts.ErrorResponse]"
@@ -734,7 +734,9 @@ def test_every_recorded_qualification_follows_exact_ordinary_selection_paths() -
             assert ("[📦](" in line) == affected
     # An operation's related CLI/client records do not inherit its qualification.
     operation = next(
-        e for e in elements if e["authority"] == "riverhog" and e["title"] == "GET /v1/collections"
+        e
+        for e in elements
+        if e["authority"] == "riverhog" and e["title"] == "POST /v1/collections:search"
     )
     assert expected[operation["id"]]
     assert operation["related_element_ids"]

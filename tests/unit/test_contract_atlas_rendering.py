@@ -131,7 +131,7 @@ def test_http_semantics_are_owned_once_and_operation_bindings_remain_structural(
 
     assert len(records) == len(http_operations) == len(qualified) == 147
     assert not any(item["interface"] == "operation" for item in elements)
-    assert root["counts"]["by_authority"]["riverhog"] == 364
+    assert root["counts"]["by_authority"]["riverhog"] == 366
     assert (
         sum(
             item["authority"] == "riverhog" and item["interface"] == "http-operations"
@@ -144,7 +144,7 @@ def test_http_semantics_are_owned_once_and_operation_bindings_remain_structural(
             item["authority"] == "riverhog" and item["interface"] == "http-schemas"
             for item in elements
         )
-        == 253
+        == 255
     )
     assert len(root["projection"]["external_contract"]["http_route_supplements"]) == 2
     assert set(qualified) == {(item["application"], item["operation_id"]) for item in records}
@@ -182,7 +182,7 @@ def test_collection_list_has_a_readable_mutual_http_client_cli_audit_path() -> N
     selected = [
         next(item for item in checked.root["elements"] if item["title"] == title)
         for title in (
-            "GET /v1/collections",
+            "POST /v1/collections:search",
             "riverhog_client.ApiClient.list_collections",
             "piggity collection list",
         )
@@ -773,7 +773,7 @@ def test_cli_authority_resolution_fails_closed() -> None:
     with pytest.raises(atlas.ContractAtlasError, match="no atlas resolver"):
         atlas._cli_authority_reference({"kind": "unknown"}, **kwargs)
 
-    inapplicable = {**authority, "method": "POST"}
+    inapplicable = {**authority, "method": "GET"}
     with pytest.raises(atlas.ContractAtlasError, match="resolves to 0"):
         atlas._cli_authority_reference(inapplicable, **kwargs)
 
@@ -1184,7 +1184,7 @@ def test_current_http_field_shapes_cannot_drop_value_changes() -> None:
 
 @pytest.mark.parametrize("extra", [False, None, 0, "", [], {}, {"all_of": [{"any_of": []}]}])
 def test_http_unknown_fields_survive_at_every_record_level(extra: object) -> None:
-    element, _ = _primary_contract("riverhog", "GET /v1/collections")
+    element, _ = _primary_contract("riverhog", "POST /v1/collections:search")
     value = {
         "parameters": [{"name": "x", "schema": {}, "future_parameter": extra}],
         "requestBody": {

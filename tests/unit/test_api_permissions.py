@@ -239,7 +239,7 @@ def test_application_authentication_uses_the_public_error_contract() -> None:
     async def exercise() -> None:
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
-            unauthorized = await client.get("/v1/collections")
+            unauthorized = await client.post("/v1/collections:search", json={"tags": []})
             assert unauthorized.status_code == 401
             assert unauthorized.headers["WWW-Authenticate"] == "Bearer"
             assert unauthorized.json() == {

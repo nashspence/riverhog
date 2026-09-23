@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 ### Related interface records
 
 - [piggity collection tag contains](../../piggity/cli/piggity-collection-tag-contains.md)
-- [GET /v1/collections/{collection_id}/tags:contains](../../riverhog/http-operations/get-v1-collections-collection-id-tags-contains.md)
+- [POST /v1/collections/{collection_id}/tags:contains](../../riverhog/http-operations/post-v1-collections-collection-id-tags-contains.md)
 - [ApiClient](riverhog-client-apiclient.md)
 
 ## Governing policies
@@ -48,7 +48,7 @@ Exact externally visible contract owned by this contract element.
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [python:riverhog-client:riverhog_client](../../../evidence/sources/authorities.md#src-c149020c71) — [packages/riverhog-client/src/riverhog\_client/\_\_init\_\_.py](../../../../../../packages/riverhog-client/src/riverhog_client/__init__.py)
-- **Client method:** [packages/riverhog-client/src/riverhog\_client/client.py::ApiClient.collection\_contains\_tag](../../../../../../packages/riverhog-client/src/riverhog_client/client.py#L2265)
+- **Client method:** [packages/riverhog-client/src/riverhog\_client/client.py::ApiClient.collection\_contains\_tag](../../../../../../packages/riverhog-client/src/riverhog_client/client.py#L2269)
 
 ### Machine authority
 

@@ -47,7 +47,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-cb1e96f23c"></a>`completed` | <a id="s-e15078e80e"></a>`{"kind":"command-completed"}` | <a id="s-cce5a8053c"></a>`0` | <a id="s-642d4e9f5f"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP collection_contains_tag response 200](../../riverhog/http-operations/get-v1-collections-collection-id-tags-contains.md#s-02989a39c4) | <a id="s-addc816fa3"></a>all: `"empty"` |
+| <a id="s-cb1e96f23c"></a>`completed` | <a id="s-e15078e80e"></a>`{"kind":"command-completed"}` | <a id="s-cce5a8053c"></a>`0` | <a id="s-642d4e9f5f"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP collection_contains_tag response 200](../../riverhog/http-operations/post-v1-collections-collection-id-tags-contains.md#s-8cf8efb305) | <a id="s-addc816fa3"></a>all: `"empty"` |
 
 #### Failure outcomes
 
@@ -74,8 +74,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ### Related interface records
 
-- [GET /v1/collections/{collection_id}/tags:contains](../../riverhog/http-operations/get-v1-collections-collection-id-tags-contains.md)
 - [GET /v1/collections/{collection_id}](../../riverhog/http-operations/get-v1-collections-collection-id.md)
+- [POST /v1/collections/{collection_id}/tags:contains](../../riverhog/http-operations/post-v1-collections-collection-id-tags-contains.md)
 - [riverhog_client.ApiClient.collection_contains_tag](../../riverhog-client/python/riverhog-client-apiclient-collection-contains-tag.md)
 - [riverhog_client.ApiClient.get_collection](../../riverhog-client/python/riverhog-client-apiclient-get-collection.md)
 
@@ -250,7 +250,7 @@ false
 
 ### `/external_contract/cli/piggity/commands/collection/commands/tag/commands/contains/result_contract`
 
-<!-- exact-contract-value: a2674cd3b3baba2c16f7aeed83f24bdcba37699c6f2940c2c1163ba9ed20f2cd -->
+<!-- exact-contract-value: e9e6f10a5a6084d77887ab16fc1038faa11fae75d7a5ce248faa2d0d69242945 -->
 
 ```json
 {
@@ -355,7 +355,7 @@ false
         "json": {
           "application": "riverhog",
           "kind": "http-operation-response",
-          "method": "GET",
+          "method": "POST",
           "operation_id": "collection_contains_tag",
           "path": "/v1/collections/{collection_id}/tags:contains",
           "schema": {

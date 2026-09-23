@@ -1201,30 +1201,42 @@ def _render_cli(
             authority_pointer = item.get("occurrences_authority")
             if authority_pointer is None:
                 continue
-            if not isinstance(authority_pointer, str) or "/schema" not in authority_pointer:
+            if not isinstance(authority_pointer, str):
                 raise ContractAtlasError("CLI occurrence authority is not a schema pointer")
+            schema = cast(Mapping[str, object], pointer_value(projection, authority_pointer))
+            if "/parameters/" in authority_pointer and "/schema" in authority_pointer:
+                owner_pointer = authority_pointer.split("/parameters/", 1)[0]
+                target_interface = "http-operations"
+                source_pointer = authority_pointer.rsplit("/schema", 1)[0]
+                source = cast(Mapping[str, object], pointer_value(projection, source_pointer))
+                source_name = str(source["name"])
+            elif (
+                "/components/schemas/" in authority_pointer and "/properties/" in authority_pointer
+            ):
+                owner_pointer = authority_pointer.split("/properties/", 1)[0]
+                target_interface = "http-schemas"
+                source_pointer = authority_pointer
+                source_name = (
+                    authority_pointer.rsplit("/", 1)[-1].replace("~1", "/").replace("~0", "~")
+                )
+            else:
+                raise ContractAtlasError("CLI occurrence authority is not an HTTP array field")
             target = _one_cli_authority_element(
                 (
                     candidate
                     for candidate in elements_by_id.values()
-                    if candidate["interface"] == "http-operations"
-                    and any(
-                        authority_pointer.startswith(f"{owned}/parameters/")
-                        for owned in cast(Sequence[str], candidate["pointers"])
-                    )
+                    if candidate["interface"] == target_interface
+                    and owner_pointer in cast(Sequence[str], candidate["pointers"])
                 ),
                 kind="occurrence",
             )
-            parameter_pointer = authority_pointer.rsplit("/schema", 1)[0]
-            source = cast(Mapping[str, object], pointer_value(projection, parameter_pointer))
-            schema = cast(Mapping[str, object], pointer_value(projection, authority_pointer))
-            link = _anchor_link(path, str(target["dossier"]), _subject_anchor(parameter_pointer))
+            link = _anchor_link(path, str(target["dossier"]), _subject_anchor(source_pointer))
             lines.extend(
                 [
                     "",
                     f"Repeated `{_md(item['name'])}` accepts at most **{schema['maxItems']}** "
                     f"occurrences, through "
-                    f"[{_md(target['title'])} · {_md(source['name'])}]({link}).",
+                    f"[{_md(target['title'])} · {_md(source_name)}]({link}).",
                 ]
             )
     if exclusive_groups:

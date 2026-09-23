@@ -24,7 +24,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [GET /v1/collection-processing-claims/{claim_id}/plan/artifacts](../../authorities/riverhog/http-operations/get-v1-collection-processing-claims-claim-id-plan-artifacts.md#pa-e784e432ec) |
 | `riverhog` | [GET /v1/collection-upload-sessions](../../authorities/riverhog/http-operations/get-v1-collection-upload-sessions.md#pa-688354a668) |
 | `riverhog` | [GET /v1/collection-upload-sessions/{collection_id}/files](../../authorities/riverhog/http-operations/get-v1-collection-upload-sessions-collection-id-files.md#pa-6833e1af5e) |
-| `riverhog` | [GET /v1/collections](../../authorities/riverhog/http-operations/get-v1-collections.md#pa-e7a35d31a6) |
 | `riverhog` | [GET /v1/collections/{collection_id}/archive-copies](../../authorities/riverhog/http-operations/get-v1-collections-collection-id-archive-copies.md#pa-1a56063d3e) |
 | `riverhog` | [GET /v1/collections/{collection_id}/provenance/files](../../authorities/riverhog/http-operations/get-v1-collections-collection-id-provenance-files.md#pa-b9fc28d13d) |
 | `riverhog` | [GET /v1/collections/{collection_id}/provenance/journals/{journal_id}/agents](../../authorities/riverhog/http-operations/get-v1-collections-collection-id-provenance-journals-journal-id-agents.md#pa-9462d4848b) |
@@ -36,6 +35,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [GET /v1/retrieval-plans/{plan_id}/files](../../authorities/riverhog/http-operations/get-v1-retrieval-plans-plan-id-files.md#pa-66302080b8) |
 | `riverhog` | [GET /v1/search](../../authorities/riverhog/http-operations/get-v1-search.md#pa-979f15728e) |
 | `riverhog` | [GET /v1/tags](../../authorities/riverhog/http-operations/get-v1-tags.md#pa-27bd42f751) |
+| `riverhog` | [POST /v1/collections:search](../../authorities/riverhog/http-operations/post-v1-collections-search.md#pa-e85340dccb) |
 | `riverhog` | [schemas: AppAccessListOut](../../authorities/riverhog/http-schemas/schemas-appaccesslistout.md#pa-4e7e9df07f) |
 | `riverhog` | [schemas: AppKeyListOut](../../authorities/riverhog/http-schemas/schemas-appkeylistout.md#pa-13d3227c51) |
 | `riverhog` | [schemas: AppListOut](../../authorities/riverhog/http-schemas/schemas-applistout.md#pa-60b3a6bad4) |

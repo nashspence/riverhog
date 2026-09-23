@@ -12,4 +12,4 @@ Each definition has one primary location and states its own scope. The links bel
 | [extent-rule/extension-contract/v1](../../authorities/extent-contract/extent/extent-rule-extension-contract.md#p-75a89f9d1c) | [16 indexed contract elements](../extent-rule-extension-contract-v1/applications.md) |
 | [extent-rule/no-semantic-maximum/v1](../../authorities/extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a) | [168 indexed contract elements](../extent-rule-no-semantic-maximum-v1/applications.md) |
 | [extent-rule/route-progression/v1](../../authorities/extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb) | [67 indexed contract elements](../extent-rule-route-progression-v1/applications.md) |
-| [extent-rule/schema-bound/v1](../../authorities/extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0) | [475 indexed contract elements](../extent-rule-schema-bound-v1/applications.md) |
+| [extent-rule/schema-bound/v1](../../authorities/extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0) | [476 indexed contract elements](../extent-rule-schema-bound-v1/applications.md) |

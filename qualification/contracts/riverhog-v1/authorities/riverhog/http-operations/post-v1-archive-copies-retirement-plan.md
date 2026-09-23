@@ -103,7 +103,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.plan_archive_copy_retirement",
       "source": {
-        "line": 2487,
+        "line": 2491,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.plan_archive_copy_retirement"

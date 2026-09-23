@@ -44,8 +44,8 @@ type ApplicationKeyId = Annotated[
 ]
 type MonthlyDownloadQuotaBytes = Annotated[
     int,
-    BeforeValidator(validate_monthly_download_quota_bytes),
     Field(ge=0),
+    BeforeValidator(validate_monthly_download_quota_bytes),
 ]
 
 

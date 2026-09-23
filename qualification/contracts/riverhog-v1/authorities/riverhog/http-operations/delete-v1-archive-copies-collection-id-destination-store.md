@@ -101,7 +101,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.cancel_archive_copy_job",
       "source": {
-        "line": 2474,
+        "line": 2478,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.cancel_archive_copy_job"

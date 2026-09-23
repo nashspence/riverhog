@@ -39,7 +39,7 @@ def test_openapi_describes_archive_catalog_and_retrieval_boundaries() -> None:
         "/v1/apps/{app}/keys/{key_id}/revoke",
         "/v1/apps/{app}/keys/{key_id}/rotate",
         "/v1/catalog/collections/{collection_id}/inventory",
-        "/v1/collections",
+        "/v1/collections:search",
         "/v1/collection-upload-sessions",
         "/v1/collection-upload-sessions/{collection_id}",
         "/v1/collection-upload-sessions/{collection_id}/files",
@@ -405,10 +405,11 @@ def test_collection_contracts_expose_creation_and_encryption_identities() -> Non
             "tag_publication",
         } <= set(schemas[schema]["required"])
     assert {"tag_revision", "tag_set_identity"} <= set(schemas["CollectionSummaryOut"]["required"])
-    list_parameters = {
-        parameter["name"] for parameter in document["paths"]["/v1/collections"]["get"]["parameters"]
-    }
-    assert {"encryption_format", "passphrase_id", "tags"} <= list_parameters
+    search = document["paths"]["/v1/collections:search"]["post"]
+    list_parameters = {parameter["name"] for parameter in search["parameters"]}
+    assert {"encryption_format", "passphrase_id"} <= list_parameters
+    assert "tags" not in list_parameters
+    assert schemas["SearchCollectionsRequest"]["properties"]["tags"]["maxItems"] == 100
 
     mapped = map_collection(
         CollectionSummary(

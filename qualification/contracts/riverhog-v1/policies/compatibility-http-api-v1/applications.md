@@ -39,7 +39,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [GET /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}](../../authorities/riverhog/http-operations/get-v1-collection-upload-sessions-collection-id-provenance-journals-journal-id.md#pa-877d896959) |
 | `riverhog` | [GET /v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}](../../authorities/riverhog/http-operations/get-v1-collection-upload-sessions-collection-id-volumes-volume-id-units-unit.md#pa-c375d71f12) |
 | `riverhog` | [GET /v1/collection-upload-sessions/{collection_id}/work](../../authorities/riverhog/http-operations/get-v1-collection-upload-sessions-collection-id-work.md#pa-ce19a922fd) |
-| `riverhog` | [GET /v1/collections](../../authorities/riverhog/http-operations/get-v1-collections.md#pa-0d9445c818) |
 | `riverhog` | [GET /v1/collections/{collection_id}](../../authorities/riverhog/http-operations/get-v1-collections-collection-id.md#pa-ea6394cecc) |
 | `riverhog` | [GET /v1/collections/{collection_id}/archive-copies](../../authorities/riverhog/http-operations/get-v1-collections-collection-id-archive-copies.md#pa-a4a43ccebd) |
 | `riverhog` | [GET /v1/collections/{collection_id}/derivation](../../authorities/riverhog/http-operations/get-v1-collections-collection-id-derivation.md#pa-219ed626ca) |
@@ -50,7 +49,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [GET /v1/collections/{collection_id}/provenance/trace/{path}](../../authorities/riverhog/http-operations/get-v1-collections-collection-id-provenance-trace-path.md#pa-fa149353ed) |
 | `riverhog` | [GET /v1/collections/{collection_id}/provenance/verification](../../authorities/riverhog/http-operations/get-v1-collections-collection-id-provenance-verification.md#pa-e42492a0a5) |
 | `riverhog` | [GET /v1/collections/{collection_id}/tags](../../authorities/riverhog/http-operations/get-v1-collections-collection-id-tags.md#pa-5486674c80) |
-| `riverhog` | [GET /v1/collections/{collection_id}/tags:contains](../../authorities/riverhog/http-operations/get-v1-collections-collection-id-tags-contains.md#pa-8915a89c73) |
 | `riverhog` | [GET /v1/download-quota](../../authorities/riverhog/http-operations/get-v1-download-quota.md#pa-154258b868) |
 | `riverhog` | [GET /v1/download-quotas](../../authorities/riverhog/http-operations/get-v1-download-quotas.md#pa-3989335c4b) |
 | `riverhog` | [GET /v1/events](../../authorities/riverhog/http-operations/get-v1-events.md#pa-bc38801a90) |
@@ -101,7 +99,9 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [POST /v1/collections/{collection_id}/deletion-plan](../../authorities/riverhog/http-operations/post-v1-collections-collection-id-deletion-plan.md#pa-9ecb8b8a5d) |
 | `riverhog` | [POST /v1/collections/{collection_id}/provenance/verification](../../authorities/riverhog/http-operations/post-v1-collections-collection-id-provenance-verification.md#pa-3b7a4ec14e) |
 | `riverhog` | [POST /v1/collections/{collection_id}/tags:add](../../authorities/riverhog/http-operations/post-v1-collections-collection-id-tags-add.md#pa-27228d4c79) |
+| `riverhog` | [POST /v1/collections/{collection_id}/tags:contains](../../authorities/riverhog/http-operations/post-v1-collections-collection-id-tags-contains.md#pa-a34ceeac5a) |
 | `riverhog` | [POST /v1/collections/{collection_id}/tags:remove](../../authorities/riverhog/http-operations/post-v1-collections-collection-id-tags-remove.md#pa-c1855bfc7b) |
+| `riverhog` | [POST /v1/collections:search](../../authorities/riverhog/http-operations/post-v1-collections-search.md#pa-0019b87788) |
 | `riverhog` | [POST /v1/retrieval-jobs](../../authorities/riverhog/http-operations/post-v1-retrieval-jobs.md#pa-b7768d4f1c) |
 | `riverhog` | [POST /v1/retrieval-jobs/{job_id}/ack](../../authorities/riverhog/http-operations/post-v1-retrieval-jobs-job-id-ack.md#pa-65f93996a6) |
 | `riverhog` | [POST /v1/retrieval-jobs/{job_id}/renew](../../authorities/riverhog/http-operations/post-v1-retrieval-jobs-job-id-renew.md#pa-185f8e90df) |
@@ -218,6 +218,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: CollectionTag](../../authorities/riverhog/http-schemas/schemas-collectiontag.md#pa-e9bfcb474d) |
 | `riverhog` | [schemas: CollectionTagListOut](../../authorities/riverhog/http-schemas/schemas-collectiontaglistout.md#pa-664bff9a09) |
 | `riverhog` | [schemas: CollectionTagMembershipOut](../../authorities/riverhog/http-schemas/schemas-collectiontagmembershipout.md#pa-bae7089d2f) |
+| `riverhog` | [schemas: CollectionTagMembershipRequest](../../authorities/riverhog/http-schemas/schemas-collectiontagmembershiprequest.md#pa-59dcd5e0c4) |
 | `riverhog` | [schemas: CollectionTagMutationOut](../../authorities/riverhog/http-schemas/schemas-collectiontagmutationout.md#pa-f425c08c81) |
 | `riverhog` | [schemas: CollectionTagMutationRequest](../../authorities/riverhog/http-schemas/schemas-collectiontagmutationrequest.md#pa-a4317d2753) |
 | `riverhog` | [schemas: CollectionUploadArtifactCustodyReceiptDocument](../../authorities/riverhog/http-schemas/schemas-collectionuploadartifactcustodyreceiptdocument.md#pa-4dcb128901) |
@@ -358,6 +359,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: RiverhogEventCause](../../authorities/riverhog/http-schemas/schemas-riverhogeventcause.md#pa-96262cd2e3) |
 | `riverhog` | [schemas: RiverhogEventPage](../../authorities/riverhog/http-schemas/schemas-riverhogeventpage.md#pa-5c4a8f803b) |
 | `riverhog` | [schemas: RiverhogLifecycleEvent](../../authorities/riverhog/http-schemas/schemas-riverhoglifecycleevent.md#pa-7ecc1c9f7e) |
+| `riverhog` | [schemas: SearchCollectionsRequest](../../authorities/riverhog/http-schemas/schemas-searchcollectionsrequest.md#pa-064f9c293e) |
 | `riverhog` | [schemas: SearchFileOut](../../authorities/riverhog/http-schemas/schemas-searchfileout.md#pa-3fbb8d040d) |
 | `riverhog` | [schemas: SearchResponse](../../authorities/riverhog/http-schemas/schemas-searchresponse.md#pa-31d7b26630) |
 | `riverhog` | [schemas: SearchSort](../../authorities/riverhog/http-schemas/schemas-searchsort.md#pa-37f3ec8211) |

@@ -115,14 +115,12 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [GET /v1/collection-upload-sessions](../../authorities/riverhog/http-operations/get-v1-collection-upload-sessions.md#pa-59635e8f3e) |
 | `riverhog` | [GET /v1/collection-upload-sessions/{collection_id}/files](../../authorities/riverhog/http-operations/get-v1-collection-upload-sessions-collection-id-files.md#pa-e1596a7963) |
 | `riverhog` | [GET /v1/collection-upload-sessions/{collection_id}/work](../../authorities/riverhog/http-operations/get-v1-collection-upload-sessions-collection-id-work.md#pa-a91e16b5bb) |
-| `riverhog` | [GET /v1/collections](../../authorities/riverhog/http-operations/get-v1-collections.md#pa-6dcddfdec9) |
 | `riverhog` | [GET /v1/collections/{collection_id}/archive-copies](../../authorities/riverhog/http-operations/get-v1-collections-collection-id-archive-copies.md#pa-b34f41fb4d) |
 | `riverhog` | [GET /v1/collections/{collection_id}/provenance/files](../../authorities/riverhog/http-operations/get-v1-collections-collection-id-provenance-files.md#pa-2ab6660a36) |
 | `riverhog` | [GET /v1/collections/{collection_id}/provenance/files/{path}](../../authorities/riverhog/http-operations/get-v1-collections-collection-id-provenance-files-path.md#pa-f539eadd2a) |
 | `riverhog` | [GET /v1/collections/{collection_id}/provenance/journals/{journal_id}/agents](../../authorities/riverhog/http-operations/get-v1-collections-collection-id-provenance-journals-journal-id-agents.md#pa-583b63bac2) |
 | `riverhog` | [GET /v1/collections/{collection_id}/provenance/trace/{path}](../../authorities/riverhog/http-operations/get-v1-collections-collection-id-provenance-trace-path.md#pa-0718a0ce31) |
 | `riverhog` | [GET /v1/collections/{collection_id}/tags](../../authorities/riverhog/http-operations/get-v1-collections-collection-id-tags.md#pa-4917d6da55) |
-| `riverhog` | [GET /v1/collections/{collection_id}/tags:contains](../../authorities/riverhog/http-operations/get-v1-collections-collection-id-tags-contains.md#pa-0052a98669) |
 | `riverhog` | [GET /v1/download-quotas](../../authorities/riverhog/http-operations/get-v1-download-quotas.md#pa-157e218e10) |
 | `riverhog` | [GET /v1/events](../../authorities/riverhog/http-operations/get-v1-events.md#pa-f92e425cf6) |
 | `riverhog` | [GET /v1/retrieval-cache/objects](../../authorities/riverhog/http-operations/get-v1-retrieval-cache-objects.md#pa-e23779f9f9) |
@@ -147,6 +145,8 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [POST /v1/collection-processing-claims/{claim_id}/retirement](../../authorities/riverhog/http-operations/post-v1-collection-processing-claims-claim-id-retirement.md#pa-16a13dc2a9) |
 | `riverhog` | [POST /v1/collection-processing-claims/{claim_id}/settle](../../authorities/riverhog/http-operations/post-v1-collection-processing-claims-claim-id-settle.md#pa-bb83091655) |
 | `riverhog` | [POST /v1/collections/{collection_id}/deletion-plan](../../authorities/riverhog/http-operations/post-v1-collections-collection-id-deletion-plan.md#pa-4f01ffe004) |
+| `riverhog` | [POST /v1/collections/{collection_id}/tags:contains](../../authorities/riverhog/http-operations/post-v1-collections-collection-id-tags-contains.md#pa-dc2ba7f9e9) |
+| `riverhog` | [POST /v1/collections:search](../../authorities/riverhog/http-operations/post-v1-collections-search.md#pa-97d646a9fa) |
 | `riverhog` | [PUT /v1/apps/{app}/keys/{key_id}/access](../../authorities/riverhog/http-operations/put-v1-apps-app-keys-key-id-access.md#pa-b568ce4331) |
 | `riverhog` | [PUT /v1/apps/{app}/keys/{key_id}/download-quota](../../authorities/riverhog/http-operations/put-v1-apps-app-keys-key-id-download-quota.md#pa-353997fcca) |
 | `riverhog` | [PUT /v1/collection-processing-claims/{claim_id}/capabilities/{capability_id}/artifacts](../../authorities/riverhog/http-operations/put-v1-collection-processing-claims-claim-id-capabilities-capability-id-artifacts.md#pa-1d95f2e52e) |
@@ -269,6 +269,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: RetrievalRequestedData](../../authorities/riverhog/http-schemas/schemas-retrievalrequesteddata.md#pa-a374dd7942) |
 | `riverhog` | [schemas: RiverhogActor](../../authorities/riverhog/http-schemas/schemas-riverhogactor.md#pa-e2b5fe54f9) |
 | `riverhog` | [schemas: RiverhogEventCause](../../authorities/riverhog/http-schemas/schemas-riverhogeventcause.md#pa-b879585740) |
+| `riverhog` | [schemas: SearchCollectionsRequest](../../authorities/riverhog/http-schemas/schemas-searchcollectionsrequest.md#pa-e3e1ecf8f7) |
 | `riverhog` | [schemas: SearchFileOut](../../authorities/riverhog/http-schemas/schemas-searchfileout.md#pa-bc30f5420e) |
 | `riverhog` | [schemas: SearchResponse](../../authorities/riverhog/http-schemas/schemas-searchresponse.md#pa-344ca8638f) |
 | `riverhog` | [schemas: TagListOut](../../authorities/riverhog/http-schemas/schemas-taglistout.md#pa-296ec2a9ea) |
