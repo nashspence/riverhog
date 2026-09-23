@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-6948f16fe8"></a>`kind`: `"function"`
-- <a id="s-d7b1d2723d"></a>`signature`: `"\"(schema_id: 'str', *, required: 'tuple[str, ...]' = (), properties: 'Mapping[str, JsonValue] \| None' = None) -> 'JsonSchemaDocument'\""`
+- <a id="s-d7b1d2723d"></a>`signature`: `"\"(schema_id: 'str', *, required: 'tuple[str, ...]' = (), properties: 'Mapping[str, JsonValue] \| None' = None) -> 'JsonSchemaValidationProfile'\""`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 29665f4bbc8e0366d7d75343d2a58391468df895acd56a68bfef30aa684125ad -->
+<!-- exact-contract-value: 0c4c051f42ea921273cbc654740b232ad9cdca0b8c405e9fa29be8d01791bedb -->
 
 ```json
 {
   "contract": {
     "kind": "function",
-    "signature": "\"(schema_id: 'str', *, required: 'tuple[str, ...]' = (), properties: 'Mapping[str, JsonValue] | None' = None) -> 'JsonSchemaDocument'\""
+    "signature": "\"(schema_id: 'str', *, required: 'tuple[str, ...]' = (), properties: 'Mapping[str, JsonValue] | None' = None) -> 'JsonSchemaValidationProfile'\""
   },
   "distribution": "stove0-review-target-support",
   "module": "stove0_review_target_support",

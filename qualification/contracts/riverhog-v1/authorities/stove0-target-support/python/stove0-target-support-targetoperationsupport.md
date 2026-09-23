@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-5b6a100cff"></a>`kind`: `"class"`
-- <a id="s-9dd3c930e3"></a>`signature`: `"\"(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], result_kind: Literal['collection', 'external-effect'] = 'collection', options_schema: stove0_protocol.models.JsonSchemaDocument) -> None\""`
+- <a id="s-9dd3c930e3"></a>`signature`: `"\"(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], result_kind: Literal['collection', 'external-effect'] = 'collection', options_schema: stove0_protocol.models.JsonSchemaValidationProfile) -> None\""`
 
 #### Validated model schema
 
@@ -38,29 +38,29 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-cce4d5b1d8"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-64f99e5d7c"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-b737583ea3"></a>`options_schema` | yes | [JsonSchemaDocument](#s-822d6c4940) |  |
+| <a id="s-b737583ea3"></a>`options_schema` | yes | [JsonSchemaValidationProfile](#s-bc3eb8eece) |  |
 | <a id="s-81b564fb09"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
 
 ##### Definitions
 
-- [JsonSchemaDocument](#s-822d6c4940)
+- [JsonSchemaValidationProfile](#s-bc3eb8eece)
 - [JsonValue](#s-4eda7d957f)
 
-##### <a id="s-822d6c4940"></a>definition `JsonSchemaDocument`
+##### <a id="s-bc3eb8eece"></a>definition `JsonSchemaValidationProfile`
 
-- <a id="s-50cb7f93dc"></a>`type`: `"object"`
-- <a id="s-0ade2e5fee"></a>`additionalProperties`: `false`
-- <a id="s-eb9e2c8311"></a>`required`: `["id","sha256","schema"]`
+- <a id="s-594fd0c4d2"></a>`type`: `"object"`
+- <a id="s-503758e354"></a>`additionalProperties`: `false`
+- <a id="s-38c9636d3c"></a>`required`: `["id","profile_sha256","schema"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4f1854ffba"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
-| <a id="s-84f9398759"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
-| <a id="s-517146da9b"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-aa4c4e91e2"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-4eda7d957f)) |  |
-| <a id="s-4eb4f7788f"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-9ad0767861"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-457511e02f"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-2b3995f48c"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-fc9b5096c9"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-8d8abe28e5"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-4eda7d957f)) |  |
 
 ##### <a id="s-4eda7d957f"></a>definition `JsonValue`
 
@@ -93,7 +93,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 36dabca2151c81c826288465a6dbe6bdd84428f5654e77906daa6f4f3242ad52 -->
+<!-- exact-contract-value: 5de6dd776b92fb367debf1e70d3f5fc2d028e8cca0fe68a767975390d774f2fb -->
 
 ```json
 {
@@ -101,7 +101,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "$defs": {
-        "JsonSchemaDocument": {
+        "JsonSchemaValidationProfile": {
           "additionalProperties": false,
           "properties": {
             "dialect": {
@@ -118,20 +118,20 @@ The following JSON is the complete value owned at each machine-authority pointer
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
               "type": "string"
             },
+            "profile_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
             "schema": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
               "type": "object"
-            },
-            "sha256": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
             }
           },
           "required": [
             "id",
-            "sha256",
+            "profile_sha256",
             "schema"
           ],
           "type": "object"
@@ -149,7 +149,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "options_schema": {
-          "$ref": "#/$defs/JsonSchemaDocument"
+          "$ref": "#/$defs/JsonSchemaValidationProfile"
         },
         "result_kind": {
           "default": "collection",
@@ -167,7 +167,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], result_kind: Literal['collection', 'external-effect'] = 'collection', options_schema: stove0_protocol.models.JsonSchemaDocument) -> None\""
+    "signature": "\"(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], result_kind: Literal['collection', 'external-effect'] = 'collection', options_schema: stove0_protocol.models.JsonSchemaValidationProfile) -> None\""
   },
   "distribution": "stove0-target-support",
   "module": "stove0_target_support",

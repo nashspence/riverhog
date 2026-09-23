@@ -40,7 +40,7 @@ from stove0_protocol import (
     ControllerEvidencePayload,
     ExecutionEnvelope,
     ExecutionEnvelopePayload,
-    JsonSchemaDocument,
+    JsonSchemaValidationProfile,
     OperationRef,
     RecipeRef,
     TargetPlanBinding,
@@ -105,7 +105,7 @@ def _input_selection(work: WorkIdentity) -> ArtifactSelection:
 
 
 def _operation() -> OperationContract:
-    schema = JsonSchemaDocument.from_schema(
+    schema = JsonSchemaValidationProfile.from_schema(
         "fixture.empty/v1",
         {"type": "object", "additionalProperties": False},
     )

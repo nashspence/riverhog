@@ -48,7 +48,7 @@ from stove0_protocol import (
     JoinDeclaration,
     JoinMemberDeclaration,
     JoinWorkBinding,
-    JsonSchemaDocument,
+    JsonSchemaValidationProfile,
     OperationRef,
     RecipeRef,
     TargetPlanBinding,
@@ -126,7 +126,7 @@ def _operation(*, source_retirement_permitted: bool = False) -> OperationContrac
         OperationContractPayload(
             id="fixture.copy/v1",
             intent_semantics=JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
-            intent_schema=JsonSchemaDocument.from_schema(
+            intent_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.copy-intent/v1",
                 {
                     "type": "object",
@@ -153,7 +153,7 @@ def _operation(*, source_retirement_permitted: bool = False) -> OperationContrac
 
 
 def _fork_join_operations() -> tuple[OperationContract, OperationContract]:
-    intent = JsonSchemaDocument.from_schema(
+    intent = JsonSchemaValidationProfile.from_schema(
         "fixture.empty-intent/v1",
         {"type": "object", "additionalProperties": False},
     )
@@ -212,7 +212,7 @@ def _fork_join_target(
                 TargetOperationSupport(
                     operation_id=operation.id,
                     operation_contract_sha256=operation.contract_sha256,
-                    options_schema=JsonSchemaDocument.from_schema(
+                    options_schema=JsonSchemaValidationProfile.from_schema(
                         f"{operation.id}.options",
                         {"type": "object", "additionalProperties": False},
                     ),
@@ -234,7 +234,7 @@ def _target(operation: OperationContract) -> TargetContract:
                 TargetOperationSupport(
                     operation_id=operation.id,
                     operation_contract_sha256=operation.contract_sha256,
-                    options_schema=JsonSchemaDocument.from_schema(
+                    options_schema=JsonSchemaValidationProfile.from_schema(
                         "fixture.target-options/v1",
                         {"type": "object", "additionalProperties": False},
                     ),
@@ -260,11 +260,11 @@ def _observer() -> tuple[ObserverContract, ObserverDescriptor]:
         ObserverContractPayload(
             id="fixture.kind/v1",
             facts_semantics=JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
-            options_schema=JsonSchemaDocument.from_schema(
+            options_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.kind-options/v1",
                 {"type": "object", "additionalProperties": False},
             ),
-            facts_schema=JsonSchemaDocument.from_schema(
+            facts_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.kind-facts/v1",
                 {
                     "type": "object",

@@ -31,7 +31,7 @@ from stove0_protocol import (
     BranchWorkBinding,
     CollectionRootRef,
     ControllerEvidence,
-    JsonSchemaDocument,
+    JsonSchemaValidationProfile,
     OperationResultKind,
     SemanticValidationProfile,
 )
@@ -123,11 +123,11 @@ class OutputArtifactContract(TargetProtocolModel):
 class OperationContractPayload(TargetProtocolModel):
     id: SemanticId
     result_kind: TargetResultKind = "collection"
-    intent_schema: JsonSchemaDocument
+    intent_schema: JsonSchemaValidationProfile
     intent_semantics: SemanticValidationProfile
     inputs: tuple[InputArtifactContract, ...] = Field(min_length=1)
     outputs: tuple[OutputArtifactContract, ...] = ()
-    effect_receipt_schema: JsonSchemaDocument | None = None
+    effect_receipt_schema: JsonSchemaValidationProfile | None = None
     source_retirement_permitted: bool = False
 
     @model_validator(mode="after")
@@ -199,7 +199,7 @@ class TargetOperationSupport(TargetProtocolModel):
     operation_id: SemanticId
     operation_contract_sha256: Sha256
     result_kind: TargetResultKind = "collection"
-    options_schema: JsonSchemaDocument
+    options_schema: JsonSchemaValidationProfile
 
 
 class TargetContractPayload(TargetProtocolModel):

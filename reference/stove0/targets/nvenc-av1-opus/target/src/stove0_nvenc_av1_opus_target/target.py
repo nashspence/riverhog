@@ -26,7 +26,7 @@ from stove0_media_archive_target_support import (
     render_projection_xmp,
     resolve_media_archive_preflight_projection,
 )
-from stove0_protocol import JsonSchemaDocument
+from stove0_protocol import JsonSchemaValidationProfile
 from stove0_target_support import (
     DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
     OutputArtifact,
@@ -54,7 +54,7 @@ from stove0_nvenc_av1_opus_target.common import (
 from stove0_nvenc_av1_opus_target.media_source_artifacts import build_strict_source_artifacts
 
 _PROJECTION_SCHEMA = MediaArchiveProjection.model_json_schema()
-OPTIONS = JsonSchemaDocument.from_schema(
+OPTIONS = JsonSchemaValidationProfile.from_schema(
     "stove0.nvenc-av1-opus-target-options/v1",
     {
         "$schema": "https://json-schema.org/draft/2020-12/schema",

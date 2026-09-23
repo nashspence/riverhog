@@ -21,7 +21,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-a47a617b1d"></a>`authorities · http_operations` | `"http_binding.operations"` |
 | <a id="s-86ee5506af"></a>`authorities · semantic_acceptance` | `"semantic_acceptance"` |
 | <a id="s-ac2d9ba033"></a>`authorities · structural_models` | `"schemas"` |
-| <a id="s-0bdd9b0af3"></a>`bundle_sha256` | `"dbbc9320e223fb591a30981339ba8c7a7f8b7de2358ce3a3cc38c2c7fbf78119"` |
+| <a id="s-0bdd9b0af3"></a>`bundle_sha256` | `"0358808c8bb2a1baaefaa98b25b029deeefe2206f62f13de096681f3ef3f5769"` |
 | <a id="s-70d47dd5f8"></a>`format` | `"stove0-review-sampler-schema-bundle/v1"` |
 | <a id="s-835f094545"></a>`protocol` | `"stove0-review-sampler/v1"` |
 | <a id="s-ccbb501261"></a>`semantic_acceptance · kind` | `"request-bound-result"` |
@@ -84,10 +84,10 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/protocol_schemas/generated:stove0-review-sampler/bundle_sha256`
 
-<!-- exact-contract-value: 552a20034f23023138a0710253c4c2787d7a61d31d0e886e1b8a6e4429785cac -->
+<!-- exact-contract-value: 79c95f1c75bdedb090f8b0ba51422d77ca82fa6598c086570dab4c836133ec43 -->
 
 ```json
-"dbbc9320e223fb591a30981339ba8c7a7f8b7de2358ce3a3cc38c2c7fbf78119"
+"0358808c8bb2a1baaefaa98b25b029deeefe2206f62f13de096681f3ef3f5769"
 ```
 
 ### `/external_contract/protocol_schemas/generated:stove0-review-sampler/format`

@@ -46,25 +46,25 @@ Exact externally visible contract owned by this contract element.
 
 ##### Definitions
 
-- [JsonSchemaDocument](#s-e1801cde0e)
+- [JsonSchemaValidationProfile](#s-0746bb6069)
 - [JsonValue](#s-6586730d4d)
 - [TargetOperationSupport](#s-fa9f791a75)
 
-##### <a id="s-e1801cde0e"></a>definition `JsonSchemaDocument`
+##### <a id="s-0746bb6069"></a>definition `JsonSchemaValidationProfile`
 
-- <a id="s-d4a0cd7bd3"></a>`type`: `"object"`
-- <a id="s-b476e4970e"></a>`additionalProperties`: `false`
-- <a id="s-9f3ccb13b1"></a>`required`: `["id","sha256","schema"]`
+- <a id="s-785358a875"></a>`type`: `"object"`
+- <a id="s-5d3aee652c"></a>`additionalProperties`: `false`
+- <a id="s-464fc31342"></a>`required`: `["id","profile_sha256","schema"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8bde7c108a"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
-| <a id="s-82a89f7d15"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
-| <a id="s-40d1633d47"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-efc5cded6f"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-6586730d4d)) |  |
-| <a id="s-fd8a6cde37"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-35743bda18"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-c7475a3d9d"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-fa9640b353"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-366dd4cc23"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-91de9fb781"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-6586730d4d)) |  |
 
 ##### <a id="s-6586730d4d"></a>definition `JsonValue`
 
@@ -82,7 +82,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-5806c50c3a"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-d7bf265462"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-bbc49ba83f"></a>`options_schema` | yes | [JsonSchemaDocument](#s-e1801cde0e) |  |
+| <a id="s-bbc49ba83f"></a>`options_schema` | yes | [JsonSchemaValidationProfile](#s-0746bb6069) |  |
 | <a id="s-06bb66e9cc"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
 
 ## Maintained corroboration
@@ -119,7 +119,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 748f70a7c1cc2716b0b21cc905bc8fc775bd26fd1190368ea5fa8e7a31f924f2 -->
+<!-- exact-contract-value: a0e65dd616148eb1ad612fa499eddadf637453509ac4f989b71f1f6468a9b747 -->
 
 ```json
 {
@@ -127,7 +127,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "$defs": {
-        "JsonSchemaDocument": {
+        "JsonSchemaValidationProfile": {
           "additionalProperties": false,
           "properties": {
             "dialect": {
@@ -144,20 +144,20 @@ The following JSON is the complete value owned at each machine-authority pointer
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
               "type": "string"
             },
+            "profile_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
             "schema": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
               "type": "object"
-            },
-            "sha256": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
             }
           },
           "required": [
             "id",
-            "sha256",
+            "profile_sha256",
             "schema"
           ],
           "type": "object"
@@ -175,7 +175,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "options_schema": {
-              "$ref": "#/$defs/JsonSchemaDocument"
+              "$ref": "#/$defs/JsonSchemaValidationProfile"
             },
             "result_kind": {
               "default": "collection",

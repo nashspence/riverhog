@@ -376,7 +376,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: JoinSettlement](../../authorities/stove0/http-schemas/schemas-joinsettlement.md#pa-4223232168) |
 | `stove0` | [schemas: JoinWorkBinding](../../authorities/stove0/http-schemas/schemas-joinworkbinding.md#pa-a156635db3) |
 | `stove0` | [schemas: JoinWorkMemberBinding](../../authorities/stove0/http-schemas/schemas-joinworkmemberbinding.md#pa-c251992978) |
-| `stove0` | [schemas: JsonSchemaDocument](../../authorities/stove0/http-schemas/schemas-jsonschemadocument.md#pa-e7fce21029) |
+| `stove0` | [schemas: JsonSchemaValidationProfile](../../authorities/stove0/http-schemas/schemas-jsonschemavalidationprofile.md#pa-dbe3711acd) |
 | `stove0` | [schemas: ObservationFailure](../../authorities/stove0/http-schemas/schemas-observationfailure.md#pa-5f95e6f61f) |
 | `stove0` | [schemas: ObservationInapplicable](../../authorities/stove0/http-schemas/schemas-observationinapplicable.md#pa-0a2f1e6bf4) |
 | `stove0` | [schemas: ObservationRequest](../../authorities/stove0/http-schemas/schemas-observationrequest.md#pa-fb7dc34cce) |

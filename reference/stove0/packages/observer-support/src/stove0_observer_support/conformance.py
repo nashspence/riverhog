@@ -128,8 +128,8 @@ class ObserverContractConformanceEvidence(_ObserverConformanceModel):
 class ObserverContractConformance(_ObserverConformanceModel):
     contract_id: str
     contract_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    options_schema_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    facts_schema_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    options_schema_profile_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    facts_schema_profile_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     facts_semantics_id: str
     facts_semantics_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     facts_semantics_conformance_vectors_sha256: str | None = Field(
@@ -171,8 +171,8 @@ class ObserverConformanceResult(_ObserverConformanceModel):
             if (
                 report.contract_id != support.contract_id
                 or report.contract_sha256 != support.contract_sha256
-                or report.options_schema_sha256 != support.options_schema.sha256
-                or report.facts_schema_sha256 != support.facts_schema.sha256
+                or report.options_schema_profile_sha256 != support.options_schema.profile_sha256
+                or report.facts_schema_profile_sha256 != support.facts_schema.profile_sha256
                 or report.facts_semantics_id != support.facts_semantics.id
                 or report.facts_semantics_sha256 != support.facts_semantics.profile_sha256
                 or report.facts_semantics_conformance_vectors_sha256
@@ -263,8 +263,8 @@ def conformance_report(
         entry: dict[str, Any] = {
             "contract_id": support.contract_id,
             "contract_sha256": support.contract_sha256,
-            "options_schema_sha256": support.options_schema.sha256,
-            "facts_schema_sha256": support.facts_schema.sha256,
+            "options_schema_profile_sha256": support.options_schema.profile_sha256,
+            "facts_schema_profile_sha256": support.facts_schema.profile_sha256,
             "facts_semantics_id": support.facts_semantics.id,
             "facts_semantics_sha256": support.facts_semantics.profile_sha256,
             "facts_semantics_conformance_vectors_sha256": (

@@ -6,7 +6,7 @@ from collections.abc import Mapping
 from importlib.resources import files
 
 from stove0_protocol import (
-    JsonSchemaDocument,
+    JsonSchemaValidationProfile,
     SemanticValidationProfile,
     SemanticValidationProfilePayload,
 )
@@ -30,7 +30,7 @@ REVIEW_AUDIO_ROLE = "stove0.review.audio/v1"
 REVIEW_INDEX_ROLE = "stove0.review.index/v1"
 REVIEW_VIDEO_ROLE = "stove0.review.video/v1"
 
-REVIEW_MATERIALIZE_INTENT_SCHEMA = JsonSchemaDocument.from_schema(
+REVIEW_MATERIALIZE_INTENT_SCHEMA = JsonSchemaValidationProfile.from_schema(
     REVIEW_MATERIALIZE_INTENT_SCHEMA_ID,
     ReviewMaterializeIntent.model_json_schema(),
 )
@@ -91,7 +91,7 @@ REVIEW_MATERIALIZE_OPERATION = OperationContract.seal(
     )
 )
 
-REVIEW_RCLONE_RECEIPT_SCHEMA = JsonSchemaDocument.from_schema(
+REVIEW_RCLONE_RECEIPT_SCHEMA = JsonSchemaValidationProfile.from_schema(
     REVIEW_RCLONE_RECEIPT_SCHEMA_ID,
     {
         "$schema": "https://json-schema.org/draft/2020-12/schema",

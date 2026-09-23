@@ -134,9 +134,9 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-protocol` | [stove0_protocol.JoinWorkBinding](../../../authorities/stove0-protocol/python/stove0-protocol-joinworkbinding.md#pa-69987bcfd6) |
 | `stove0-protocol` | [stove0_protocol.JoinWorkBinding.canonical_members](../../../authorities/stove0-protocol/python/stove0-protocol-joinworkbinding-canonical-members.md#pa-817d9d4cb5) |
 | `stove0-protocol` | [stove0_protocol.JoinWorkMemberBinding](../../../authorities/stove0-protocol/python/stove0-protocol-joinworkmemberbinding.md#pa-2b67ee6758) |
-| `stove0-protocol` | [stove0_protocol.JsonSchemaDocument](../../../authorities/stove0-protocol/python/stove0-protocol-jsonschemadocument.md#pa-4372580bc3) |
-| `stove0-protocol` | [stove0_protocol.JsonSchemaDocument.from_schema](../../../authorities/stove0-protocol/python/stove0-protocol-jsonschemadocument-from-schema.md#pa-f9084459c6) |
-| `stove0-protocol` | [stove0_protocol.JsonSchemaDocument.verify_digest](../../../authorities/stove0-protocol/python/stove0-protocol-jsonschemadocument-verify-digest.md#pa-433817ffb4) |
+| `stove0-protocol` | [stove0_protocol.JsonSchemaValidationProfile](../../../authorities/stove0-protocol/python/stove0-protocol-jsonschemavalidationprofile.md#pa-1583e5d165) |
+| `stove0-protocol` | [stove0_protocol.JsonSchemaValidationProfile.from_schema](../../../authorities/stove0-protocol/python/stove0-protocol-jsonschemavalidationprofile-from-schema.md#pa-348dd1b5aa) |
+| `stove0-protocol` | [stove0_protocol.JsonSchemaValidationProfile.verify_digest](../../../authorities/stove0-protocol/python/stove0-protocol-jsonschemavalidationprofile-verify-digest.md#pa-cd04560bb7) |
 | `stove0-protocol` | [stove0_protocol.OperationRef](../../../authorities/stove0-protocol/python/stove0-protocol-operationref.md#pa-45aad26098) |
 | `stove0-protocol` | [stove0_protocol.OperationRef.from_identity](../../../authorities/stove0-protocol/python/stove0-protocol-operationref-from-identity.md#pa-2171364a30) |
 | `stove0-protocol` | [stove0_protocol.OperationRef.to_identity](../../../authorities/stove0-protocol/python/stove0-protocol-operationref-to-identity.md#pa-38c876eddf) |

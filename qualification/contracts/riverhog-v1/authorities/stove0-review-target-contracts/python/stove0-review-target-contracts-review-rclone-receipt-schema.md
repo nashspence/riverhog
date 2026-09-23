@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-aac419aa4f"></a>`kind`: `"object"`
-- <a id="s-5fc3efcffa"></a>`type`: `"stove0_protocol.models.JsonSchemaDocument"`
+- <a id="s-5fc3efcffa"></a>`type`: `"stove0_protocol.models.JsonSchemaValidationProfile"`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 20f6f7638adef7559fd426839a364f3159c563b8b1a20482770527224dec4791 -->
+<!-- exact-contract-value: 890e8f5131acb971a9b7ade4d5ce5ff3ea4aa1947841e3ef218e10f66d09e296 -->
 
 ```json
 {
   "contract": {
     "kind": "object",
-    "type": "stove0_protocol.models.JsonSchemaDocument"
+    "type": "stove0_protocol.models.JsonSchemaValidationProfile"
   },
   "distribution": "stove0-review-target-contracts",
   "module": "stove0_review_target_contracts",

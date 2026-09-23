@@ -48,7 +48,7 @@ Exact externally visible contract owned by this contract element.
 - [InputArtifactContract](#s-ae1b42ecf6)
 - [JoinWorkBinding](#s-13aa1fbe2e)
 - [JoinWorkMemberBinding](#s-b0603b6193)
-- [JsonSchemaDocument](#s-9f33951499)
+- [JsonSchemaValidationProfile](#s-5dd81cb02e)
 - [JsonValue](#s-40b30ec575)
 - [ObservationEvidence](#s-60b8c95972)
 - [ObservationFailure](#s-5dbd59498f)
@@ -335,22 +335,22 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-a363cba30d"></a>`producer_settlement_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null; title="Producer Settlement Sha256" |  |
 | <a id="s-8165c6e0af"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Settlement Sha256" |  |
 
-### <a id="s-9f33951499"></a>definition `JsonSchemaDocument`
+### <a id="s-5dd81cb02e"></a>definition `JsonSchemaValidationProfile`
 
-- <a id="s-924dfdd5ac"></a>`type`: `"object"`
-- <a id="s-bd59d0150f"></a>`additionalProperties`: `false`
-- <a id="s-680f97041a"></a>`required`: `["id","sha256","schema"]`
-- <a id="s-4c7feffa12"></a>`title`: `"JsonSchemaDocument"`
+- <a id="s-d72c319f59"></a>`type`: `"object"`
+- <a id="s-f382aa5614"></a>`additionalProperties`: `false`
+- <a id="s-4088420ba4"></a>`required`: `["id","profile_sha256","schema"]`
+- <a id="s-b4e84f8c31"></a>`title`: `"JsonSchemaValidationProfile"`
 
 #### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-76943665ca"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema"; title="Dialect" |  |
-| <a id="s-496edfca6d"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only"; title="Format Policy" |  |
-| <a id="s-51ccd01373"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
-| <a id="s-e842483be0"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-40b30ec575)); title="Schema" |  |
-| <a id="s-7ee2ae3e99"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-afd67f1fbc"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema"; title="Dialect" |  |
+| <a id="s-770c55c896"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only"; title="Format Policy" |  |
+| <a id="s-0fdd302c02"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-5456747373"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Profile Sha256" |  |
+| <a id="s-a6285f089f"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-40b30ec575)); title="Schema" |  |
 
 ### <a id="s-40b30ec575"></a>definition `JsonValue`
 
@@ -437,7 +437,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-b7c76ef4ab"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-40b30ec575)); title="Execution Evidence" |  |
 | <a id="s-24492536c1"></a>`facts` | no | anyOf=[(type="object"; additionalProperties=([JsonValue](#s-40b30ec575))); (type="null")]; default=null; title="Facts" |  |
-| <a id="s-ef10ac1e14"></a>`facts_schema` | no | anyOf=[([JsonSchemaDocument](#s-9f33951499)); (type="null")]; default=null |  |
+| <a id="s-ef10ac1e14"></a>`facts_schema` | no | anyOf=[([JsonSchemaValidationProfile](#s-5dd81cb02e)); (type="null")]; default=null |  |
 | <a id="s-1d932298df"></a>`facts_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null; title="Facts Sha256" |  |
 | <a id="s-dfd842944e"></a>`failure` | no | anyOf=[([ObservationFailure](#s-5dbd59498f)); (type="null")]; default=null |  |
 | <a id="s-cb0921000b"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1"; title="Format" |  |
@@ -479,10 +479,10 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-db12b8f130"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Contract Sha256" |  |
-| <a id="s-c27f24027e"></a>`effect_receipt_schema` | no | anyOf=[([JsonSchemaDocument](#s-9f33951499)); (type="null")]; default=null |  |
+| <a id="s-c27f24027e"></a>`effect_receipt_schema` | no | anyOf=[([JsonSchemaValidationProfile](#s-5dd81cb02e)); (type="null")]; default=null |  |
 | <a id="s-b8f718ea39"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
 | <a id="s-864b2f62ff"></a>`inputs` | yes | type="array"; items=([InputArtifactContract](#s-ae1b42ecf6)); minItems=1; title="Inputs" |  |
-| <a id="s-4cdcd181ad"></a>`intent_schema` | yes | [JsonSchemaDocument](#s-9f33951499) |  |
+| <a id="s-4cdcd181ad"></a>`intent_schema` | yes | [JsonSchemaValidationProfile](#s-5dd81cb02e) |  |
 | <a id="s-825b6cb6a3"></a>`intent_semantics` | yes | [SemanticValidationProfile](#s-ee0cfd3dd1) |  |
 | <a id="s-9fda8d7f17"></a>`outputs` | no | type="array"; default=[]; items=([OutputArtifactContract](#s-d338c851cc)); title="Outputs" |  |
 | <a id="s-0fae452d35"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection"; title="Result Kind" |  |
@@ -790,7 +790,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-ff44c3b672"></a>`type`: `"object"`
 - <a id="s-2f4848a8da"></a>`additionalProperties`: `false`
-- <a id="s-cbc31c976c"></a>`required`: `["operation_id","operation_contract_sha256","result_kind","options_schema_sha256","semantic_conformance"]`
+- <a id="s-cbc31c976c"></a>`required`: `["operation_id","operation_contract_sha256","result_kind","options_schema_profile_sha256","semantic_conformance"]`
 - <a id="s-681049eccd"></a>`title`: `"TargetOperationConformance"`
 
 #### Fields
@@ -802,7 +802,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-d6b1f77509"></a>`intent_semantics_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null; title="Intent Semantics Sha256" |  |
 | <a id="s-3bf21a25eb"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Operation Contract Sha256" |  |
 | <a id="s-1a08274365"></a>`operation_id` | yes | type="string"; title="Operation Id" |  |
-| <a id="s-13c5b43d97"></a>`options_schema_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Options Schema Sha256" |  |
+| <a id="s-fc4735320f"></a>`options_schema_profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Options Schema Profile Sha256" |  |
 | <a id="s-90a6acab7d"></a>`result_kind` | yes | type="string"; enum=["collection","external-effect"]; title="Result Kind" |  |
 | <a id="s-8588a67811"></a>`semantic_conformance` | yes | type="string"; enum=["not-exercised","schema-only","exercised"]; title="Semantic Conformance" |  |
 
@@ -839,7 +839,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-933c5a1e37"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Operation Contract Sha256" |  |
 | <a id="s-ec006056a2"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Operation Id" |  |
-| <a id="s-a890454c27"></a>`options_schema` | yes | [JsonSchemaDocument](#s-9f33951499) |  |
+| <a id="s-a890454c27"></a>`options_schema` | yes | [JsonSchemaValidationProfile](#s-5dd81cb02e) |  |
 | <a id="s-17bd19a14f"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection"; title="Result Kind" |  |
 
 ### <a id="s-51289b901e"></a>definition `TargetPlanBinding`
@@ -1141,7 +1141,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | <a id="s-4298a4626e"></a>[definition TargetOperationConformance · field intent_semantics_conformance_vectors_sha256 · string value](#s-a1c96a1ec7) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | <a id="s-730db5906a"></a>[definition TargetOperationConformance · field intent_semantics_sha256 · string value](#s-d6b1f77509) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition TargetOperationConformance · field operation_contract_sha256](#s-3bf21a25eb) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [definition TargetOperationConformance · field options_schema_sha256](#s-13c5b43d97) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition TargetOperationConformance · field options_schema_profile_sha256](#s-fc4735320f) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition TargetOperationSupport · field operation_contract_sha256](#s-933c5a1e37) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition TargetPlanBinding · field operation_contract_sha256](#s-891e764597) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition TargetPlanBinding · field plan_sha256](#s-41e0eec4b4) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
@@ -1201,7 +1201,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: dacd9898c46672af35bfeb83fabcf79bcb811edbef134d19b75e3c4a7f66b543 -->
+<!-- exact-contract-value: 3b21063eeacc2c94bbcc63eddb2e12c098d15c09f8b0190ef26a3fe1a1a9d685 -->
 
 ```json
 {
@@ -1788,7 +1788,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "JoinWorkMemberBinding",
       "type": "object"
     },
-    "JsonSchemaDocument": {
+    "JsonSchemaValidationProfile": {
       "additionalProperties": false,
       "properties": {
         "dialect": {
@@ -1808,25 +1808,25 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Id",
           "type": "string"
         },
+        "profile_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Profile Sha256",
+          "type": "string"
+        },
         "schema": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
           "title": "Schema",
           "type": "object"
-        },
-        "sha256": {
-          "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
-          "type": "string"
         }
       },
       "required": [
         "id",
-        "sha256",
+        "profile_sha256",
         "schema"
       ],
-      "title": "JsonSchemaDocument",
+      "title": "JsonSchemaValidationProfile",
       "type": "object"
     },
     "JsonValue": {},
@@ -2015,7 +2015,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "facts_schema": {
           "anyOf": [
             {
-              "$ref": "#/$defs/JsonSchemaDocument"
+              "$ref": "#/$defs/JsonSchemaValidationProfile"
             },
             {
               "type": "null"
@@ -2170,7 +2170,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "effect_receipt_schema": {
           "anyOf": [
             {
-              "$ref": "#/$defs/JsonSchemaDocument"
+              "$ref": "#/$defs/JsonSchemaValidationProfile"
             },
             {
               "type": "null"
@@ -2192,7 +2192,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "array"
         },
         "intent_schema": {
-          "$ref": "#/$defs/JsonSchemaDocument"
+          "$ref": "#/$defs/JsonSchemaValidationProfile"
         },
         "intent_semantics": {
           "$ref": "#/$defs/SemanticValidationProfile"
@@ -3015,9 +3015,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Operation Id",
           "type": "string"
         },
-        "options_schema_sha256": {
+        "options_schema_profile_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Options Schema Sha256",
+          "title": "Options Schema Profile Sha256",
           "type": "string"
         },
         "result_kind": {
@@ -3042,7 +3042,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "operation_id",
         "operation_contract_sha256",
         "result_kind",
-        "options_schema_sha256",
+        "options_schema_profile_sha256",
         "semantic_conformance"
       ],
       "title": "TargetOperationConformance",
@@ -3104,7 +3104,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "options_schema": {
-          "$ref": "#/$defs/JsonSchemaDocument"
+          "$ref": "#/$defs/JsonSchemaValidationProfile"
         },
         "result_kind": {
           "default": "collection",

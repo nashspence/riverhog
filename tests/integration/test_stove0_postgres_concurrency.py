@@ -59,7 +59,7 @@ from stove0_protocol import (
     JoinDeclaration,
     JoinMemberDeclaration,
     JoinPlan,
-    JsonSchemaDocument,
+    JsonSchemaValidationProfile,
     OperationRef,
     RecipeRef,
     WorkflowPlan,
@@ -222,7 +222,7 @@ def _target_contracts() -> tuple[OperationContract, TargetContract, TransformPla
     operation = OperationContract.seal(
         OperationContractPayload(
             id="fixture.copy/v1",
-            intent_schema=JsonSchemaDocument.from_schema(
+            intent_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.copy-intent/v1",
                 {
                     "type": "object",
@@ -256,7 +256,7 @@ def _target_contracts() -> tuple[OperationContract, TargetContract, TransformPla
                 TargetOperationSupport(
                     operation_id=operation.id,
                     operation_contract_sha256=operation.contract_sha256,
-                    options_schema=JsonSchemaDocument.from_schema(
+                    options_schema=JsonSchemaValidationProfile.from_schema(
                         "fixture.target-options/v1",
                         {"type": "object", "additionalProperties": False},
                     ),
@@ -454,7 +454,7 @@ def _active_effect_work(
         OperationContractPayload(
             id="fixture.external-index/v1",
             result_kind="external-effect",
-            intent_schema=JsonSchemaDocument.from_schema(
+            intent_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.external-index-intent/v1",
                 {"type": "object", "additionalProperties": False},
             ),
@@ -465,7 +465,7 @@ def _active_effect_work(
                     allowed_dispositions=None,
                 ),
             ),
-            effect_receipt_schema=JsonSchemaDocument.from_schema(
+            effect_receipt_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.external-index-receipt/v1",
                 {
                     "type": "object",
@@ -488,7 +488,7 @@ def _active_effect_work(
                     operation_id=operation.id,
                     operation_contract_sha256=operation.contract_sha256,
                     result_kind="external-effect",
-                    options_schema=JsonSchemaDocument.from_schema(
+                    options_schema=JsonSchemaValidationProfile.from_schema(
                         "fixture.external-index-target-options/v1",
                         {"type": "object", "additionalProperties": False},
                     ),

@@ -47,7 +47,7 @@ Exact externally visible contract owned by this contract element.
 - [ExecutionEnvelope](#s-033c077b2b)
 - [JoinWorkBinding](#s-53a18f36fb)
 - [JoinWorkMemberBinding](#s-82dd57ddfa)
-- [JsonSchemaDocument](#s-8c4f8b0d2b)
+- [JsonSchemaValidationProfile](#s-17a6537685)
 - [JsonValue](#s-326d0b99e9)
 - [ObservationEvidence](#s-35224d38b2)
 - [ObservationFailure](#s-ee43532728)
@@ -244,22 +244,22 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-d2351954dd"></a>`producer_settlement_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null; title="Producer Settlement Sha256" |  |
 | <a id="s-07e92a2b73"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Settlement Sha256" |  |
 
-#### <a id="s-8c4f8b0d2b"></a>definition `JsonSchemaDocument`
+#### <a id="s-17a6537685"></a>definition `JsonSchemaValidationProfile`
 
-- <a id="s-50bef47ded"></a>`type`: `"object"`
-- <a id="s-8e2e95d057"></a>`additionalProperties`: `false`
-- <a id="s-a207d4c673"></a>`required`: `["id","sha256","schema"]`
-- <a id="s-31488951a7"></a>`title`: `"JsonSchemaDocument"`
+- <a id="s-c95680767a"></a>`type`: `"object"`
+- <a id="s-ac7f61d0f3"></a>`additionalProperties`: `false`
+- <a id="s-25fa7c486d"></a>`required`: `["id","profile_sha256","schema"]`
+- <a id="s-06708c106d"></a>`title`: `"JsonSchemaValidationProfile"`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6dbf79486f"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema"; title="Dialect" |  |
-| <a id="s-b84f6e9c13"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only"; title="Format Policy" |  |
-| <a id="s-5698ad3b1e"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
-| <a id="s-969fe40f76"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-326d0b99e9)); title="Schema" |  |
-| <a id="s-b48e2cb4ac"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-b8d620e6e2"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema"; title="Dialect" |  |
+| <a id="s-f220065e7b"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only"; title="Format Policy" |  |
+| <a id="s-fd32cc52d4"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-57a3da8f91"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Profile Sha256" |  |
+| <a id="s-aa6082e5bb"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-326d0b99e9)); title="Schema" |  |
 
 #### <a id="s-326d0b99e9"></a>definition `JsonValue`
 
@@ -346,7 +346,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-e6daecbddf"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-326d0b99e9)); title="Execution Evidence" |  |
 | <a id="s-30ef3ffd48"></a>`facts` | no | anyOf=[(type="object"; additionalProperties=([JsonValue](#s-326d0b99e9))); (type="null")]; default=null; title="Facts" |  |
-| <a id="s-ff9ba3ed23"></a>`facts_schema` | no | anyOf=[([JsonSchemaDocument](#s-8c4f8b0d2b)); (type="null")]; default=null |  |
+| <a id="s-ff9ba3ed23"></a>`facts_schema` | no | anyOf=[([JsonSchemaValidationProfile](#s-17a6537685)); (type="null")]; default=null |  |
 | <a id="s-5957c11276"></a>`facts_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null; title="Facts Sha256" |  |
 | <a id="s-30786e76d4"></a>`failure` | no | anyOf=[([ObservationFailure](#s-ee43532728)); (type="null")]; default=null |  |
 | <a id="s-d9341dd0a5"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1"; title="Format" |  |
@@ -570,7 +570,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: bfd68b20b927724bb6a948754e7626732e555bd7c38d79a2f1524e14a408f0e4 -->
+<!-- exact-contract-value: fc161e6154c850a6b55fbe7199dfa9acdddefaabce56cdfa1eb70b4ee833fe15 -->
 
 ```json
 {
@@ -985,7 +985,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "title": "JoinWorkMemberBinding",
         "type": "object"
       },
-      "JsonSchemaDocument": {
+      "JsonSchemaValidationProfile": {
         "additionalProperties": false,
         "properties": {
           "dialect": {
@@ -1005,25 +1005,25 @@ The following JSON is the complete value owned at each machine-authority pointer
             "title": "Id",
             "type": "string"
           },
+          "profile_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Profile Sha256",
+            "type": "string"
+          },
           "schema": {
             "additionalProperties": {
               "$ref": "#/$defs/JsonValue"
             },
             "title": "Schema",
             "type": "object"
-          },
-          "sha256": {
-            "pattern": "^[0-9a-f]{64}$",
-            "title": "Sha256",
-            "type": "string"
           }
         },
         "required": [
           "id",
-          "sha256",
+          "profile_sha256",
           "schema"
         ],
-        "title": "JsonSchemaDocument",
+        "title": "JsonSchemaValidationProfile",
         "type": "object"
       },
       "JsonValue": {},
@@ -1212,7 +1212,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "facts_schema": {
             "anyOf": [
               {
-                "$ref": "#/$defs/JsonSchemaDocument"
+                "$ref": "#/$defs/JsonSchemaValidationProfile"
               },
               {
                 "type": "null"

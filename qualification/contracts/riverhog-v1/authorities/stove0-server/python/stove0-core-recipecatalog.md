@@ -47,7 +47,7 @@ Exact externally visible contract owned by this contract element.
 - [ArtifactRule](#s-321bcd0181)
 - [FactPredicate](#s-faa5d4d6cc)
 - [InputArtifactContract](#s-893e7a1885)
-- [JsonSchemaDocument](#s-0b52936ac5)
+- [JsonSchemaValidationProfile](#s-aabf222999)
 - [JsonValue](#s-655fdbe95a)
 - [ObserverUse](#s-ead92c6441)
 - [OperationContract](#s-42d3f33c91)
@@ -133,21 +133,21 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-e0c3ac6573"></a>`minimum` | no | type="integer"; minimum=0; default=1 |  |
 | <a id="s-80105dd786"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
-##### <a id="s-0b52936ac5"></a>definition `JsonSchemaDocument`
+##### <a id="s-aabf222999"></a>definition `JsonSchemaValidationProfile`
 
-- <a id="s-f623a78d39"></a>`type`: `"object"`
-- <a id="s-7f26c576b5"></a>`additionalProperties`: `false`
-- <a id="s-75c157cf5d"></a>`required`: `["id","sha256","schema"]`
+- <a id="s-c9625a9d00"></a>`type`: `"object"`
+- <a id="s-bdae2d5387"></a>`additionalProperties`: `false`
+- <a id="s-07b0979c13"></a>`required`: `["id","profile_sha256","schema"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-dda74400ac"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
-| <a id="s-c3ca28ccfe"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
-| <a id="s-cd66b88bca"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-f726443f93"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-655fdbe95a)) |  |
-| <a id="s-274976be71"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d715c7a4d9"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-8f3b1260fb"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-c070004279"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-74f92323c3"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-4673823f15"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-655fdbe95a)) |  |
 
 ##### <a id="s-655fdbe95a"></a>definition `JsonValue`
 
@@ -183,10 +183,10 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-65cbffa857"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a75ce4856f"></a>`effect_receipt_schema` | no | anyOf=[([JsonSchemaDocument](#s-0b52936ac5)); (type="null")]; default=null |  |
+| <a id="s-a75ce4856f"></a>`effect_receipt_schema` | no | anyOf=[([JsonSchemaValidationProfile](#s-aabf222999)); (type="null")]; default=null |  |
 | <a id="s-37654f4f87"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-fe1578028d"></a>`inputs` | yes | type="array"; items=([InputArtifactContract](#s-893e7a1885)); minItems=1 |  |
-| <a id="s-fc7522a438"></a>`intent_schema` | yes | [JsonSchemaDocument](#s-0b52936ac5) |  |
+| <a id="s-fc7522a438"></a>`intent_schema` | yes | [JsonSchemaValidationProfile](#s-aabf222999) |  |
 | <a id="s-249f692d35"></a>`intent_semantics` | yes | [SemanticValidationProfile](#s-467a54d056) |  |
 | <a id="s-fde0449546"></a>`outputs` | no | type="array"; default=[]; items=([OutputArtifactContract](#s-4ebe2c544b)) |  |
 | <a id="s-70a075cf49"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
@@ -386,7 +386,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fc2912b20aa4fb6c5a2ca75e7e403d5b4544d3e97474b6a4f6189cae2ad00396 -->
+<!-- exact-contract-value: 54e85d99fded51d581de47b148386271444267e20817034d06b4b2b50a0d547b -->
 
 ```json
 {
@@ -566,7 +566,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
-        "JsonSchemaDocument": {
+        "JsonSchemaValidationProfile": {
           "additionalProperties": false,
           "properties": {
             "dialect": {
@@ -583,20 +583,20 @@ The following JSON is the complete value owned at each machine-authority pointer
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
               "type": "string"
             },
+            "profile_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
             "schema": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
               "type": "object"
-            },
-            "sha256": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
             }
           },
           "required": [
             "id",
-            "sha256",
+            "profile_sha256",
             "schema"
           ],
           "type": "object"
@@ -673,7 +673,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             "effect_receipt_schema": {
               "anyOf": [
                 {
-                  "$ref": "#/$defs/JsonSchemaDocument"
+                  "$ref": "#/$defs/JsonSchemaValidationProfile"
                 },
                 {
                   "type": "null"
@@ -693,7 +693,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "array"
             },
             "intent_schema": {
-              "$ref": "#/$defs/JsonSchemaDocument"
+              "$ref": "#/$defs/JsonSchemaValidationProfile"
             },
             "intent_semantics": {
               "$ref": "#/$defs/SemanticValidationProfile"

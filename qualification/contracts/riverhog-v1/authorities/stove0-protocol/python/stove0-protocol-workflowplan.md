@@ -59,7 +59,7 @@ Exact externally visible contract owned by this contract element.
 - [EvaluationBinding](#s-d85a23e820)
 - [JoinWorkBinding](#s-5d9b2b6117)
 - [JoinWorkMemberBinding](#s-3e6462b479)
-- [JsonSchemaDocument](#s-268660e515)
+- [JsonSchemaValidationProfile](#s-fb32774868)
 - [JsonValue](#s-4fc3efab64)
 - [ObservationEvidence](#s-e27ba5e565)
 - [ObservationFailure](#s-1e3302875e)
@@ -169,21 +169,21 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-5061049d1c"></a>`producer_settlement_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-09de199bbb"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-##### <a id="s-268660e515"></a>definition `JsonSchemaDocument`
+##### <a id="s-fb32774868"></a>definition `JsonSchemaValidationProfile`
 
-- <a id="s-8dcb5ad23d"></a>`type`: `"object"`
-- <a id="s-77cd021f82"></a>`additionalProperties`: `false`
-- <a id="s-5fd29a0956"></a>`required`: `["id","sha256","schema"]`
+- <a id="s-5cd2a8ee4e"></a>`type`: `"object"`
+- <a id="s-6a7af95f73"></a>`additionalProperties`: `false`
+- <a id="s-176c3daf06"></a>`required`: `["id","profile_sha256","schema"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e1b691d934"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
-| <a id="s-77642692f2"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
-| <a id="s-569e9f26c4"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-a386c404a5"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-4fc3efab64)) |  |
-| <a id="s-ee0715edd0"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-caeaad50d5"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-a83f117c5f"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-058346ea89"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-2a8616037a"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-60113e77a7"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-4fc3efab64)) |  |
 
 ##### <a id="s-4fc3efab64"></a>definition `JsonValue`
 
@@ -264,7 +264,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-3d244c3bb0"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-4fc3efab64)) |  |
 | <a id="s-6c205a3fd2"></a>`facts` | no | anyOf=[(type="object"; additionalProperties=([JsonValue](#s-4fc3efab64))); (type="null")]; default=null |  |
-| <a id="s-6f55240053"></a>`facts_schema` | no | anyOf=[([JsonSchemaDocument](#s-268660e515)); (type="null")]; default=null |  |
+| <a id="s-6f55240053"></a>`facts_schema` | no | anyOf=[([JsonSchemaValidationProfile](#s-fb32774868)); (type="null")]; default=null |  |
 | <a id="s-a5e905d55d"></a>`facts_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-8f38591e19"></a>`failure` | no | anyOf=[([ObservationFailure](#s-1e3302875e)); (type="null")]; default=null |  |
 | <a id="s-680b7f3372"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1" |  |
@@ -374,7 +374,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b6e64a97e1b72810ffbccfbce46a962e9736c67281599c060a7d8efb121e282a -->
+<!-- exact-contract-value: ea407c4af0cf3f2f6cc467a4629f169d9776cae429cc11fd515cffacc8e1ccb9 -->
 
 ```json
 {
@@ -587,7 +587,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
-        "JsonSchemaDocument": {
+        "JsonSchemaValidationProfile": {
           "additionalProperties": false,
           "properties": {
             "dialect": {
@@ -604,20 +604,20 @@ The following JSON is the complete value owned at each machine-authority pointer
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
               "type": "string"
             },
+            "profile_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
             "schema": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
               "type": "object"
-            },
-            "sha256": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
             }
           },
           "required": [
             "id",
-            "sha256",
+            "profile_sha256",
             "schema"
           ],
           "type": "object"
@@ -784,7 +784,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             "facts_schema": {
               "anyOf": [
                 {
-                  "$ref": "#/$defs/JsonSchemaDocument"
+                  "$ref": "#/$defs/JsonSchemaValidationProfile"
                 },
                 {
                   "type": "null"

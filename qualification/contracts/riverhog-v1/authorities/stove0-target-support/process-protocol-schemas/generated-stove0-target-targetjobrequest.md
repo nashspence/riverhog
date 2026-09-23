@@ -43,7 +43,7 @@ Secret-bearing target invocation; never store this document durably.
 - [ExecutionEnvelope](#s-d6d1b42663)
 - [JoinWorkBinding](#s-465ef625e0)
 - [JoinWorkMemberBinding](#s-b02b34545d)
-- [JsonSchemaDocument](#s-82ad700d35)
+- [JsonSchemaValidationProfile](#s-61a9572469)
 - [JsonValue](#s-35500bba5f)
 - [ObservationEvidence](#s-81090ce01d)
 - [ObservationFailure](#s-076b3c43df)
@@ -242,22 +242,22 @@ Secret-bearing target invocation; never store this document durably.
 | <a id="s-457b19c11d"></a>`producer_settlement_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null; title="Producer Settlement Sha256" |  |
 | <a id="s-a472a2f78b"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Settlement Sha256" |  |
 
-### <a id="s-82ad700d35"></a>definition `JsonSchemaDocument`
+### <a id="s-61a9572469"></a>definition `JsonSchemaValidationProfile`
 
-- <a id="s-7fb05e1db3"></a>`type`: `"object"`
-- <a id="s-6ea3feec1a"></a>`additionalProperties`: `false`
-- <a id="s-31203838af"></a>`required`: `["id","sha256","schema"]`
-- <a id="s-a6ff7c9d06"></a>`title`: `"JsonSchemaDocument"`
+- <a id="s-f81af88855"></a>`type`: `"object"`
+- <a id="s-ae76df2b7f"></a>`additionalProperties`: `false`
+- <a id="s-13762ad71e"></a>`required`: `["id","profile_sha256","schema"]`
+- <a id="s-49a9023e16"></a>`title`: `"JsonSchemaValidationProfile"`
 
 #### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1e66f2698f"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema"; title="Dialect" |  |
-| <a id="s-985799e9b9"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only"; title="Format Policy" |  |
-| <a id="s-94e9064131"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
-| <a id="s-1bc3a9ce60"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-35500bba5f)); title="Schema" |  |
-| <a id="s-91a1f8f382"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-9f9df25911"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema"; title="Dialect" |  |
+| <a id="s-665fd84406"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only"; title="Format Policy" |  |
+| <a id="s-80bf9d2fd7"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-a7576d1128"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Profile Sha256" |  |
+| <a id="s-d3083e27c3"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-35500bba5f)); title="Schema" |  |
 
 ### <a id="s-35500bba5f"></a>definition `JsonValue`
 
@@ -344,7 +344,7 @@ Secret-bearing target invocation; never store this document durably.
 |---|---:|---|---|
 | <a id="s-8f75b96d6c"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-35500bba5f)); title="Execution Evidence" |  |
 | <a id="s-9baa2e9b6e"></a>`facts` | no | anyOf=[(type="object"; additionalProperties=([JsonValue](#s-35500bba5f))); (type="null")]; default=null; title="Facts" |  |
-| <a id="s-bb733cb460"></a>`facts_schema` | no | anyOf=[([JsonSchemaDocument](#s-82ad700d35)); (type="null")]; default=null |  |
+| <a id="s-bb733cb460"></a>`facts_schema` | no | anyOf=[([JsonSchemaValidationProfile](#s-61a9572469)); (type="null")]; default=null |  |
 | <a id="s-2c2c3bbfcc"></a>`facts_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null; title="Facts Sha256" |  |
 | <a id="s-3ff94ab0be"></a>`failure` | no | anyOf=[([ObservationFailure](#s-076b3c43df)); (type="null")]; default=null |  |
 | <a id="s-0f05e79544"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1"; title="Format" |  |
@@ -615,7 +615,7 @@ Secret-bearing target invocation; never store this document durably.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a9548cb0b668b182a9fdebb904bc5e91d9299131bbf9c38cff8a5c19c450063e -->
+<!-- exact-contract-value: 8a6dd5486d3610d9b9b0bead301224116222b94987dee58d3377f939f1fcb333 -->
 
 ```json
 {
@@ -1028,7 +1028,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "JoinWorkMemberBinding",
       "type": "object"
     },
-    "JsonSchemaDocument": {
+    "JsonSchemaValidationProfile": {
       "additionalProperties": false,
       "properties": {
         "dialect": {
@@ -1048,25 +1048,25 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Id",
           "type": "string"
         },
+        "profile_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Profile Sha256",
+          "type": "string"
+        },
         "schema": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
           "title": "Schema",
           "type": "object"
-        },
-        "sha256": {
-          "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
-          "type": "string"
         }
       },
       "required": [
         "id",
-        "sha256",
+        "profile_sha256",
         "schema"
       ],
-      "title": "JsonSchemaDocument",
+      "title": "JsonSchemaValidationProfile",
       "type": "object"
     },
     "JsonValue": {},
@@ -1255,7 +1255,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "facts_schema": {
           "anyOf": [
             {
-              "$ref": "#/$defs/JsonSchemaDocument"
+              "$ref": "#/$defs/JsonSchemaValidationProfile"
             },
             {
               "type": "null"

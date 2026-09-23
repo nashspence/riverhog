@@ -9,7 +9,7 @@ from typing import Final, Literal, Self
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, field_validator, model_validator
 from stove0_observer_protocol import (
     ArtifactSubject,
-    JsonSchemaDocument,
+    JsonSchemaValidationProfile,
     ObservationRequest,
     ObserverContract,
     ObserverContractPayload,
@@ -113,7 +113,7 @@ class MediaMetadataFacts(MediaObservationModel):
         return value
 
 
-MEDIA_METADATA_OPTIONS_SCHEMA = JsonSchemaDocument.from_schema(
+MEDIA_METADATA_OPTIONS_SCHEMA = JsonSchemaValidationProfile.from_schema(
     MEDIA_METADATA_OPTIONS_SCHEMA_ID,
     {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -123,7 +123,7 @@ MEDIA_METADATA_OPTIONS_SCHEMA = JsonSchemaDocument.from_schema(
     },
 )
 
-MEDIA_METADATA_FACTS_SCHEMA = JsonSchemaDocument.from_schema(
+MEDIA_METADATA_FACTS_SCHEMA = JsonSchemaValidationProfile.from_schema(
     MEDIA_METADATA_FACTS_SCHEMA_ID,
     MediaMetadataFacts.model_json_schema(),
 )

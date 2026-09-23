@@ -1314,7 +1314,7 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 ### <a id="s-e8775f45df"></a>definition `relationRole`
 
 - <a id="s-1366340f8d"></a>`type`: `"string"`
-- <a id="s-00d49b7ada"></a>`enum`: `["source","input","reference","component","metadata_source","result","output","derivative","replacement","copy","other"]`
+- <a id="s-00d49b7ada"></a>`enum`: `["source","reference","component","metadata_source","result","derivative","replacement","copy","other"]`
 
 ### <a id="s-a011de07f6"></a>definition `runtime`
 
@@ -1778,7 +1778,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 Large integers appear as decimal strings in this machine representation. The machine artifact's `projection_unsafe_integer_paths` identifies them; primary content displays the recovered numeric values.
 
-<!-- exact-contract-value: 5b93f8c2bb1707ac9179e764afc163ed06036bf508fb7e9692dfb9930602e738 -->
+<!-- exact-contract-value: 84e0f16e6c1b4d2d9cdddd4c8b809d3433c08c42a3c6fedc5cffca1a62d43b4c -->
 
 ```json
 {
@@ -5117,12 +5117,10 @@ Large integers appear as decimal strings in this machine representation. The mac
     "relationRole": {
       "enum": [
         "source",
-        "input",
         "reference",
         "component",
         "metadata_source",
         "result",
-        "output",
         "derivative",
         "replacement",
         "copy",

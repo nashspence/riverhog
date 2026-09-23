@@ -10,7 +10,7 @@ import httpx
 import pytest
 from http_api_contracts import canonical_json_bytes, http_operation_inventory
 from pydantic import ValidationError
-from stove0_protocol import JsonSchemaDocument
+from stove0_protocol import JsonSchemaValidationProfile
 from stove0_review_sampler_client import ReviewSamplerClient
 from stove0_review_sampler_protocol import (
     SAMPLER_HTTP_OPERATIONS,
@@ -48,7 +48,7 @@ def _descriptor() -> SamplerDescriptor:
             image_digest=_sha("9"),
             primary_operation_id="fixture.opus/v1",
             primary_operation_contract_sha256=_sha("8"),
-            portable_intent_schema=JsonSchemaDocument.from_schema(
+            portable_intent_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.opus-intent/v1",
                 {
                     "type": "object",

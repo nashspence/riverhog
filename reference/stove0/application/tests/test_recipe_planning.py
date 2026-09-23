@@ -58,7 +58,7 @@ from stove0_protocol import (
     BranchSettlement,
     CollectionRootRef,
     CoordinationBranchPlan,
-    JsonSchemaDocument,
+    JsonSchemaValidationProfile,
     resolve_join_plan,
 )
 from stove0_review_planning import ReviewVariant, review_evaluation_definition
@@ -168,7 +168,7 @@ class MediaObservers:
 
 class ArchiveTargets:
     def __init__(self) -> None:
-        options = JsonSchemaDocument.from_schema(
+        options = JsonSchemaValidationProfile.from_schema(
             "fixture.archive-options/v1",
             {"type": "object", "additionalProperties": False},
         )
@@ -245,7 +245,7 @@ class BatchMediaObservers:
 
 class ConformanceTargets:
     def __init__(self) -> None:
-        empty_schema = JsonSchemaDocument.from_schema(
+        empty_schema = JsonSchemaValidationProfile.from_schema(
             "fixture.target-options/v1",
             {"type": "object"},
         )
@@ -834,7 +834,7 @@ def test_review_recipe_projects_semantic_intent_and_options_before_preflight() -
                 TargetOperationSupport(
                     operation_id=REVIEW_MATERIALIZE_OPERATION.id,
                     operation_contract_sha256=(REVIEW_MATERIALIZE_OPERATION.contract_sha256),
-                    options_schema=JsonSchemaDocument.from_schema(
+                    options_schema=JsonSchemaValidationProfile.from_schema(
                         "riverhog.review-ffmpeg-options/v1",
                         {
                             "type": "object",
@@ -986,7 +986,7 @@ def test_reference_recipes_embed_exact_maintained_contracts_and_explicit_cost_po
 
 
 def test_production_planner_resolves_overlapping_branches_into_one_exact_join() -> None:
-    empty_schema = JsonSchemaDocument.from_schema(
+    empty_schema = JsonSchemaValidationProfile.from_schema(
         "fixture.empty/v1",
         {"type": "object", "additionalProperties": False},
     )
@@ -1152,7 +1152,7 @@ def _retirement_operation() -> OperationContract:
         OperationContractPayload(
             id="fixture.retirement-copy/v1",
             intent_semantics=JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
-            intent_schema=JsonSchemaDocument.from_schema(
+            intent_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.retirement-copy-options/v1",
                 {"type": "object", "additionalProperties": False},
             ),
@@ -1195,7 +1195,7 @@ def _retirement_planner(recipe: RecipeDefinition) -> RecipePlanner:
                 TargetOperationSupport(
                     operation_id=operation.id,
                     operation_contract_sha256=operation.contract_sha256,
-                    options_schema=JsonSchemaDocument.from_schema(
+                    options_schema=JsonSchemaValidationProfile.from_schema(
                         "fixture.retirement-target-options/v1",
                         {"type": "object", "additionalProperties": False},
                     ),

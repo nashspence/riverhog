@@ -127,9 +127,9 @@ class Stove0ProtocolModel(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, populate_by_name=True)
 
 
-class JsonSchemaDocument(Stove0ProtocolModel):
+class JsonSchemaValidationProfile(Stove0ProtocolModel):
     id: SemanticId
-    sha256: Sha256
+    profile_sha256: Sha256
     dialect: Literal["https://json-schema.org/draft/2020-12/schema"] = JSON_SCHEMA_DIALECT
     format_policy: Literal["annotation-only"] = JSON_SCHEMA_FORMAT_POLICY
     document: dict[str, JsonValue] = Field(alias="schema")
@@ -144,8 +144,8 @@ class JsonSchemaDocument(Stove0ProtocolModel):
             "format_policy": self.format_policy,
             "schema": self.document,
         }
-        if canonical_json_sha256(profile) != self.sha256:
-            raise ValueError("schema sha256 does not match its complete execution profile")
+        if canonical_json_sha256(profile) != self.profile_sha256:
+            raise ValueError("schema profile digest does not match its complete execution profile")
         try:
             Draft202012Validator.check_schema(self.document)
         except SchemaError as exc:
@@ -154,7 +154,9 @@ class JsonSchemaDocument(Stove0ProtocolModel):
         return self
 
     @classmethod
-    def from_schema(cls, schema_id: str, schema: dict[str, JsonValue]) -> JsonSchemaDocument:
+    def from_schema(
+        cls, schema_id: str, schema: dict[str, JsonValue]
+    ) -> JsonSchemaValidationProfile:
         document = dict(schema)
         document.setdefault("$schema", JSON_SCHEMA_DIALECT)
         profile = {
@@ -163,7 +165,7 @@ class JsonSchemaDocument(Stove0ProtocolModel):
             "format_policy": JSON_SCHEMA_FORMAT_POLICY,
             "schema": document,
         }
-        return cls(id=schema_id, sha256=canonical_json_sha256(profile), schema=document)
+        return cls(id=schema_id, profile_sha256=canonical_json_sha256(profile), schema=document)
 
 
 class CollectionRootRef(Stove0ProtocolModel):
@@ -361,8 +363,8 @@ JSON_SCHEMA_ONLY_SEMANTIC_PROFILE = SemanticValidationProfile.seal(
 
 class ObserverContractPayload(Stove0ProtocolModel):
     id: SemanticId
-    options_schema: JsonSchemaDocument
-    facts_schema: JsonSchemaDocument
+    options_schema: JsonSchemaValidationProfile
+    facts_schema: JsonSchemaValidationProfile
     facts_semantics: SemanticValidationProfile
     maximum_result_bytes: int = Field(default=1024 * 1024, ge=1, le=64 * 1024 * 1024)
 
@@ -396,8 +398,8 @@ class ObserverContract(ObserverContractPayload):
 class ObserverContractSupport(Stove0ProtocolModel):
     contract_id: SemanticId
     contract_sha256: Sha256
-    options_schema: JsonSchemaDocument
-    facts_schema: JsonSchemaDocument
+    options_schema: JsonSchemaValidationProfile
+    facts_schema: JsonSchemaValidationProfile
     facts_semantics: SemanticValidationProfile
     preferred_subject_batch_size: int = Field(default=128, ge=1)
     maximum_result_bytes: int = Field(ge=1, le=64 * 1024 * 1024)
@@ -551,7 +553,7 @@ class ObservationResultPayload(Stove0ProtocolModel):
     observer_contract_id: SemanticId
     observer_contract_sha256: Sha256
     subjects: tuple[ArtifactSubject, ...] = Field(min_length=1)
-    facts_schema: JsonSchemaDocument | None = None
+    facts_schema: JsonSchemaValidationProfile | None = None
     facts: dict[str, JsonValue] | None = None
     facts_sha256: Sha256 | None = None
     execution_evidence: dict[str, JsonValue] = Field(default_factory=dict)
@@ -971,7 +973,7 @@ __all__ = [
     "ForkJoinBinding",
     "JoinWorkBinding",
     "JoinWorkMemberBinding",
-    "JsonSchemaDocument",
+    "JsonSchemaValidationProfile",
     "JSON_SCHEMA_ONLY_SEMANTIC_PROFILE",
     "OBSERVER_PROTOCOL",
     "OBSERVATION_REQUEST_FORMAT",

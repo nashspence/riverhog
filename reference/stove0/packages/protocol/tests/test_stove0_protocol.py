@@ -19,7 +19,7 @@ from stove0_protocol import (
     EvaluationVariant,
     ExecutionEnvelope,
     ExecutionEnvelopePayload,
-    JsonSchemaDocument,
+    JsonSchemaValidationProfile,
     OperationRef,
     RecipeRef,
     TargetPlanBinding,
@@ -55,14 +55,14 @@ from stove0_protocol.models import (
 
 def test_json_schema_document_rejects_invalid_draft_2020_12_schema() -> None:
     with pytest.raises(ValueError, match="not valid JSON Schema Draft 2020-12"):
-        JsonSchemaDocument.from_schema(
+        JsonSchemaValidationProfile.from_schema(
             "fixture.invalid-schema/v1",
             {"type": "definitely-not-a-json-schema-type"},
         )
 
 
 def test_json_schema_document_seals_a_complete_local_reference_closure() -> None:
-    document = JsonSchemaDocument.from_schema(
+    document = JsonSchemaValidationProfile.from_schema(
         "fixture.local-schema/v1",
         {
             "$defs": {"value": {"type": "string"}},
@@ -78,7 +78,7 @@ def test_json_schema_document_seals_a_complete_local_reference_closure() -> None
 
 def test_json_schema_document_rejects_a_conflicting_dialect() -> None:
     with pytest.raises(ValueError, match="exact JSON Schema Draft 2020-12"):
-        JsonSchemaDocument.from_schema(
+        JsonSchemaValidationProfile.from_schema(
             "fixture.conflicting-dialect/v1",
             {
                 "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -95,14 +95,14 @@ def test_json_schema_document_rejects_unsealed_reference_authority(
     reference: str,
 ) -> None:
     with pytest.raises(ValueError, match="sealed schema document"):
-        JsonSchemaDocument.from_schema(
+        JsonSchemaValidationProfile.from_schema(
             "fixture.open-schema/v1",
             {"properties": {"value": {"$ref": reference}}},
         )
 
 
 def test_json_schema_document_resolves_local_dynamic_references() -> None:
-    JsonSchemaDocument.from_schema(
+    JsonSchemaValidationProfile.from_schema(
         "fixture.dynamic-schema/v1",
         {
             "$dynamicAnchor": "node",
@@ -135,11 +135,11 @@ def _work() -> WorkIdentity:
 
 
 def _contract() -> ObserverContract:
-    options = JsonSchemaDocument.from_schema(
+    options = JsonSchemaValidationProfile.from_schema(
         "camera.probe-options/v1",
         {"type": "object", "additionalProperties": False},
     )
-    facts = JsonSchemaDocument.from_schema(
+    facts = JsonSchemaValidationProfile.from_schema(
         "camera.probe-facts/v1",
         {
             "type": "object",
@@ -546,11 +546,11 @@ def test_observer_batch_preference_and_large_evaluation_are_supported() -> None:
     contract = ObserverContract.seal(
         ObserverContractPayload(
             id="fixture.large-observer/v1",
-            options_schema=JsonSchemaDocument.from_schema(
+            options_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.large-observer-options/v1",
                 {"type": "object", "additionalProperties": False},
             ),
-            facts_schema=JsonSchemaDocument.from_schema(
+            facts_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.large-observer-facts/v1",
                 {"type": "object", "additionalProperties": True},
             ),

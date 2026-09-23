@@ -57,7 +57,7 @@ Applies to: reported · stdout (json).
 | Field | Value |
 |---|---|
 | <a id="s-b884c01d55"></a>`format` | `"stove0-review-contract-report/v1"` |
-| <a id="s-326bc1f814"></a>`observer_contract · contract_sha256` | `"beb0c37e896b0b2e3a8818f667ff59628614a461b06dc9f83560db434525a5be"` |
+| <a id="s-326bc1f814"></a>`observer_contract · contract_sha256` | `"0e0cdebd908511848dc7953a045587ac141c689bbd64c831403f531bb70371c6"` |
 | <a id="s-9cf66b7af3"></a>`observer_contract · facts_schema · dialect` | `"https://json-schema.org/draft/2020-12/schema"` |
 | <a id="s-16c24f5c2c"></a>`observer_contract · facts_schema · document · $schema` | `"https://json-schema.org/draft/2020-12/schema"` |
 | <a id="s-82b0a95fe3"></a>`observer_contract · facts_schema · document · additionalProperties` | `false` |
@@ -83,7 +83,7 @@ Applies to: reported · stdout (json).
 | <a id="s-97d11f4512"></a>`observer_contract · facts_schema · document · type` | `"object"` |
 | <a id="s-3238c8ac66"></a>`observer_contract · facts_schema · format_policy` | `"annotation-only"` |
 | <a id="s-41199aa23f"></a>`observer_contract · facts_schema · id` | `"stove0.review.media-sampling-facts/v1"` |
-| <a id="s-8d34ac8466"></a>`observer_contract · facts_schema · sha256` | `"730e1fcd4a831bad9707814fe65fb59861359795bcf336ed65f72670c725f71a"` |
+| <a id="s-2db503e01c"></a>`observer_contract · facts_schema · profile_sha256` | `"730e1fcd4a831bad9707814fe65fb59861359795bcf336ed65f72670c725f71a"` |
 | <a id="s-0aa83751b3"></a>`observer_contract · facts_semantics · conformance_vectors_sha256` | `"7fa8220ce785a840b854d24a70b9c4b6da99c853ab0b6eba4100d89ae1fb23f8"` |
 | <a id="s-8ad269b184"></a>`observer_contract · facts_semantics · id` | `"stove0.review.media-sampling-facts-semantics/v1"` |
 | <a id="s-eaeaba3b35"></a>`observer_contract · facts_semantics · profile_sha256` | `"6f91eaa38e4152a6db4d9d7f6c157295ac7d30fc412fef92ebcd5120de8fce7e"` |
@@ -97,8 +97,8 @@ Applies to: reported · stdout (json).
 | <a id="s-45269c26e0"></a>`observer_contract · options_schema · document · type` | `"object"` |
 | <a id="s-6f2287927a"></a>`observer_contract · options_schema · format_policy` | `"annotation-only"` |
 | <a id="s-5fa0e92c9d"></a>`observer_contract · options_schema · id` | `"stove0.review.media-sampling-options/v1"` |
-| <a id="s-ca642ed481"></a>`observer_contract · options_schema · sha256` | `"9c523e70f370789ff20984ca7a638b47ada230c1d751869ce8dfc162db15b77a"` |
-| <a id="s-af8c1fdb27"></a>`operation_contract · contract_sha256` | `"5517370bb1016dfadd236f0f06300999e18de90537bbdad46b87f274958ab06d"` |
+| <a id="s-a804dcdb36"></a>`observer_contract · options_schema · profile_sha256` | `"9c523e70f370789ff20984ca7a638b47ada230c1d751869ce8dfc162db15b77a"` |
+| <a id="s-af8c1fdb27"></a>`operation_contract · contract_sha256` | `"47f85e10c52a329c4a30d23a0bbd926d6dbd7c5a004d85c01e99e3bc606ffc5a"` |
 | <a id="s-90e5b5db3c"></a>`operation_contract · effect_receipt_schema` | `null` |
 | <a id="s-a4e039afd8"></a>`operation_contract · id` | `"stove0.review.materialize/v1"` |
 | <a id="s-ef1f5737f1"></a>`operation_contract · inputs · item 1 · allowed_dispositions` | `["preserved","transformed"]` |
@@ -165,7 +165,7 @@ Applies to: reported · stdout (json).
 | <a id="s-0cede4721a"></a>`operation_contract · intent_schema · document · type` | `"object"` |
 | <a id="s-0643123018"></a>`operation_contract · intent_schema · format_policy` | `"annotation-only"` |
 | <a id="s-909926582a"></a>`operation_contract · intent_schema · id` | `"stove0.review.materialize-intent/v1"` |
-| <a id="s-d7bb0ccd24"></a>`operation_contract · intent_schema · sha256` | `"dacf9977497657d10678176bb83ecf7783db08114b417390d577810d47ef2b30"` |
+| <a id="s-607b9f13a5"></a>`operation_contract · intent_schema · profile_sha256` | `"dacf9977497657d10678176bb83ecf7783db08114b417390d577810d47ef2b30"` |
 | <a id="s-b75a49ff65"></a>`operation_contract · intent_semantics · conformance_vectors_sha256` | `"eda75742bb220994e735aa6e00cb0f598dbac7de55e3cdd9576cbe4944789583"` |
 | <a id="s-a3631ae26c"></a>`operation_contract · intent_semantics · id` | `"stove0.review.materialize-intent-semantics/v1"` |
 | <a id="s-e0686c8a9d"></a>`operation_contract · intent_semantics · profile_sha256` | `"4625bc86e212e403da151d0c6dfe1f7a6cbf9832adea7161ffcec32656c1b79c"` |
@@ -244,7 +244,7 @@ true
 
 ### `/external_contract/cli/stove0-review-planning/result_contract`
 
-<!-- exact-contract-value: 17a2c7ad2f81bc115350c21007fb983626ee3bea87984e11cab31c61d9b7436c -->
+<!-- exact-contract-value: c8fb5d26723189cc16b7faef256cd58d312663dc855c01de3500e63466175e8a -->
 
 ```json
 {
@@ -282,7 +282,7 @@ true
           "document": {
             "format": "stove0-review-contract-report/v1",
             "observer_contract": {
-              "contract_sha256": "beb0c37e896b0b2e3a8818f667ff59628614a461b06dc9f83560db434525a5be",
+              "contract_sha256": "0e0cdebd908511848dc7953a045587ac141c689bbd64c831403f531bb70371c6",
               "facts_schema": {
                 "dialect": "https://json-schema.org/draft/2020-12/schema",
                 "document": {
@@ -342,7 +342,7 @@ true
                 },
                 "format_policy": "annotation-only",
                 "id": "stove0.review.media-sampling-facts/v1",
-                "sha256": "730e1fcd4a831bad9707814fe65fb59861359795bcf336ed65f72670c725f71a"
+                "profile_sha256": "730e1fcd4a831bad9707814fe65fb59861359795bcf336ed65f72670c725f71a"
               },
               "facts_semantics": {
                 "conformance_vectors_sha256": "7fa8220ce785a840b854d24a70b9c4b6da99c853ab0b6eba4100d89ae1fb23f8",
@@ -365,11 +365,11 @@ true
                 },
                 "format_policy": "annotation-only",
                 "id": "stove0.review.media-sampling-options/v1",
-                "sha256": "9c523e70f370789ff20984ca7a638b47ada230c1d751869ce8dfc162db15b77a"
+                "profile_sha256": "9c523e70f370789ff20984ca7a638b47ada230c1d751869ce8dfc162db15b77a"
               }
             },
             "operation_contract": {
-              "contract_sha256": "5517370bb1016dfadd236f0f06300999e18de90537bbdad46b87f274958ab06d",
+              "contract_sha256": "47f85e10c52a329c4a30d23a0bbd926d6dbd7c5a004d85c01e99e3bc606ffc5a",
               "effect_receipt_schema": null,
               "id": "stove0.review.materialize/v1",
               "inputs": [
@@ -507,7 +507,7 @@ true
                 },
                 "format_policy": "annotation-only",
                 "id": "stove0.review.materialize-intent/v1",
-                "sha256": "dacf9977497657d10678176bb83ecf7783db08114b417390d577810d47ef2b30"
+                "profile_sha256": "dacf9977497657d10678176bb83ecf7783db08114b417390d577810d47ef2b30"
               },
               "intent_semantics": {
                 "conformance_vectors_sha256": "eda75742bb220994e735aa6e00cb0f598dbac7de55e3cdd9576cbe4944789583",

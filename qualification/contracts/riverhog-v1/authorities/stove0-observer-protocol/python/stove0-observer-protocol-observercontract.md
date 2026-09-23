@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-bbe7f6e787"></a>`kind`: `"class"`
-- <a id="s-3c4ff68ef7"></a>`signature`: `"\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], options_schema: stove0_protocol.models.JsonSchemaDocument, facts_schema: stove0_protocol.models.JsonSchemaDocument, facts_semantics: stove0_protocol.models.SemanticValidationProfile, maximum_result_bytes: Annotated[int, Ge(ge=1), Le(le=67108864)] = 1048576, contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+- <a id="s-3c4ff68ef7"></a>`signature`: `"\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], options_schema: stove0_protocol.models.JsonSchemaValidationProfile, facts_schema: stove0_protocol.models.JsonSchemaValidationProfile, facts_semantics: stove0_protocol.models.SemanticValidationProfile, maximum_result_bytes: Annotated[int, Ge(ge=1), Le(le=67108864)] = 1048576, contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
 
 #### Validated model schema
 
@@ -37,33 +37,33 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-ffb388d74b"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-79265b7bba"></a>`facts_schema` | yes | [JsonSchemaDocument](#s-80f7422792) |  |
+| <a id="s-79265b7bba"></a>`facts_schema` | yes | [JsonSchemaValidationProfile](#s-75fb390d5d) |  |
 | <a id="s-0c0d2b0f9d"></a>`facts_semantics` | yes | [SemanticValidationProfile](#s-f92abed4ae) |  |
 | <a id="s-57f9615963"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-22b0547d5b"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
-| <a id="s-135a1e34f9"></a>`options_schema` | yes | [JsonSchemaDocument](#s-80f7422792) |  |
+| <a id="s-135a1e34f9"></a>`options_schema` | yes | [JsonSchemaValidationProfile](#s-75fb390d5d) |  |
 
 ##### Definitions
 
-- [JsonSchemaDocument](#s-80f7422792)
+- [JsonSchemaValidationProfile](#s-75fb390d5d)
 - [JsonValue](#s-7449c72b12)
 - [SemanticValidationProfile](#s-f92abed4ae)
 
-##### <a id="s-80f7422792"></a>definition `JsonSchemaDocument`
+##### <a id="s-75fb390d5d"></a>definition `JsonSchemaValidationProfile`
 
-- <a id="s-885d3faceb"></a>`type`: `"object"`
-- <a id="s-71813fa7ed"></a>`additionalProperties`: `false`
-- <a id="s-def4f41fb6"></a>`required`: `["id","sha256","schema"]`
+- <a id="s-208750e992"></a>`type`: `"object"`
+- <a id="s-19d894c296"></a>`additionalProperties`: `false`
+- <a id="s-61b281c1e5"></a>`required`: `["id","profile_sha256","schema"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c0135546d9"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
-| <a id="s-384a56a38b"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
-| <a id="s-cbb831b552"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-58607a0e0b"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-7449c72b12)) |  |
-| <a id="s-3ecb285c1d"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-664082520a"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema" |  |
+| <a id="s-f749e5269e"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only" |  |
+| <a id="s-56328e2dae"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-7cb9d3b2a5"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b8c0c0283c"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-7449c72b12)) |  |
 
 ##### <a id="s-7449c72b12"></a>definition `JsonValue`
 
@@ -119,7 +119,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5b9fbd5b10efdd7c9f748a4ca08c6c4eab36047374f9235865caeae62794c700 -->
+<!-- exact-contract-value: 1eb082458db7368827f78448ad96022146acb124153274887fea231427b26a47 -->
 
 ```json
 {
@@ -127,7 +127,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "$defs": {
-        "JsonSchemaDocument": {
+        "JsonSchemaValidationProfile": {
           "additionalProperties": false,
           "properties": {
             "dialect": {
@@ -144,20 +144,20 @@ The following JSON is the complete value owned at each machine-authority pointer
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
               "type": "string"
             },
+            "profile_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
             "schema": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
               "type": "object"
-            },
-            "sha256": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
             }
           },
           "required": [
             "id",
-            "sha256",
+            "profile_sha256",
             "schema"
           ],
           "type": "object"
@@ -210,7 +210,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "facts_schema": {
-          "$ref": "#/$defs/JsonSchemaDocument"
+          "$ref": "#/$defs/JsonSchemaValidationProfile"
         },
         "facts_semantics": {
           "$ref": "#/$defs/SemanticValidationProfile"
@@ -226,7 +226,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "integer"
         },
         "options_schema": {
-          "$ref": "#/$defs/JsonSchemaDocument"
+          "$ref": "#/$defs/JsonSchemaValidationProfile"
         }
       },
       "required": [
@@ -238,7 +238,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], options_schema: stove0_protocol.models.JsonSchemaDocument, facts_schema: stove0_protocol.models.JsonSchemaDocument, facts_semantics: stove0_protocol.models.SemanticValidationProfile, maximum_result_bytes: Annotated[int, Ge(ge=1), Le(le=67108864)] = 1048576, contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
+    "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], options_schema: stove0_protocol.models.JsonSchemaValidationProfile, facts_schema: stove0_protocol.models.JsonSchemaValidationProfile, facts_semantics: stove0_protocol.models.SemanticValidationProfile, maximum_result_bytes: Annotated[int, Ge(ge=1), Le(le=67108864)] = 1048576, contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-observer-protocol",
   "module": "stove0_observer_protocol",

@@ -77,7 +77,7 @@ Supporting HTTP data definitions; these are not callable operations.
 - [JoinSettlement](schemas-joinsettlement.md)
 - [JoinWorkBinding](schemas-joinworkbinding.md)
 - [JoinWorkMemberBinding](schemas-joinworkmemberbinding.md)
-- [JsonSchemaDocument](schemas-jsonschemadocument.md)
+- [JsonSchemaValidationProfile](schemas-jsonschemavalidationprofile.md)
 - [JsonValue](schemas-jsonvalue.md)
 - [ObservationEvidence](schemas-observationevidence.md)
 - [ObservationFailure](schemas-observationfailure.md)

@@ -33,13 +33,13 @@ def test_review_target_contracts_retain_exact_result_and_retirement_semantics() 
     assert REVIEW_MATERIALIZE_OPERATION.id == "stove0.review.materialize/v1"
     assert (
         REVIEW_MATERIALIZE_OPERATION.contract_sha256
-        == "5517370bb1016dfadd236f0f06300999e18de90537bbdad46b87f274958ab06d"
+        == "47f85e10c52a329c4a30d23a0bbd926d6dbd7c5a004d85c01e99e3bc606ffc5a"
     )
     assert REVIEW_MATERIALIZE_OPERATION.result_kind == "collection"
     assert REVIEW_RCLONE_DELIVER_OPERATION.id == "stove0.review.rclone-deliver/v1"
     assert (
         REVIEW_RCLONE_DELIVER_OPERATION.contract_sha256
-        == "1716dda4f6b7948762712a30a434a4bfefdfec6aadd5123f637eed0cd33f5639"
+        == "28428884658c88e8d934fe3773f1b3038f98925ff1183ea61bf2eb7223f4e9be"
     )
     assert REVIEW_RCLONE_DELIVER_OPERATION.result_kind == "external-effect"
     assert REVIEW_MATERIALIZE_OPERATION.source_retirement_permitted is False

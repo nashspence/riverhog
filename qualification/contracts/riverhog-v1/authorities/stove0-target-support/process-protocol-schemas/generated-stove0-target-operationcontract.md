@@ -25,10 +25,10 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-d662de9b15"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Contract Sha256" |  |
-| <a id="s-772086af5f"></a>`effect_receipt_schema` | no | anyOf=[([JsonSchemaDocument](#s-a7a5e8c1b9)); (type="null")]; default=null |  |
+| <a id="s-772086af5f"></a>`effect_receipt_schema` | no | anyOf=[([JsonSchemaValidationProfile](#s-8ce1551249)); (type="null")]; default=null |  |
 | <a id="s-702fc5907b"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
 | <a id="s-f5e91f55d7"></a>`inputs` | yes | type="array"; items=([InputArtifactContract](#s-5f66949083)); minItems=1; title="Inputs" |  |
-| <a id="s-51f7145810"></a>`intent_schema` | yes | [JsonSchemaDocument](#s-a7a5e8c1b9) |  |
+| <a id="s-51f7145810"></a>`intent_schema` | yes | [JsonSchemaValidationProfile](#s-8ce1551249) |  |
 | <a id="s-7b1634eba7"></a>`intent_semantics` | yes | [SemanticValidationProfile](#s-c4cc0dce83) |  |
 | <a id="s-b55e379a61"></a>`outputs` | no | type="array"; default=[]; items=([OutputArtifactContract](#s-63772a2004)); title="Outputs" |  |
 | <a id="s-fc20921336"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection"; title="Result Kind" |  |
@@ -37,7 +37,7 @@ Exact externally visible contract owned by this contract element.
 ### Definitions
 
 - [InputArtifactContract](#s-5f66949083)
-- [JsonSchemaDocument](#s-a7a5e8c1b9)
+- [JsonSchemaValidationProfile](#s-8ce1551249)
 - [JsonValue](#s-003a178d94)
 - [OutputArtifactContract](#s-63772a2004)
 - [SemanticValidationProfile](#s-c4cc0dce83)
@@ -58,22 +58,22 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-873a544617"></a>`minimum` | no | type="integer"; minimum=0; default=1; title="Minimum" |  |
 | <a id="s-a65c58876b"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Role" |  |
 
-### <a id="s-a7a5e8c1b9"></a>definition `JsonSchemaDocument`
+### <a id="s-8ce1551249"></a>definition `JsonSchemaValidationProfile`
 
-- <a id="s-cbdfe77f5c"></a>`type`: `"object"`
-- <a id="s-122aedb2d7"></a>`additionalProperties`: `false`
-- <a id="s-6bd2e7a45d"></a>`required`: `["id","sha256","schema"]`
-- <a id="s-14818bb4e4"></a>`title`: `"JsonSchemaDocument"`
+- <a id="s-139e56e6d9"></a>`type`: `"object"`
+- <a id="s-b8c44341a8"></a>`additionalProperties`: `false`
+- <a id="s-a5208648a9"></a>`required`: `["id","profile_sha256","schema"]`
+- <a id="s-b666858977"></a>`title`: `"JsonSchemaValidationProfile"`
 
 #### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-189775a636"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema"; title="Dialect" |  |
-| <a id="s-bf122bd58b"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only"; title="Format Policy" |  |
-| <a id="s-0bbeacfca2"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
-| <a id="s-4683f85a56"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-003a178d94)); title="Schema" |  |
-| <a id="s-3d54e4a533"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-63c3e09422"></a>`dialect` | no | type="string"; const="https://json-schema.org/draft/2020-12/schema"; default="https://json-schema.org/draft/2020-12/schema"; title="Dialect" |  |
+| <a id="s-731e820882"></a>`format_policy` | no | type="string"; const="annotation-only"; default="annotation-only"; title="Format Policy" |  |
+| <a id="s-b06c618a91"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-d9b3640689"></a>`profile_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Profile Sha256" |  |
+| <a id="s-07dd739bdb"></a>`schema` | yes | type="object"; additionalProperties=([JsonValue](#s-003a178d94)); title="Schema" |  |
 
 ### <a id="s-003a178d94"></a>definition `JsonValue`
 
@@ -122,7 +122,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [field inputs](#s-f5e91f55d7) | `cardinality · items · operational_policy` | shared above |
 | [field outputs](#s-b55e379a61) | `cardinality · items · operational_policy` | shared above |
 | <a id="s-52aee30098"></a>[definition InputArtifactContract · field allowed_dispositions · array value](#s-d1ffbc5970) | `cardinality · items · operational_policy` | shared above |
-| [definition JsonSchemaDocument · field schema](#s-4683f85a56) | `cardinality · entries · operational_policy` | shared above |
+| [definition JsonSchemaValidationProfile · field schema](#s-07dd739bdb) | `cardinality · entries · operational_policy` | shared above |
 | [definition OutputArtifactContract · field derived_from_roles](#s-db0de128fe) | `cardinality · items · operational_policy` | shared above |
 | [definition SemanticValidationProfile · field rules](#s-2f2dbe7f7f) | `cardinality · items · operational_policy` | shared above |
 
@@ -133,7 +133,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [field contract_sha256](#s-d662de9b15) | `length · characters · fixed` | shared above |
-| [definition JsonSchemaDocument · field sha256](#s-3d54e4a533) | `length · characters · fixed` | shared above |
+| [definition JsonSchemaValidationProfile · field profile_sha256](#s-d9b3640689) | `length · characters · fixed` | shared above |
 | <a id="s-4052e4cd9d"></a>[definition SemanticValidationProfile · field conformance_vectors_sha256 · string value](#s-a0b3e86781) | `length · characters · fixed` | shared above |
 | [definition SemanticValidationProfile · field profile_sha256](#s-133a5bb76e) | `length · characters · fixed` | shared above |
 
@@ -174,7 +174,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: aa2a5d676e27f1328d9ac0508bb514c28355ff594b7e72c052731d4fbc4edd22 -->
+<!-- exact-contract-value: 55be6abb3d3e6881cba731f8ea8c857355d44523fa90994f5c880376bae376aa -->
 
 ```json
 {
@@ -234,7 +234,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "InputArtifactContract",
       "type": "object"
     },
-    "JsonSchemaDocument": {
+    "JsonSchemaValidationProfile": {
       "additionalProperties": false,
       "properties": {
         "dialect": {
@@ -254,25 +254,25 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Id",
           "type": "string"
         },
+        "profile_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Profile Sha256",
+          "type": "string"
+        },
         "schema": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
           "title": "Schema",
           "type": "object"
-        },
-        "sha256": {
-          "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
-          "type": "string"
         }
       },
       "required": [
         "id",
-        "sha256",
+        "profile_sha256",
         "schema"
       ],
-      "title": "JsonSchemaDocument",
+      "title": "JsonSchemaValidationProfile",
       "type": "object"
     },
     "JsonValue": {},
@@ -375,7 +375,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "effect_receipt_schema": {
       "anyOf": [
         {
-          "$ref": "#/$defs/JsonSchemaDocument"
+          "$ref": "#/$defs/JsonSchemaValidationProfile"
         },
         {
           "type": "null"
@@ -397,7 +397,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "array"
     },
     "intent_schema": {
-      "$ref": "#/$defs/JsonSchemaDocument"
+      "$ref": "#/$defs/JsonSchemaValidationProfile"
     },
     "intent_semantics": {
       "$ref": "#/$defs/SemanticValidationProfile"

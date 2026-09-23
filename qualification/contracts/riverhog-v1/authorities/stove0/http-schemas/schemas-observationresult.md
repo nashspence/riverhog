@@ -26,7 +26,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-e68ebf9982"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Execution Evidence" |  |
 | <a id="s-e0e895304b"></a>`facts` | no | anyOf=[(type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md))); (type="null")]; title="Facts" |  |
-| <a id="s-1494511718"></a>`facts_schema` | no | anyOf=[([JsonSchemaDocument](schemas-jsonschemadocument.md)); (type="null")] |  |
+| <a id="s-1494511718"></a>`facts_schema` | no | anyOf=[([JsonSchemaValidationProfile](schemas-jsonschemavalidationprofile.md)); (type="null")] |  |
 | <a id="s-95b10a81fc"></a>`facts_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Facts Sha256" |  |
 | <a id="s-5791d4f0bf"></a>`failure` | no | anyOf=[([ObservationFailure](schemas-observationfailure.md)); (type="null")] |  |
 | <a id="s-6bac73ead1"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1"; title="Format" |  |
@@ -67,7 +67,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 ### Referenced contract elements
 
 - [ArtifactSubject](schemas-artifactsubject.md)
-- [JsonSchemaDocument](schemas-jsonschemadocument.md)
+- [JsonSchemaValidationProfile](schemas-jsonschemavalidationprofile.md)
 - [JsonValue](schemas-jsonvalue.md)
 - [ObservationFailure](schemas-observationfailure.md)
 - [ObservationInapplicable](schemas-observationinapplicable.md)
@@ -104,7 +104,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9f06c7aaea3e4c68bf2da3d3f5ef467b30b67cb3db431233ed43d443146613be -->
+<!-- exact-contract-value: 49ab212db5abf5c861091e49511d301d37eefc6a0a907950c634327b2f4f0b8e -->
 
 ```json
 {
@@ -134,7 +134,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "facts_schema": {
       "anyOf": [
         {
-          "$ref": "#/components/schemas/JsonSchemaDocument"
+          "$ref": "#/components/schemas/JsonSchemaValidationProfile"
         },
         {
           "type": "null"
