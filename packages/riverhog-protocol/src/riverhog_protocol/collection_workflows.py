@@ -14,6 +14,13 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Literal, cast
 
+from riverhog_canonical_json import (
+    canonical_json_bytes,
+    canonical_json_sha256,
+    format_scalar,
+    parse_scalar,
+)
+
 from riverhog_protocol.paths import (
     CollectionId,
     normalize_relpath,
@@ -61,30 +68,6 @@ def derivation_evidence_page_path(
     return f"{prefix}/{start_ordinal:0{DERIVATION_EVIDENCE_ORDINAL_HEX_WIDTH}x}.json"
 
 
-def canonical_json_bytes(value: object) -> bytes:
-    """Encode a JSON value canonically for contract identities.
-
-    V1 deliberately permits only finite JSON numbers and uses sorted UTF-8 JSON
-    without insignificant whitespace. The result is deterministic across all
-    in-repository Python implementations.
-    """
-
-    try:
-        return json.dumps(
-            value,
-            ensure_ascii=False,
-            allow_nan=False,
-            sort_keys=True,
-            separators=(",", ":"),
-        ).encode("utf-8")
-    except (TypeError, ValueError) as exc:
-        raise ValueError(f"value is not canonical JSON: {exc}") from exc
-
-
-def canonical_json_sha256(value: object) -> str:
-    return hashlib.sha256(canonical_json_bytes(value)).hexdigest()
-
-
 def _sha256(value: object, label: str) -> str:
     text = str(value or "").casefold()
     if _SHA256_RE.fullmatch(text) is None:
@@ -125,6 +108,16 @@ def _positive_uint(value: object, label: str) -> int:
     return parsed
 
 
+def _positive_decimal(value: object, label: str) -> int:
+    try:
+        parsed = parse_scalar("nonnegative", value)
+    except ValueError as exc:
+        raise ValueError(f"{label} must be an exact decimal string") from exc
+    if parsed < 1:
+        raise ValueError(f"{label} must be positive")
+    return parsed
+
+
 def _json_object(value: object, label: str) -> dict[str, JsonValue]:
     if not isinstance(value, Mapping):
         raise ValueError(f"{label} must be a JSON object")
@@ -157,7 +150,7 @@ class CollectionRootIdentity:
 
     def as_dict(self) -> dict[str, object]:
         return {
-            "collection_id": self.collection_id,
+            "collection_id": format_scalar("sequence63", self.collection_id),
             "archive_root_sha256": self.archive_root_sha256,
             "content_identity": self.content_identity,
         }
@@ -167,7 +160,7 @@ class CollectionRootIdentity:
         if set(value) != {"collection_id", "archive_root_sha256", "content_identity"}:
             raise ValueError("collection root identity fields are invalid")
         return cls(
-            collection_id=_positive_uint(value.get("collection_id"), "collection id"),
+            collection_id=parse_scalar("sequence63", value.get("collection_id")),
             archive_root_sha256=str(value.get("archive_root_sha256") or ""),
             content_identity=str(value.get("content_identity") or ""),
         )
@@ -191,7 +184,7 @@ class CollectionArtifactIdentity:
         return {
             "collection": self.collection.as_dict(),
             "path": self.path,
-            "bytes": self.bytes,
+            "bytes": format_scalar("nonnegative", self.bytes),
             "sha256": self.sha256,
         }
 
@@ -205,7 +198,7 @@ class CollectionArtifactIdentity:
         return cls(
             collection=CollectionRootIdentity.from_mapping(collection),
             path=str(value.get("path") or ""),
-            bytes=_uint(value.get("bytes"), "artifact bytes"),
+            bytes=parse_scalar("nonnegative", value.get("bytes")),
             sha256=str(value.get("sha256") or ""),
         )
 
@@ -279,7 +272,11 @@ class RecipeIdentity:
         object.__setattr__(self, "sha256", _sha256(self.sha256, "recipe identity"))
 
     def as_dict(self) -> dict[str, object]:
-        return {"id": self.id, "revision": self.revision, "sha256": self.sha256}
+        return {
+            "id": self.id,
+            "revision": format_scalar("nonnegative", self.revision),
+            "sha256": self.sha256,
+        }
 
     @classmethod
     def from_mapping(cls, value: Mapping[str, object]) -> RecipeIdentity:
@@ -287,7 +284,7 @@ class RecipeIdentity:
             raise ValueError("recipe identity fields are invalid")
         return cls(
             id=str(value.get("id") or ""),
-            revision=_positive_uint(value.get("revision"), "recipe revision"),
+            revision=_positive_decimal(value.get("revision"), "recipe revision"),
             sha256=str(value.get("sha256") or ""),
         )
 
@@ -563,7 +560,7 @@ class ArtifactDisposition:
     def as_dict(self) -> dict[str, object]:
         payload: dict[str, object] = {
             "input": {
-                "collection_id": self.input_collection_id,
+                "collection_id": format_scalar("sequence63", self.input_collection_id),
                 "archive_root_sha256": self.input_archive_root_sha256,
                 "path": self.input_path,
             },
@@ -597,9 +594,7 @@ class ArtifactDisposition:
             code = str(failure.get("code") or "")
             message = str(failure.get("message") or "")
         return cls(
-            input_collection_id=_positive_uint(
-                input_value.get("collection_id"), "input collection id"
-            ),
+            input_collection_id=parse_scalar("sequence63", input_value.get("collection_id")),
             input_archive_root_sha256=str(input_value.get("archive_root_sha256") or ""),
             input_path=str(input_value.get("path") or ""),
             status=cast(DispositionState, str(value.get("status") or "")),
@@ -634,7 +629,7 @@ class ArtifactDispositionOutput:
     def as_dict(self) -> dict[str, object]:
         return {
             "input": {
-                "collection_id": self.input_collection_id,
+                "collection_id": format_scalar("sequence63", self.input_collection_id),
                 "archive_root_sha256": self.input_archive_root_sha256,
                 "path": self.input_path,
             },
@@ -653,9 +648,7 @@ class ArtifactDispositionOutput:
         }:
             raise ValueError("artifact disposition output input fields are invalid")
         return cls(
-            input_collection_id=_positive_uint(
-                input_value.get("collection_id"), "input collection id"
-            ),
+            input_collection_id=parse_scalar("sequence63", input_value.get("collection_id")),
             input_archive_root_sha256=str(input_value.get("archive_root_sha256") or ""),
             input_path=str(input_value.get("path") or ""),
             output_path=str(value.get("output_path") or ""),
@@ -693,9 +686,9 @@ class ArtifactDispositionSetIdentity:
 
     def as_dict(self) -> dict[str, object]:
         return {
-            "disposition_count": self.disposition_count,
-            "output_edge_count": self.output_edge_count,
-            "output_artifact_count": self.output_artifact_count,
+            "disposition_count": format_scalar("nonnegative", self.disposition_count),
+            "output_edge_count": format_scalar("nonnegative", self.output_edge_count),
+            "output_artifact_count": format_scalar("nonnegative", self.output_artifact_count),
             "sha256": self.sha256,
         }
 
@@ -709,9 +702,13 @@ class ArtifactDispositionSetIdentity:
         }:
             raise ValueError("artifact disposition set fields are invalid")
         return cls(
-            disposition_count=_positive_uint(value.get("disposition_count"), "disposition count"),
-            output_edge_count=_positive_uint(value.get("output_edge_count"), "output edge count"),
-            output_artifact_count=_positive_uint(
+            disposition_count=_positive_decimal(
+                value.get("disposition_count"), "disposition count"
+            ),
+            output_edge_count=_positive_decimal(
+                value.get("output_edge_count"), "output edge count"
+            ),
+            output_artifact_count=_positive_decimal(
                 value.get("output_artifact_count"), "output artifact count"
             ),
             sha256=str(value.get("sha256") or ""),
@@ -780,7 +777,7 @@ class CollectionDerivation:
         return {
             "format": DERIVATION_FORMAT,
             "execution_id": self.execution_id,
-            "claim": {"id": self.claim_id, "fence": self.fence},
+            "claim": {"id": self.claim_id, "fence": format_scalar("nonnegative", self.fence)},
             "recipe": self.recipe.as_dict(),
             "operation": self.operation.as_dict(),
             "input_set_sha256": self.input_set_sha256,
@@ -835,7 +832,7 @@ class CollectionDerivation:
         return cls(
             execution_id=str(value.get("execution_id") or ""),
             claim_id=str(claim.get("id") or ""),
-            fence=_positive_uint(claim.get("fence"), "claim fence"),
+            fence=_positive_decimal(claim.get("fence"), "claim fence"),
             recipe=RecipeIdentity.from_mapping(recipe),
             operation=OperationIdentity.from_mapping(operation),
             input_set_sha256=str(value.get("input_set_sha256") or ""),

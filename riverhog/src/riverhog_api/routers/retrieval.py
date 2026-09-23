@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Header, Query, Request, Response
+from fastapi import Header, Query, Request, Response
 from fastapi.responses import StreamingResponse
 from http_api_contracts import (
     QuotedSha256Identity,
@@ -33,6 +33,7 @@ from riverhog_api.browse import (
     page_position,
 )
 from riverhog_api.deps import ContainerDep
+from riverhog_api.routing import RiverhogRouter
 from riverhog_api.schemas.retrieval import (
     CreateRetrievalJobRequest,
     RenewRetrievalJobRequest,
@@ -45,7 +46,7 @@ from riverhog_api.schemas.retrieval import (
     RetrievalPlanRequest,
 )
 
-router = APIRouter(tags=["retrieval"])
+router = RiverhogRouter(tags=["retrieval"])
 
 
 def _files(request: RetrievalPlanRequest) -> list[tuple[int, str]]:

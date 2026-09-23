@@ -15,6 +15,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, BinaryIO, Literal, cast
 
+from pydantic import TypeAdapter
 from riverhog_protocol import (
     CollectionDescription,
     CollectionTag,
@@ -34,7 +35,7 @@ from riverhog_protocol.collection_workflows import (
     ProducerEvidence,
 )
 from riverhog_protocol.file_identity import ImmutableFileIdentityDocument
-from riverhog_protocol.paths import CollectionId, normalize_relpath, validate_collection_id
+from riverhog_protocol.paths import CollectionId, normalize_relpath
 from riverhog_protocol.storage_names import ArchiveStoreName
 
 from riverhog_client.client import ApiClient
@@ -368,7 +369,9 @@ class IncrementalCollectionProducer:
         )
         self._heartbeat_interval_seconds = _custody_heartbeat_interval(session)
         self.resumed = bool(session.get("resumed"))
-        self.collection_id = validate_collection_id(session.get("collection_id"))
+        self.collection_id: int = TypeAdapter(CollectionId).validate_python(
+            session.get("collection_id")
+        )
         if str(session.get("state") or "") == "finalized":
             self._finalized = _finalized_receipt(session)
             self._closed = True
@@ -722,10 +725,12 @@ class IncrementalCollectionProducer:
                 )
                 validate_collection_upload_artifact_custody_receipt(
                     self.collection_id,
-                    ImmutableFileIdentityDocument(
-                        path=source.path,
-                        bytes=source.bytes,
-                        sha256=source.sha256,
+                    ImmutableFileIdentityDocument.model_validate(
+                        {
+                            "path": source.path,
+                            "bytes": str(source.bytes),
+                            "sha256": source.sha256,
+                        }
                     ),
                     receipt,
                 )
@@ -993,7 +998,7 @@ def _registered_identity(source: _Source) -> tuple[str, int, str, str]:
 def _source_registration(source: _Source) -> dict[str, object]:
     return {
         "path": source.path,
-        "bytes": source.bytes,
+        "bytes": str(source.bytes),
         "sha256": source.sha256,
         **({"raw_parts": source.raw_parts} if source.raw_parts is not None else {}),
         **({"provenance": source.provenance} if source.provenance else {}),

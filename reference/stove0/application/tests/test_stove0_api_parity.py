@@ -363,7 +363,7 @@ class _LifecycleAdmission:
         self.intent = AdmissionIntent.seal(
             policy=self.policy,
             collection=CatalogSyncDescriptor(
-                collection_id=1,
+                collection_id="1",
                 archive_root_sha256="1" * 64,
                 content_identity="2" * 64,
                 description=None,
@@ -459,7 +459,7 @@ def _lifecycle_composition() -> Stove0Composition:
 
 def _collection_root(collection_id: int = 1) -> CollectionRootRef:
     return CollectionRootRef(
-        collection_id=collection_id,
+        collection_id=str(collection_id),
         archive_root_sha256="1" * 64,
         content_identity="2" * 64,
     )
@@ -480,7 +480,7 @@ def _evaluation_definition() -> EvaluationDefinition:
             recipe=RecipeRef(id="fixture.recipe/v1", revision=1, sha256="3" * 64),
             inputs=(
                 CollectionRootRef(
-                    collection_id=1,
+                    collection_id=str(1),
                     archive_root_sha256="1" * 64,
                     content_identity="2" * 64,
                 ),
@@ -515,7 +515,7 @@ def _fixture_work(recipe_id: str = "stove0.conformance-media/v1") -> WorkIdentit
             recipe=RecipeRef(id=recipe_id, revision=1, sha256="3" * 64),
             inputs=(
                 CollectionRootRef(
-                    collection_id=1,
+                    collection_id=str(1),
                     archive_root_sha256="1" * 64,
                     content_identity="2" * 64,
                 ),
@@ -668,7 +668,7 @@ class _LifecycleTargetCallbacks:
             id="source",
             role="fixture.source/v1",
             collection=CollectionRootRef(
-                collection_id=1,
+                collection_id=str(1),
                 archive_root_sha256="1" * 64,
                 content_identity="2" * 64,
             ),

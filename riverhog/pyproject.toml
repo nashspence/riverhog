@@ -28,6 +28,7 @@ dependencies = [
   "pydantic>=2.7,<3.0",
   "riverhog-age>=0.1,<0.2",
   "riverhog-archive-contracts>=0.1,<0.2",
+  "riverhog-canonical-json>=0.1,<0.2",
   "riverhog-protocol>=0.1,<0.2",
   "riverhog-provenance>=0.1,<0.2",
   "riverhog-provenance-contracts>=0.1,<0.2",
@@ -49,6 +50,7 @@ http-api-contracts = { workspace = true }
 lifecycle-events = { workspace = true }
 riverhog-age = { workspace = true }
 riverhog-archive-contracts = { workspace = true }
+riverhog-canonical-json = { workspace = true }
 riverhog-protocol = { workspace = true }
 riverhog-provenance = { workspace = true }
 riverhog-provenance-contracts = { workspace = true }

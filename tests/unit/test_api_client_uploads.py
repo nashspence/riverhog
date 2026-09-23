@@ -25,21 +25,21 @@ def _volume(sequence: int, units: int) -> _Volume:
     return _Volume(
         summary=CollectionUploadVolumeSummaryDocument(
             volume_id=volume_id,
-            sequence=sequence,
+            sequence=f"{sequence:064x}",
             kind="pack",
         ),
         plan_sha256="a" * 64,
         units=tuple(
             CollectionUploadUnitWorkDocument.model_validate(
                 {
-                    "unit": unit,
-                    "payload_bytes": 1,
-                    "plaintext_bytes": 1,
+                    "unit": str(unit),
+                    "payload_bytes": "1",
+                    "plaintext_bytes": "1",
                     "sources": [
                         {
                             "path": f"source-{sequence}.bin",
-                            "offset": unit,
-                            "bytes": 1,
+                            "offset": str(unit),
+                            "bytes": "1",
                             "artifact_sha256": "b" * 64,
                         }
                     ],
@@ -90,10 +90,10 @@ class UploadApi:
                 )
         work = work[:limit]
         return CollectionUploadWorkBatchDocument(
-            collection_id=collection_id,
+            collection_id=str(collection_id),
             planning_complete=True,
             complete=not work,
-            committed_payload_bytes=sum(self.committed.values()),
+            committed_payload_bytes=str(sum(self.committed.values())),
             work=work,
         )
 

@@ -25,8 +25,8 @@ from tests.provenance_observer import native_provenance_observer
 RUNNER = CliRunner()
 COLLECTION_ID = 1
 REGISTRATION_CONSTRAINTS = {
-    "pack_member_bytes": 8,
-    "raw_part_plaintext_bytes": 5 * 1024 * 1024,
+    "pack_member_bytes": "8",
+    "raw_part_plaintext_bytes": str(5 * 1024 * 1024),
 }
 
 
@@ -174,20 +174,20 @@ def test_upload_unit_content_concatenates_planned_source_ranges(tmp_path: Path) 
             root,
             CollectionUploadUnitWorkDocument.model_validate(
                 {
-                    "unit": 0,
-                    "payload_bytes": 7,
-                    "plaintext_bytes": 7,
+                    "unit": "0",
+                    "payload_bytes": "7",
+                    "plaintext_bytes": "7",
                     "sources": [
                         {
                             "path": "a.bin",
-                            "offset": 1,
-                            "bytes": 3,
+                            "offset": "1",
+                            "bytes": "3",
                             "artifact_sha256": hashlib.sha256(b"alpha").hexdigest(),
                         },
                         {
                             "path": "b.bin",
-                            "offset": 2,
-                            "bytes": 4,
+                            "offset": "2",
+                            "bytes": "4",
                             "artifact_sha256": hashlib.sha256(b"bravox").hexdigest(),
                         },
                     ],
@@ -209,14 +209,14 @@ def test_upload_unit_recovers_when_commit_response_is_lost(
     committed = False
     unit = CollectionUploadUnitWorkDocument.model_validate(
         {
-            "unit": 0,
-            "payload_bytes": 7,
-            "plaintext_bytes": 7,
+            "unit": "0",
+            "payload_bytes": "7",
+            "plaintext_bytes": "7",
             "sources": [
                 {
                     "path": "clip.bin",
-                    "offset": 0,
-                    "bytes": 7,
+                    "offset": "0",
+                    "bytes": "7",
                     "artifact_sha256": hashlib.sha256(b"content").hexdigest(),
                 }
             ],
@@ -226,7 +226,7 @@ def test_upload_unit_recovers_when_commit_response_is_lost(
     assignment = CollectionUploadUnitAssignmentDocument(
         volume={
             "volume_id": f"pack-{0:064x}",
-            "sequence": 0,
+            "sequence": f"{0:064x}",
             "kind": "pack",
         },
         plan_sha256="a" * 64,
@@ -289,7 +289,7 @@ def test_direct_collection_upload_registers_plans_and_finalizes(
             with prepare_initial_collection_tags(requested_tags) as prepared:
                 assert _kwargs["initial_tag_set_identity"] == prepared.tag_set_identity
             return {
-                "collection_id": COLLECTION_ID,
+                "collection_id": str(COLLECTION_ID),
                 "state": "open",
                 "registration_constraints": REGISTRATION_CONSTRAINTS,
             }
@@ -352,25 +352,25 @@ def test_direct_collection_upload_registers_plans_and_finalizes(
                     {
                         "volume": {
                             "volume_id": f"pack-{0:064x}",
-                            "sequence": 0,
+                            "sequence": f"{0:064x}",
                             "kind": "pack",
                         },
                         "plan_sha256": "a" * 64,
                         "unit": {
-                            "unit": 0,
-                            "payload_bytes": 10,
-                            "plaintext_bytes": 10,
+                            "unit": "0",
+                            "payload_bytes": "10",
+                            "plaintext_bytes": "10",
                             "sources": [
                                 {
                                     "path": "a.txt",
-                                    "offset": 0,
-                                    "bytes": 5,
+                                    "offset": "0",
+                                    "bytes": "5",
                                     "artifact_sha256": hashlib.sha256(b"alpha").hexdigest(),
                                 },
                                 {
                                     "path": "b.txt",
-                                    "offset": 0,
-                                    "bytes": 5,
+                                    "offset": "0",
+                                    "bytes": "5",
                                     "artifact_sha256": hashlib.sha256(b"bravo").hexdigest(),
                                 },
                             ],
@@ -381,10 +381,10 @@ def test_direct_collection_upload_registers_plans_and_finalizes(
             )
             return CollectionUploadWorkBatchDocument.model_validate(
                 {
-                    "collection_id": collection_id,
+                    "collection_id": str(collection_id),
                     "planning_complete": True,
                     "complete": not work,
-                    "committed_payload_bytes": 10 if committed else 0,
+                    "committed_payload_bytes": "10" if committed else "0",
                     "work": work[:limit],
                 }
             )

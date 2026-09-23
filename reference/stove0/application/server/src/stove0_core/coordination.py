@@ -364,10 +364,12 @@ def _output_selection(record: WorkRecord, store: WorkStore) -> ArtifactSelection
 
 
 def _collection_root(output: OutputCollectionRef) -> CollectionRootRef:
-    return CollectionRootRef(
-        collection_id=output.collection_id,
-        archive_root_sha256=output.archive_root_sha256,
-        content_identity=output.content_identity,
+    return CollectionRootRef.model_validate(
+        {
+            "collection_id": str(output.collection_id),
+            "archive_root_sha256": output.archive_root_sha256,
+            "content_identity": output.content_identity,
+        }
     )
 
 

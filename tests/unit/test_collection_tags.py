@@ -597,7 +597,7 @@ def test_tag_removal_emits_exact_loss_of_visibility_without_event_tag_snapshots(
         principal=principal,
     )
 
-    assert changes.changes == [CatalogSyncDelete(collection_id=1, revision="2")]
+    assert changes.changes == [CatalogSyncDelete(collection_id="1", revision="2")]
     with session_scope(factory) as session:  # type: ignore[arg-type]
         intervals = list(session.scalars(select(CollectionTagVisibilityRecord)))
         assert len(intervals) == 1

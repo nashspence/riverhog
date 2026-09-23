@@ -28,7 +28,7 @@ def test_assertion_entry_template_validates_at_schema_level(tmp_path: Path, urn_
         previous_sequence=2,
     )
     assert entry["entry_kind"] == "assertion"
-    assert entry["sequence"] == 3
+    assert entry["sequence"] == "3"
     assert entry["body"] == result.assertion_body()
     validate_entry_document(entry)
     encoded = canonical_json(entry)

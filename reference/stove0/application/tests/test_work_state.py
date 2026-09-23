@@ -98,7 +98,7 @@ def _sha(character: str) -> str:
 
 def _root() -> CollectionRootRef:
     return CollectionRootRef(
-        collection_id=1,
+        collection_id=str(1),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
     )
@@ -862,7 +862,7 @@ def test_one_record_carries_observation_plan_execution_verification_and_completi
         disposition_set=disposition_set,
     )
     output_collection = OutputCollectionRef(
-        collection_id=7,
+        collection_id=str(7),
         archive_root_sha256=_sha("6"),
         content_identity=_sha("7"),
         derivation_sha256=derivation.sha256,
@@ -1111,7 +1111,7 @@ def test_stale_revision_and_invalid_success_order_fail_closed() -> None:
         service.verify_output(
             record.work_id,
             OutputCollectionRef(
-                collection_id=7,
+                collection_id=str(7),
                 archive_root_sha256=_sha("6"),
                 content_identity=_sha("7"),
                 derivation_sha256=_sha("8"),
@@ -1121,7 +1121,7 @@ def test_stale_revision_and_invalid_success_order_fail_closed() -> None:
                     job_id=record.work_id,
                     production_sha256=_sha("9"),
                     output_collection=OutputCollectionRef(
-                        collection_id=7,
+                        collection_id=str(7),
                         archive_root_sha256=_sha("6"),
                         content_identity=_sha("7"),
                         derivation_sha256=_sha("8"),
@@ -1288,7 +1288,7 @@ def test_sql_runnable_scan_ignores_terminal_history_and_uses_a_keyset(
                 recipe=RecipeRef(id="fixture.recipe/v1", revision=1, sha256=_sha("3")),
                 inputs=(
                     CollectionRootRef(
-                        collection_id=index + 1,
+                        collection_id=str(index + 1),
                         archive_root_sha256=f"{index + 1:064x}",
                         content_identity=_sha("2"),
                     ),

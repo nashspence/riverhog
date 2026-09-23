@@ -252,7 +252,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     missing_archive_source = transport.post(
         "/v1/archive/copies",
         headers=operator_headers,
-        json={"collection_id": 999, "destination_store": "secondary"},
+        json={"collection_id": "999", "destination_store": "secondary"},
     )
     assert missing_archive_source.status_code == 404
     assert missing_archive_source.json()["error"]["code"] == "not_found"
@@ -382,7 +382,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         [
             {
                 "path": binding.path,
-                "bytes": binding.bytes,
+                "bytes": str(binding.bytes),
                 "sha256": binding.sha256,
                 "provenance": {
                     "status": "captured",
@@ -422,7 +422,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     _finalize_upload(container, operator, collection_id)
     assert operator.get_collection_upload_session(collection_id)["state"] == "finalized"
     source_collection = operator.get_collection(collection_id)
-    assert source_collection["id"] == collection_id
+    assert source_collection["id"] == str(collection_id)
     assert source_collection["description"] == "Qualification source collection"
     updated_description = operator.replace_collection_description(
         collection_id,
@@ -685,7 +685,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     source_artifact = {
         "collection": source_identity.as_dict(),
         "path": binding.path,
-        "bytes": binding.bytes,
+        "bytes": str(binding.bytes),
         "sha256": binding.sha256,
     }
 
@@ -1044,7 +1044,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         [
             {
                 "path": path,
-                "bytes": byte_count,
+                "bytes": str(byte_count),
                 "sha256": sha256,
                 "provenance": (
                     {
@@ -1146,7 +1146,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     )
     assert operator.release_processing_claim(claim_id, fence=claim_fence)["state"] == "released"
     outcomes = operator.get_processing_claim(outcome_claim_id)["outcomes"]
-    assert outcomes["count"] == 1
+    assert outcomes["count"] == "1"
     assert outcomes["authority"] is None
     settled_outcomes = operator.settle_processing_claim_outcomes(
         outcome_claim_id,

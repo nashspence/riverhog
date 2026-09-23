@@ -19,6 +19,7 @@ from riverhog_archive_contracts import (
     format_archive_sequence,
     update_archive_sequence_commitment,
 )
+from riverhog_canonical_json import format_scalar
 from riverhog_protocol import (
     COLLECTION_TAG_REQUEST_MEMBERS_MAX,
     CapturedFileProvenanceBinding,
@@ -566,7 +567,7 @@ class SqlAlchemyCollectionUploadService:
             _touch_upload(upload, config=self._config, now=now)
             session.flush()
             return {
-                "collection_id": normalized,
+                "collection_id": format_scalar("sequence63", normalized),
                 "added": added,
                 "tag_count": existing_tag_count + added,
             }
@@ -739,7 +740,7 @@ class SqlAlchemyCollectionUploadService:
                 for current in normalized_files
             ]
             return {
-                "collection_id": normalized_id,
+                "collection_id": format_scalar("sequence63", normalized_id),
                 "ingest_source": upload.ingest_source,
                 "archive_store": upload.archive_store,
                 "encryption_format": upload.encryption_format,
@@ -1103,7 +1104,7 @@ class SqlAlchemyCollectionUploadService:
                 position_of=lambda row: (row.file_order,),
             )
             return {
-                "collection_id": normalized_id,
+                "collection_id": format_scalar("sequence63", normalized_id),
                 "page_size": page_size,
                 "_next_position": (
                     (*next_position, frontier)
@@ -1133,7 +1134,10 @@ class SqlAlchemyCollectionUploadService:
             upload = session.get(CollectionUploadRecord, normalized_id)
             if upload is None:
                 if session.get(CollectionRecord, normalized_id) is not None:
-                    return {"collection_id": normalized_id, "volumes": []}
+                    return {
+                        "collection_id": format_scalar("sequence63", normalized_id),
+                        "volumes": [],
+                    }
                 raise NotFound(f"collection upload session not found: {normalized_id}")
             volumes = list(
                 session.scalars(
@@ -1143,7 +1147,7 @@ class SqlAlchemyCollectionUploadService:
                 )
             )
             return {
-                "collection_id": normalized_id,
+                "collection_id": format_scalar("sequence63", normalized_id),
                 "volumes": [_volume_work_payload(row) for row in volumes],
             }
 
@@ -1158,10 +1162,10 @@ class SqlAlchemyCollectionUploadService:
             if upload is None:
                 if session.get(CollectionRecord, normalized_id) is not None:
                     return {
-                        "collection_id": normalized_id,
+                        "collection_id": format_scalar("sequence63", normalized_id),
                         "planning_complete": True,
                         "complete": True,
-                        "committed_payload_bytes": 0,
+                        "committed_payload_bytes": "0",
                         "work": [],
                     }
                 raise NotFound(f"collection upload session not found: {normalized_id}")
@@ -1194,10 +1198,12 @@ class SqlAlchemyCollectionUploadService:
             )
             work = [_unit_assignment_payload(row) for row in volumes]
             return {
-                "collection_id": normalized_id,
+                "collection_id": format_scalar("sequence63", normalized_id),
                 "planning_complete": planning_complete,
                 "complete": planning_complete and not work,
-                "committed_payload_bytes": upload.uploaded_payload_bytes,
+                "committed_payload_bytes": format_scalar(
+                    "nonnegative", upload.uploaded_payload_bytes
+                ),
                 "work": work,
             }
 
@@ -1589,7 +1595,7 @@ class SqlAlchemyCollectionUploadService:
                     raise NotFound(f"collection upload session not found: {normalized_id}")
                 return {
                     "status": "already_absent",
-                    "collection_id": normalized_id,
+                    "collection_id": format_scalar("sequence63", normalized_id),
                     "files": 0,
                     "bytes": 0,
                     "custody": {"state": "complete"},
@@ -1621,7 +1627,7 @@ class SqlAlchemyCollectionUploadService:
             passphrase_id = upload.passphrase_id
             result = {
                 "status": "discarded",
-                "collection_id": normalized_id,
+                "collection_id": format_scalar("sequence63", normalized_id),
                 "files": plan["files"],
                 "bytes": plan["bytes"],
                 "custody": plan["custody"],
@@ -3414,13 +3420,15 @@ def _advance_catalog_identity(session: Session, upload: CollectionUploadRecord) 
             upload.collection_id,
             upload.provenance_mode,
         )
-        header = PortableCollectionHeader(
-            collection=upload.collection_id,
-            content_identity=upload.catalog_content_identity,
-            encryption_format=upload.encryption_format,
-            passphrase_id=upload.passphrase_id,
-            provenance_mode=provenance_mode,  # type: ignore[arg-type]
-            provenance_identity=upload.provenance_identity,
+        header = PortableCollectionHeader.model_validate(
+            dict(
+                collection=format_scalar("sequence63", upload.collection_id),
+                content_identity=upload.catalog_content_identity,
+                encryption_format=upload.encryption_format,
+                passphrase_id=upload.passphrase_id,
+                provenance_mode=provenance_mode,
+                provenance_identity=upload.provenance_identity,
+            )
         )
         digest.update(canonical_json_bytes(header.model_dump(mode="json")))
     statement = select(CollectionUploadFileRecord).where(
@@ -3450,11 +3458,13 @@ def _advance_catalog_identity(session: Session, upload: CollectionUploadRecord) 
                 if files_seen:
                     digest.update(b",")
                 digest.update(
-                    json.dumps(
-                        {"path": row.path, "bytes": row.bytes, "sha256": row.sha256},
-                        sort_keys=True,
-                        separators=(",", ":"),
-                    ).encode("utf-8")
+                    canonical_json_bytes(
+                        {
+                            "path": row.path,
+                            "bytes": format_scalar("nonnegative", row.bytes),
+                            "sha256": row.sha256,
+                        }
+                    )
                 )
             else:
                 encoded = canonical_json_bytes(
@@ -3649,7 +3659,7 @@ def _advance_catalog_files(session: Session, upload: CollectionUploadRecord) -> 
             raise RuntimeError("catalog file projection order is not contiguous")
         values.append(
             {
-                "collection_id": upload.collection_id,
+                "collection_id": format_scalar("sequence63", upload.collection_id),
                 "path": row.path,
                 "bytes": row.bytes,
                 "sha256": row.sha256,
@@ -3759,7 +3769,7 @@ def _advance_catalog_journals(session: Session, upload: CollectionUploadRecord) 
                 insert(CollectionProvenanceJournalChunkRecord),
                 [
                     {
-                        "collection_id": upload.collection_id,
+                        "collection_id": format_scalar("sequence63", upload.collection_id),
                         "journal_id": journal.journal_id,
                         "ordinal": row.ordinal,
                         "byte_offset": row.byte_offset,
@@ -3799,7 +3809,7 @@ def _advance_catalog_journals(session: Session, upload: CollectionUploadRecord) 
                     insert(CollectionProvenanceJournalAgentRecord),
                     [
                         {
-                            "collection_id": upload.collection_id,
+                            "collection_id": format_scalar("sequence63", upload.collection_id),
                             "journal_id": journal.journal_id,
                             "agent_id": fact.fact_key,
                         }
@@ -3812,7 +3822,7 @@ def _advance_catalog_journals(session: Session, upload: CollectionUploadRecord) 
                     value = json.loads(fact.value_json)
                     values.append(
                         {
-                            "collection_id": upload.collection_id,
+                            "collection_id": format_scalar("sequence63", upload.collection_id),
                             "journal_id": journal.journal_id,
                             "entity_type": value["entity_type"],
                             "entity_id": value["entity_id"],
@@ -3871,7 +3881,7 @@ def _advance_catalog_provenance_relations(
         value = json.loads(fact.value_json)
         values.append(
             {
-                "collection_id": upload.collection_id,
+                "collection_id": format_scalar("sequence63", upload.collection_id),
                 "from_journal_id": fact.journal_id,
                 "to_journal_id": value["journal_id"],
                 "entry_id": value["entry_id"],
@@ -3910,7 +3920,7 @@ def _advance_catalog_bindings(session: Session, upload: CollectionUploadRecord) 
         insert(CollectionFileProvenanceRecord),
         [
             {
-                "collection_id": upload.collection_id,
+                "collection_id": format_scalar("sequence63", upload.collection_id),
                 "path": row.path,
                 "status": row.provenance_status,
                 "journal_id": row.provenance_journal_id,
@@ -4043,7 +4053,7 @@ def _advance_catalog_file_objects(session: Session, upload: CollectionUploadReco
             insert(CollectionArchiveFileObjectRecord),
             [
                 {
-                    "collection_id": upload.collection_id,
+                    "collection_id": format_scalar("sequence63", upload.collection_id),
                     "store": upload.archive_store,
                     "path": member.path,
                     "sequence": 0,
@@ -4344,11 +4354,11 @@ def _transform_derivation_evidence(
     next_ordinal = start + len(values)
     document: dict[str, object] = {
         "authority": authority.as_dict(),
-        "start_ordinal": start,
+        "start_ordinal": format_scalar("nonnegative", start),
         field: values,
     }
     if next_ordinal < total:
-        document["next_ordinal"] = next_ordinal
+        document["next_ordinal"] = format_scalar("nonnegative", next_ordinal)
     return canonical_json_bytes(document)
 
 
@@ -5607,17 +5617,17 @@ def _mark_finalization_ready(upload: CollectionUploadRecord, *, now: str) -> Non
     upload.archive_failure = None
 
 
-def _registration_constraints_payload(policy: CollectionVolumePolicy) -> dict[str, int]:
+def _registration_constraints_payload(policy: CollectionVolumePolicy) -> dict[str, str]:
     return {
-        "pack_member_bytes": policy.pack_member_bytes,
-        "raw_part_plaintext_bytes": policy.raw_part_plaintext_bytes,
+        "pack_member_bytes": format_scalar("nonnegative", policy.pack_member_bytes),
+        "raw_part_plaintext_bytes": format_scalar("nonnegative", policy.raw_part_plaintext_bytes),
     }
 
 
 def _file_payload(record: CollectionUploadFileRecord) -> dict[str, object]:
     return {
         "path": record.path,
-        "bytes": record.bytes,
+        "bytes": format_scalar("nonnegative", record.bytes),
         "sha256": record.sha256,
         "provenance": (
             {
@@ -5650,8 +5660,8 @@ def _raw_digest_progress(record: CollectionUploadFileRecord) -> dict[str, object
     expected = int(record.raw_part_count)
     return {
         "path": record.path,
-        "accepted_parts": accepted,
-        "expected_parts": expected,
+        "accepted_parts": format_scalar("nonnegative", accepted),
+        "expected_parts": format_scalar("nonnegative", expected),
         "complete": accepted == expected,
     }
 
@@ -5662,9 +5672,9 @@ def _journal_payload(
     payload: dict[str, object] = {
         "journal_id": record.journal_id,
         "state": record.state,
-        "bytes": record.bytes,
+        "bytes": format_scalar("nonnegative", record.bytes),
         "sha256": record.sha256,
-        "accepted_bytes": record.accepted_bytes,
+        "accepted_bytes": format_scalar("nonnegative", record.accepted_bytes),
         "failure": record.failure,
     }
     if record.state == "sealed":
@@ -5672,7 +5682,11 @@ def _journal_payload(
             {
                 "current_state_id": record.current_state_id,
                 "current_path": record.current_path,
-                "current_bytes": record.current_bytes,
+                "current_bytes": (
+                    format_scalar("nonnegative", record.current_bytes)
+                    if record.current_bytes is not None
+                    else None
+                ),
                 "current_sha256": record.current_sha256,
             }
         )
@@ -5992,7 +6006,7 @@ def _seal_validated_upload_journal(
 def _volume_summary(plan: PackVolumePlan | RawVolumePlan) -> dict[str, object]:
     return {
         "volume_id": plan.volume_id,
-        "sequence": plan.sequence,
+        "sequence": format_archive_sequence(plan.sequence),
         "kind": "pack" if isinstance(plan, PackVolumePlan) else "segment",
     }
 
@@ -6025,14 +6039,14 @@ def _volume_work_payload(record: CollectionArchiveObjectUploadRecord) -> dict[st
         pack_plan = parse_pack_volume_plan(record.plan_json)
         units = [
             {
-                "unit": current.unit,
-                "payload_bytes": current.payload_bytes,
-                "plaintext_bytes": current.plaintext_bytes,
+                "unit": format_scalar("nonnegative", current.unit),
+                "payload_bytes": format_scalar("nonnegative", current.payload_bytes),
+                "plaintext_bytes": format_scalar("nonnegative", current.plaintext_bytes),
                 "sources": [
                     {
                         "path": source.path,
-                        "offset": 0,
-                        "bytes": source.bytes,
+                        "offset": "0",
+                        "bytes": format_scalar("nonnegative", source.bytes),
                         "artifact_sha256": source.sha256,
                     }
                     for source in current.sources
@@ -6052,14 +6066,16 @@ def _volume_work_payload(record: CollectionArchiveObjectUploadRecord) -> dict[st
             )
             units.append(
                 {
-                    "unit": unit,
-                    "payload_bytes": byte_count,
-                    "plaintext_bytes": byte_count,
+                    "unit": format_scalar("nonnegative", unit),
+                    "payload_bytes": format_scalar("nonnegative", byte_count),
+                    "plaintext_bytes": format_scalar("nonnegative", byte_count),
                     "sources": [
                         {
                             "path": raw_plan.source_path,
-                            "offset": raw_plan.file_offset + unit * raw_part_bytes,
-                            "bytes": byte_count,
+                            "offset": format_scalar(
+                                "nonnegative", raw_plan.file_offset + unit * raw_part_bytes
+                            ),
+                            "bytes": format_scalar("nonnegative", byte_count),
                             "artifact_sha256": raw_plan.file_sha256,
                         }
                     ],
@@ -6068,12 +6084,12 @@ def _volume_work_payload(record: CollectionArchiveObjectUploadRecord) -> dict[st
             )
     return {
         "volume_id": record.object_id,
-        "sequence": record.sequence,
+        "sequence": format_archive_sequence(record.sequence),
         "kind": record.kind,
         "state": record.state,
         "plan_sha256": record.plan_sha256,
-        "plaintext_bytes": record.plaintext_bytes,
-        "source_bytes": record.source_bytes,
+        "plaintext_bytes": format_scalar("nonnegative", record.plaintext_bytes),
+        "source_bytes": format_scalar("nonnegative", record.source_bytes),
         "units": units,
     }
 
@@ -6089,14 +6105,14 @@ def _unit_work_payload(
             raise NotFound(f"collection upload unit not found: {unit}")
         current = descriptors[unit]
         return {
-            "unit": current.unit,
-            "payload_bytes": current.payload_bytes,
-            "plaintext_bytes": current.plaintext_bytes,
+            "unit": format_scalar("nonnegative", current.unit),
+            "payload_bytes": format_scalar("nonnegative", current.payload_bytes),
+            "plaintext_bytes": format_scalar("nonnegative", current.plaintext_bytes),
             "sources": [
                 {
                     "path": source.path,
-                    "offset": 0,
-                    "bytes": source.bytes,
+                    "offset": "0",
+                    "bytes": format_scalar("nonnegative", source.bytes),
                     "artifact_sha256": source.sha256,
                 }
                 for source in current.sources
@@ -6112,14 +6128,16 @@ def _unit_work_payload(
             plan.plaintext_bytes - unit * record.unit_plaintext_bytes,
         )
         return {
-            "unit": unit,
-            "payload_bytes": byte_count,
-            "plaintext_bytes": byte_count,
+            "unit": format_scalar("nonnegative", unit),
+            "payload_bytes": format_scalar("nonnegative", byte_count),
+            "plaintext_bytes": format_scalar("nonnegative", byte_count),
             "sources": [
                 {
                     "path": plan.source_path,
-                    "offset": plan.file_offset + unit * record.unit_plaintext_bytes,
-                    "bytes": byte_count,
+                    "offset": format_scalar(
+                        "nonnegative", plan.file_offset + unit * record.unit_plaintext_bytes
+                    ),
+                    "bytes": format_scalar("nonnegative", byte_count),
                     "artifact_sha256": plan.file_sha256,
                 }
             ],
@@ -6134,7 +6152,7 @@ def _unit_assignment_payload(record: CollectionArchiveObjectUploadRecord) -> dic
     return {
         "volume": {
             "volume_id": record.object_id,
-            "sequence": record.sequence,
+            "sequence": format_archive_sequence(record.sequence),
             "kind": record.kind,
         },
         "plan_sha256": record.plan_sha256,
@@ -6446,7 +6464,7 @@ def _upload_list_payload(
     custodied_files, custodied_bytes = _custody_stats(session, upload.collection_id)
     tag_count = _upload_tag_count(session, upload.collection_id)
     return {
-        "collection_id": upload.collection_id,
+        "collection_id": format_scalar("sequence63", upload.collection_id),
         "created_at": upload.opened_at,
         "ingest_source": upload.ingest_source,
         "description": upload.description,
@@ -6548,7 +6566,7 @@ def _orphan_discard_plan(
             blockers.append("owning processing claim remains active until " + claim.expires_at)
     return {
         "status": "blocked" if blockers else "ready",
-        "collection_id": collection_id,
+        "collection_id": format_scalar("sequence63", collection_id),
         "warning": _CUSTODY_LOSS_WARNING,
         "expires_at": expires_at,
         "state": upload.state,
@@ -6658,7 +6676,7 @@ def _upload_payload(
         ).where(CollectionArchiveObjectUploadRecord.collection_id == upload.collection_id)
     ).one()
     payload: dict[str, object] = {
-        "collection_id": upload.collection_id,
+        "collection_id": format_scalar("sequence63", upload.collection_id),
         "created_at": upload.opened_at,
         "ingest_source": upload.ingest_source,
         "description": upload.description,
@@ -6756,7 +6774,7 @@ def _finalized_payload(
     if manifest_sha256 is None:
         raise RuntimeError("finalized collection has no immutable archive-root identity")
     summary = {
-        "id": collection.id,
+        "id": format_scalar("sequence63", collection.id),
         "created_at": collection.created_at,
         "description": collection.description,
         "description_revision": collection.description_revision,
@@ -6777,7 +6795,7 @@ def _finalized_payload(
         "archive_copy_count": archive_copy_count,
     }
     payload: dict[str, object] = {
-        "collection_id": collection.id,
+        "collection_id": format_scalar("sequence63", collection.id),
         "created_at": collection.created_at,
         "ingest_source": collection.ingest_source,
         "description": collection.description,

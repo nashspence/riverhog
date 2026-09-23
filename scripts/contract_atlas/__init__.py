@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 from collections.abc import Mapping, Sequence
 from pathlib import Path
@@ -236,9 +235,6 @@ def build_atlas(
     boundaries = cast(Mapping[str, object], normalized_projection["boundaries"])
     identities: dict[str, object] = {
         "boundary_canonical_sha256": canonical_sha256(boundaries),
-        "boundary_legacy_sha256": hashlib.sha256(
-            json.dumps(boundaries, separators=(",", ":"), sort_keys=True).encode()
-        ).hexdigest(),
         "external_contract_sha256": canonical_sha256(normalized_projection["external_contract"]),
         "semantic_contract_sha256": canonical_sha256(semantic_identity),
         "coverage_sha256": canonical_sha256(coverage_identity),

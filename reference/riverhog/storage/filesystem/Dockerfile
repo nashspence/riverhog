@@ -23,6 +23,7 @@ WORKDIR /workspace
 COPY pyproject.toml uv.lock ./
 COPY reference/riverhog/storage/filesystem reference/riverhog/storage/filesystem
 COPY packages/http-api-contracts packages/http-api-contracts
+COPY packages/riverhog-canonical-json packages/riverhog-canonical-json
 COPY packages/riverhog-storage-adapter-asgi-support packages/riverhog-storage-adapter-asgi-support
 COPY packages/riverhog-storage-adapter-protocol packages/riverhog-storage-adapter-protocol
 COPY packages/riverhog-storage-adapter-support packages/riverhog-storage-adapter-support

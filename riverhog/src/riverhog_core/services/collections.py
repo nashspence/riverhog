@@ -6,6 +6,7 @@ from typing import Any
 
 from http_api_contracts import closed_literal_values
 from riverhog_archive_contracts import normalize_passphrase_id
+from riverhog_canonical_json import format_scalar
 from riverhog_protocol import (
     COLLECTION_TAG_REQUEST_MEMBERS_MAX,
     CollectionSort,
@@ -276,7 +277,7 @@ class SqlAlchemyCollectionService:
                 position_of=lambda row: (row[0].store,),
             )
             return {
-                "collection_id": normalized,
+                "collection_id": format_scalar("sequence63", normalized),
                 "page_size": page_size,
                 "_next_position": next_position,
                 "copies": [_collection_archive_copy_payload(row) for row in rows],

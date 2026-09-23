@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import re
 from datetime import UTC, datetime, timedelta
 
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_protocol.errors import BadRequest
 
 PLAN_TTL = timedelta(minutes=15)
@@ -15,7 +15,7 @@ def plan_challenge(
     plan: dict[str, object],
     expires_at: datetime,
 ) -> str:
-    payload = json.dumps(plan, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    payload = canonical_json_bytes(plan)
     return f"{prefix}-{int(expires_at.timestamp())}-{hashlib.sha256(payload).hexdigest()}"
 
 

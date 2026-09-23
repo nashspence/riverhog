@@ -4,11 +4,12 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import re
 from collections import Counter
 from collections.abc import Iterable, Mapping
 from typing import Any
+
+from riverhog_canonical_json import canonical_json_bytes
 
 SCHEMA = "riverhog-extent-contract/v1"
 EXTENT_DECLARATION = "x-riverhog-extent"
@@ -136,17 +137,7 @@ def _pointer(*parts: str) -> str:
 
 
 def _canonical_sha256(value: object) -> str:
-    def normalize_numbers(current: object) -> object:
-        if isinstance(current, float) and current.is_integer():
-            return int(current)
-        if isinstance(current, Mapping):
-            return {key: normalize_numbers(child) for key, child in current.items()}
-        if isinstance(current, list):
-            return [normalize_numbers(child) for child in current]
-        return current
-
-    payload = json.dumps(normalize_numbers(value), separators=(",", ":"), sort_keys=True).encode()
-    return hashlib.sha256(payload).hexdigest()
+    return hashlib.sha256(canonical_json_bytes(value)).hexdigest()
 
 
 def _schema_children(schema: Mapping[str, Any]) -> Iterable[tuple[str, Mapping[str, Any]]]:

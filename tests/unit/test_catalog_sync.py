@@ -152,7 +152,7 @@ def test_catalog_sync_bootstrap_and_follow_are_exact_bounded_authorities(
     catchup = service.changes(cursor=final.changes_cursor, limit=1, principal=PRINCIPAL)
     assert catchup.changes == [
         CatalogSyncUpsert(
-            collection_id=4,
+            collection_id="4",
             archive_root_sha256=f"{4:064x}",
             content_identity=f"{4:064x}",
             description=None,
@@ -185,7 +185,7 @@ def test_catalog_sync_bootstrap_and_follow_are_exact_bounded_authorities(
         session.delete(collection)
 
     followed = service.changes(cursor=catchup.next_cursor, limit=1, principal=PRINCIPAL)
-    assert followed.changes == [CatalogSyncDelete(collection_id=2, revision="5")]
+    assert followed.changes == [CatalogSyncDelete(collection_id="2", revision="5")]
     assert followed.caught_up is True
 
 
@@ -339,7 +339,7 @@ class _ReplicaApi:
             authorization_view_identity="b" * 64,
             collections=[
                 CatalogSyncDescriptor(
-                    collection_id=1,
+                    collection_id="1",
                     archive_root_sha256="c" * 64,
                     content_identity="d" * 64,
                     description="Reference collection",
@@ -460,7 +460,7 @@ def test_catalog_replica_rejects_cross_page_reordering(tmp_path: Path) -> None:
                     authorization_view_identity="b" * 64,
                     collections=[
                         CatalogSyncDescriptor(
-                            collection_id=2,
+                            collection_id="2",
                             archive_root_sha256="c" * 64,
                             content_identity="d" * 64,
                             description=None,
@@ -479,7 +479,7 @@ def test_catalog_replica_rejects_cross_page_reordering(tmp_path: Path) -> None:
                 authorization_view_identity="b" * 64,
                 collections=[
                     CatalogSyncDescriptor(
-                        collection_id=1,
+                        collection_id="1",
                         archive_root_sha256="e" * 64,
                         content_identity="f" * 64,
                         description=None,
@@ -518,7 +518,7 @@ def test_catalog_replica_reclaims_settled_tombstones_in_bounded_steps(
             return CatalogSyncChangePage(
                 source_identity="a" * 64,
                 authorization_view_identity="b" * 64,
-                changes=[CatalogSyncDelete(collection_id=1, revision="2")],
+                changes=[CatalogSyncDelete(collection_id="1", revision="2")],
                 next_cursor="changes-3",
                 caught_up=True,
                 through_revision="2",
@@ -608,7 +608,7 @@ def test_catalog_sync_documents_fail_closed_on_ambiguous_continuations() -> None
         )
     with pytest.raises(ValidationError):
         CatalogSyncDescriptor(
-            collection_id=1,
+            collection_id="1",
             archive_root_sha256="c" * 64,
             content_identity="d" * 64,
             description=None,
@@ -619,7 +619,7 @@ def test_catalog_sync_documents_fail_closed_on_ambiguous_continuations() -> None
             revision="0",
         )
     boundary = CatalogSyncDescriptor(
-        collection_id=1,
+        collection_id="1",
         archive_root_sha256="c" * 64,
         content_identity="d" * 64,
         description=None,
@@ -632,7 +632,7 @@ def test_catalog_sync_documents_fail_closed_on_ambiguous_continuations() -> None
     assert boundary.revision == str(MAX_CATALOG_SYNC_REVISION)
     with pytest.raises(ValidationError):
         CatalogSyncDescriptor(
-            collection_id=1,
+            collection_id="1",
             archive_root_sha256="c" * 64,
             content_identity="d" * 64,
             description=None,

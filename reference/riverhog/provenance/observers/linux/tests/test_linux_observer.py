@@ -56,7 +56,7 @@ def test_live_linux_observation_is_riverhog_provenance_valid(tmp_path: Path, urn
     validate_graph_fragment(fragment)
 
     state = result.state
-    assert state["content"]["size_bytes"] == len(content)
+    assert state["content"]["size_bytes"] == str(len(content))
     assert state["content"]["digests"][0]["value"] == hashlib.sha256(content).hexdigest()
     assert state["filesystem_metadata"]["access"]["posix_mode"] == "0644"
     assert result.capture["consistency"] == "verified_unchanged"
@@ -190,8 +190,8 @@ def test_linux_acl_external_evidence_is_not_silently_empty(tmp_path: Path, urn_f
         if row["kind"] == "acl" and row["source"]["api"] == "acl_get_fd(3)"
     ]
     if acl_rows:
-        assert acl_rows[0]["observed_byte_length"] > 0
-        assert acl_rows[0]["value"]["byte_length"] > 0
+        assert int(acl_rows[0]["observed_byte_length"]) > 0
+        assert int(acl_rows[0]["value"]["byte_length"]) > 0
 
 
 def test_primary_read_length_mismatch_is_never_accepted_as_stable(

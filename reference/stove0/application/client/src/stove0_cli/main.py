@@ -534,10 +534,12 @@ def _collection_roots(values: list[str]) -> tuple[CollectionRootRef, ...]:
         collection_id, archive_root_sha256, content_identity = fields
         try:
             roots.append(
-                CollectionRootRef(
-                    collection_id=int(collection_id),
-                    archive_root_sha256=archive_root_sha256,
-                    content_identity=content_identity,
+                CollectionRootRef.model_validate(
+                    {
+                        "collection_id": collection_id,
+                        "archive_root_sha256": archive_root_sha256,
+                        "content_identity": content_identity,
+                    }
                 )
             )
         except ValueError as exc:

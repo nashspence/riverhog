@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import unicodedata
 from typing import Annotated, Any, Literal, Self
 
@@ -15,6 +14,7 @@ from pydantic import (
     StringConstraints,
     model_validator,
 )
+from riverhog_canonical_json import canonical_json_bytes, parse_identity_json
 
 COLLECTION_DESCRIPTION_DOCUMENT_FORMAT: Literal["riverhog-collection-description/v1"] = (
     "riverhog-collection-description/v1"
@@ -29,7 +29,7 @@ MAX_COLLECTION_DESCRIPTION_REVISION = 9_007_199_254_740_991
 def _maximum_document_bytes() -> int:
     """Return the exact maximum canonical document size over the accepted domain."""
 
-    fixed = json.dumps(
+    fixed = canonical_json_bytes(
         {
             "archive_root_sha256": "0" * 64,
             "description": "",
@@ -37,10 +37,7 @@ def _maximum_document_bytes() -> int:
             "format": COLLECTION_DESCRIPTION_DOCUMENT_FORMAT,
             "revision": MAX_COLLECTION_DESCRIPTION_REVISION,
         },
-        ensure_ascii=False,
-        sort_keys=True,
-        separators=(",", ":"),
-    ).encode("utf-8")
+    )
     # Each accepted UTF-8 byte contributes at most two canonical JSON bytes: the
     # one-byte quote, reverse solidus, tab, or line-feed cases require escaping;
     # every accepted multibyte Unicode scalar is emitted without ASCII escaping.
@@ -74,7 +71,13 @@ def validate_collection_description(value: str) -> str:
         raise ValueError("collection description exceeds its UTF-8 byte limit")
     for character in value:
         codepoint = ord(character)
-        if codepoint <= 0x08 or 0x0B <= codepoint <= 0x1F or 0x7F <= codepoint <= 0x9F:
+        if (
+            codepoint <= 0x08
+            or 0x0B <= codepoint <= 0x1F
+            or 0x7F <= codepoint <= 0x9F
+            or 0xFDD0 <= codepoint <= 0xFDEF
+            or codepoint & 0xFFFF >= 0xFFFE
+        ):
             raise ValueError("collection description contains a control character")
     return value
 
@@ -102,17 +105,14 @@ def _description_authority_bytes(
     revision: int,
     description: str | None,
 ) -> bytes:
-    return json.dumps(
+    return canonical_json_bytes(
         {
             "archive_root_sha256": archive_root_sha256,
             "description": description,
             "format": COLLECTION_DESCRIPTION_DOCUMENT_FORMAT,
             "revision": revision,
         },
-        ensure_ascii=False,
-        sort_keys=True,
-        separators=(",", ":"),
-    ).encode("utf-8")
+    )
 
 
 def collection_description_identity(
@@ -197,20 +197,15 @@ class CollectionDescriptionDocument(BaseModel):
         )
 
     def to_json_bytes(self) -> bytes:
-        return json.dumps(
-            self.model_dump(mode="json"),
-            ensure_ascii=False,
-            sort_keys=True,
-            separators=(",", ":"),
-        ).encode("utf-8")
+        return canonical_json_bytes(self.model_dump(mode="json"))
 
     @classmethod
     def from_json_bytes(cls, content: bytes | str) -> CollectionDescriptionDocument:
         try:
             encoded = content if isinstance(content, bytes) else content.encode("utf-8")
-            value: Any = json.loads(encoded)
+            value: Any = parse_identity_json(encoded)
             document = cls.model_validate(value)
-        except (UnicodeError, json.JSONDecodeError, ValueError) as exc:
+        except (UnicodeError, ValueError) as exc:
             raise ValueError("collection description document is invalid") from exc
         if document.to_json_bytes() != encoded:
             raise ValueError("collection description document is not canonical")

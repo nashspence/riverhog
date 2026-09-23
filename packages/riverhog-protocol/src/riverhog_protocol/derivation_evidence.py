@@ -5,6 +5,8 @@ from __future__ import annotations
 import hashlib
 from collections.abc import Iterable
 
+from riverhog_canonical_json import format_scalar
+
 from riverhog_protocol.collection_workflow_transport import (
     ArtifactDispositionOutputPageDocument,
     ArtifactDispositionPageDocument,
@@ -88,10 +90,10 @@ def verify_derivation_evidence(
         sha256=canonical_json_sha256(
             {
                 "format": "riverhog-artifact-disposition-set/v1",
-                "disposition_count": disposition_count,
+                "disposition_count": format_scalar("nonnegative", disposition_count),
                 "dispositions_sha256": disposition_digest.hexdigest(),
-                "output_edge_count": output_edge_count,
-                "output_artifact_count": output_artifact_count,
+                "output_edge_count": format_scalar("nonnegative", output_edge_count),
+                "output_artifact_count": format_scalar("nonnegative", output_artifact_count),
                 "outputs_sha256": output_digest.hexdigest(),
             }
         ),

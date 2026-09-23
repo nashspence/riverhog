@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import re
 from collections.abc import Iterable, Iterator, Mapping, Sequence
 from dataclasses import dataclass
+
+from riverhog_canonical_json import canonical_json_bytes as canonical_json_bytes
 
 from riverhog_protocol.paths import normalize_relpath
 
@@ -62,15 +63,6 @@ class PackUnitDescriptor:
     @property
     def plaintext_end(self) -> int:
         return self.plaintext_start + self.plaintext_bytes
-
-
-def canonical_json_bytes(value: object) -> bytes:
-    return json.dumps(
-        value,
-        ensure_ascii=False,
-        sort_keys=True,
-        separators=(",", ":"),
-    ).encode("utf-8")
 
 
 def pack_upload_plan_sha256(

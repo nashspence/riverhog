@@ -27,6 +27,7 @@ members = [
     "riverhog-age",
     "riverhog-application-access",
     "riverhog-archive-contracts",
+    "riverhog-canonical-json",
     "riverhog-client",
     "riverhog-ftp-adapter",
     "riverhog-ftp-adapter-api-client",
@@ -728,10 +729,14 @@ version = "0.1.0"
 source = { editable = "packages/http-api-contracts" }
 dependencies = [
     { name = "pydantic" },
+    { name = "riverhog-canonical-json" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pydantic", specifier = ">=2.7,<3.0" }]
+requires-dist = [
+    { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
+]
 
 [[package]]
 name = "httpcore"
@@ -1622,10 +1627,14 @@ version = "0.1.0"
 source = { editable = "packages/riverhog-age" }
 dependencies = [
     { name = "cryptography" },
+    { name = "riverhog-canonical-json" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "cryptography", specifier = ">=50.0.0,<51" }]
+requires-dist = [
+    { name = "cryptography", specifier = ">=50.0.0,<51" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
+]
 
 [[package]]
 name = "riverhog-application-access"
@@ -1646,6 +1655,23 @@ requires-dist = [
 name = "riverhog-archive-contracts"
 version = "0.1.0"
 source = { editable = "packages/riverhog-archive-contracts" }
+dependencies = [
+    { name = "riverhog-canonical-json" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" }]
+
+[[package]]
+name = "riverhog-canonical-json"
+version = "0.1.0"
+source = { editable = "packages/riverhog-canonical-json" }
+dependencies = [
+    { name = "rfc8785" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "rfc8785", specifier = ">=0.1.4,<0.2" }]
 
 [[package]]
 name = "riverhog-client"
@@ -1724,6 +1750,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "lifecycle-events" },
     { name = "pydantic" },
+    { name = "riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts" },
 ]
 
@@ -1732,6 +1759,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "lifecycle-events", editable = "packages/lifecycle-events" },
     { name = "pydantic", specifier = ">=2.12,<3.0" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
 ]
 
@@ -1742,6 +1770,7 @@ source = { editable = "packages/riverhog-provenance" }
 dependencies = [
     { name = "jsonschema" },
     { name = "referencing" },
+    { name = "riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts" },
 ]
 
@@ -1749,6 +1778,7 @@ dependencies = [
 requires-dist = [
     { name = "jsonschema", specifier = ">=4.23,<5.0" },
     { name = "referencing", specifier = ">=0.37,<0.38" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
 ]
 
@@ -1760,7 +1790,7 @@ dependencies = [
     { name = "jsonschema" },
     { name = "pydantic" },
     { name = "referencing" },
-    { name = "rfc8785" },
+    { name = "riverhog-canonical-json" },
 ]
 
 [package.metadata]
@@ -1768,7 +1798,7 @@ requires-dist = [
     { name = "jsonschema", specifier = ">=4.25,<5.0" },
     { name = "pydantic", specifier = ">=2.12,<3.0" },
     { name = "referencing", specifier = ">=0.37,<0.38" },
-    { name = "rfc8785", specifier = ">=0.1,<0.2" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
 ]
 
 [[package]]
@@ -1880,6 +1910,7 @@ dependencies = [
     { name = "riverhog-age" },
     { name = "riverhog-application-access" },
     { name = "riverhog-archive-contracts" },
+    { name = "riverhog-canonical-json" },
     { name = "riverhog-protocol" },
     { name = "riverhog-provenance" },
     { name = "riverhog-provenance-contracts" },
@@ -1903,6 +1934,7 @@ requires-dist = [
     { name = "riverhog-age", editable = "packages/riverhog-age" },
     { name = "riverhog-application-access", editable = "packages/riverhog-application-access" },
     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance", editable = "packages/riverhog-provenance" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
@@ -2003,12 +2035,14 @@ version = "0.1.0"
 source = { editable = "packages/riverhog-storage-adapter-protocol" }
 dependencies = [
     { name = "pydantic" },
+    { name = "riverhog-canonical-json" },
     { name = "time-formats" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "time-formats", editable = "packages/time-formats" },
 ]
 
@@ -2039,6 +2073,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "httpx", extra = ["http2"] },
     { name = "pydantic" },
+    { name = "riverhog-canonical-json" },
     { name = "riverhog-storage-adapter-protocol" },
 ]
 
@@ -2047,6 +2082,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "httpx", extras = ["http2"], specifier = ">=0.27,<1.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-storage-adapter-protocol", editable = "packages/riverhog-storage-adapter-protocol" },
 ]
 
@@ -2548,6 +2584,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "jsonschema" },
     { name = "pydantic" },
+    { name = "riverhog-canonical-json" },
     { name = "riverhog-client" },
     { name = "stove0-observer-client" },
     { name = "stove0-observer-protocol" },
@@ -2558,6 +2595,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "jsonschema", specifier = ">=4.25,<5.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-client", editable = "packages/riverhog-client" },
     { name = "stove0-observer-client", editable = "reference/stove0/packages/observer-client" },
     { name = "stove0-observer-protocol", editable = "reference/stove0/packages/observer-protocol" },
@@ -2652,7 +2690,7 @@ dependencies = [
     { name = "jsonschema" },
     { name = "pydantic" },
     { name = "referencing" },
-    { name = "rfc8785" },
+    { name = "riverhog-canonical-json" },
     { name = "riverhog-protocol" },
 ]
 
@@ -2661,7 +2699,7 @@ requires-dist = [
     { name = "jsonschema", specifier = ">=4.25,<5.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
     { name = "referencing", specifier = ">=0.37,<0.38" },
-    { name = "rfc8785", specifier = ">=0.1.4,<0.2" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
 ]
 
@@ -2959,6 +2997,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "jsonschema" },
     { name = "pydantic" },
+    { name = "riverhog-canonical-json" },
     { name = "riverhog-client" },
     { name = "riverhog-protocol" },
     { name = "stove0-target-client" },
@@ -2970,6 +3009,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "jsonschema", specifier = ">=4.25,<5.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-client", editable = "packages/riverhog-client" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "stove0-target-client", editable = "reference/stove0/packages/target-client" },

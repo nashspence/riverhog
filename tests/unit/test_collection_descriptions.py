@@ -461,7 +461,7 @@ def test_description_replacement_is_durable_searchable_and_syncable(tmp_path: Pa
         expected_identity=initial_identity,
         principal=PRINCIPAL,
     ) == {
-        "collection_id": 1,
+        "collection_id": "1",
         "description": description,
         "description_revision": 1,
         "description_identity": description_identity,
@@ -508,7 +508,7 @@ def test_description_replacement_is_durable_searchable_and_syncable(tmp_path: Pa
     changes = sync.changes(cursor=caught_up.next_cursor, limit=10, principal=PRINCIPAL)
     assert changes.changes == [
         CatalogSyncUpsert(
-            collection_id=1,
+            collection_id="1",
             archive_root_sha256="5" * 64,
             content_identity="3" * 64,
             description=description,
@@ -558,7 +558,7 @@ def test_description_replacement_is_durable_searchable_and_syncable(tmp_path: Pa
         principal=PRINCIPAL,
     )
     assert cleared == {
-        "collection_id": 1,
+        "collection_id": "1",
         "description": None,
         "description_revision": 2,
         "description_identity": cleared_identity,

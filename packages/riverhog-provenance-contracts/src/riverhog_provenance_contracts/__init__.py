@@ -9,13 +9,13 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from typing import Annotated, Any
 
-import rfc8785
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import SchemaError
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 from referencing import Registry
 from referencing.exceptions import Unresolvable
 from referencing.jsonschema import DRAFT202012
+from riverhog_canonical_json import canonical_json_bytes
 
 CANONICAL_UUID_URN_PATTERN = (
     r"^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
@@ -48,7 +48,7 @@ def index_schema_documents(
 
 
 def _canonical_json(value: Mapping[str, Any]) -> bytes:
-    return rfc8785.dumps(dict(value))
+    return canonical_json_bytes(dict(value))
 
 
 def _validate_schema_pack(

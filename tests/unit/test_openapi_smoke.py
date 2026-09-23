@@ -221,14 +221,14 @@ def test_wire_batches_are_bounded_without_limiting_workflow_cardinality() -> Non
     )
     controller_evidence = {"format": "fixture-controller-evidence/v1"}
     sealed = ProcessingClaimPlanSealIn(
-        fence=1,
+        fence="1",
         execution_id="5" * 64,
         controller_evidence=controller_evidence,
         controller_evidence_sha256=canonical_json_sha256(controller_evidence),
         operation=OperationIdentityIn(id="fixture.operation/v1", sha256="7" * 64),
     )
 
-    logical_authority = ExactSetAuthorityDocument(count=10**100, sha256="8" * 64)
+    logical_authority = ExactSetAuthorityDocument(count=str(10**100), sha256="8" * 64)
     assert claim.work_id == "3" * 64
     assert sealed.operation.id == "fixture.operation/v1"
     assert logical_authority.count == 10**100

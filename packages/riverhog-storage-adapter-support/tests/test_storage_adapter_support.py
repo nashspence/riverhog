@@ -910,6 +910,13 @@ def test_schema_and_support_source_remain_provider_and_state_neutral() -> None:
 def test_client_surfaces_the_closed_adapter_error() -> None:
     binding = StorageAdapterHttpBinding(MemoryAdapter())
 
+    request = ObjectHeadRequest(
+        object=ObjectLocator(object_path="archives/id/object"),
+        expected_placement="archive",
+    )
+    duplicate = b'{"expected_placement":"archive",' + request.model_dump_json().encode()[1:]
+    assert binding.handle("POST", "/v1/objects/head", duplicate).status == 400
+
     def handler(request: httpx.Request) -> httpx.Response:
         result = binding.handle("POST", "/v1/objects/head", request.read())
         assert isinstance(result.body, bytes)

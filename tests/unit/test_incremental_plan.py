@@ -4,6 +4,7 @@ import hashlib
 import json
 
 import pytest
+from riverhog_archive_contracts import format_archive_sequence
 from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.domain.archive import ArchiveFile
 from riverhog_core.incremental_plan import (
@@ -169,15 +170,15 @@ def test_incremental_checkpoint_preserves_the_full_v1_sequence_domain() -> None:
             new_incremental_volume_planner(policy=_policy())
         )
     )
-    payload["next_sequence"] = (1 << 256) - 1
+    payload["next_sequence"] = format_archive_sequence((1 << 256) - 1)
 
     restored = parse_incremental_volume_planner_checkpoint(
         json.dumps(payload, sort_keys=True, separators=(",", ":"))
     )
 
     assert restored.next_sequence == (1 << 256) - 1
-    payload["next_sequence"] = 1 << 256
-    with pytest.raises(ValueError, match="sequence exceeds"):
+    payload["next_sequence"] = "1" + "0" * 64
+    with pytest.raises(ValueError, match="invalid canonical integer string"):
         parse_incremental_volume_planner_checkpoint(
             json.dumps(payload, sort_keys=True, separators=(",", ":"))
         )

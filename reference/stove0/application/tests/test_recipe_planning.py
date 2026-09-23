@@ -120,17 +120,20 @@ class CatalogApi:
         return PortableCollectionInventoryPage(
             authority=PortableCollectionInventoryAuthority(
                 header=PortableCollectionHeader(
-                    collection=11,
+                    collection="11",
                     content_identity=_sha("2"),
                     encryption_format="age-v1-scrypt",
                     passphrase_id="fixture-archive-key-v1",
                     provenance_mode="omitted",
                 ),
                 inventory_identity=_sha("a"),
-                file_count=len(files),
-                file_bytes=sum(int(item["bytes"]) for item in files),
+                file_count=str(len(files)),
+                file_bytes=str(sum(int(item["bytes"]) for item in files)),
             ),
-            files=[ImmutableFileIdentityDocument.model_validate(item) for item in files],
+            files=[
+                ImmutableFileIdentityDocument.model_validate({**item, "bytes": str(item["bytes"])})
+                for item in files
+            ],
             complete=True,
         )
 
@@ -299,7 +302,7 @@ def _conformance_plan(
         targets=cast(TargetPort, ConformanceTargets()),
     )
     root = CollectionRootRef(
-        collection_id=11,
+        collection_id=str(11),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
     )
@@ -399,7 +402,7 @@ def test_installed_catalog_rejects_stale_observer_contract_before_observation() 
         stale_recipe.id,
         (
             CollectionRootRef(
-                collection_id=11,
+                collection_id=str(11),
                 archive_root_sha256=_sha("1"),
                 content_identity=_sha("2"),
             ),
@@ -444,7 +447,7 @@ def test_planning_rejects_stale_target_operation_contract_before_preflight() -> 
         recipe.id,
         (
             CollectionRootRef(
-                collection_id=11,
+                collection_id=str(11),
                 archive_root_sha256=_sha("1"),
                 content_identity=_sha("2"),
             ),
@@ -495,7 +498,7 @@ def test_planner_seals_exact_nested_subrecipe_tree_without_target_smearing() -> 
         parent.id,
         (
             CollectionRootRef(
-                collection_id=11,
+                collection_id=str(11),
                 archive_root_sha256=_sha("1"),
                 content_identity=_sha("2"),
             ),
@@ -553,7 +556,7 @@ def test_recipe_explicitly_rejects_unmatched_primary_and_sidecar_artifacts() -> 
         recipe.id,
         (
             CollectionRootRef(
-                collection_id=11,
+                collection_id=str(11),
                 archive_root_sha256=_sha("1"),
                 content_identity=_sha("2"),
             ),
@@ -650,7 +653,7 @@ def test_observer_preference_batches_unbounded_collection_work_without_omission(
         targets=cast(TargetPort, ArchiveTargets()),
     )
     root = CollectionRootRef(
-        collection_id=11,
+        collection_id=str(11),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
     )
@@ -742,7 +745,7 @@ def test_media_observation_evidence_binds_exact_primary_sidecar_selection() -> N
         targets=cast(TargetPort, ArchiveTargets()),
     )
     root = CollectionRootRef(
-        collection_id=11,
+        collection_id=str(11),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
     )
@@ -901,7 +904,7 @@ def test_review_recipe_projects_semantic_intent_and_options_before_preflight() -
         recipes=(recipe,),
     )
     root = CollectionRootRef(
-        collection_id=11,
+        collection_id=str(11),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
     )
@@ -1087,7 +1090,7 @@ def test_production_planner_resolves_overlapping_branches_into_one_exact_join() 
         targets=cast(TargetPort, ForkJoinTargets()),
     )
     root = CollectionRootRef(
-        collection_id=11,
+        collection_id=str(11),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
     )
@@ -1105,7 +1108,7 @@ def test_production_planner_resolves_overlapping_branches_into_one_exact_join() 
     settlements: list[BranchSettlement] = []
     for collection_id, branch in enumerate(decision.plan.branches, start=21):
         output_root = CollectionRootRef(
-            collection_id=collection_id,
+            collection_id=str(collection_id),
             archive_root_sha256=f"{collection_id % 16:x}" * 64,
             content_identity=f"{(collection_id + 1) % 16:x}" * 64,
         )
@@ -1234,7 +1237,7 @@ def test_retirement_plan_accepts_overlapping_selections_covering_complete_invent
     )
     planner = _retirement_planner(recipe)
     root = CollectionRootRef(
-        collection_id=11,
+        collection_id=str(11),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
     )
@@ -1268,7 +1271,7 @@ def test_retirement_plan_rejects_incomplete_inventory_before_target_preflight() 
     )
     planner = _retirement_planner(recipe)
     root = CollectionRootRef(
-        collection_id=11,
+        collection_id=str(11),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
     )

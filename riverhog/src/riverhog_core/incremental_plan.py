@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import json
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from riverhog_archive_contracts import format_archive_sequence
+from riverhog_canonical_json import format_scalar, parse_scalar, require_canonical_json
 from riverhog_protocol.pack_ingress import RESERVED_ARCHIVE_PREFIX, canonical_json_bytes
 from riverhog_protocol.paths import normalize_relpath
 
@@ -52,7 +51,7 @@ class IncrementalVolumePlannerCheckpoint:
             raise ValueError("incremental planner counters must be non-negative")
         if self.next_file_order != self.files_seen:
             raise ValueError("incremental planner file order does not match files seen")
-        format_archive_sequence(self.next_sequence)
+        format_scalar("sequence256", self.next_sequence)
         if len(self.pending_pack_files) > self.policy.pack_files:
             raise ValueError("incremental planner pending pack exceeds its file limit")
         pending_bytes = 0
@@ -230,14 +229,14 @@ def incremental_volume_planner_checkpoint_payload(
         "schema": INCREMENTAL_VOLUME_PLANNER_CHECKPOINT_SCHEMA,
         "policy": _policy_payload(checkpoint.policy),
         "content_hash_state": checkpoint.content_hash_state,
-        "next_file_order": checkpoint.next_file_order,
-        "next_sequence": checkpoint.next_sequence,
-        "files_seen": checkpoint.files_seen,
-        "bytes_seen": checkpoint.bytes_seen,
+        "next_file_order": format_scalar("nonnegative", checkpoint.next_file_order),
+        "next_sequence": format_scalar("sequence256", checkpoint.next_sequence),
+        "files_seen": format_scalar("nonnegative", checkpoint.files_seen),
+        "bytes_seen": format_scalar("nonnegative", checkpoint.bytes_seen),
         "pending_pack_files": [
             {
                 "path": current.path,
-                "bytes": current.bytes,
+                "bytes": format_scalar("nonnegative", current.bytes),
                 "sha256": current.sha256,
             }
             for current in checkpoint.pending_pack_files
@@ -256,12 +255,12 @@ def incremental_volume_planner_checkpoint_bytes(
 def parse_incremental_volume_planner_checkpoint(
     content: bytes | str,
 ) -> IncrementalVolumePlannerCheckpoint:
-    if isinstance(content, bytes):
-        content = content.decode("utf-8")
     try:
-        payload = json.loads(content)
-    except (UnicodeError, json.JSONDecodeError) as exc:
-        raise ValueError("incremental volume planner checkpoint is not valid JSON") from exc
+        payload = require_canonical_json(
+            content if isinstance(content, bytes) else content.encode()
+        )
+    except (UnicodeError, ValueError) as exc:
+        raise ValueError("incremental volume planner checkpoint is not canonical JSON") from exc
     expected = {
         "schema",
         "policy",
@@ -292,7 +291,7 @@ def parse_incremental_volume_planner_checkpoint(
             _normalized_file(
                 ArchiveFile(
                     path=str(raw.get("path", "")),
-                    bytes=_uint(raw.get("bytes"), label="pending file bytes"),
+                    bytes=parse_scalar("nonnegative", raw.get("bytes")),
                     sha256=str(raw.get("sha256", "")),
                 )
             )
@@ -303,10 +302,10 @@ def parse_incremental_volume_planner_checkpoint(
     checkpoint = IncrementalVolumePlannerCheckpoint(
         policy=policy,
         content_hash_state=str(payload.get("content_hash_state", "")),
-        next_file_order=_uint(payload.get("next_file_order"), label="next file order"),
-        next_sequence=_uint(payload.get("next_sequence"), label="next sequence"),
-        files_seen=_uint(payload.get("files_seen"), label="files seen"),
-        bytes_seen=_uint(payload.get("bytes_seen"), label="bytes seen"),
+        next_file_order=parse_scalar("nonnegative", payload.get("next_file_order")),
+        next_sequence=parse_scalar("sequence256", payload.get("next_sequence")),
+        files_seen=parse_scalar("nonnegative", payload.get("files_seen")),
+        bytes_seen=parse_scalar("nonnegative", payload.get("bytes_seen")),
         pending_pack_files=tuple(pending),
         closed=closed,
         content_identity=(
@@ -332,21 +331,25 @@ def _normalized_file(file: ArchiveFile) -> ArchiveFile:
 def _content_identity_member_bytes(file: ArchiveFile) -> bytes:
     # Match riverhog_protocol.manifest exactly.  The checkpoint encoding is private,
     # while the completed digest remains the existing public collection identity.
-    return json.dumps(
-        {"path": file.path, "bytes": file.bytes, "sha256": file.sha256},
-        sort_keys=True,
-        separators=(",", ":"),
-    ).encode("utf-8")
+    return canonical_json_bytes(
+        {
+            "path": file.path,
+            "bytes": format_scalar("nonnegative", file.bytes),
+            "sha256": file.sha256,
+        }
+    )
 
 
-def _policy_payload(policy: CollectionVolumePolicy) -> dict[str, int]:
+def _policy_payload(policy: CollectionVolumePolicy) -> dict[str, int | str]:
     return {
-        "pack_source_bytes": policy.pack_source_bytes,
+        "pack_source_bytes": format_scalar("nonnegative", policy.pack_source_bytes),
         "pack_files": policy.pack_files,
-        "pack_member_bytes": policy.pack_member_bytes,
-        "pack_part_plaintext_bytes": policy.pack_part_plaintext_bytes,
-        "raw_volume_plaintext_bytes": policy.raw_volume_plaintext_bytes,
-        "raw_part_plaintext_bytes": policy.raw_part_plaintext_bytes,
+        "pack_member_bytes": format_scalar("nonnegative", policy.pack_member_bytes),
+        "pack_part_plaintext_bytes": format_scalar("nonnegative", policy.pack_part_plaintext_bytes),
+        "raw_volume_plaintext_bytes": format_scalar(
+            "nonnegative", policy.raw_volume_plaintext_bytes
+        ),
+        "raw_part_plaintext_bytes": format_scalar("nonnegative", policy.raw_part_plaintext_bytes),
     }
 
 
@@ -362,16 +365,16 @@ def _parse_policy(value: object) -> CollectionVolumePolicy:
     if not isinstance(value, dict) or set(value) != expected:
         raise ValueError("incremental planner policy is invalid")
     return CollectionVolumePolicy(
-        pack_source_bytes=_positive(value.get("pack_source_bytes"), "pack source bytes"),
+        pack_source_bytes=_positive_scalar(value.get("pack_source_bytes"), "pack source bytes"),
         pack_files=_positive(value.get("pack_files"), "pack files"),
-        pack_member_bytes=_positive(value.get("pack_member_bytes"), "pack member bytes"),
-        pack_part_plaintext_bytes=_positive(
+        pack_member_bytes=_positive_scalar(value.get("pack_member_bytes"), "pack member bytes"),
+        pack_part_plaintext_bytes=_positive_scalar(
             value.get("pack_part_plaintext_bytes"), "pack part plaintext bytes"
         ),
-        raw_volume_plaintext_bytes=_positive(
+        raw_volume_plaintext_bytes=_positive_scalar(
             value.get("raw_volume_plaintext_bytes"), "raw volume plaintext bytes"
         ),
-        raw_part_plaintext_bytes=_positive(
+        raw_part_plaintext_bytes=_positive_scalar(
             value.get("raw_part_plaintext_bytes"), "raw part plaintext bytes"
         ),
     )
@@ -379,6 +382,13 @@ def _parse_policy(value: object) -> CollectionVolumePolicy:
 
 def _positive(value: object, label: str) -> int:
     parsed = _uint(value, label=label)
+    if parsed < 1:
+        raise ValueError(f"{label} must be positive")
+    return parsed
+
+
+def _positive_scalar(value: object, label: str) -> int:
+    parsed = parse_scalar("nonnegative", value)
     if parsed < 1:
         raise ValueError(f"{label} must be positive")
     return parsed

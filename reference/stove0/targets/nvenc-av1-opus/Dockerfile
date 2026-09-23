@@ -100,6 +100,7 @@ COPY reference/stove0/targets/nvenc-av1-opus/target reference/stove0/targets/nve
 COPY reference/stove0/targets/nvenc-av1-opus/review-sampler reference/stove0/targets/nvenc-av1-opus/review-sampler
 COPY packages/riverhog-application-access packages/riverhog-application-access
 COPY packages/http-api-contracts packages/http-api-contracts
+COPY packages/riverhog-canonical-json packages/riverhog-canonical-json
 COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-client packages/riverhog-client
 COPY packages/riverhog-protocol packages/riverhog-protocol

@@ -134,7 +134,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "runtime_images",
     }
     components = boundaries["components"]
-    assert len(components) == 71
+    assert len(components) == 72
     roles = {component["distribution"]: component["role"] for component in components}
     extension_points = boundaries["entry_point_extensions"]
     assert {point["group"] for point in extension_points} == {
@@ -229,7 +229,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     assert set(release) == {"compatibility", "publication"}
     publication = release["publication"]
     assert publication["schema"] == "riverhog-release-publication/v1"
-    assert len(publication["distributions"]) == 71
+    assert len(publication["distributions"]) == 72
     assert len(publication["runtime_images"]) == 13
     assert len(publication["installation_roots"]) == 4
     assert "test" not in publication["runtime_images"]
@@ -257,9 +257,9 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "configuration-environment-pattern": 2,
         "openapi": 3,
         "protocol": 35,
-        "python": 62,
+        "python": 63,
         "release": 1,
-        "release-distribution": 71,
+        "release-distribution": 72,
         "release-images": 1,
         "release-installation": 1,
         "release-publication": 1,
@@ -268,7 +268,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     assert trace["coverage"]["extent_decisions"] == len(extents["decisions"])
     assert trace["coverage"]["operation_qualification_records"] == 147
     assert trace["python_registry"]["coverage"] == {
-        "detected": 62,
+        "detected": 63,
         "resolved": len(trace["python_registry"]["resolutions"]),
         "protected": len(external["python"]),
         "unresolved": 0,
@@ -392,7 +392,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     }
     assert all(path.endswith(".md") for path in checked.files)
     assert not any(path.endswith(".json") for path in checked.files)
-    assert root["identities"]["boundary_legacy_sha256"] == trace["boundary_canonical_sha256"]
+    assert root["identities"]["boundary_canonical_sha256"] == trace["boundary_canonical_sha256"]
     release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
     freeze = release["governance"]["boundary_freeze"]
     protected_boundaries = module.reassemble_projection(checked)["boundaries"]

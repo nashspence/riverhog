@@ -11,6 +11,7 @@ from datetime import timedelta
 from typing import Any, cast
 
 from http_api_contracts import closed_literal_values
+from riverhog_canonical_json import format_scalar
 from riverhog_protocol import (
     ClaimState,
     ProcessingClaimSort,
@@ -21,7 +22,6 @@ from riverhog_protocol.collection_workflow_transport import (
     CONTROLLER_EVIDENCE_MAX_BYTES,
     DISPOSITION_BATCH_MAX,
     WORK_DOCUMENT_MAX_BYTES,
-    ExactSetAuthorityDocument,
 )
 from riverhog_protocol.collection_workflows import (
     DERIVATION_EVIDENCE_PATH,
@@ -183,12 +183,7 @@ class SqlAlchemyCollectionWorkflowService:
                 consumer_app=principal.app,
                 consumer_key_id=principal.key_id,
                 purpose=normalized_purpose,
-                work_document_json=json.dumps(
-                    normalized_work,
-                    ensure_ascii=False,
-                    sort_keys=True,
-                    separators=(",", ":"),
-                ),
+                work_document_json=canonical_json_bytes(normalized_work).decode("utf-8"),
                 work_document_sha256=normalized_work_sha256,
                 retirement_grace_seconds=0,
                 state="active",
@@ -345,8 +340,12 @@ class SqlAlchemyCollectionWorkflowService:
             next_ordinal = start + len(rows)
             return {
                 "authority": authority,
-                "start_ordinal": start,
-                "next_ordinal": next_ordinal if next_ordinal < claim.input_count else None,
+                "start_ordinal": format_scalar("nonnegative", start),
+                "next_ordinal": (
+                    format_scalar("nonnegative", next_ordinal)
+                    if next_ordinal < claim.input_count
+                    else None
+                ),
                 "inputs": [_input_identity(item).as_dict() for item in rows],
             }
 
@@ -458,8 +457,12 @@ class SqlAlchemyCollectionWorkflowService:
             next_ordinal = start + len(rows)
             return {
                 "authority": authority,
-                "start_ordinal": start,
-                "next_ordinal": next_ordinal if next_ordinal < claim.artifact_count else None,
+                "start_ordinal": format_scalar("nonnegative", start),
+                "next_ordinal": (
+                    format_scalar("nonnegative", next_ordinal)
+                    if next_ordinal < claim.artifact_count
+                    else None
+                ),
                 "artifacts": [
                     _artifact_identity(session, claim.id, item).as_dict() for item in rows
                 ],
@@ -627,12 +630,7 @@ class SqlAlchemyCollectionWorkflowService:
             _require_inputs_sealed(claim)
             if claim.artifacts_sealed_at is None or claim.artifact_set_sha256 is None:
                 raise Conflict("artifact authority is not sealed")
-            encoded_evidence = json.dumps(
-                evidence,
-                ensure_ascii=False,
-                sort_keys=True,
-                separators=(",", ":"),
-            )
+            encoded_evidence = canonical_json_bytes(evidence).decode("utf-8")
             if claim.plan_sealed_at is not None:
                 expected = (
                     normalized_execution_id,
@@ -724,7 +722,7 @@ class SqlAlchemyCollectionWorkflowService:
                 "format": "riverhog-transform-capability/v1",
                 "id": capability.id,
                 "claim_id": claim.id,
-                "fence": claim.fence,
+                "fence": format_scalar("nonnegative", claim.fence),
                 "audience": capability.audience,
                 "actions": list(normalized_actions),
                 "state": "receiving",
@@ -732,8 +730,8 @@ class SqlAlchemyCollectionWorkflowService:
                 "expires_at": capability.expires_at,
                 "artifacts": {
                     "state": "receiving",
-                    "count": 0,
-                    "total_bytes": 0,
+                    "count": "0",
+                    "total_bytes": "0",
                     "authority": None,
                 },
                 "token": token,
@@ -1145,9 +1143,11 @@ class SqlAlchemyCollectionWorkflowService:
             next_ordinal = start + len(rows)
             return {
                 "authority": _disposition_set_identity(disposition_set).as_dict(),
-                "start_ordinal": start,
+                "start_ordinal": format_scalar("nonnegative", start),
                 "next_ordinal": (
-                    next_ordinal if next_ordinal < int(disposition_set.disposition_count) else None
+                    format_scalar("nonnegative", next_ordinal)
+                    if next_ordinal < int(disposition_set.disposition_count)
+                    else None
                 ),
                 "dispositions": [
                     _disposition_record_identity(session, claim, row).as_dict() for row in rows
@@ -1181,9 +1181,11 @@ class SqlAlchemyCollectionWorkflowService:
             next_ordinal = start + len(rows)
             return {
                 "authority": _disposition_set_identity(disposition_set).as_dict(),
-                "start_ordinal": start,
+                "start_ordinal": format_scalar("nonnegative", start),
                 "next_ordinal": (
-                    next_ordinal if next_ordinal < int(disposition_set.output_edge_count) else None
+                    format_scalar("nonnegative", next_ordinal)
+                    if next_ordinal < int(disposition_set.output_edge_count)
+                    else None
                 ),
                 "outputs": [
                     _disposition_output_record_identity(session, claim, row).as_dict()
@@ -1251,10 +1253,16 @@ class SqlAlchemyCollectionWorkflowService:
                     identity = canonical_json_sha256(
                         {
                             "format": "riverhog-artifact-disposition-set/v1",
-                            "disposition_count": disposition_set.disposition_count,
+                            "disposition_count": format_scalar(
+                                "nonnegative", disposition_set.disposition_count
+                            ),
                             "dispositions_sha256": disposition_set.disposition_sha256,
-                            "output_edge_count": disposition_set.output_edge_count,
-                            "output_artifact_count": disposition_set.output_artifact_count,
+                            "output_edge_count": format_scalar(
+                                "nonnegative", disposition_set.output_edge_count
+                            ),
+                            "output_artifact_count": format_scalar(
+                                "nonnegative", disposition_set.output_artifact_count
+                            ),
                             "outputs_sha256": disposition_set.output_sha256,
                         }
                     )
@@ -1501,8 +1509,12 @@ class SqlAlchemyCollectionWorkflowService:
             next_ordinal = start + len(rows)
             return {
                 "authority": authority,
-                "start_ordinal": start,
-                "next_ordinal": next_ordinal if next_ordinal < claim.outcome_count else None,
+                "start_ordinal": format_scalar("nonnegative", start),
+                "next_ordinal": (
+                    format_scalar("nonnegative", next_ordinal)
+                    if next_ordinal < claim.outcome_count
+                    else None
+                ),
                 "outcomes": [_outcome_identity(item).as_dict() for item in rows],
             }
 
@@ -1520,7 +1532,7 @@ class SqlAlchemyCollectionWorkflowService:
             if claim is None or claim.consumer_app != principal.app:
                 raise NotFound(f"collection derivation not found: {collection_id}")
             return {
-                "collection_id": record.collection_id,
+                "collection_id": format_scalar("sequence63", record.collection_id),
                 "document_sha256": record.document_sha256,
                 "derivation": json.loads(record.document_json),
             }
@@ -2051,8 +2063,8 @@ def _capability_artifact_set_payload(
 ) -> dict[str, object]:
     authority = (
         {
-            "count": capability.artifact_count,
-            "total_bytes": capability.artifact_bytes,
+            "count": format_scalar("nonnegative", capability.artifact_count),
+            "total_bytes": format_scalar("nonnegative", capability.artifact_bytes),
             "sha256": capability.artifact_set_sha256,
         }
         if capability.artifact_set_sha256 is not None
@@ -2060,8 +2072,8 @@ def _capability_artifact_set_payload(
     )
     return {
         "state": "sealed" if authority is not None else "receiving",
-        "count": capability.artifact_count,
-        "total_bytes": capability.artifact_bytes,
+        "count": format_scalar("nonnegative", capability.artifact_count),
+        "total_bytes": format_scalar("nonnegative", capability.artifact_bytes),
         "authority": authority,
     }
 
@@ -2080,7 +2092,7 @@ def _require_set_authority(
     expected = _sha256(requested_sha256, f"{label} authority")
     if actual_sha256 is None or actual_sha256 != expected or count < 1:
         raise Conflict(f"{label} authority is unavailable or changed")
-    return {"count": count, "sha256": actual_sha256}
+    return {"count": format_scalar("nonnegative", count), "sha256": actual_sha256}
 
 
 def _require_artifact_authority(
@@ -2093,19 +2105,19 @@ def _require_artifact_authority(
         requested_sha256,
         "artifact",
     )
-    authority["total_bytes"] = claim.artifact_bytes
+    authority["total_bytes"] = format_scalar("nonnegative", claim.artifact_bytes)
     return authority
 
 
 def _input_set_payload(claim: CollectionProcessingClaimRecord) -> dict[str, object]:
     authority = (
-        {"count": claim.input_count, "sha256": claim.input_set_sha256}
+        {"count": format_scalar("nonnegative", claim.input_count), "sha256": claim.input_set_sha256}
         if claim.input_set_sha256 is not None
         else None
     )
     return {
         "state": "sealed" if authority is not None else "receiving",
-        "count": claim.input_count,
+        "count": format_scalar("nonnegative", claim.input_count),
         "authority": authority,
     }
 
@@ -2113,8 +2125,8 @@ def _input_set_payload(claim: CollectionProcessingClaimRecord) -> dict[str, obje
 def _artifact_set_payload(claim: CollectionProcessingClaimRecord) -> dict[str, object]:
     authority = (
         {
-            "count": claim.artifact_count,
-            "total_bytes": claim.artifact_bytes,
+            "count": format_scalar("nonnegative", claim.artifact_count),
+            "total_bytes": format_scalar("nonnegative", claim.artifact_bytes),
             "sha256": claim.artifact_set_sha256,
         }
         if claim.artifact_set_sha256 is not None
@@ -2122,21 +2134,24 @@ def _artifact_set_payload(claim: CollectionProcessingClaimRecord) -> dict[str, o
     )
     return {
         "state": "sealed" if authority is not None else "receiving",
-        "count": claim.artifact_count,
-        "total_bytes": claim.artifact_bytes,
+        "count": format_scalar("nonnegative", claim.artifact_count),
+        "total_bytes": format_scalar("nonnegative", claim.artifact_bytes),
         "authority": authority,
     }
 
 
 def _outcome_set_payload(claim: CollectionProcessingClaimRecord) -> dict[str, object]:
     authority = (
-        {"count": claim.outcome_count, "sha256": claim.outcome_set_sha256}
+        {
+            "count": format_scalar("nonnegative", claim.outcome_count),
+            "sha256": claim.outcome_set_sha256,
+        }
         if claim.outcome_set_sha256 is not None
         else None
     )
     return {
         "state": claim.outcome_state,
-        "count": claim.outcome_count,
+        "count": format_scalar("nonnegative", claim.outcome_count),
         "authority": authority,
         "failure": claim.outcome_failure,
     }
@@ -2340,9 +2355,9 @@ def _disposition_set_payload(
     return {
         "claim_id": record.claim_id,
         "state": record.state,
-        "disposition_count": int(record.disposition_count),
-        "output_edge_count": int(record.output_edge_count),
-        "output_artifact_count": int(record.output_artifact_count),
+        "disposition_count": format_scalar("nonnegative", int(record.disposition_count)),
+        "output_edge_count": format_scalar("nonnegative", int(record.output_edge_count)),
+        "output_artifact_count": format_scalar("nonnegative", int(record.output_artifact_count)),
         "identity": identity,
         "failure": record.failure,
     }
@@ -3063,16 +3078,18 @@ def _claim_payload(
                 "sha256": claim.operation_sha256,
             },
             "inputs": {
-                "count": claim.input_count,
+                "count": format_scalar("nonnegative", claim.input_count),
                 "sha256": claim.input_set_sha256,
             },
             "artifacts": {
-                "count": claim.artifact_count,
-                "total_bytes": claim.artifact_bytes,
+                "count": format_scalar("nonnegative", claim.artifact_count),
+                "total_bytes": format_scalar("nonnegative", claim.artifact_bytes),
                 "sha256": claim.artifact_set_sha256,
             },
             "retirement_policy": claim.retirement_policy,
-            "retirement_grace_seconds": claim.retirement_grace_seconds,
+            "retirement_grace_seconds": format_scalar(
+                "nonnegative", claim.retirement_grace_seconds
+            ),
             "sealed_at": claim.plan_sealed_at,
         }
     outcome_settlement = None
@@ -3081,11 +3098,13 @@ def _claim_payload(
             raise InvalidState("settled collection work has no exact outcome settlement")
         outcome_settlement = {
             "outcomes": {
-                "count": claim.outcome_count,
+                "count": format_scalar("nonnegative", claim.outcome_count),
                 "sha256": claim.outcome_set_sha256,
             },
             "retirement_policy": claim.retirement_policy,
-            "retirement_grace_seconds": claim.retirement_grace_seconds,
+            "retirement_grace_seconds": format_scalar(
+                "nonnegative", claim.retirement_grace_seconds
+            ),
         }
     return {
         "format": "riverhog-processing-claim/v1",
@@ -3094,7 +3113,7 @@ def _claim_payload(
         "consumer": {"app": claim.consumer_app, "key_id": claim.consumer_key_id},
         "purpose": claim.purpose,
         "state": claim.state,
-        "fence": claim.fence,
+        "fence": format_scalar("nonnegative", claim.fence),
         "expires_at": claim.expires_at,
         "created_at": claim.created_at,
         "updated_at": claim.updated_at,
@@ -3102,7 +3121,11 @@ def _claim_payload(
         "abandoned_at": claim.abandoned_at,
         "abandonment_reason": claim.abandonment_reason,
         "released_at": claim.released_at,
-        "output_collection_id": claim.output_collection_id,
+        "output_collection_id": (
+            None
+            if claim.output_collection_id is None
+            else format_scalar("sequence63", claim.output_collection_id)
+        ),
         "work_document": json.loads(claim.work_document_json),
         "work_document_sha256": claim.work_document_sha256,
         "inputs": _input_set_payload(claim),
@@ -3277,20 +3300,26 @@ def require_retirement_exemption(
     if input_row is None or not (direct_output_ready or delegated_output_ready):
         raise Forbidden("retirement claim does not authorize this input collection")
     outcome_set_sha256 = claim.outcome_set_sha256
-    return RetirementClaimReferenceDocument(
-        claim_id=claim.id,
-        fence=claim.fence,
-        work_id=claim.work_id,
-        execution_id=claim.execution_id,
-        output_collection_id=claim.output_collection_id,
-        outcomes=(
-            ExactSetAuthorityDocument(
-                count=claim.outcome_count,
-                sha256=cast(str, outcome_set_sha256),
-            )
-            if delegated_output_ready
-            else None
-        ),
+    return RetirementClaimReferenceDocument.model_validate(
+        {
+            "claim_id": claim.id,
+            "fence": format_scalar("nonnegative", claim.fence),
+            "work_id": claim.work_id,
+            "execution_id": claim.execution_id,
+            "output_collection_id": (
+                None
+                if claim.output_collection_id is None
+                else format_scalar("sequence63", claim.output_collection_id)
+            ),
+            "outcomes": (
+                {
+                    "count": format_scalar("nonnegative", claim.outcome_count),
+                    "sha256": cast(str, outcome_set_sha256),
+                }
+                if delegated_output_ready
+                else None
+            ),
+        }
     ).model_dump(mode="json")
 
 

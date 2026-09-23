@@ -39,10 +39,10 @@ def _fixture() -> tuple[list[bytes], list[bytes], ArtifactDispositionSetIdentity
         sha256=canonical_json_sha256(
             {
                 "format": "riverhog-artifact-disposition-set/v1",
-                "disposition_count": 2,
+                "disposition_count": "2",
                 "dispositions_sha256": disposition_digest.hexdigest(),
-                "output_edge_count": 2,
-                "output_artifact_count": 2,
+                "output_edge_count": "2",
+                "output_artifact_count": "2",
                 "outputs_sha256": output_digest.hexdigest(),
             }
         ),
@@ -51,8 +51,8 @@ def _fixture() -> tuple[list[bytes], list[bytes], ArtifactDispositionSetIdentity
         ArtifactDispositionPageDocument.model_validate(
             {
                 "authority": identity.as_dict(),
-                "start_ordinal": index,
-                "next_ordinal": index + 1 if index == 0 else None,
+                "start_ordinal": str(index),
+                "next_ordinal": str(index + 1) if index == 0 else None,
                 "dispositions": [item.as_dict()],
             }
         )
@@ -62,8 +62,8 @@ def _fixture() -> tuple[list[bytes], list[bytes], ArtifactDispositionSetIdentity
         ArtifactDispositionOutputPageDocument.model_validate(
             {
                 "authority": identity.as_dict(),
-                "start_ordinal": index,
-                "next_ordinal": index + 1 if index == 0 else None,
+                "start_ordinal": str(index),
+                "next_ordinal": str(index + 1) if index == 0 else None,
                 "outputs": [item.as_dict()],
             }
         )

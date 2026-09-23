@@ -8,7 +8,9 @@ from typing import Literal
 
 from http_api_contracts import canonical_json_bytes
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from riverhog_canonical_json import format_scalar, parse_scalar
 
+from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from riverhog_protocol.file_identity import ImmutableFileIdentityDocument
 from riverhog_protocol.paths import (
     CollectionId,
@@ -66,14 +68,22 @@ class PortableCollectionFile:
             raise PortableCollectionError("portable collection file path is invalid") from exc
         if path != value["path"]:
             raise PortableCollectionError("portable collection file path is not canonical")
+        try:
+            byte_count = parse_scalar("nonnegative", value["bytes"])
+        except ValueError as exc:
+            raise PortableCollectionError("portable collection file bytes are invalid") from exc
         return cls(
             path=path,
-            bytes=_nonnegative_int(value["bytes"], "portable collection file bytes"),
+            bytes=byte_count,
             sha256=_sha256(value["sha256"], "portable collection file sha256"),
         )
 
     def to_mapping(self) -> dict[str, object]:
-        return {"path": self.path, "bytes": self.bytes, "sha256": self.sha256}
+        return {
+            "path": self.path,
+            "bytes": format_scalar("nonnegative", self.bytes),
+            "sha256": self.sha256,
+        }
 
 
 class PortableCollectionHeader(BaseModel):
@@ -105,8 +115,8 @@ class PortableCollectionInventoryAuthority(BaseModel):
 
     header: PortableCollectionHeader
     inventory_identity: str = Field(pattern=r"^[0-9a-f]{64}$")
-    file_count: int = Field(ge=1)
-    file_bytes: int = Field(ge=0)
+    file_count: NonnegativeDecimal = Field(ge=1)
+    file_bytes: NonnegativeDecimal
 
 
 class PortableCollectionInventoryPage(BaseModel):

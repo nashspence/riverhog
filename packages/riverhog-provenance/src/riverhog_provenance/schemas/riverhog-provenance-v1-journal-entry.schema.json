@@ -38,9 +38,7 @@
       "$ref": "#/$defs/urnUuid"
     },
     "sequence": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 9223372036854775807
+      "$ref": "#/$defs/sequence63"
     },
     "recorded_at": {
       "$ref": "#/$defs/utcDateTime"
@@ -90,7 +88,7 @@
       "then": {
         "properties": {
           "sequence": {
-            "const": 0
+            "const": "0"
           },
           "body": {
             "$ref": "#/$defs/journalInitBody"
@@ -117,7 +115,9 @@
       "then": {
         "properties": {
           "sequence": {
-            "minimum": 1
+            "not": {
+              "const": "0"
+            }
           },
           "body": {
             "$ref": "#/$defs/assertionBody"
@@ -142,7 +142,9 @@
       "then": {
         "properties": {
           "sequence": {
-            "minimum": 1
+            "not": {
+              "const": "0"
+            }
           },
           "body": {
             "$ref": "#/$defs/correctionBody"
@@ -167,7 +169,9 @@
       "then": {
         "properties": {
           "sequence": {
-            "minimum": 1
+            "not": {
+              "const": "0"
+            }
           },
           "body": {
             "$ref": "#/$defs/checkpointBody"
@@ -245,9 +249,7 @@
           "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
         },
         "byte_length": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9223372036854775807
+          "$ref": "#/$defs/sequence63"
         },
         "media_type": {
           "$ref": "#/$defs/nonEmptyString"
@@ -916,9 +918,7 @@
           "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
         },
         "byte_length": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9223372036854775807
+          "$ref": "#/$defs/sequence63"
         },
         "media_type": {
           "$ref": "#/$defs/nonEmptyString"
@@ -953,9 +953,7 @@
           "$ref": "#/$defs/nonEmptyString"
         },
         "byte_length": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9223372036854775807
+          "$ref": "#/$defs/sequence63"
         },
         "media_type": {
           "$ref": "#/$defs/nonEmptyString"
@@ -1036,9 +1034,10 @@
           "$ref": "#/$defs/utcDateTime"
         },
         "resolution_ns": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 9223372036854775807
+          "$ref": "#/$defs/sequence63",
+          "not": {
+            "const": "0"
+          }
         }
       },
       "required": [
@@ -1134,9 +1133,7 @@
           "const": "digest"
         },
         "byte_length": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9223372036854775807
+          "$ref": "#/$defs/sequence63"
         },
         "digests": {
           "type": "array",
@@ -1356,9 +1353,7 @@
           "$ref": "#/$defs/sourceDescriptor"
         },
         "observed_byte_length": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9223372036854775807
+          "$ref": "#/$defs/sequence63"
         },
         "value": {
           "$ref": "#/$defs/typedValue"
@@ -1580,9 +1575,10 @@
           "$ref": "#/$defs/utcDateTime"
         },
         "resolution_ns": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 9223372036854775807
+          "$ref": "#/$defs/sequence63",
+          "not": {
+            "const": "0"
+          }
         },
         "source": {
           "$ref": "#/$defs/fieldSourceDescriptor"
@@ -2484,9 +2480,7 @@
           "$ref": "#/$defs/urnUuid"
         },
         "sequence": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9223372036854775807
+          "$ref": "#/$defs/sequence63"
         },
         "json_sha256": {
           "$ref": "#/$defs/sha256Hex"
@@ -2577,9 +2571,7 @@
       "additionalProperties": false,
       "properties": {
         "size_bytes": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9223372036854775807
+          "$ref": "#/$defs/sequence63"
         },
         "digests": {
           "type": "array",
@@ -4181,34 +4173,25 @@
       "additionalProperties": false,
       "properties": {
         "entries": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 9223372036854775807
+          "$ref": "#/$defs/sequence63",
+          "not": {
+            "const": "0"
+          }
         },
         "lineages": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9223372036854775807
+          "$ref": "#/$defs/sequence63"
         },
         "states": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9223372036854775807
+          "$ref": "#/$defs/sequence63"
         },
         "captures": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9223372036854775807
+          "$ref": "#/$defs/sequence63"
         },
         "activities": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9223372036854775807
+          "$ref": "#/$defs/sequence63"
         },
         "relations": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9223372036854775807
+          "$ref": "#/$defs/sequence63"
         }
       },
       "required": [
@@ -4271,6 +4254,10 @@
         }
       ],
       "description": "A cumulative checkpoint over exact RFC 7464 bytes through the preceding entry. Tail truncation is detectable only when a checkpoint or tail digest is anchored externally."
+    },
+    "sequence63": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])"
     }
   }
 }

@@ -17,7 +17,6 @@ import base64
 import binascii
 import hashlib
 import hmac
-import json
 import math
 import os
 from collections.abc import Callable, Iterable, Iterator, Mapping
@@ -25,6 +24,12 @@ from dataclasses import dataclass
 
 from cryptography.exceptions import InvalidTag
 from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
+from riverhog_canonical_json import (
+    canonical_json_bytes,
+    format_scalar,
+    parse_scalar,
+    require_canonical_json,
+)
 
 AGE_V1_LINE = b"age-encryption.org/v1\n"
 SCRYPT_SALT_PREFIX = b"age-encryption.org/v1/scrypt"
@@ -68,24 +73,38 @@ class UploadState:
             "format": self.format,
             "header_b64": _b64_encode(self.header),
             "payload_nonce_b64": _b64_encode(self.payload_nonce),
-            "plaintext_size": self.plaintext_size,
+            "plaintext_size": (
+                format_scalar("nonnegative", self.plaintext_size)
+                if self.plaintext_size is not None
+                else None
+            ),
         }
-        return json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        return canonical_json_bytes(payload)
 
     @classmethod
     def from_json_bytes(cls, data: bytes | str) -> UploadState:
-        if isinstance(data, bytes):
-            data = data.decode("utf-8")
-        raw = json.loads(data)
+        try:
+            raw = require_canonical_json(data if isinstance(data, bytes) else data.encode("utf-8"))
+        except (UnicodeError, ValueError) as exc:
+            raise AgeFormatError("upload state must be canonical JSON") from exc
+        if not isinstance(raw, dict):
+            raise AgeFormatError("upload state must be a JSON object")
         if raw.get("format") != "age-v1-scrypt-resumable":
             raise AgeFormatError(f"unsupported upload state format: {raw.get('format')!r}")
-        header = _b64_decode(raw["header_b64"])
-        payload_nonce = _b64_decode(raw["payload_nonce_b64"])
+        header_text = raw.get("header_b64")
+        nonce_text = raw.get("payload_nonce_b64")
+        if not isinstance(header_text, str) or not isinstance(nonce_text, str):
+            raise AgeFormatError("upload state base64 fields are invalid")
+        header = _b64_decode(header_text)
+        payload_nonce = _b64_decode(nonce_text)
         plaintext_size = raw.get("plaintext_size")
-        if plaintext_size is not None and (
-            not isinstance(plaintext_size, int) or plaintext_size < 0
-        ):
-            raise AgeFormatError("plaintext_size must be a non-negative integer or null")
+        if plaintext_size is not None:
+            try:
+                plaintext_size = parse_scalar("nonnegative", plaintext_size)
+            except ValueError as exc:
+                raise AgeFormatError(
+                    "plaintext_size must be an exact decimal string or null"
+                ) from exc
         if len(payload_nonce) != PAYLOAD_NONCE_SIZE:
             raise AgeFormatError("payload nonce must be 16 bytes")
         return cls(header=header, payload_nonce=payload_nonce, plaintext_size=plaintext_size)
@@ -109,7 +128,7 @@ def plaintext_bytes_for_ciphertext_offset(
     elif isinstance(state, (bytes, str)):
         upload_state = UploadState.from_json_bytes(state)
     else:
-        upload_state = UploadState.from_json_bytes(json.dumps(dict(state)))
+        upload_state = UploadState.from_json_bytes(canonical_json_bytes(dict(state)))
     prefix_bytes = len(upload_state.header) + len(upload_state.payload_nonce)
     if ciphertext_offset <= prefix_bytes:
         return 0
@@ -224,7 +243,7 @@ class ResumableAgeScryptSession:
         elif isinstance(state, (bytes, str)):
             upload_state = UploadState.from_json_bytes(state)
         else:
-            upload_state = UploadState.from_json_bytes(json.dumps(dict(state)).encode("utf-8"))
+            upload_state = UploadState.from_json_bytes(canonical_json_bytes(dict(state)))
         parsed = parse_scrypt_header(upload_state.header)
         file_key = _unwrap_scrypt_file_key(
             _passphrase_to_bytes(passphrase), parsed, scrypt_maxmem=scrypt_maxmem

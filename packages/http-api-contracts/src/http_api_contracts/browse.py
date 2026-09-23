@@ -13,6 +13,7 @@ from collections.abc import Callable, Mapping, Sequence
 from typing import Annotated
 
 from pydantic import AfterValidator, StringConstraints
+from riverhog_canonical_json import canonical_json_bytes
 
 type BrowseScalar = str | int | bool | bytes | None
 
@@ -51,13 +52,7 @@ class BrowseTokenError(ValueError):
 
 
 def _canonical_bytes(value: object) -> bytes:
-    return json.dumps(
-        value,
-        ensure_ascii=False,
-        allow_nan=False,
-        sort_keys=True,
-        separators=(",", ":"),
-    ).encode("utf-8")
+    return canonical_json_bytes(value)
 
 
 def _b64encode(value: bytes) -> str:

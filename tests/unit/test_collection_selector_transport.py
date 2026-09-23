@@ -132,7 +132,7 @@ def test_tag_membership_selector_uses_json_through_client_cli_and_http(
         return httpx.Response(
             200,
             json={
-                "collection_id": 42,
+                "collection_id": "42",
                 "revision": 1,
                 "tag_set_identity": identity,
                 "tag": tag,
@@ -187,7 +187,7 @@ def test_tag_membership_selector_uses_json_through_client_cli_and_http(
             assert collection_id == 42
             assert kwargs["tag"] == tag
             return {
-                "collection_id": collection_id,
+                "collection_id": str(collection_id),
                 "revision": kwargs["revision"],
                 "tag_set_identity": kwargs["tag_set_identity"],
                 "tag": kwargs["tag"],

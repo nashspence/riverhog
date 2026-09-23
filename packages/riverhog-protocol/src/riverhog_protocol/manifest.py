@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import hashlib
-import json
 from collections.abc import Iterable
+
+from riverhog_canonical_json import canonical_json_bytes, format_scalar
 
 from riverhog_protocol.collection_upload_transport import collection_upload_path_order_key
 
@@ -20,11 +21,13 @@ def collection_content_identity_ordered(files: Iterable[tuple[str, int, str]]) -
     for path, byte_count, sha256 in files:
         digest.update(separator)
         digest.update(
-            json.dumps(
-                {"path": path, "bytes": byte_count, "sha256": sha256},
-                sort_keys=True,
-                separators=(",", ":"),
-            ).encode("utf-8")
+            canonical_json_bytes(
+                {
+                    "path": path,
+                    "bytes": format_scalar("nonnegative", byte_count),
+                    "sha256": sha256,
+                }
+            )
         )
         separator = b","
     digest.update(b'],"format":"riverhog-collection-content/v1"}')

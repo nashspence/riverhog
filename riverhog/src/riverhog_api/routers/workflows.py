@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Query
+from fastapi import Query
 from http_api_contracts import (
     exact_authority_page_operation,
     mutable_browse_operation,
@@ -34,6 +34,7 @@ from riverhog_api.browse import (
     page_position,
 )
 from riverhog_api.deps import ContainerDep
+from riverhog_api.routing import RiverhogRouter
 from riverhog_api.schemas.workflows import (
     ArtifactDispositionBatchIn,
     ArtifactDispositionOutputBatchIn,
@@ -62,7 +63,7 @@ from riverhog_api.schemas.workflows import (
     TransformCapabilityOut,
 )
 
-router = APIRouter(tags=["collection-workflows"])
+router = RiverhogRouter(tags=["collection-workflows"])
 
 
 @router.post(

@@ -25,6 +25,8 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any, Protocol, cast
 
+from riverhog_canonical_json import canonical_json_bytes
+
 CONFIG_SCHEMA = "riverhog-provider-qualification-config/v1"
 PLAN_SCHEMA = "riverhog-provider-qualification-infrastructure-plan/v1"
 CORPUS_SCHEMA = "riverhog-provider-qualification-corpus/v1"
@@ -355,7 +357,14 @@ class AdditionalInfrastructureManager(Protocol):
 
 
 def _canonical_json(payload: object) -> bytes:
-    return json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    def json_lists(value: object) -> object:
+        if isinstance(value, tuple | list):
+            return [json_lists(item) for item in value]
+        if isinstance(value, dict):
+            return {key: json_lists(item) for key, item in value.items()}
+        return value
+
+    return canonical_json_bytes(json_lists(payload))
 
 
 def _utc_now() -> datetime:

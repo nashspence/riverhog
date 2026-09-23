@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Query
+from fastapi import Query
 from http_api_contracts import mutable_browse_operation
 from riverhog_application_access import ApplicationKeyId, ApplicationName
 from riverhog_protocol import DownloadQuotaSort, SortOrder
@@ -17,13 +17,14 @@ from riverhog_api.browse import (
     page_position,
 )
 from riverhog_api.deps import ContainerDep
+from riverhog_api.routing import RiverhogRouter
 from riverhog_api.schemas.quotas import (
     KeyDownloadQuotaListOut,
     KeyDownloadQuotaOut,
     SetKeyDownloadQuotaRequest,
 )
 
-router = APIRouter(tags=["download quotas"])
+router = RiverhogRouter(tags=["download quotas"])
 
 
 @router.get("/download-quota", response_model=KeyDownloadQuotaOut)

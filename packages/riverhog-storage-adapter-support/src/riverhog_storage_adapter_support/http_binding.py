@@ -14,6 +14,7 @@ from http_api_contracts import (
     http_operation_for_request,
 )
 from pydantic import BaseModel, ValidationError
+from riverhog_canonical_json import parse_identity_json
 from riverhog_storage_adapter_protocol import (
     AdapterDescriptor,
     CompletedObjectReceipt,
@@ -342,7 +343,7 @@ class StorageAdapterHttpBinding:
                 "adapter control request exceeds its size limit",
             )
         try:
-            return model.model_validate_json(body)
+            return model.model_validate(parse_identity_json(body))
         except (ValidationError, ValueError) as exc:
             raise StorageAdapterServiceError(
                 400,

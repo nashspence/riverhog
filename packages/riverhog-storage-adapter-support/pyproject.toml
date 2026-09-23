@@ -22,6 +22,7 @@ dependencies = [
   "http-api-contracts>=0.1,<0.2",
   "httpx[http2]>=0.27,<1.0",
   "pydantic>=2.7,<3.0",
+  "riverhog-canonical-json>=0.1,<0.2",
   "riverhog-storage-adapter-protocol>=0.1,<0.2",
 ]
 
@@ -31,6 +32,7 @@ riverhog-storage-adapter-schemas = "riverhog_storage_adapter_support.schemas:mai
 
 [tool.uv.sources]
 http-api-contracts = { workspace = true }
+riverhog-canonical-json = { workspace = true }
 riverhog-storage-adapter-protocol = { workspace = true }
 
 [tool.hatch.build.targets.wheel]

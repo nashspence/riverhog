@@ -8,6 +8,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from riverhog_canonical_json import (
+    CanonicalJsonError,
+    format_scalar,
+    parse_scalar,
+    require_canonical_json,
+)
+
 from .common import (
     canonical_json,
     digest_assertion,
@@ -127,7 +134,7 @@ def validate_incremental_journal_entry(
         document.get("$schema") != PROVENANCE_ENTRY_SCHEMA
         or document.get("profile") != PROVENANCE_PROFILE
         or document.get("type") != JOURNAL_TYPE
-        or document.get("sequence") != sequence
+        or document.get("sequence") != format_scalar("sequence63", sequence)
         or document.get("journal_id") != journal_id
     ):
         raise ProvenanceValidationError(f"journal entry {sequence} authority is invalid")
@@ -138,7 +145,7 @@ def validate_incremental_journal_entry(
             raise ProvenanceValidationError("journal initialization unexpectedly has a predecessor")
     elif document.get("previous_entry") != {
         "entry_id": previous_entry_id,
-        "sequence": sequence - 1,
+        "sequence": format_scalar("sequence63", sequence - 1),
         "json_sha256": previous_json_sha256,
     }:
         raise ProvenanceValidationError(
@@ -301,19 +308,13 @@ def _journal_frame(physical_sequence: int, chunk: bytes) -> JournalFrame:
             f"journal entry {physical_sequence} has non-canonical outer whitespace"
         )
     try:
-        document = json.loads(
-            json_bytes,
-            object_pairs_hook=_unique_object,
-            parse_constant=_reject_json_constant,
-        )
-    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+        document = require_canonical_json(json_bytes)
+    except CanonicalJsonError as exc:
         raise ProvenanceValidationError(
             f"journal entry {physical_sequence} is not strict JSON: {exc}"
         ) from exc
     if not isinstance(document, dict):
         raise ProvenanceValidationError(f"journal entry {physical_sequence} must be a JSON object")
-    if canonical_json(document) != json_bytes:
-        raise ProvenanceValidationError(f"journal entry {physical_sequence} is not canonical JSON")
     return JournalFrame(
         sequence=physical_sequence,
         json_bytes=json_bytes,
@@ -411,7 +412,7 @@ def validate_journal_chunks(
             raise ProvenanceValidationError(f"journal entry {index} uses another profile")
         if document.get("type") != JOURNAL_TYPE:
             raise ProvenanceValidationError(f"journal entry {index} has another type")
-        if document.get("sequence") != index:
+        if document.get("sequence") != format_scalar("sequence63", index):
             raise ProvenanceValidationError(
                 f"journal entry {index} sequence does not match physical order"
             )
@@ -432,7 +433,7 @@ def validate_journal_chunks(
             assert prior is not None
             if previous != {
                 "entry_id": _required_string(prior.document, "id"),
-                "sequence": index - 1,
+                "sequence": format_scalar("sequence63", index - 1),
                 "json_sha256": prior.sha256,
             }:
                 raise ProvenanceValidationError(
@@ -608,7 +609,7 @@ def create_observation_journal(
         "id": new_urn_uuid(),
         "type": JOURNAL_TYPE,
         "journal_id": journal_id,
-        "sequence": 0,
+        "sequence": "0",
         "recorded_at": utc_now(),
         "recorded_by_agent_id": agent["id"],
         "entry_kind": "journal_init",
@@ -1019,7 +1020,7 @@ def create_derivative_journal_from_identity(
         "id": new_urn_uuid(),
         "type": JOURNAL_TYPE,
         "journal_id": resolved_journal_id,
-        "sequence": 0,
+        "sequence": "0",
         "recorded_at": utc_now(),
         "recorded_by_agent_id": agent["id"],
         "entry_kind": "journal_init",
@@ -1058,7 +1059,7 @@ def create_derivative_journal_from_identity(
         "lineage_id": lineage_id,
         "locator": locator_from_path(relative_path, kind="relative"),
         "content": {
-            "size_bytes": byte_count,
+            "size_bytes": format_scalar("sequence63", byte_count),
             "digests": [
                 digest_assertion(
                     normalized_sha256,
@@ -1153,13 +1154,13 @@ def create_derivative_journal_from_identity(
         "id": new_urn_uuid(),
         "type": JOURNAL_TYPE,
         "journal_id": resolved_journal_id,
-        "sequence": 1,
+        "sequence": "1",
         "recorded_at": utc_now(),
         "recorded_by_agent_id": agent["id"],
         "entry_kind": "assertion",
         "previous_entry": {
             "entry_id": init["id"],
-            "sequence": 0,
+            "sequence": "0",
             "json_sha256": hashlib.sha256(init_json).hexdigest(),
         },
         "body": {
@@ -1238,7 +1239,7 @@ def create_derivative_journal_seed(
         "id": identity("entry:0"),
         "type": JOURNAL_TYPE,
         "journal_id": normalized_journal_id,
-        "sequence": 0,
+        "sequence": "0",
         "recorded_at": started_at,
         "recorded_by_agent_id": agent["id"],
         "entry_kind": "journal_init",
@@ -1277,7 +1278,7 @@ def create_derivative_journal_seed(
         "lineage_id": lineage_id,
         "locator": locator_from_path(relative_path, kind="relative"),
         "content": {
-            "size_bytes": byte_count,
+            "size_bytes": format_scalar("sequence63", byte_count),
             "digests": [
                 digest_assertion(
                     normalized_sha256,
@@ -1330,13 +1331,13 @@ def create_derivative_journal_seed(
         "id": identity("entry:1"),
         "type": JOURNAL_TYPE,
         "journal_id": normalized_journal_id,
-        "sequence": 1,
+        "sequence": "1",
         "recorded_at": ended_at,
         "recorded_by_agent_id": agent["id"],
         "entry_kind": "assertion",
         "previous_entry": {
             "entry_id": init["id"],
-            "sequence": 0,
+            "sequence": "0",
             "json_sha256": hashlib.sha256(init_json).hexdigest(),
         },
         "body": {
@@ -1453,13 +1454,13 @@ def create_derivative_source_entry(
         "id": identity(f"entry:{sequence}"),
         "type": JOURNAL_TYPE,
         "journal_id": seed.journal_id,
-        "sequence": sequence,
+        "sequence": format_scalar("sequence63", sequence),
         "recorded_at": recorded_at,
         "recorded_by_agent_id": seed.recorded_by_agent_id,
         "entry_kind": "assertion",
         "previous_entry": {
             "entry_id": previous_entry_id,
-            "sequence": sequence - 1,
+            "sequence": format_scalar("sequence63", sequence - 1),
             "json_sha256": previous_entry_json_sha256,
         },
         "body": {"assertions": {"relations": relations}},
@@ -1489,31 +1490,18 @@ def _assertion_entry(
         "id": new_urn_uuid(),
         "type": JOURNAL_TYPE,
         "journal_id": summary.journal_id,
-        "sequence": summary.entries,
+        "sequence": format_scalar("sequence63", summary.entries),
         "recorded_at": utc_now(),
         "recorded_by_agent_id": recorded_by_agent_id,
         "recording_environment_id": recording_environment_id,
         "entry_kind": "assertion",
         "previous_entry": {
             "entry_id": _required_string(summary.tail.document, "id"),
-            "sequence": summary.tail.sequence,
+            "sequence": format_scalar("sequence63", summary.tail.sequence),
             "json_sha256": summary.tail.sha256,
         },
         "body": {"assertions": dict(assertions)},
     }
-
-
-def _unique_object(pairs: Iterable[tuple[str, Any]]) -> JsonObject:
-    result: JsonObject = {}
-    for key, value in pairs:
-        if key in result:
-            raise ValueError(f"duplicate JSON object key {key!r}")
-        result[key] = value
-    return result
-
-
-def _reject_json_constant(value: str) -> None:
-    raise ValueError(f"non-finite JSON number {value}")
 
 
 def _required_string(value: Mapping[str, Any], key: str) -> str:
@@ -1545,9 +1533,10 @@ def _state_content_identity(state: Mapping[str, Any]) -> tuple[int, str]:
     content = state.get("content")
     if not isinstance(content, dict):
         raise ProvenanceValidationError("file state has no content identity")
-    byte_count = content.get("size_bytes")
-    if isinstance(byte_count, bool) or not isinstance(byte_count, int) or byte_count < 0:
-        raise ProvenanceValidationError("file state has an invalid byte count")
+    try:
+        byte_count = parse_scalar("sequence63", content.get("size_bytes"))
+    except CanonicalJsonError as exc:
+        raise ProvenanceValidationError("file state has an invalid byte count") from exc
     digests = content.get("digests")
     if not isinstance(digests, list):
         raise ProvenanceValidationError("file state has no digest list")

@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Header, HTTPException, Query, Request, Response
+from fastapi import Body, Header, HTTPException, Query, Request, Response
 from http_api_contracts import (
     QuotedSha256Identity,
     mutable_browse_operation,
     operation_interface,
     parse_quoted_sha256_identity,
 )
+from riverhog_canonical_json import parse_scalar
 from riverhog_core.app_permissions import COLLECTIONS_DELETE
 from riverhog_protocol import (
     COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX,
@@ -43,6 +44,7 @@ from riverhog_api.browse import (
 )
 from riverhog_api.deps import ContainerDep
 from riverhog_api.mappers import map_collection, map_collection_list_page
+from riverhog_api.routing import RiverhogRouter
 from riverhog_api.schemas.collections import (
     AddCollectionUploadTagsRequest,
     CollectionArchiveCopyListOut,
@@ -70,7 +72,7 @@ from riverhog_api.schemas.collections import (
     SearchCollectionsRequest,
 )
 
-router = APIRouter(tags=["collections"])
+router = RiverhogRouter(tags=["collections"])
 
 _CLIENT_BINARY_OPERATION = {
     **operation_interface("client-only-primitive"),
@@ -603,9 +605,10 @@ async def put_collection_upload_session_unit(
     declared = request.headers.get("content-length")
     if declared is None or not declared.isdecimal():
         raise HTTPException(status_code=411, detail="Content-Length is required")
-    expected_bytes = work.get("payload_bytes")
-    if isinstance(expected_bytes, bool) or not isinstance(expected_bytes, int):
-        raise RuntimeError("collection upload unit payload size is invalid")
+    try:
+        expected_bytes = parse_scalar("nonnegative", work.get("payload_bytes"))
+    except ValueError as exc:
+        raise RuntimeError("collection upload unit payload size is invalid") from exc
     if int(declared) != expected_bytes:
         raise HTTPException(status_code=400, detail="Content-Length does not match the upload unit")
     payload = await run_in_threadpool(

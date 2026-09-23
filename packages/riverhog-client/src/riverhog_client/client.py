@@ -50,6 +50,7 @@ from riverhog_protocol import (
     CatalogSyncCollectionPage,
     CollectionDescription,
     CollectionId,
+    CollectionIdParameter,
     CollectionSort,
     CollectionTag,
     CollectionUploadArtifactCustodyReceiptDocument,
@@ -127,11 +128,11 @@ _APPLICATION_RESOURCE: TypeAdapter[str] = TypeAdapter(ApplicationResource)
 _ARCHIVE_STORE_NAME: TypeAdapter[str] = TypeAdapter(ArchiveStoreName)
 _RETRIEVAL_CACHE_STORE_NAME: TypeAdapter[str] = TypeAdapter(RetrievalCacheStoreName)
 _COLLECTION_ID: TypeAdapter[int] = TypeAdapter(CollectionId)
+_COLLECTION_ID_PARAMETER: TypeAdapter[int] = TypeAdapter(CollectionIdParameter)
 _CANONICAL_RELPATH: TypeAdapter[str] = TypeAdapter(CanonicalRelPath)
 _MONTHLY_DOWNLOAD_QUOTA_BYTES: TypeAdapter[int] = TypeAdapter(MonthlyDownloadQuotaBytes)
 _PROCESSING_CLAIM_ID: TypeAdapter[str] = TypeAdapter(ProcessingClaimId)
 _COLLECTION_UPLOAD_VOLUME_ID: TypeAdapter[str] = TypeAdapter(CollectionUploadVolumeId)
-_COLLECTION_UPLOAD_UNIT_NUMBER: TypeAdapter[int] = TypeAdapter(CollectionUploadUnitNumber)
 _COLLECTION_DESCRIPTION: TypeAdapter[str] = TypeAdapter(CollectionDescription)
 _COLLECTION_TAG: TypeAdapter[str] = TypeAdapter(CollectionTag)
 _SORT_ORDERS = closed_literal_values(SortOrder)
@@ -208,10 +209,9 @@ def _collection_upload_volume_id(value: str) -> str:
 
 
 def _collection_upload_unit_number(value: int) -> int:
-    try:
-        return _COLLECTION_UPLOAD_UNIT_NUMBER.validate_python(value, strict=True)
-    except ValidationError as exc:
-        raise BadRequest(str(exc)) from exc
+    if type(value) is not int or value < 0:
+        raise BadRequest("upload unit number must be a nonnegative integer")
+    return value
 
 
 def _application_name(value: str) -> str:
@@ -269,7 +269,7 @@ def _retrieval_cache_store_name(value: str) -> str:
 
 def _collection_id(value: int) -> int:
     try:
-        return _COLLECTION_ID.validate_python(value)
+        return _COLLECTION_ID_PARAMETER.validate_python(value)
     except ValidationError as exc:
         raise BadRequest("collection id must be a positive integer") from exc
 
@@ -436,7 +436,7 @@ def _file_selections_payload(
         document = RetrievalFileReferenceSetDocument.model_validate(
             {
                 "files": [
-                    {"collection_id": collection_id, "path": path}
+                    {"collection_id": str(_collection_id(collection_id)), "path": path}
                     for collection_id, path in ordered
                 ]
             }
@@ -1268,9 +1268,11 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
                 "PUT",
                 f"/v1/collection-upload-sessions/{str(_collection_id(collection_id))}/provenance/journals/"
                 f"{quote(canonical_journal_id, safe='')}",
-                json=CollectionUploadProvenanceJournalCreateDocument(
-                    bytes=byte_count,
-                    sha256=_sha256_identity(sha256, "provenance SHA-256"),
+                json=CollectionUploadProvenanceJournalCreateDocument.model_validate(
+                    {
+                        "bytes": str(byte_count),
+                        "sha256": _sha256_identity(sha256, "provenance SHA-256"),
+                    }
                 ).model_dump(mode="json"),
             )
         )
@@ -2422,7 +2424,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         except ValueError as exc:
             raise BadRequest(str(exc)) from exc
         payload: dict[str, Any] = {
-            "collection_id": _collection_id(collection_id),
+            "collection_id": str(_collection_id(collection_id)),
             "destination_store": stores.destination_store,
         }
         if stores.source_store is not None:

@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Literal, cast
 
+from riverhog_canonical_json import format_scalar
 from riverhog_protocol.manifest import collection_content_identity
 from riverhog_protocol.portable_collection import (
     PortableCollectionFile,
@@ -23,19 +24,21 @@ def collection_inventory_identity(
 ) -> tuple[PortableCollectionHeader, str]:
     if provenance_mode not in {"captured", "mixed", "omitted"}:
         raise ValueError("collection provenance mode is invalid")
-    header = PortableCollectionHeader(
-        collection=collection_id,
-        content_identity=content_identity,
-        encryption_format=encryption_format,
-        passphrase_id=passphrase_id,
-        provenance_mode=cast(Literal["captured", "mixed", "omitted"], provenance_mode),
-        provenance_identity=provenance_identity,
+    header = PortableCollectionHeader.model_validate(
+        dict(
+            collection=format_scalar("sequence63", collection_id),
+            content_identity=content_identity,
+            encryption_format=encryption_format,
+            passphrase_id=passphrase_id,
+            provenance_mode=cast(Literal["captured", "mixed", "omitted"], provenance_mode),
+            provenance_identity=provenance_identity,
+        )
     )
     builder = PortableCollectionIdentityBuilder(header)
     for path, byte_count, sha256 in files:
         builder.add(
             PortableCollectionFile.from_mapping(
-                {"path": path, "bytes": byte_count, "sha256": sha256}
+                {"path": path, "bytes": format_scalar("nonnegative", byte_count), "sha256": sha256}
             )
         )
     # passphrase_id is an opaque public identifier, not passphrase material.

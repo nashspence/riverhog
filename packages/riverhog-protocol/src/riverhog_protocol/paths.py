@@ -4,7 +4,8 @@ import unicodedata
 from pathlib import PurePosixPath
 from typing import Annotated
 
-from pydantic import AfterValidator, BeforeValidator, Field
+from pydantic import AfterValidator, BeforeValidator, Field, PlainSerializer, WithJsonSchema
+from riverhog_canonical_json import SEQUENCE63_MAX, format_scalar, parse_scalar, scalar_schema
 
 __all__ = [
     "CANONICAL_RELPATH_PATTERN",
@@ -105,7 +106,10 @@ def normalize_collection_id(raw: str | int) -> int:
     text = str(raw)
     if not text or not text.isascii() or not text.isdecimal():
         raise PathNormalizationError("collection id must be a positive integer")
-    value = int(text)
+    try:
+        value = parse_scalar("sequence63", text)
+    except ValueError as exc:
+        raise PathNormalizationError("collection id exceeds its 63 bit domain") from exc
     if value < 1 or text != str(value):
         raise PathNormalizationError("collection id must be a canonical positive integer")
     return value
@@ -116,6 +120,10 @@ def validate_collection_id(value: object) -> int:
 
     if isinstance(value, bool) or not isinstance(value, int) or value < 1:
         raise PathNormalizationError("collection id must be a positive integer")
+    try:
+        format_scalar("sequence63", value)
+    except ValueError as exc:
+        raise PathNormalizationError("collection id exceeds its 63 bit domain") from exc
     return value
 
 
@@ -129,11 +137,14 @@ def parse_collection_id_parameter(value: object) -> int:
 
 type CollectionId = Annotated[
     int,
+    BeforeValidator(lambda value: parse_scalar("sequence63", value)),
     Field(ge=1),
-    BeforeValidator(validate_collection_id),
+    PlainSerializer(lambda value: format_scalar("sequence63", value), return_type=str),
+    WithJsonSchema({"allOf": [scalar_schema("sequence63"), {"not": {"const": "0"}}]}),
 ]
 type CollectionIdParameter = Annotated[
     int,
-    Field(ge=1),
+    Field(ge=1, le=SEQUENCE63_MAX),
     BeforeValidator(parse_collection_id_parameter),
+    WithJsonSchema({"allOf": [scalar_schema("sequence63"), {"not": {"const": "0"}}]}),
 ]

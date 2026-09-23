@@ -175,8 +175,9 @@ def test_public_collection_identity_mirrors_use_the_canonical_scalar(
     model: type[Any],
     payload: dict[str, object],
 ) -> None:
+    assert model.model_validate(payload).model_dump(mode="json")["collection_id"] == "1"
     with pytest.raises(ValidationError):
-        model.model_validate(payload)
+        model.model_validate({**payload, "collection_id": 1})
 
 
 def test_public_collection_identity_dataclass_uses_the_canonical_scalar() -> None:

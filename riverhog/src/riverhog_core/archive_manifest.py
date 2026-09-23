@@ -20,7 +20,8 @@ from riverhog_archive_contracts import (
     format_archive_sequence,
     ordered_archive_volume_commitment,
 )
-from riverhog_protocol.pack_ingress import RESERVED_ARCHIVE_PREFIX, canonical_json_bytes
+from riverhog_canonical_json import format_scalar
+from riverhog_protocol.pack_ingress import RESERVED_ARCHIVE_PREFIX
 from riverhog_protocol.paths import normalize_relpath
 
 from riverhog_core.domain.archive import (
@@ -255,7 +256,11 @@ def build_collection_archive_root_manifest(
             "part_digest": "sha256",
             "selective_read": SELECTIVE_READ_FORMAT,
         },
-        "tree": tree,
+        "tree": {
+            "files": format_scalar("nonnegative", tree["files"]),
+            "bytes": format_scalar("nonnegative", tree["bytes"]),
+            "sha256": tree["sha256"],
+        },
         "volume_sequence": {
             "sha256": ordered_volume_sha256,
         },
@@ -320,9 +325,9 @@ def _provenance_object_row(item: SealedProvenanceObject) -> dict[str, object]:
         "id": item.object_id,
         "kind": item.kind,
         "path": normalize_relpath(item.relative_path),
-        "plaintext_bytes": item.plaintext_bytes,
+        "plaintext_bytes": format_scalar("nonnegative", item.plaintext_bytes),
         "sha256": item.plaintext_sha256,
-        "stored_bytes": item.stored_bytes,
+        "stored_bytes": format_scalar("nonnegative", item.stored_bytes),
         "stored_sha256": item.stored_sha256,
     }
 
@@ -347,8 +352,8 @@ def _pack_volume_row(plan: PackVolumePlan, receipt: SealedPackVolume) -> dict[st
         "kind": "pack",
         "path": expected_path,
         "files": receipt.files,
-        "source_bytes": receipt.source_bytes,
-        "plaintext_bytes": receipt.plaintext_bytes,
+        "source_bytes": format_scalar("nonnegative", receipt.source_bytes),
+        "plaintext_bytes": format_scalar("nonnegative", receipt.plaintext_bytes),
         "age_state": _age_state_row(
             receipt.age_state_json, plaintext_bytes=receipt.plaintext_bytes
         ),
@@ -372,15 +377,15 @@ def _raw_volume_row(receipt: SealedRawVolume) -> dict[str, object]:
         "sequence": receipt.sequence,
         "kind": "segment",
         "path": expected_path,
-        "plaintext_bytes": receipt.plaintext_bytes,
+        "plaintext_bytes": format_scalar("nonnegative", receipt.plaintext_bytes),
         "age_state": _age_state_row(
             receipt.age_state_json, plaintext_bytes=receipt.plaintext_bytes
         ),
         "file": {
             "path": source_path,
-            "offset": receipt.file_offset,
-            "bytes": receipt.plaintext_bytes,
-            "file_bytes": receipt.file_bytes,
+            "offset": format_scalar("nonnegative", receipt.file_offset),
+            "bytes": format_scalar("nonnegative", receipt.plaintext_bytes),
+            "file_bytes": format_scalar("nonnegative", receipt.file_bytes),
             "sha256": receipt.file_sha256,
         },
         "parts": [_part_row(current) for current in receipt.parts],
@@ -389,32 +394,14 @@ def _raw_volume_row(receipt: SealedRawVolume) -> dict[str, object]:
 
 def _age_state_row(age_state_json: str, *, plaintext_bytes: int) -> dict[str, object]:
     try:
-        value = json.loads(age_state_json)
-    except json.JSONDecodeError as exc:
-        raise ValueError("sealed archive volume age state is not valid JSON") from exc
-    return _normalized_age_state(value, plaintext_bytes=plaintext_bytes)
-
-
-def _normalized_age_state(
-    value: object,
-    *,
-    plaintext_bytes: int,
-) -> dict[str, object]:
-    expected = {"format", "header_b64", "payload_nonce_b64", "plaintext_size"}
-    if not isinstance(value, Mapping) or set(value) != expected:
-        raise ValueError("collection archive volume age state is invalid")
-    canonical = canonical_json_bytes(dict(value)).decode("utf-8")
-    try:
-        state = UploadState.from_json_bytes(canonical)
+        state = UploadState.from_json_bytes(age_state_json)
     except (TypeError, ValueError) as exc:
         raise ValueError("collection archive volume age state is invalid") from exc
     if state.plaintext_size != plaintext_bytes:
         raise ValueError("collection archive volume age state size mismatch")
     normalized = json.loads(state.to_json_bytes())
-    if not isinstance(normalized, dict):
+    if not isinstance(normalized, dict):  # pragma: no cover - UploadState owns this shape
         raise ValueError("collection archive volume age state is invalid")
-    if canonical_json_bytes(normalized) != canonical_json_bytes(dict(value)):
-        raise ValueError("collection archive volume age state is not canonical")
     return dict(normalized)
 
 
@@ -427,10 +414,10 @@ def _stored_int(value: object, label: str) -> int:
 def _part_row(current: StoredArchivePart) -> dict[str, object]:
     return {
         "number": current.number,
-        "plaintext_start": current.plaintext_start,
-        "plaintext_bytes": current.plaintext_bytes,
+        "plaintext_start": format_scalar("nonnegative", current.plaintext_start),
+        "plaintext_bytes": format_scalar("nonnegative", current.plaintext_bytes),
         "plaintext_sha256": current.plaintext_sha256,
-        "stored_bytes": current.stored_bytes,
+        "stored_bytes": format_scalar("nonnegative", current.stored_bytes),
         "stored_sha256": current.stored_sha256,
     }
 

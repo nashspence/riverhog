@@ -7,6 +7,7 @@ from datetime import datetime
 from functools import cache
 from typing import cast
 
+from riverhog_canonical_json import format_scalar
 from riverhog_protocol.errors import BadRequest, Conflict, InvalidState, NotFound
 from riverhog_protocol.transport import COLLECTION_DELETION_BLOCKER_CATEGORY_SAMPLE_MAX
 from sqlalchemy import Table, and_, case, delete, func, or_, select, update
@@ -789,7 +790,7 @@ def _build_plan(
     )
     return {
         "status": "blocked" if blockers else "ready",
-        "collection_id": collection_id,
+        "collection_id": format_scalar("sequence63", collection_id),
         "warning": ARCHIVE_DATA_LOSS_WARNING,
         "expires_at": format_utc_timestamp(expires_at),
         "file_count": int(file_count),

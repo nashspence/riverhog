@@ -75,7 +75,7 @@ def _portable_page(files: Sequence[Mapping[str, Any]]) -> PortableCollectionInve
     ordered = [
         ImmutableFileIdentityDocument(
             path=str(file["path"]),
-            bytes=int(file["bytes"]),
+            bytes=str(file["bytes"]),
             sha256=str(file["sha256"]),
         )
         for file in sorted(files, key=lambda item: str(item["path"]).encode("utf-8"))
@@ -83,15 +83,15 @@ def _portable_page(files: Sequence[Mapping[str, Any]]) -> PortableCollectionInve
     return PortableCollectionInventoryPage(
         authority=PortableCollectionInventoryAuthority(
             header=PortableCollectionHeader(
-                collection=1,
+                collection="1",
                 content_identity="2" * 64,
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
                 provenance_mode="omitted",
             ),
             inventory_identity="9" * 64,
-            file_count=len(ordered),
-            file_bytes=sum(file.bytes for file in ordered),
+            file_count=str(len(ordered)),
+            file_bytes=str(sum(file.bytes for file in ordered)),
         ),
         files=ordered,
         complete=True,
@@ -162,7 +162,7 @@ class RetrievalApi:
 
     def get_collection(self, collection_id: int) -> dict[str, Any]:
         return {
-            "id": collection_id,
+            "id": str(collection_id),
             "archive_root_sha256": "3" * 64 if self.changed_root else "1" * 64,
             "content_identity": "2" * 64,
         }
@@ -171,15 +171,15 @@ class RetrievalApi:
         return {
             "files": [
                 {
-                    "collection_id": 1,
+                    "collection_id": "1",
                     "path": PRODUCER_EVIDENCE_PATH,
-                    "bytes": 2,
+                    "bytes": "2",
                     "sha256": hashlib.sha256(b"{}").hexdigest(),
                 },
                 {
-                    "collection_id": 1,
+                    "collection_id": "1",
                     "path": "camera/input.mov",
-                    "bytes": len(self.data),
+                    "bytes": str(len(self.data)),
                     "sha256": self.sha256,
                 },
             ]
@@ -203,9 +203,9 @@ class RetrievalApi:
             "next_page_token": None,
             "files": [
                 {
-                    "collection_id": 1,
+                    "collection_id": "1",
                     "path": "camera/input.mov",
-                    "bytes": len(self.data),
+                    "bytes": str(len(self.data)),
                     "sha256": self.sha256,
                     "provenance": {
                         "status": "omitted",
@@ -222,9 +222,9 @@ class RetrievalApi:
     def _rows(self, files: Sequence[tuple[int, str]]) -> list[dict[str, object]]:
         return [
             {
-                "collection_id": collection_id,
+                "collection_id": str(collection_id),
                 "path": path,
-                "bytes": len(self.data),
+                "bytes": str(len(self.data)),
                 "sha256": self.sha256,
             }
             for collection_id, path in files
@@ -449,20 +449,20 @@ def test_claimed_reader_streams_multiple_inventory_pages_without_eager_surface()
                 {
                     "authority": {
                         "header": {
-                            "collection": 1,
+                            "collection": "1",
                             "content_identity": "2" * 64,
                             "encryption_format": "age-v1-scrypt",
                             "passphrase_id": "fixture-archive-key-v1",
                             "provenance_mode": "omitted",
                         },
                         "inventory_identity": "9" * 64,
-                        "file_count": 2,
-                        "file_bytes": len("a.bin") + len("b.bin"),
+                        "file_count": "2",
+                        "file_bytes": str(len("a.bin") + len("b.bin")),
                     },
                     "files": [
                         {
                             "path": path,
-                            "bytes": len(content),
+                            "bytes": str(len(content)),
                             "sha256": hashlib.sha256(content).hexdigest(),
                         }
                     ],
@@ -665,11 +665,11 @@ class UploadApi:
         return ArtifactDispositionPageDocument.model_validate(
             {
                 "authority": identity.as_dict(),
-                "start_ordinal": 0,
+                "start_ordinal": "0",
                 "dispositions": [
                     {
                         "input": {
-                            "collection_id": 1,
+                            "collection_id": "1",
                             "archive_root_sha256": "1" * 64,
                             "path": f"camera/input-{index:04d}.mov",
                         },
@@ -693,11 +693,11 @@ class UploadApi:
         return ArtifactDispositionOutputPageDocument.model_validate(
             {
                 "authority": identity.as_dict(),
-                "start_ordinal": 0,
+                "start_ordinal": "0",
                 "outputs": [
                     {
                         "input": {
-                            "collection_id": 1,
+                            "collection_id": "1",
                             "archive_root_sha256": "1" * 64,
                             "path": f"camera/input-{index:04d}.mov",
                         },
@@ -715,12 +715,12 @@ class UploadApi:
     ) -> dict[str, Any]:
         self.session_calls += 1
         return {
-            "collection_id": 7,
+            "collection_id": "7",
             "resumed": self.session_calls > 1,
             "state": "open",
             "registration_constraints": {
-                "pack_member_bytes": 1024,
-                "raw_part_plaintext_bytes": 65536,
+                "pack_member_bytes": "1024",
+                "raw_part_plaintext_bytes": "65536",
             },
         }
 
@@ -772,10 +772,10 @@ class UploadApi:
         assignment = self._assignment()
         work = [] if assignment is None else [assignment]
         return CollectionUploadWorkBatchDocument(
-            collection_id=collection_id,
+            collection_id=str(collection_id),
             planning_complete=self.discovery_closed,
             complete=self.discovery_closed and not work,
-            committed_payload_bytes=len(self.uploaded),
+            committed_payload_bytes=str(len(self.uploaded)),
             work=work[:limit],
         )
 
@@ -785,7 +785,7 @@ class UploadApi:
         sources = [
             {
                 "path": item["path"],
-                "offset": 0,
+                "offset": "0",
                 "bytes": item["bytes"],
                 "artifact_sha256": item["sha256"],
             }
@@ -796,14 +796,14 @@ class UploadApi:
             {
                 "volume": {
                     "volume_id": "pack-" + "0" * 64,
-                    "sequence": 0,
+                    "sequence": "0" * 64,
                     "kind": "pack",
                 },
                 "plan_sha256": "8" * 64,
                 "unit": {
-                    "unit": 0,
-                    "payload_bytes": total_bytes,
-                    "plaintext_bytes": total_bytes,
+                    "unit": "0",
+                    "payload_bytes": str(total_bytes),
+                    "plaintext_bytes": str(total_bytes),
                     "sources": sources,
                     "state": "pending",
                 },
@@ -846,7 +846,7 @@ class UploadApi:
         sources = [
             {
                 "path": item["path"],
-                "offset": 0,
+                "offset": "0",
                 "bytes": item["bytes"],
                 "artifact_sha256": item["sha256"],
             }
@@ -854,9 +854,9 @@ class UploadApi:
         ]
         total_bytes = sum(int(item["bytes"]) for item in sources)
         return {
-            "unit": 0,
-            "payload_bytes": total_bytes,
-            "plaintext_bytes": total_bytes,
+            "unit": "0",
+            "payload_bytes": str(total_bytes),
+            "plaintext_bytes": str(total_bytes),
             "sources": sources,
         }
 
@@ -884,7 +884,7 @@ class UploadApi:
             "state": "finalized",
             "content_identity": self.completion_content_identity,
             "collection": {
-                "id": 7,
+                "id": "7",
                 "archive_root_sha256": "7" * 64,
                 "content_identity": self.completion_content_identity,
             },
@@ -919,7 +919,7 @@ class ProvenanceTransformApi(UploadApi):
     def get_collection(self, collection_id: int) -> dict[str, Any]:
         assert collection_id == 1
         return {
-            "id": 1,
+            "id": "1",
             "archive_root_sha256": "1" * 64,
             "content_identity": "2" * 64,
         }
@@ -927,9 +927,9 @@ class ProvenanceTransformApi(UploadApi):
     def search(self, _query: str | None = None, **_kwargs: Any) -> dict[str, Any]:
         files = [
             {
-                "collection_id": 1,
+                "collection_id": "1",
                 "path": path,
-                "bytes": len(content),
+                "bytes": str(len(content)),
                 "sha256": hashlib.sha256(content).hexdigest(),
             }
             for path, content in self.source_contents.items()
@@ -959,9 +959,9 @@ class ProvenanceTransformApi(UploadApi):
         }
         files = [
             {
-                "collection_id": 1,
+                "collection_id": "1",
                 "path": path,
-                "bytes": len(content),
+                "bytes": str(len(content)),
                 "sha256": hashlib.sha256(content).hexdigest(),
                 "provenance": {
                     "status": "captured",

@@ -40,7 +40,7 @@ from tests.unit.db_helpers import sqlite_url
 
 def _collection_event_data(collection_id: int, owner: str) -> dict[str, object]:
     return {
-        "collection_id": collection_id,
+        "collection_id": str(collection_id),
         "collection_created_at": utc_timestamp_now(),
         "actor": {"app": "riverhog"},
         "initiator": {"app": owner},

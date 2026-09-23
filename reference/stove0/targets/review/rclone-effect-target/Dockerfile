@@ -33,6 +33,7 @@ COPY reference/stove0/targets/review/rclone-effect-target reference/stove0/targe
 COPY reference/stove0/targets/review/support reference/stove0/targets/review/support
 COPY packages/riverhog-application-access packages/riverhog-application-access
 COPY packages/http-api-contracts packages/http-api-contracts
+COPY packages/riverhog-canonical-json packages/riverhog-canonical-json
 COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-client packages/riverhog-client
 COPY packages/riverhog-protocol packages/riverhog-protocol

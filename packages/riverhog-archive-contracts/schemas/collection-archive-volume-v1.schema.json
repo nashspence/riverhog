@@ -14,6 +14,8 @@
   },
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nonnegative_count": {"type": "string", "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])"},
+    "positive_count": {"type": "string", "pattern": "^[1-9][0-9]*(?![\\s\\S])"},
     "sequence": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "age_state": {
       "type": "object",
@@ -23,7 +25,7 @@
         "format": {"const": "age-v1-scrypt-resumable"},
         "header_b64": {"type": "string", "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}|[A-Za-z0-9+/]{3})$"},
         "payload_nonce_b64": {"type": "string", "pattern": "^[A-Za-z0-9+/]{21}[AQgw]$"},
-        "plaintext_size": {"type": "integer", "minimum": 0}
+        "plaintext_size": {"$ref": "#/$defs/nonnegative_count"}
       }
     },
     "part": {
@@ -32,10 +34,10 @@
       "required": ["number", "plaintext_start", "plaintext_bytes", "plaintext_sha256", "stored_bytes", "stored_sha256"],
       "properties": {
         "number": {"type": "integer", "minimum": 1},
-        "plaintext_start": {"type": "integer", "minimum": 0},
-        "plaintext_bytes": {"type": "integer", "minimum": 0},
+        "plaintext_start": {"$ref": "#/$defs/nonnegative_count"},
+        "plaintext_bytes": {"$ref": "#/$defs/nonnegative_count"},
         "plaintext_sha256": {"$ref": "#/$defs/sha256"},
-        "stored_bytes": {"type": "integer", "minimum": 1},
+        "stored_bytes": {"$ref": "#/$defs/positive_count"},
         "stored_sha256": {"$ref": "#/$defs/sha256"}
       }
     },
@@ -49,8 +51,8 @@
         "kind": {"const": "pack"},
         "path": {"type": "string", "pattern": "^volumes/pack-[0-9a-f]{64}\\.tar\\.age$"},
         "files": {"type": "integer", "minimum": 1, "maximum": 50000},
-        "source_bytes": {"type": "integer", "minimum": 0},
-        "plaintext_bytes": {"type": "integer", "minimum": 0},
+        "source_bytes": {"$ref": "#/$defs/nonnegative_count"},
+        "plaintext_bytes": {"$ref": "#/$defs/nonnegative_count"},
         "age_state": {"$ref": "#/$defs/age_state"},
         "index_sha256": {"$ref": "#/$defs/sha256"},
         "plan_sha256": {"$ref": "#/$defs/sha256"},
@@ -73,9 +75,9 @@
       "required": ["path", "offset", "bytes", "file_bytes", "sha256"],
       "properties": {
         "path": {"type": "string", "pattern": "^(?!/)(?!\\.riverhog/)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))[^/]+(?:/[^/]+)*$"},
-        "offset": {"type": "integer", "minimum": 0},
-        "bytes": {"type": "integer", "minimum": 0},
-        "file_bytes": {"type": "integer", "minimum": 0},
+        "offset": {"$ref": "#/$defs/nonnegative_count"},
+        "bytes": {"$ref": "#/$defs/nonnegative_count"},
+        "file_bytes": {"$ref": "#/$defs/nonnegative_count"},
         "sha256": {"$ref": "#/$defs/sha256"}
       }
     },
@@ -88,7 +90,7 @@
         "sequence": {"$ref": "#/$defs/sequence"},
         "kind": {"const": "segment"},
         "path": {"type": "string", "pattern": "^volumes/segment-[0-9a-f]{64}\\.bin\\.age$"},
-        "plaintext_bytes": {"type": "integer", "minimum": 0},
+        "plaintext_bytes": {"$ref": "#/$defs/nonnegative_count"},
         "age_state": {"$ref": "#/$defs/age_state"},
         "file": {"$ref": "#/$defs/segment_file"},
         "parts": {

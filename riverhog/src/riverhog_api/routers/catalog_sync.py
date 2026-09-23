@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Query, Response
+from fastapi import Query, Response
 from http_api_contracts import (
     cursor_feed_operation,
     exact_authority_page_operation,
@@ -18,8 +18,9 @@ from riverhog_protocol import (
 
 from riverhog_api.auth import CatalogReader
 from riverhog_api.deps import ContainerDep
+from riverhog_api.routing import RiverhogRouter
 
-router = APIRouter(tags=["catalog synchronization"])
+router = RiverhogRouter(tags=["catalog synchronization"])
 
 
 def _no_store(response: Response) -> None:

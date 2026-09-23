@@ -14,6 +14,7 @@ from typing import Any
 
 from http_api_contracts import closed_literal_values
 from riverhog_age import UploadState
+from riverhog_canonical_json import format_scalar
 from riverhog_protocol import ArchiveCopySort, SortOrder
 from riverhog_protocol.errors import BadRequest, Conflict, InvalidState, NotFound
 from riverhog_protocol.paths import PathNormalizationError, normalize_collection_id
@@ -2076,7 +2077,7 @@ def _archive_copy_list_position(
 
 def _job_payload(job: ArchiveCopyJobRecord) -> dict[str, object]:
     return {
-        "collection_id": job.collection_id,
+        "collection_id": format_scalar("sequence63", job.collection_id),
         "source_store": job.source_store,
         "destination_store": job.destination_store,
         "initiated_by_app": job.initiated_by_app,
@@ -2092,7 +2093,7 @@ def _job_payload(job: ArchiveCopyJobRecord) -> dict[str, object]:
 
 def _completed_payload(copy: CollectionArchiveCopyRecord) -> dict[str, object]:
     return {
-        "collection_id": copy.collection_id,
+        "collection_id": format_scalar("sequence63", copy.collection_id),
         "source_store": None,
         "destination_store": copy.store,
         "initiated_by_app": None,

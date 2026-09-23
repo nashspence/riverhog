@@ -68,7 +68,7 @@ def _request(observer: ExiftoolObserver) -> ObservationRequest:
     descriptor = observer.descriptor()
     support = descriptor.contracts[0]
     root = CollectionRootRef(
-        collection_id=1,
+        collection_id=str(1),
         archive_root_sha256=_sha("2"),
         content_identity=_sha("3"),
     )

@@ -128,11 +128,13 @@ class TargetCollectionPublication:
             **kwargs,
         )
         self._release_all_files()
-        output_collection = OutputCollectionRef(
-            collection_id=receipt.collection_id,
-            archive_root_sha256=receipt.archive_root_sha256,
-            content_identity=receipt.content_identity,
-            derivation_sha256=receipt.derivation.sha256,
+        output_collection = OutputCollectionRef.model_validate(
+            {
+                "collection_id": str(receipt.collection_id),
+                "archive_root_sha256": receipt.archive_root_sha256,
+                "content_identity": receipt.content_identity,
+                "derivation_sha256": receipt.derivation.sha256,
+            }
         )
         plan = self.execution.request.declaration.plan
         status = TargetJobStatus(

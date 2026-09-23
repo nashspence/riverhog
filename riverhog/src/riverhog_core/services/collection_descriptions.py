@@ -6,6 +6,7 @@ import logging
 from datetime import timedelta
 from typing import Literal
 
+from riverhog_canonical_json import format_scalar
 from riverhog_protocol import (
     MAX_COLLECTION_DESCRIPTION_REVISION,
     CollectionDescriptionDocument,
@@ -885,7 +886,7 @@ def _schedule_copy(
 
 def _description_payload(session: Session, collection: CollectionRecord) -> dict[str, object]:
     return {
-        "collection_id": collection.id,
+        "collection_id": format_scalar("sequence63", collection.id),
         "description": collection.description,
         "description_revision": collection.description_revision,
         "description_identity": collection.description_identity,

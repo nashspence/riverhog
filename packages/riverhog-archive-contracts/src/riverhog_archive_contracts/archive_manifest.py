@@ -4,12 +4,20 @@ import base64
 import binascii
 import builtins
 import hashlib
-import json
 import re
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from pathlib import PurePosixPath
 from typing import Any, Literal
+
+from riverhog_canonical_json import (
+    canonical_json_bytes as _canonical_json_bytes,
+)
+from riverhog_canonical_json import (
+    format_scalar,
+    parse_scalar,
+    require_canonical_json,
+)
 
 COLLECTION_ARCHIVE_MANIFEST_SCHEMA = "collection-archive-manifest/v1"
 COLLECTION_ARCHIVE_VOLUME_SCHEMA = "collection-archive-volume/v1"
@@ -35,10 +43,6 @@ class ArchiveManifestError(ValueError):
     """The plaintext archive root is not the canonical v1 contract."""
 
 
-def _canonical_json_bytes(value: object) -> bytes:
-    return json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
-
-
 def _mapping(value: object, fields: set[str], label: str) -> Mapping[str, object]:
     if not isinstance(value, Mapping) or set(value) != fields:
         raise ArchiveManifestError(f"{label} fields are invalid")
@@ -56,6 +60,16 @@ def _positive_int(value: object, label: str) -> int:
     if parsed < 1:
         raise ArchiveManifestError(f"{label} must be positive")
     return parsed
+
+
+def _exact_count(value: object, label: str, *, positive: bool = False) -> int:
+    try:
+        result = parse_scalar("nonnegative", value)
+    except ValueError as exc:
+        raise ArchiveManifestError(f"{label} is not an exact decimal string") from exc
+    if positive and result == 0:
+        raise ArchiveManifestError(f"{label} must be positive")
+    return result
 
 
 def format_archive_sequence(value: int) -> str:
@@ -121,15 +135,19 @@ class CollectionTreeIdentity:
     @classmethod
     def from_mapping(cls, value: object) -> CollectionTreeIdentity:
         row = _mapping(value, {"files", "bytes", "sha256"}, "archive tree")
-        files = _positive_int(row["files"], "archive tree files")
+        files = _exact_count(row["files"], "archive tree files", positive=True)
         return cls(
             files=files,
-            bytes=_nonnegative_int(row["bytes"], "archive tree bytes"),
+            bytes=_exact_count(row["bytes"], "archive tree bytes"),
             sha256=_sha256(row["sha256"], "archive tree sha256"),
         )
 
     def to_mapping(self) -> dict[str, object]:
-        return {"files": self.files, "bytes": self.bytes, "sha256": self.sha256}
+        return {
+            "files": format_scalar("nonnegative", self.files),
+            "bytes": format_scalar("nonnegative", self.bytes),
+            "sha256": self.sha256,
+        }
 
 
 @dataclass(frozen=True, slots=True)
@@ -159,7 +177,7 @@ class AgeUploadState:
         )
         if row["format"] != AGE_UPLOAD_STATE_FORMAT:
             raise ArchiveManifestError("archive age state format is unsupported")
-        size = _nonnegative_int(row["plaintext_size"], "archive age state plaintext size")
+        size = _exact_count(row["plaintext_size"], "archive age state plaintext size")
         if size != plaintext_bytes:
             raise ArchiveManifestError("archive age state plaintext size does not match volume")
         header_b64 = _base64(row["header_b64"], "archive age header")
@@ -179,7 +197,7 @@ class AgeUploadState:
             "format": self.format,
             "header_b64": self.header_b64,
             "payload_nonce_b64": self.payload_nonce_b64,
-            "plaintext_size": self.plaintext_size,
+            "plaintext_size": format_scalar("nonnegative", self.plaintext_size),
         }
 
 
@@ -221,27 +239,27 @@ class StoredPartIdentity:
             "archive part",
         )
         number = _positive_int(row["number"], "archive part number")
-        start = _nonnegative_int(row["plaintext_start"], "archive part plaintext start")
+        start = _exact_count(row["plaintext_start"], "archive part plaintext start")
         if number != expected_number or start != expected_start:
             raise ArchiveManifestError("archive part order is not canonical")
         return cls(
             number=number,
             plaintext_start=start,
-            plaintext_bytes=_nonnegative_int(
-                row["plaintext_bytes"], "archive part plaintext bytes"
-            ),
+            plaintext_bytes=_exact_count(row["plaintext_bytes"], "archive part plaintext bytes"),
             plaintext_sha256=_sha256(row["plaintext_sha256"], "archive part plaintext sha256"),
-            stored_bytes=_positive_int(row["stored_bytes"], "archive part stored bytes"),
+            stored_bytes=_exact_count(
+                row["stored_bytes"], "archive part stored bytes", positive=True
+            ),
             stored_sha256=_sha256(row["stored_sha256"], "archive part stored sha256"),
         )
 
     def to_mapping(self) -> dict[str, object]:
         return {
             "number": self.number,
-            "plaintext_start": self.plaintext_start,
-            "plaintext_bytes": self.plaintext_bytes,
+            "plaintext_start": format_scalar("nonnegative", self.plaintext_start),
+            "plaintext_bytes": format_scalar("nonnegative", self.plaintext_bytes),
             "plaintext_sha256": self.plaintext_sha256,
-            "stored_bytes": self.stored_bytes,
+            "stored_bytes": format_scalar("nonnegative", self.stored_bytes),
             "stored_sha256": self.stored_sha256,
         }
 
@@ -329,9 +347,9 @@ class SegmentFilePlacement:
         path = _relative_path(row["path"], "archive segment source path")
         if path.startswith(".riverhog/"):
             raise ArchiveManifestError("archive segment source path is reserved")
-        offset = _nonnegative_int(row["offset"], "archive segment file offset")
-        byte_count = _nonnegative_int(row["bytes"], "archive segment bytes")
-        file_bytes = _nonnegative_int(row["file_bytes"], "archive segment file bytes")
+        offset = _exact_count(row["offset"], "archive segment file offset")
+        byte_count = _exact_count(row["bytes"], "archive segment bytes")
+        file_bytes = _exact_count(row["file_bytes"], "archive segment file bytes")
         if byte_count != plaintext_bytes or offset + byte_count > file_bytes:
             raise ArchiveManifestError("archive segment placement is invalid")
         return cls(
@@ -345,9 +363,9 @@ class SegmentFilePlacement:
     def to_mapping(self) -> dict[str, object]:
         return {
             "path": self.path,
-            "offset": self.offset,
-            "bytes": self.bytes,
-            "file_bytes": self.file_bytes,
+            "offset": format_scalar("nonnegative", self.offset),
+            "bytes": format_scalar("nonnegative", self.bytes),
+            "file_bytes": format_scalar("nonnegative", self.file_bytes),
             "sha256": self.sha256,
         }
 
@@ -391,8 +409,8 @@ class PackArchiveVolume:
             "kind": self.kind,
             "path": self.path,
             "files": self.files,
-            "source_bytes": self.source_bytes,
-            "plaintext_bytes": self.plaintext_bytes,
+            "source_bytes": format_scalar("nonnegative", self.source_bytes),
+            "plaintext_bytes": format_scalar("nonnegative", self.plaintext_bytes),
             "age_state": self.age_state.to_mapping(),
             "index_sha256": self.index_sha256,
             "plan_sha256": self.plan_sha256,
@@ -440,7 +458,7 @@ class SegmentArchiveVolume:
             "sequence": format_archive_sequence(self.sequence),
             "kind": self.kind,
             "path": self.path,
-            "plaintext_bytes": self.plaintext_bytes,
+            "plaintext_bytes": format_scalar("nonnegative", self.plaintext_bytes),
             "age_state": self.age_state.to_mapping(),
             "file": self.file.to_mapping(),
             "parts": [part.to_mapping() for part in self.parts],
@@ -494,12 +512,11 @@ class CollectionArchiveVolumeDocument:
         if len(encoded) > ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX:
             raise ArchiveManifestError("collection archive volume exceeds its byte limit")
         try:
-            text = encoded.decode("utf-8")
-            value: Any = json.loads(text)
-        except (UnicodeError, json.JSONDecodeError) as exc:
-            raise ArchiveManifestError("collection archive volume is not valid JSON") from exc
+            value: Any = require_canonical_json(encoded)
+        except (UnicodeError, ValueError) as exc:
+            raise ArchiveManifestError("collection archive volume is not canonical JSON") from exc
         document = cls.from_mapping(value)
-        if document.to_json_bytes() != text.encode("utf-8"):
+        if document.to_json_bytes() != encoded:
             raise ArchiveManifestError("collection archive volume JSON is not canonical")
         return document
 
@@ -561,9 +578,9 @@ class CollectionArchiveTerminalDocument:
         if len(encoded) > ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX:
             raise ArchiveManifestError("collection archive terminal exceeds its byte limit")
         try:
-            value: Any = json.loads(encoded.decode("utf-8"))
-        except (UnicodeError, json.JSONDecodeError) as exc:
-            raise ArchiveManifestError("collection archive terminal is not valid JSON") from exc
+            value: Any = require_canonical_json(encoded)
+        except (UnicodeError, ValueError) as exc:
+            raise ArchiveManifestError("collection archive terminal is not canonical JSON") from exc
         document = cls.from_mapping(value)
         if document.to_json_bytes() != encoded:
             raise ArchiveManifestError("collection archive terminal JSON is not canonical")
@@ -679,7 +696,7 @@ def _volume(value: object, *, expected_sequence: int) -> ArchiveVolume:
     path = _relative_path(row["path"], "archive volume path")
     if path != f"volumes/{volume_id}.{suffix}":
         raise ArchiveManifestError("archive volume path is not canonical")
-    plaintext_bytes = _nonnegative_int(row["plaintext_bytes"], "archive volume bytes")
+    plaintext_bytes = _exact_count(row["plaintext_bytes"], "archive volume bytes")
     age_state = AgeUploadState.from_mapping(row["age_state"], plaintext_bytes=plaintext_bytes)
     parts = _parts(row["parts"], plaintext_bytes=plaintext_bytes)
     if kind == "pack":
@@ -688,7 +705,7 @@ def _volume(value: object, *, expected_sequence: int) -> ArchiveVolume:
             sequence=sequence,
             path=path,
             files=_bounded_pack_files(row["files"]),
-            source_bytes=_nonnegative_int(row["source_bytes"], "archive pack source bytes"),
+            source_bytes=_exact_count(row["source_bytes"], "archive pack source bytes"),
             plaintext_bytes=plaintext_bytes,
             age_state=age_state,
             index_sha256=_sha256(row["index_sha256"], "archive pack index sha256"),
@@ -747,11 +764,13 @@ class ProvenanceRootIdentity:
             id=str(row["id"]),
             kind=str(row["kind"]),  # type: ignore[arg-type]
             path=_relative_path(row["path"], "archive provenance root path"),
-            plaintext_bytes=_positive_int(
-                row["plaintext_bytes"], "archive provenance plaintext bytes"
+            plaintext_bytes=_exact_count(
+                row["plaintext_bytes"], "archive provenance plaintext bytes", positive=True
             ),
             sha256=_sha256(row["sha256"], "archive provenance sha256"),
-            stored_bytes=_positive_int(row["stored_bytes"], "archive provenance stored bytes"),
+            stored_bytes=_exact_count(
+                row["stored_bytes"], "archive provenance stored bytes", positive=True
+            ),
             stored_sha256=_sha256(row["stored_sha256"], "archive provenance stored sha256"),
         )
 
@@ -760,9 +779,9 @@ class ProvenanceRootIdentity:
             "id": self.id,
             "kind": self.kind,
             "path": self.path,
-            "plaintext_bytes": self.plaintext_bytes,
+            "plaintext_bytes": format_scalar("nonnegative", self.plaintext_bytes),
             "sha256": self.sha256,
-            "stored_bytes": self.stored_bytes,
+            "stored_bytes": format_scalar("nonnegative", self.stored_bytes),
             "stored_sha256": self.stored_sha256,
         }
 
@@ -854,12 +873,11 @@ class CollectionArchiveManifest:
         if len(encoded) > ARCHIVE_ROOT_DOCUMENT_BYTES_MAX:
             raise ArchiveManifestError("collection archive root exceeds its byte limit")
         try:
-            text = encoded.decode("utf-8")
-            value: Any = json.loads(text)
-        except (UnicodeError, json.JSONDecodeError) as exc:
-            raise ArchiveManifestError("collection archive manifest is not valid JSON") from exc
+            value: Any = require_canonical_json(encoded)
+        except (UnicodeError, ValueError) as exc:
+            raise ArchiveManifestError("collection archive manifest is not canonical JSON") from exc
         manifest = cls.from_mapping(value)
-        if manifest.to_json_bytes() != text.encode("utf-8"):
+        if manifest.to_json_bytes() != encoded:
             raise ArchiveManifestError("collection archive manifest JSON is not canonical")
         return manifest
 

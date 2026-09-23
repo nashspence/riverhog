@@ -7,7 +7,6 @@ configuration model.
 
 from __future__ import annotations
 
-import json
 import re
 from collections.abc import Callable, Iterable, Iterator
 from hashlib import sha256
@@ -21,6 +20,7 @@ from pydantic import (
     field_validator,
     model_validator,
 )
+from riverhog_canonical_json import canonical_json_bytes
 from time_formats import format_utc_timestamp, parse_utc_timestamp
 
 STORAGE_ADAPTER_PROTOCOL: Literal["riverhog-storage-adapter/v1"] = "riverhog-storage-adapter/v1"
@@ -114,13 +114,7 @@ def _canonical_identity_assertions(value: dict[str, str]) -> dict[str, str]:
         if key in normalized:
             raise ValueError("required identity assertion keys collide after case folding")
         normalized[key] = item
-    encoded = json.dumps(
-        normalized,
-        allow_nan=False,
-        ensure_ascii=False,
-        separators=(",", ":"),
-        sort_keys=True,
-    ).encode("utf-8")
+    encoded = canonical_json_bytes(normalized)
     if len(encoded) > _MAX_IDENTITY_ASSERTIONS_BYTES:
         raise ValueError("required identity assertions exceed their encoded-size bound")
     return dict(sorted(normalized.items()))

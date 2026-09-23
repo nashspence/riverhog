@@ -81,7 +81,7 @@ def test_large_native_value_becomes_digest_only(urn_factory) -> None:
     status, value, note = retained_native_value(b"abcdef", agent_id=urn_factory(), request=request)
     assert status == "digest_only"
     assert value is not None and value["type"] == "digest"
-    assert value["byte_length"] == 6
+    assert value["byte_length"] == "6"
     assert note is None
 
 

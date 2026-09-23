@@ -41,6 +41,7 @@ MYPY_SOURCES = \
 	packages/lifecycle-events/src \
 	packages/riverhog-age/src \
 	packages/riverhog-archive-contracts/src \
+	packages/riverhog-canonical-json/src \
 	reference/riverhog/ingress/ftp-api-client/src \
 	packages/riverhog-client/src \
 	packages/riverhog-protocol/src \

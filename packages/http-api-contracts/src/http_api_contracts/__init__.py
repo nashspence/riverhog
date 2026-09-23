@@ -11,6 +11,7 @@ from typing import Annotated, Any, Literal, get_args
 from urllib.parse import urlsplit
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, TypeAdapter, ValidationError
+from riverhog_canonical_json import canonical_json_bytes
 
 from .browse import (
     MAX_BROWSE_QUERY_CHARACTERS,
@@ -64,18 +65,6 @@ class ErrorResponse(HttpApiModel):
 class HealthResponse(HttpApiModel):
     service: str = Field(min_length=1)
     status: Literal["ok"]
-
-
-def canonical_json_bytes(value: object) -> bytes:
-    """Encode one bounded protocol value with the repository canonical JSON rules."""
-
-    return json.dumps(
-        value,
-        ensure_ascii=False,
-        allow_nan=False,
-        sort_keys=True,
-        separators=(",", ":"),
-    ).encode("utf-8")
 
 
 def validate_sha256_identity(value: str) -> str:

@@ -42,7 +42,7 @@ def _work() -> WorkIdentity:
             recipe=RecipeRef(id="fixture.recipe/v1", revision=1, sha256="1" * 64),
             inputs=(
                 CollectionRootRef(
-                    collection_id=1,
+                    collection_id=str(1),
                     archive_root_sha256="2" * 64,
                     content_identity="3" * 64,
                 ),
@@ -153,12 +153,12 @@ def test_evaluation_review_request_is_meaningful_and_canonical() -> None:
 def test_operator_requests_share_one_exact_canonical_collection_contract() -> None:
     roots = (
         CollectionRootRef(
-            collection_id=1,
+            collection_id=str(1),
             archive_root_sha256="1" * 64,
             content_identity="2" * 64,
         ),
         CollectionRootRef(
-            collection_id=2,
+            collection_id=str(2),
             archive_root_sha256="3" * 64,
             content_identity="4" * 64,
         ),

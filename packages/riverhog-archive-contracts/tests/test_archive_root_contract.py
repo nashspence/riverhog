@@ -33,23 +33,23 @@ def _volume_mapping() -> dict[str, object]:
             "kind": "pack",
             "path": f"volumes/pack-{format_archive_sequence(0)}.tar.age",
             "files": 1,
-            "source_bytes": 0,
-            "plaintext_bytes": 0,
+            "source_bytes": "0",
+            "plaintext_bytes": "0",
             "age_state": {
                 "format": "age-v1-scrypt-resumable",
                 "header_b64": "YQ",
                 "payload_nonce_b64": "MDAwMDAwMDAwMDAwMDAwMA",
-                "plaintext_size": 0,
+                "plaintext_size": "0",
             },
             "index_sha256": ZERO,
             "plan_sha256": ONE,
             "parts": [
                 {
                     "number": 1,
-                    "plaintext_start": 0,
-                    "plaintext_bytes": 0,
+                    "plaintext_start": "0",
+                    "plaintext_bytes": "0",
                     "plaintext_sha256": ZERO,
-                    "stored_bytes": 1,
+                    "stored_bytes": "1",
                     "stored_sha256": ONE,
                 }
             ],
@@ -73,7 +73,7 @@ def _manifest_mapping() -> dict[str, object]:
             "part_digest": "sha256",
             "selective_read": "age-chunk-range/v1",
         },
-        "tree": {"files": 1, "bytes": 0, "sha256": ZERO},
+        "tree": {"files": "1", "bytes": "0", "sha256": ZERO},
         "volume_sequence": {
             "sha256": ordered_archive_volume_commitment((volume, terminal)),
         },
@@ -88,6 +88,16 @@ def test_archive_root_has_one_canonical_public_model() -> None:
     assert reparsed == manifest
     assert reparsed.to_mapping() == source
     assert reparsed.ordered_volume_sha256 == source["volume_sequence"]["sha256"]
+
+
+def test_archive_root_keeps_large_exact_tree_totals() -> None:
+    source = _manifest_mapping()
+    source["tree"] = {"files": str(2**63 - 1), "bytes": str(2**100 + 1), "sha256": ZERO}
+    manifest = CollectionArchiveManifest.from_mapping(source)
+    encoded = manifest.to_json_bytes()
+
+    assert CollectionArchiveManifest.from_json_bytes(encoded) == manifest
+    assert json.loads(encoded)["tree"] == source["tree"]
 
 
 def test_checked_schema_names_the_same_archive_root_contract() -> None:
