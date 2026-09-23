@@ -26,13 +26,13 @@ from stove0_core import (
     WorkRecord,
 )
 from stove0_observer_protocol import (
-    ObservationEvidence,
-    ObservationFailure,
-    ObservationInapplicable,
-    ObservationRequest,
-    ObservationRequestPayload,
-    ObservationResult,
-    ObservationResultPayload,
+    ContentObservationEvidence,
+    ContentObservationFailure,
+    ContentObservationInapplicable,
+    ContentObservationRequest,
+    ContentObservationRequestPayload,
+    ContentObservationResult,
+    ContentObservationResultPayload,
     ObserverContract,
     ObserverContractPayload,
     ObserverContractSupport,
@@ -150,7 +150,7 @@ def _observation(
     work: WorkIdentity,
     contract: ObserverContract,
     descriptor: ObserverDescriptor,
-) -> tuple[ObservationRequest, ObservationResult]:
+) -> tuple[ContentObservationRequest, ContentObservationResult]:
     subject = ArtifactSubject(
         id="source",
         role="fixture.source/v1",
@@ -159,8 +159,8 @@ def _observation(
         bytes=12,
         sha256=_sha("4"),
     )
-    request = ObservationRequest.seal(
-        ObservationRequestPayload(
+    request = ContentObservationRequest.seal(
+        ContentObservationRequestPayload(
             work_id=work.work_id,
             observer_registration_id="fixture-observer",
             observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -171,8 +171,8 @@ def _observation(
         )
     )
     facts = {"kind": "fixture"}
-    result = ObservationResult.seal(
-        ObservationResultPayload(
+    result = ContentObservationResult.seal(
+        ContentObservationResultPayload(
             request_id=request.request_id,
             state="observed",
             observer=ObserverImplementation(
@@ -764,7 +764,7 @@ def test_one_record_carries_observation_plan_execution_verification_and_completi
     workflow = WorkflowPlan.seal(
         WorkflowPlanPayload(
             work=work,
-            observations=(ObservationEvidence(request=request, result=result),),
+            observations=(ContentObservationEvidence(request=request, result=result),),
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
             target_contract_sha256=target.contract_sha256,
@@ -1022,20 +1022,28 @@ def test_new_claim_fence_resets_unsettled_execution_authorities() -> None:
     [
         (
             "inapplicable",
-            {"inapplicable": ObservationInapplicable(code="unsupported", message="No match")},
+            {
+                "inapplicable": ContentObservationInapplicable(
+                    code="unsupported", message="No match"
+                )
+            },
             "abandon_pending",
             "inapplicable",
         ),
         (
             "failed",
-            {"failure": ObservationFailure(code="temporary", message="Try again", retryable=True)},
+            {
+                "failure": ContentObservationFailure(
+                    code="temporary", message="Try again", retryable=True
+                )
+            },
             "failed",
             None,
         ),
         (
             "failed",
             {
-                "failure": ObservationFailure(
+                "failure": ContentObservationFailure(
                     code="invalid", message="Cannot inspect", retryable=False
                 )
             },
@@ -1067,8 +1075,8 @@ def test_terminal_observation_results_converge_without_entering_planning(
         (request,),
         expected_revision=record.revision,
     )
-    result = ObservationResult.seal(
-        ObservationResultPayload(
+    result = ContentObservationResult.seal(
+        ContentObservationResultPayload(
             **observed.model_dump(
                 mode="python",
                 exclude_none=True,

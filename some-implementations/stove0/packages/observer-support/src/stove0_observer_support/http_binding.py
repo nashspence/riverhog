@@ -11,7 +11,7 @@ from pydantic import BaseModel, ValidationError
 from riverhog_canonical_json import parse_identity_json
 from stove0_observer_protocol import (
     OBSERVER_HTTP_OPERATIONS,
-    ObservationInvocation,
+    ContentObservationInvocation,
     ObserverDescriptor,
     SemanticValidatorProvider,
     accept_observation_result,
@@ -20,8 +20,8 @@ from stove0_observer_protocol import (
 )
 
 from stove0_observer_support.runtime import (
+    ContentObservationRuntime,
     ContentObserver,
-    ObservationRuntime,
 )
 
 _JSON_CONTENT_TYPE = "application/json"
@@ -87,7 +87,7 @@ class ObserverHttpBinding:
             if len(body) > self.maximum_request_bytes:
                 return _error(413, "request_too_large", "observer request exceeds its size limit")
             try:
-                invocation = ObservationInvocation.model_validate(parse_identity_json(body))
+                invocation = ContentObservationInvocation.model_validate(parse_identity_json(body))
             except (ValidationError, ValueError) as exc:
                 return _error(400, "invalid_observation_request", str(exc))
             try:
@@ -102,7 +102,7 @@ class ObserverHttpBinding:
                 return _error(400, "invalid_observation_request", str(exc))
             try:
                 with self._execution_slots:
-                    with ObservationRuntime.from_invocation(invocation) as runtime:
+                    with ContentObservationRuntime.from_invocation(invocation) as runtime:
                         result = self.observer.observe(invocation.request, runtime)
                 accept_observation_result(
                     result,

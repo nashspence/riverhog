@@ -25,7 +25,7 @@ from stove0_media_metadata_observer_contracts import (
     MediaMetadataFacts,
 )
 from stove0_observer_protocol import (
-    ObservationEvidence,
+    ContentObservationEvidence,
     canonical_json_bytes,
     canonical_json_sha256,
 )
@@ -205,7 +205,7 @@ class MediaArchiveProjection(MediaArchiveProjectionPayload):
 def resolve_media_archive_projection(
     *,
     inputs: Sequence[InputArtifact],
-    observations: Sequence[ObservationEvidence],
+    observations: Sequence[ContentObservationEvidence],
     policy: MediaProjectionPolicy,
     archive_directory: str,
     archive_suffix: str,

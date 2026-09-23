@@ -13,9 +13,9 @@ from riverhog_provenance.common import (
     retained_native_value,
 )
 from riverhog_provenance.model import (
+    FileStateObservationRequest,
     LargeValueDisposition,
     ObservationPolicy,
-    ObservationRequest,
 )
 
 
@@ -68,7 +68,7 @@ def test_locator_preserves_non_utf8_path_bytes() -> None:
 
 
 def test_large_native_value_becomes_digest_only(urn_factory) -> None:
-    request = ObservationRequest(
+    request = FileStateObservationRequest(
         path="unused",
         lineage_id=urn_factory(),
         host_id=urn_factory(),

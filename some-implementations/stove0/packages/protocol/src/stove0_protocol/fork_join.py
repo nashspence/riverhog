@@ -21,9 +21,9 @@ from stove0_protocol.models import (
     ArtifactSubject,
     BranchWorkBinding,
     CollectionRootRef,
+    ContentObservationEvidence,
     JoinWorkBinding,
     JoinWorkMemberBinding,
-    ObservationEvidence,
     PreviewOutcome,
     RecipeRef,
     RetirementPolicy,
@@ -270,7 +270,7 @@ class BranchPlan(Stove0ProtocolModel):
         recipe: RecipeRef,
         effective_intent: Mapping[str, JsonValue],
         workflow_intent: WorkflowPlanIntent,
-        observations: tuple[ObservationEvidence, ...] = (),
+        observations: tuple[ContentObservationEvidence, ...] = (),
     ) -> BranchPlan:
         child_work = WorkIdentity.seal(
             WorkPayload(
@@ -1054,7 +1054,7 @@ class WorkflowPreviewPayload(Stove0ProtocolModel):
     preview_id: Sha256
     state: Literal["ready", "inapplicable", "failed", "canceled"]
     work: WorkIdentity
-    observations: tuple[ObservationEvidence, ...] = ()
+    observations: tuple[ContentObservationEvidence, ...] = ()
     branch_set_plan: BranchSetPlan | None = None
     branch_sets: tuple[BranchSetPlan, ...] = ()
     selections: tuple[ArtifactSelection, ...] = ()
@@ -1065,8 +1065,8 @@ class WorkflowPreviewPayload(Stove0ProtocolModel):
     @field_validator("observations")
     @classmethod
     def canonical_observations(
-        cls, value: tuple[ObservationEvidence, ...]
-    ) -> tuple[ObservationEvidence, ...]:
+        cls, value: tuple[ContentObservationEvidence, ...]
+    ) -> tuple[ContentObservationEvidence, ...]:
         ids = [item.request.request_id for item in value]
         if ids != sorted(ids) or len(ids) != len(set(ids)):
             raise ValueError("preview observations must be unique and ordered")

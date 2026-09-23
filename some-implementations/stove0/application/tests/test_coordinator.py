@@ -19,12 +19,12 @@ from stove0_core import (
     WorkRecord,
 )
 from stove0_observer_protocol import (
-    ObservationEvidence,
-    ObservationInvocation,
-    ObservationRequest,
-    ObservationRequestPayload,
-    ObservationResult,
-    ObservationResultPayload,
+    ContentObservationEvidence,
+    ContentObservationInvocation,
+    ContentObservationRequest,
+    ContentObservationRequestPayload,
+    ContentObservationResult,
+    ContentObservationResultPayload,
     ObserverContract,
     ObserverContractPayload,
     ObserverContractSupport,
@@ -331,7 +331,7 @@ class FixturePlanning:
     def observation_requests(
         self,
         work: WorkIdentity,
-    ) -> tuple[ObservationRequest, ...]:
+    ) -> tuple[ContentObservationRequest, ...]:
         if self.observer is None:
             return ()
         contract, descriptor = self.observer
@@ -344,8 +344,8 @@ class FixturePlanning:
             sha256=_sha("4"),
         )
         return (
-            ObservationRequest.seal(
-                ObservationRequestPayload(
+            ContentObservationRequest.seal(
+                ContentObservationRequestPayload(
                     work_id=work.work_id,
                     observer_registration_id="fixture-observer",
                     observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -359,7 +359,7 @@ class FixturePlanning:
     def workflow_plan(
         self,
         work: WorkIdentity,
-        observations: tuple[ObservationEvidence, ...],
+        observations: tuple[ContentObservationEvidence, ...],
         *,
         nested_observer: object | None = None,
     ) -> BranchSetDecision:
@@ -450,13 +450,13 @@ class ForkJoinPlanning:
         self.join_operation = join_operation
         self.target = target
 
-    def observation_requests(self, _work: WorkIdentity) -> tuple[ObservationRequest, ...]:
+    def observation_requests(self, _work: WorkIdentity) -> tuple[ContentObservationRequest, ...]:
         return ()
 
     def workflow_plan(
         self,
         work: WorkIdentity,
-        observations: tuple[ObservationEvidence, ...],
+        observations: tuple[ContentObservationEvidence, ...],
         *,
         nested_observer: object | None = None,
     ) -> BranchSetDecision:
@@ -556,7 +556,7 @@ class NestedPlanning(FixturePlanning):
     def workflow_plan(
         self,
         work: WorkIdentity,
-        observations: tuple[ObservationEvidence, ...],
+        observations: tuple[ContentObservationEvidence, ...],
         *,
         nested_observer: object | None = None,
     ) -> BranchSetDecision:
@@ -629,7 +629,7 @@ class NestedJoinPlanning(ForkJoinPlanning):
     def workflow_plan(
         self,
         work: WorkIdentity,
-        observations: tuple[ObservationEvidence, ...],
+        observations: tuple[ContentObservationEvidence, ...],
         *,
         nested_observer: object | None = None,
     ) -> BranchSetDecision:
@@ -681,7 +681,7 @@ class InapplicablePlanning(FixturePlanning):
     def workflow_plan(
         self,
         work: WorkIdentity,
-        observations: tuple[ObservationEvidence, ...],
+        observations: tuple[ContentObservationEvidence, ...],
         *,
         nested_observer: object | None = None,
     ) -> WorkInapplicable:
@@ -708,15 +708,15 @@ class FixtureObservers:
         invocation: object,
         *,
         descriptor: ObserverDescriptor,
-    ) -> ObservationResult:
+    ) -> ContentObservationResult:
         assert registration_id == "fixture-observer"
         assert self.observer is not None
-        invocation = ObservationInvocation.model_validate(invocation)
+        invocation = ContentObservationInvocation.model_validate(invocation)
         contract, expected_descriptor = self.observer
         assert descriptor == expected_descriptor
         facts = {"kind": "fixture"}
-        return ObservationResult.seal(
-            ObservationResultPayload(
+        return ContentObservationResult.seal(
+            ContentObservationResultPayload(
                 request_id=invocation.request.request_id,
                 state="observed",
                 observer=ObserverImplementation(
@@ -1097,7 +1097,7 @@ class FixtureRiverhog:
     def observation_authority(
         self,
         _claim: ClaimBinding,
-        _request: ObservationRequest,
+        _request: ContentObservationRequest,
     ) -> ObserverRuntimeAuthority:
         return ObserverRuntimeAuthority(
             riverhog_base_url="https://riverhog.invalid",

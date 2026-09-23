@@ -12,15 +12,15 @@ from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
 from stove0_protocol.models import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
     SHA256_PATTERN,
-    ObservationRequest,
-    ObservationResult,
+    ContentObservationRequest,
+    ContentObservationResult,
     ObserverContractSupport,
     ObserverDescriptor,
     SemanticValidationProfile,
     canonical_json_bytes,
 )
 
-FactsSemanticValidator = Callable[[ObservationRequest, Mapping[str, object]], None]
+FactsSemanticValidator = Callable[[ContentObservationRequest, Mapping[str, object]], None]
 
 
 @dataclass(frozen=True, slots=True)
@@ -83,7 +83,7 @@ class SemanticValidatorRegistry:
 
 
 def validate_observation_request(
-    request: ObservationRequest,
+    request: ContentObservationRequest,
     descriptor: ObserverDescriptor,
 ) -> ObserverContractSupport:
     """Validate one sealed request against the exact advertised contract."""
@@ -120,8 +120,8 @@ def require_semantic_validators(
 
 
 def accept_observation_result(
-    result: ObservationResult,
-    request: ObservationRequest,
+    result: ContentObservationResult,
+    request: ContentObservationRequest,
     descriptor: ObserverDescriptor,
     semantic_validators: SemanticValidatorProvider | None = None,
 ) -> None:
@@ -148,8 +148,8 @@ def accept_observation_result(
 
 
 def validate_observation_result_structure(
-    result: ObservationResult,
-    request: ObservationRequest,
+    result: ContentObservationResult,
+    request: ContentObservationRequest,
     descriptor: ObserverDescriptor,
 ) -> ObserverContractSupport:
     """Apply the extension-agnostic structural and schema acceptance domain."""

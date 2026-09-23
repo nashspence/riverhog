@@ -8,11 +8,11 @@ from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
 from pydantic import JsonValue
 from stove0_observer_protocol import (
-    ObservationFailure,
-    ObservationInapplicable,
-    ObservationRequest,
-    ObservationResult,
-    ObservationResultPayload,
+    ContentObservationFailure,
+    ContentObservationInapplicable,
+    ContentObservationRequest,
+    ContentObservationResult,
+    ContentObservationResultPayload,
     ObserverDescriptor,
     ObserverImplementation,
     canonical_json_bytes,
@@ -21,13 +21,13 @@ from stove0_observer_protocol import (
 )
 
 
-class ObservationResultBuilder:
+class ContentObservationResultBuilder:
     """Build bounded results that exactly bind one sealed observation request."""
 
     def __init__(
         self,
         descriptor: ObserverDescriptor,
-        request: ObservationRequest,
+        request: ContentObservationRequest,
     ) -> None:
         support = validate_observation_request(request, descriptor)
         self.descriptor = descriptor
@@ -39,7 +39,7 @@ class ObservationResultBuilder:
         facts: Mapping[str, JsonValue],
         *,
         execution_evidence: Mapping[str, JsonValue] | None = None,
-    ) -> ObservationResult:
+    ) -> ContentObservationResult:
         document = dict(facts)
         try:
             Draft202012Validator(self.support.facts_schema.document).validate(document)
@@ -59,10 +59,10 @@ class ObservationResultBuilder:
         code: str,
         message: str,
         execution_evidence: Mapping[str, JsonValue] | None = None,
-    ) -> ObservationResult:
+    ) -> ContentObservationResult:
         return self._seal(
             state="inapplicable",
-            inapplicable=ObservationInapplicable(code=code, message=message),
+            inapplicable=ContentObservationInapplicable(code=code, message=message),
             execution_evidence=dict(execution_evidence or {}),
         )
 
@@ -73,10 +73,10 @@ class ObservationResultBuilder:
         message: str,
         retryable: bool,
         execution_evidence: Mapping[str, JsonValue] | None = None,
-    ) -> ObservationResult:
+    ) -> ContentObservationResult:
         return self._seal(
             state="failed",
-            failure=ObservationFailure(
+            failure=ContentObservationFailure(
                 code=code,
                 message=message,
                 retryable=retryable,
@@ -88,13 +88,13 @@ class ObservationResultBuilder:
         self,
         *,
         execution_evidence: Mapping[str, JsonValue] | None = None,
-    ) -> ObservationResult:
+    ) -> ContentObservationResult:
         return self._seal(
             state="canceled",
             execution_evidence=dict(execution_evidence or {}),
         )
 
-    def _seal(self, **updates: object) -> ObservationResult:
+    def _seal(self, **updates: object) -> ContentObservationResult:
         payload: dict[str, object] = {
             "request_id": self.request.request_id,
             "observer": ObserverImplementation(
@@ -108,7 +108,9 @@ class ObservationResultBuilder:
             "subjects": self.request.subjects,
         }
         payload.update(updates)
-        result = ObservationResult.seal(ObservationResultPayload.model_validate(payload))
+        result = ContentObservationResult.seal(
+            ContentObservationResultPayload.model_validate(payload)
+        )
         if len(canonical_json_bytes(result.model_dump(mode="json", exclude_none=True))) > (
             self.request.maximum_result_bytes
         ):
@@ -116,4 +118,4 @@ class ObservationResultBuilder:
         return result
 
 
-__all__ = ["ObservationResultBuilder"]
+__all__ = ["ContentObservationResultBuilder"]

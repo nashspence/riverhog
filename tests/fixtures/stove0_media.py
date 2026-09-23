@@ -13,11 +13,11 @@ from stove0_media_metadata_observer_contracts import (
     MediaMetadataFacts,
 )
 from stove0_observer_protocol import (
-    ObservationEvidence,
-    ObservationRequest,
-    ObservationRequestPayload,
-    ObservationResult,
-    ObservationResultPayload,
+    ContentObservationEvidence,
+    ContentObservationRequest,
+    ContentObservationRequestPayload,
+    ContentObservationResult,
+    ContentObservationResultPayload,
     ObserverImplementation,
 )
 from stove0_protocol import (
@@ -82,8 +82,8 @@ def media_preflight_request(
         )
         for item in inputs
     )
-    request = ObservationRequest.seal(
-        ObservationRequestPayload(
+    request = ContentObservationRequest.seal(
+        ContentObservationRequestPayload(
             work_id=sha("5"),
             observer_registration_id="exiftool",
             observer_descriptor_sha256=sha("6"),
@@ -124,8 +124,8 @@ def media_preflight_request(
             ),
         )
     ).model_dump(mode="json")
-    result = ObservationResult.seal(
-        ObservationResultPayload(
+    result = ContentObservationResult.seal(
+        ContentObservationResultPayload(
             request_id=request.request_id,
             state="observed",
             observer=ObserverImplementation(
@@ -148,7 +148,7 @@ def media_preflight_request(
         inputs=TargetInputAuthority.from_selection(ArtifactSelection.seal(subjects)),
         intent=intent,
         target_options=dict(target_options or {}),
-        observations=(ObservationEvidence(request=request, result=result),),
+        observations=(ContentObservationEvidence(request=request, result=result),),
     )
 
 

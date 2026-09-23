@@ -84,7 +84,7 @@ class PayloadBindingRequest:
 
 
 @dataclass(frozen=True, slots=True)
-class ObservationRequest:
+class FileStateObservationRequest:
     """Inputs needed to produce one immutable Riverhog provenance file-state observation.
 
     ``host_id`` is the durable host/naming-authority URI used to scope UIDs,
@@ -180,10 +180,10 @@ class NativeCollection:
 
 
 @dataclass(frozen=True, slots=True)
-class ObservationResult:
+class FileStateObservationResult:
     """Schema-shaped result returned by every Riverhog provenance observer."""
 
-    state: JsonObject
+    file_state: JsonObject
     capture: JsonObject
     environment: JsonObject
     agents: tuple[JsonObject, ...]
@@ -211,7 +211,7 @@ class ObservationResult:
         omitted = set(omit_object_ids)
         fragment: JsonObject = {}
         categories = {
-            "states": (self.state,),
+            "states": (self.file_state,),
             "captures": (self.capture,),
             "environments": (self.environment,),
             "agents": self.agents,

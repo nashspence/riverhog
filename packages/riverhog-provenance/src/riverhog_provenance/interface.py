@@ -7,11 +7,11 @@ from typing import Protocol, runtime_checkable
 
 from .errors import SymlinkRefusedError, UnsupportedFileTypeError
 from .model import (
+    FileStateObservationRequest,
+    FileStateObservationResult,
     JsonObject,
     NativeCollection,
     NativeStat,
-    ObservationRequest,
-    ObservationResult,
     PathInput,
 )
 
@@ -22,7 +22,7 @@ class FileStateObserver(Protocol):
 
     platform_family: str
 
-    def observe(self, request: ObservationRequest) -> ObservationResult:
+    def observe(self, request: FileStateObservationRequest) -> FileStateObservationResult:
         """Observe one regular-file state and return schema-shaped assertions."""
         ...
 
@@ -84,7 +84,7 @@ class PlatformBackend(ABC):
 
     @abstractmethod
     def open_readonly(
-        self, path: str | bytes, request: ObservationRequest
+        self, path: str | bytes, request: FileStateObservationRequest
     ) -> tuple[int, list[dict[str, object]], bool]:
         """Open without following the final symlink.
 
@@ -101,7 +101,7 @@ class PlatformBackend(ABC):
         fd: int,
         path: str | bytes,
         stat: NativeStat,
-        request: ObservationRequest,
+        request: FileStateObservationRequest,
     ) -> NativeCollection:
         """Capture platform-native metadata and the technical environment."""
 
@@ -109,7 +109,7 @@ class PlatformBackend(ABC):
         self,
         collection: NativeCollection,
         final_stat: NativeStat,
-        request: ObservationRequest,
+        request: FileStateObservationRequest,
     ) -> None:
         """Update observer-affected timestamps after all reads.
 

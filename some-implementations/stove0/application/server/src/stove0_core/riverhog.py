@@ -38,7 +38,7 @@ from riverhog_protocol.collection_workflows import (
 )
 from riverhog_protocol.portable_collection import PortableCollectionInventoryPage
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
-from stove0_observer_protocol import ObservationRequest, ObserverRuntimeAuthority
+from stove0_observer_protocol import ContentObservationRequest, ObserverRuntimeAuthority
 from stove0_protocol import (
     ArtifactSubject,
     BranchSetEvaluation,
@@ -411,7 +411,7 @@ class Stove0RiverhogClient:
     def observation_authority(
         self,
         claim: ClaimBinding,
-        request: ObservationRequest,
+        request: ContentObservationRequest,
     ) -> ObserverRuntimeAuthority:
         if request.timeout_seconds > min(
             self.claim_lease_seconds,

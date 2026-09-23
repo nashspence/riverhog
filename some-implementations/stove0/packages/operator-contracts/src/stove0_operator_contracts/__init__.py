@@ -21,7 +21,7 @@ from riverhog_protocol import (
     CatalogSyncDescriptor,
     CollectionTag,
 )
-from stove0_observer_protocol import ObservationRequest, ObservationResult
+from stove0_observer_protocol import ContentObservationRequest, ContentObservationResult
 from stove0_protocol import (
     ArtifactSelectionPage,
     BranchSetPlan,
@@ -700,8 +700,8 @@ class WorkView(OperatorModel):
     claim: WorkClaimView | None = None
     preview_acceptance: PreviewAcceptanceView | None = None
     expected_target_plan_sha256: Sha256 | None = None
-    observation_requests: tuple[ObservationRequest, ...] = ()
-    observation_results: tuple[ObservationResult, ...] = ()
+    observation_requests: tuple[ContentObservationRequest, ...] = ()
+    observation_results: tuple[ContentObservationResult, ...] = ()
     branch_set_plan: BranchSetPlan | None = None
     coordination_settlement: CoordinationSettlement | None = None
     join_plan: JoinPlan | None = None

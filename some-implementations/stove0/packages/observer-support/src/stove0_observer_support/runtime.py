@@ -18,10 +18,10 @@ from riverhog_client.transform import (
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_observer_protocol import (
     ArtifactSubject,
+    ContentObservationInvocation,
+    ContentObservationRequest,
+    ContentObservationResult,
     FactsSemanticValidator,
-    ObservationInvocation,
-    ObservationRequest,
-    ObservationResult,
     ObserverDescriptor,
 )
 
@@ -36,19 +36,19 @@ class ContentObserver(Protocol):
 
     def observe(
         self,
-        request: ObservationRequest,
-        runtime: ObservationRuntime,
-    ) -> ObservationResult: ...
+        request: ContentObservationRequest,
+        runtime: ContentObservationRuntime,
+    ) -> ContentObservationResult: ...
 
 
-class ObservationRuntime:
+class ContentObservationRuntime:
     """One read-only observation over exact immutable Riverhog artifacts."""
 
     def __init__(
         self,
         api: Any,
         *,
-        request: ObservationRequest,
+        request: ContentObservationRequest,
         claim_id: str,
         fence: int,
         cancellation_check: CancellationCheck | None = None,
@@ -85,11 +85,11 @@ class ObservationRuntime:
     @classmethod
     def from_invocation(
         cls,
-        invocation: ObservationInvocation,
+        invocation: ContentObservationInvocation,
         *,
         cancellation_check: CancellationCheck | None = None,
         heartbeat: Heartbeat | None = None,
-    ) -> ObservationRuntime:
+    ) -> ContentObservationRuntime:
         authority = invocation.runtime
         api = ApiClient(
             base_url=authority.riverhog_base_url,
@@ -252,5 +252,5 @@ __all__ = [
     "ContentObserver",
     "FactsSemanticValidator",
     "Heartbeat",
-    "ObservationRuntime",
+    "ContentObservationRuntime",
 ]

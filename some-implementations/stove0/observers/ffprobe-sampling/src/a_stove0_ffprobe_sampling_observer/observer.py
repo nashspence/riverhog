@@ -17,13 +17,13 @@ from stove0_media_sampling_observer_contracts import (
     validate_media_sampling_facts,
 )
 from stove0_observer_protocol import (
-    ObservationRequest,
-    ObservationResult,
+    ContentObservationRequest,
+    ContentObservationResult,
     ObserverContractSupport,
     ObserverDescriptor,
     ObserverDescriptorPayload,
 )
-from stove0_observer_support import ObservationResultBuilder, ObservationRuntime
+from stove0_observer_support import ContentObservationResultBuilder, ContentObservationRuntime
 
 
 def _version() -> str:
@@ -65,10 +65,10 @@ class FfprobeSamplingObserver:
 
     def observe(
         self,
-        request: ObservationRequest,
-        runtime: ObservationRuntime,
-    ) -> ObservationResult:
-        builder = ObservationResultBuilder(self._descriptor, request)
+        request: ContentObservationRequest,
+        runtime: ContentObservationRuntime,
+    ) -> ContentObservationResult:
+        builder = ContentObservationResultBuilder(self._descriptor, request)
         self.workspace_root.mkdir(mode=0o700, parents=True, exist_ok=True)
         os.chmod(self.workspace_root, 0o700)
         workspace = runtime.open_workspace(self.workspace_root)

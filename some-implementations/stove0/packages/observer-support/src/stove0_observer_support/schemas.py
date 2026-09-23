@@ -12,9 +12,9 @@ from http_api_contracts import http_operation_inventory, structural_model_catalo
 from stove0_observer_protocol import (
     OBSERVER_HTTP_OPERATIONS,
     OBSERVER_PROTOCOL,
-    ObservationInvocation,
-    ObservationRequest,
-    ObservationResult,
+    ContentObservationInvocation,
+    ContentObservationRequest,
+    ContentObservationResult,
     ObserverContract,
     ObserverDescriptor,
     canonical_json_bytes,
@@ -73,9 +73,9 @@ _CLI_RESULT_CONTRACT: dict[str, object] = {
 _ADDITIONAL_MODELS = (
     ObserverContract,
     ObserverDescriptor,
-    ObservationRequest,
-    ObservationInvocation,
-    ObservationResult,
+    ContentObservationRequest,
+    ContentObservationInvocation,
+    ContentObservationResult,
 )
 
 

@@ -6,7 +6,7 @@ from pathlib import Path
 import riverhog_provenance.schema as provenance_schema
 from a_riverhog_linux_provenance_observer import LinuxFileStateObserver
 from riverhog_provenance import (
-    ObservationRequest,
+    FileStateObservationRequest,
     validate_entry_document,
     validate_graph_fragment,
 )
@@ -17,7 +17,7 @@ def test_assertion_entry_template_validates_at_schema_level(tmp_path: Path, urn_
     payload = tmp_path / "file"
     payload.write_bytes(b"abc")
     result = LinuxFileStateObserver().observe(
-        ObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
+        FileStateObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
     )
     validate_graph_fragment(result.graph_fragment())
     entry = result.make_assertion_entry(
@@ -39,7 +39,7 @@ def test_schema_validators_are_reused(tmp_path: Path, urn_factory) -> None:
     payload = tmp_path / "file"
     payload.write_bytes(b"abc")
     result = LinuxFileStateObserver().observe(
-        ObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
+        FileStateObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
     )
     entry = result.make_assertion_entry(
         journal_id=urn_factory(),
@@ -69,11 +69,11 @@ def test_observer_does_not_claim_payload_format(tmp_path: Path, urn_factory) -> 
     payload = tmp_path / "misleading.jpg"
     payload.write_bytes(b"not actually a JPEG")
     result = LinuxFileStateObserver().observe(
-        ObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
+        FileStateObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
     )
-    content = result.state["content"]
+    content = result.file_state["content"]
     assert set(content) == {"size_bytes", "digests"}
-    assert "format" not in result.state
+    assert "format" not in result.file_state
 
 
 def test_policy_extension_is_digest_bound(tmp_path: Path, urn_factory) -> None:
@@ -84,7 +84,7 @@ def test_policy_extension_is_digest_bound(tmp_path: Path, urn_factory) -> None:
     payload = tmp_path / "bound"
     payload.write_bytes(b"bound")
     result = LinuxFileStateObserver().observe(
-        ObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
+        FileStateObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
     )
     fragment = copy.deepcopy(result.graph_fragment())
     policy = next(

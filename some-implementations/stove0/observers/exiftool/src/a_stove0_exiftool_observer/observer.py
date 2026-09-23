@@ -22,14 +22,14 @@ from stove0_media_metadata_observer_contracts import (
     validate_media_metadata_facts,
 )
 from stove0_observer_protocol import (
-    ObservationRequest,
-    ObservationResult,
+    ContentObservationRequest,
+    ContentObservationResult,
     ObserverContractSupport,
     ObserverDescriptor,
     ObserverDescriptorPayload,
     canonical_json_bytes,
 )
-from stove0_observer_support import ObservationResultBuilder, ObservationRuntime
+from stove0_observer_support import ContentObservationResultBuilder, ContentObservationRuntime
 
 _FACT_NAMES: dict[str, MediaFactName] = {
     "artist": "creator",
@@ -111,10 +111,10 @@ class ExiftoolObserver:
 
     def observe(
         self,
-        request: ObservationRequest,
-        runtime: ObservationRuntime,
-    ) -> ObservationResult:
-        builder = ObservationResultBuilder(self._descriptor, request)
+        request: ContentObservationRequest,
+        runtime: ContentObservationRuntime,
+    ) -> ContentObservationResult:
+        builder = ContentObservationResultBuilder(self._descriptor, request)
         self.workspace_root.mkdir(mode=0o700, parents=True, exist_ok=True)
         os.chmod(self.workspace_root, 0o700)
         workspace = runtime.open_workspace(self.workspace_root)

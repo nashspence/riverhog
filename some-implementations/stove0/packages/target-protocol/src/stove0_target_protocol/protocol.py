@@ -37,7 +37,7 @@ from stove0_protocol import (
     SemanticValidationProfile,
 )
 from stove0_protocol.jcs import canonical_json_bytes, canonical_json_sha256
-from stove0_protocol.models import ObservationEvidence
+from stove0_protocol.models import ContentObservationEvidence
 
 TRANSFORM_TARGET_PROTOCOL: Literal["stove0-transform-target/v1"] = "stove0-transform-target/v1"
 EFFECT_TARGET_PROTOCOL: Literal["stove0-effect-target/v1"] = "stove0-effect-target/v1"
@@ -544,14 +544,14 @@ class TargetDeclaration(TargetProtocolModel):
 
 class TargetPreflightRequest(TargetDeclaration):
     protocol: TargetProtocol = TRANSFORM_TARGET_PROTOCOL
-    observations: tuple[ObservationEvidence, ...] = ()
+    observations: tuple[ContentObservationEvidence, ...] = ()
 
     @field_validator("observations")
     @classmethod
     def canonical_observations(
         cls,
-        value: tuple[ObservationEvidence, ...],
-    ) -> tuple[ObservationEvidence, ...]:
+        value: tuple[ContentObservationEvidence, ...],
+    ) -> tuple[ContentObservationEvidence, ...]:
         ids = [item.request.request_id for item in value]
         if ids != sorted(ids) or len(ids) != len(set(ids)):
             raise ValueError("target preflight observations must be unique and ordered")

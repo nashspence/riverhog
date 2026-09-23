@@ -25,7 +25,7 @@ from .common import (
 )
 from .constants import PROVENANCE_ENTRY_SCHEMA, PROVENANCE_PROFILE
 from .interface import FileStateObserver
-from .model import ObservationPolicy, ObservationRequest, PayloadBindingRequest
+from .model import FileStateObservationRequest, ObservationPolicy, PayloadBindingRequest
 from .schema import validate_entry_document
 
 RS = b"\x1e"
@@ -642,7 +642,7 @@ def create_observation_journal(
     }
     init_json = canonical_json(init)
     observation = observer.observe(
-        ObservationRequest(
+        FileStateObservationRequest(
             path=path,
             lineage_id=lineage_id,
             host_id=host_id,
@@ -678,7 +678,7 @@ def append_observation(
     summary = validate_journal(content)
     agent = software_agent(agent_name, agent_version)
     observation = observer.observe(
-        ObservationRequest(
+        FileStateObservationRequest(
             path=path,
             lineage_id=summary.primary_lineage_id,
             host_id=host_id,
@@ -723,7 +723,7 @@ def append_replacement_transformation(
     summary = validate_journal(content)
     agent = software_agent(agent_name, agent_version)
     observation = observer.observe(
-        ObservationRequest(
+        FileStateObservationRequest(
             path=output_path,
             lineage_id=summary.primary_lineage_id,
             host_id=host_id,
@@ -736,7 +736,7 @@ def append_replacement_transformation(
         )
     )
     activity_id = new_urn_uuid()
-    generated_state_id = str(observation.state["id"])
+    generated_state_id = str(observation.file_state["id"])
     assertions = observation.graph_fragment(omit_object_ids=(str(agent["id"]),))
     if agent["id"] not in summary.agent_ids:
         assertions["agents"] = [agent]
