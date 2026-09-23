@@ -2463,24 +2463,22 @@ def write_runtime_environment(
     aws_key, aws_secret, aws_session = _runtime_credentials(aws, values)
     adapter_environments = {
         "aws-deep-archive": {
-            "RIVERHOG_AWS_STORAGE_ADAPTER_TOKEN_FILE": (
-                "/run/secrets/riverhog-storage-adapter.token"
-            ),
-            "RIVERHOG_AWS_STORAGE_ADAPTER_ENDPOINT_URL": _s3_endpoint(aws, values),
-            "RIVERHOG_AWS_STORAGE_ADAPTER_REGION": aws.region,
-            "RIVERHOG_AWS_STORAGE_ADAPTER_BUCKET": aws.bucket_name,
-            "RIVERHOG_AWS_STORAGE_ADAPTER_ACCESS_KEY_ID": aws_key,
-            "RIVERHOG_AWS_STORAGE_ADAPTER_SECRET_ACCESS_KEY": aws_secret,
-            "RIVERHOG_AWS_STORAGE_ADAPTER_SESSION_TOKEN": aws_session or "",
-            "RIVERHOG_AWS_STORAGE_ADAPTER_FORCE_PATH_STYLE": "false",
-            "RIVERHOG_AWS_STORAGE_ADAPTER_ROOT_PREFIX": checkpoint.namespace,
-            "RIVERHOG_AWS_STORAGE_ADAPTER_READ_MODE": "restore_required",
-            "RIVERHOG_AWS_STORAGE_ADAPTER_ARCHIVE_STORAGE_CLASS": "DEEP_ARCHIVE",
-            "RIVERHOG_AWS_STORAGE_ADAPTER_RESTORE_TIER": config.restore_tier.capitalize(),
-            "RIVERHOG_AWS_STORAGE_ADAPTER_RESTORE_DAYS": str(config.restore_copy_days),
-            "RIVERHOG_AWS_STORAGE_ADAPTER_CLOUDFRONT_BASE_URL": cloudfront_base_url,
-            "RIVERHOG_AWS_STORAGE_ADAPTER_CLOUDFRONT_PUBLIC_KEY_ID": (cloudfront_public_key_id),
-            "RIVERHOG_AWS_STORAGE_ADAPTER_CLOUDFRONT_PRIVATE_KEY_PATH": (
+            "A_RIVERHOG_AWS_STORE_TOKEN_FILE": ("/run/secrets/riverhog-storage-adapter.token"),
+            "A_RIVERHOG_AWS_STORE_ENDPOINT_URL": _s3_endpoint(aws, values),
+            "A_RIVERHOG_AWS_STORE_REGION": aws.region,
+            "A_RIVERHOG_AWS_STORE_BUCKET": aws.bucket_name,
+            "A_RIVERHOG_AWS_STORE_ACCESS_KEY_ID": aws_key,
+            "A_RIVERHOG_AWS_STORE_SECRET_ACCESS_KEY": aws_secret,
+            "A_RIVERHOG_AWS_STORE_SESSION_TOKEN": aws_session or "",
+            "A_RIVERHOG_AWS_STORE_FORCE_PATH_STYLE": "false",
+            "A_RIVERHOG_AWS_STORE_ROOT_PREFIX": checkpoint.namespace,
+            "A_RIVERHOG_AWS_STORE_READ_MODE": "restore_required",
+            "A_RIVERHOG_AWS_STORE_ARCHIVE_STORAGE_CLASS": "DEEP_ARCHIVE",
+            "A_RIVERHOG_AWS_STORE_RESTORE_TIER": config.restore_tier.capitalize(),
+            "A_RIVERHOG_AWS_STORE_RESTORE_DAYS": str(config.restore_copy_days),
+            "A_RIVERHOG_AWS_STORE_CLOUDFRONT_BASE_URL": cloudfront_base_url,
+            "A_RIVERHOG_AWS_STORE_CLOUDFRONT_PUBLIC_KEY_ID": (cloudfront_public_key_id),
+            "A_RIVERHOG_AWS_STORE_CLOUDFRONT_PRIVATE_KEY_PATH": (
                 "/run/secrets/riverhog-cloudfront.pem"
             ),
         }
@@ -2489,23 +2487,21 @@ def write_runtime_environment(
         bucket = by_name[logical_name]
         access_key, secret_key, _session_token = _runtime_credentials(bucket, values)
         adapter_environments[logical_name] = {
-            "RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_TOKEN_FILE": (
-                "/run/secrets/riverhog-storage-adapter.token"
-            ),
-            "RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_ENDPOINT_URL": _s3_endpoint(bucket, values),
-            "RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_REGION": bucket.region,
-            "RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_BUCKET": bucket.bucket_name,
-            "RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_ACCESS_KEY_ID": access_key,
-            "RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_SECRET_ACCESS_KEY": secret_key,
-            "RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_FORCE_PATH_STYLE": "false",
-            "RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_ROOT_PREFIX": checkpoint.namespace,
+            "A_RIVERHOG_B2_STORE_TOKEN_FILE": ("/run/secrets/riverhog-storage-adapter.token"),
+            "A_RIVERHOG_B2_STORE_ENDPOINT_URL": _s3_endpoint(bucket, values),
+            "A_RIVERHOG_B2_STORE_REGION": bucket.region,
+            "A_RIVERHOG_B2_STORE_BUCKET": bucket.bucket_name,
+            "A_RIVERHOG_B2_STORE_ACCESS_KEY_ID": access_key,
+            "A_RIVERHOG_B2_STORE_SECRET_ACCESS_KEY": secret_key,
+            "A_RIVERHOG_B2_STORE_FORCE_PATH_STYLE": "false",
+            "A_RIVERHOG_B2_STORE_ROOT_PREFIX": checkpoint.namespace,
         }
 
     riverhog_output = _riverhog_environment_path(output)
     compose_runtime = {
         **riverhog_runtime,
         "RIVERHOG_STORAGE_ADAPTER_TOKEN_HOST_PATH": str(token_path),
-        "RIVERHOG_AWS_STORAGE_ADAPTER_CLOUDFRONT_PRIVATE_KEY_HOST_PATH": str(private_key_path),
+        "A_RIVERHOG_AWS_STORE_CLOUDFRONT_PRIVATE_KEY_HOST_PATH": str(private_key_path),
         "RIVERHOG_QUALIFICATION_AWS_ADAPTER_ENV_FILE": str(adapter_outputs["aws-deep-archive"]),
         "RIVERHOG_QUALIFICATION_B2_ARCHIVE_ADAPTER_ENV_FILE": str(adapter_outputs["b2-archive"]),
         "RIVERHOG_QUALIFICATION_B2_CACHE_ADAPTER_ENV_FILE": str(
@@ -2636,7 +2632,7 @@ def _upload_collection_with_observation(
     token: str,
     allow_insecure_http: bool,
 ) -> tuple[int, tuple[str, ...]]:
-    executable = shutil.which("piggity")
+    executable = shutil.which("a-riverhog-cli")
     if executable is None:
         raise QualificationError("the official riverhog CLI is unavailable")
     environment = os.environ.copy()
@@ -2645,7 +2641,7 @@ def _upload_collection_with_observation(
             "RIVERHOG_BASE_URL": base_url,
             "RIVERHOG_TOKEN": token,
             "RIVERHOG_ALLOW_INSECURE_HTTP": "true" if allow_insecure_http else "false",
-            "PIGGITY_PLAIN": "1",
+            "A_RIVERHOG_CLI_PLAIN": "1",
         }
     )
     command = [
@@ -3391,7 +3387,7 @@ def _independent_provider_recovery(
     scratch: Path,
     values: Mapping[str, str],
 ) -> tuple[str, tuple[str, ...], int]:
-    from riverhog_recover import recover_archive
+    from a_riverhog_recovery_tool import recover_archive
 
     prefix = _provider_archive_prefix(
         api,

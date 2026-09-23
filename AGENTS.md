@@ -4,15 +4,15 @@ Read [README.md](README.md) for the product entrypoint.
 
 ## Boundaries
 
-Riverhog product, reusable-library, reference-application, and reference-component implementations
+Riverhog product code, reusable libraries, supplied applications, and supplied components
 may share focused contracts but never import one another's implementation modules. Runtime
-integration crosses published HTTP and CloudEvents contracts. Reference applications own their
-interfaces and state without becoming Riverhog authority; independently selectable extensions stay
-separate reference components. `reference/riverhog/recovery` must remain independent of the server,
-client, and database. Stove0 core remains content-opaque; observers interpret bytes, targets perform
-declared transformations, and protocol adapters only produce collections. Hardware-specific target
-implementations remain independently selected reference components even when a paired sampler shares
-their image. Keep public code generic; real identity and deployment topology belong downstream.
+integration crosses published HTTP and CloudEvents contracts. Supplied applications own their
+interfaces and state without becoming Riverhog authority; independently selectable extensions
+stay separate components. `some-implementations/riverhog/recovery` must remain independent of
+the server, client, and database. Stove0 core remains content-opaque; observers interpret bytes,
+targets perform declared transformations, and protocol adapters only produce collections.
+Hardware-specific targets remain independently selected components even when a paired sampler
+shares their image. Keep public code generic; real identity and deployment topology belong downstream.
 
 ## Safety
 
@@ -23,7 +23,7 @@ their image. Keep public code generic; real identity and deployment topology bel
 - Preserve verified archive bytes, the encrypted canonical root, its bounded volume
   authorities, authenticated terminator, and recovery descriptor together.
 - Preserve archive recovery without Riverhog or its database using standard tools;
-  `reference/riverhog/recovery` remains an independent reference implementation.
+  `some-implementations/riverhog/recovery` remains an independent recovery tool.
 - Treat catalog and object-store mutations as one archive mutation.
 - Never expose secrets or private deployment identity in public code, fixtures, logs,
   examples, or generated contracts.
@@ -59,7 +59,7 @@ release reference or duplicate executable contracts to `main`.
 - Keep domain behavior in services, external effects behind ports, and HTTP or CLI
   formatting in adapters.
 - Put reusable behavior in a focused package; never share code by importing across a
-  product, reference-application, or reference-component implementation boundary.
+  product, application, or component implementation boundary.
 - Install a mise-owned standalone container tool with `mise install --locked` in a
   digest-pinned disposable build stage, then copy only its required runtime artifacts
   forward.

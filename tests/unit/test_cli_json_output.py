@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import json
 
-import piggity.main
-from piggity.cli_support import emit
-from piggity.main import app
+import a_riverhog_cli.main
+from a_riverhog_cli.cli_support import emit
+from a_riverhog_cli.main import app
 from pytest import CaptureFixture
 from riverhog_api.schemas.collections import ListCollectionsResponse
 from typer.testing import CliRunner
@@ -52,7 +52,7 @@ def test_collection_list_json_emits_the_api_response_without_a_second_model(
             calls.append(kwargs)
             return payload
 
-    monkeypatch.setattr(piggity.main, "client", FakeClient)
+    monkeypatch.setattr(a_riverhog_cli.main, "client", FakeClient)
     result = CliRunner().invoke(app, ["collection", "list", "--json"])
     human = CliRunner().invoke(app, ["collection", "list"])
 
@@ -85,7 +85,7 @@ def test_collection_show_human_and_json_use_one_identical_api_response(monkeypat
             calls.append(collection_id)
             return payload
 
-    monkeypatch.setattr(piggity.main, "client", FakeClient)
+    monkeypatch.setattr(a_riverhog_cli.main, "client", FakeClient)
     runner = CliRunner()
     human = runner.invoke(app, ["collection", "show", "42"])
     machine = runner.invoke(app, ["collection", "show", "42", "--json"])
@@ -125,7 +125,7 @@ def test_collection_description_mutation_has_human_and_json_parity(monkeypatch) 
                 "description_identity": "b" * 64,
             }
 
-    monkeypatch.setattr(piggity.main, "client", FakeClient)
+    monkeypatch.setattr(a_riverhog_cli.main, "client", FakeClient)
     runner = CliRunner()
     human = runner.invoke(
         app,
@@ -195,7 +195,7 @@ def test_archive_store_views_project_the_same_api_models_in_human_and_json(
             calls.append(f"show:{name}")
             return store
 
-    monkeypatch.setattr(piggity.main, "client", FakeClient)
+    monkeypatch.setattr(a_riverhog_cli.main, "client", FakeClient)
     runner = CliRunner()
 
     human_list = runner.invoke(app, ["archive", "store", "list"])
@@ -296,7 +296,7 @@ def test_retrieval_cache_views_project_the_same_api_models_in_human_and_json(
             calls.append(("show", (collection_id, source_store, object_id)))
             return cached
 
-    monkeypatch.setattr(piggity.main, "client", FakeClient)
+    monkeypatch.setattr(a_riverhog_cli.main, "client", FakeClient)
     runner = CliRunner()
     list_args = [
         "retrieval",

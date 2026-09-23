@@ -40,7 +40,7 @@ def archive_recovery_readme() -> str:
 
 Riverhog archives are independently recoverable from a canonical logical object
 tree with `age`, `sha256sum`, and `tar`.
-The matching `riverhog-recover` release artifact is the maintained reference
+The matching `a-riverhog-recovery-tool` release artifact is the maintained reference
 implementation. The selected storage adapter owns the read-only materialization
 from its private storage topology; preserve every relative logical path exactly.
 

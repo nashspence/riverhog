@@ -15,129 +15,136 @@ REPO = Path(__file__).resolve().parents[2]
 
 IMPLEMENTATION_OWNERS = {
     "riverhog-server": (REPO / "riverhog/src", {"riverhog_api", "riverhog_core"}),
-    "piggity": (REPO / "reference/riverhog/applications/piggity/src", {"piggity"}),
-    "riverhog-recover": (REPO / "reference/riverhog/recovery/src", {"riverhog_recover"}),
-    "riverhog-ftp-adapter": (REPO / "reference/riverhog/ingress/ftp/src", {"riverhog_ftp_adapter"}),
-    "riverhog-storage-adapter-aws": (
-        REPO / "reference/riverhog/storage/aws/src",
-        {"riverhog_storage_adapter_aws"},
+    "a-riverhog-cli": (
+        REPO / "some-implementations/riverhog/applications/a-riverhog-cli/src",
+        {"a_riverhog_cli"},
     ),
-    "riverhog-storage-adapter-backblaze": (
-        REPO / "reference/riverhog/storage/backblaze/src",
-        {"riverhog_storage_adapter_backblaze"},
+    "a-riverhog-recovery-tool": (
+        REPO / "some-implementations/riverhog/recovery/src",
+        {"a_riverhog_recovery_tool"},
     ),
-    "riverhog-storage-adapter-filesystem": (
-        REPO / "reference/riverhog/storage/filesystem/src",
-        {"riverhog_storage_adapter_filesystem"},
+    "a-riverhog-ftp-spool": (
+        REPO / "some-implementations/riverhog/ingress/ftp/src",
+        {"a_riverhog_ftp_spool"},
     ),
-    "riverhog-provenance-linux-observer": (
-        REPO / "reference/riverhog/provenance/observers/linux/src",
-        {"riverhog_provenance_linux_observer"},
+    "a-riverhog-aws-store": (
+        REPO / "some-implementations/riverhog/storage/aws/src",
+        {"a_riverhog_aws_store"},
     ),
-    "riverhog-provenance-macos-observer": (
-        REPO / "reference/riverhog/provenance/observers/macos/src",
-        {"riverhog_provenance_macos_observer"},
+    "a-riverhog-b2-store": (
+        REPO / "some-implementations/riverhog/storage/backblaze/src",
+        {"a_riverhog_b2_store"},
     ),
-    "riverhog-provenance-windows-observer": (
-        REPO / "reference/riverhog/provenance/observers/windows/src",
-        {"riverhog_provenance_windows_observer"},
+    "a-riverhog-filesystem-store": (
+        REPO / "some-implementations/riverhog/storage/filesystem/src",
+        {"a_riverhog_filesystem_store"},
+    ),
+    "a-riverhog-linux-provenance-observer": (
+        REPO / "some-implementations/riverhog/provenance/observers/linux/src",
+        {"a_riverhog_linux_provenance_observer"},
+    ),
+    "a-riverhog-macos-provenance-observer": (
+        REPO / "some-implementations/riverhog/provenance/observers/macos/src",
+        {"a_riverhog_macos_provenance_observer"},
+    ),
+    "a-riverhog-windows-provenance-observer": (
+        REPO / "some-implementations/riverhog/provenance/observers/windows/src",
+        {"a_riverhog_windows_provenance_observer"},
     ),
     "stove0-server": (
-        REPO / "reference/stove0/application/server/src",
+        REPO / "some-implementations/stove0/application/server/src",
         {"stove0_api", "stove0_core"},
     ),
-    "stove0-client": (REPO / "reference/stove0/application/client/src", {"stove0_cli"}),
-    "stove0-exiftool-observer": (
-        REPO / "reference/stove0/observers/exiftool/src",
-        {"stove0_exiftool_observer"},
+    "a-stove0-cli": (REPO / "some-implementations/stove0/application/client/src", {"a_stove0_cli"}),
+    "a-stove0-exiftool-observer": (
+        REPO / "some-implementations/stove0/observers/exiftool/src",
+        {"a_stove0_exiftool_observer"},
     ),
-    "stove0-ffprobe-sampling-observer": (
-        REPO / "reference/stove0/observers/ffprobe-sampling/src",
-        {"stove0_ffprobe_sampling_observer"},
+    "a-stove0-ffprobe-sampling-observer": (
+        REPO / "some-implementations/stove0/observers/ffprobe-sampling/src",
+        {"a_stove0_ffprobe_sampling_observer"},
     ),
     "stove0-media-metadata-observer-contracts": (
-        REPO / "reference/stove0/observers/contracts/media-metadata/src",
+        REPO / "some-implementations/stove0/observers/contracts/media-metadata/src",
         {"stove0_media_metadata_observer_contracts"},
     ),
     "stove0-media-sampling-observer-contracts": (
-        REPO / "reference/stove0/observers/contracts/media-sampling/src",
+        REPO / "some-implementations/stove0/observers/contracts/media-sampling/src",
         {"stove0_media_sampling_observer_contracts"},
     ),
-    "stove0-nvenc-av1-opus-target": (
-        REPO / "reference/stove0/targets/nvenc-av1-opus/target/src",
-        {"stove0_nvenc_av1_opus_target"},
+    "a-stove0-nvenc-av1-opus-target": (
+        REPO / "some-implementations/stove0/targets/nvenc-av1-opus/target/src",
+        {"a_stove0_nvenc_av1_opus_target"},
     ),
-    "stove0-nvenc-av1-opus-review-sampler": (
-        REPO / "reference/stove0/targets/nvenc-av1-opus/review-sampler/src",
-        {"stove0_nvenc_av1_opus_review_sampler"},
+    "a-review0-nvenc-av1-opus-sampler": (
+        REPO / "some-implementations/stove0/review0/samplers/nvenc-av1-opus/src",
+        {"a_review0_nvenc_av1_opus_sampler"},
     ),
-    "stove0-opus-review-sampler": (
-        REPO / "reference/stove0/targets/opus/review-sampler/src",
-        {"stove0_opus_review_sampler"},
+    "a-review0-opus-sampler": (
+        REPO / "some-implementations/stove0/review0/samplers/opus/src",
+        {"a_review0_opus_sampler"},
     ),
-    "stove0-opus-target": (
-        REPO / "reference/stove0/targets/opus/target/src",
-        {"stove0_opus_target"},
+    "a-stove0-opus-target": (
+        REPO / "some-implementations/stove0/targets/opus/target/src",
+        {"a_stove0_opus_target"},
     ),
-    "stove0-review-materialize-target": (
-        REPO / "reference/stove0/targets/review/materialize-target/src",
-        {"stove0_review_materialize_target"},
+    "a-review0-materializer": (
+        REPO / "some-implementations/stove0/review0/materialize-target/src",
+        {"a_review0_materializer"},
     ),
-    "stove0-review-rclone-effect-target": (
-        REPO / "reference/stove0/targets/review/rclone-effect-target/src",
-        {"stove0_review_rclone_effect_target"},
+    "a-review0-rclone-target": (
+        REPO / "some-implementations/stove0/review0/rclone-effect-target/src",
+        {"a_review0_rclone_target"},
     ),
-    "stove0-review-planning": (
-        REPO / "reference/stove0/targets/review/planning/src",
-        {"stove0_review_planning"},
+    "review0-planner": (
+        REPO / "some-implementations/stove0/review0/planning/src",
+        {"review0_planner"},
     ),
-    "stove0-review-sampler-support": (
-        REPO / "reference/stove0/targets/review/sampler/support/src",
-        {"stove0_review_sampler_support"},
+    "a-riverhog-event-relay": (
+        REPO / "some-implementations/riverhog/applications/a-riverhog-event-relay/src",
+        {"a_riverhog_event_relay"},
     ),
-    "mango-fish": (REPO / "reference/riverhog/applications/mango-fish/src", {"mango_fish"}),
-    "gogurt": (REPO / "reference/gogurt/application/src", {"gogurt"}),
-    "gogurt-linux-listener-host": (
-        REPO / "reference/gogurt/listener-host/linux/src",
-        {"gogurt_linux_listener_host"},
+    "gogurt": (REPO / "some-implementations/gogurt/application/src", {"gogurt"}),
+    "a-gogurt-linux-listener": (
+        REPO / "some-implementations/gogurt/listener-host/linux/src",
+        {"a_gogurt_linux_listener"},
     ),
-    "gogurt-linux-mounted-volume": (
-        REPO / "reference/gogurt/mounted-volume/linux/src",
-        {"gogurt_linux_mounted_volume"},
+    "a-gogurt-linux-volume": (
+        REPO / "some-implementations/gogurt/mounted-volume/linux/src",
+        {"a_gogurt_linux_volume"},
     ),
-    "gogurt-macos-listener-host": (
-        REPO / "reference/gogurt/listener-host/macos/src",
-        {"gogurt_macos_listener_host"},
+    "a-gogurt-macos-listener": (
+        REPO / "some-implementations/gogurt/listener-host/macos/src",
+        {"a_gogurt_macos_listener"},
     ),
-    "gogurt-macos-mounted-volume": (
-        REPO / "reference/gogurt/mounted-volume/macos/src",
-        {"gogurt_macos_mounted_volume"},
+    "a-gogurt-macos-volume": (
+        REPO / "some-implementations/gogurt/mounted-volume/macos/src",
+        {"a_gogurt_macos_volume"},
     ),
-    "gogurt-windows-listener-host": (
-        REPO / "reference/gogurt/listener-host/windows/src",
-        {"gogurt_windows_listener_host"},
+    "a-gogurt-windows-listener": (
+        REPO / "some-implementations/gogurt/listener-host/windows/src",
+        {"a_gogurt_windows_listener"},
     ),
-    "gogurt-windows-mounted-volume": (
-        REPO / "reference/gogurt/mounted-volume/windows/src",
-        {"gogurt_windows_mounted_volume"},
+    "a-gogurt-windows-volume": (
+        REPO / "some-implementations/gogurt/mounted-volume/windows/src",
+        {"a_gogurt_windows_volume"},
     ),
 }
-REFERENCE_FAMILY_SUPPORT_OWNERS = {
+SHARED_PROVIDER_MODULES = {
     "stove0-media-metadata-observer-contracts",
     "stove0-media-sampling-observer-contracts",
-    "stove0-review-planning",
-    "stove0-review-sampler-support",
+    "review0-planner",
 }
 ALL_IMPLEMENTATION_MODULES = set().union(
     *(
         modules
         for owner, (_, modules) in IMPLEMENTATION_OWNERS.items()
-        if owner not in REFERENCE_FAMILY_SUPPORT_OWNERS
+        if owner not in SHARED_PROVIDER_MODULES
     )
 )
 CORE_ROOTS = {
     "riverhog_core": REPO / "riverhog/src/riverhog_core",
-    "stove0_core": REPO / "reference/stove0/application/server/src/stove0_core",
+    "stove0_core": REPO / "some-implementations/stove0/application/server/src/stove0_core",
 }
 RIVERHOG_COLLECTION_WORKFLOW_SURFACE = (
     REPO / "packages/riverhog-protocol/src/riverhog_protocol/collection_workflows.py",
@@ -323,8 +330,8 @@ def test_every_implementation_project_and_module_has_exactly_one_owner() -> None
         if roles[relative] not in {
             "end_user_artifact",
             "deployed_implementation",
-            "reference_application",
-            "reference_component",
+            "application",
+            "component",
         }:
             continue
         config = tomllib.loads(pyproject.read_text(encoding="utf-8"))
@@ -375,9 +382,9 @@ def test_riverhog_collection_workflows_use_application_agnostic_outcomes() -> No
 def test_riverhog_production_surfaces_are_stove0_agnostic() -> None:
     roots = (
         REPO / "riverhog/src",
-        REPO / "reference/riverhog/applications/piggity/src",
-        REPO / "reference/riverhog/recovery/src",
-        REPO / "reference/riverhog/ingress/ftp/src",
+        REPO / "some-implementations/riverhog/applications/a-riverhog-cli/src",
+        REPO / "some-implementations/riverhog/recovery/src",
+        REPO / "some-implementations/riverhog/ingress/ftp/src",
     )
     paths = [path for root in roots for path in root.rglob("*.py")]
     paths.extend(
@@ -394,8 +401,8 @@ def test_riverhog_production_surfaces_are_stove0_agnostic() -> None:
     assert not violations, "\n".join(violations)
 
 
-def test_piggity_consumes_only_the_declared_riverhog_client_root() -> None:
-    source = REPO / "reference/riverhog/applications/piggity/src"
+def test_a_riverhog_cli_consumes_only_the_declared_riverhog_client_root() -> None:
+    source = REPO / "some-implementations/riverhog/applications/a-riverhog-cli/src"
     imported = {
         node.module
         for path in source.rglob("*.py")
@@ -447,44 +454,46 @@ def test_projects_declare_their_exact_direct_runtime_dependencies() -> None:
 
 def test_portable_products_do_not_select_provider_implementations() -> None:
     gogurt = tomllib.loads(
-        (REPO / "reference/gogurt/application/pyproject.toml").read_text(encoding="utf-8")
+        (REPO / "some-implementations/gogurt/application/pyproject.toml").read_text(
+            encoding="utf-8"
+        )
     )
     assert declared_project_dependencies(gogurt).isdisjoint(
         {
-            "gogurt-linux-listener-host",
-            "gogurt-linux-mounted-volume",
-            "gogurt-macos-listener-host",
-            "gogurt-macos-mounted-volume",
+            "a-gogurt-linux-listener",
+            "a-gogurt-linux-volume",
+            "a-gogurt-macos-listener",
+            "a-gogurt-macos-volume",
             "gogurt-path-volume-support",
-            "gogurt-windows-listener-host",
-            "gogurt-windows-mounted-volume",
+            "a-gogurt-windows-listener",
+            "a-gogurt-windows-volume",
         }
     )
-    gogurt_sources = tuple((REPO / "reference/gogurt/application/src").rglob("*.py"))
+    gogurt_sources = tuple((REPO / "some-implementations/gogurt/application/src").rglob("*.py"))
     gogurt_imports = set().union(*(imported_roots(path) for path in gogurt_sources))
     assert gogurt_imports.isdisjoint(
         {
-            "gogurt_linux_listener_host",
-            "gogurt_linux_mounted_volume",
-            "gogurt_macos_listener_host",
-            "gogurt_macos_mounted_volume",
+            "a_gogurt_linux_listener",
+            "a_gogurt_linux_volume",
+            "a_gogurt_macos_listener",
+            "a_gogurt_macos_volume",
             "gogurt_path_volume_support",
-            "gogurt_windows_listener_host",
-            "gogurt_windows_mounted_volume",
+            "a_gogurt_windows_listener",
+            "a_gogurt_windows_volume",
         }
     )
     assert all("sys.platform" not in path.read_text(encoding="utf-8") for path in gogurt_sources)
     client = tomllib.loads(
-        (REPO / "reference/riverhog/applications/piggity/pyproject.toml").read_text(
-            encoding="utf-8"
-        )
+        (
+            REPO / "some-implementations/riverhog/applications/a-riverhog-cli/pyproject.toml"
+        ).read_text(encoding="utf-8")
     )
     client_dependencies = declared_project_dependencies(client)
     assert client_dependencies.isdisjoint(
         {
-            "riverhog-provenance-linux-observer",
-            "riverhog-provenance-macos-observer",
-            "riverhog-provenance-windows-observer",
+            "a-riverhog-linux-provenance-observer",
+            "a-riverhog-macos-provenance-observer",
+            "a-riverhog-windows-provenance-observer",
         }
     )
 
@@ -498,7 +507,7 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
     gogurt_core_imports = set().union(
         *(
             imported_roots(path)
-            for path in (REPO / "reference/gogurt/packages/core/src").rglob("*.py")
+            for path in (REPO / "some-implementations/gogurt/packages/core/src").rglob("*.py")
         )
     )
     assert gogurt_core_imports.isdisjoint(
@@ -506,7 +515,7 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
     )
 
     path_volume_config = tomllib.loads(
-        (REPO / "reference/gogurt/mounted-volume/path-support/pyproject.toml").read_text(
+        (REPO / "some-implementations/gogurt/mounted-volume/path-support/pyproject.toml").read_text(
             encoding="utf-8"
         )
     )
@@ -516,7 +525,7 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
     }
 
     listener_runtime_config = tomllib.loads(
-        (REPO / "reference/gogurt/packages/listener-runtime/pyproject.toml").read_text(
+        (REPO / "some-implementations/gogurt/packages/listener-runtime/pyproject.toml").read_text(
             encoding="utf-8"
         )
     )
@@ -527,7 +536,9 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
     listener_runtime_imports = set().union(
         *(
             imported_roots(path)
-            for path in (REPO / "reference/gogurt/packages/listener-runtime/src").rglob("*.py")
+            for path in (REPO / "some-implementations/gogurt/packages/listener-runtime/src").rglob(
+                "*.py"
+            )
         )
     )
     assert "gogurt_core" in listener_runtime_imports
@@ -536,11 +547,15 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
     )
 
     generic_marker_sources = (
-        REPO / "reference/gogurt/packages/core/src/gogurt_core/mounts.py",
-        REPO / "reference/gogurt/packages/core/src/gogurt_core/core.py",
-        REPO / "reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/listener.py",
-        REPO / "reference/gogurt/application/src/gogurt/cli.py",
-        REPO / "reference/gogurt/application/src/gogurt/providers.py",
+        REPO / "some-implementations/gogurt/packages/core/src/gogurt_core/mounts.py",
+        REPO / "some-implementations/gogurt/packages/core/src/gogurt_core/core.py",
+        REPO
+        / (
+            "some-implementations/gogurt/packages/listener-runtime/"
+            "src/gogurt_listener_runtime/listener.py"
+        ),
+        REPO / "some-implementations/gogurt/application/src/gogurt/cli.py",
+        REPO / "some-implementations/gogurt/application/src/gogurt/providers.py",
     )
     for source in generic_marker_sources:
         text = source.read_text(encoding="utf-8")
@@ -549,46 +564,51 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
 
     path_support = (
         REPO
-        / "reference/gogurt/mounted-volume/path-support/src/gogurt_path_volume_support/__init__.py"
+        / (
+            "some-implementations/gogurt/mounted-volume/path-support/"
+            "src/gogurt_path_volume_support/__init__.py"
+        )
     ).read_text(encoding="utf-8")
     assert 'PATH_MARKER_NAME = ".gogurt"' in path_support
     assert 'f"{document.route}\\n".encode()' in path_support
 
     platform_contracts = {
-        "linux": "riverhog-provenance-linux-contracts",
-        "macos": "riverhog-provenance-macos-contracts",
-        "windows": "riverhog-provenance-windows-contracts",
+        "linux": "a-riverhog-linux-provenance-contract-lib",
+        "macos": "a-riverhog-macos-provenance-contract-lib",
+        "windows": "a-riverhog-windows-provenance-contract-lib",
     }
     for platform, contract in platform_contracts.items():
         observer_config = tomllib.loads(
-            (REPO / f"reference/riverhog/provenance/observers/{platform}/pyproject.toml").read_text(
-                encoding="utf-8"
-            )
+            (
+                REPO
+                / f"some-implementations/riverhog/provenance/observers/{platform}/pyproject.toml"
+            ).read_text(encoding="utf-8")
         )
         assert declared_project_dependencies(observer_config) == {
             "riverhog-provenance",
             contract,
         }
         contract_config = tomllib.loads(
-            (REPO / f"reference/riverhog/provenance/contracts/{platform}/pyproject.toml").read_text(
-                encoding="utf-8"
-            )
+            (
+                REPO
+                / f"some-implementations/riverhog/provenance/contracts/{platform}/pyproject.toml"
+            ).read_text(encoding="utf-8")
         )
         assert declared_project_dependencies(contract_config) == {"riverhog-provenance-contracts"}
 
         mounted_volume_config = tomllib.loads(
-            (REPO / f"reference/gogurt/mounted-volume/{platform}/pyproject.toml").read_text(
-                encoding="utf-8"
-            )
+            (
+                REPO / f"some-implementations/gogurt/mounted-volume/{platform}/pyproject.toml"
+            ).read_text(encoding="utf-8")
         )
         assert declared_project_dependencies(mounted_volume_config) == {
             "gogurt-core",
             "gogurt-path-volume-support",
         }
         listener_host_config = tomllib.loads(
-            (REPO / f"reference/gogurt/listener-host/{platform}/pyproject.toml").read_text(
-                encoding="utf-8"
-            )
+            (
+                REPO / f"some-implementations/gogurt/listener-host/{platform}/pyproject.toml"
+            ).read_text(encoding="utf-8")
         )
         assert declared_project_dependencies(listener_host_config) == {"gogurt-listener-runtime"}
 
@@ -616,7 +636,7 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
     )
 
 
-def test_reference_extension_distributions_each_own_one_selectable_capability() -> None:
+def test_supplied_extension_distributions_each_own_one_selectable_capability() -> None:
     provider_groups = {
         "gogurt.listener-host-providers",
         "gogurt.mounted-volume-providers",
@@ -626,7 +646,7 @@ def test_reference_extension_distributions_each_own_one_selectable_capability() 
     }
     observed: set[str] = set()
     projects_by_name: dict[str, tuple[Path, dict[str, object], set[str]]] = {}
-    for pyproject in (REPO / "reference").rglob("pyproject.toml"):
+    for pyproject in (REPO / "some-implementations").rglob("pyproject.toml"):
         config = tomllib.loads(pyproject.read_text(encoding="utf-8"))
         project = config["project"]
         projects_by_name[project["name"]] = (
@@ -645,13 +665,13 @@ def test_reference_extension_distributions_each_own_one_selectable_capability() 
     assert observed == provider_groups
     capability_support = {
         "stove0-observer-support",
-        "stove0-review-sampler-support",
+        "review0-sampler-lib",
         "stove0-target-support",
     }
     stove0_extensions = {
         distribution
         for distribution, (root, project, dependencies) in projects_by_name.items()
-        if root.relative_to(REPO).is_relative_to("reference/stove0")
+        if root.relative_to(REPO).is_relative_to("some-implementations/stove0")
         and project.get("scripts")
         and dependencies & capability_support
     }
@@ -684,30 +704,28 @@ def test_reference_extension_distributions_each_own_one_selectable_capability() 
     assert "only exact digest-bound contracts or selected bindings carry authority" in architecture
 
 
-def test_reference_paths_follow_the_closed_nonnormative_release_policy() -> None:
+def test_supplied_implementation_paths_have_structural_roles_and_clear_descriptions() -> None:
     release = tomllib.loads((REPO / "release.toml").read_text(encoding="utf-8"))
-    reference_policy = release["references"]["policy"]
-    expected_policy = (
-        "Checked-in references form a closed, tightly scoped, maintainer-selected, "
-        "nonnormative conformance set."
-    )
-    assert reference_policy == expected_policy
     readme = " ".join((REPO / "README.md").read_text(encoding="utf-8").split())
     assert "New mechanisms are independently owned and published" in readme
-    assert expected_policy in readme
+    assert "some-implementations/" in readme
     classified = {path: role for role, paths in release["python"].items() for path in paths}
-    for pyproject in (REPO / "reference").rglob("pyproject.toml"):
+    projects = list((REPO / "some-implementations").rglob("pyproject.toml"))
+    assert projects
+    for pyproject in projects:
         relative = pyproject.parent.relative_to(REPO).as_posix()
         role = classified[relative]
-        assert role in {"reference_application", "reference_component", "reusable_library"}
+        assert role in {"application", "component", "reusable_library"}
         project = tomllib.loads(pyproject.read_text(encoding="utf-8"))["project"]
-        if role in {"reference_application", "reference_component"}:
-            description = project["description"].casefold()
-            assert all(word in description for word in ("optional", "nonnormative", "reference"))
-        else:
-            assert project["readme"]["text"].startswith(
-                "Public contract or support for a nonnormative Riverhog v1 reference application."
-            )
+        assert project["readme"] == {
+            "text": project["description"]
+            + "\n\nSee the project URL for documentation and releases.",
+            "content-type": "text/markdown",
+        }
+        assert not any(
+            word in project["description"].casefold()
+            for word in ("optional", "nonnormative", "reference")
+        )
 
 
 def test_shared_packages_are_product_owned_or_implementation_neutral() -> None:
@@ -751,69 +769,70 @@ def test_core_domain_and_ports_are_dependency_roots() -> None:
 def test_images_copy_only_their_owned_implementation_project() -> None:
     dockerfiles = {
         REPO / "riverhog/Dockerfile": "riverhog",
-        REPO / "reference/riverhog/ingress/ftp/Dockerfile": (
-            "reference/riverhog/ingress/ftp",
-            "reference/riverhog/ingress/ftp-api-client",
-            "reference/riverhog/provenance/contracts/linux",
-            "reference/riverhog/provenance/observers/linux",
+        REPO / "some-implementations/riverhog/ingress/ftp/Dockerfile": (
+            "some-implementations/riverhog/ingress/ftp",
+            "some-implementations/riverhog/ingress/ftp-api-client",
+            "some-implementations/riverhog/provenance/contracts/linux",
+            "some-implementations/riverhog/provenance/observers/linux",
         ),
-        REPO / "reference/riverhog/storage/aws/Dockerfile": (
-            "reference/riverhog/storage/aws",
-            "reference/riverhog/storage/s3-support",
+        REPO / "some-implementations/riverhog/storage/aws/Dockerfile": (
+            "some-implementations/riverhog/storage/aws",
+            "some-implementations/riverhog/storage/s3-support",
         ),
-        REPO / "reference/riverhog/storage/backblaze/Dockerfile": (
-            "reference/riverhog/storage/backblaze",
-            "reference/riverhog/storage/s3-support",
+        REPO / "some-implementations/riverhog/storage/backblaze/Dockerfile": (
+            "some-implementations/riverhog/storage/backblaze",
+            "some-implementations/riverhog/storage/s3-support",
         ),
-        REPO
-        / "reference/stove0/application/server/Dockerfile": "reference/stove0/application/server",
-        REPO / "reference/stove0/observers/exiftool/Dockerfile": (
-            "reference/stove0/observers/exiftool",
-            "reference/stove0/observers/contracts/media-metadata",
+        REPO / "some-implementations/stove0/application/server/Dockerfile": (
+            "some-implementations/stove0/application/server"
         ),
-        REPO / "reference/stove0/observers/ffprobe-sampling/Dockerfile": (
-            "reference/stove0/observers/ffprobe-sampling",
-            "reference/stove0/observers/contracts/media-sampling",
+        REPO / "some-implementations/stove0/observers/exiftool/Dockerfile": (
+            "some-implementations/stove0/observers/exiftool",
+            "some-implementations/stove0/observers/contracts/media-metadata",
         ),
-        REPO / "reference/stove0/targets/nvenc-av1-opus/Dockerfile": (
-            "reference/stove0/observers/contracts/media-metadata",
-            "reference/stove0/targets/media-archive/contracts",
-            "reference/stove0/targets/media-archive/support",
-            "reference/stove0/targets/nvenc-av1-opus/target",
-            "reference/stove0/targets/nvenc-av1-opus/review-sampler",
-            "reference/stove0/targets/nvenc-av1-opus/verify-ffmpeg",
-            "reference/stove0/targets/review/contracts",
-            "reference/stove0/targets/review/sampler/client",
-            "reference/stove0/targets/review/sampler/protocol",
-            "reference/stove0/targets/review/sampler/support",
+        REPO / "some-implementations/stove0/observers/ffprobe-sampling/Dockerfile": (
+            "some-implementations/stove0/observers/ffprobe-sampling",
+            "some-implementations/stove0/observers/contracts/media-sampling",
         ),
-        REPO / "reference/stove0/targets/opus/Dockerfile": (
-            "reference/stove0/observers/contracts/media-metadata",
-            "reference/stove0/targets/media-archive/contracts",
-            "reference/stove0/targets/media-archive/support",
-            "reference/stove0/targets/opus/target",
-            "reference/stove0/targets/opus/review-sampler",
-            "reference/stove0/targets/review/contracts",
-            "reference/stove0/targets/review/sampler/client",
-            "reference/stove0/targets/review/sampler/protocol",
-            "reference/stove0/targets/review/sampler/support",
+        REPO / "some-implementations/stove0/targets/nvenc-av1-opus/Dockerfile": (
+            "some-implementations/stove0/observers/contracts/media-metadata",
+            "some-implementations/stove0/targets/media-archive/contracts",
+            "some-implementations/stove0/targets/media-archive/support",
+            "some-implementations/stove0/targets/nvenc-av1-opus/target",
+            "some-implementations/stove0/review0/samplers/nvenc-av1-opus",
+            "some-implementations/stove0/targets/nvenc-av1-opus/verify-ffmpeg",
+            "some-implementations/stove0/review0/contracts",
+            "some-implementations/stove0/review0/sampler/client",
+            "some-implementations/stove0/review0/sampler/protocol",
+            "some-implementations/stove0/review0/sampler/support",
         ),
-        REPO / "reference/stove0/targets/review/materialize-target/Dockerfile": (
-            "reference/stove0/targets/review/contracts",
-            "reference/stove0/targets/review/materialize-target",
-            "reference/stove0/targets/review/sampler/client",
-            "reference/stove0/targets/review/sampler/protocol",
-            "reference/stove0/targets/review/support",
+        REPO / "some-implementations/stove0/targets/opus/Dockerfile": (
+            "some-implementations/stove0/observers/contracts/media-metadata",
+            "some-implementations/stove0/targets/media-archive/contracts",
+            "some-implementations/stove0/targets/media-archive/support",
+            "some-implementations/stove0/targets/opus/target",
+            "some-implementations/stove0/review0/samplers/opus",
+            "some-implementations/stove0/review0/contracts",
+            "some-implementations/stove0/review0/sampler/client",
+            "some-implementations/stove0/review0/sampler/protocol",
+            "some-implementations/stove0/review0/sampler/support",
         ),
-        REPO / "reference/stove0/targets/review/rclone-effect-target/Dockerfile": (
-            "reference/stove0/targets/review/contracts",
-            "reference/stove0/targets/review/rclone-effect-target",
-            "reference/stove0/targets/review/sampler/client",
-            "reference/stove0/targets/review/sampler/protocol",
-            "reference/stove0/targets/review/support",
+        REPO / "some-implementations/stove0/review0/materialize-target/Dockerfile": (
+            "some-implementations/stove0/review0/contracts",
+            "some-implementations/stove0/review0/materialize-target",
+            "some-implementations/stove0/review0/sampler/client",
+            "some-implementations/stove0/review0/sampler/protocol",
+            "some-implementations/stove0/review0/support",
         ),
-        REPO / "reference/riverhog/applications/mango-fish/Dockerfile": (
-            "reference/riverhog/applications/mango-fish"
+        REPO / "some-implementations/stove0/review0/rclone-effect-target/Dockerfile": (
+            "some-implementations/stove0/review0/contracts",
+            "some-implementations/stove0/review0/rclone-effect-target",
+            "some-implementations/stove0/review0/sampler/client",
+            "some-implementations/stove0/review0/sampler/protocol",
+            "some-implementations/stove0/review0/support",
+        ),
+        REPO / "some-implementations/riverhog/applications/a-riverhog-event-relay/Dockerfile": (
+            "some-implementations/riverhog/applications/a-riverhog-event-relay"
         ),
     }
     release = tomllib.loads((REPO / "release.toml").read_text(encoding="utf-8"))
@@ -822,17 +841,15 @@ def test_images_copy_only_their_owned_implementation_project() -> None:
         for role in (
             "end_user_artifact",
             "deployed_implementation",
-            "reference_application",
-            "reference_component",
+            "application",
+            "component",
         )
         for path in release["python"][role]
     }
     for dockerfile, expected in dockerfiles.items():
         dockerfile_text = dockerfile.read_text()
-        if dockerfile == REPO / "reference/stove0/application/server/Dockerfile":
-            dockerfile_text = dockerfile_text.split("FROM build AS reference-composition-build", 1)[
-                0
-            ]
+        if dockerfile == REPO / "some-implementations/stove0/application/server/Dockerfile":
+            dockerfile_text = dockerfile_text.split("FROM build AS bundled-components-build", 1)[0]
         copied = {
             source
             for source in re.findall(r"^COPY ([^\s]+)", dockerfile_text, re.MULTILINE)
@@ -856,15 +873,15 @@ def test_stove0_server_has_only_protocol_and_caller_side_extension_dependencies(
         "stove0-media-metadata-observer-contracts",
         "stove0-media-sampling-observer-contracts",
         "stove0-observer-support",
-        "stove0-review-planning",
-        "stove0-review-target-contracts",
-        "stove0-review-sampler-support",
+        "review0-planner",
+        "review0-target-contracts",
+        "review0-sampler-lib",
         "stove0-target-support",
     }
 
 
 def test_stove0_control_plane_does_not_import_riverhog_transform_runtime() -> None:
-    server = REPO / "reference/stove0/application/server/src"
+    server = REPO / "some-implementations/stove0/application/server/src"
     imported = {
         module
         for path in server.rglob("*.py")
@@ -878,14 +895,14 @@ def test_stove0_control_plane_does_not_import_riverhog_transform_runtime() -> No
 def test_maintained_observer_distributions_do_not_pull_target_authority() -> None:
     _projects, graph = workspace_project_graph()
     expected = {
-        "stove0-exiftool-observer": "stove0-media-metadata-observer-contracts",
-        "stove0-ffprobe-sampling-observer": "stove0-media-sampling-observer-contracts",
+        "a-stove0-exiftool-observer": "stove0-media-metadata-observer-contracts",
+        "a-stove0-ffprobe-sampling-observer": "stove0-media-sampling-observer-contracts",
     }
     forbidden = {
         "stove0-media-archive-target-contracts",
         "stove0-media-archive-target-support",
-        "stove0-review-planning",
-        "stove0-review-target-contracts",
+        "review0-planner",
+        "review0-target-contracts",
         "stove0-target-client",
         "stove0-target-protocol",
         "stove0-target-support",
@@ -908,9 +925,9 @@ def test_semantic_contract_distributions_do_not_pull_runtime_support() -> None:
         "stove0-media-metadata-observer-contracts",
         "stove0-media-sampling-observer-contracts",
         "stove0-media-archive-target-contracts",
-        "stove0-review-target-contracts",
+        "review0-target-contracts",
         "stove0-media-archive-target-support",
-        "stove0-review-planning",
+        "review0-planner",
     ):
         closure = dependency_closure(distribution, graph)
         assert not closure & {
@@ -923,8 +940,8 @@ def test_semantic_contract_distributions_do_not_pull_runtime_support() -> None:
 
 def test_paired_target_and_review_sampler_distributions_do_not_import_each_other() -> None:
     pairs = (
-        ("stove0_opus_target", "stove0_opus_review_sampler"),
-        ("stove0_nvenc_av1_opus_target", "stove0_nvenc_av1_opus_review_sampler"),
+        ("a_stove0_opus_target", "a_review0_opus_sampler"),
+        ("a_stove0_nvenc_av1_opus_target", "a_review0_nvenc_av1_opus_sampler"),
     )
     for target, sampler in pairs:
         target_source = next(
@@ -975,37 +992,42 @@ def test_compose_timezone_defaults_are_configurable_utc() -> None:
 def test_images_copy_their_complete_internal_dependency_closure() -> None:
     images = {
         REPO / "riverhog/Dockerfile": "riverhog-server",
-        REPO / "reference/riverhog/ingress/ftp/Dockerfile": (
-            "riverhog-ftp-adapter",
-            "riverhog-provenance-linux-observer",
+        REPO / "some-implementations/riverhog/ingress/ftp/Dockerfile": (
+            "a-riverhog-ftp-spool",
+            "a-riverhog-linux-provenance-observer",
         ),
-        REPO / "reference/riverhog/storage/aws/Dockerfile": "riverhog-storage-adapter-aws",
-        REPO / "reference/riverhog/storage/backblaze/Dockerfile": (
-            "riverhog-storage-adapter-backblaze"
+        REPO / "some-implementations/riverhog/storage/aws/Dockerfile": "a-riverhog-aws-store",
+        REPO / "some-implementations/riverhog/storage/backblaze/Dockerfile": (
+            "a-riverhog-b2-store"
         ),
-        REPO / "reference/riverhog/storage/filesystem/Dockerfile": (
-            "riverhog-storage-adapter-filesystem"
+        REPO / "some-implementations/riverhog/storage/filesystem/Dockerfile": (
+            "a-riverhog-filesystem-store"
         ),
-        REPO / "reference/stove0/application/server/Dockerfile": "stove0-server",
-        REPO / "reference/stove0/observers/exiftool/Dockerfile": ("stove0-exiftool-observer"),
-        REPO / "reference/stove0/observers/ffprobe-sampling/Dockerfile": (
-            "stove0-ffprobe-sampling-observer"
+        REPO / "some-implementations/stove0/application/server/Dockerfile": "stove0-server",
+        REPO / "some-implementations/stove0/observers/exiftool/Dockerfile": (
+            "a-stove0-exiftool-observer"
         ),
-        REPO / "reference/stove0/targets/nvenc-av1-opus/Dockerfile": (
-            "stove0-nvenc-av1-opus-target",
-            "stove0-nvenc-av1-opus-review-sampler",
+        REPO / "some-implementations/stove0/observers/ffprobe-sampling/Dockerfile": (
+            "a-stove0-ffprobe-sampling-observer"
         ),
-        REPO / "reference/stove0/targets/opus/Dockerfile": (
-            "stove0-opus-target",
-            "stove0-opus-review-sampler",
+        REPO / "some-implementations/stove0/targets/nvenc-av1-opus/Dockerfile": (
+            "a-stove0-nvenc-av1-opus-target",
+            "a-review0-nvenc-av1-opus-sampler",
         ),
-        REPO / "reference/stove0/targets/review/materialize-target/Dockerfile": (
-            "stove0-review-materialize-target"
+        REPO / "some-implementations/stove0/targets/opus/Dockerfile": (
+            "a-stove0-opus-target",
+            "a-review0-opus-sampler",
         ),
-        REPO / "reference/stove0/targets/review/rclone-effect-target/Dockerfile": (
-            "stove0-review-rclone-effect-target"
+        REPO / "some-implementations/stove0/review0/materialize-target/Dockerfile": (
+            "a-review0-materializer"
         ),
-        REPO / "reference/riverhog/applications/mango-fish/Dockerfile": "mango-fish",
+        REPO / "some-implementations/stove0/review0/rclone-effect-target/Dockerfile": (
+            "a-review0-rclone-target"
+        ),
+        REPO
+        / (
+            "some-implementations/riverhog/applications/a-riverhog-event-relay/Dockerfile"
+        ): "a-riverhog-event-relay",
     }
     projects, graph = workspace_project_graph()
 

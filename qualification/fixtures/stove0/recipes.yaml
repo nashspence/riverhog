@@ -324,7 +324,7 @@ operations:
   result_kind: collection
   intent_schema:
     id: stove0.review.materialize-intent/v1
-    profile_sha256: dacf9977497657d10678176bb83ecf7783db08114b417390d577810d47ef2b30
+    profile_sha256: eb997cd9a6f54adf0036ea548eca97df7ad335a8618d1af0c7ef65c190a80eaf
     dialect: https://json-schema.org/draft/2020-12/schema
     format_policy: annotation-only
     schema:
@@ -334,8 +334,8 @@ operations:
           additionalProperties: false
           properties:
             format:
-              const: stove0-review-sample-plan/v1
-              default: stove0-review-sample-plan/v1
+              const: review0-sample-plan/v1
+              default: review0-sample-plan/v1
               title: Format
               type: string
             selection_method:
@@ -424,8 +424,8 @@ operations:
     rules:
     - stove0.review.sample-plan.exact-declared-shape/v1
     - stove0.review.sample-plan.identity-verification/v1
-    conformance_vectors_sha256: eda75742bb220994e735aa6e00cb0f598dbac7de55e3cdd9576cbe4944789583
-    profile_sha256: 4625bc86e212e403da151d0c6dfe1f7a6cbf9832adea7161ffcec32656c1b79c
+    conformance_vectors_sha256: 87c848c1e820178e863cf589b987cb392e4f3f85be1881e5dc3ce7e6de7f51ac
+    profile_sha256: 0af5db45b2087ad40168ff5a95da2c41657e42c83b0c055c976181ecb773c373
   inputs:
   - role: stove0.review.source/v1
     minimum: 1
@@ -447,12 +447,12 @@ operations:
     derived_from_roles:
     - stove0.review.source/v1
   source_retirement_permitted: false
-  contract_sha256: 47f85e10c52a329c4a30d23a0bbd926d6dbd7c5a004d85c01e99e3bc606ffc5a
+  contract_sha256: d41bbf55a3cabf764445d4bcf0c00def514327a58d9313a7f6c5d727d8ba7e9f
 - id: stove0.review.rclone-deliver/v1
   result_kind: external-effect
   intent_schema:
     id: stove0.review.materialize-intent/v1
-    profile_sha256: dacf9977497657d10678176bb83ecf7783db08114b417390d577810d47ef2b30
+    profile_sha256: eb997cd9a6f54adf0036ea548eca97df7ad335a8618d1af0c7ef65c190a80eaf
     dialect: https://json-schema.org/draft/2020-12/schema
     format_policy: annotation-only
     schema:
@@ -462,8 +462,8 @@ operations:
           additionalProperties: false
           properties:
             format:
-              const: stove0-review-sample-plan/v1
-              default: stove0-review-sample-plan/v1
+              const: review0-sample-plan/v1
+              default: review0-sample-plan/v1
               title: Format
               type: string
             selection_method:
@@ -552,15 +552,15 @@ operations:
     rules:
     - stove0.review.sample-plan.exact-declared-shape/v1
     - stove0.review.sample-plan.identity-verification/v1
-    conformance_vectors_sha256: eda75742bb220994e735aa6e00cb0f598dbac7de55e3cdd9576cbe4944789583
-    profile_sha256: 4625bc86e212e403da151d0c6dfe1f7a6cbf9832adea7161ffcec32656c1b79c
+    conformance_vectors_sha256: 87c848c1e820178e863cf589b987cb392e4f3f85be1881e5dc3ce7e6de7f51ac
+    profile_sha256: 0af5db45b2087ad40168ff5a95da2c41657e42c83b0c055c976181ecb773c373
   inputs:
   - role: stove0.review.source/v1
     minimum: 1
   outputs: []
   effect_receipt_schema:
     id: stove0.review.rclone-receipt/v1
-    profile_sha256: 10234918310d650a4ddeddd3b95567750c355c54ac5003bca70085c5fcf31c0e
+    profile_sha256: 34ba5fe26798a3074c995286e7ed3ff1a8907c73d6a286f3557c7b1a0e5e8472
     dialect: https://json-schema.org/draft/2020-12/schema
     format_policy: annotation-only
     schema:
@@ -575,7 +575,7 @@ operations:
       - total_bytes
       properties:
         format:
-          const: stove0-review-rclone-receipt/v1
+          const: review0-rclone-receipt/v1
         destination_identity:
           type: string
           pattern: ^[0-9a-f]{64}$
@@ -593,7 +593,7 @@ operations:
           minimum: 0
       additionalProperties: false
   source_retirement_permitted: false
-  contract_sha256: 28428884658c88e8d934fe3773f1b3038f98925ff1183ea61bf2eb7223f4e9be
+  contract_sha256: 2c23aa4d9697738b46f2a1a2da7a87d0757725cab5044034c14bc0a6237a358f
 recipes:
 - id: stove0.audio-archive/v1
   revision: 1

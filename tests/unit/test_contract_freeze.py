@@ -129,7 +129,6 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "contract_authorities",
         "entry_point_extensions",
         "process_extensions",
-        "reference_policy",
         "role_kinds",
         "runtime_images",
     }
@@ -146,7 +145,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     }
     assert all(roles[point["owner"]] == "reusable_library" for point in extension_points)
     assert all(
-        roles[provider["distribution"]] == "reference_component"
+        roles[provider["distribution"]] == "component"
         for point in extension_points
         for provider in point["providers"]
     )
@@ -155,7 +154,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "riverhog-storage-adapter/v1",
         "stove0-content-observer/v1",
         "stove0-effect-target/v1",
-        "stove0-review-sampler/v1",
+        "review0-sampler/v1",
         "stove0-transform-target/v1",
     }
     external = projection["external_contract"]
@@ -174,36 +173,36 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     }
     assert set(external["cli"]) == {
         "gogurt",
-        "mango-fish",
-        "piggity",
+        "a-riverhog-event-relay",
+        "a-riverhog-cli",
         "riverhog-api",
-        "riverhog-ftp-adapter",
-        "riverhog-recover",
-        "riverhog-storage-adapter-aws",
-        "riverhog-storage-adapter-backblaze",
+        "a-riverhog-ftp-spool",
+        "a-riverhog-recovery-tool",
+        "a-riverhog-aws-store",
+        "a-riverhog-b2-store",
         "riverhog-storage-adapter-conformance",
-        "riverhog-storage-adapter-filesystem",
-        "riverhog-storage-adapter-filesystem-materialize",
+        "a-riverhog-filesystem-store",
+        "a-riverhog-filesystem-store-materialize",
         "riverhog-storage-adapter-schemas",
         "stove0",
-        "stove0-exiftool-observer",
-        "stove0-ffprobe-sampling-observer",
-        "stove0-nvenc-av1-opus-review-sampler",
-        "stove0-nvenc-av1-opus-target",
+        "a-stove0-exiftool-observer",
+        "a-stove0-ffprobe-sampling-observer",
+        "a-review0-nvenc-av1-opus-sampler",
+        "a-stove0-nvenc-av1-opus-target",
         "stove0-observer-conformance",
         "stove0-observer-schemas",
-        "stove0-opus-review-sampler",
-        "stove0-opus-target",
-        "stove0-review-materialize-target",
-        "stove0-review-planning",
-        "stove0-review-rclone-effect-target",
-        "stove0-review-sampler-conformance",
-        "stove0-review-sampler-schemas",
+        "a-review0-opus-sampler",
+        "a-stove0-opus-target",
+        "a-review0-materializer",
+        "review0-planner",
+        "a-review0-rclone-target",
+        "review0-sampler-conformance",
+        "review0-sampler-schemas",
         "stove0-server",
         "stove0-target-conformance",
         "stove0-target-schemas",
     }
-    assert set(external["cli"]["piggity"]["commands"]) == {
+    assert set(external["cli"]["a-riverhog-cli"]["commands"]) == {
         "app",
         "archive",
         "catalog-sync",
@@ -214,7 +213,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "retrieval",
         "tag",
     }
-    assert set(external["http_openapi"]) == {"riverhog", "riverhog-ftp-adapter", "stove0"}
+    assert set(external["http_openapi"]) == {"riverhog", "a-riverhog-ftp-spool", "stove0"}
     assert len(external["http_route_supplements"]) == 2
     assert len(trace["operation_qualification"]["records"]) == 147
     assert isinstance(external["python"], dict)
@@ -296,7 +295,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         and sources[f"state:{owner['id']}"]["fixtures"]
         for owner in external["durable_state"]["owners"]
     )
-    assert sources["cli:stove0"]["owner"] == "stove0-client"
+    assert sources["cli:stove0"]["owner"] == "a-stove0-cli"
     assert (
         sources["cli:riverhog-storage-adapter-conformance"]["owner"]
         == "riverhog-storage-adapter-support"
@@ -328,26 +327,26 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "resolved_detections": 199,
         "unique_environment_names": 240,
         "by_owner": {
-            "gogurt-linux-listener-host": 2,
-            "gogurt-windows-listener-host": 3,
-            "piggity": 7,
+            "a-gogurt-linux-listener": 2,
+            "a-gogurt-windows-listener": 3,
+            "a-riverhog-cli": 7,
             "riverhog-client": 12,
-            "riverhog-ftp-adapter": 3,
-            "riverhog-ftp-adapter-api-client": 5,
+            "a-riverhog-ftp-spool": 3,
+            "a-riverhog-ftp-spool-client": 5,
             "riverhog-provenance": 3,
             "riverhog-server": 50,
-            "riverhog-storage-adapter-aws": 30,
-            "riverhog-storage-adapter-backblaze": 20,
-            "riverhog-storage-adapter-filesystem": 8,
+            "a-riverhog-aws-store": 30,
+            "a-riverhog-b2-store": 20,
+            "a-riverhog-filesystem-store": 8,
             "stove0-api-client": 5,
-            "stove0-exiftool-observer": 8,
-            "stove0-ffprobe-sampling-observer": 8,
-            "stove0-nvenc-av1-opus-review-sampler": 8,
-            "stove0-nvenc-av1-opus-target": 10,
-            "stove0-opus-review-sampler": 8,
-            "stove0-opus-target": 9,
-            "stove0-review-materialize-target": 10,
-            "stove0-review-rclone-effect-target": 15,
+            "a-stove0-exiftool-observer": 8,
+            "a-stove0-ffprobe-sampling-observer": 8,
+            "a-review0-nvenc-av1-opus-sampler": 8,
+            "a-stove0-nvenc-av1-opus-target": 10,
+            "a-review0-opus-sampler": 8,
+            "a-stove0-opus-target": 9,
+            "a-review0-materializer": 10,
+            "a-review0-rclone-target": 15,
             "stove0-server": 25,
             "stove0-target-support": 1,
         },
@@ -360,7 +359,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     )
     assert {
         item["owner"] for item in configuration["records"] if item["name"] == "RIVERHOG_BASE_URL"
-    } == {"riverhog-client", "riverhog-ftp-adapter", "stove0-server"}
+    } == {"riverhog-client", "a-riverhog-ftp-spool", "stove0-server"}
     assert not any(item["authority"] == "configuration" for item in checked.root["elements"])
     assert not any(item["interface"] == "boundary" for item in checked.root["elements"])
     assert not any(
@@ -372,7 +371,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "durable-state",
         "gogurt-core:configuration:gogurt-routes-schema",
         "stove0-recipe-config:configuration:recipe-catalog",
-        "stove0-review-target-support:configuration:review-target-config",
+        "review0-target-lib:configuration:review-target-config",
     } & {item["authority"] for item in checked.root["elements"]}
 
     root = checked.root
@@ -542,7 +541,8 @@ def test_configuration_resolution_fails_closed_on_an_owner_outside_the_frozen_to
         (REPO_ROOT / "qualification/contract-freeze-exceptions.toml")
         .read_text(encoding="utf-8")
         .replace(
-            'source_authority_id = "configuration:mango-fish:configuration:mango-fish-config"',
+            'source_authority_id = "configuration:a-riverhog-event-relay:'
+            'configuration:event-relay-config"',
             'source_authority_id = "configuration:unowned-setting"',
             1,
         )

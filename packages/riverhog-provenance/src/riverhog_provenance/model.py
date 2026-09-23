@@ -23,7 +23,7 @@ class ObservationPolicy:
     """Capture policy shared by all platform observers.
 
     The defaults are intentionally archival rather than minimal. They capture all
-    native categories that the reference implementation can enumerate without
+    native categories that this implementation can enumerate without
     interpreting the primary file bytes.
     """
 

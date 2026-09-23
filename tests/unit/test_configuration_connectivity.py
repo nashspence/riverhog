@@ -6,20 +6,20 @@ from collections import Counter
 from dataclasses import MISSING, fields
 from pathlib import Path
 
+from a_riverhog_ftp_spool.config import FtpSpoolConfig, SourceConfig
 from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
 from riverhog_core.runtime_config import RuntimeConfig, StorageAdapterRegistration
 from riverhog_core.throughput import ArchiveThroughputTuning
-from riverhog_ftp_adapter.config import FtpAdapterConfig, SourceConfig
 from stove0_core import EndpointRegistration, Stove0RuntimeConfig
 
 REPO_ROOT = Path(__file__).parents[2]
-STOVE0_SOURCE = REPO_ROOT / "reference" / "stove0" / "application" / "server" / "src"
-ADAPTER_SOURCE = REPO_ROOT / "reference" / "riverhog" / "ingress" / "ftp" / "src"
+STOVE0_SOURCE = REPO_ROOT / "some-implementations" / "stove0" / "application" / "server" / "src"
+ADAPTER_SOURCE = REPO_ROOT / "some-implementations" / "riverhog" / "ingress" / "ftp" / "src"
 PRODUCTION_ROOTS = (
     REPO_ROOT / "packages",
     REPO_ROOT / "riverhog",
-    REPO_ROOT / "reference",
+    REPO_ROOT / "some-implementations",
     REPO_ROOT / "scripts",
 )
 _SETTING_NAME = re.compile(r"^(?:RIVERHOG|STOVE0|GOGURT|MANGO|VCRUNCH)_[A-Z0-9_]+$")
@@ -155,9 +155,9 @@ def test_stove0_and_adapter_configuration_fields_have_consumers_and_witnesses() 
             set(Stove0RuntimeConfig.__dataclass_fields__)
             | set(EndpointRegistration.__dataclass_fields__),
         ),
-        "riverhog-ftp-adapter": (
+        "a-riverhog-ftp-spool": (
             _trees(ADAPTER_SOURCE),
-            set(FtpAdapterConfig.model_fields) | set(SourceConfig.model_fields),
+            set(FtpSpoolConfig.model_fields) | set(SourceConfig.model_fields),
         ),
     }
 
@@ -212,8 +212,8 @@ def test_deployable_secret_inputs_have_no_source_known_runtime_defaults() -> Non
     assert riverhog_fields["archive_active_passphrase_id"].default == ""
     assert riverhog_fields["browse_token_signing_key"].default == ""
     assert Stove0RuntimeConfig.__dataclass_fields__["browse_token_signing_key"].default is MISSING
-    assert FtpAdapterConfig.model_fields["riverhog_token"].is_required()
-    assert FtpAdapterConfig.model_fields["api_token"].is_required()
+    assert FtpSpoolConfig.model_fields["riverhog_token"].is_required()
+    assert FtpSpoolConfig.model_fields["api_token"].is_required()
 
 
 def test_parser_owned_settings_have_an_explicit_stable_classification() -> None:
@@ -233,7 +233,7 @@ def test_parser_owned_settings_have_an_explicit_stable_classification() -> None:
             *Stove0RuntimeConfig.__dataclass_fields__,
             *EndpointRegistration.__dataclass_fields__,
         ],
-        "riverhog-ftp-adapter": [*FtpAdapterConfig.model_fields, *SourceConfig.model_fields],
+        "a-riverhog-ftp-spool": [*FtpSpoolConfig.model_fields, *SourceConfig.model_fields],
     }
     counts = {
         component: {
@@ -243,6 +243,6 @@ def test_parser_owned_settings_have_an_explicit_stable_classification() -> None:
         for component, names in components.items()
     }
 
-    assert set(counts) == {"riverhog", "stove0", "riverhog-ftp-adapter"}
+    assert set(counts) == {"riverhog", "stove0", "a-riverhog-ftp-spool"}
     assert all(sum(component.values()) > 0 for component in counts.values())
     assert all(set(component) == set(_SETTING_CLASSIFICATIONS) for component in counts.values())

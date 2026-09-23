@@ -17,7 +17,7 @@ COPY --from=wheels /constraints.txt /constraints.txt
 RUN uv venv /opt/venv \
     && uv pip install --strict --python /opt/venv/bin/python --find-links /wheels \
       --constraints /constraints.txt \
-      piggity==0.1.0 riverhog-provenance-linux-observer==0.1.0 \
+      a-riverhog-cli==0.1.0 a-riverhog-linux-provenance-observer==0.1.0 \
     && /opt/venv/bin/python -I -c \
       'import importlib.util; assert importlib.util.find_spec("riverhog_core") is None'
 
@@ -26,7 +26,7 @@ ENV PATH=/opt/venv/bin:$PATH \
     PYTHONUNBUFFERED=1
 
 USER 65532:65532
-ENTRYPOINT ["piggity"]
+ENTRYPOINT ["a-riverhog-cli"]
 
 
 FROM python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203 AS recovery
@@ -43,7 +43,7 @@ COPY --from=wheels /constraints.txt /constraints.txt
 RUN uv venv /opt/venv \
     && uv pip install --strict --python /opt/venv/bin/python --find-links /wheels \
       --constraints /constraints.txt \
-      riverhog-recover==0.1.0 \
+      a-riverhog-recovery-tool==0.1.0 \
     && test "$(age --version)" = "v1.3.1" \
     && test "$(age-plugin-batchpass --version)" = "v1.3.1" \
     && /opt/venv/bin/python -I -c \
@@ -54,4 +54,4 @@ ENV PATH=/opt/venv/bin:$PATH \
     PYTHONUNBUFFERED=1
 
 USER 65532:65532
-ENTRYPOINT ["riverhog-recover"]
+ENTRYPOINT ["a-riverhog-recovery-tool"]

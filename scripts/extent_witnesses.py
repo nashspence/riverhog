@@ -70,10 +70,10 @@ WITNESSES = (
             "packages/riverhog-storage-adapter-support/tests/"
             "test_storage_adapter_support.py::"
             "test_http_write_traversal_crosses_pages_and_process_restart",
-            "reference/riverhog/storage/filesystem/tests/"
+            "some-implementations/riverhog/storage/filesystem/tests/"
             "test_filesystem_storage_adapter.py::"
             "test_segment_traversal_is_bounded_exact_and_restartable",
-            "reference/riverhog/storage/s3-support/tests/"
+            "some-implementations/riverhog/storage/s3-support/tests/"
             "test_s3_storage_adapter.py::"
             "test_resumable_write_reconciles_segments_and_lost_completion",
         ),
@@ -84,7 +84,7 @@ WITNESSES = (
         owner="riverhog",
         reasons=("bounded-authority-append",),
         test_node_ids=(
-            "reference/stove0/application/tests/test_riverhog_adapter.py::"
+            "some-implementations/stove0/application/tests/test_riverhog_adapter.py::"
             "test_post_root_settlement_restarts_from_bounded_portable_inventory_progress",
             "tests/integration/test_collection_deletion_concurrency.py::"
             "test_postgres_exact_output_intent_creation_resumes_one_upload",
@@ -96,7 +96,7 @@ WITNESSES = (
         owner="riverhog",
         reasons=("bounded-disposition-append",),
         test_node_ids=(
-            "reference/stove0/application/tests/test_riverhog_adapter.py::"
+            "some-implementations/stove0/application/tests/test_riverhog_adapter.py::"
             "test_post_root_settlement_restarts_from_bounded_portable_inventory_progress",
             "tests/integration/test_collection_deletion_concurrency.py::"
             "test_postgres_concurrent_first_disposition_and_output_create_one_set",
@@ -195,51 +195,51 @@ WITNESSES = (
         test_node_ids=(
             "tests/unit/test_public_interface_parity.py::"
             "test_public_read_collection_selectors_are_bounded_and_frozen",
-            "reference/stove0/application/tests/test_cli.py::"
+            "some-implementations/stove0/application/tests/test_cli.py::"
             "test_stove0_bounded_pages_keep_rich_and_json_cli_parity",
-            "reference/stove0/application/tests/test_work_state.py::"
+            "some-implementations/stove0/application/tests/test_work_state.py::"
             "test_sql_operational_retention_scans_bounded_pages_without_parsing_all_work",
         ),
         gates=("make unit", "make database-qualification", "make compose-smoke"),
     ),
     SegmentedExtentWitness(
-        id="riverhog-ftp-adapter-status-progression/v1",
-        owner="riverhog-ftp-adapter",
+        id="a-riverhog-ftp-spool-status-progression/v1",
+        owner="a-riverhog-ftp-spool",
         reasons=("bounded-route-progression",),
         test_node_ids=(
-            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::"
             "test_status_pages_sources_without_claiming_an_exact_backlog_snapshot",
-            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::"
             "test_large_unavailable_backlog_is_bounded_then_drains_exactly_after_restart",
-            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::"
             "test_completion_discovery_progresses_beyond_persistent_prefix_across_restart",
-            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::"
             "test_adapter_owned_completion_authority_is_restartable_and_hidden",
-            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::"
             "test_full_batch_returns_before_bad_lookahead_record",
-            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::"
             "test_completion_failure_capacity_backpressures_at_exact_cursor",
-            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::"
             "test_lowered_admission_capacity_preserves_bounded_status_and_claim_drain",
-            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::"
             "test_durable_receipt_finishes_claim_cleanup_after_process_stop",
-            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::"
             "test_completion_event_replay_guard_survives_until_exact_log_tip",
-            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::"
             "test_completion_event_replay_state_reclaims_in_bounded_restartable_pages",
-            "reference/riverhog/ingress/ftp/tests/test_ftp_listener.py::"
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py::"
             "test_incomplete_upload_is_not_handed_off_and_resumes_after_restart",
-            "reference/riverhog/ingress/ftp/tests/test_ftp_listener.py::"
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py::"
             "test_success_ack_follows_exact_durable_handoff_and_path_reuse",
-            "reference/riverhog/ingress/ftp/tests/test_ftp_listener.py::"
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py::"
             "test_same_path_replay_and_new_event_partition_into_restartable_claims",
-            "reference/riverhog/ingress/ftp/tests/test_ftp_listener.py::"
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py::"
             "test_listener_recovers_published_intent_after_exact_adapter_acquisition",
-            "reference/riverhog/ingress/ftp/tests/test_ftp_listener.py::"
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py::"
             "test_intent_retirement_and_adapter_acquisition_race_converges_repeatedly",
-            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::"
             "test_completed_portable_sidecar_follows_payload_into_claim",
-            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_api_parity.py::"
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_api_parity.py::"
             "test_management_api_and_client_share_versioned_routes",
         ),
         gates=("make unit", "make compose-smoke"),
@@ -298,7 +298,7 @@ WITNESSES = (
 
 
 class ExtentWitnessError(RuntimeError):
-    """Raised when the nonnormative proof bindings no longer resolve."""
+    """Raised when implementation proof bindings no longer resolve."""
 
 
 def _test_source(root: Path, node_id: str) -> dict[str, object] | None:

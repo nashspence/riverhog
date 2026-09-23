@@ -1916,7 +1916,7 @@
       ],
       "properties": {
         "format": {
-          "const": "riverhog-provenance-contract-reference/v1"
+          "const": "riverhog-provenance-contract-some-implementations/v1"
         },
         "provider": {
           "$ref": "#/$defs/nonEmptyString"
@@ -1948,7 +1948,7 @@
       },
       "properties": {
         "format": {
-          "const": "riverhog-provenance-observer-reference/v1"
+          "const": "riverhog-provenance-observer-some-implementations/v1"
         },
         "provider": {
           "$ref": "#/$defs/nonEmptyString"

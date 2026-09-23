@@ -119,7 +119,7 @@ _FIXED_WIDTH_PATTERN = re.compile(r"^\^\[[^]]+\]\{([1-9][0-9]*)\}\$$")
 _GENERATED_PROTOCOL_OWNERS = {
     "generated:riverhog-storage-adapter": "riverhog-storage-adapter-protocol",
     "generated:stove0-observer": "stove0-observer-protocol",
-    "generated:stove0-review-sampler": "stove0-review-sampler-protocol",
+    "generated:review0-sampler": "review0-sampler-protocol",
     "generated:stove0-target": "stove0-target-protocol",
 }
 

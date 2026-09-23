@@ -4,8 +4,8 @@ from collections.abc import Callable
 
 import httpx
 import pytest
+from review0_sampler_client import ReviewSamplerClient, SamplerProtocolError
 from stove0_observer_client import ContentObserverClient, ObserverProtocolError
-from stove0_review_sampler_client import ReviewSamplerClient, SamplerProtocolError
 from stove0_target_client import TargetClient, TargetProtocolError
 
 

@@ -25,6 +25,14 @@ import extent_witnesses
 import operation_qualification
 import release as release_contract
 import state_contract
+from a_riverhog_cli.main import app as a_riverhog_cli_app
+from a_riverhog_event_relay.cli import parser as a_riverhog_event_relay_parser
+from a_riverhog_filesystem_store.materialize_cli import (
+    build_parser as filesystem_materialize_parser,
+)
+from a_riverhog_ftp_spool.app import build_parser as ftp_spool_parser
+from a_riverhog_recovery_tool.cli import _parser as recovery_parser
+from a_stove0_cli.main import app as stove0_app
 from contract_atlas import (
     ContractAtlas,
     ContractAtlasError,
@@ -45,9 +53,11 @@ from contract_discovery import (
 )
 from gogurt.cli import app as gogurt_app
 from jsonschema import Draft202012Validator
-from mango_fish.cli import parser as mango_fish_parser
-from piggity.main import app as piggity_app
 from pydantic import BaseModel
+from review0_planner.conformance import _parser as review_planning_parser
+from review0_sampler_lib import sampler_schema_bundle
+from review0_sampler_lib.conformance import _parser as sampler_conformance_parser
+from review0_sampler_lib.schemas import _parser as sampler_schemas_parser
 from riverhog_canonical_json import canonical_json_bytes as jcs_bytes
 from riverhog_core.runtime_config import (
     ARCHIVE_STORE_ENVIRONMENT_SETTINGS,
@@ -55,22 +65,12 @@ from riverhog_core.runtime_config import (
     RETRIEVAL_CACHE_STORE_ENVIRONMENT_SETTINGS,
     RETRIEVAL_CACHE_STORE_ENVIRONMENT_TEMPLATE,
 )
-from riverhog_ftp_adapter.app import build_parser as ftp_adapter_parser
-from riverhog_recover.cli import _parser as recovery_parser
-from riverhog_storage_adapter_filesystem.materialize_cli import (
-    build_parser as filesystem_materialize_parser,
-)
 from riverhog_storage_adapter_support import storage_adapter_schema_bundle
 from riverhog_storage_adapter_support.conformance import _parser as storage_conformance_parser
 from riverhog_storage_adapter_support.schemas import _parser as storage_schemas_parser
-from stove0_cli.main import app as stove0_app
 from stove0_observer_support import observer_schema_bundle
 from stove0_observer_support.conformance import _parser as observer_conformance_parser
 from stove0_observer_support.schemas import _parser as observer_schemas_parser
-from stove0_review_planning.conformance import _parser as review_planning_parser
-from stove0_review_sampler_support import sampler_schema_bundle
-from stove0_review_sampler_support.conformance import _parser as sampler_conformance_parser
-from stove0_review_sampler_support.schemas import _parser as sampler_schemas_parser
 from stove0_target_support import target_schema_bundle
 from stove0_target_support.conformance import _parser as target_conformance_parser
 from stove0_target_support.schemas import _parser as target_schemas_parser
@@ -127,7 +127,7 @@ NONCONTRACTUAL_PROJECTION_AUTHORITIES: tuple[dict[str, object], ...] = (
 PROCESS_SCHEMA_BUNDLES: dict[str, Callable[[], dict[str, Any]]] = {
     "riverhog-storage-adapter": storage_adapter_schema_bundle,
     "stove0-observer": observer_schema_bundle,
-    "stove0-review-sampler": sampler_schema_bundle,
+    "review0-sampler": sampler_schema_bundle,
     "stove0-target": target_schema_bundle,
 }
 PUBLIC_DATA_MODEL_METHODS = frozenset(
@@ -634,11 +634,11 @@ def _extension_points(
         invalid = sorted(
             provider["distribution"]
             for provider in group_providers
-            if roles[provider["distribution"]] != "reference_component"
+            if roles[provider["distribution"]] != "component"
         )
         if invalid:
             raise ContractFreezeError(
-                f"checked-in extension providers are outside the reference role: {invalid}"
+                f"checked-in extension providers are outside the component role: {invalid}"
             )
         points.append(
             {
@@ -687,7 +687,11 @@ def _process_extensions(
         binding_support = distributions_by_module.get(module)
         if binding_support is None:
             raise ContractFreezeError(f"process protocol has no distribution owner: {name}")
-        contract_owner = f"{binding_support.removesuffix('-support')}-protocol"
+        contract_owner = (
+            "review0-sampler-protocol"
+            if binding_support == "review0-sampler-lib"
+            else f"{binding_support.removesuffix('-support')}-protocol"
+        )
         if contract_owner not in internal[binding_support]:
             raise ContractFreezeError(f"process protocol has ambiguous contract ownership: {name}")
         bundle = factory()
@@ -701,7 +705,7 @@ def _process_extensions(
                 "images": sorted(distribution_images),
             }
             for distribution, distribution_images in sorted(images_by_distribution.items())
-            if roles[distribution] == "reference_component"
+            if roles[distribution] == "component"
             and binding_support in release_contract._dependency_closure(internal, distribution)
         ]
         if not protocols or not providers:
@@ -779,40 +783,38 @@ def _click_parameter(parameter: Any) -> dict[str, object]:
 CLI_RESULT_CONTRACT_SCHEMA = "riverhog-cli-result-contract/v1"
 CLI_COMMAND_JSON_OUTPUT = "$command-json-output"
 CLI_OPERATION_APPLICATIONS = {
-    "piggity": "riverhog",
-    "riverhog-ftp-adapter": "riverhog-ftp-adapter",
+    "a-riverhog-cli": "riverhog",
+    "a-riverhog-ftp-spool": "a-riverhog-ftp-spool",
     "stove0": "stove0",
 }
 CLI_MODULES = {
     "riverhog-api": "riverhog_api.app",
-    "riverhog-storage-adapter-aws": "riverhog_storage_adapter_aws.app",
-    "riverhog-storage-adapter-backblaze": "riverhog_storage_adapter_backblaze.app",
-    "riverhog-storage-adapter-filesystem": "riverhog_storage_adapter_filesystem.app",
-    "stove0-exiftool-observer": "stove0_exiftool_observer.app",
-    "stove0-ffprobe-sampling-observer": "stove0_ffprobe_sampling_observer.app",
-    "stove0-nvenc-av1-opus-review-sampler": "stove0_nvenc_av1_opus_review_sampler.app",
-    "stove0-nvenc-av1-opus-target": "stove0_nvenc_av1_opus_target.app",
-    "stove0-opus-review-sampler": "stove0_opus_review_sampler.app",
-    "stove0-opus-target": "stove0_opus_target.app",
-    "stove0-review-materialize-target": "stove0_review_materialize_target.app",
-    "stove0-review-rclone-effect-target": "stove0_review_rclone_effect_target.app",
+    "a-riverhog-aws-store": "a_riverhog_aws_store.app",
+    "a-riverhog-b2-store": "a_riverhog_b2_store.app",
+    "a-riverhog-filesystem-store": "a_riverhog_filesystem_store.app",
+    "a-stove0-exiftool-observer": "a_stove0_exiftool_observer.app",
+    "a-stove0-ffprobe-sampling-observer": "a_stove0_ffprobe_sampling_observer.app",
+    "a-review0-nvenc-av1-opus-sampler": "a_review0_nvenc_av1_opus_sampler.app",
+    "a-stove0-nvenc-av1-opus-target": "a_stove0_nvenc_av1_opus_target.app",
+    "a-review0-opus-sampler": "a_review0_opus_sampler.app",
+    "a-stove0-opus-target": "a_stove0_opus_target.app",
+    "a-review0-materializer": "a_review0_materializer.app",
+    "a-review0-rclone-target": "a_review0_rclone_target.app",
     "stove0-server": "stove0_api.app",
     "gogurt": "gogurt.cli",
-    "mango-fish": "mango_fish.cli",
-    "piggity": "piggity.main",
-    "riverhog-ftp-adapter": "riverhog_ftp_adapter.app",
-    "riverhog-recover": "riverhog_recover.cli",
+    "a-riverhog-event-relay": "a_riverhog_event_relay.cli",
+    "a-riverhog-cli": "a_riverhog_cli.main",
+    "a-riverhog-ftp-spool": "a_riverhog_ftp_spool.app",
+    "a-riverhog-recovery-tool": "a_riverhog_recovery_tool.cli",
     "riverhog-storage-adapter-conformance": "riverhog_storage_adapter_support.conformance",
-    "riverhog-storage-adapter-filesystem-materialize": (
-        "riverhog_storage_adapter_filesystem.materialize_cli"
-    ),
+    "a-riverhog-filesystem-store-materialize": ("a_riverhog_filesystem_store.materialize_cli"),
     "riverhog-storage-adapter-schemas": "riverhog_storage_adapter_support.schemas",
-    "stove0": "stove0_cli.main",
+    "stove0": "a_stove0_cli.main",
     "stove0-observer-conformance": "stove0_observer_support.conformance",
     "stove0-observer-schemas": "stove0_observer_support.schemas",
-    "stove0-review-planning": "stove0_review_planning.conformance",
-    "stove0-review-sampler-conformance": "stove0_review_sampler_support.conformance",
-    "stove0-review-sampler-schemas": "stove0_review_sampler_support.schemas",
+    "review0-planner": "review0_planner.conformance",
+    "review0-sampler-conformance": "review0_sampler_lib.conformance",
+    "review0-sampler-schemas": "review0_sampler_lib.schemas",
     "stove0-target-conformance": "stove0_target_support.conformance",
     "stove0-target-schemas": "stove0_target_support.schemas",
 }
@@ -1701,19 +1703,19 @@ def _apply_cli_occurrence_authorities(
 def _cli_parsers() -> dict[str, Any]:
     parsers = {
         "gogurt": get_command(gogurt_app),
-        "mango-fish": mango_fish_parser(),
-        "piggity": get_command(piggity_app),
-        "riverhog-ftp-adapter": ftp_adapter_parser(),
-        "riverhog-recover": recovery_parser(),
+        "a-riverhog-event-relay": a_riverhog_event_relay_parser(),
+        "a-riverhog-cli": get_command(a_riverhog_cli_app),
+        "a-riverhog-ftp-spool": ftp_spool_parser(),
+        "a-riverhog-recovery-tool": recovery_parser(),
         "riverhog-storage-adapter-conformance": storage_conformance_parser(),
-        "riverhog-storage-adapter-filesystem-materialize": filesystem_materialize_parser(),
+        "a-riverhog-filesystem-store-materialize": filesystem_materialize_parser(),
         "riverhog-storage-adapter-schemas": storage_schemas_parser(),
         "stove0": get_command(stove0_app),
         "stove0-observer-conformance": observer_conformance_parser(),
         "stove0-observer-schemas": observer_schemas_parser(),
-        "stove0-review-planning": review_planning_parser(),
-        "stove0-review-sampler-conformance": sampler_conformance_parser(),
-        "stove0-review-sampler-schemas": sampler_schemas_parser(),
+        "review0-planner": review_planning_parser(),
+        "review0-sampler-conformance": sampler_conformance_parser(),
+        "review0-sampler-schemas": sampler_schemas_parser(),
         "stove0-target-conformance": target_conformance_parser(),
         "stove0-target-schemas": target_schemas_parser(),
     }
@@ -2933,7 +2935,6 @@ def contract_projection() -> dict[str, object]:
     }
     external_contract["extents"] = extent_contract.extent_projection(external_contract)
     boundaries: dict[str, object] = {
-        "reference_policy": config["references"]["policy"],
         "contract_authorities": config["contract_authorities"],
         "role_kinds": list(release_contract.RELEASE_ROLES),
         "components": components,

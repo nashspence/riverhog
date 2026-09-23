@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate or verify nonnormative cross-cutting implementation policy witnesses."""
+"""Generate or verify cross-cutting implementation policy witnesses."""
 
 from __future__ import annotations
 
@@ -276,7 +276,7 @@ def policy_projection(root: Path = ROOT) -> dict[str, object]:
     ]
     return {
         "schema": SCHEMA,
-        "authority": "nonnormative-implementation-correctness",
+        "authority": "implementation-correctness",
         "policies": policies,
         "coverage": {
             "policies": len(policies),

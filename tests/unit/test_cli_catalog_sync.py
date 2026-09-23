@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from piggity import main
+from a_riverhog_cli import main
 from riverhog_protocol import (
     CatalogSyncChangePage,
     CatalogSyncCheckpoint,

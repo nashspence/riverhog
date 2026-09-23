@@ -38,13 +38,11 @@ def test_provider_qualification_runs_isolated_storage_adapter_images() -> None:
     compose = yaml.safe_load(PROVIDER_QUALIFICATION_COMPOSE.read_text(encoding="utf-8"))
     services = compose["services"]
 
-    assert services["aws-deep-archive-adapter"]["image"] == ("riverhog-storage-adapter-aws:dev")
-    assert services["b2-archive-adapter"]["image"] == ("riverhog-storage-adapter-backblaze:dev")
-    assert services["b2-retrieval-cache-adapter"]["image"] == (
-        "riverhog-storage-adapter-backblaze:dev"
-    )
+    assert services["aws-deep-archive-adapter"]["image"] == ("a-riverhog-aws-store:dev")
+    assert services["b2-archive-adapter"]["image"] == ("a-riverhog-b2-store:dev")
+    assert services["b2-retrieval-cache-adapter"]["image"] == ("a-riverhog-b2-store:dev")
     assert services["qualification-filesystem-cache-adapter"]["image"] == (
-        "riverhog-storage-adapter-filesystem:dev"
+        "a-riverhog-filesystem-store:dev"
     )
     assert set(services["app"]["depends_on"]) == {
         "aws-deep-archive-adapter",
@@ -223,7 +221,7 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         "mise x python uv age -- uv run --locked --all-packages --group dev "
         "python -m pytest -q "
         "packages/riverhog-provenance/tests/test_platform_live.py "
-        "reference/gogurt/application/tests "
+        "some-implementations/gogurt/application/tests "
         "tests/platform/test_end_user_artifacts.py",
         "mise x python uv age -- uv run --locked --all-packages --group dev "
         "python scripts/qualify_installation.py --version 1.0.0 --listener-lifecycle "
@@ -304,7 +302,7 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     )
     assert "test_operation_lifecycle_api.py" in lifecycle_evidence["run"]
     assert "test_stove0_api_parity.py" in lifecycle_evidence["run"]
-    assert "test_ftp_adapter_api_parity.py" in lifecycle_evidence["run"]
+    assert "test_ftp_spool_api_parity.py" in lifecycle_evidence["run"]
     assert "test_collection_reads.py" in lifecycle_evidence["run"]
     assert "test_unified_state_store_is_restart_safe" in lifecycle_evidence["run"]
     assert "test_unified_evaluation_store_is_restart_safe" in lifecycle_evidence["run"]
@@ -648,9 +646,9 @@ def test_provider_qualification_is_resumable_dummy_only_and_cloudfront_required(
     assert "corpus-create" in state["run"] and "checkpoint-start" in state["run"]
     assert {
         "riverhog",
-        "riverhog-storage-adapter-aws",
-        "riverhog-storage-adapter-backblaze",
-        "riverhog-storage-adapter-filesystem",
+        "a-riverhog-aws-store",
+        "a-riverhog-b2-store",
+        "a-riverhog-filesystem-store",
     } == {item.strip() for item in image_build["with"]["targets"].split(",")}
     assert "RIVERHOG_QUALIFICATION_STORAGE_ADAPTER_TOKEN_PATH" in key_material["run"]
     assert 'test -z "${RIVERHOG_DATABASE_URL:-}"' in deployment_env["run"]

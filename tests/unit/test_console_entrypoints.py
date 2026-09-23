@@ -8,64 +8,64 @@ from collections.abc import Iterator
 from typing import Any
 
 import pytest
-from piggity.main import app as piggity_app
-from riverhog_ftp_adapter.app import build_parser as build_adapter_parser
-from stove0_cli.main import app as stove0_app
+from a_riverhog_cli.main import app as a_riverhog_cli_app
+from a_riverhog_ftp_spool.app import build_parser as build_adapter_parser
+from a_stove0_cli.main import app as stove0_app
 from typer.main import get_command
 
 CONSOLE_DISTRIBUTIONS = {
-    "piggity": "piggity",
+    "a-riverhog-cli": "a-riverhog-cli",
     "riverhog-api": "riverhog-server",
-    "riverhog-recover": "riverhog-recover",
-    "riverhog-ftp-adapter": "riverhog-ftp-adapter",
-    "riverhog-storage-adapter-filesystem-materialize": ("riverhog-storage-adapter-filesystem"),
-    "stove0": "stove0-client",
+    "a-riverhog-recovery-tool": "a-riverhog-recovery-tool",
+    "a-riverhog-ftp-spool": "a-riverhog-ftp-spool",
+    "a-riverhog-filesystem-store-materialize": ("a-riverhog-filesystem-store"),
+    "stove0": "a-stove0-cli",
     "stove0-server": "stove0-server",
-    "stove0-exiftool-observer": "stove0-exiftool-observer",
-    "stove0-ffprobe-sampling-observer": "stove0-ffprobe-sampling-observer",
-    "stove0-nvenc-av1-opus-target": "stove0-nvenc-av1-opus-target",
-    "stove0-nvenc-av1-opus-review-sampler": "stove0-nvenc-av1-opus-review-sampler",
-    "stove0-opus-target": "stove0-opus-target",
-    "stove0-opus-review-sampler": "stove0-opus-review-sampler",
-    "stove0-review-materialize-target": "stove0-review-materialize-target",
-    "stove0-review-rclone-effect-target": "stove0-review-rclone-effect-target",
-    "stove0-review-sampler-conformance": "stove0-review-sampler-support",
-    "stove0-review-sampler-schemas": "stove0-review-sampler-support",
+    "a-stove0-exiftool-observer": "a-stove0-exiftool-observer",
+    "a-stove0-ffprobe-sampling-observer": "a-stove0-ffprobe-sampling-observer",
+    "a-stove0-nvenc-av1-opus-target": "a-stove0-nvenc-av1-opus-target",
+    "a-review0-nvenc-av1-opus-sampler": "a-review0-nvenc-av1-opus-sampler",
+    "a-stove0-opus-target": "a-stove0-opus-target",
+    "a-review0-opus-sampler": "a-review0-opus-sampler",
+    "a-review0-materializer": "a-review0-materializer",
+    "a-review0-rclone-target": "a-review0-rclone-target",
+    "review0-sampler-conformance": "review0-sampler-lib",
+    "review0-sampler-schemas": "review0-sampler-lib",
     "gogurt": "gogurt",
-    "mango-fish": "mango-fish",
+    "a-riverhog-event-relay": "a-riverhog-event-relay",
 }
 
 LIFECYCLE_EVENT_LIST_COMMANDS = (
-    ("piggity", "event", "list", "--help"),
+    ("a-riverhog-cli", "event", "list", "--help"),
     ("stove0", "event", "list", "--help"),
 )
 
 PAGED_LIST_COMMANDS = (
-    ("piggity", "collection", "list", "--help"),
-    ("piggity", "collection", "upload", "list", "--help"),
-    ("piggity", "collection", "provenance", "list", "--help"),
-    ("piggity", "find", "--help"),
-    ("piggity", "archive", "copy", "list", "--help"),
-    ("piggity", "archive", "store", "list", "--help"),
-    ("piggity", "retrieval", "cache", "list", "--help"),
-    ("piggity", "app", "list", "--help"),
-    ("piggity", "app", "key", "list", "--help"),
-    ("piggity", "app", "key", "access", "list", "--help"),
-    ("piggity", "app", "key", "quota", "list", "--help"),
-    ("piggity", "local", "list", "--help"),
+    ("a-riverhog-cli", "collection", "list", "--help"),
+    ("a-riverhog-cli", "collection", "upload", "list", "--help"),
+    ("a-riverhog-cli", "collection", "provenance", "list", "--help"),
+    ("a-riverhog-cli", "find", "--help"),
+    ("a-riverhog-cli", "archive", "copy", "list", "--help"),
+    ("a-riverhog-cli", "archive", "store", "list", "--help"),
+    ("a-riverhog-cli", "retrieval", "cache", "list", "--help"),
+    ("a-riverhog-cli", "app", "list", "--help"),
+    ("a-riverhog-cli", "app", "key", "list", "--help"),
+    ("a-riverhog-cli", "app", "key", "access", "list", "--help"),
+    ("a-riverhog-cli", "app", "key", "quota", "list", "--help"),
+    ("a-riverhog-cli", "local", "list", "--help"),
     ("stove0", "work", "list", "--help"),
     ("stove0", "evaluation", "list", "--help"),
     ("stove0", "admission", "list", "--help"),
 )
 
 BOUNDED_LIST_COMMANDS = (
-    ("piggity", "collection", "tag", "list", "--help"),
-    ("piggity", "local", "provenance-observer", "list", "--help"),
+    ("a-riverhog-cli", "collection", "tag", "list", "--help"),
+    ("a-riverhog-cli", "local", "provenance-observer", "list", "--help"),
     ("stove0", "recipe", "list", "--help"),
     ("stove0", "admission", "policy", "list", "--help"),
 )
 
-QUERY_PAGED_LIST_COMMANDS = (("piggity", "tag", "list", "--help"),)
+QUERY_PAGED_LIST_COMMANDS = (("a-riverhog-cli", "tag", "list", "--help"),)
 
 
 def _run_help(command: tuple[str, ...]) -> subprocess.CompletedProcess[str]:
@@ -116,7 +116,7 @@ def test_lifecycle_event_cli_help_uses_the_shared_contract(command: tuple[str, .
     assert completed.returncode == 0, completed.stderr
     for option in ("--after", "--limit"):
         assert option in completed.stdout
-    if command[0] == "piggity":
+    if command[0] == "a-riverhog-cli":
         assert "--json" in completed.stdout
 
 
@@ -130,7 +130,7 @@ def test_paged_list_cli_help_uses_the_shared_contract(command: tuple[str, ...]) 
     assert completed.returncode == 0, completed.stderr
     for option in ("--page-size", "--page-token", "--sort", "--order", "--query"):
         assert option in completed.stdout
-    if command[0] == "piggity":
+    if command[0] == "a-riverhog-cli":
         assert "--json" in completed.stdout
 
 
@@ -139,7 +139,7 @@ def test_bounded_list_cli_help_uses_the_shared_output_contract(command: tuple[st
     completed = _run_help(command)
 
     assert completed.returncode == 0, completed.stderr
-    if command[0] == "piggity":
+    if command[0] == "a-riverhog-cli":
         for option in ("--ids", "--json"):
             assert option in completed.stdout
 
@@ -161,7 +161,7 @@ def test_stove0_declares_its_shared_json_projection_once_at_the_root() -> None:
 
 
 def test_retrieval_cache_list_emits_actionable_composite_selectors() -> None:
-    completed = _run_help(("piggity", "retrieval", "cache", "list", "--help"))
+    completed = _run_help(("a-riverhog-cli", "retrieval", "cache", "list", "--help"))
 
     assert completed.returncode == 0, completed.stderr
     assert "--selectors" in completed.stdout
@@ -200,9 +200,9 @@ def _argparse_list_commands(
 
 def test_every_official_list_command_has_one_declared_convention() -> None:
     discovered = {
-        *_typer_list_commands(get_command(piggity_app), ("piggity",)),
+        *_typer_list_commands(get_command(a_riverhog_cli_app), ("a-riverhog-cli",)),
         *_typer_list_commands(get_command(stove0_app), ("stove0",)),
-        *_argparse_list_commands(build_adapter_parser(), ("riverhog-ftp-adapter",)),
+        *_argparse_list_commands(build_adapter_parser(), ("a-riverhog-ftp-spool",)),
     }
     classified = {
         command[:-1]

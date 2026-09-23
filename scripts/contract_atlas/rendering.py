@@ -339,7 +339,7 @@ def _render_extension_contexts(
         lines.extend(
             [
                 "",
-                "## Checked-in nonnormative implementations",
+                "## Supplied implementations",
                 "",
             ]
         )
@@ -351,7 +351,7 @@ def _render_extension_contexts(
                     f"- [{_md(provider['name'])}]({edge_link}) — {_md(provider['description'])}"
                 )
         else:
-            lines.append("No checked-in implementation is part of this conformance set.")
+            lines.append("No supplied implementation provides this extension.")
         files[path] = ("\n".join(lines).rstrip() + "\n").encode()
         metadata[path] = {
             "kind": "extension-context",
@@ -713,8 +713,6 @@ def _render_atlas(
         f"Extent decisions: **{root_counts['extent_decisions']}**. "
         "Complete accounting does not establish desirable contracts, behavioral proof, "
         "freeze approval, or release readiness.",
-        "",
-        str(relationship["reference_policy"]),
         "",
         "## Audit references",
         "",

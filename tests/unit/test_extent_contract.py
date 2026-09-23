@@ -159,7 +159,9 @@ def test_operation_parameter_extents_are_covered_from_the_openapi_authority() ->
         "contract_max",
         1024 * 1024,
     )
-    cli_page_size = decisions["cli:piggity:piggity:collection:list:parameter:page_size:value"]
+    cli_page_size = decisions[
+        "cli:a-riverhog-cli:a-riverhog-cli:collection:list:parameter:page_size:value"
+    ]
     assert (cli_page_size["policy"], cli_page_size["maximum"]) == (
         page_size["policy"],
         page_size["maximum"],
@@ -179,7 +181,9 @@ def test_collection_list_separates_logical_total_page_carrier_and_selector_batch
     tags = decisions[
         "http:riverhog:components:/schemas/ListCollectionsResponse/properties/tags:cardinality"
     ]
-    cli_tags = decisions["cli:piggity:piggity:collection:list:parameter:tag:occurrences"]
+    cli_tags = decisions[
+        "cli:a-riverhog-cli:a-riverhog-cli:collection:list:parameter:tag:occurrences"
+    ]
     assert total["policy"] == page["policy"] == "segmented_no_total_max"
     assert "maximum" not in total and "maximum" not in page
     assert total["progression"] == page["progression"]
@@ -221,9 +225,9 @@ def test_cli_occurrence_bound_tracks_its_source_and_rejects_missing_authority() 
     external = copy.deepcopy(_checked_projection()["external_contract"])
     parameter = next(
         parameter
-        for parameter in external["cli"]["piggity"]["commands"]["collection"]["commands"]["list"][
-            "parameters"
-        ]
+        for parameter in external["cli"]["a-riverhog-cli"]["commands"]["collection"]["commands"][
+            "list"
+        ]["parameters"]
         if parameter["name"] == "tag"
     )
     schema = _resolve_pointer({"external_contract": external}, parameter["occurrences_authority"])
@@ -232,7 +236,8 @@ def test_cli_occurrence_bound_tracks_its_source_and_rejects_missing_authority() 
     decision = next(
         item
         for item in module._cli_decisions(external)
-        if item["id"] == "cli:piggity:piggity:collection:list:parameter:tag:occurrences"
+        if item["id"]
+        == "cli:a-riverhog-cli:a-riverhog-cli:collection:list:parameter:tag:occurrences"
     )
     assert decision["maximum"] == 7
     del schema["maxItems"]
@@ -531,7 +536,7 @@ def test_generated_protocols_remain_owned_by_the_product_contract_packages() -> 
     expected = {
         "generated:riverhog-storage-adapter": "riverhog-storage-adapter-protocol",
         "generated:stove0-observer": "stove0-observer-protocol",
-        "generated:stove0-review-sampler": "stove0-review-sampler-protocol",
+        "generated:review0-sampler": "review0-sampler-protocol",
         "generated:stove0-target": "stove0-target-protocol",
     }
 

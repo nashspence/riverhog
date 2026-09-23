@@ -11,7 +11,7 @@ from typing import Any
 from uuid import uuid4
 
 import pytest
-from piggity.main import _create_or_resume_collection_upload_session
+from a_riverhog_cli.main import _create_or_resume_collection_upload_session
 from riverhog_client.initial_tags import prepare_initial_collection_tags
 from riverhog_core.app_permissions import (
     ALL_RESOURCES,
@@ -213,14 +213,14 @@ def test_postgres_upload_tag_authorization_never_returns_the_accumulated_set(
     )
 
 
-def test_piggity_reconciles_real_closed_discovery_without_replaying_tags(
+def test_a_riverhog_cli_reconciles_real_closed_discovery_without_replaying_tags(
     database_url: str,
 ) -> None:
     service, _other = _services(database_url)
     tags = [f"camera/retry-{index:04d}" for index in range(205)]
     principal = ApplicationPrincipal(
-        app="piggity-retry",
-        key_id="piggity-retry-key",
+        app="a-riverhog-cli-retry",
+        key_id="a-riverhog-cli-retry-key",
         access=frozenset(
             {
                 ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES),
@@ -260,7 +260,7 @@ def test_piggity_reconciles_real_closed_discovery_without_replaying_tags(
     api = Api()
     opened = _create_or_resume_collection_upload_session(
         api,  # type: ignore[arg-type]
-        "piggity-closing-retry",
+        "a-riverhog-cli-closing-retry",
         ingest_source="fixture",
         tags=tags,
         provenance_mode="omitted",
@@ -274,7 +274,7 @@ def test_piggity_reconciles_real_closed_discovery_without_replaying_tags(
 
     resumed = _create_or_resume_collection_upload_session(
         api,  # type: ignore[arg-type]
-        "piggity-closing-retry",
+        "a-riverhog-cli-closing-retry",
         ingest_source="fixture",
         tags=tags,
         provenance_mode="omitted",

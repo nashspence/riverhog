@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "a-stove0-opus-target"
+version = "0.1.0"
+description = "Opus transformation target for Stove0."
+requires-python = ">=3.12"
+license = "CAL-1.0"
+license-files = ["LICENSE"]
+readme = { text = "Opus transformation target for Stove0.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+authors = [{ name = "Nash Spence" }]
+maintainers = [{ name = "Nash Spence" }]
+classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.12", "Typing :: Typed"]
+urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
+dependencies = [
+  "fastapi>=0.111,<1.0",
+  "http-api-contracts>=0.1,<0.2",
+  "riverhog-client>=0.1,<0.2",
+  "riverhog-protocol>=0.1,<0.2",
+  "stove0-media-archive-target-contracts>=0.1,<0.2",
+  "stove0-media-archive-target-support>=0.1,<0.2",
+  "stove0-protocol>=0.1,<0.2",
+  "stove0-target-support>=0.1,<0.2",
+  "uvicorn[standard]>=0.30,<1.0",
+]
+
+[project.scripts]
+a-stove0-opus-target = "a_stove0_opus_target.app:target_main"
+
+[tool.uv.sources]
+http-api-contracts = { workspace = true }
+riverhog-client = { workspace = true }
+riverhog-protocol = { workspace = true }
+stove0-media-archive-target-contracts = { workspace = true }
+stove0-media-archive-target-support = { workspace = true }
+stove0-protocol = { workspace = true }
+stove0-target-support = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/a_stove0_opus_target"]

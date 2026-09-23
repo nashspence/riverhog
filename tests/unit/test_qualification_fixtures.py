@@ -6,8 +6,8 @@ import sys
 import tomllib
 from pathlib import Path
 
+from a_riverhog_ftp_spool.config import load_config as load_adapter_config
 from gogurt_core.core import execute_gogurt_action, load_gogurt_actions, plan_gogurt_action
-from riverhog_ftp_adapter.config import load_config as load_adapter_config
 from stove0_core import RecipeCatalog
 from stove0_operator_contracts import AdmissionCatalog
 
@@ -20,7 +20,7 @@ QUALIFICATION_INPUTS = {
     REPO_ROOT / "qualification/contract-freeze-exceptions.toml",
     REPO_ROOT / "qualification/fixtures/gogurt/gogurt-routes.yaml",
     REPO_ROOT / "qualification/fixtures/gogurt/scripts/fake_archive_device.py",
-    REPO_ROOT / "qualification/fixtures/riverhog-ftp-adapter/config.json",
+    REPO_ROOT / "qualification/fixtures/a-riverhog-ftp-spool/config.json",
     REPO_ROOT / "qualification/fixtures/stove0/recipes.yaml",
     REPO_ROOT / "qualification/fixtures/stove0/admissions.json",
     *CONTRACT_FILES,
@@ -37,9 +37,9 @@ def test_shared_qualification_support_is_owned_outside_test_modules() -> None:
     installation_runner = (REPO_ROOT / "scripts/qualify_installation.py").read_text(
         encoding="utf-8"
     )
-    recovery_test = (REPO_ROOT / "reference/riverhog/recovery/tests/test_recovery.py").read_text(
-        encoding="utf-8"
-    )
+    recovery_test = (
+        REPO_ROOT / "some-implementations/riverhog/recovery/tests/test_recovery.py"
+    ).read_text(encoding="utf-8")
     recovery_materialization = (
         REPO_ROOT / "tests/harness/filesystem_recovery_materialization.py"
     ).read_text(encoding="utf-8")
@@ -103,9 +103,9 @@ def test_every_checked_qualification_input_runs_through_its_real_consumer(
     )
 
     monkeypatch.setenv("RIVERHOG_TOKEN", "fake-riverhog-token")
-    monkeypatch.setenv("RIVERHOG_FTP_ADAPTER_API_TOKEN", "fake-adapter-token")
+    monkeypatch.setenv("A_RIVERHOG_FTP_SPOOL_API_TOKEN", "fake-adapter-token")
     adapters = load_adapter_config(
-        REPO_ROOT / "qualification/fixtures/riverhog-ftp-adapter/config.json"
+        REPO_ROOT / "qualification/fixtures/a-riverhog-ftp-spool/config.json"
     )
     assert [source.id for source in adapters.sources] == ["ftp-intake"]
 
@@ -123,7 +123,7 @@ def test_every_checked_qualification_input_runs_through_its_real_consumer(
         "aws-deep-archive",
     }
     release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
-    assert set(release["qualification"]["storage_reference"]["cases"]) == {
+    assert set(release["qualification"]["storage_providers"]["cases"]) == {
         *(bucket.logical_name for bucket in qualification.buckets),
         "aws-cloudfront-egress",
         "filesystem-retrieval-cache",

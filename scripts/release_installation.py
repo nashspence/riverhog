@@ -32,9 +32,9 @@ from packaging.utils import InvalidWheelFilename, canonicalize_name, parse_wheel
 INSTALLATION_SCHEMA = "riverhog-installation/v1"
 INSTALLATION_ROOTS = (
     "gogurt",
-    "piggity",
-    "riverhog-recover",
-    "stove0-client",
+    "a-riverhog-cli",
+    "a-riverhog-recovery-tool",
+    "a-stove0-cli",
 )
 SUPPORTED_PLATFORMS = ("linux-x64", "macos-arm64", "windows-x64")
 INSTALLATION_POLICY = {
@@ -174,8 +174,8 @@ def installation_roots(projects: Sequence[ProjectLike]) -> list[ProjectLike]:
         raise InstallationError(
             "an installation root is absent from the release inventory"
         ) from exc
-    if any(project.role not in {"end_user_artifact", "reference_application"} for project in roots):
-        raise InstallationError("installation roots must be products or reference applications")
+    if any(project.role not in {"end_user_artifact", "application"} for project in roots):
+        raise InstallationError("installation roots must be products or applications")
     return roots
 
 
@@ -247,14 +247,17 @@ def platform_dependency_closures(
     }
 
 
-def gogurt_reference_qualification(
+GOGURT_PROVIDERS_PURPOSE = "Gogurt provider conformance for selected platforms."
+
+
+def gogurt_providers_qualification(
     root: Path,
     projects: Sequence[ProjectLike],
 ) -> dict[str, dict[str, str]]:
-    """Return explicit reference selections used only by release qualification."""
+    """Return explicit provider selections used by release qualification."""
 
     release = tomllib.loads((root / "release.toml").read_text(encoding="utf-8"))
-    raw = release.get("qualification", {}).get("gogurt_reference")
+    raw = release.get("qualification", {}).get("gogurt_providers")
     expected_fields = {
         "listener_host_distribution",
         "listener_host_provider",
@@ -262,19 +265,19 @@ def gogurt_reference_qualification(
         "mounted_volume_provider",
     }
     if not isinstance(raw, dict) or set(raw) != {"purpose", *SUPPORTED_PLATFORMS}:
-        raise InstallationError("Gogurt reference qualification is incomplete")
+        raise InstallationError("Gogurt provider qualification is incomplete")
     purpose = raw.get("purpose")
-    if purpose != "Maintainer-selected Gogurt reference conformance.":
-        raise InstallationError("Gogurt reference qualification differs from release policy")
+    if purpose != GOGURT_PROVIDERS_PURPOSE:
+        raise InstallationError("Gogurt provider qualification differs from release policy")
     project_by_name = {project.name: project for project in projects}
     result: dict[str, dict[str, str]] = {}
     for platform in SUPPORTED_PLATFORMS:
         value = raw.get(platform)
         if not isinstance(value, dict) or set(value) != expected_fields:
-            raise InstallationError(f"Gogurt reference qualification is invalid for {platform}")
+            raise InstallationError(f"Gogurt provider qualification is invalid for {platform}")
         item = {key: str(value[key]) for key in expected_fields}
         if any(not field or field != field.strip() for field in item.values()):
-            raise InstallationError(f"Gogurt reference qualification is invalid for {platform}")
+            raise InstallationError(f"Gogurt provider qualification is invalid for {platform}")
         capability_fields = (
             (
                 "mounted_volume_distribution",
@@ -293,9 +296,9 @@ def gogurt_reference_qualification(
             )
         for distribution_field, provider_field, entry_point_group in capability_fields:
             project = project_by_name.get(item[distribution_field])
-            if project is None or project.role != "reference_component":
+            if project is None or project.role != "component":
                 raise InstallationError(
-                    f"Gogurt qualification must select reference components for {platform}"
+                    f"Gogurt qualification must select components for {platform}"
                 )
             metadata = tomllib.loads(
                 (root / project.path / "pyproject.toml").read_text(encoding="utf-8")
@@ -826,7 +829,7 @@ def build_installation_artifacts(
         )
         for item in roots
     }
-    gogurt_qualification = gogurt_reference_qualification(root, projects)
+    gogurt_qualification = gogurt_providers_qualification(root, projects)
     gogurt_qualification_closures = {
         platform: set().union(
             *(
@@ -1062,8 +1065,8 @@ def build_installation_artifacts(
         "wheels": {name: wheels[name] for name in sorted(index_names)},
         "components": component_items,
         "qualification": {
-            "gogurt_reference": {
-                "purpose": "Maintainer-selected Gogurt reference conformance.",
+            "gogurt_providers": {
+                "purpose": GOGURT_PROVIDERS_PURPOSE,
                 "platforms": {
                     platform: {
                         **gogurt_qualification[platform],
@@ -1159,12 +1162,12 @@ def verify_installation_artifacts(output: Path, manifest: dict[str, Any]) -> Non
     wheel_names = set(manifest.get("wheels", {}))
     if wheel_names != set(manifest["index"]["first_party_projects"]):
         raise InstallationError("install manifest wheel and index inventories differ")
-    qualification = manifest.get("qualification", {}).get("gogurt_reference", {})
+    qualification = manifest.get("qualification", {}).get("gogurt_providers", {})
     qualification_platforms = qualification.get("platforms", {})
-    if qualification.get("purpose") != "Maintainer-selected Gogurt reference conformance." or set(
+    if qualification.get("purpose") != GOGURT_PROVIDERS_PURPOSE or set(
         qualification_platforms
     ) != set(SUPPORTED_PLATFORMS):
-        raise InstallationError("Gogurt reference qualification differs from release policy")
+        raise InstallationError("Gogurt provider qualification differs from release policy")
     for platform in SUPPORTED_PLATFORMS:
         reference = qualification_platforms[platform]
         expected_reference_fields = {
@@ -1184,19 +1187,19 @@ def verify_installation_artifacts(output: Path, manifest: dict[str, Any]) -> Non
             or any(reference[field] not in wheel_names for field in distribution_fields)
             or len({reference[field] for field in distribution_fields}) != len(distribution_fields)
         ):
-            raise InstallationError(f"Gogurt reference qualification is invalid: {platform}")
+            raise InstallationError(f"Gogurt provider qualification is invalid: {platform}")
         raw_closure = reference["first_party_closure"]
         if not isinstance(raw_closure, list) or any(
             not isinstance(item, dict) or set(item) != {"name", "version"} for item in raw_closure
         ):
-            raise InstallationError(f"Gogurt reference closure is invalid: {platform}")
+            raise InstallationError(f"Gogurt provider closure is invalid: {platform}")
         closure = {str(item["name"]): str(item["version"]) for item in raw_closure}
         if (
             len(closure) != len(raw_closure)
             or any(reference[field] not in closure for field in distribution_fields)
             or not set(closure) <= wheel_names
         ):
-            raise InstallationError(f"Gogurt reference closure is invalid: {platform}")
+            raise InstallationError(f"Gogurt provider closure is invalid: {platform}")
     for component in components:
         lock = component["lock"]
         path = output / str(lock["path"])

@@ -9,7 +9,7 @@ description = "Encrypted archive management, catalog, and retrieval."
 requires-python = ">=3.12"
 license = "CAL-1.0"
 license-files = ["LICENSE"]
-readme = { text = "Riverhog v1 component. See the project URL for documentation and releases.", content-type = "text/markdown" }
+readme = { text = "Encrypted archive management, catalog, and retrieval.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
 authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = [

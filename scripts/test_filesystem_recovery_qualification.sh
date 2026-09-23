@@ -22,7 +22,7 @@ proof_root="$(mktemp -d "${TMPDIR:-/tmp}/riverhog-filesystem-recovery.XXXXXX")"
 volume_name="${COMPOSE_PROJECT_NAME}_filesystem-cache-data"
 client_image="riverhog-filesystem-recovery-client:${SOURCE_REVISION}-${COMPOSE_PROJECT_NAME}"
 recovery_image="riverhog-filesystem-recovery-tool:${SOURCE_REVISION}-${COMPOSE_PROJECT_NAME}"
-filesystem_image="riverhog-storage-adapter-filesystem:dev"
+filesystem_image="a-riverhog-filesystem-store:dev"
 network_name="${COMPOSE_PROJECT_NAME}_default"
 receipt=""
 
@@ -110,7 +110,7 @@ receipt="$({
     --volume "${proof_root}/oracle:/input:ro" \
     "${client_image}" collection upload start /input \
     --description 'Built-service filesystem recovery qualification' \
-    --provenance-observer riverhog-linux \
+    --provenance-observer a-riverhog-linux-provenance-observer \
     "${tags[@]}" \
     --json
 } 2>"${proof_root}/client.stderr")"
@@ -124,7 +124,7 @@ docker run --rm \
   --entrypoint python \
   "${filesystem_image}" -c \
   'from pathlib import Path
-from riverhog_storage_adapter_filesystem import FilesystemStorageAdapter, FilesystemStorageAdapterConfig
+from a_riverhog_filesystem_store import FilesystemStorageAdapter, FilesystemStorageAdapterConfig
 from riverhog_storage_adapter_protocol import WriteStartRequest
 with FilesystemStorageAdapter(FilesystemStorageAdapterConfig(root=Path("/var/lib/riverhog-filesystem"), minimum_free_bytes=0)) as adapter:
     adapter.begin_write(WriteStartRequest(object_path="archives/incomplete/payload.age", expected_bytes=65536, content_type="application/octet-stream", required_identity_assertions={"qualification":"incomplete"}, placement="archive"))'
@@ -148,7 +148,7 @@ docker run --rm \
   --volume "${proof_root}/materializer-full:/work" \
   --entrypoint /bin/sh \
   "${filesystem_image}" -ceu \
-  'test ! -e /oracle; test ! -e /prior-full; test ! -e /passphrases.json; exec riverhog-storage-adapter-filesystem-materialize "$@"' \
+  'test ! -e /oracle; test ! -e /prior-full; test ! -e /passphrases.json; exec a-riverhog-filesystem-store-materialize "$@"' \
   sh /source /work/tree --all --json >"${proof_root}/materialize-full.json"
 archive_relative="$(docker run --rm \
   --network none \
@@ -198,7 +198,7 @@ docker run --rm --network none --user 65532:65532 \
   --volume "${volume_name}:/source:ro" \
   --volume "${proof_root}/materializer-description:/work" \
   --entrypoint /bin/sh "${filesystem_image}" -ceu \
-  'test ! -e /oracle; test ! -e /prior-full; test ! -e /passphrases.json; exec riverhog-storage-adapter-filesystem-materialize "$@"' \
+  'test ! -e /oracle; test ! -e /prior-full; test ! -e /passphrases.json; exec a-riverhog-filesystem-store-materialize "$@"' \
   sh /source /work/tree "${description_args[@]}"
 description="$({
   docker run --rm --network none --read-only \
@@ -217,7 +217,7 @@ docker run --rm --network none --user 65532:65532 \
   --volume "${volume_name}:/source:ro" \
   --volume "${proof_root}/materializer-tags:/work" \
   --entrypoint /bin/sh "${filesystem_image}" -ceu \
-  'test ! -e /oracle; test ! -e /prior-full; test ! -e /passphrases.json; exec riverhog-storage-adapter-filesystem-materialize "$@"' \
+  'test ! -e /oracle; test ! -e /prior-full; test ! -e /passphrases.json; exec a-riverhog-filesystem-store-materialize "$@"' \
   sh /source /work/tree \
   --path "${tag_paths[0]}" --path "${tag_paths[1]}" --path "${tag_paths[2]}" \
   --prefix "${tag_prefix}"

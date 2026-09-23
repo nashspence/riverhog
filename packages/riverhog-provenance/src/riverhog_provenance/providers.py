@@ -21,7 +21,7 @@ from .schema import compile_observer_contract_validator
 
 PROVENANCE_OBSERVER_ENTRY_POINT_GROUP = "riverhog.provenance-observers"
 PROVENANCE_OBSERVER_BINDING_FORMAT = "riverhog-provenance-observer-binding/v1"
-PROVENANCE_OBSERVER_REFERENCE_FORMAT = "riverhog-provenance-observer-reference/v1"
+PROVENANCE_OBSERVER_REFERENCE_FORMAT = "riverhog-provenance-observer-some-implementations/v1"
 type FileStateObserverFactory = Callable[[], FileStateObserver]
 
 

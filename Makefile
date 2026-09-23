@@ -3,9 +3,9 @@ SHELL := bash
 
 MISE_BIN ?= mise
 FILES ?= .
-TESTS ?= packages reference riverhog tests/unit
+TESTS ?= packages some-implementations riverhog tests/unit
 POSTGRES_TESTS ?= tests/integration/test_catalog_schema_postgres.py tests/integration/test_collection_deletion_concurrency.py tests/integration/test_collection_upload_custody_concurrency.py tests/integration/test_download_allowance_concurrency.py tests/integration/test_lifecycle_event_concurrency.py tests/integration/test_public_selector_plans_postgres.py tests/integration/test_retrieval_cache_admission_concurrency.py tests/integration/test_stove0_postgres_concurrency.py
-PYTHON_PATHS ?= packages reference riverhog scripts tests
+PYTHON_PATHS ?= packages some-implementations riverhog scripts tests
 RELEASE_VERSION ?= 1.0.0
 RELEASE_OUTPUT ?=
 RELEASE_SUMMARY ?=
@@ -15,26 +15,26 @@ UV_RUN = "$(MISE_BIN)" x -- uv run --locked --all-packages --group dev
 BAKE_FILE = docker-bake.hcl
 MYPY_FLAGS = --show-error-codes --hide-error-context --no-error-summary --no-color-output
 MYPY_SOURCES = \
-	reference/stove0/application/client/src \
-	reference/gogurt/packages/core/src \
-	reference/gogurt/packages/listener-runtime/src \
-	reference/gogurt/mounted-volume/path-support/src \
-	reference/gogurt/listener-host/linux/src \
-	reference/gogurt/listener-host/macos/src \
-	reference/gogurt/listener-host/windows/src \
-	reference/gogurt/mounted-volume/linux/src \
-	reference/gogurt/mounted-volume/macos/src \
-	reference/gogurt/mounted-volume/windows/src \
-	reference/stove0/observers/exiftool/src \
-	reference/stove0/observers/ffprobe-sampling/src \
-	reference/stove0/targets/nvenc-av1-opus/review-sampler/src \
-	reference/stove0/targets/nvenc-av1-opus/target/src \
-	reference/stove0/targets/opus/review-sampler/src \
-	reference/stove0/targets/opus/target/src \
-	reference/stove0/targets/review/materialize-target/src \
-	reference/stove0/targets/review/rclone-effect-target/src \
-	reference/stove0/targets/review/support/src \
-	reference/stove0/application/server/src \
+	some-implementations/stove0/application/client/src \
+	some-implementations/gogurt/packages/core/src \
+	some-implementations/gogurt/packages/listener-runtime/src \
+	some-implementations/gogurt/mounted-volume/path-support/src \
+	some-implementations/gogurt/listener-host/linux/src \
+	some-implementations/gogurt/listener-host/macos/src \
+	some-implementations/gogurt/listener-host/windows/src \
+	some-implementations/gogurt/mounted-volume/linux/src \
+	some-implementations/gogurt/mounted-volume/macos/src \
+	some-implementations/gogurt/mounted-volume/windows/src \
+	some-implementations/stove0/observers/exiftool/src \
+	some-implementations/stove0/observers/ffprobe-sampling/src \
+	some-implementations/stove0/review0/samplers/nvenc-av1-opus/src \
+	some-implementations/stove0/targets/nvenc-av1-opus/target/src \
+	some-implementations/stove0/review0/samplers/opus/src \
+	some-implementations/stove0/targets/opus/target/src \
+	some-implementations/stove0/review0/materialize-target/src \
+	some-implementations/stove0/review0/rclone-effect-target/src \
+	some-implementations/stove0/review0/support/src \
+	some-implementations/stove0/application/server/src \
 	packages/riverhog-application-access/src \
 	packages/config-validation/src \
 	packages/http-api-contracts/src \
@@ -42,49 +42,49 @@ MYPY_SOURCES = \
 	packages/riverhog-age/src \
 	packages/riverhog-archive-contracts/src \
 	packages/riverhog-canonical-json/src \
-	reference/riverhog/ingress/ftp-api-client/src \
+	some-implementations/riverhog/ingress/ftp-api-client/src \
 	packages/riverhog-client/src \
 	packages/riverhog-protocol/src \
 	packages/riverhog-provenance-contracts/src \
-	reference/riverhog/provenance/contracts/linux/src \
-	reference/riverhog/provenance/observers/linux/src \
-	reference/riverhog/provenance/contracts/macos/src \
-	reference/riverhog/provenance/observers/macos/src \
-	reference/riverhog/provenance/contracts/windows/src \
-	reference/riverhog/provenance/observers/windows/src \
+	some-implementations/riverhog/provenance/contracts/linux/src \
+	some-implementations/riverhog/provenance/observers/linux/src \
+	some-implementations/riverhog/provenance/contracts/macos/src \
+	some-implementations/riverhog/provenance/observers/macos/src \
+	some-implementations/riverhog/provenance/contracts/windows/src \
+	some-implementations/riverhog/provenance/observers/windows/src \
 	packages/riverhog-storage-adapter-asgi-support/src \
 	packages/riverhog-storage-adapter-protocol/src \
-	reference/riverhog/storage/s3-support/src \
+	some-implementations/riverhog/storage/s3-support/src \
 	packages/riverhog-storage-adapter-support/src \
-	reference/stove0/packages/api-client/src \
-	reference/stove0/packages/observer-client/src \
-	reference/stove0/packages/observer-protocol/src \
-	reference/stove0/packages/observer-support/src \
-	reference/stove0/packages/operator-contracts/src \
-	reference/stove0/targets/media-archive/contracts/src \
-	reference/stove0/targets/media-archive/support/src \
-	reference/stove0/observers/contracts/media-metadata/src \
-	reference/stove0/observers/contracts/media-sampling/src \
-	reference/stove0/packages/protocol/src \
-	reference/stove0/packages/recipe-config/src \
-	reference/stove0/targets/review/planning/src \
-	reference/stove0/targets/review/contracts/src \
-	reference/stove0/targets/review/sampler/client/src \
-	reference/stove0/targets/review/sampler/protocol/src \
-	reference/stove0/targets/review/sampler/support/src \
-	reference/stove0/packages/target-client/src \
-	reference/stove0/packages/target-protocol/src \
-	reference/stove0/packages/target-support/src \
+	some-implementations/stove0/packages/api-client/src \
+	some-implementations/stove0/packages/observer-client/src \
+	some-implementations/stove0/packages/observer-protocol/src \
+	some-implementations/stove0/packages/observer-support/src \
+	some-implementations/stove0/packages/operator-contracts/src \
+	some-implementations/stove0/targets/media-archive/contracts/src \
+	some-implementations/stove0/targets/media-archive/support/src \
+	some-implementations/stove0/observers/contracts/media-metadata/src \
+	some-implementations/stove0/observers/contracts/media-sampling/src \
+	some-implementations/stove0/packages/protocol/src \
+	some-implementations/stove0/packages/recipe-config/src \
+	some-implementations/stove0/review0/planning/src \
+	some-implementations/stove0/review0/contracts/src \
+	some-implementations/stove0/review0/sampler/client/src \
+	some-implementations/stove0/review0/sampler/protocol/src \
+	some-implementations/stove0/review0/sampler/support/src \
+	some-implementations/stove0/packages/target-client/src \
+	some-implementations/stove0/packages/target-protocol/src \
+	some-implementations/stove0/packages/target-support/src \
 	packages/riverhog-provenance/src \
 	packages/state-schema/src \
 	packages/time-formats/src \
-	reference/riverhog/applications/piggity/src \
-	reference/riverhog/ingress/ftp/src \
-	reference/riverhog/recovery/src \
+	some-implementations/riverhog/applications/a-riverhog-cli/src \
+	some-implementations/riverhog/ingress/ftp/src \
+	some-implementations/riverhog/recovery/src \
 	riverhog/src \
-	reference/riverhog/storage/aws/src \
-	reference/riverhog/storage/backblaze/src \
-	reference/riverhog/storage/filesystem/src \
+	some-implementations/riverhog/storage/aws/src \
+	some-implementations/riverhog/storage/backblaze/src \
+	some-implementations/riverhog/storage/filesystem/src \
 	scripts/implementation_policy.py \
 	scripts/operation_qualification.py \
 	scripts/contract_atlas \
@@ -92,13 +92,13 @@ MYPY_SOURCES = \
 	scripts/provider_qualification.py \
 	scripts/release.py \
 	scripts/release_installation.py \
-	scripts/test_mango_fish_image.py \
+	scripts/test_a_riverhog_event_relay_image.py \
 	scripts/qualify_installation.py \
-	reference/gogurt/application/src \
-	reference/riverhog/applications/mango-fish/src
+	some-implementations/gogurt/application/src \
+	some-implementations/riverhog/applications/a-riverhog-event-relay/src
 args ?=
 
-.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update implementation-policy implementation-policy-update provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification mango-fish-smoke transfer-profile dist dist-smoke build build-riverhog build-riverhog-ftp-adapter build-riverhog-storage-adapter-aws build-riverhog-storage-adapter-backblaze build-riverhog-storage-adapter-filesystem build-stove0 build-stove0-exiftool-observer build-stove0-ffprobe-sampling-observer build-stove0-nvenc-av1-opus-target build-stove0-opus-target build-stove0-review-materialize-target build-stove0-review-rclone-effect-target build-mango-fish build-test bootstrap-garage down test
+.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update implementation-policy implementation-policy-update provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke transfer-profile dist dist-smoke build build-riverhog build-a-riverhog-ftp-spool build-a-riverhog-aws-store build-a-riverhog-b2-store build-a-riverhog-filesystem-store build-stove0 build-a-stove0-exiftool-observer build-a-stove0-ffprobe-sampling-observer build-a-stove0-nvenc-av1-opus-target build-a-stove0-opus-target build-a-review0-materializer build-a-review0-rclone-target build-a-riverhog-event-relay build-test bootstrap-garage down test
 
 define UV_CMD
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \
@@ -138,7 +138,7 @@ help:
 		'  make database-qualification Record exact-SHA database scale evidence.' \
 		'  make contract-freeze   Verify the checked-in v1 boundary and external contract.' \
 		'  make contract-freeze-update Regenerate that contract for semantic review.' \
-		'  make implementation-policy Verify nonnormative implementation-policy proof.' \
+		'  make implementation-policy Verify implementation-policy proof.' \
 		'  make implementation-policy-update Regenerate that separate proof inventory.' \
 		'  make provider-qualification Run the operator/provider qualification command.' \
 		'  make installation-qualification Stage and qualify independent uv-tool installs.' \
@@ -153,23 +153,23 @@ help:
 		'  make compose-smoke     Verify disposable adapter, Riverhog, cache, and stove0 lifecycle.' \
 		'  make filesystem-recovery-qualification Prove built-service recovery from filesystem storage.' \
 		'  make stove0-scale-qualification Run the final-image lifecycle with a 128-file workload.' \
-		'  make mango-fish-smoke  Exercise the already-built final Mango Fish image.' \
+		'  make a-riverhog-event-relay-smoke  Exercise the already-built final Riverhog event relay image.' \
 		'  make transfer-profile  Profile a supported transfer command with secret-free JSON.' \
 		'  make dist              Build every Python distribution independently.' \
 		'  make dist-smoke        Install and exercise the Riverhog server and client wheels.' \
 		'  make build-riverhog    Build the Riverhog image.' \
-		'  make build-riverhog-ftp-adapter Build the FTP adapter image.' \
-		'  make build-riverhog-storage-adapter-aws Build the AWS storage adapter image.' \
-		'  make build-riverhog-storage-adapter-backblaze Build the Backblaze storage adapter image.' \
-		'  make build-riverhog-storage-adapter-filesystem Build the filesystem storage adapter image.' \
+		'  make build-a-riverhog-ftp-spool Build the FTP spool image.' \
+		'  make build-a-riverhog-aws-store Build the AWS store image.' \
+		'  make build-a-riverhog-b2-store Build the B2 store image.' \
+		'  make build-a-riverhog-filesystem-store Build the filesystem store image.' \
 		'  make build-stove0      Build the stove0 service image.' \
-		'  make build-stove0-exiftool-observer Build the ExifTool observer image.' \
-		'  make build-stove0-ffprobe-sampling-observer Build the FFprobe observer image.' \
-		'  make build-stove0-nvenc-av1-opus-target Build the NVENC AV1 + Opus target/sampler image.' \
-		'  make build-stove0-opus-target Build the slim Opus target/sampler image.' \
-		'  make build-stove0-review-materialize-target Build the review materialization target image.' \
-		'  make build-stove0-review-rclone-effect-target Build the rclone review-effect target image.' \
-		'  make build-mango-fish  Build the Mango Fish image.' \
+		'  make build-a-stove0-exiftool-observer Build the ExifTool observer image.' \
+		'  make build-a-stove0-ffprobe-sampling-observer Build the FFprobe observer image.' \
+		'  make build-a-stove0-nvenc-av1-opus-target Build the NVENC AV1 + Opus target/sampler image.' \
+		'  make build-a-stove0-opus-target Build the slim Opus target/sampler image.' \
+		'  make build-a-review0-materializer Build the review materialization target image.' \
+		'  make build-a-review0-rclone-target Build the Review0 rclone target image.' \
+		'  make build-a-riverhog-event-relay  Build the Riverhog event relay image.' \
 		'  make build-test        Build the test image.' \
 		'  make build             Build every application and test image.' \
 		'  make bootstrap-garage  Start Garage and apply the checked-in bucket/key bootstrap.' \
@@ -311,53 +311,53 @@ dist-smoke: dist
 build-riverhog:
 	$(call BAKE_IMAGE,riverhog)
 
-build-riverhog-ftp-adapter:
-	$(call BAKE_IMAGE,riverhog-ftp-adapter)
+build-a-riverhog-ftp-spool:
+	$(call BAKE_IMAGE,a-riverhog-ftp-spool)
 
-build-riverhog-storage-adapter-aws:
-	$(call BAKE_IMAGE,riverhog-storage-adapter-aws)
+build-a-riverhog-aws-store:
+	$(call BAKE_IMAGE,a-riverhog-aws-store)
 
-build-riverhog-storage-adapter-backblaze:
-	$(call BAKE_IMAGE,riverhog-storage-adapter-backblaze)
+build-a-riverhog-b2-store:
+	$(call BAKE_IMAGE,a-riverhog-b2-store)
 
-build-riverhog-storage-adapter-filesystem:
-	$(call BAKE_IMAGE,riverhog-storage-adapter-filesystem)
+build-a-riverhog-filesystem-store:
+	$(call BAKE_IMAGE,a-riverhog-filesystem-store)
 
 build-stove0:
 	$(call BAKE_IMAGE,stove0)
 
-build-stove0-exiftool-observer:
-	$(call BAKE_IMAGE,stove0-exiftool-observer)
+build-a-stove0-exiftool-observer:
+	$(call BAKE_IMAGE,a-stove0-exiftool-observer)
 
-build-stove0-ffprobe-sampling-observer:
-	$(call BAKE_IMAGE,stove0-ffprobe-sampling-observer)
+build-a-stove0-ffprobe-sampling-observer:
+	$(call BAKE_IMAGE,a-stove0-ffprobe-sampling-observer)
 
-build-stove0-nvenc-av1-opus-target:
-	$(call BAKE_IMAGE,stove0-nvenc-av1-opus-target)
+build-a-stove0-nvenc-av1-opus-target:
+	$(call BAKE_IMAGE,a-stove0-nvenc-av1-opus-target)
 
-build-stove0-opus-target:
-	$(call BAKE_IMAGE,stove0-opus-target)
+build-a-stove0-opus-target:
+	$(call BAKE_IMAGE,a-stove0-opus-target)
 
-build-stove0-review-materialize-target:
-	$(call BAKE_IMAGE,stove0-review-materialize-target)
+build-a-review0-materializer:
+	$(call BAKE_IMAGE,a-review0-materializer)
 
-build-stove0-review-rclone-effect-target:
-	$(call BAKE_IMAGE,stove0-review-rclone-effect-target)
+build-a-review0-rclone-target:
+	$(call BAKE_IMAGE,a-review0-rclone-target)
 
-build-mango-fish:
-	$(call BAKE_IMAGE,mango-fish)
+build-a-riverhog-event-relay:
+	$(call BAKE_IMAGE,a-riverhog-event-relay)
 
-mango-fish-smoke:
+a-riverhog-event-relay-smoke:
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \
-		printf '%s\n' 'Mango Fish image smoke requires mise on PATH, or MISE_BIN=/abs/path/to/mise.' >&2; \
+		printf '%s\n' 'Riverhog event relay image smoke requires mise on PATH, or MISE_BIN=/abs/path/to/mise.' >&2; \
 		exit 127; \
 	fi
-	@"$(MISE_BIN)" x python -- python scripts/test_mango_fish_image.py
+	@"$(MISE_BIN)" x python -- python scripts/test_a_riverhog_event_relay_image.py
 
 build-test:
 	$(call BAKE_IMAGE,test)
 
-build: build-riverhog build-riverhog-ftp-adapter build-riverhog-storage-adapter-aws build-riverhog-storage-adapter-backblaze build-riverhog-storage-adapter-filesystem build-stove0 build-stove0-exiftool-observer build-stove0-ffprobe-sampling-observer build-stove0-nvenc-av1-opus-target build-stove0-opus-target build-stove0-review-materialize-target build-stove0-review-rclone-effect-target build-mango-fish build-test
+build: build-riverhog build-a-riverhog-ftp-spool build-a-riverhog-aws-store build-a-riverhog-b2-store build-a-riverhog-filesystem-store build-stove0 build-a-stove0-exiftool-observer build-a-stove0-ffprobe-sampling-observer build-a-stove0-nvenc-av1-opus-target build-a-stove0-opus-target build-a-review0-materializer build-a-review0-rclone-target build-a-riverhog-event-relay build-test
 
 bootstrap-garage:
 	@./scripts/bootstrap_garage.sh

@@ -1,18 +1,18 @@
 group "default" {
   targets = [
     "riverhog",
-    "riverhog-ftp-adapter",
-    "riverhog-storage-adapter-aws",
-    "riverhog-storage-adapter-backblaze",
-    "riverhog-storage-adapter-filesystem",
+    "a-riverhog-ftp-spool",
+    "a-riverhog-aws-store",
+    "a-riverhog-b2-store",
+    "a-riverhog-filesystem-store",
     "stove0",
-    "stove0-exiftool-observer",
-    "stove0-ffprobe-sampling-observer",
-    "stove0-nvenc-av1-opus-target",
-    "stove0-opus-target",
-    "stove0-review-materialize-target",
-    "stove0-review-rclone-effect-target",
-    "mango-fish",
+    "a-stove0-exiftool-observer",
+    "a-stove0-ffprobe-sampling-observer",
+    "a-stove0-nvenc-av1-opus-target",
+    "a-stove0-opus-target",
+    "a-review0-materializer",
+    "a-review0-rclone-target",
+    "a-riverhog-event-relay",
     "test",
   ]
 }
@@ -36,99 +36,99 @@ target "riverhog" {
   args       = { SOURCE_REVISION = "unknown" }
 }
 
-target "riverhog-ftp-adapter" {
+target "a-riverhog-ftp-spool" {
   inherits   = ["image-common"]
   context    = "."
-  dockerfile = "reference/riverhog/ingress/ftp/Dockerfile"
-  tags       = ["riverhog-ftp-adapter:dev"]
+  dockerfile = "some-implementations/riverhog/ingress/ftp/Dockerfile"
+  tags       = ["a-riverhog-ftp-spool:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
 
-target "riverhog-storage-adapter-aws" {
+target "a-riverhog-aws-store" {
   inherits   = ["image-common"]
   context    = "."
-  dockerfile = "reference/riverhog/storage/aws/Dockerfile"
-  tags       = ["riverhog-storage-adapter-aws:dev"]
+  dockerfile = "some-implementations/riverhog/storage/aws/Dockerfile"
+  tags       = ["a-riverhog-aws-store:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
 
-target "riverhog-storage-adapter-backblaze" {
+target "a-riverhog-b2-store" {
   inherits   = ["image-common"]
   context    = "."
-  dockerfile = "reference/riverhog/storage/backblaze/Dockerfile"
-  tags       = ["riverhog-storage-adapter-backblaze:dev"]
+  dockerfile = "some-implementations/riverhog/storage/backblaze/Dockerfile"
+  tags       = ["a-riverhog-b2-store:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
 
-target "riverhog-storage-adapter-filesystem" {
+target "a-riverhog-filesystem-store" {
   inherits   = ["image-common"]
   context    = "."
-  dockerfile = "reference/riverhog/storage/filesystem/Dockerfile"
-  tags       = ["riverhog-storage-adapter-filesystem:dev"]
+  dockerfile = "some-implementations/riverhog/storage/filesystem/Dockerfile"
+  tags       = ["a-riverhog-filesystem-store:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
 
 target "stove0" {
   inherits   = ["image-common"]
   context    = "."
-  dockerfile = "reference/stove0/application/server/Dockerfile"
+  dockerfile = "some-implementations/stove0/application/server/Dockerfile"
   tags       = ["stove0:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
 
-target "stove0-exiftool-observer" {
+target "a-stove0-exiftool-observer" {
   inherits   = ["image-common"]
   context    = "."
-  dockerfile = "reference/stove0/observers/exiftool/Dockerfile"
-  tags       = ["stove0-exiftool-observer:dev"]
+  dockerfile = "some-implementations/stove0/observers/exiftool/Dockerfile"
+  tags       = ["a-stove0-exiftool-observer:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
 
-target "stove0-ffprobe-sampling-observer" {
+target "a-stove0-ffprobe-sampling-observer" {
   inherits   = ["image-common"]
   context    = "."
-  dockerfile = "reference/stove0/observers/ffprobe-sampling/Dockerfile"
-  tags       = ["stove0-ffprobe-sampling-observer:dev"]
+  dockerfile = "some-implementations/stove0/observers/ffprobe-sampling/Dockerfile"
+  tags       = ["a-stove0-ffprobe-sampling-observer:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
 
-target "stove0-nvenc-av1-opus-target" {
+target "a-stove0-nvenc-av1-opus-target" {
   inherits   = ["image-common"]
   context    = "."
-  dockerfile = "reference/stove0/targets/nvenc-av1-opus/Dockerfile"
-  tags       = ["stove0-nvenc-av1-opus-target:dev"]
+  dockerfile = "some-implementations/stove0/targets/nvenc-av1-opus/Dockerfile"
+  tags       = ["a-stove0-nvenc-av1-opus-target:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
 
-target "stove0-opus-target" {
+target "a-stove0-opus-target" {
   inherits   = ["image-common"]
   context    = "."
-  dockerfile = "reference/stove0/targets/opus/Dockerfile"
-  tags       = ["stove0-opus-target:dev"]
+  dockerfile = "some-implementations/stove0/targets/opus/Dockerfile"
+  tags       = ["a-stove0-opus-target:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
 
-target "stove0-review-materialize-target" {
+target "a-review0-materializer" {
   inherits   = ["image-common"]
   context    = "."
-  dockerfile = "reference/stove0/targets/review/materialize-target/Dockerfile"
-  tags       = ["stove0-review-materialize-target:dev"]
+  dockerfile = "some-implementations/stove0/review0/materialize-target/Dockerfile"
+  tags       = ["a-review0-materializer:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
 
-target "stove0-review-rclone-effect-target" {
+target "a-review0-rclone-target" {
   inherits   = ["image-common"]
   context    = "."
-  dockerfile = "reference/stove0/targets/review/rclone-effect-target/Dockerfile"
-  tags       = ["stove0-review-rclone-effect-target:dev"]
+  dockerfile = "some-implementations/stove0/review0/rclone-effect-target/Dockerfile"
+  tags       = ["a-review0-rclone-target:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
 
-target "mango-fish" {
+target "a-riverhog-event-relay" {
   inherits   = ["image-common"]
   context    = "."
-  dockerfile = "reference/riverhog/applications/mango-fish/Dockerfile"
-  tags       = ["mango-fish:dev"]
+  dockerfile = "some-implementations/riverhog/applications/a-riverhog-event-relay/Dockerfile"
+  tags       = ["a-riverhog-event-relay:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
 

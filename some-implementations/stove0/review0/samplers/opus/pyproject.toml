@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "a-review0-opus-sampler"
+version = "0.1.0"
+description = "Opus sampler for Review0."
+requires-python = ">=3.12"
+license = "CAL-1.0"
+license-files = ["LICENSE"]
+readme = { text = "Opus sampler for Review0.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+authors = [{ name = "Nash Spence" }]
+maintainers = [{ name = "Nash Spence" }]
+classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.12", "Typing :: Typed"]
+urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
+dependencies = [
+  "fastapi>=0.111,<1.0",
+  "http-api-contracts>=0.1,<0.2",
+  "stove0-media-archive-target-contracts>=0.1,<0.2",
+  "review0-target-contracts>=0.1,<0.2",
+  "review0-sampler-protocol>=0.1,<0.2",
+  "review0-sampler-lib>=0.1,<0.2",
+  "uvicorn[standard]>=0.30,<1.0",
+]
+
+[project.scripts]
+a-review0-opus-sampler = "a_review0_opus_sampler.app:main"
+
+[tool.uv.sources]
+http-api-contracts = { workspace = true }
+stove0-media-archive-target-contracts = { workspace = true }
+review0-target-contracts = { workspace = true }
+review0-sampler-protocol = { workspace = true }
+review0-sampler-lib = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/a_review0_opus_sampler"]

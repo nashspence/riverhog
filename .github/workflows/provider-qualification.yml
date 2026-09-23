@@ -338,9 +338,9 @@ jobs:
           files: docker-bake.hcl
           targets: >-
             riverhog,
-            riverhog-storage-adapter-aws,
-            riverhog-storage-adapter-backblaze,
-            riverhog-storage-adapter-filesystem
+            a-riverhog-aws-store,
+            a-riverhog-b2-store,
+            a-riverhog-filesystem-store
           load: true
           set: |
             *.args.SOURCE_REVISION=${{ needs.resolve.outputs.source_sha }}

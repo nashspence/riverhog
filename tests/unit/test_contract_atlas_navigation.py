@@ -78,7 +78,6 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
     )
     assert "Discovery means inclusion" in root_page
     assert "Complete accounting does not establish" in root_page
-    assert relationship["reference_policy"] in root_page
     assert "[machine artifact (raw JSON)](../riverhog-v1.json?raw=1)" in root_page
     for target in (
         "policies/index.md",
@@ -114,7 +113,7 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
     assert "[RIVERHOG_BASE_URL]" in settings
     assert all(
         f"`{owner}`" in settings
-        for owner in ("riverhog-client", "riverhog-ftp-adapter", "stove0-server")
+        for owner in ("riverhog-client", "a-riverhog-ftp-spool", "stove0-server")
     )
     assert relationship["schema"] == atlas.RELATIONSHIP_SCHEMA
     assert any(item["kind"] == "runtime-image" for item in relationship["nodes"])
@@ -132,7 +131,6 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
         "schema",
         "center",
         "product",
-        "reference_policy",
         "nodes",
         "edges",
     }
@@ -180,8 +178,8 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
         )
     runtime_page = checked.files["riverhog-v1/authorities/release/runtime-images/index.md"].decode()
     assert "`product`" in runtime_page
-    assert "`reference_application`" in runtime_page
-    assert "`reference_component`" in runtime_page
+    assert "`application`" in runtime_page
+    assert "`component`" in runtime_page
 
     publication_policies = {item["id"]: item for item in root["policies"]["publication"]}
     assert {key: len(value["applies_to"]) for key, value in publication_policies.items()} == {
@@ -248,7 +246,7 @@ def test_authority_inventory_routes_every_interface_and_extension_without_duplic
         assert descriptor["extension_id"] == node["id"]
         assert f"- Identity: `{node['id']}`" in extension_page
         assert node["description"] in extension_page
-        assert "## Checked-in nonnormative implementations" in extension_page
+        assert "## Supplied implementations" in extension_page
         assert "Contract elements" not in extension_page
         assert "Extent decisions" not in extension_page
         for interface in node["semantic_interfaces"]:
@@ -310,59 +308,67 @@ def test_cli_dossiers_expose_exact_result_and_failure_contracts() -> None:
         for item in executable
         if len(item["details"]["command_path"]) == 1
     } == {
-        ("mango-fish",),
+        ("a-riverhog-event-relay",),
         ("riverhog-api",),
-        ("riverhog-ftp-adapter",),
-        ("riverhog-recover",),
-        ("riverhog-storage-adapter-aws",),
-        ("riverhog-storage-adapter-backblaze",),
+        ("a-riverhog-ftp-spool",),
+        ("a-riverhog-recovery-tool",),
+        ("a-riverhog-aws-store",),
+        ("a-riverhog-b2-store",),
         ("riverhog-storage-adapter-conformance",),
-        ("riverhog-storage-adapter-filesystem",),
-        ("riverhog-storage-adapter-filesystem-materialize",),
+        ("a-riverhog-filesystem-store",),
+        ("a-riverhog-filesystem-store-materialize",),
         ("riverhog-storage-adapter-schemas",),
-        ("stove0-exiftool-observer",),
-        ("stove0-ffprobe-sampling-observer",),
-        ("stove0-nvenc-av1-opus-review-sampler",),
-        ("stove0-nvenc-av1-opus-target",),
+        ("a-stove0-exiftool-observer",),
+        ("a-stove0-ffprobe-sampling-observer",),
+        ("a-review0-nvenc-av1-opus-sampler",),
+        ("a-stove0-nvenc-av1-opus-target",),
         ("stove0-observer-conformance",),
         ("stove0-observer-schemas",),
-        ("stove0-opus-review-sampler",),
-        ("stove0-opus-target",),
-        ("stove0-review-materialize-target",),
-        ("stove0-review-planning",),
-        ("stove0-review-rclone-effect-target",),
-        ("stove0-review-sampler-conformance",),
-        ("stove0-review-sampler-schemas",),
+        ("a-review0-opus-sampler",),
+        ("a-stove0-opus-target",),
+        ("a-review0-materializer",),
+        ("review0-planner",),
+        ("a-review0-rclone-target",),
+        ("review0-sampler-conformance",),
+        ("review0-sampler-schemas",),
         ("stove0-target-conformance",),
         ("stove0-target-schemas",),
     }
-    assert not any("mango-fish mango-fish" in item["title"] for item in cli_elements)
     assert not any(
-        "riverhog-ftp-adapter riverhog-ftp-adapter" in item["title"] for item in cli_elements
+        "a-riverhog-event-relay a-riverhog-event-relay" in item["title"] for item in cli_elements
+    )
+    assert not any(
+        "a-riverhog-ftp-spool a-riverhog-ftp-spool" in item["title"] for item in cli_elements
     )
 
-    upload = next(item for item in executable if item["title"] == "piggity collection upload start")
+    upload = next(
+        item for item in executable if item["title"] == "a-riverhog-cli collection upload start"
+    )
     page = checked.files[upload["dossier"]].decode()
     assert "### Result and failure contract" in page
-    assert "`piggity-cli-result/collection/upload/start/v1`" in page
+    assert "`a-riverhog-cli-result/collection/upload/start/v1`" in page
     assert "`custody-timeout`" in page
     assert "`124`" in page
-    piggity_index = checked.files["riverhog-v1/authorities/piggity/cli/index.md"].decode()
-    assert "Executable commands: **66** · Command groups: **20**" in piggity_index
-    assert "### Command tree" in piggity_index
-    assert "### Executable commands" not in piggity_index
-    assert "### Command groups" not in piggity_index
-    assert "piggity-cli-human-json/v1" not in piggity_index
-    assert "- [piggity](piggity.md)" in piggity_index
-    assert "    - [upload](piggity-collection-upload.md)" in piggity_index
-    assert "      - [start](piggity-collection-upload-start.md)" in piggity_index
-    app_key_create = next(item for item in executable if item["title"] == "piggity app key create")
+    a_riverhog_cli_index = checked.files[
+        "riverhog-v1/authorities/a-riverhog-cli/cli/index.md"
+    ].decode()
+    assert "Executable commands: **66** · Command groups: **20**" in a_riverhog_cli_index
+    assert "### Command tree" in a_riverhog_cli_index
+    assert "### Executable commands" not in a_riverhog_cli_index
+    assert "### Command groups" not in a_riverhog_cli_index
+    assert "a-riverhog-cli-human-json/v1" not in a_riverhog_cli_index
+    assert "- [a-riverhog-cli](a-riverhog-cli.md)" in a_riverhog_cli_index
+    assert "    - [upload](a-riverhog-cli-collection-upload.md)" in a_riverhog_cli_index
+    assert "      - [start](a-riverhog-cli-collection-upload-start.md)" in a_riverhog_cli_index
+    app_key_create = next(
+        item for item in executable if item["title"] == "a-riverhog-cli app key create"
+    )
     assert atlas._dossier_navigation_labels(upload, [app_key_create]) == {
         app_key_create["id"]: "app key create"
     }
 
     collection_list = next(
-        item for item in executable if item["title"] == "piggity collection list"
+        item for item in executable if item["title"] == "a-riverhog-cli collection list"
     )
     list_page = checked.files[collection_list["dossier"]].decode()
     assert (
@@ -510,8 +516,8 @@ def test_interface_inventory_labels_are_contextual_unique_and_canonically_ordere
     assert "[schemas: " not in schemas
     assert "[CollectionSummaryOut](schemas-collectionsummaryout.md)" in schemas
 
-    mango = checked.files["riverhog-v1/authorities/mango-fish/cli/index.md"].decode()
-    assert "- [mango-fish](mango-fish.md)" in mango
+    mango = checked.files["riverhog-v1/authorities/a-riverhog-event-relay/cli/index.md"].decode()
+    assert "- [a-riverhog-event-relay](a-riverhog-event-relay.md)" in mango
 
     durable = checked.files[
         "riverhog-v1/authorities/riverhog-catalog/durable-state/index.md"

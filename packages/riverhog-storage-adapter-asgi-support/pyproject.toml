@@ -9,7 +9,7 @@ description = "Authenticated ASGI shell for independently scoped Riverhog storag
 requires-python = ">=3.12"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-readme = { text = "Riverhog v1 component. See the project URL for documentation and releases.", content-type = "text/markdown" }
+readme = { text = "Authenticated ASGI shell for independently scoped Riverhog storage adapters.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
 authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.12", "Typing :: Typed"]

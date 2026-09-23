@@ -42,10 +42,10 @@ def test_cli_occurrence_authorities_must_resolve_to_discovered_inputs(
     monkeypatch,
     stale: str,
 ) -> None:
-    import piggity.main
+    import a_riverhog_cli.main
 
     module = _contract_module()
-    bindings = copy.deepcopy(piggity.main._CLI_OCCURRENCE_AUTHORITIES)
+    bindings = copy.deepcopy(a_riverhog_cli.main._CLI_OCCURRENCE_AUTHORITIES)
     if stale == "command":
         bindings["collection missing"] = bindings.pop("collection list")
     elif stale == "option":
@@ -54,7 +54,7 @@ def test_cli_occurrence_authorities_must_resolve_to_discovered_inputs(
         bindings["collection list"]["tag"]["operation_id"] = "get_collection"
     elif stale == "query":
         bindings["collection list"]["tag"]["parameter"] = "missing"
-    monkeypatch.setattr(piggity.main, "_CLI_OCCURRENCE_AUTHORITIES", bindings)
+    monkeypatch.setattr(a_riverhog_cli.main, "_CLI_OCCURRENCE_AUTHORITIES", bindings)
     openapi = module._openapi_surfaces()
     if stale == "query-shape":
         schema = openapi["riverhog"]["components"]["schemas"]["SearchCollectionsRequest"]
@@ -64,8 +64,8 @@ def test_cli_occurrence_authorities_must_resolve_to_discovered_inputs(
         }
     with pytest.raises(module.ContractFreezeError, match="CLI occurrence"):
         module._apply_cli_occurrence_authorities(
-            "piggity",
-            copy.deepcopy(cli_surfaces["piggity"]),
+            "a-riverhog-cli",
+            copy.deepcopy(cli_surfaces["a-riverhog-cli"]),
             operations=module.operation_qualification.operation_matrix(),
             openapi=openapi,
         )
@@ -136,11 +136,11 @@ def test_every_released_cli_leaf_has_one_implementation_owned_result_contract(
     assert len(executable) == 152
     assert len({str(item["identity"]) for item in executable}) == len(executable)
     assert groups_with_contracts == {
-        ("mango-fish", ()),
+        ("a-riverhog-event-relay", ()),
         ("riverhog-api", ()),
-        ("riverhog-ftp-adapter", ()),
+        ("a-riverhog-ftp-spool", ()),
     }
-    mango_commands = cli_surfaces["mango-fish"]["commands"]
+    mango_commands = cli_surfaces["a-riverhog-event-relay"]["commands"]
     assert isinstance(mango_commands, Mapping)
     assert set(mango_commands) == {"state"}
     mango_state = mango_commands["state"]
@@ -155,7 +155,7 @@ def test_every_released_cli_leaf_has_one_implementation_owned_result_contract(
 def test_cli_result_contracts_preserve_nonzero_terminal_semantics(
     cli_surfaces: Mapping[str, Mapping[str, object]],
 ) -> None:
-    upload = _result(cli_surfaces, "piggity", ("collection", "upload", "start"))
+    upload = _result(cli_surfaces, "a-riverhog-cli", ("collection", "upload", "start"))
     assert _outcome(upload, "failures", "custody-timeout")["exit_status"] == 124
     action = _result(cli_surfaces, "gogurt", ("run",))
     assert _outcome(action, "failures", "action-exit")["exit_status"] == {
@@ -167,7 +167,7 @@ def test_cli_result_contracts_preserve_nonzero_terminal_semantics(
 
 def test_cli_result_declaration_drift_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
     contract = _contract_module()
-    planning = importlib.import_module("stove0_review_planning.conformance")
+    planning = importlib.import_module("review0_planner.conformance")
     declaration = dict(planning._CLI_RESULT_CONTRACT)
     declaration["command_overrides"] = {"missing-command": {}}
     monkeypatch.setattr(planning, "_CLI_RESULT_CONTRACT", declaration)
@@ -175,7 +175,7 @@ def test_cli_result_declaration_drift_fails_closed(monkeypatch: pytest.MonkeyPat
 
     with pytest.raises(contract.ContractFreezeError, match="unknown commands"):
         contract._apply_cli_result_contract(
-            "stove0-review-planning",
+            "review0-planner",
             root,
             operations=contract.operation_qualification.operation_matrix(),
             openapi=contract._openapi_surfaces(),
@@ -186,11 +186,11 @@ def test_machine_report_success_matches_its_discovered_contract(
     cli_surfaces: Mapping[str, Mapping[str, object]],
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    planning = importlib.import_module("stove0_review_planning.conformance")
+    planning = importlib.import_module("review0_planner.conformance")
     status = planning.main([])
     captured = capsys.readouterr()
     outcome = _outcome(
-        _result(cli_surfaces, "stove0-review-planning", ()),
+        _result(cli_surfaces, "review0-planner", ()),
         "success",
         "reported",
     )
@@ -205,12 +205,12 @@ def test_argparse_usage_failure_matches_its_discovered_contract(
     cli_surfaces: Mapping[str, Mapping[str, object]],
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    materialize = importlib.import_module("riverhog_storage_adapter_filesystem.materialize_cli")
+    materialize = importlib.import_module("a_riverhog_filesystem_store.materialize_cli")
     with pytest.raises(SystemExit) as raised:
         materialize.main([])
     captured = capsys.readouterr()
     outcome = _outcome(
-        _result(cli_surfaces, "riverhog-storage-adapter-filesystem-materialize", ()),
+        _result(cli_surfaces, "a-riverhog-filesystem-store-materialize", ()),
         "failures",
         "usage",
     )
@@ -219,22 +219,22 @@ def test_argparse_usage_failure_matches_its_discovered_contract(
     assert captured.err
 
 
-def test_piggity_json_failure_matches_its_discovered_contract(
+def test_a_riverhog_cli_json_failure_matches_its_discovered_contract(
     cli_surfaces: Mapping[str, Mapping[str, object]],
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    piggity = importlib.import_module("piggity.main")
+    a_riverhog_cli = importlib.import_module("a_riverhog_cli.main")
 
     def fail() -> None:
         raise FileNotFoundError("missing fixture")
 
-    monkeypatch.setattr(piggity, "app", fail)
-    monkeypatch.setattr(sys, "argv", ["piggity", "local", "show", "1", "--json"])
-    status = piggity.main()
+    monkeypatch.setattr(a_riverhog_cli, "app", fail)
+    monkeypatch.setattr(sys, "argv", ["a-riverhog-cli", "local", "show", "1", "--json"])
+    status = a_riverhog_cli.main()
     captured = capsys.readouterr()
     outcome = _outcome(
-        _result(cli_surfaces, "piggity", ("local", "show")),
+        _result(cli_surfaces, "a-riverhog-cli", ("local", "show")),
         "failures",
         "operational",
     )
@@ -322,7 +322,7 @@ def test_unresolved_json_format_and_unknown_runtime_selector_fail_closed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     contract = _contract_module()
-    planning = importlib.import_module("stove0_review_planning.conformance")
+    planning = importlib.import_module("review0_planner.conformance")
     original = planning._CLI_RESULT_CONTRACT
 
     unresolved = json.loads(json.dumps(original))
@@ -330,7 +330,7 @@ def test_unresolved_json_format_and_unknown_runtime_selector_fail_closed(
     monkeypatch.setattr(planning, "_CLI_RESULT_CONTRACT", unresolved)
     with pytest.raises(contract.ContractFreezeError, match="does not resolve"):
         contract._apply_cli_result_contract(
-            "stove0-review-planning",
+            "review0-planner",
             contract._argparse_command(planning._parser()),
             operations=contract.operation_qualification.operation_matrix(),
             openapi=contract._openapi_surfaces(),
@@ -341,7 +341,7 @@ def test_unresolved_json_format_and_unknown_runtime_selector_fail_closed(
     monkeypatch.setattr(planning, "_CLI_RESULT_CONTRACT", unknown_selector)
     with pytest.raises(contract.ContractFreezeError, match="selector kind is unknown"):
         contract._apply_cli_result_contract(
-            "stove0-review-planning",
+            "review0-planner",
             contract._argparse_command(planning._parser()),
             operations=contract.operation_qualification.operation_matrix(),
             openapi=contract._openapi_surfaces(),
@@ -377,15 +377,20 @@ def test_framework_terminating_controls_are_discovered_without_completion_side_e
             "completion" not in json.dumps(parameter).casefold() for parameter in root_parameters
         )
     assert {"help", "implicit-help", "version"} <= control_ids
-    assert {"gogurt", "mango-fish", "piggity", "stove0-client"} <= version_distributions
+    assert {
+        "gogurt",
+        "a-riverhog-event-relay",
+        "a-riverhog-cli",
+        "a-stove0-cli",
+    } <= version_distributions
 
 
 @pytest.mark.parametrize(
     ("module_name", "application_name", "distribution"),
     [
         ("gogurt.cli", "app", "gogurt"),
-        ("piggity.main", "app", "piggity"),
-        ("stove0_cli.main", "app", "stove0-client"),
+        ("a_riverhog_cli.main", "app", "a-riverhog-cli"),
+        ("a_stove0_cli.main", "app", "a-stove0-cli"),
     ],
 )
 def test_typer_version_control_reports_the_installed_distribution_version(
@@ -402,12 +407,12 @@ def test_typer_version_control_reports_the_installed_distribution_version(
 def test_argparse_version_control_reports_the_installed_distribution_version(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    mango_fish = importlib.import_module("mango_fish.cli")
+    a_riverhog_event_relay = importlib.import_module("a_riverhog_event_relay.cli")
     with pytest.raises(SystemExit) as raised:
-        mango_fish.parser().parse_args(["--version"])
+        a_riverhog_event_relay.parser().parse_args(["--version"])
     captured = capsys.readouterr()
     assert raised.value.code == 0
-    assert importlib.metadata.version("mango-fish") in captured.out.split()
+    assert importlib.metadata.version("a-riverhog-event-relay") in captured.out.split()
     assert captured.err == ""
 
 
@@ -415,7 +420,7 @@ def test_http_backed_and_local_outputs_keep_their_own_authorities(
     cli_surfaces: Mapping[str, Mapping[str, object]],
 ) -> None:
     remote = _outcome(
-        _result(cli_surfaces, "piggity", ("collection", "show")),
+        _result(cli_surfaces, "a-riverhog-cli", ("collection", "show")),
         "success",
         "completed",
     )["stdout"]["json"]
@@ -425,15 +430,15 @@ def test_http_backed_and_local_outputs_keep_their_own_authorities(
     assert remote["operation_id"] == "get_collection"
 
     local = _outcome(
-        _result(cli_surfaces, "piggity", ("local", "list")),
+        _result(cli_surfaces, "a-riverhog-cli", ("local", "list")),
         "success",
         "completed",
     )["stdout"]["json"]
     assert isinstance(local, Mapping)
     assert local["kind"] == "cli-local-json-schema"
-    assert local["identity"] == "piggity-local-collection-list/v1"
+    assert local["identity"] == "a-riverhog-cli-local-collection-list/v1"
 
-    retire = _result(cli_surfaces, "piggity", ("archive", "retire"))
+    retire = _result(cli_surfaces, "a-riverhog-cli", ("archive", "retire"))
     planned = _outcome(retire, "success", "planned")
     executed = _outcome(retire, "success", "executed")
     assert planned["selected_by"] == {
@@ -449,7 +454,7 @@ def test_stove0_human_and_json_success_and_failure_match_the_profile(
     cli_surfaces: Mapping[str, Mapping[str, object]],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    stove0 = importlib.import_module("stove0_cli.main")
+    stove0 = importlib.import_module("a_stove0_cli.main")
 
     class HealthyClient:
         def __init__(self, *_args: Any, **_kwargs: Any) -> None:

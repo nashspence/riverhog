@@ -144,22 +144,22 @@ def test_installation_artifacts_are_derived_and_mutually_consistent(
     components = {item["root"]: item for item in manifest["components"]}
     platform_packages = {
         "linux-x64": {
-            "listener_host_distribution": "gogurt-linux-listener-host",
-            "listener_host_provider": "gogurt-linux-listener-host",
-            "mounted_volume_distribution": "gogurt-linux-mounted-volume",
-            "mounted_volume_provider": "gogurt-linux-mounted-volume",
+            "listener_host_distribution": "a-gogurt-linux-listener",
+            "listener_host_provider": "a-gogurt-linux-listener",
+            "mounted_volume_distribution": "a-gogurt-linux-volume",
+            "mounted_volume_provider": "a-gogurt-linux-volume",
         },
         "macos-arm64": {
-            "listener_host_distribution": "gogurt-macos-listener-host",
-            "listener_host_provider": "gogurt-macos-listener-host",
-            "mounted_volume_distribution": "gogurt-macos-mounted-volume",
-            "mounted_volume_provider": "gogurt-macos-mounted-volume",
+            "listener_host_distribution": "a-gogurt-macos-listener",
+            "listener_host_provider": "a-gogurt-macos-listener",
+            "mounted_volume_distribution": "a-gogurt-macos-volume",
+            "mounted_volume_provider": "a-gogurt-macos-volume",
         },
         "windows-x64": {
-            "listener_host_distribution": "gogurt-windows-listener-host",
-            "listener_host_provider": "gogurt-windows-listener-host",
-            "mounted_volume_distribution": "gogurt-windows-mounted-volume",
-            "mounted_volume_provider": "gogurt-windows-mounted-volume",
+            "listener_host_distribution": "a-gogurt-windows-listener",
+            "listener_host_provider": "a-gogurt-windows-listener",
+            "mounted_volume_distribution": "a-gogurt-windows-volume",
+            "mounted_volume_provider": "a-gogurt-windows-volume",
         },
     }
     all_gogurt_native = {
@@ -168,14 +168,14 @@ def test_installation_artifacts_are_derived_and_mutually_consistent(
         for field in ("listener_host_distribution", "mounted_volume_distribution")
     }
     all_provenance_native = {
-        "riverhog-provenance-linux-observer",
-        "riverhog-provenance-macos-observer",
-        "riverhog-provenance-windows-observer",
+        "a-riverhog-linux-provenance-observer",
+        "a-riverhog-macos-provenance-observer",
+        "a-riverhog-windows-provenance-observer",
     }
     provenance_contracts = {
-        "riverhog-provenance-linux-contracts",
-        "riverhog-provenance-macos-contracts",
-        "riverhog-provenance-windows-contracts",
+        "a-riverhog-linux-provenance-contract-lib",
+        "a-riverhog-macos-provenance-contract-lib",
+        "a-riverhog-windows-provenance-contract-lib",
     }
     for platform, selection in platform_packages.items():
         gogurt_closure = {
@@ -187,7 +187,7 @@ def test_installation_artifacts_are_derived_and_mutually_consistent(
             "gogurt-listener-runtime",
         } <= gogurt_closure
         assert gogurt_closure.isdisjoint(all_gogurt_native)
-        assert manifest["qualification"]["gogurt_reference"]["platforms"][platform] == {
+        assert manifest["qualification"]["gogurt_providers"]["platforms"][platform] == {
             **selection,
             "first_party_closure": [
                 {"name": name, "version": "0.1.0"}
@@ -205,10 +205,10 @@ def test_installation_artifacts_are_derived_and_mutually_consistent(
         }
 
         client_closure = {
-            item["name"] for item in components["piggity"]["first_party_closure"][platform]
+            item["name"] for item in components["a-riverhog-cli"]["first_party_closure"][platform]
         }
         assert {
-            "piggity",
+            "a-riverhog-cli",
             "riverhog-client",
             "riverhog-provenance",
             "riverhog-provenance-contracts",

@@ -496,10 +496,10 @@ def _run_client_operation(
     cwd: Path,
     environment: dict[str, str],
 ) -> str:
-    if root == "piggity":
+    if root == "a-riverhog-cli":
         environment["RIVERHOG_BASE_URL"] = base_url
         command = [str(executable), "event", "list", "--json"]
-    elif root == "stove0-client":
+    elif root == "a-stove0-cli":
         environment["STOVE0_BASE_URL"] = base_url
         environment["STOVE0_TOKEN"] = "qualification-token"
         command = [str(executable), "--json", "event", "list"]
@@ -507,7 +507,7 @@ def _run_client_operation(
         raise QualificationError(f"no disposable client operation for {root}")
     completed = _run(command, cwd=cwd, env=environment, capture=True)
     payload = json.loads(completed.stdout)
-    expected = STOVE0_EVENT_PAGE if root == "stove0-client" else RIVERHOG_EVENT_PAGE
+    expected = STOVE0_EVENT_PAGE if root == "a-stove0-cli" else RIVERHOG_EVENT_PAGE
     if payload != expected:
         raise QualificationError(f"{root} changed the disposable event response")
     return "lifecycle-event-list"
@@ -1807,31 +1807,31 @@ def _qualify_component(
         raise QualificationError(f"{root} is not already synchronized to its PEP 751 lock")
 
     qualification_first_party: dict[str, str] = {}
-    gogurt_reference: dict[str, str] | None = None
+    gogurt_providers: dict[str, str] | None = None
     if root == "gogurt":
-        raw_reference = manifest["qualification"]["gogurt_reference"]["platforms"][platform]
+        raw_reference = manifest["qualification"]["gogurt_providers"]["platforms"][platform]
         if not isinstance(raw_reference, dict):
-            raise QualificationError("Gogurt reference qualification is invalid")
+            raise QualificationError("Gogurt provider qualification is invalid")
         reference_fields = (
             "listener_host_distribution",
             "listener_host_provider",
             "mounted_volume_distribution",
             "mounted_volume_provider",
         )
-        gogurt_reference = {key: str(raw_reference[key]) for key in reference_fields}
+        gogurt_providers = {key: str(raw_reference[key]) for key in reference_fields}
         raw_reference_closure = raw_reference.get("first_party_closure")
         if not isinstance(raw_reference_closure, list):
-            raise QualificationError("Gogurt reference qualification closure is invalid")
+            raise QualificationError("Gogurt provider qualification closure is invalid")
         qualification_first_party = {
             str(item["name"]): str(item["version"])
             for item in raw_reference_closure
             if isinstance(item, dict) and set(item) == {"name", "version"}
         }
         if len(qualification_first_party) != len(raw_reference_closure):
-            raise QualificationError("Gogurt reference qualification closure is invalid")
+            raise QualificationError("Gogurt provider qualification closure is invalid")
         distributions = (
-            gogurt_reference["mounted_volume_distribution"],
-            gogurt_reference["listener_host_distribution"],
+            gogurt_providers["mounted_volume_distribution"],
+            gogurt_providers["listener_host_distribution"],
         )
         qualified_version = str(manifest["version"])
         _run(
@@ -1864,7 +1864,7 @@ def _qualify_component(
             if name in all_project_names
         }
         if qualified_first_party != expected_first_party | qualification_first_party:
-            raise QualificationError("Gogurt reference qualification changed another package")
+            raise QualificationError("Gogurt provider qualification changed another package")
 
     entry_points = [str(value) for value in component["entry_points"]]
     executables = [_executable(bin_dir, name) for name in entry_points]
@@ -1874,7 +1874,7 @@ def _qualify_component(
         raise QualificationError(f"{root} --version differs from the installed release")
     _run([str(primary), "--help"], cwd=scratch, env=environment, capture=True)
 
-    if root in {"piggity", "stove0-client"}:
+    if root in {"a-riverhog-cli", "a-stove0-cli"}:
         operation = _run_client_operation(
             root,
             primary,
@@ -1883,7 +1883,7 @@ def _qualify_component(
             environment=environment,
         )
     elif root == "gogurt":
-        assert gogurt_reference is not None
+        assert gogurt_providers is not None
         operation = _run_gogurt(
             primary,
             source_root=source_root,
@@ -1892,7 +1892,7 @@ def _qualify_component(
             listener_lifecycle=listener_lifecycle,
             listener_lifecycle_repetitions=listener_lifecycle_repetitions,
             gogurt_evidence_dir=gogurt_evidence_dir,
-            reference=gogurt_reference,
+            reference=gogurt_providers,
         )
     else:
         operation = _run_recovery(

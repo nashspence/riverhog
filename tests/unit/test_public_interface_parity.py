@@ -19,8 +19,16 @@ import riverhog_core.services.download_allowances as quota_service_module
 import riverhog_core.services.provenance as provenance_service_module
 import riverhog_core.services.retrieval as retrieval_service_module
 import riverhog_core.services.search as search_service_module
-import stove0_api_client.client as stove0_client_module
+import stove0_api_client.client as a_stove0_client_module
 import stove0_core.persistence as stove0_persistence_module
+from a_riverhog_cli import main as a_riverhog_cli
+from a_riverhog_cli import upload_progress as riverhog_upload_progress
+from a_riverhog_ftp_spool_client import (
+    HealthResponse as FtpSpoolHealthResponse,
+)
+from a_riverhog_ftp_spool_client import (
+    RiverhogFtpSpoolClient,
+)
 from fastapi import FastAPI
 from http_api_contracts import (
     ERROR_STATUS_BY_CODE,
@@ -34,8 +42,6 @@ from http_api_contracts import (
 from http_api_contracts import (
     HealthResponse as CanonicalHealthResponse,
 )
-from piggity import main as piggity
-from piggity import upload_progress as riverhog_upload_progress
 from pydantic import TypeAdapter, ValidationError
 from riverhog_api.app import create_app as create_riverhog_app
 from riverhog_api.browse import canonical_selectors
@@ -58,12 +64,6 @@ from riverhog_client import producer as riverhog_producer
 from riverhog_client import workflows as riverhog_workflow_client_module
 from riverhog_client.client import ApiClient
 from riverhog_core.services.archive_copy_states import ARCHIVE_COPY_STATES
-from riverhog_ftp_adapter_api_client import (
-    HealthResponse as FtpAdapterHealthResponse,
-)
-from riverhog_ftp_adapter_api_client import (
-    RiverhogFtpAdapterClient,
-)
 from riverhog_protocol import (
     RIVERHOG_HTTP_ERROR_AUTHORITY,
     ApplicationAccessSort,
@@ -129,10 +129,10 @@ SUPPORTED_CLIENT_HELPERS = {
         "upload_collection_upload_session_provenance_journal",
     },
     "stove0": {"close", "health_live", "health_ready", "iter_inputs"},
-    "riverhog-ftp-adapter": {
+    "a-riverhog-ftp-spool": {
         "close",
-        "ftp_adapter_health_live",
-        "ftp_adapter_health_ready",
+        "ftp_spool_health_live",
+        "ftp_spool_health_ready",
     },
 }
 
@@ -241,9 +241,9 @@ def _parameter_enum(
         ("riverhog", create_riverhog_app, (ApiClient,)),
         ("stove0", create_stove0_contract_app, (Stove0ApiClient, TargetCallbackClient)),
         (
-            "riverhog-ftp-adapter",
+            "a-riverhog-ftp-spool",
             create_adapter_contract_app,
-            (RiverhogFtpAdapterClient,),
+            (RiverhogFtpSpoolClient,),
         ),
     ),
 )
@@ -274,9 +274,9 @@ def test_every_public_api_operation_has_an_official_client_method(
         ("riverhog", create_riverhog_app, (ApiClient,)),
         ("stove0", create_stove0_contract_app, (Stove0ApiClient, TargetCallbackClient)),
         (
-            "riverhog-ftp-adapter",
+            "a-riverhog-ftp-spool",
             create_adapter_contract_app,
-            (RiverhogFtpAdapterClient,),
+            (RiverhogFtpSpoolClient,),
         ),
     ),
 )
@@ -348,7 +348,7 @@ def test_control_client_transport_calls_carry_exact_server_operation_identities(
                 "stream_retrieval_file": {"download_retrieval_file"},
             },
         ),
-        ((stove0_client_module,), create_stove0_contract_app, {}),
+        ((a_stove0_client_module,), create_stove0_contract_app, {}),
     )
     for modules, app_factory, aliases in cases:
         schema = app_factory().openapi()
@@ -370,7 +370,7 @@ def test_control_client_transport_calls_carry_exact_server_operation_identities(
     (
         ("riverhog", create_riverhog_app),
         ("stove0", create_stove0_contract_app),
-        ("riverhog-ftp-adapter", create_adapter_contract_app),
+        ("a-riverhog-ftp-spool", create_adapter_contract_app),
     ),
 )
 def test_public_http_health_and_error_schemas_are_conventional(
@@ -458,9 +458,9 @@ def test_official_client_health_models_project_the_exact_http_contract() -> None
     expected = create_stove0_contract_app().openapi()["components"]["schemas"]["HealthResponse"]
 
     assert Stove0HealthResponse is CanonicalHealthResponse
-    assert FtpAdapterHealthResponse is CanonicalHealthResponse
+    assert FtpSpoolHealthResponse is CanonicalHealthResponse
     assert Stove0HealthResponse.model_json_schema() == expected
-    assert FtpAdapterHealthResponse.model_json_schema() == expected
+    assert FtpSpoolHealthResponse.model_json_schema() == expected
 
 
 def test_riverhog_client_exports_the_canonical_public_access_types() -> None:
@@ -644,8 +644,8 @@ PUBLIC_QUERY_SELECTORS = {
         "list_events": {"after", "limit"},
         "list_work": {"order", "page_size", "page_token", "phase", "q", "sort"},
     },
-    "riverhog-ftp-adapter": {
-        "get_ftp_adapter_status": {"page_size", "page_token"},
+    "a-riverhog-ftp-spool": {
+        "get_ftp_spool_status": {"page_size", "page_token"},
     },
 }
 
@@ -904,7 +904,7 @@ def test_public_read_services_do_not_use_sql_offsets() -> None:
     (
         ("riverhog", create_riverhog_app),
         ("stove0", create_stove0_contract_app),
-        ("riverhog-ftp-adapter", create_adapter_contract_app),
+        ("a-riverhog-ftp-spool", create_adapter_contract_app),
     ),
 )
 def test_every_public_query_selector_is_intentionally_frozen(
@@ -929,7 +929,7 @@ def test_every_public_query_selector_is_intentionally_frozen(
     (
         ("riverhog", create_riverhog_app),
         ("stove0", create_stove0_contract_app),
-        ("riverhog-ftp-adapter", create_adapter_contract_app),
+        ("a-riverhog-ftp-spool", create_adapter_contract_app),
     ),
 )
 def test_every_closed_query_selector_has_one_exact_public_vocabulary(
@@ -1023,7 +1023,7 @@ def test_official_client_selector_validation_projects_public_vocabularies() -> N
         "_WORK_PHASES": WorkPhase,
         "_WORK_SORTS": WorkSort,
     }.items():
-        assert getattr(stove0_client_module, attribute) == closed_literal_values(vocabulary)
+        assert getattr(a_stove0_client_module, attribute) == closed_literal_values(vocabulary)
 
 
 def test_service_selector_validation_projects_public_vocabularies() -> None:
@@ -1073,7 +1073,7 @@ def test_non_cli_python_interfaces_do_not_reintroduce_an_all_selector() -> None:
     roots = (
         REPO_ROOT / "packages",
         REPO_ROOT / "riverhog",
-        REPO_ROOT / "reference" / "stove0" / "application" / "server",
+        REPO_ROOT / "some-implementations" / "stove0" / "application" / "server",
     )
     offenders: list[str] = []
     for root in roots:
@@ -1234,11 +1234,11 @@ def test_official_clients_reject_invalid_crud_controls_and_resources() -> None:
             "https://stove0.example.test",
         ),
         (
-            RiverhogFtpAdapterClient,
-            "RIVERHOG_FTP_ADAPTER_BASE_URL",
-            "RIVERHOG_FTP_ADAPTER_TOKEN",
-            "RIVERHOG_FTP_ADAPTER_HTTP2",
-            "RIVERHOG_FTP_ADAPTER_HTTP_TIMEOUT_SECONDS",
+            RiverhogFtpSpoolClient,
+            "A_RIVERHOG_FTP_SPOOL_BASE_URL",
+            "A_RIVERHOG_FTP_SPOOL_TOKEN",
+            "A_RIVERHOG_FTP_SPOOL_HTTP2",
+            "A_RIVERHOG_FTP_SPOOL_HTTP_TIMEOUT_SECONDS",
             "https://adapters.example.test",
         ),
     ),
@@ -1295,7 +1295,7 @@ def test_shared_transport_contract_accepts_explicit_remote_cleartext_opt_in() ->
     (
         (ApiClient, BadRequest),
         (Stove0ApiClient, ValueError),
-        (RiverhogFtpAdapterClient, ValueError),
+        (RiverhogFtpSpoolClient, ValueError),
     ),
 )
 def test_official_clients_reject_remote_cleartext_transport(
@@ -1311,7 +1311,7 @@ def test_official_clients_reject_remote_cleartext_transport(
     (
         (ApiClient, "RIVERHOG_ALLOW_INSECURE_HTTP"),
         (Stove0ApiClient, "STOVE0_ALLOW_INSECURE_HTTP"),
-        (RiverhogFtpAdapterClient, "RIVERHOG_FTP_ADAPTER_ALLOW_INSECURE_HTTP"),
+        (RiverhogFtpSpoolClient, "A_RIVERHOG_FTP_SPOOL_ALLOW_INSECURE_HTTP"),
     ),
 )
 def test_official_clients_allow_explicit_remote_cleartext_transport(
@@ -1327,7 +1327,7 @@ def test_official_clients_allow_explicit_remote_cleartext_transport(
         client.close()
 
 
-@pytest.mark.parametrize("client_type", (ApiClient, Stove0ApiClient, RiverhogFtpAdapterClient))
+@pytest.mark.parametrize("client_type", (ApiClient, Stove0ApiClient, RiverhogFtpSpoolClient))
 def test_official_clients_accept_a_scoped_remote_cleartext_opt_in(
     client_type: type[Any],
 ) -> None:
@@ -1343,13 +1343,13 @@ def test_official_clients_accept_a_scoped_remote_cleartext_opt_in(
 
 
 def test_official_direct_ingress_callers_share_the_upload_runner() -> None:
-    assert piggity.upload_collection_units is upload_collection_units
+    assert a_riverhog_cli.upload_collection_units is upload_collection_units
     assert riverhog_producer.upload_collection_units is upload_collection_units
 
 
 @pytest.mark.parametrize(
     ("setting", "rich_enabled"),
-    (("PIGGITY_PLAIN", riverhog_upload_progress._rich_progress_available),),
+    (("A_RIVERHOG_CLI_PLAIN", riverhog_upload_progress._rich_progress_available),),
 )
 def test_rich_clients_share_plain_output_selection(
     monkeypatch: pytest.MonkeyPatch,

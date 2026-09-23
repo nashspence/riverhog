@@ -1,0 +1,150 @@
+x-ftp-spool-image: &ftp-spool-image
+  image: a-riverhog-ftp-spool:dev
+  build:
+    context: ../../../..
+    dockerfile: some-implementations/riverhog/ingress/ftp/Dockerfile
+    args:
+      SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
+
+services:
+  intake-init:
+    image: alpine:3.22@sha256:14358309a308569c32bdc37e2e0e9694be33a9d99e68afb0f5ff33cc1f695dce
+    restart: "no"
+    environment:
+      INTAKE_GID: ${A_RIVERHOG_FTP_SPOOL_INTAKE_GID:-65532}
+    command:
+      - sh
+      - -c
+      - >-
+        install -d -o 65532 -g "$${INTAKE_GID}" -m 2770 /intake /intake/ftp
+    volumes:
+      - type: bind
+        source: ${A_RIVERHOG_FTP_SPOOL_INTAKE_HOST_DIR:-./runtime/intake}
+        target: /intake
+
+  ftp-spool:
+    <<: *ftp-spool-image
+    restart: unless-stopped
+    read_only: true
+    user: "65532:65532"
+    group_add:
+      - "${A_RIVERHOG_FTP_SPOOL_SECRET_FILE_GID:-65532}"
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    depends_on:
+      intake-init:
+        condition: service_completed_successfully
+    environment:
+      TZ: ${TZ:-UTC}
+      A_RIVERHOG_FTP_SPOOL_CONFIG: /etc/riverhog/ftp-spool.json
+      RIVERHOG_TOKEN_FILE: /run/secrets/riverhog_token
+      A_RIVERHOG_FTP_SPOOL_API_TOKEN_FILE: /run/secrets/api_token
+    secrets:
+      - riverhog_token
+      - api_token
+    volumes:
+      - type: bind
+        source: ${A_RIVERHOG_FTP_SPOOL_CONFIG_HOST_PATH:?A_RIVERHOG_FTP_SPOOL_CONFIG_HOST_PATH is required}
+        target: /etc/riverhog/ftp-spool.json
+        read_only: true
+      - type: bind
+        source: ${A_RIVERHOG_FTP_SPOOL_INTAKE_HOST_DIR:-./runtime/intake}
+        target: /intake
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
+    networks: ["default", "riverhog-control"]
+    ports:
+      - "${A_RIVERHOG_FTP_SPOOL_API_BIND_ADDR:-127.0.0.1}:${A_RIVERHOG_FTP_SPOOL_API_PORT:-8082}:8080"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import json, urllib.request;
+          payload = json.load(urllib.request.urlopen('http://127.0.0.1:8080/health/ready', timeout=5));
+          assert payload == {'service': 'a-riverhog-ftp-spool', 'status': 'ok'}
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  ftp-listener:
+    <<: *ftp-spool-image
+    restart: unless-stopped
+    read_only: true
+    user: "65532:65532"
+    group_add:
+      - "${A_RIVERHOG_FTP_SPOOL_SECRET_FILE_GID:-65532}"
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    depends_on:
+      intake-init:
+        condition: service_completed_successfully
+    environment:
+      TZ: ${TZ:-UTC}
+      A_RIVERHOG_FTP_SPOOL_CONFIG: /etc/riverhog/ftp-spool.json
+    secrets: ["ftp_password"]
+    command:
+      - a-riverhog-ftp-spool
+      - --config
+      - /etc/riverhog/ftp-spool.json
+      - listen
+      - --source
+      - ${A_RIVERHOG_FTP_SPOOL_SOURCE_ID:-ftp-intake}
+      - --username
+      - ${A_RIVERHOG_FTP_SPOOL_USERNAME:-ftp-intake}
+      - --password-file
+      - /run/secrets/ftp_password
+      - --host
+      - 0.0.0.0
+      - --port
+      - "2121"
+      - --passive-port-start
+      - ${A_RIVERHOG_FTP_SPOOL_PASSIVE_PORT_START:-30000}
+      - --passive-port-end
+      - ${A_RIVERHOG_FTP_SPOOL_PASSIVE_PORT_END:-30039}
+      - --public-host
+      - ${A_RIVERHOG_FTP_SPOOL_PUBLIC_HOST:-}
+      - --max-connections
+      - ${A_RIVERHOG_FTP_SPOOL_MAX_CONNECTIONS:-256}
+      - --max-connections-per-ip
+      - ${A_RIVERHOG_FTP_SPOOL_MAX_CONNECTIONS_PER_IP:-32}
+    ports:
+      - "${A_RIVERHOG_FTP_SPOOL_INGRESS_BIND_ADDR:-127.0.0.1}:${A_RIVERHOG_FTP_SPOOL_PORT:-21}:2121"
+      - "${A_RIVERHOG_FTP_SPOOL_INGRESS_BIND_ADDR:-127.0.0.1}:${A_RIVERHOG_FTP_SPOOL_PASSIVE_PORT_START:-30000}-${A_RIVERHOG_FTP_SPOOL_PASSIVE_PORT_END:-30039}:30000-30039"
+    volumes:
+      - type: bind
+        source: ${A_RIVERHOG_FTP_SPOOL_CONFIG_HOST_PATH:?A_RIVERHOG_FTP_SPOOL_CONFIG_HOST_PATH is required}
+        target: /etc/riverhog/ftp-spool.json
+        read_only: true
+      - type: bind
+        source: ${A_RIVERHOG_FTP_SPOOL_INTAKE_HOST_DIR:-./runtime/intake}
+        target: /intake
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import socket;
+          socket.create_connection(('127.0.0.1', 2121), timeout=5).close()
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+
+secrets:
+  riverhog_token:
+    file: ${A_RIVERHOG_FTP_SPOOL_RIVERHOG_TOKEN_FILE:?A_RIVERHOG_FTP_SPOOL_RIVERHOG_TOKEN_FILE is required}
+  api_token:
+    file: ${A_RIVERHOG_FTP_SPOOL_API_TOKEN_FILE:?A_RIVERHOG_FTP_SPOOL_API_TOKEN_FILE is required}
+  ftp_password:
+    file: ${A_RIVERHOG_FTP_SPOOL_PASSWORD_FILE:-./secrets/ftp_password}
+
+networks:
+  riverhog-control:
+    external: true
+    name: ${RIVERHOG_CONTROL_NETWORK:-riverhog_default}
