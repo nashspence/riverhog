@@ -15,7 +15,7 @@ from pydantic import JsonValue
 from riverhog_client import ProducerFile
 from riverhog_client.transform import TransformWorkspace
 from riverhog_protocol import canonical_json_bytes, canonical_json_sha256
-from stove0_protocol import JsonSchemaDocument
+from stove0_protocol import JsonSchemaValidationProfile
 from stove0_review_sampler_client import ReviewSamplerClient
 from stove0_review_sampler_protocol import (
     SamplerDescriptor,
@@ -73,10 +73,10 @@ def review_options_schema(
     *,
     required: tuple[str, ...] = (),
     properties: Mapping[str, JsonValue] | None = None,
-) -> JsonSchemaDocument:
+) -> JsonSchemaValidationProfile:
     """Build one exact target-owned schema over shared sampler selection options."""
 
-    return JsonSchemaDocument.from_schema(
+    return JsonSchemaValidationProfile.from_schema(
         schema_id,
         {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -119,7 +119,7 @@ class ReviewTargetServiceBase(PersistentTargetService, ABC):
         protocol: TargetProtocol,
         implementation_id: str,
         operation: OperationContract,
-        options_schema: JsonSchemaDocument,
+        options_schema: JsonSchemaValidationProfile,
         terminal_state_retention_seconds: int = DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
     ) -> None:
         if not samplers or [item.id for item in samplers] != sorted(item.id for item in samplers):

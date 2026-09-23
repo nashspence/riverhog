@@ -5,7 +5,7 @@ import sys
 
 import pytest
 from stove0_protocol import (
-    JsonSchemaDocument,
+    JsonSchemaValidationProfile,
     SemanticValidationProfile,
     SemanticValidationProfilePayload,
 )
@@ -41,7 +41,7 @@ def test_target_contract_models_are_importable_without_runtime_support() -> None
     operation = OperationContract.seal(
         OperationContractPayload(
             id="fixture.copy/v1",
-            intent_schema=JsonSchemaDocument.from_schema(
+            intent_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.copy-intent/v1",
                 {"type": "object", "additionalProperties": False},
             ),
@@ -88,7 +88,7 @@ def test_target_contract_requires_vectors_for_non_schema_only_semantics() -> Non
     with pytest.raises(ValueError, match="require conformance-vector identity"):
         OperationContractPayload(
             id="fixture.copy/v1",
-            intent_schema=JsonSchemaDocument.from_schema(
+            intent_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.copy-intent/v1",
                 {"type": "object", "additionalProperties": False},
             ),
@@ -109,11 +109,11 @@ def test_target_contract_requires_vectors_for_non_schema_only_semantics() -> Non
 
 
 def test_operation_result_kind_owns_collection_disposition_semantics() -> None:
-    schema = JsonSchemaDocument.from_schema(
+    schema = JsonSchemaValidationProfile.from_schema(
         "fixture.effect-intent/v1",
         {"type": "object", "additionalProperties": False},
     )
-    receipt = JsonSchemaDocument.from_schema(
+    receipt = JsonSchemaValidationProfile.from_schema(
         "fixture.effect-receipt/v1",
         {"type": "object", "additionalProperties": False},
     )

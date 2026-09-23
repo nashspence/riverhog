@@ -18,7 +18,7 @@ from stove0_protocol import (
     ControllerEvidencePayload,
     ExecutionEnvelope,
     ExecutionEnvelopePayload,
-    JsonSchemaDocument,
+    JsonSchemaValidationProfile,
     OperationRef,
     RecipeRef,
     TargetPlanBinding,
@@ -123,7 +123,7 @@ def _sampler() -> tuple[SamplerRegistration, FixtureSamplerClient]:
             image_digest=_sha("8"),
             primary_operation_id="stove0.media.audio-archive/v1",
             primary_operation_contract_sha256=_sha("7"),
-            portable_intent_schema=JsonSchemaDocument.from_schema(
+            portable_intent_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.opus-intent/v1",
                 {
                     "type": "object",

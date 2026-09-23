@@ -48,7 +48,7 @@ from stove0_protocol import (
     ControllerEvidencePayload,
     ExecutionEnvelope,
     ExecutionEnvelopePayload,
-    JsonSchemaDocument,
+    JsonSchemaValidationProfile,
     OperationRef,
     RecipeRef,
     SemanticValidationProfile,
@@ -159,7 +159,7 @@ def _operation() -> OperationContract:
     return OperationContract.seal(
         OperationContractPayload(
             id="fixture.copy/v1",
-            intent_schema=JsonSchemaDocument.from_schema(
+            intent_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.copy-intent/v1",
                 {
                     "type": "object",
@@ -197,7 +197,7 @@ def _target(operation: OperationContract) -> TargetContract:
                 TargetOperationSupport(
                     operation_id=operation.id,
                     operation_contract_sha256=operation.contract_sha256,
-                    options_schema=JsonSchemaDocument.from_schema(
+                    options_schema=JsonSchemaValidationProfile.from_schema(
                         "fixture.target-options/v1",
                         {"type": "object", "additionalProperties": False},
                     ),
@@ -335,7 +335,7 @@ def _effect_request() -> tuple[OperationContract, TargetContract, TargetJobReque
         OperationContractPayload(
             id="fixture.record-index/v1",
             result_kind="external-effect",
-            intent_schema=JsonSchemaDocument.from_schema(
+            intent_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.record-index-intent/v1",
                 {"type": "object", "additionalProperties": False},
             ),
@@ -346,7 +346,7 @@ def _effect_request() -> tuple[OperationContract, TargetContract, TargetJobReque
                     allowed_dispositions=None,
                 ),
             ),
-            effect_receipt_schema=JsonSchemaDocument.from_schema(
+            effect_receipt_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.record-index-receipt/v1",
                 {
                     "type": "object",
@@ -372,7 +372,7 @@ def _effect_request() -> tuple[OperationContract, TargetContract, TargetJobReque
                     operation_id=operation.id,
                     operation_contract_sha256=operation.contract_sha256,
                     result_kind="external-effect",
-                    options_schema=JsonSchemaDocument.from_schema(
+                    options_schema=JsonSchemaValidationProfile.from_schema(
                         "fixture.index-target-options/v1",
                         {"type": "object", "additionalProperties": False},
                     ),
@@ -940,7 +940,7 @@ def test_target_conformance_requires_every_advertised_operation() -> None:
     second_payload = first.model_dump(mode="python", exclude={"contract_sha256"})
     second_payload["id"] = "fixture.second/v1"
     second = OperationContract.seal(OperationContractPayload.model_validate(second_payload))
-    options = JsonSchemaDocument.from_schema(
+    options = JsonSchemaValidationProfile.from_schema(
         "fixture.multi-target-options/v1",
         {"type": "object", "additionalProperties": False},
     )

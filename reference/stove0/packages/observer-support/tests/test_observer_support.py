@@ -57,7 +57,7 @@ from stove0_observer_support import (
 from stove0_protocol import (
     ArtifactSubject,
     CollectionRootRef,
-    JsonSchemaDocument,
+    JsonSchemaValidationProfile,
     SemanticValidationProfile,
     SemanticValidationProfilePayload,
     canonical_json_sha256,
@@ -227,11 +227,11 @@ def _contract() -> ObserverContract:
     return ObserverContract.seal(
         ObserverContractPayload(
             id="fixture.bytes/v1",
-            options_schema=JsonSchemaDocument.from_schema(
+            options_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.bytes-options/v1",
                 {"type": "object", "additionalProperties": False},
             ),
-            facts_schema=JsonSchemaDocument.from_schema(
+            facts_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.bytes-facts/v1",
                 {
                     "type": "object",

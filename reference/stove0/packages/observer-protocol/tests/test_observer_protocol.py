@@ -9,7 +9,7 @@ import pytest
 import stove0_protocol
 from stove0_observer_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
-    JsonSchemaDocument,
+    JsonSchemaValidationProfile,
     ObservationRequest,
     ObserverContract,
     ObserverContractPayload,
@@ -53,11 +53,11 @@ def test_observer_contract_models_are_importable_without_runtime_support() -> No
     contract = ObserverContract.seal(
         ObserverContractPayload(
             id="fixture.observation/v1",
-            options_schema=JsonSchemaDocument.from_schema(
+            options_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.options/v1",
                 {"type": "object", "additionalProperties": False},
             ),
-            facts_schema=JsonSchemaDocument.from_schema(
+            facts_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.facts/v1",
                 {"type": "object", "additionalProperties": False},
             ),
@@ -100,11 +100,11 @@ def test_only_the_exact_schema_only_profile_can_omit_conformance_vectors() -> No
     with pytest.raises(ValueError, match="conformance-vector identity"):
         ObserverContractPayload(
             id="fixture.observation/v1",
-            options_schema=JsonSchemaDocument.from_schema(
+            options_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.options/v1",
                 {"type": "object", "additionalProperties": False},
             ),
-            facts_schema=JsonSchemaDocument.from_schema(
+            facts_schema=JsonSchemaValidationProfile.from_schema(
                 "fixture.facts/v1",
                 {"type": "object", "additionalProperties": False},
             ),

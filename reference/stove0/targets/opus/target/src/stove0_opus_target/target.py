@@ -25,7 +25,7 @@ from stove0_media_archive_target_support import (
     render_projection_xmp,
     resolve_media_archive_preflight_projection,
 )
-from stove0_protocol import JsonSchemaDocument
+from stove0_protocol import JsonSchemaValidationProfile
 from stove0_target_support import (
     DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
     OutputArtifact,
@@ -47,7 +47,7 @@ from stove0_target_support import (
 from stove0_opus_target.common import OpusContentError, file_identity, run_ffmpeg, tool_version
 
 _PROJECTION_SCHEMA = MediaArchiveProjection.model_json_schema()
-OPTIONS = JsonSchemaDocument.from_schema(
+OPTIONS = JsonSchemaValidationProfile.from_schema(
     "stove0.opus-target-options/v1",
     {
         "$schema": "https://json-schema.org/draft/2020-12/schema",

@@ -99,7 +99,7 @@ class TargetOperationConformance(_TargetConformanceModel):
     operation_id: str
     operation_contract_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     result_kind: TargetResultKind
-    options_schema_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    options_schema_profile_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     semantic_conformance: Literal["not-exercised", "schema-only", "exercised"]
     intent_semantics_id: str | None = None
     intent_semantics_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
@@ -209,7 +209,7 @@ class TargetConformanceResult(_TargetConformanceModel):
                 report.operation_id != support.operation_id
                 or report.operation_contract_sha256 != support.operation_contract_sha256
                 or report.result_kind != support.result_kind
-                or report.options_schema_sha256 != support.options_schema.sha256
+                or report.options_schema_profile_sha256 != support.options_schema.profile_sha256
             ):
                 raise ValueError("target conformance operation differs from its contract")
             evidence = evidence_by_id.get(report.operation_id)
@@ -323,7 +323,7 @@ def _single_operation_report(
             "operation_id": item.operation_id,
             "operation_contract_sha256": item.operation_contract_sha256,
             "result_kind": item.result_kind,
-            "options_schema_sha256": item.options_schema.sha256,
+            "options_schema_profile_sha256": item.options_schema.profile_sha256,
             "semantic_conformance": "not-exercised",
         }
         if operation is not None and operation.id == item.operation_id:

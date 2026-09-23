@@ -27,13 +27,13 @@ def test_media_archive_operations_retain_exact_v1_retirement_semantics() -> None
     assert AUDIO_ARCHIVE_OPERATION.id == "stove0.media.audio-archive/v1"
     assert (
         AUDIO_ARCHIVE_OPERATION.contract_sha256
-        == "e756d97c1b30f97d64fe82b1279c6605f7eac15af8677aecd429dc328b539d25"
+        == "ebbce54d0380c00fe10e79992791f23208e70a7d6e5bb2608b7fae49e7ae03c6"
     )
     assert AUDIO_ARCHIVE_OPERATION.source_retirement_permitted is False
     assert AV1_OPUS_ARCHIVE_OPERATION.id == "stove0.media.av1-opus-archive/v1"
     assert (
         AV1_OPUS_ARCHIVE_OPERATION.contract_sha256
-        == "1823db9b9ec9c99e44ec740e6d56a8d6e3096c9d42b19897e0a7750e18d9835b"
+        == "b1b4e9b710b3cecdfe62c3c01bd1b5dac9693741a3ed8bda08c527a0077edf33"
     )
     assert AV1_OPUS_ARCHIVE_OPERATION.source_retirement_permitted is True
     assert source_artifacts.minimum == 1

@@ -8,7 +8,7 @@ from typing import Final, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 from stove0_protocol import (
-    JsonSchemaDocument,
+    JsonSchemaValidationProfile,
     SemanticValidationProfile,
     SemanticValidationProfilePayload,
 )
@@ -60,8 +60,8 @@ class Av1OpusArchiveIntent(IntentModel):
     metadata_projection: MediaProjectionPolicy = Field(default_factory=MediaProjectionPolicy)
 
 
-def _schema(identifier: str, model: type[IntentModel]) -> JsonSchemaDocument:
-    return JsonSchemaDocument.from_schema(identifier, model.model_json_schema())
+def _schema(identifier: str, model: type[IntentModel]) -> JsonSchemaValidationProfile:
+    return JsonSchemaValidationProfile.from_schema(identifier, model.model_json_schema())
 
 
 AUDIO_ARCHIVE_INTENT_CONFORMANCE_VECTORS = SemanticIntentConformanceVectors.model_validate_json(
