@@ -10,7 +10,7 @@ from riverhog_core.domain.archive import RawVolumePlan
 from riverhog_core.ports.archive_objects import (
     CompletedObjectReceipt,
     ResumableWriteConstraints,
-    WriteCompletionAuthority,
+    WriteCompletionPrecondition,
     WriteSegmentCursor,
     WriteSegmentPage,
     WriteSegmentReceipt,
@@ -26,8 +26,8 @@ from riverhog_core.raw_volume import raw_age_aligned_unit_plans
 ARCHIVE_UNIT_BYTES = 5 * 1024 * 1024
 
 
-def _authority(segments: tuple[WriteSegmentReceipt, ...]) -> WriteCompletionAuthority:
-    return WriteCompletionAuthority(
+def _authority(segments: tuple[WriteSegmentReceipt, ...]) -> WriteCompletionPrecondition:
+    return WriteCompletionPrecondition(
         len(segments),
         sum(item.bytes for item in segments),
         hashlib.sha256(repr(segments).encode("utf-8")).hexdigest(),
@@ -130,7 +130,7 @@ class MemoryResumableStore:
         self,
         *,
         session: WriteSession,
-        completion: WriteCompletionAuthority,
+        completion: WriteCompletionPrecondition,
         expected_bytes: int,
         expected_content_type: str,
         expected_metadata: dict[str, str],

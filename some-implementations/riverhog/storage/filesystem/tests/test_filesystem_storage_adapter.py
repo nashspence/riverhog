@@ -19,7 +19,7 @@ from riverhog_storage_adapter_protocol import (
     SmallObjectWriteRequest,
     StorageAdapterRejection,
     WriteCompleteRequest,
-    WriteCompletionAuthority,
+    WriteCompletionPrecondition,
     WriteSegmentListRequest,
     WriteSession,
     WriteStartRequest,
@@ -57,10 +57,10 @@ def _segment_page(adapter: FilesystemStorageAdapter, session):  # type: ignore[n
     return adapter.list_segments(WriteSegmentListRequest(session=session))
 
 
-def _completion_authority(
+def _completion_precondition(
     adapter: FilesystemStorageAdapter,
     session: WriteSession,
-) -> WriteCompletionAuthority:
+) -> WriteCompletionPrecondition:
     after_number = 0
     traversal_token = None
     while True:
@@ -119,7 +119,7 @@ def test_resumable_write_survives_restart_and_supports_exact_reads(tmp_path: Pat
         receipt = adapter.complete_write(
             WriteCompleteRequest(
                 session=resumed,
-                completion=_completion_authority(adapter, resumed),
+                completion=_completion_precondition(adapter, resumed),
                 expected_bytes=len(payload),
                 expected_content_type=request.content_type,
                 required_identity_assertions=request.required_identity_assertions,
@@ -534,7 +534,7 @@ def test_segment_replay_and_completion_replay_are_exact(tmp_path: Path) -> None:
 
         completion = WriteCompleteRequest(
             session=session,
-            completion=_completion_authority(adapter, session),
+            completion=_completion_precondition(adapter, session),
             expected_bytes=len(content),
             expected_content_type=request.content_type,
             required_identity_assertions=request.required_identity_assertions,
@@ -543,7 +543,7 @@ def test_segment_replay_and_completion_replay_are_exact(tmp_path: Path) -> None:
         altered_completion = completion.model_copy(
             update={
                 "completion": completion.completion.model_copy(
-                    update={"authority_token": "altered-active-write-authority"}
+                    update={"state_token": "altered-active-write-state"}
                 )
             }
         )
@@ -580,7 +580,7 @@ def test_completion_does_not_reread_the_completed_payload(
         receipt = adapter.complete_write(
             WriteCompleteRequest(
                 session=session,
-                completion=_completion_authority(adapter, session),
+                completion=_completion_precondition(adapter, session),
                 expected_bytes=len(content),
                 expected_content_type=request.content_type,
                 required_identity_assertions=request.required_identity_assertions,
@@ -696,7 +696,7 @@ def test_out_of_order_segments_complete_in_logical_number_order(tmp_path: Path) 
         receipt = adapter.complete_write(
             WriteCompleteRequest(
                 session=session,
-                completion=_completion_authority(adapter, session),
+                completion=_completion_precondition(adapter, session),
                 expected_bytes=request.expected_bytes,
                 expected_content_type=request.content_type,
                 required_identity_assertions=request.required_identity_assertions,
@@ -842,7 +842,7 @@ def test_stale_completion_does_not_abort_a_newer_active_session(tmp_path: Path) 
         )
         first_completion = WriteCompleteRequest(
             session=first_session,
-            completion=_completion_authority(adapter, first_session),
+            completion=_completion_precondition(adapter, first_session),
             expected_bytes=len(payload),
             expected_content_type=first_request.content_type,
             required_identity_assertions=first_request.required_identity_assertions,
@@ -873,7 +873,7 @@ def test_restart_finalizes_revision_installed_before_current_pointer(tmp_path: P
     )
     completion = WriteCompleteRequest(
         session=session,
-        completion=_completion_authority(adapter, session),
+        completion=_completion_precondition(adapter, session),
         expected_bytes=len(payload),
         expected_content_type=request.content_type,
         required_identity_assertions=request.required_identity_assertions,

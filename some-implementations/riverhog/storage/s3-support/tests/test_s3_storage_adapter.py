@@ -469,7 +469,7 @@ def test_resumable_write_reconciles_segments_and_lost_completion() -> None:
     altered_completion = completion.model_copy(
         update={
             "completion": completion.completion.model_copy(
-                update={"authority_token": "altered-active-write-authority"}
+                update={"state_token": "altered-active-write-state"}
             )
         }
     )

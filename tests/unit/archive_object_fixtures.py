@@ -52,7 +52,7 @@ from riverhog_core.ports.archive_objects import (
     CompletedObjectReceipt,
     ImmutableObjectReceipt,
     ResumableWriteConstraints,
-    WriteCompletionAuthority,
+    WriteCompletionPrecondition,
     WriteSegmentCursor,
     WriteSegmentPage,
     WriteSegmentReceipt,
@@ -102,13 +102,13 @@ from tests.provenance_observer import native_provenance_observer
 from tests.unit.db_helpers import sqlite_url
 
 
-def _completion_authority(
+def _completion_precondition(
     receipts: tuple[WriteSegmentReceipt, ...],
-) -> WriteCompletionAuthority:
-    return WriteCompletionAuthority(
+) -> WriteCompletionPrecondition:
+    return WriteCompletionPrecondition(
         segment_count=len(receipts),
         stored_bytes=sum(receipt.bytes for receipt in receipts),
-        authority_token=hashlib.sha256(repr(receipts).encode("utf-8")).hexdigest(),
+        state_token=hashlib.sha256(repr(receipts).encode("utf-8")).hexdigest(),
     )
 
 
@@ -995,14 +995,14 @@ class MemoryArchiveStore:
             next_cursor=(
                 WriteSegmentCursor(page_segments[-1].number, traversal_token) if has_more else None
             ),
-            completion=(None if has_more else _completion_authority(receipts)),
+            completion=(None if has_more else _completion_precondition(receipts)),
         )
 
     def complete_write(
         self,
         *,
         session: WriteSession,
-        completion: WriteCompletionAuthority,
+        completion: WriteCompletionPrecondition,
         expected_bytes: int,
         expected_content_type: str,
         expected_metadata: dict[str, str],
@@ -1021,7 +1021,7 @@ class MemoryArchiveStore:
             )
             for number, content in sorted(written_segments.items())
         )
-        assert _completion_authority(receipts) == completion
+        assert _completion_precondition(receipts) == completion
         content = b"".join(written_segments[current.number] for current in receipts)
         assert len(content) == expected_bytes
         self.objects[object_path] = content

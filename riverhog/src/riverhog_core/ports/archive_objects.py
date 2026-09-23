@@ -29,10 +29,10 @@ class WriteSegmentReceipt:
 
 
 @dataclass(frozen=True, slots=True)
-class WriteCompletionAuthority:
+class WriteCompletionPrecondition:
     segment_count: int
     stored_bytes: int
-    authority_token: str
+    state_token: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -45,7 +45,7 @@ class WriteSegmentCursor:
 class WriteSegmentPage:
     segments: tuple[WriteSegmentReceipt, ...]
     next_cursor: WriteSegmentCursor | None
-    completion: WriteCompletionAuthority | None
+    completion: WriteCompletionPrecondition | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -96,7 +96,7 @@ class ArchiveResumableObjectStore(Protocol):
         self,
         *,
         session: WriteSession,
-        completion: WriteCompletionAuthority,
+        completion: WriteCompletionPrecondition,
         expected_bytes: int,
         expected_content_type: str,
         expected_metadata: dict[str, str],

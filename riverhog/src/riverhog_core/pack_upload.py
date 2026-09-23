@@ -29,7 +29,7 @@ from riverhog_core.pack_volume import iter_render_pack_upload_unit_payload
 from riverhog_core.ports.archive_objects import (
     ArchiveResumableObjectStore,
     CompletedObjectReceipt,
-    WriteCompletionAuthority,
+    WriteCompletionPrecondition,
     WriteSegmentCursor,
     WriteSession,
 )
@@ -615,7 +615,7 @@ class PackVolumeUploader:
             checkpoint.write_token,
             _stored_bytes_for_state(checkpoint.age_state_json),
         )
-        completion = self._completion_authority(plan=plan, checkpoint=checkpoint)
+        completion = self._completion_precondition(plan=plan, checkpoint=checkpoint)
         completed = self._object_store.complete_write(
             session=session,
             completion=completion,
@@ -690,12 +690,12 @@ class PackVolumeUploader:
         if checkpoint.completed is not None and len(checkpoint.archive_parts) != len(plan.units):
             raise ValueError("completed pack upload checkpoint has pending units")
 
-    def _completion_authority(
+    def _completion_precondition(
         self,
         *,
         plan: PackVolumePlan,
         checkpoint: PackUploadCheckpoint,
-    ) -> WriteCompletionAuthority:
+    ) -> WriteCompletionPrecondition:
         expected = iter(
             self._write_segment_plans(
                 plan,

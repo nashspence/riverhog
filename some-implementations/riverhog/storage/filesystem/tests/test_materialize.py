@@ -25,7 +25,7 @@ from a_riverhog_filesystem_store.materialize_cli import main
 from riverhog_storage_adapter_protocol import (
     SmallObjectWriteRequest,
     WriteCompleteRequest,
-    WriteCompletionAuthority,
+    WriteCompletionPrecondition,
     WriteSegmentListRequest,
     WriteSession,
     WriteStartRequest,
@@ -58,10 +58,10 @@ def _put(adapter: FilesystemStorageAdapter, path: str, payload: bytes) -> None:
     )
 
 
-def _completion_authority(
+def _completion_precondition(
     adapter: FilesystemStorageAdapter,
     session: WriteSession,
-) -> WriteCompletionAuthority:
+) -> WriteCompletionPrecondition:
     after_number = 0
     traversal_token = None
     while True:
@@ -103,7 +103,7 @@ def _put_segmented(
     adapter.complete_write(
         WriteCompleteRequest(
             session=session,
-            completion=_completion_authority(adapter, session),
+            completion=_completion_precondition(adapter, session),
             expected_bytes=len(payload),
             expected_content_type=request.content_type,
             required_identity_assertions=request.required_identity_assertions,

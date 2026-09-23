@@ -95,7 +95,7 @@ def _expected_checks(descriptor: AdapterDescriptor) -> tuple[str, ...]:
         (
             "write-continuation-replay",
             "write-reconciliation",
-            "write-active-completion-authority",
+            "write-active-completion-precondition",
             "write-completion-recovery",
             "write-completed-object-authority",
             "write-stream",
@@ -335,7 +335,7 @@ def run_storage_adapter_conformance(
         if listed_segment_page.segments != written_segments:
             raise AssertionError("write listing differs from written segment receipts")
         if listed_segment_page.completion is None:
-            raise AssertionError("complete segment sequence has no completion authority")
+            raise AssertionError("complete segment sequence has no completion precondition")
         checks.append("write-continuation-replay")
         checks.append("write-reconciliation")
 
@@ -348,26 +348,26 @@ def run_storage_adapter_conformance(
             required_identity_assertions=write_request.required_identity_assertions,
             expected_placement=write_request.placement,
         )
-        altered_authority = listed_segment_page.completion.model_copy(
-            update={"authority_token": "conformance-altered-authority"}
+        altered_precondition = listed_segment_page.completion.model_copy(
+            update={"state_token": "conformance-altered-state"}
         )
-        if altered_authority == listed_segment_page.completion:
-            altered_authority = listed_segment_page.completion.model_copy(
-                update={"authority_token": "conformance-other-authority"}
+        if altered_precondition == listed_segment_page.completion:
+            altered_precondition = listed_segment_page.completion.model_copy(
+                update={"state_token": "conformance-other-state"}
             )
         altered_completion_request = completion_request.model_copy(
-            update={"completion": altered_authority}
+            update={"completion": altered_precondition}
         )
         try:
             continuation_client.complete_write(altered_completion_request)
         except StorageAdapterProtocolError as completion_exc:
             if completion_exc.code != "identity_conflict":
                 raise AssertionError(
-                    "active write rejected an altered authority with the wrong error code"
+                    "active write rejected an altered precondition with the wrong error code"
                 ) from completion_exc
         else:
-            raise AssertionError("active write accepted an altered completion authority")
-        checks.append("write-active-completion-authority")
+            raise AssertionError("active write accepted an altered completion precondition")
+        checks.append("write-active-completion-precondition")
         completed = continuation_client.complete_write(completion_request)
         recovered_completion = continuation_client.complete_write(completion_request)
         if recovered_completion != completed:
@@ -376,7 +376,9 @@ def run_storage_adapter_conformance(
             altered_completion_request
         )
         if recovered_with_obsolete_transport != completed:
-            raise AssertionError("completed-object identity did not supersede transport authority")
+            raise AssertionError(
+                "completed-object identity did not supersede active-write precondition"
+            )
         headed_completion = continuation_client.find_completed_write(
             CompletedWriteLookupRequest(
                 object_path=write_path,

@@ -17,7 +17,7 @@ from riverhog_storage_adapter_protocol import (
     validated_storage_adapter,
 )
 from riverhog_storage_adapter_protocol import (
-    WriteCompletionAuthority as AdapterWriteCompletionAuthority,
+    WriteCompletionPrecondition as AdapterWriteCompletionPrecondition,
 )
 from riverhog_storage_adapter_protocol import (
     WriteSegmentReceipt as AdapterWriteSegmentReceipt,
@@ -31,7 +31,7 @@ from riverhog_core.ports.archive_objects import (
     CompletedObjectReceipt,
     ImmutableObjectReceipt,
     ResumableWriteConstraints,
-    WriteCompletionAuthority,
+    WriteCompletionPrecondition,
     WriteSegmentCursor,
     WriteSegmentPage,
     WriteSegmentReceipt,
@@ -125,7 +125,7 @@ class StorageAdapterArchiveResumableObjectStore:
         self,
         *,
         session: WriteSession,
-        completion: WriteCompletionAuthority,
+        completion: WriteCompletionPrecondition,
         expected_bytes: int,
         expected_content_type: str,
         expected_metadata: dict[str, str],
@@ -270,22 +270,22 @@ def _write_session(session: AdapterWriteSession) -> WriteSession:
 
 
 def _adapter_completion(
-    completion: WriteCompletionAuthority,
-) -> AdapterWriteCompletionAuthority:
-    return AdapterWriteCompletionAuthority(
+    completion: WriteCompletionPrecondition,
+) -> AdapterWriteCompletionPrecondition:
+    return AdapterWriteCompletionPrecondition(
         segment_count=completion.segment_count,
         stored_bytes=completion.stored_bytes,
-        authority_token=completion.authority_token,
+        state_token=completion.state_token,
     )
 
 
 def _write_completion(
-    completion: AdapterWriteCompletionAuthority,
-) -> WriteCompletionAuthority:
-    return WriteCompletionAuthority(
+    completion: AdapterWriteCompletionPrecondition,
+) -> WriteCompletionPrecondition:
+    return WriteCompletionPrecondition(
         segment_count=completion.segment_count,
         stored_bytes=completion.stored_bytes,
-        authority_token=completion.authority_token,
+        state_token=completion.state_token,
     )
 
 

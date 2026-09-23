@@ -93,7 +93,7 @@ def run(
         after_number = 0
         traversal_token: str | None = None
         accepted_segments = 0
-        completion_authority = None
+        completion_precondition = None
         while True:
             page = client.list_segments(
                 WriteSegmentListRequest(
@@ -104,15 +104,15 @@ def run(
             )
             accepted_segments += len(page.segments)
             if page.next_after_number is None:
-                completion_authority = page.completion
+                completion_precondition = page.completion
                 break
             after_number = page.next_after_number
             traversal_token = page.traversal_token
-        if completion_authority is None or accepted_segments != number - 1:
+        if completion_precondition is None or accepted_segments != number - 1:
             raise RuntimeError("storage-adapter goodput traversal is incomplete")
         completion = WriteCompleteRequest(
             session=session,
-            completion=completion_authority,
+            completion=completion_precondition,
             expected_bytes=payload_bytes,
             expected_content_type=request.content_type,
             required_identity_assertions=request.required_identity_assertions,

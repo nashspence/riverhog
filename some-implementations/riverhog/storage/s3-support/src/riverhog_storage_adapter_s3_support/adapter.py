@@ -34,7 +34,7 @@ from riverhog_storage_adapter_protocol import (
     SmallObjectWriteRequest,
     StorageAdapterRejection,
     WriteCompleteRequest,
-    WriteCompletionAuthority,
+    WriteCompletionPrecondition,
     WriteSegmentListRequest,
     WriteSegmentPage,
     WriteSegmentReceipt,
@@ -70,9 +70,9 @@ def _segment_traversal_token(segments: tuple[WriteSegmentReceipt, ...]) -> str:
     return digest.hexdigest()
 
 
-def _write_completion_authority(
+def _write_completion_precondition(
     segments: tuple[WriteSegmentReceipt, ...],
-) -> WriteCompletionAuthority:
+) -> WriteCompletionPrecondition:
     digest = hashlib.sha256(_COMPLETION_DOMAIN)
     stored_bytes = 0
     for expected_number, segment in enumerate(segments, start=1):
@@ -88,10 +88,10 @@ def _write_completion_authority(
         digest.update(len(encoded).to_bytes(8, "big"))
         digest.update(encoded)
         stored_bytes += segment.stored_bytes
-    return WriteCompletionAuthority(
+    return WriteCompletionPrecondition(
         segment_count=len(segments),
         stored_bytes=stored_bytes,
-        authority_token=digest.hexdigest(),
+        state_token=digest.hexdigest(),
     )
 
 
@@ -296,7 +296,7 @@ class S3StorageAdapter:
             expected_bytes=request.session.expected_bytes,
             minimum_nonfinal_bytes=_MINIMUM_NONFINAL_PART_BYTES,
         ):
-            completion = _write_completion_authority(parts)
+            completion = _write_completion_precondition(parts)
         return WriteSegmentPage(
             session=request.session,
             traversal_token=traversal_token,
@@ -348,10 +348,10 @@ class S3StorageAdapter:
         if recovered is not None:
             return recovered
         parts = self._listed_segments(request.session)
-        if _write_completion_authority(parts) != request.completion:
+        if _write_completion_precondition(parts) != request.completion:
             raise StorageAdapterRejection(
                 "identity_conflict",
-                "S3 write completion authority differs from accepted segments",
+                "S3 write completion precondition differs from accepted segments",
             )
         if len(parts) > _MAXIMUM_PART_COUNT or any(
             part.stored_bytes > _MAXIMUM_PART_BYTES for part in parts

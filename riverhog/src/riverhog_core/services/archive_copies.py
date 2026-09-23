@@ -46,7 +46,7 @@ from riverhog_core.pack_upload import PACK_VOLUME_CONTENT_TYPE
 from riverhog_core.ports.archive_objects import (
     ArchiveResumableObjectStore,
     ImmutableArchiveObjectStore,
-    WriteCompletionAuthority,
+    WriteCompletionPrecondition,
     WriteSegmentCursor,
     WriteSegmentReceipt,
     WriteSession,
@@ -929,7 +929,7 @@ class SqlAlchemyArchiveCopyService:
         )
         completed = destination_object_store.complete_write(
             session=write_session,
-            completion=self._copy_completion_authority(
+            completion=self._copy_completion_precondition(
                 destination_object_store,
                 session=write_session,
                 expected=iter_write_segments(
@@ -1209,15 +1209,15 @@ class SqlAlchemyArchiveCopyService:
             raise Conflict("archive copy write-segment receipts do not cover the volume")
 
     @staticmethod
-    def _copy_completion_authority(
+    def _copy_completion_precondition(
         store: ArchiveResumableObjectStore,
         *,
         session: WriteSession,
         expected: Iterable[WriteSegmentPlan],
-    ) -> WriteCompletionAuthority:
+    ) -> WriteCompletionPrecondition:
         expected_iterator = iter(expected)
         cursor = WriteSegmentCursor()
-        completion: WriteCompletionAuthority | None = None
+        completion: WriteCompletionPrecondition | None = None
         while True:
             page = store.list_segments(session=session, cursor=cursor)
             for receipt in page.segments:

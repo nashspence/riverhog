@@ -26,7 +26,7 @@ from riverhog_core.domain.archive import (
 from riverhog_core.ports.archive_objects import (
     ArchiveResumableObjectStore,
     CompletedObjectReceipt,
-    WriteCompletionAuthority,
+    WriteCompletionPrecondition,
     WriteSegmentCursor,
     WriteSession,
 )
@@ -638,7 +638,7 @@ class RawVolumeUploader:
         )
         completed = self._object_store.complete_write(
             session=session,
-            completion=self._completion_authority(checkpoint, session=session),
+            completion=self._completion_precondition(checkpoint, session=session),
             expected_bytes=sum(current.stored_bytes for current in parts),
             expected_content_type=RAW_VOLUME_CONTENT_TYPE,
             expected_metadata=_metadata(
@@ -728,15 +728,15 @@ class RawVolumeUploader:
             self._object_store.write_constraints(),
         )
 
-    def _completion_authority(
+    def _completion_precondition(
         self,
         checkpoint: RawUploadCheckpoint,
         *,
         session: WriteSession,
-    ) -> WriteCompletionAuthority:
+    ) -> WriteCompletionPrecondition:
         expected = iter(self._write_segment_plans(checkpoint))
         cursor = WriteSegmentCursor()
-        completion: WriteCompletionAuthority | None = None
+        completion: WriteCompletionPrecondition | None = None
         while True:
             page = self._object_store.list_segments(session=session, cursor=cursor)
             for receipt in page.segments:

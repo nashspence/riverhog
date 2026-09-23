@@ -46,7 +46,7 @@ from riverhog_storage_adapter_protocol import (
     SmallObjectWriteRequest,
     StorageAdapterRejection,
     WriteCompleteRequest,
-    WriteCompletionAuthority,
+    WriteCompletionPrecondition,
     WriteSegmentListRequest,
     WriteSegmentPage,
     WriteSegmentReceipt,
@@ -270,7 +270,7 @@ class _SegmentAuthority:
     def state(self) -> str:
         return f"{self.combined_entry_sha256:064x}"
 
-    def completion(self) -> WriteCompletionAuthority:
+    def completion(self) -> WriteCompletionPrecondition:
         count = str(self.segment_count).encode("ascii")
         stored_bytes = str(self.stored_bytes).encode("ascii")
         digest = hashlib.sha256(_SEGMENT_SEQUENCE_DOMAIN)
@@ -279,10 +279,10 @@ class _SegmentAuthority:
         digest.update(len(stored_bytes).to_bytes(8, "big"))
         digest.update(stored_bytes)
         digest.update(self.combined_entry_sha256.to_bytes(32, "big"))
-        return WriteCompletionAuthority(
+        return WriteCompletionPrecondition(
             segment_count=self.segment_count,
             stored_bytes=self.stored_bytes,
-            authority_token=digest.hexdigest(),
+            state_token=digest.hexdigest(),
         )
 
 
@@ -696,7 +696,7 @@ class FilesystemStorageAdapter:
             if completion is None or request.completion != completion:
                 raise StorageAdapterRejection(
                     "identity_conflict",
-                    "write completion authority differs from persisted state",
+                    "write completion precondition differs from persisted state",
                 )
             completed_at = format_utc_timestamp(utc_now())
             record = _ObjectRecord(
@@ -710,7 +710,7 @@ class FilesystemStorageAdapter:
                 placement=state.placement,
                 completed_at=completed_at,
                 segment_count=completion.segment_count,
-                segment_sequence_sha256=completion.authority_token,
+                segment_sequence_sha256=completion.state_token,
             )
             self._install_write_as_revision(object_key, write_dir, record)
             return self._completed_receipt(record)
@@ -1388,7 +1388,7 @@ class FilesystemStorageAdapter:
         path: Path,
         *,
         expected_bytes: int,
-    ) -> WriteCompletionAuthority | None:
+    ) -> WriteCompletionPrecondition | None:
         accumulated = self._segment_authority(path)
         if accumulated.stored_bytes != expected_bytes:
             return None
