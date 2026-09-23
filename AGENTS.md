@@ -41,6 +41,12 @@ membership; do not mirror child or transitive state in parent checklists or work
 prefixes. When reopening an issue, narrow its body to the current residual and preserve completed
 history in comments; use checklists only for acceptance steps owned by that issue.
 
+Externally produced repository-shaped reference material follows the standing convention in #903,
+including material requested after triage or by an integration agent. Link each reference branch
+to its owning issue through GitHub's native Development relationship and record the exact handoff
+SHA plus producer/requester provenance in the issue. Reference material remains non-authoritative
+input and does not bypass the repository's current integration rail.
+
 Durable documentation has distinct roles:
 
 - [README](README.md) is the human entrypoint;
