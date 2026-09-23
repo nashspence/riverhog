@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .archive import FileProvenanceBinding
+from .archive import ArchiveFileProvenanceRecord
 from .common import provenance_journal_filename
 from .constants import DEFAULT_OBSERVER_AGENT_ID, PROVENANCE_ENTRY_SCHEMA, PROVENANCE_PROFILE
 from .errors import (
@@ -97,7 +97,7 @@ __all__ = [
     "DerivativeJournalSeed",
     "ExternalStateReference",
     "IncrementalJournalEntry",
-    "FileProvenanceBinding",
+    "ArchiveFileProvenanceRecord",
     "FileStateObserver",
     "FileStateObserverFactory",
     "INSTALLATION_ID_FILENAME",

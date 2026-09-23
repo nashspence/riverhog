@@ -70,7 +70,7 @@ from riverhog_protocol.errors import Conflict, NotFound
 from riverhog_protocol.manifest import collection_content_identity
 from riverhog_protocol.raw_ingress import ordered_raw_part_commitment
 from riverhog_provenance import (
-    FileProvenanceBinding,
+    ArchiveFileProvenanceRecord,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
@@ -746,7 +746,7 @@ def test_captured_and_omitted_file_provenance_is_one_immutable_mixed_archive(
     )
     summary = validate_journal(journal)
     bindings = (
-        FileProvenanceBinding(
+        ArchiveFileProvenanceRecord(
             path="captured.bin",
             bytes=len(contents["captured.bin"]),
             sha256=hashlib.sha256(contents["captured.bin"]).hexdigest(),
@@ -754,7 +754,7 @@ def test_captured_and_omitted_file_provenance_is_one_immutable_mixed_archive(
             journal_id=summary.journal_id,
             current_state_id=summary.current_state_id,
         ),
-        FileProvenanceBinding(
+        ArchiveFileProvenanceRecord(
             path="operator-note.txt",
             bytes=len(contents["operator-note.txt"]),
             sha256=hashlib.sha256(contents["operator-note.txt"]).hexdigest(),

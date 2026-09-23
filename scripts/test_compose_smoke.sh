@@ -1026,10 +1026,10 @@ with ApiClient() as client:
     while True:
         page = client.list_processing_claim_inputs(
             derivation['derivation']['claim']['id'],
-            authority_sha256=authority,
+            identity_sha256=authority,
             start_ordinal=ordinal,
         )
-        assert page.authority.sha256 == authority
+        assert page.identity.sha256 == authority
         roots.extend(page.inputs)
         if page.next_ordinal is None:
             break

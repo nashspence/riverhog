@@ -120,45 +120,45 @@ class CollectionArtifactIdentityDocument(RiverhogWorkflowDocument):
         return self
 
 
-class ExactSetAuthorityDocument(RiverhogWorkflowDocument):
+class ExactSetIdentityDocument(RiverhogWorkflowDocument):
     """Small immutable identity for an exact canonically ordered logical set."""
 
     count: NonnegativeDecimal = Field(ge=1)
     sha256: SHA256
 
 
-class ArtifactSetAuthorityDocument(ExactSetAuthorityDocument):
+class ArtifactSetIdentityDocument(ExactSetIdentityDocument):
     total_bytes: NonnegativeDecimal = Field(ge=0)
 
 
 class ReceivingSetDocument(RiverhogWorkflowDocument):
     state: Literal["receiving", "sealed"]
     count: NonnegativeDecimal = Field(ge=0)
-    authority: ExactSetAuthorityDocument | None = None
+    identity: ExactSetIdentityDocument | None = None
 
     @model_validator(mode="after")
     def validate_state(self) -> Self:
-        if (self.state == "sealed") != (self.authority is not None):
-            raise ValueError("set authority is inconsistent with state")
-        if self.authority is not None and self.authority.count != self.count:
-            raise ValueError("set authority count differs from staged count")
+        if (self.state == "sealed") != (self.identity is not None):
+            raise ValueError("set identity is inconsistent with state")
+        if self.identity is not None and self.identity.count != self.count:
+            raise ValueError("set identity count differs from staged count")
         return self
 
 
 class OutcomeSetDocument(RiverhogWorkflowDocument):
     state: Literal["receiving", "sealing", "sealed", "failed"]
     count: NonnegativeDecimal = Field(ge=0)
-    authority: ExactSetAuthorityDocument | None = None
+    identity: ExactSetIdentityDocument | None = None
     failure: str | None = Field(default=None, min_length=1, max_length=1000)
 
     @model_validator(mode="after")
     def validate_state(self) -> Self:
-        if (self.state == "sealed") != (self.authority is not None):
-            raise ValueError("outcome authority is inconsistent with state")
+        if (self.state == "sealed") != (self.identity is not None):
+            raise ValueError("outcome identity is inconsistent with state")
         if (self.state == "failed") != (self.failure is not None):
             raise ValueError("outcome failure is inconsistent with state")
-        if self.authority is not None and self.authority.count != self.count:
-            raise ValueError("outcome authority count differs from staged count")
+        if self.identity is not None and self.identity.count != self.count:
+            raise ValueError("outcome identity count differs from staged count")
         return self
 
 
@@ -166,16 +166,16 @@ class ArtifactReceivingSetDocument(RiverhogWorkflowDocument):
     state: Literal["receiving", "sealed"]
     count: NonnegativeDecimal = Field(ge=0)
     total_bytes: NonnegativeDecimal = Field(ge=0)
-    authority: ArtifactSetAuthorityDocument | None = None
+    identity: ArtifactSetIdentityDocument | None = None
 
     @model_validator(mode="after")
     def validate_state(self) -> Self:
-        if (self.state == "sealed") != (self.authority is not None):
-            raise ValueError("artifact authority is inconsistent with state")
-        if self.authority is not None and (
-            self.authority.count != self.count or self.authority.total_bytes != self.total_bytes
+        if (self.state == "sealed") != (self.identity is not None):
+            raise ValueError("artifact identity is inconsistent with state")
+        if self.identity is not None and (
+            self.identity.count != self.count or self.identity.total_bytes != self.total_bytes
         ):
-            raise ValueError("artifact authority totals differ from staged totals")
+            raise ValueError("artifact identity totals differ from staged totals")
         return self
 
 
@@ -189,7 +189,7 @@ class CollectionRootBatchDocument(RiverhogWorkflowDocument):
             "uniqueItems": True,
             "x-riverhog-extent": {
                 "policy": "segmented_no_total_max",
-                "reason": "bounded-authority-append",
+                "reason": "bounded-set-append",
                 "progression": "start_ordinal",
             },
         },
@@ -197,7 +197,7 @@ class CollectionRootBatchDocument(RiverhogWorkflowDocument):
 
 
 class CollectionRootPageDocument(RiverhogWorkflowDocument):
-    authority: ExactSetAuthorityDocument
+    identity: ExactSetIdentityDocument
     start_ordinal: NonnegativeDecimal = Field(ge=0)
     next_ordinal: NonnegativeDecimal | None = Field(default=None, ge=1)
     inputs: list[CollectionRootIdentityDocument] = Field(
@@ -205,8 +205,8 @@ class CollectionRootPageDocument(RiverhogWorkflowDocument):
         json_schema_extra={
             "x-riverhog-extent": {
                 "policy": "segmented_no_total_max",
-                "reason": "bounded-authority-page",
-                "progression": "authority-bound-start_ordinal",
+                "reason": "bounded-identity-page",
+                "progression": "identity-bound-start_ordinal",
             }
         },
     )
@@ -222,7 +222,7 @@ class CollectionArtifactBatchDocument(RiverhogWorkflowDocument):
             "uniqueItems": True,
             "x-riverhog-extent": {
                 "policy": "segmented_no_total_max",
-                "reason": "bounded-authority-append",
+                "reason": "bounded-set-append",
                 "progression": "start_ordinal",
             },
         },
@@ -230,7 +230,7 @@ class CollectionArtifactBatchDocument(RiverhogWorkflowDocument):
 
 
 class CollectionArtifactPageDocument(RiverhogWorkflowDocument):
-    authority: ArtifactSetAuthorityDocument
+    identity: ArtifactSetIdentityDocument
     start_ordinal: NonnegativeDecimal = Field(ge=0)
     next_ordinal: NonnegativeDecimal | None = Field(default=None, ge=1)
     artifacts: list[CollectionArtifactIdentityDocument] = Field(
@@ -238,15 +238,15 @@ class CollectionArtifactPageDocument(RiverhogWorkflowDocument):
         json_schema_extra={
             "x-riverhog-extent": {
                 "policy": "segmented_no_total_max",
-                "reason": "bounded-authority-page",
-                "progression": "authority-bound-start_ordinal",
+                "reason": "bounded-identity-page",
+                "progression": "identity-bound-start_ordinal",
             }
         },
     )
 
 
 class ProcessingOutcomePageDocument(RiverhogWorkflowDocument):
-    authority: ExactSetAuthorityDocument
+    identity: ExactSetIdentityDocument
     start_ordinal: NonnegativeDecimal = Field(ge=0)
     next_ordinal: NonnegativeDecimal | None = Field(default=None, ge=1)
     outcomes: list[ProcessingOutcomeIdentityDocument] = Field(
@@ -254,8 +254,8 @@ class ProcessingOutcomePageDocument(RiverhogWorkflowDocument):
         json_schema_extra={
             "x-riverhog-extent": {
                 "policy": "segmented_no_total_max",
-                "reason": "bounded-authority-page",
-                "progression": "authority-bound-start_ordinal",
+                "reason": "bounded-identity-page",
+                "progression": "identity-bound-start_ordinal",
             }
         },
     )
@@ -356,7 +356,7 @@ class ArtifactDispositionBatchDocument(RiverhogWorkflowDocument):
             "x-riverhog-extent": {
                 "policy": "segmented_no_total_max",
                 "reason": "bounded-disposition-append",
-                "progression": "sealed-disposition-authority",
+                "progression": "sealed-disposition-identity",
             },
         },
     )
@@ -372,7 +372,7 @@ class ArtifactDispositionOutputBatchDocument(RiverhogWorkflowDocument):
             "x-riverhog-extent": {
                 "policy": "segmented_no_total_max",
                 "reason": "bounded-disposition-append",
-                "progression": "sealed-disposition-authority",
+                "progression": "sealed-disposition-identity",
             },
         },
     )
@@ -415,7 +415,7 @@ class ArtifactDispositionSetDocument(RiverhogWorkflowDocument):
 
 
 class ArtifactDispositionPageDocument(RiverhogWorkflowDocument):
-    authority: ArtifactDispositionSetIdentityDocument
+    identity: ArtifactDispositionSetIdentityDocument
     start_ordinal: NonnegativeDecimal = Field(ge=0)
     next_ordinal: NonnegativeDecimal | None = Field(default=None, ge=1)
     dispositions: list[ArtifactDispositionDocument] = Field(
@@ -423,15 +423,15 @@ class ArtifactDispositionPageDocument(RiverhogWorkflowDocument):
         json_schema_extra={
             "x-riverhog-extent": {
                 "policy": "segmented_no_total_max",
-                "reason": "bounded-authority-page",
-                "progression": "authority-bound-start_ordinal",
+                "reason": "bounded-identity-page",
+                "progression": "identity-bound-start_ordinal",
             }
         },
     )
 
 
 class ArtifactDispositionOutputPageDocument(RiverhogWorkflowDocument):
-    authority: ArtifactDispositionSetIdentityDocument
+    identity: ArtifactDispositionSetIdentityDocument
     start_ordinal: NonnegativeDecimal = Field(ge=0)
     next_ordinal: NonnegativeDecimal | None = Field(default=None, ge=1)
     outputs: list[ArtifactDispositionOutputDocument] = Field(
@@ -439,8 +439,8 @@ class ArtifactDispositionOutputPageDocument(RiverhogWorkflowDocument):
         json_schema_extra={
             "x-riverhog-extent": {
                 "policy": "segmented_no_total_max",
-                "reason": "bounded-authority-page",
-                "progression": "authority-bound-start_ordinal",
+                "reason": "bounded-identity-page",
+                "progression": "identity-bound-start_ordinal",
             }
         },
     )
@@ -620,8 +620,8 @@ class ProcessingClaimPlanDocument(RiverhogWorkflowDocument):
     controller_evidence: ControllerEvidenceDocument
     controller_evidence_sha256: SHA256
     operation: OperationIdentityDocument
-    inputs: ExactSetAuthorityDocument
-    artifacts: ArtifactSetAuthorityDocument
+    inputs: ExactSetIdentityDocument
+    artifacts: ArtifactSetIdentityDocument
     retirement_policy: RetirementPolicy
     retirement_grace_seconds: NonnegativeDecimal = Field(ge=0)
     sealed_at: Timestamp
@@ -652,7 +652,7 @@ class ProcessingClaimOutcomeSettlementDocument(RiverhogWorkflowDocument):
         }
     )
 
-    outcomes: ExactSetAuthorityDocument
+    outcomes: ExactSetIdentityDocument
     retirement_policy: RetirementPolicy
     retirement_grace_seconds: NonnegativeDecimal = Field(ge=0)
 
@@ -694,7 +694,7 @@ class RetirementClaimReferenceDocument(RiverhogWorkflowDocument):
     work_id: SHA256
     execution_id: SHA256 | None = None
     output_collection_id: CollectionId | None = None
-    outcomes: ExactSetAuthorityDocument | None = None
+    outcomes: ExactSetIdentityDocument | None = None
 
     @model_validator(mode="after")
     def validate_settlement_form(self) -> Self:
@@ -780,7 +780,7 @@ class ProcessingClaimDocument(RiverhogWorkflowDocument):
             purpose=self.purpose,
         )
         if self.outcome_settlement is not None:
-            if self.outcomes.authority != self.outcome_settlement.outcomes:
+            if self.outcomes.identity != self.outcome_settlement.outcomes:
                 raise ValueError("processing outcome settlement identity is invalid")
             if self.plan is not None or self.state not in {"settled", "retiring", "released"}:
                 raise ValueError("processing outcome settlement is inconsistent with claim state")
@@ -807,7 +807,7 @@ class ProcessingClaimDocument(RiverhogWorkflowDocument):
                     raise ValueError("direct claim settlement evidence is incomplete")
             elif (
                 self.output_collection_id is not None
-                or self.outcomes.authority is None
+                or self.outcomes.identity is None
                 or self.outcome_settlement is None
             ):
                 raise ValueError("delegated claim settlement evidence is incomplete")
@@ -889,7 +889,7 @@ __all__ = [
     "ArtifactDispositionSetDocument",
     "ArtifactDispositionSetIdentityDocument",
     "ArtifactReceivingSetDocument",
-    "ArtifactSetAuthorityDocument",
+    "ArtifactSetIdentityDocument",
     "CollectionArtifactBatchDocument",
     "CollectionArtifactIdentityDocument",
     "CollectionArtifactPageDocument",
@@ -898,7 +898,7 @@ __all__ = [
     "CollectionRootIdentityDocument",
     "CollectionRootBatchDocument",
     "CollectionRootPageDocument",
-    "ExactSetAuthorityDocument",
+    "ExactSetIdentityDocument",
     "OperationIdentityDocument",
     "OutcomeSetDocument",
     "ProcessingClaimAbandonDocument",

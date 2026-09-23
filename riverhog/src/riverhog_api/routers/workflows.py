@@ -140,7 +140,7 @@ def seal_processing_claim_inputs(
         **operation_interface("client-only-primitive"),
         **exact_authority_page_operation(
             authority="processing-claim-inputs",
-            authority_parameter="authority_sha256",
+            authority_parameter="identity_sha256",
             cursor_parameter="start_ordinal",
             fixed_limit=128,
         ),
@@ -150,13 +150,13 @@ def list_processing_claim_inputs(
     claim_id: ProcessingClaimId,
     container: ContainerDep,
     principal: CollectionTransformLeaseManager,
-    authority_sha256: Annotated[str, Query(pattern=r"^[0-9a-f]{64}$")],
+    identity_sha256: Annotated[str, Query(pattern=r"^[0-9a-f]{64}$")],
     start_ordinal: Annotated[int, Query(ge=0)] = 0,
 ) -> CollectionRootPageOut:
     return CollectionRootPageOut.model_validate(
         container.collection_workflows.list_claim_inputs(
             claim_id,
-            authority_sha256=authority_sha256,
+            identity_sha256=identity_sha256,
             start_ordinal=start_ordinal,
             principal=principal,
         )
@@ -215,7 +215,7 @@ def seal_processing_claim_artifacts(
         **operation_interface("client-only-primitive"),
         **exact_authority_page_operation(
             authority="processing-claim-artifacts",
-            authority_parameter="authority_sha256",
+            authority_parameter="identity_sha256",
             cursor_parameter="start_ordinal",
             fixed_limit=128,
         ),
@@ -225,13 +225,13 @@ def list_processing_claim_artifacts(
     claim_id: ProcessingClaimId,
     container: ContainerDep,
     principal: CollectionTransformLeaseManager,
-    authority_sha256: Annotated[str, Query(pattern=r"^[0-9a-f]{64}$")],
+    identity_sha256: Annotated[str, Query(pattern=r"^[0-9a-f]{64}$")],
     start_ordinal: Annotated[int, Query(ge=0)] = 0,
 ) -> CollectionArtifactPageOut:
     return CollectionArtifactPageOut.model_validate(
         container.collection_workflows.list_claim_artifacts(
             claim_id,
-            authority_sha256=authority_sha256,
+            identity_sha256=identity_sha256,
             start_ordinal=start_ordinal,
             principal=principal,
         )
@@ -489,7 +489,7 @@ def record_processing_claim_dispositions(
         **operation_interface("client-only-primitive"),
         **exact_authority_page_operation(
             authority="processing-claim-dispositions",
-            authority_parameter="authority_sha256",
+            authority_parameter="identity_sha256",
             cursor_parameter="start_ordinal",
             fixed_limit=128,
         ),
@@ -499,13 +499,13 @@ def list_processing_claim_dispositions(
     claim_id: ProcessingClaimId,
     container: ContainerDep,
     principal: CollectionTransformLeaseManager,
-    authority_sha256: Annotated[str, Query(pattern=r"^[0-9a-f]{64}$")],
+    identity_sha256: Annotated[str, Query(pattern=r"^[0-9a-f]{64}$")],
     start_ordinal: Annotated[int, Query(ge=0)] = 0,
 ) -> ArtifactDispositionPageOut:
     return ArtifactDispositionPageOut.model_validate(
         container.collection_workflows.list_dispositions(
             claim_id,
-            authority_sha256=authority_sha256,
+            identity_sha256=identity_sha256,
             start_ordinal=start_ordinal,
             principal=principal,
         )
@@ -543,7 +543,7 @@ def record_processing_claim_disposition_outputs(
         **operation_interface("client-only-primitive"),
         **exact_authority_page_operation(
             authority="processing-claim-disposition-outputs",
-            authority_parameter="authority_sha256",
+            authority_parameter="identity_sha256",
             cursor_parameter="start_ordinal",
             fixed_limit=128,
         ),
@@ -553,13 +553,13 @@ def list_processing_claim_disposition_outputs(
     claim_id: ProcessingClaimId,
     container: ContainerDep,
     principal: CollectionTransformLeaseManager,
-    authority_sha256: Annotated[str, Query(pattern=r"^[0-9a-f]{64}$")],
+    identity_sha256: Annotated[str, Query(pattern=r"^[0-9a-f]{64}$")],
     start_ordinal: Annotated[int, Query(ge=0)] = 0,
 ) -> ArtifactDispositionOutputPageOut:
     return ArtifactDispositionOutputPageOut.model_validate(
         container.collection_workflows.list_disposition_outputs(
             claim_id,
-            authority_sha256=authority_sha256,
+            identity_sha256=identity_sha256,
             start_ordinal=start_ordinal,
             principal=principal,
         )
@@ -658,7 +658,7 @@ def settle_processing_claim_outcomes(
         **operation_interface("client-only-primitive"),
         **exact_authority_page_operation(
             authority="processing-claim-outcomes",
-            authority_parameter="authority_sha256",
+            authority_parameter="identity_sha256",
             cursor_parameter="start_ordinal",
             fixed_limit=128,
         ),
@@ -668,13 +668,13 @@ def list_processing_claim_outcomes(
     claim_id: ProcessingClaimId,
     container: ContainerDep,
     principal: CollectionTransformController,
-    authority_sha256: Annotated[str, Query(pattern=r"^[0-9a-f]{64}$")],
+    identity_sha256: Annotated[str, Query(pattern=r"^[0-9a-f]{64}$")],
     start_ordinal: Annotated[int, Query(ge=0)] = 0,
 ) -> ProcessingOutcomePageOut:
     return ProcessingOutcomePageOut.model_validate(
         container.collection_workflows.list_claim_outcomes(
             claim_id,
-            authority_sha256=authority_sha256,
+            identity_sha256=identity_sha256,
             start_ordinal=start_ordinal,
             principal=principal,
         )

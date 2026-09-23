@@ -169,12 +169,12 @@ class UploadApi:
         )
 
     def list_processing_claim_dispositions(
-        self, claim_id: str, *, authority_sha256: str, start_ordinal: int = 0
+        self, claim_id: str, *, identity_sha256: str, start_ordinal: int = 0
     ) -> ArtifactDispositionPageDocument:
-        assert claim_id == CLAIM_ID and authority_sha256 == DISPOSITIONS.sha256
+        assert claim_id == CLAIM_ID and identity_sha256 == DISPOSITIONS.sha256
         return ArtifactDispositionPageDocument.model_validate(
             {
-                "authority": DISPOSITIONS.as_dict(),
+                "identity": DISPOSITIONS.as_dict(),
                 "start_ordinal": str(start_ordinal),
                 "dispositions": [
                     {
@@ -190,12 +190,12 @@ class UploadApi:
         )
 
     def list_processing_claim_disposition_outputs(
-        self, claim_id: str, *, authority_sha256: str, start_ordinal: int = 0
+        self, claim_id: str, *, identity_sha256: str, start_ordinal: int = 0
     ) -> ArtifactDispositionOutputPageDocument:
-        assert claim_id == CLAIM_ID and authority_sha256 == DISPOSITIONS.sha256
+        assert claim_id == CLAIM_ID and identity_sha256 == DISPOSITIONS.sha256
         return ArtifactDispositionOutputPageDocument.model_validate(
             {
-                "authority": DISPOSITIONS.as_dict(),
+                "identity": DISPOSITIONS.as_dict(),
                 "start_ordinal": str(start_ordinal),
                 "outputs": [
                     {

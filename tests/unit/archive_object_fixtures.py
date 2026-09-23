@@ -83,7 +83,7 @@ from riverhog_protocol import (
 from riverhog_provenance import (
     PROVENANCE_BINDING_SEGMENT_FILES_MAX,
     PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
-    FileProvenanceBinding,
+    ArchiveFileProvenanceRecord,
     ProvenancePayloadIdentity,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
@@ -166,7 +166,7 @@ def _fixture_provenance(
     *,
     archive_generation: str,
     tree_sha256: str,
-    bindings: Sequence[FileProvenanceBinding],
+    bindings: Sequence[ArchiveFileProvenanceRecord],
     journals: dict[str, bytes],
 ) -> FixtureProvenance:
     ordered_bindings = sorted(bindings, key=lambda item: item.path.encode("utf-8"))
@@ -264,7 +264,7 @@ def make_archive(
     files: dict[str, bytes],
     *,
     collection_id: int = COLLECTION_ID,
-    provenance_bindings: Sequence[FileProvenanceBinding] = (),
+    provenance_bindings: Sequence[ArchiveFileProvenanceRecord] = (),
     provenance_journals: dict[str, bytes] | None = None,
 ) -> FixtureArchive:
     archive_files = tuple(
@@ -451,7 +451,7 @@ def make_captured_provenance_archive(
     *,
     collection_id: int = COLLECTION_ID,
 ) -> FixtureArchive:
-    bindings: list[FileProvenanceBinding] = []
+    bindings: list[ArchiveFileProvenanceRecord] = []
     journals: dict[str, bytes] = {}
     for relative_path, content in sorted(files.items()):
         payload = root / relative_path
@@ -467,7 +467,7 @@ def make_captured_provenance_archive(
         )
         summary = validate_journal(journal)
         bindings.append(
-            FileProvenanceBinding(
+            ArchiveFileProvenanceRecord(
                 path=relative_path,
                 bytes=len(content),
                 sha256=hashlib.sha256(content).hexdigest(),

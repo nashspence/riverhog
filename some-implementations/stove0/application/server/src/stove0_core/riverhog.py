@@ -152,7 +152,7 @@ class RiverhogApi(Protocol):
         self,
         claim_id: str,
         *,
-        authority_sha256: str,
+        identity_sha256: str,
         start_ordinal: int = 0,
     ) -> ProcessingOutcomePageDocument: ...
 
@@ -179,7 +179,7 @@ class RiverhogApi(Protocol):
         self,
         claim_id: str,
         *,
-        authority_sha256: str,
+        identity_sha256: str,
         start_ordinal: int = 0,
     ) -> ArtifactDispositionPageDocument: ...
 
@@ -187,7 +187,7 @@ class RiverhogApi(Protocol):
         self,
         claim_id: str,
         *,
-        authority_sha256: str,
+        identity_sha256: str,
         start_ordinal: int = 0,
     ) -> ArtifactDispositionOutputPageDocument: ...
 
@@ -235,7 +235,7 @@ class RiverhogApi(Protocol):
     def release_processing_claim(self, claim_id: str, *, fence: int) -> ProcessingClaimDocument: ...
 
 
-def _verify_disposition_authority(
+def _verify_disposition_identity(
     api: RiverhogApi,
     record: WorkRecord,
     derivation: CollectionDerivation,
@@ -253,7 +253,7 @@ def _verify_disposition_authority(
         or ArtifactDispositionSetIdentity.from_mapping(sealed.identity.model_dump(mode="json"))
         != production.riverhog_disposition_set
     ):
-        raise RuntimeError("Riverhog generic derivation authority changed")
+        raise RuntimeError("Riverhog generic derivation identity changed")
 
 
 class Stove0RiverhogClient:
@@ -535,7 +535,7 @@ class Stove0RiverhogClient:
             raise ValueError("stove0 work is not ready for Riverhog settlement")
         target_output = record.target_status.output_collection
         derivation = CollectionDerivation.from_mapping(record.target_status.derivation)
-        _verify_disposition_authority(
+        _verify_disposition_identity(
             self.api,
             record,
             derivation,
@@ -738,14 +738,14 @@ class Stove0RiverhogClient:
         )
         if payload.state == "active":
             return False
-        if payload.state != "settled" or payload.outcomes.authority is None:
-            raise RuntimeError("Riverhog did not seal the processing outcome authority")
+        if payload.state != "settled" or payload.outcomes.identity is None:
+            raise RuntimeError("Riverhog did not seal the processing outcome identity")
         outcomes: list[CollectionProcessingOutcomeIdentity] = []
         ordinal = 0
         while True:
             page = self.api.list_processing_claim_outcomes(
                 record.claim.claim_id,
-                authority_sha256=payload.outcomes.authority.sha256,
+                identity_sha256=payload.outcomes.identity.sha256,
                 start_ordinal=ordinal,
             )
             outcomes.extend(

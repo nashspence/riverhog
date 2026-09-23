@@ -156,23 +156,23 @@ _NON_PLAN_QUERY_OPERATIONS = {
         "sort",
     },
     ("riverhog", "list_processing_claim_artifacts"): {
-        "authority_sha256",
+        "identity_sha256",
         "start_ordinal",
     },
     ("riverhog", "list_processing_claim_disposition_outputs"): {
-        "authority_sha256",
+        "identity_sha256",
         "start_ordinal",
     },
     ("riverhog", "list_processing_claim_dispositions"): {
-        "authority_sha256",
+        "identity_sha256",
         "start_ordinal",
     },
     ("riverhog", "list_processing_claim_inputs"): {
-        "authority_sha256",
+        "identity_sha256",
         "start_ordinal",
     },
     ("riverhog", "list_processing_claim_outcomes"): {
-        "authority_sha256",
+        "identity_sha256",
         "start_ordinal",
     },
     ("riverhog", "list_collection_upload_session_files"): {"page_size", "page_token"},

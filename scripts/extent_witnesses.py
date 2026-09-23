@@ -80,9 +80,9 @@ WITNESSES = (
         gates=("make unit", "make compose-smoke", "make provider-qualification"),
     ),
     SegmentedExtentWitness(
-        id="riverhog-work-authority-append/v1",
+        id="riverhog-work-set-append/v1",
         owner="riverhog",
-        reasons=("bounded-authority-append",),
+        reasons=("bounded-set-append",),
         test_node_ids=(
             "some-implementations/stove0/application/tests/test_riverhog_adapter.py::"
             "test_post_root_settlement_restarts_from_bounded_portable_inventory_progress",

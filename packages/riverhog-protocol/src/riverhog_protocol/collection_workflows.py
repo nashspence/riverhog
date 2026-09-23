@@ -605,7 +605,7 @@ class ArtifactDisposition:
 
 @dataclass(frozen=True, order=True, slots=True)
 class ArtifactDispositionOutput:
-    """One exact source-to-output edge in a claim's disposition authority."""
+    """One exact source-to-output edge in a claim's disposition set."""
 
     input_collection_id: CollectionId
     input_archive_root_sha256: str

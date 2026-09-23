@@ -26,7 +26,7 @@ def verify_derivation_evidence(
     *,
     expected: ArtifactDispositionSetIdentity,
 ) -> ArtifactDispositionSetIdentity:
-    """Verify one sealed generic derivation authority with bounded working state."""
+    """Verify one sealed generic derivation set identity with bounded working state."""
 
     disposition_digest = hashlib.sha256()
     disposition_count = 0
@@ -37,7 +37,7 @@ def verify_derivation_evidence(
             raise ValueError("derivation disposition evidence continues after completion")
         disposition_page = ArtifactDispositionPageDocument.model_validate_json(content)
         _require_canonical_page(content, disposition_page)
-        _require_authority(disposition_page.authority.model_dump(mode="json"), expected)
+        _require_identity(disposition_page.identity.model_dump(mode="json"), expected)
         if disposition_page.start_ordinal != disposition_count or not disposition_page.dispositions:
             raise ValueError("derivation disposition evidence is not contiguous")
         for disposition_document in disposition_page.dispositions:
@@ -64,7 +64,7 @@ def verify_derivation_evidence(
             raise ValueError("derivation output evidence continues after completion")
         output_page = ArtifactDispositionOutputPageDocument.model_validate_json(content)
         _require_canonical_page(content, output_page)
-        _require_authority(output_page.authority.model_dump(mode="json"), expected)
+        _require_identity(output_page.identity.model_dump(mode="json"), expected)
         if output_page.start_ordinal != output_edge_count or not output_page.outputs:
             raise ValueError("derivation output evidence is not contiguous")
         for output_document in output_page.outputs:
@@ -99,7 +99,7 @@ def verify_derivation_evidence(
         ),
     )
     if observed != expected:
-        raise ValueError("derivation evidence differs from its sealed authority")
+        raise ValueError("derivation evidence differs from its sealed identity")
     return observed
 
 
@@ -112,9 +112,9 @@ def _require_canonical_page(
         raise ValueError("derivation evidence page is not canonical JSON")
 
 
-def _require_authority(value: dict[str, object], expected: ArtifactDispositionSetIdentity) -> None:
+def _require_identity(value: dict[str, object], expected: ArtifactDispositionSetIdentity) -> None:
     if ArtifactDispositionSetIdentity.from_mapping(value) != expected:
-        raise ValueError("derivation evidence page belongs to another authority")
+        raise ValueError("derivation evidence page belongs to another identity")
 
 
 def _require_next(next_ordinal: int | None, observed: int) -> None:

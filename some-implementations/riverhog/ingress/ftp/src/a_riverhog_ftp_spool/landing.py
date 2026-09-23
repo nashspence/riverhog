@@ -21,7 +21,7 @@ from riverhog_client import ApiClient
 from riverhog_client.producer import CollectionProducer, ProducedCollection, ProducerFile
 from riverhog_provenance import (
     SIDECAR_SUFFIX,
-    FileProvenanceBinding,
+    ArchiveFileProvenanceRecord,
     FileStateObserverFactory,
     canonical_sidecar_path,
     prepare_file_provenance,
@@ -1458,7 +1458,7 @@ def _producer_provenance(file_row: Mapping[str, object]) -> dict[str, object]:
     }
 
 
-def _portable_binding(value: FileProvenanceBinding) -> dict[str, object]:
+def _portable_binding(value: ArchiveFileProvenanceRecord) -> dict[str, object]:
     row: dict[str, object] = {
         "path": value.path,
         "bytes": value.bytes,

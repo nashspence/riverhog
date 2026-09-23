@@ -210,7 +210,7 @@ class CollectionWorkflowMethods:
         self,
         claim_id: ProcessingClaimId,
         *,
-        authority_sha256: str,
+        identity_sha256: str,
         start_ordinal: int = 0,
     ) -> CollectionRootPageDocument:
         return CollectionRootPageDocument.model_validate(
@@ -219,7 +219,7 @@ class CollectionWorkflowMethods:
                 "GET",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/inputs",
                 params={
-                    "authority_sha256": authority_sha256,
+                    "identity_sha256": identity_sha256,
                     "start_ordinal": start_ordinal,
                 },
             )
@@ -381,7 +381,7 @@ class CollectionWorkflowMethods:
         self,
         claim_id: ProcessingClaimId,
         *,
-        authority_sha256: str,
+        identity_sha256: str,
         start_ordinal: int = 0,
     ) -> CollectionArtifactPageDocument:
         return CollectionArtifactPageDocument.model_validate(
@@ -390,7 +390,7 @@ class CollectionWorkflowMethods:
                 "GET",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/plan/artifacts",
                 params={
-                    "authority_sha256": authority_sha256,
+                    "identity_sha256": identity_sha256,
                     "start_ordinal": start_ordinal,
                 },
             )
@@ -541,7 +541,7 @@ class CollectionWorkflowMethods:
         self,
         claim_id: ProcessingClaimId,
         *,
-        authority_sha256: str,
+        identity_sha256: str,
         start_ordinal: int = 0,
     ) -> ArtifactDispositionPageDocument:
         return ArtifactDispositionPageDocument.model_validate(
@@ -550,7 +550,7 @@ class CollectionWorkflowMethods:
                 "GET",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/derivation/dispositions",
                 params={
-                    "authority_sha256": authority_sha256,
+                    "identity_sha256": identity_sha256,
                     "start_ordinal": start_ordinal,
                 },
             )
@@ -586,7 +586,7 @@ class CollectionWorkflowMethods:
         self,
         claim_id: ProcessingClaimId,
         *,
-        authority_sha256: str,
+        identity_sha256: str,
         start_ordinal: int = 0,
     ) -> ArtifactDispositionOutputPageDocument:
         return ArtifactDispositionOutputPageDocument.model_validate(
@@ -595,7 +595,7 @@ class CollectionWorkflowMethods:
                 "GET",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/derivation/output-edges",
                 params={
-                    "authority_sha256": authority_sha256,
+                    "identity_sha256": identity_sha256,
                     "start_ordinal": start_ordinal,
                 },
             )
@@ -654,7 +654,7 @@ class CollectionWorkflowMethods:
         self,
         claim_id: ProcessingClaimId,
         *,
-        authority_sha256: str,
+        identity_sha256: str,
         start_ordinal: int = 0,
     ) -> ProcessingOutcomePageDocument:
         return ProcessingOutcomePageDocument.model_validate(
@@ -663,7 +663,7 @@ class CollectionWorkflowMethods:
                 "GET",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/outcomes",
                 params={
-                    "authority_sha256": authority_sha256,
+                    "identity_sha256": identity_sha256,
                     "start_ordinal": start_ordinal,
                 },
             )

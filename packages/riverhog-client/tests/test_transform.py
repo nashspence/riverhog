@@ -656,15 +656,15 @@ class UploadApi:
         self,
         claim_id: str,
         *,
-        authority_sha256: str,
+        identity_sha256: str,
         start_ordinal: int = 0,
     ) -> ArtifactDispositionPageDocument:
         assert claim_id == "claim-1"
         identity = self.derivation_identity
-        assert authority_sha256 == identity.sha256 and start_ordinal == 0
+        assert identity_sha256 == identity.sha256 and start_ordinal == 0
         return ArtifactDispositionPageDocument.model_validate(
             {
-                "authority": identity.as_dict(),
+                "identity": identity.as_dict(),
                 "start_ordinal": "0",
                 "dispositions": [
                     {
@@ -684,15 +684,15 @@ class UploadApi:
         self,
         claim_id: str,
         *,
-        authority_sha256: str,
+        identity_sha256: str,
         start_ordinal: int = 0,
     ) -> ArtifactDispositionOutputPageDocument:
         assert claim_id == "claim-1"
         identity = self.derivation_identity
-        assert authority_sha256 == identity.sha256 and start_ordinal == 0
+        assert identity_sha256 == identity.sha256 and start_ordinal == 0
         return ArtifactDispositionOutputPageDocument.model_validate(
             {
-                "authority": identity.as_dict(),
+                "identity": identity.as_dict(),
                 "start_ordinal": "0",
                 "outputs": [
                     {
@@ -1533,7 +1533,7 @@ def test_derived_writer_binds_outputs_to_dispositions(
         )
 
 
-def test_runtime_passes_the_sealed_disposition_authority_to_publication(
+def test_runtime_passes_the_sealed_disposition_identity_to_publication(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     spec = _spec()

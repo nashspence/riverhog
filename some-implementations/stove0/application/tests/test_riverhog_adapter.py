@@ -343,18 +343,18 @@ class FixtureApi:
             id=claim_id,
             fence=kwargs["fence"],
             state="settled",
-            outcomes=_AttrDict(authority=_AttrDict(sha256=_sha("a"))),
+            outcomes=_AttrDict(identity=_AttrDict(sha256=_sha("a"))),
         )
 
     def list_processing_claim_outcomes(
         self,
         claim_id: str,
         *,
-        authority_sha256: str,
+        identity_sha256: str,
         start_ordinal: int,
     ) -> SimpleNamespace:
         assert claim_id == _claim_id()
-        assert authority_sha256 == _sha("a")
+        assert identity_sha256 == _sha("a")
         assert start_ordinal == 0
         return SimpleNamespace(
             outcomes=[

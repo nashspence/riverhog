@@ -83,9 +83,9 @@ from riverhog_provenance import (
     PROVENANCE_BINDING_SEGMENT_FILES_MAX,
     PROVENANCE_JOURNAL_ENTRY_BYTES_MAX,
     PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
+    ArchiveFileProvenanceRecord,
     DerivativeJournalSeed,
     ExternalStateReference,
-    FileProvenanceBinding,
     ProvenancePayloadIdentity,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
@@ -4252,7 +4252,7 @@ def _require_transform_control_paths(
             int(item["bytes"]) != len(expected)
             or str(item["sha256"]) != hashlib.sha256(expected).hexdigest()
         ):
-            raise Conflict("transform derivation evidence differs from its sealed authority")
+            raise Conflict("transform derivation evidence differs from its sealed identity")
 
 
 def _transform_derivation_evidence(
@@ -4271,19 +4271,19 @@ def _transform_derivation_evidence(
     if start % DISPOSITION_BATCH_MAX:
         raise Conflict("transform derivation evidence starts outside a canonical page boundary")
     claim = _derivative_claim(session, upload)
-    authority_record = session.get(CollectionProcessingDispositionSetRecord, claim.id)
-    assert authority_record is not None and authority_record.identity_sha256 is not None
-    authority = ArtifactDispositionSetIdentity(
-        disposition_count=authority_record.disposition_count,
-        output_edge_count=authority_record.output_edge_count,
-        output_artifact_count=authority_record.output_artifact_count,
-        sha256=authority_record.identity_sha256,
+    disposition_set = session.get(CollectionProcessingDispositionSetRecord, claim.id)
+    assert disposition_set is not None and disposition_set.identity_sha256 is not None
+    identity = ArtifactDispositionSetIdentity(
+        disposition_count=disposition_set.disposition_count,
+        output_edge_count=disposition_set.output_edge_count,
+        output_artifact_count=disposition_set.output_artifact_count,
+        sha256=disposition_set.identity_sha256,
     )
     total = (
-        authority.disposition_count if matched.group(1) is not None else authority.output_edge_count
+        identity.disposition_count if matched.group(1) is not None else identity.output_edge_count
     )
     if start >= total:
-        raise Conflict("transform derivation evidence page is outside its sealed authority")
+        raise Conflict("transform derivation evidence page is outside its sealed identity")
     if matched.group(1) is not None:
         disposition_rows = list(
             session.execute(
@@ -4350,10 +4350,10 @@ def _transform_derivation_evidence(
         ]
         field = "outputs"
     if not values:
-        raise Conflict("transform derivation evidence page is outside its sealed authority")
+        raise Conflict("transform derivation evidence page is outside its sealed identity")
     next_ordinal = start + len(values)
     document: dict[str, object] = {
-        "authority": authority.as_dict(),
+        "identity": identity.as_dict(),
         "start_ordinal": format_scalar("nonnegative", start),
         field: values,
     }
@@ -4362,14 +4362,14 @@ def _transform_derivation_evidence(
     return canonical_json_bytes(document)
 
 
-def _require_transform_output_authority(
+def _require_transform_output_disposition_coverage(
     session: Session,
     upload: CollectionUploadRecord,
 ) -> None:
-    """Bind every staged transform payload to the sealed generic authority.
+    """Require exact coverage of sealed disposition outputs by staged transform files.
 
     Target artifacts enter Riverhog custody incrementally before the producer
-    can seal its complete production and disposition authorities.  Completion
+    can seal its complete production and disposition evidence. Completion
     is the first boundary where Riverhog can require the exact bijection; file
     registration deliberately remains resumable construction state.
     """
@@ -4560,7 +4560,7 @@ def _validate_external_state_reference(
 
 
 def _provenance_binding_row(row: CollectionUploadFileRecord) -> dict[str, object]:
-    binding = FileProvenanceBinding(
+    binding = ArchiveFileProvenanceRecord(
         path=row.path,
         bytes=row.bytes,
         sha256=row.sha256,
@@ -4774,9 +4774,9 @@ def _derivative_claim(
     )
     if claim is None or claim.plan_sealed_at is None:
         raise Conflict("transform provenance requires its sealed collection-work claim")
-    authority = session.get(CollectionProcessingDispositionSetRecord, claim.id)
-    if authority is None or authority.state != "sealed":
-        raise Conflict("transform provenance requires its sealed disposition authority")
+    disposition_set = session.get(CollectionProcessingDispositionSetRecord, claim.id)
+    if disposition_set is None or disposition_set.state != "sealed":
+        raise Conflict("transform provenance requires its sealed disposition set")
     return claim
 
 
@@ -5326,7 +5326,7 @@ def _seal_open_collection_upload(
     )
     if incomplete_provenance is not None:
         raise Conflict(f"provenance journal is not sealed: {incomplete_provenance}")
-    _require_transform_output_authority(session, upload)
+    _require_transform_output_disposition_coverage(session, upload)
     if upload.file_count < 1:
         raise Conflict("collection upload has no registered files")
     _require_pending_pack_matches_registration(session, upload, checkpoint)

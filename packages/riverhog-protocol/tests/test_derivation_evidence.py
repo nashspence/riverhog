@@ -50,7 +50,7 @@ def _fixture() -> tuple[list[bytes], list[bytes], ArtifactDispositionSetIdentity
     disposition_pages = [
         ArtifactDispositionPageDocument.model_validate(
             {
-                "authority": identity.as_dict(),
+                "identity": identity.as_dict(),
                 "start_ordinal": str(index),
                 "next_ordinal": str(index + 1) if index == 0 else None,
                 "dispositions": [item.as_dict()],
@@ -61,7 +61,7 @@ def _fixture() -> tuple[list[bytes], list[bytes], ArtifactDispositionSetIdentity
     output_pages = [
         ArtifactDispositionOutputPageDocument.model_validate(
             {
-                "authority": identity.as_dict(),
+                "identity": identity.as_dict(),
                 "start_ordinal": str(index),
                 "next_ordinal": str(index + 1) if index == 0 else None,
                 "outputs": [item.as_dict()],

@@ -57,7 +57,7 @@ from riverhog_protocol.collection_workflows import (
 )
 from riverhog_protocol.errors import Forbidden
 from riverhog_provenance import (
-    FileProvenanceBinding,
+    ArchiveFileProvenanceRecord,
     create_derivative_journal_from_identity,
     create_observation_journal,
     validate_journal,
@@ -334,7 +334,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     )
     journal_summary = validate_journal(journal)
     digest = hashlib.sha256(source.read_bytes()).hexdigest()
-    binding = FileProvenanceBinding(
+    binding = ArchiveFileProvenanceRecord(
         path="document.txt",
         bytes=source.stat().st_size,
         sha256=digest,
@@ -814,7 +814,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     assert (
         operator.list_processing_claim_inputs(
             claim_id,
-            authority_sha256=str(sealed["inputs"]["authority"]["sha256"]),
+            identity_sha256=str(sealed["inputs"]["identity"]["sha256"]),
         )
         .inputs[0]
         .collection_id
@@ -823,7 +823,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     assert (
         operator.list_processing_claim_artifacts(
             claim_id,
-            authority_sha256=str(sealed_plan["artifacts"]["sha256"]),
+            identity_sha256=str(sealed_plan["artifacts"]["sha256"]),
         )
         .artifacts[0]
         .path
@@ -879,12 +879,12 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     )
     disposition_page = target.list_processing_claim_dispositions(
         claim_id,
-        authority_sha256=disposition_identity.sha256,
+        identity_sha256=disposition_identity.sha256,
     )
     assert len(disposition_page.dispositions) == 1
     output_page = target.list_processing_claim_disposition_outputs(
         claim_id,
-        authority_sha256=disposition_identity.sha256,
+        identity_sha256=disposition_identity.sha256,
     )
     assert len(output_page.outputs) == 1
     plan = sealed["plan"]
@@ -1147,7 +1147,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     assert operator.release_processing_claim(claim_id, fence=claim_fence)["state"] == "released"
     outcomes = operator.get_processing_claim(outcome_claim_id)["outcomes"]
     assert outcomes["count"] == "1"
-    assert outcomes["authority"] is None
+    assert outcomes["identity"] is None
     settled_outcomes = operator.settle_processing_claim_outcomes(
         outcome_claim_id,
         fence=outcome_fence,
@@ -1161,12 +1161,12 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
             retirement_policy="retire-after-verified-output",
         )
     assert settled_outcomes["state"] == "settled"
-    assert settled_outcomes["outcomes"]["authority"] is not None
-    outcome_authority = settled_outcomes["outcomes"]["authority"]
+    assert settled_outcomes["outcomes"]["identity"] is not None
+    outcome_authority = settled_outcomes["outcomes"]["identity"]
     assert (
         operator.list_processing_claim_outcomes(
             outcome_claim_id,
-            authority_sha256=str(outcome_authority["sha256"]),
+            identity_sha256=str(outcome_authority["sha256"]),
         )
         .outcomes[0]
         .outcome_id
