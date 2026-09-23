@@ -17,7 +17,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-e85e3e0f34"></a>`type`: `"object"`
 - <a id="s-11abcce352"></a>`additionalProperties`: `false`
-- <a id="s-d8044f6042"></a>`required`: `["collection_id","source_store","destination_store","initiated_by_app","initiated_by_key_id","state","requested_at","ready_at","expires_at","completed_at","failure"]`
+- <a id="s-d8044f6042"></a>`required`: `["collection_id","source_store","destination_store","initiated_by_app","initiated_by_key_id","state","requested_at","ready_at","expires_at","finished_at","failure"]`
 - <a id="s-06125bc5d9"></a>`title`: `"ArchiveCopyJobOut"`
 
 ### Fields
@@ -25,22 +25,22 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-f94ca18605"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
-| <a id="s-c99eec83e0"></a>`completed_at` | yes | anyOf=[(type="string"); (type="null")]; title="Completed At" |  |
 | <a id="s-ee02c17aac"></a>`destination_store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
 | <a id="s-17ef5e59ff"></a>`expires_at` | yes | anyOf=[(type="string"); (type="null")]; title="Expires At" |  |
 | <a id="s-79dd5dafe3"></a>`failure` | yes | anyOf=[(type="string"; minLength=1); (type="null")]; title="Failure" |  |
-| <a id="s-c07f6332bc"></a>`initiated_by_app` | yes | anyOf=[([ApplicationName](schemas-applicationname.md)); (type="null")] |  |
+| <a id="s-42f7be85cb"></a>`finished_at` | yes | anyOf=[(type="string"); (type="null")]; title="Finished At" |  |
+| <a id="s-c07f6332bc"></a>`initiated_by_app` | yes | [ApplicationName](schemas-applicationname.md) |  |
 | <a id="s-0bcb097c2c"></a>`initiated_by_key_id` | yes | anyOf=[([ApplicationKeyId](schemas-applicationkeyid.md)); (type="null")] |  |
 | <a id="s-88e645a59b"></a>`ready_at` | yes | anyOf=[(type="string"); (type="null")]; title="Ready At" |  |
-| <a id="s-69542ab9df"></a>`requested_at` | yes | anyOf=[(type="string"); (type="null")]; title="Requested At" |  |
-| <a id="s-7dd0ee0992"></a>`source_store` | yes | anyOf=[([ArchiveStoreName](schemas-archivestorename.md)); (type="null")] |  |
-| <a id="s-9877b84351"></a>`state` | yes | [ArchiveCopyState](schemas-archivecopystate.md) |  |
+| <a id="s-69542ab9df"></a>`requested_at` | yes | type="string"; title="Requested At" |  |
+| <a id="s-7dd0ee0992"></a>`source_store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
+| <a id="s-9877b84351"></a>`state` | yes | [ArchiveCopyJobState](schemas-archivecopyjobstate.md) |  |
 
 ### All must match (`allOf`)
 
 | Rule | If schema matches | Then must match | Otherwise must match |
 |---|---|---|---|
-| <a id="s-fbea60a442"></a>1 | properties={state: (enum=["completed","canceled"])} | properties={completed_at: (type="string")} | properties={completed_at: (type="null")} |
+| <a id="s-fbea60a442"></a>1 | properties={state: (enum=["completed","failed","canceled"])} | properties={finished_at: (type="string")} | properties={finished_at: (type="null")} |
 | <a id="s-ab9983dcd9"></a>2 | properties={state: (const="failed")} | properties={failure: (type="string"; minLength=1)} | properties={failure: (type="null")} |
 
 ## Maintained corroboration
@@ -49,7 +49,7 @@ Exact externally visible contract owned by this contract element.
 
 - [ApplicationKeyId](schemas-applicationkeyid.md)
 - [ApplicationName](schemas-applicationname.md)
-- [ArchiveCopyState](schemas-archivecopystate.md)
+- [ArchiveCopyJobState](schemas-archivecopyjobstate.md)
 - [ArchiveStoreName](schemas-archivestorename.md)
 - [CollectionId](schemas-collectionid.md)
 
@@ -80,7 +80,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 29dc4b874f692462c8d48922f23cd8d427114f94ade134c50fba648edc4b7427 -->
+<!-- exact-contract-value: c2c04a28fd603df4a70428ffd6d7c0645ff1ed9ae91dea8b20cdfc0955f90d02 -->
 
 ```json
 {
@@ -89,7 +89,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "else": {
         "properties": {
-          "completed_at": {
+          "finished_at": {
             "type": "null"
           }
         }
@@ -99,6 +99,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "state": {
             "enum": [
               "completed",
+              "failed",
               "canceled"
             ]
           }
@@ -106,7 +107,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "then": {
         "properties": {
-          "completed_at": {
+          "finished_at": {
             "type": "string"
           }
         }
@@ -141,17 +142,6 @@ The following JSON is the complete value owned at each machine-authority pointer
     "collection_id": {
       "$ref": "#/components/schemas/CollectionId"
     },
-    "completed_at": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "title": "Completed At"
-    },
     "destination_store": {
       "$ref": "#/components/schemas/ArchiveStoreName"
     },
@@ -178,15 +168,19 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "title": "Failure"
     },
-    "initiated_by_app": {
+    "finished_at": {
       "anyOf": [
         {
-          "$ref": "#/components/schemas/ApplicationName"
+          "type": "string"
         },
         {
           "type": "null"
         }
-      ]
+      ],
+      "title": "Finished At"
+    },
+    "initiated_by_app": {
+      "$ref": "#/components/schemas/ApplicationName"
     },
     "initiated_by_key_id": {
       "anyOf": [
@@ -210,28 +204,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Ready At"
     },
     "requested_at": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "title": "Requested At"
+      "title": "Requested At",
+      "type": "string"
     },
     "source_store": {
-      "anyOf": [
-        {
-          "$ref": "#/components/schemas/ArchiveStoreName"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "$ref": "#/components/schemas/ArchiveStoreName"
     },
     "state": {
-      "$ref": "#/components/schemas/ArchiveCopyState"
+      "$ref": "#/components/schemas/ArchiveCopyJobState"
     }
   },
   "required": [
@@ -244,7 +224,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "requested_at",
     "ready_at",
     "expires_at",
-    "completed_at",
+    "finished_at",
     "failure"
   ],
   "title": "ArchiveCopyJobOut",

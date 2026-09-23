@@ -17,20 +17,20 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-05c1c9f223"></a>`type`: `"object"`
 - <a id="s-88aaaa0ab4"></a>`additionalProperties`: `false`
-- <a id="s-8e51b64181"></a>`required`: `["page_size","next_page_token","sort","order","query","filters","copies"]`
+- <a id="s-8e51b64181"></a>`required`: `["page_size","next_page_token","sort","order","query","filters","jobs"]`
 - <a id="s-ddc136013c"></a>`title`: `"ArchiveCopyJobListOut"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4db973405e"></a>`copies` | yes | type="array"; items=([ArchiveCopyJobOut](schemas-archivecopyjobout.md)); title="Copies" |  |
 | <a id="s-5f552953c9"></a>`filters` | yes | [ArchiveCopyJobListFiltersOut](schemas-archivecopyjoblistfiltersout.md) |  |
+| <a id="s-8ef7f9127f"></a>`jobs` | yes | type="array"; items=([ArchiveCopyJobOut](schemas-archivecopyjobout.md)); title="Jobs" |  |
 | <a id="s-35da4724d8"></a>`next_page_token` | yes | anyOf=[([BrowsePageToken](schemas-browsepagetoken.md)); (type="null")] |  |
 | <a id="s-55b6ab5d20"></a>`order` | yes | [SortOrder](schemas-sortorder.md) |  |
 | <a id="s-f77467ada2"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100; title="Page Size" |  |
 | <a id="s-5571409571"></a>`query` | yes | anyOf=[(type="string"); (type="null")]; title="Query" |  |
-| <a id="s-2815c28bbe"></a>`sort` | yes | [ArchiveCopySort](schemas-archivecopysort.md) |  |
+| <a id="s-2815c28bbe"></a>`sort` | yes | [ArchiveCopyJobSort](schemas-archivecopyjobsort.md) |  |
 
 ### Progression, limits, and lifecycle
 
@@ -40,7 +40,7 @@ Shared facts for every subject below: progression={"default_page_size":25,"kind"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field copies](#s-4db973405e) | `cardinality · items · segmented_no_total_max` | shared above |
+| [field jobs](#s-8ef7f9127f) | `cardinality · items · segmented_no_total_max` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -76,7 +76,7 @@ Exact evidence groups for this contract element:
 
 - [ArchiveCopyJobListFiltersOut](schemas-archivecopyjoblistfiltersout.md)
 - [ArchiveCopyJobOut](schemas-archivecopyjobout.md)
-- [ArchiveCopySort](schemas-archivecopysort.md)
+- [ArchiveCopyJobSort](schemas-archivecopyjobsort.md)
 - [BrowsePageToken](schemas-browsepagetoken.md)
 - [SortOrder](schemas-sortorder.md)
 
@@ -111,21 +111,21 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 30eab820038f814255f58c7bc6e17b93f72f43e4fd06287596eac6dea9ef82c1 -->
+<!-- exact-contract-value: 3d5552cf47694c777390f2aeb090b8a37aa15be3797b6a2c5a0bc073a331e7c2 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
-    "copies": {
+    "filters": {
+      "$ref": "#/components/schemas/ArchiveCopyJobListFiltersOut"
+    },
+    "jobs": {
       "items": {
         "$ref": "#/components/schemas/ArchiveCopyJobOut"
       },
-      "title": "Copies",
+      "title": "Jobs",
       "type": "array"
-    },
-    "filters": {
-      "$ref": "#/components/schemas/ArchiveCopyJobListFiltersOut"
     },
     "next_page_token": {
       "anyOf": [
@@ -158,7 +158,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Query"
     },
     "sort": {
-      "$ref": "#/components/schemas/ArchiveCopySort"
+      "$ref": "#/components/schemas/ArchiveCopyJobSort"
     }
   },
   "required": [
@@ -168,7 +168,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "order",
     "query",
     "filters",
-    "copies"
+    "jobs"
   ],
   "title": "ArchiveCopyJobListOut",
   "type": "object"

@@ -40,7 +40,7 @@ RIVERHOG_HTTP_ERROR_AUTHORITY = HttpOperationErrorAuthority.from_codes(
         "get_collection": ("not_found",),
         "plan_collection_deletion": ("conflict", "invalid_state", "not_found"),
         "delete_collection": ("conflict", "invalid_state", "not_found"),
-        "create_or_resume_archive_copy": ("conflict", "invalid_state", "not_found"),
+        "create_or_resume_archive_copy_job": ("conflict", "invalid_state", "not_found"),
         "cancel_archive_copy_job": ("invalid_state", "not_found"),
         "get_archive_copy_job": ("not_found",),
         "plan_archive_copy_retirement": ("invalid_state", "not_found"),

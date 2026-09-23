@@ -12,7 +12,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [GET /v1/app-key-access](../../authorities/riverhog/http-operations/get-v1-app-key-access.md#pa-d36cf09b03) |
 | `riverhog` | [GET /v1/apps](../../authorities/riverhog/http-operations/get-v1-apps.md#pa-c156c5e29f) |
 | `riverhog` | [GET /v1/apps/{app}/keys](../../authorities/riverhog/http-operations/get-v1-apps-app-keys.md#pa-6c484fd5a1) |
-| `riverhog` | [GET /v1/archive/copies](../../authorities/riverhog/http-operations/get-v1-archive-copies.md#pa-f72583c791) |
+| `riverhog` | [GET /v1/archive/copy-jobs](../../authorities/riverhog/http-operations/get-v1-archive-copy-jobs.md#pa-4c7d8d4afb) |
 | `riverhog` | [GET /v1/archive/stores](../../authorities/riverhog/http-operations/get-v1-archive-stores.md#pa-6c76628a21) |
 | `riverhog` | [GET /v1/catalog-sync/changes](../../authorities/riverhog/http-operations/get-v1-catalog-sync-changes.md#pa-30fa77cb42) |
 | `riverhog` | [GET /v1/catalog-sync/collections](../../authorities/riverhog/http-operations/get-v1-catalog-sync-collections.md#pa-56d8c2a7d2) |

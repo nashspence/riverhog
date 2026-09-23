@@ -616,7 +616,7 @@ def format_archive_copy_job(payload: Mapping[str, object]) -> str:
         f"{payload.get('destination_store', 'unknown')}"
     )
     lines = [
-        f"archive copy {payload.get('collection_id', 'unknown')}",
+        f"archive copy job {payload.get('collection_id', 'unknown')}",
         f"route: {route}",
         f"state: {payload.get('state', 'unknown')}",
     ]
@@ -625,22 +625,22 @@ def format_archive_copy_job(payload: Mapping[str, object]) -> str:
         if payload.get("initiated_by_key_id"):
             initiator += f"/{payload['initiated_by_key_id']}"
         lines.append(f"initiator: {initiator}")
-    if payload.get("completed_at"):
-        lines.append(f"completed: {payload['completed_at']}")
+    if payload.get("finished_at"):
+        lines.append(f"finished: {payload['finished_at']}")
     if payload.get("failure"):
         lines.append(f"failure: {payload['failure']}")
     return "\n".join(lines)
 
 
 def format_archive_copy_jobs(payload: Mapping[str, object]) -> str:
-    lines = [_page_line(payload, "copies")]
-    for copy in _items(payload, "copies"):
+    lines = [_page_line(payload, "jobs")]
+    for job in _items(payload, "jobs"):
         lines.append(
-            f"- {copy.get('collection_id', 'unknown')}  "
-            f"{copy.get('source_store', 'automatic')} -> "
-            f"{copy.get('destination_store', 'unknown')}  "
-            f"state={copy.get('state', 'unknown')}  "
-            f"requested={copy.get('requested_at', 'unknown')}"
+            f"- {job.get('collection_id', 'unknown')}  "
+            f"{job.get('source_store', 'automatic')} -> "
+            f"{job.get('destination_store', 'unknown')}  "
+            f"state={job.get('state', 'unknown')}  "
+            f"requested={job.get('requested_at', 'unknown')}"
         )
     return "\n".join(lines)
 
@@ -648,7 +648,7 @@ def format_archive_copy_jobs(payload: Mapping[str, object]) -> str:
 def format_archive_copy_selectors(payload: Mapping[str, object]) -> str:
     return "\n".join(
         f"{item['collection_id']}::{item['destination_store']}"
-        for item in _items(payload, "copies")
+        for item in _items(payload, "jobs")
         if item.get("collection_id") not in {None, ""}
         and item.get("destination_store") not in {None, ""}
     )

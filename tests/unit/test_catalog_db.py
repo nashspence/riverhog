@@ -117,7 +117,7 @@ def test_initialize_db_creates_current_catalog(tmp_path: Path) -> None:
         "initiated_by_app",
         "initiated_by_key_id",
         "event_context_json",
-        "completed_at",
+        "finished_at",
     }
     assert {column["name"] for column in inspector.get_columns("archive_copy_object_uploads")} == {
         "collection_id",

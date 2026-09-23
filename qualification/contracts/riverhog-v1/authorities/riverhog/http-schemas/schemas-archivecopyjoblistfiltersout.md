@@ -23,13 +23,13 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-cccc11a0a0"></a>`state` | no | anyOf=[([ArchiveCopyState](schemas-archivecopystate.md)); (type="null")] |  |
+| <a id="s-cccc11a0a0"></a>`state` | no | anyOf=[([ArchiveCopyJobState](schemas-archivecopyjobstate.md)); (type="null")] |  |
 
 ## Maintained corroboration
 
 ### Referenced contract elements
 
-- [ArchiveCopyState](schemas-archivecopystate.md)
+- [ArchiveCopyJobState](schemas-archivecopyjobstate.md)
 
 ## Governing policies
 
@@ -58,7 +58,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ffadbfe6a984f8ff781319075ed287f5e4ad500921415287dad46c363a38e567 -->
+<!-- exact-contract-value: 47b3451aaf77662b7511748a292fa754aa243778bf2752bbb7868ae9bbde7c9a -->
 
 ```json
 {
@@ -67,7 +67,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "state": {
       "anyOf": [
         {
-          "$ref": "#/components/schemas/ArchiveCopyState"
+          "$ref": "#/components/schemas/ArchiveCopyJobState"
         },
         {
           "type": "null"

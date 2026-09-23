@@ -42,14 +42,14 @@ Exact externally visible contract owned by this contract element.
 
 ##### Definitions
 
-- [ArchiveCopyCanceledData](#s-cfa4c816fe)
-- [ArchiveCopyCanceledEvent](#s-2d7985a904)
-- [ArchiveCopyCompletedData](#s-4ea8ff49ee)
-- [ArchiveCopyCompletedEvent](#s-0f544f1f69)
-- [ArchiveCopyIssueData](#s-a5bfba4563)
-- [ArchiveCopyIssueEvent](#s-c13ccdbeaf)
-- [ArchiveCopyRequestedData](#s-336f4457d3)
-- [ArchiveCopyRequestedEvent](#s-7f20e5b5e8)
+- [ArchiveCopyJobCanceledData](#s-9f4a07c6e6)
+- [ArchiveCopyJobCanceledEvent](#s-31a0f3b0ea)
+- [ArchiveCopyJobCompletedData](#s-696dcb49a9)
+- [ArchiveCopyJobCompletedEvent](#s-d305e985f9)
+- [ArchiveCopyJobFailedData](#s-e826ef642d)
+- [ArchiveCopyJobFailedEvent](#s-ddec468949)
+- [ArchiveCopyJobRequestedData](#s-f7f1999027)
+- [ArchiveCopyJobRequestedEvent](#s-08328a8233)
 - [ArchiveStoreName](#s-2e2a7afe9a)
 - [CollectionDeletedData](#s-04e497d16f)
 - [CollectionDeletedEvent](#s-e18a1ebf85)
@@ -77,162 +77,162 @@ Exact externally visible contract owned by this contract element.
 - [RiverhogEventCause](#s-56c61376dd)
 - [RiverhogLifecycleEvent](#s-41ab5ca15a)
 
-##### <a id="s-cfa4c816fe"></a>definition `ArchiveCopyCanceledData`
+##### <a id="s-9f4a07c6e6"></a>definition `ArchiveCopyJobCanceledData`
 
-- <a id="s-10af2f5c27"></a>`type`: `"object"`
-- <a id="s-3592f413c9"></a>`additionalProperties`: `false`
-- <a id="s-e91ff79dca"></a>`required`: `["actor","initiator","collection_id","collection_created_at","source_store","destination_store","state"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-3280379529"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-c2af0612fd"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-74b7080db4"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
-| <a id="s-2b4c483c5f"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
-| <a id="s-33dba6f1eb"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
-| <a id="s-8a05bfc451"></a>`destination_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
-| <a id="s-ab6c72e50a"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-c2ba3d485e"></a>`source_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
-| <a id="s-358b2083c7"></a>`state` | yes | type="string"; const="canceled" |  |
-
-##### <a id="s-2d7985a904"></a>definition `ArchiveCopyCanceledEvent`
-
-- <a id="s-1d27102af9"></a>`type`: `"object"`
-- <a id="s-fe670f69ac"></a>`additionalProperties`: `false`
-- <a id="s-0bac221031"></a>`required`: `["id","source","type","time","data"]`
+- <a id="s-bb58b88f42"></a>`type`: `"object"`
+- <a id="s-25a65f4cb3"></a>`additionalProperties`: `false`
+- <a id="s-569356c997"></a>`required`: `["actor","initiator","collection_id","collection_created_at","source_store","destination_store","state"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a474d761ef"></a>`data` | yes | [ArchiveCopyCanceledData](#s-cfa4c816fe) |  |
-| <a id="s-cb803f4c4e"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
-| <a id="s-ada951b04e"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-94ea7ef0e6"></a>`source` | yes | type="string"; minLength=1 |  |
-| <a id="s-926bf3f7eb"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-2d17c4ef70"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-748f1d05de"></a>`time` | yes | type="string" |  |
-| <a id="s-cbc17223c2"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy.canceled" |  |
+| <a id="s-a2bf311030"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
+| <a id="s-89e606c549"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
+| <a id="s-3776852b57"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
+| <a id="s-3187d6cbeb"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
+| <a id="s-e3c6214c81"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
+| <a id="s-d82a6cc7e8"></a>`destination_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
+| <a id="s-e4a3817b39"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
+| <a id="s-5972adef13"></a>`source_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
+| <a id="s-39a2756f55"></a>`state` | yes | type="string"; const="canceled" |  |
 
-##### <a id="s-4ea8ff49ee"></a>definition `ArchiveCopyCompletedData`
+##### <a id="s-31a0f3b0ea"></a>definition `ArchiveCopyJobCanceledEvent`
 
-- <a id="s-19fde6fa3d"></a>`type`: `"object"`
-- <a id="s-a2af53bbc6"></a>`additionalProperties`: `false`
-- <a id="s-e55f01a76b"></a>`required`: `["actor","initiator","collection_id","collection_created_at","source_store","destination_store","state"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-a872366ecc"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-ef402a6fa0"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-9f5059796a"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
-| <a id="s-6df5b22451"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
-| <a id="s-3aff650bb7"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
-| <a id="s-7d87335252"></a>`destination_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
-| <a id="s-a5b8f6d486"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-7ad943949b"></a>`source_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
-| <a id="s-60642ae1ba"></a>`state` | yes | type="string"; const="completed" |  |
-
-##### <a id="s-0f544f1f69"></a>definition `ArchiveCopyCompletedEvent`
-
-- <a id="s-290d1ff9fb"></a>`type`: `"object"`
-- <a id="s-311fa4459b"></a>`additionalProperties`: `false`
-- <a id="s-63247076b9"></a>`required`: `["id","source","type","time","data"]`
+- <a id="s-61d8338ff9"></a>`type`: `"object"`
+- <a id="s-2c298c66b7"></a>`additionalProperties`: `false`
+- <a id="s-28679ea513"></a>`required`: `["id","source","type","time","data"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-5ff93d0fdd"></a>`data` | yes | [ArchiveCopyCompletedData](#s-4ea8ff49ee) |  |
-| <a id="s-37fb83fe9b"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
-| <a id="s-178a884b88"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-5a8210c932"></a>`source` | yes | type="string"; minLength=1 |  |
-| <a id="s-10cbede6bc"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-c31f959106"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-582f595eb9"></a>`time` | yes | type="string" |  |
-| <a id="s-4c91be5661"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy.completed" |  |
+| <a id="s-f8ad19b015"></a>`data` | yes | [ArchiveCopyJobCanceledData](#s-9f4a07c6e6) |  |
+| <a id="s-6604c0d285"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
+| <a id="s-570c1b52e3"></a>`id` | yes | type="string"; minLength=1 |  |
+| <a id="s-8a9efdf673"></a>`source` | yes | type="string"; minLength=1 |  |
+| <a id="s-0a6d7b54e4"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-5744ae2800"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
+| <a id="s-90610300dd"></a>`time` | yes | type="string" |  |
+| <a id="s-a39126293c"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy_job.canceled" |  |
 
-##### <a id="s-a5bfba4563"></a>definition `ArchiveCopyIssueData`
+##### <a id="s-696dcb49a9"></a>definition `ArchiveCopyJobCompletedData`
 
-- <a id="s-cd41af16c7"></a>`type`: `"object"`
-- <a id="s-296d7da7d1"></a>`additionalProperties`: `false`
-- <a id="s-d57d928588"></a>`required`: `["actor","initiator","collection_id","collection_created_at","source_store","destination_store","state","error"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-75d33b6b4f"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-1dc61ccb83"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-36c67f2162"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
-| <a id="s-f25dfe0509"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
-| <a id="s-fc0492df67"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
-| <a id="s-349c37611e"></a>`destination_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
-| <a id="s-71f2908355"></a>`error` | yes | type="string"; maxLength=16384; minLength=1 |  |
-| <a id="s-74ad67bbb0"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-36624435e1"></a>`source_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
-| <a id="s-0003e99102"></a>`state` | yes | type="string"; const="failed" |  |
-
-##### <a id="s-c13ccdbeaf"></a>definition `ArchiveCopyIssueEvent`
-
-- <a id="s-1d2bef65b9"></a>`type`: `"object"`
-- <a id="s-88fcc9dfb9"></a>`additionalProperties`: `false`
-- <a id="s-e069c6aa3a"></a>`required`: `["id","source","type","time","data"]`
+- <a id="s-6a9a1bb21d"></a>`type`: `"object"`
+- <a id="s-54996bd56e"></a>`additionalProperties`: `false`
+- <a id="s-333a530815"></a>`required`: `["actor","initiator","collection_id","collection_created_at","source_store","destination_store","state"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2b6cae5387"></a>`data` | yes | [ArchiveCopyIssueData](#s-a5bfba4563) |  |
-| <a id="s-b7a63933aa"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
-| <a id="s-bb4a44340f"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-4478a9fc56"></a>`source` | yes | type="string"; minLength=1 |  |
-| <a id="s-c27b43251e"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-8565661348"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-e1369bddc7"></a>`time` | yes | type="string" |  |
-| <a id="s-3c39fa7f36"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy.issue" |  |
+| <a id="s-cb82bfea88"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
+| <a id="s-b5c1f48847"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
+| <a id="s-a989bad623"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
+| <a id="s-560e29b4d8"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
+| <a id="s-f3b1eb0038"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
+| <a id="s-18359b47fa"></a>`destination_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
+| <a id="s-c8fe3985d9"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
+| <a id="s-5013a5dce5"></a>`source_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
+| <a id="s-06a2715d75"></a>`state` | yes | type="string"; const="completed" |  |
 
-##### <a id="s-336f4457d3"></a>definition `ArchiveCopyRequestedData`
+##### <a id="s-d305e985f9"></a>definition `ArchiveCopyJobCompletedEvent`
 
-- <a id="s-e2aaa9f2bb"></a>`type`: `"object"`
-- <a id="s-f2fe97cdc8"></a>`additionalProperties`: `false`
-- <a id="s-51f90a01f9"></a>`required`: `["actor","initiator","collection_id","collection_created_at","source_store","destination_store","state"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-5772cb13fd"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-91a65e5bab"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-afdf08164c"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
-| <a id="s-d330244f3f"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
-| <a id="s-8b24f1341b"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
-| <a id="s-049e8e50fc"></a>`destination_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
-| <a id="s-336dc29ada"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
-| <a id="s-328963d607"></a>`source_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
-| <a id="s-b44a917376"></a>`state` | yes | type="string"; const="requested" |  |
-
-##### <a id="s-7f20e5b5e8"></a>definition `ArchiveCopyRequestedEvent`
-
-- <a id="s-ccf6a0102a"></a>`type`: `"object"`
-- <a id="s-0a4efa39bd"></a>`additionalProperties`: `false`
-- <a id="s-716d4cc32a"></a>`required`: `["id","source","type","time","data"]`
+- <a id="s-d9e2609242"></a>`type`: `"object"`
+- <a id="s-7ff0832d29"></a>`additionalProperties`: `false`
+- <a id="s-e4ae0d632e"></a>`required`: `["id","source","type","time","data"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4ca0f7b36e"></a>`data` | yes | [ArchiveCopyRequestedData](#s-336f4457d3) |  |
-| <a id="s-b5d63fc490"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
-| <a id="s-ab6d13184e"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-bd21e93da4"></a>`source` | yes | type="string"; minLength=1 |  |
-| <a id="s-138ec9b34d"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-f6dd659f16"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-bdcec90dcd"></a>`time` | yes | type="string" |  |
-| <a id="s-0767fb8dcc"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy.requested" |  |
+| <a id="s-752a98242c"></a>`data` | yes | [ArchiveCopyJobCompletedData](#s-696dcb49a9) |  |
+| <a id="s-88e1bd048f"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
+| <a id="s-92c039b755"></a>`id` | yes | type="string"; minLength=1 |  |
+| <a id="s-6013d0903a"></a>`source` | yes | type="string"; minLength=1 |  |
+| <a id="s-b2659e8ee1"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-eab5955dae"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
+| <a id="s-59cb751965"></a>`time` | yes | type="string" |  |
+| <a id="s-ece152b09c"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy_job.completed" |  |
+
+##### <a id="s-e826ef642d"></a>definition `ArchiveCopyJobFailedData`
+
+- <a id="s-7e4205182f"></a>`type`: `"object"`
+- <a id="s-bc0761a12e"></a>`additionalProperties`: `false`
+- <a id="s-2f279c4a05"></a>`required`: `["actor","initiator","collection_id","collection_created_at","source_store","destination_store","state","error"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4f2680291c"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
+| <a id="s-0b44d5dbd9"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
+| <a id="s-344f8bd3f5"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
+| <a id="s-7cf9aa154e"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
+| <a id="s-433b77401b"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
+| <a id="s-c3373ca00f"></a>`destination_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
+| <a id="s-ccd122a88e"></a>`error` | yes | type="string"; maxLength=16384; minLength=1 |  |
+| <a id="s-6bbe2e7fa0"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
+| <a id="s-7d2cdbdb7c"></a>`source_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
+| <a id="s-f01019f4bb"></a>`state` | yes | type="string"; const="failed" |  |
+
+##### <a id="s-ddec468949"></a>definition `ArchiveCopyJobFailedEvent`
+
+- <a id="s-0c47942447"></a>`type`: `"object"`
+- <a id="s-f9f63f57b1"></a>`additionalProperties`: `false`
+- <a id="s-e55638c969"></a>`required`: `["id","source","type","time","data"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-cdd8faf8f8"></a>`data` | yes | [ArchiveCopyJobFailedData](#s-e826ef642d) |  |
+| <a id="s-5a4fbdb637"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
+| <a id="s-bef3bd40f9"></a>`id` | yes | type="string"; minLength=1 |  |
+| <a id="s-99489d70c5"></a>`source` | yes | type="string"; minLength=1 |  |
+| <a id="s-0e1bddbe65"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-4b256775ee"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
+| <a id="s-14bc414db1"></a>`time` | yes | type="string" |  |
+| <a id="s-8560870a04"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy_job.failed" |  |
+
+##### <a id="s-f7f1999027"></a>definition `ArchiveCopyJobRequestedData`
+
+- <a id="s-002a184ce9"></a>`type`: `"object"`
+- <a id="s-328b3c37ea"></a>`additionalProperties`: `false`
+- <a id="s-76084a666d"></a>`required`: `["actor","initiator","collection_id","collection_created_at","source_store","destination_store","state"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ad5f1a1ece"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
+| <a id="s-43db5b67db"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
+| <a id="s-b22c159690"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
+| <a id="s-519a45279f"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
+| <a id="s-5f45a158b6"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
+| <a id="s-1477505de9"></a>`destination_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
+| <a id="s-0ed3e6943f"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
+| <a id="s-56e091a390"></a>`source_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
+| <a id="s-ae83ee15eb"></a>`state` | yes | type="string"; const="requested" |  |
+
+##### <a id="s-08328a8233"></a>definition `ArchiveCopyJobRequestedEvent`
+
+- <a id="s-38ddd6f421"></a>`type`: `"object"`
+- <a id="s-55322f295a"></a>`additionalProperties`: `false`
+- <a id="s-2f67536fc9"></a>`required`: `["id","source","type","time","data"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c3e98fc681"></a>`data` | yes | [ArchiveCopyJobRequestedData](#s-f7f1999027) |  |
+| <a id="s-d02c2be48f"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
+| <a id="s-825a62ceda"></a>`id` | yes | type="string"; minLength=1 |  |
+| <a id="s-3f8b60a044"></a>`source` | yes | type="string"; minLength=1 |  |
+| <a id="s-65a10abd37"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-e98d810109"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
+| <a id="s-9c5605a96f"></a>`time` | yes | type="string" |  |
+| <a id="s-3558bfd0b3"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy_job.requested" |  |
 
 ##### <a id="s-2e2a7afe9a"></a>definition `ArchiveStoreName`
 
@@ -684,7 +684,7 @@ Exact externally visible contract owned by this contract element.
 
 ##### <a id="s-41ab5ca15a"></a>definition `RiverhogLifecycleEvent`
 
-- <a id="s-2661c0e417"></a>`discriminator`: `{"mapping":{"io.riverhog.riverhog.archive_copy.canceled":"#/$defs/ArchiveCopyCanceledEvent","io.riverhog.riverhog.archive_copy.completed":"#/$defs/ArchiveCopyCompletedEvent","io.riverhog.riverhog.archive_copy.issue":"#/$defs/ArchiveCopyIssueEvent","io.riverhog.riverhog.archive_copy.requested":"#/$defs/ArchiveCopyRequestedEvent","io.riverhog.riverhog.collection.deleted":"#/$defs/CollectionDeletedEvent","io.riverhog.riverhog.collection.finalized":"#/$defs/CollectionFinalizedEvent","io.riverhog.riverhog.retrieval.canceled":"#/$defs/RetrievalCanceledEvent","io.riverhog.riverhog.retrieval.completed":"#/$defs/RetrievalCompletedEvent","io.riverhog.riverhog.retrieval.expired":"#/$defs/RetrievalExpiredEvent","io.riverhog.riverhog.retrieval.failed":"#/$defs/RetrievalFailedEvent","io.riverhog.riverhog.retrieval.issue":"#/$defs/RetrievalIssueEvent","io.riverhog.riverhog.retrieval.ready":"#/$defs/RetrievalReadyEvent","io.riverhog.riverhog.retrieval.renewed":"#/$defs/RetrievalRenewedEvent","io.riverhog.riverhog.retrieval.requested":"#/$defs/RetrievalRequestedEvent"},"propertyName":"type"}`
+- <a id="s-2661c0e417"></a>`discriminator`: `{"mapping":{"io.riverhog.riverhog.archive_copy_job.canceled":"#/$defs/ArchiveCopyJobCanceledEvent","io.riverhog.riverhog.archive_copy_job.completed":"#/$defs/ArchiveCopyJobCompletedEvent","io.riverhog.riverhog.archive_copy_job.failed":"#/$defs/ArchiveCopyJobFailedEvent","io.riverhog.riverhog.archive_copy_job.requested":"#/$defs/ArchiveCopyJobRequestedEvent","io.riverhog.riverhog.collection.deleted":"#/$defs/CollectionDeletedEvent","io.riverhog.riverhog.collection.finalized":"#/$defs/CollectionFinalizedEvent","io.riverhog.riverhog.retrieval.canceled":"#/$defs/RetrievalCanceledEvent","io.riverhog.riverhog.retrieval.completed":"#/$defs/RetrievalCompletedEvent","io.riverhog.riverhog.retrieval.expired":"#/$defs/RetrievalExpiredEvent","io.riverhog.riverhog.retrieval.failed":"#/$defs/RetrievalFailedEvent","io.riverhog.riverhog.retrieval.issue":"#/$defs/RetrievalIssueEvent","io.riverhog.riverhog.retrieval.ready":"#/$defs/RetrievalReadyEvent","io.riverhog.riverhog.retrieval.renewed":"#/$defs/RetrievalRenewedEvent","io.riverhog.riverhog.retrieval.requested":"#/$defs/RetrievalRequestedEvent"},"propertyName":"type"}`
 
 ###### Exactly one must match (`oneOf`)
 
@@ -692,10 +692,10 @@ Exact externally visible contract owned by this contract element.
 |---|---|
 | <a id="s-957bd4c2c3"></a>1 | [CollectionFinalizedEvent](#s-dcb5f23831) |
 | <a id="s-ec5169534a"></a>2 | [CollectionDeletedEvent](#s-e18a1ebf85) |
-| <a id="s-41b9e81340"></a>3 | [ArchiveCopyRequestedEvent](#s-7f20e5b5e8) |
-| <a id="s-8980bd2c00"></a>4 | [ArchiveCopyCompletedEvent](#s-0f544f1f69) |
-| <a id="s-a2ebed2009"></a>5 | [ArchiveCopyIssueEvent](#s-c13ccdbeaf) |
-| <a id="s-543be3c82c"></a>6 | [ArchiveCopyCanceledEvent](#s-2d7985a904) |
+| <a id="s-41b9e81340"></a>3 | [ArchiveCopyJobRequestedEvent](#s-08328a8233) |
+| <a id="s-8980bd2c00"></a>4 | [ArchiveCopyJobCompletedEvent](#s-d305e985f9) |
+| <a id="s-a2ebed2009"></a>5 | [ArchiveCopyJobFailedEvent](#s-ddec468949) |
+| <a id="s-543be3c82c"></a>6 | [ArchiveCopyJobCanceledEvent](#s-31a0f3b0ea) |
 | <a id="s-d9d60a9507"></a>7 | [RetrievalRequestedEvent](#s-9dad1abe42) |
 | <a id="s-9d3126212a"></a>8 | [RetrievalReadyEvent](#s-f23d561333) |
 | <a id="s-b372983489"></a>9 | [RetrievalRenewedEvent](#s-45fb1a016c) |
@@ -740,7 +740,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1d517bf4e5615783466f9fc92dcb9ecacfa0714a91775c6ec0867b9b96079bfe -->
+<!-- exact-contract-value: 0757b0351f189b15fc203c09b2b87dd51708957dc59cf30ce059e02a8878ae3b -->
 
 ```json
 {
@@ -748,7 +748,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "$defs": {
-        "ArchiveCopyCanceledData": {
+        "ArchiveCopyJobCanceledData": {
           "additionalProperties": false,
           "properties": {
             "actor": {
@@ -815,11 +815,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
-        "ArchiveCopyCanceledEvent": {
+        "ArchiveCopyJobCanceledEvent": {
           "additionalProperties": false,
           "properties": {
             "data": {
-              "$ref": "#/$defs/ArchiveCopyCanceledData"
+              "$ref": "#/$defs/ArchiveCopyJobCanceledData"
             },
             "datacontenttype": {
               "const": "application/json",
@@ -855,7 +855,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "type": {
-              "const": "io.riverhog.riverhog.archive_copy.canceled",
+              "const": "io.riverhog.riverhog.archive_copy_job.canceled",
               "type": "string"
             }
           },
@@ -868,7 +868,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
-        "ArchiveCopyCompletedData": {
+        "ArchiveCopyJobCompletedData": {
           "additionalProperties": false,
           "properties": {
             "actor": {
@@ -935,11 +935,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
-        "ArchiveCopyCompletedEvent": {
+        "ArchiveCopyJobCompletedEvent": {
           "additionalProperties": false,
           "properties": {
             "data": {
-              "$ref": "#/$defs/ArchiveCopyCompletedData"
+              "$ref": "#/$defs/ArchiveCopyJobCompletedData"
             },
             "datacontenttype": {
               "const": "application/json",
@@ -975,7 +975,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "type": {
-              "const": "io.riverhog.riverhog.archive_copy.completed",
+              "const": "io.riverhog.riverhog.archive_copy_job.completed",
               "type": "string"
             }
           },
@@ -988,7 +988,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
-        "ArchiveCopyIssueData": {
+        "ArchiveCopyJobFailedData": {
           "additionalProperties": false,
           "properties": {
             "actor": {
@@ -1061,11 +1061,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
-        "ArchiveCopyIssueEvent": {
+        "ArchiveCopyJobFailedEvent": {
           "additionalProperties": false,
           "properties": {
             "data": {
-              "$ref": "#/$defs/ArchiveCopyIssueData"
+              "$ref": "#/$defs/ArchiveCopyJobFailedData"
             },
             "datacontenttype": {
               "const": "application/json",
@@ -1101,7 +1101,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "type": {
-              "const": "io.riverhog.riverhog.archive_copy.issue",
+              "const": "io.riverhog.riverhog.archive_copy_job.failed",
               "type": "string"
             }
           },
@@ -1114,7 +1114,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
-        "ArchiveCopyRequestedData": {
+        "ArchiveCopyJobRequestedData": {
           "additionalProperties": false,
           "properties": {
             "actor": {
@@ -1181,11 +1181,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
-        "ArchiveCopyRequestedEvent": {
+        "ArchiveCopyJobRequestedEvent": {
           "additionalProperties": false,
           "properties": {
             "data": {
-              "$ref": "#/$defs/ArchiveCopyRequestedData"
+              "$ref": "#/$defs/ArchiveCopyJobRequestedData"
             },
             "datacontenttype": {
               "const": "application/json",
@@ -1221,7 +1221,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "type": {
-              "const": "io.riverhog.riverhog.archive_copy.requested",
+              "const": "io.riverhog.riverhog.archive_copy_job.requested",
               "type": "string"
             }
           },
@@ -2744,10 +2744,10 @@ The following JSON is the complete value owned at each machine-authority pointer
         "RiverhogLifecycleEvent": {
           "discriminator": {
             "mapping": {
-              "io.riverhog.riverhog.archive_copy.canceled": "#/$defs/ArchiveCopyCanceledEvent",
-              "io.riverhog.riverhog.archive_copy.completed": "#/$defs/ArchiveCopyCompletedEvent",
-              "io.riverhog.riverhog.archive_copy.issue": "#/$defs/ArchiveCopyIssueEvent",
-              "io.riverhog.riverhog.archive_copy.requested": "#/$defs/ArchiveCopyRequestedEvent",
+              "io.riverhog.riverhog.archive_copy_job.canceled": "#/$defs/ArchiveCopyJobCanceledEvent",
+              "io.riverhog.riverhog.archive_copy_job.completed": "#/$defs/ArchiveCopyJobCompletedEvent",
+              "io.riverhog.riverhog.archive_copy_job.failed": "#/$defs/ArchiveCopyJobFailedEvent",
+              "io.riverhog.riverhog.archive_copy_job.requested": "#/$defs/ArchiveCopyJobRequestedEvent",
               "io.riverhog.riverhog.collection.deleted": "#/$defs/CollectionDeletedEvent",
               "io.riverhog.riverhog.collection.finalized": "#/$defs/CollectionFinalizedEvent",
               "io.riverhog.riverhog.retrieval.canceled": "#/$defs/RetrievalCanceledEvent",
@@ -2769,16 +2769,16 @@ The following JSON is the complete value owned at each machine-authority pointer
               "$ref": "#/$defs/CollectionDeletedEvent"
             },
             {
-              "$ref": "#/$defs/ArchiveCopyRequestedEvent"
+              "$ref": "#/$defs/ArchiveCopyJobRequestedEvent"
             },
             {
-              "$ref": "#/$defs/ArchiveCopyCompletedEvent"
+              "$ref": "#/$defs/ArchiveCopyJobCompletedEvent"
             },
             {
-              "$ref": "#/$defs/ArchiveCopyIssueEvent"
+              "$ref": "#/$defs/ArchiveCopyJobFailedEvent"
             },
             {
-              "$ref": "#/$defs/ArchiveCopyCanceledEvent"
+              "$ref": "#/$defs/ArchiveCopyJobCanceledEvent"
             },
             {
               "$ref": "#/$defs/RetrievalRequestedEvent"

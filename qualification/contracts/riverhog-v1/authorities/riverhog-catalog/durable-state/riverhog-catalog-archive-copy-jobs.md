@@ -37,7 +37,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-4a093cd57d"></a>`batch_end_order` | `VARCHAR(65)` | yes | `—` | — |
 | <a id="s-6683d93033"></a>`destination_discarded_at` | `VARCHAR` | yes | `—` | — |
 | <a id="s-47c367fc6b"></a>`next_attempt_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-bdaf1de960"></a>`completed_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-bdaf1de960"></a>`finished_at` | `VARCHAR` | yes | `—` | — |
 | <a id="s-da04114afb"></a>`failure` | `VARCHAR` | yes | `—` | — |
 | <a id="s-9173b6f815"></a>`search_text` | `VARCHAR` | no | `—` | {"generated":"GENERATED ALWAYS AS (lower(CAST(collection_id AS TEXT) \|\| ' ' \|\| source_store \|\| ' ' \|\| destination_store \|\| ' ' \|\| state)) STORED"} |
 
@@ -85,7 +85,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: aa2992cbfd56f0d2acd4ce2405a4fe0c238c62b6a00698b2bf5a71849a58ddc9 -->
+<!-- exact-contract-value: 98e374510d9bd5ab0cf3e66908a9f09ffe17c0e9a32196be7b5a7a3952386336 -->
 
 ```json
 {
@@ -187,8 +187,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "VARCHAR"
     },
     {
-      "definition": "completed_at VARCHAR",
-      "name": "completed_at",
+      "definition": "finished_at VARCHAR",
+      "name": "finished_at",
       "nullable": true,
       "type": "VARCHAR"
     },

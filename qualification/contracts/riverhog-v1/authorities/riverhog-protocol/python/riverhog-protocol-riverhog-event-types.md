@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-72dd4ffd30"></a>`kind`: `"constant"`
-- <a id="s-ab76d180e4"></a>`value`: `["io.riverhog.riverhog.archive_copy.canceled","io.riverhog.riverhog.archive_copy.completed","io.riverhog.riverhog.archive_copy.issue","io.riverhog.riverhog.archive_copy.requested","io.riverhog.riverhog.collection.deleted","io.riverhog.riverhog.collection.finalized","io.riverhog.riverhog.retrieval.canceled","io.riverhog.riverhog.retrieval.completed","io.riverhog.riverhog.retrieval.expired","io.riverhog.riverhog.retrieval.failed","io.riverhog.riverhog.retrieval.issue","io.riverhog.riverhog.retrieval.ready","io.riverhog.riverhog.retrieval.renewed","io.riverhog.riverhog.retrieval.requested"]`
+- <a id="s-ab76d180e4"></a>`value`: `["io.riverhog.riverhog.archive_copy_job.canceled","io.riverhog.riverhog.archive_copy_job.completed","io.riverhog.riverhog.archive_copy_job.failed","io.riverhog.riverhog.archive_copy_job.requested","io.riverhog.riverhog.collection.deleted","io.riverhog.riverhog.collection.finalized","io.riverhog.riverhog.retrieval.canceled","io.riverhog.riverhog.retrieval.completed","io.riverhog.riverhog.retrieval.expired","io.riverhog.riverhog.retrieval.failed","io.riverhog.riverhog.retrieval.issue","io.riverhog.riverhog.retrieval.ready","io.riverhog.riverhog.retrieval.renewed","io.riverhog.riverhog.retrieval.requested"]`
 
 ## Governing policies
 
@@ -51,17 +51,17 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 32832ab5a43c60190dcb60d901ddde8db731112dca9ae5d218b2de6510f05f21 -->
+<!-- exact-contract-value: 56bae6e16bd56e4dc33ae3fc6c91bab83d4deeaa79c0ca68fc07296f15185abf -->
 
 ```json
 {
   "contract": {
     "kind": "constant",
     "value": [
-      "io.riverhog.riverhog.archive_copy.canceled",
-      "io.riverhog.riverhog.archive_copy.completed",
-      "io.riverhog.riverhog.archive_copy.issue",
-      "io.riverhog.riverhog.archive_copy.requested",
+      "io.riverhog.riverhog.archive_copy_job.canceled",
+      "io.riverhog.riverhog.archive_copy_job.completed",
+      "io.riverhog.riverhog.archive_copy_job.failed",
+      "io.riverhog.riverhog.archive_copy_job.requested",
       "io.riverhog.riverhog.collection.deleted",
       "io.riverhog.riverhog.collection.finalized",
       "io.riverhog.riverhog.retrieval.canceled",

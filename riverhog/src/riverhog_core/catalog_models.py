@@ -1520,7 +1520,7 @@ class ArchiveCopyJobRecord(Base):
     batch_end_order: Mapped[int | None] = mapped_column(archive_object_order_type(), nullable=True)
     destination_discarded_at: Mapped[str | None] = mapped_column(String, nullable=True)
     next_attempt_at: Mapped[str | None] = mapped_column(String, nullable=True)
-    completed_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    finished_at: Mapped[str | None] = mapped_column(String, nullable=True)
     failure: Mapped[str | None] = mapped_column(String, nullable=True)
     search_text: Mapped[str] = mapped_column(
         String,

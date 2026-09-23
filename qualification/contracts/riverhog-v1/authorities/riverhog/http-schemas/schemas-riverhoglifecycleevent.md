@@ -15,7 +15,7 @@ Exact externally visible contract owned by this contract element.
 
 <a id="s-05d5a98472"></a>
 
-- <a id="s-7610d187c0"></a>`discriminator`: `{"mapping":{"io.riverhog.riverhog.archive_copy.canceled":"#/components/schemas/ArchiveCopyCanceledEvent","io.riverhog.riverhog.archive_copy.completed":"#/components/schemas/ArchiveCopyCompletedEvent","io.riverhog.riverhog.archive_copy.issue":"#/components/schemas/ArchiveCopyIssueEvent","io.riverhog.riverhog.archive_copy.requested":"#/components/schemas/ArchiveCopyRequestedEvent","io.riverhog.riverhog.collection.deleted":"#/components/schemas/CollectionDeletedEvent","io.riverhog.riverhog.collection.finalized":"#/components/schemas/CollectionFinalizedEvent","io.riverhog.riverhog.retrieval.canceled":"#/components/schemas/RetrievalCanceledEvent","io.riverhog.riverhog.retrieval.completed":"#/components/schemas/RetrievalCompletedEvent","io.riverhog.riverhog.retrieval.expired":"#/components/schemas/RetrievalExpiredEvent","io.riverhog.riverhog.retrieval.failed":"#/components/schemas/RetrievalFailedEvent","io.riverhog.riverhog.retrieval.issue":"#/components/schemas/RetrievalIssueEvent","io.riverhog.riverhog.retrieval.ready":"#/components/schemas/RetrievalReadyEvent","io.riverhog.riverhog.retrieval.renewed":"#/components/schemas/RetrievalRenewedEvent","io.riverhog.riverhog.retrieval.requested":"#/components/schemas/RetrievalRequestedEvent"},"propertyName":"type"}`
+- <a id="s-7610d187c0"></a>`discriminator`: `{"mapping":{"io.riverhog.riverhog.archive_copy_job.canceled":"#/components/schemas/ArchiveCopyJobCanceledEvent","io.riverhog.riverhog.archive_copy_job.completed":"#/components/schemas/ArchiveCopyJobCompletedEvent","io.riverhog.riverhog.archive_copy_job.failed":"#/components/schemas/ArchiveCopyJobFailedEvent","io.riverhog.riverhog.archive_copy_job.requested":"#/components/schemas/ArchiveCopyJobRequestedEvent","io.riverhog.riverhog.collection.deleted":"#/components/schemas/CollectionDeletedEvent","io.riverhog.riverhog.collection.finalized":"#/components/schemas/CollectionFinalizedEvent","io.riverhog.riverhog.retrieval.canceled":"#/components/schemas/RetrievalCanceledEvent","io.riverhog.riverhog.retrieval.completed":"#/components/schemas/RetrievalCompletedEvent","io.riverhog.riverhog.retrieval.expired":"#/components/schemas/RetrievalExpiredEvent","io.riverhog.riverhog.retrieval.failed":"#/components/schemas/RetrievalFailedEvent","io.riverhog.riverhog.retrieval.issue":"#/components/schemas/RetrievalIssueEvent","io.riverhog.riverhog.retrieval.ready":"#/components/schemas/RetrievalReadyEvent","io.riverhog.riverhog.retrieval.renewed":"#/components/schemas/RetrievalRenewedEvent","io.riverhog.riverhog.retrieval.requested":"#/components/schemas/RetrievalRequestedEvent"},"propertyName":"type"}`
 
 ### Exactly one must match (`oneOf`)
 
@@ -23,10 +23,10 @@ Exact externally visible contract owned by this contract element.
 |---|---|
 | <a id="s-e329a936f8"></a>1 | [CollectionFinalizedEvent](schemas-collectionfinalizedevent.md) |
 | <a id="s-647809a727"></a>2 | [CollectionDeletedEvent](schemas-collectiondeletedevent.md) |
-| <a id="s-0373d6bc05"></a>3 | [ArchiveCopyRequestedEvent](schemas-archivecopyrequestedevent.md) |
-| <a id="s-a41fa3dd49"></a>4 | [ArchiveCopyCompletedEvent](schemas-archivecopycompletedevent.md) |
-| <a id="s-7e38c2bdf8"></a>5 | [ArchiveCopyIssueEvent](schemas-archivecopyissueevent.md) |
-| <a id="s-b0544dd01d"></a>6 | [ArchiveCopyCanceledEvent](schemas-archivecopycanceledevent.md) |
+| <a id="s-0373d6bc05"></a>3 | [ArchiveCopyJobRequestedEvent](schemas-archivecopyjobrequestedevent.md) |
+| <a id="s-a41fa3dd49"></a>4 | [ArchiveCopyJobCompletedEvent](schemas-archivecopyjobcompletedevent.md) |
+| <a id="s-7e38c2bdf8"></a>5 | [ArchiveCopyJobFailedEvent](schemas-archivecopyjobfailedevent.md) |
+| <a id="s-b0544dd01d"></a>6 | [ArchiveCopyJobCanceledEvent](schemas-archivecopyjobcanceledevent.md) |
 | <a id="s-91af0a56a3"></a>7 | [RetrievalRequestedEvent](schemas-retrievalrequestedevent.md) |
 | <a id="s-bd66337253"></a>8 | [RetrievalReadyEvent](schemas-retrievalreadyevent.md) |
 | <a id="s-c4ae8c3d56"></a>9 | [RetrievalRenewedEvent](schemas-retrievalrenewedevent.md) |
@@ -40,10 +40,10 @@ Exact externally visible contract owned by this contract element.
 
 ### Referenced contract elements
 
-- [ArchiveCopyCanceledEvent](schemas-archivecopycanceledevent.md)
-- [ArchiveCopyCompletedEvent](schemas-archivecopycompletedevent.md)
-- [ArchiveCopyIssueEvent](schemas-archivecopyissueevent.md)
-- [ArchiveCopyRequestedEvent](schemas-archivecopyrequestedevent.md)
+- [ArchiveCopyJobCanceledEvent](schemas-archivecopyjobcanceledevent.md)
+- [ArchiveCopyJobCompletedEvent](schemas-archivecopyjobcompletedevent.md)
+- [ArchiveCopyJobFailedEvent](schemas-archivecopyjobfailedevent.md)
+- [ArchiveCopyJobRequestedEvent](schemas-archivecopyjobrequestedevent.md)
 - [CollectionDeletedEvent](schemas-collectiondeletedevent.md)
 - [CollectionFinalizedEvent](schemas-collectionfinalizedevent.md)
 - [RetrievalCanceledEvent](schemas-retrievalcanceledevent.md)
@@ -82,16 +82,16 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 69f21b5465255b2ea035e2798606f1662500dde6f394a0abf8e0e647836b8663 -->
+<!-- exact-contract-value: 9c3b49506d64d71e5e481dd37b580651d7ac6d4190c419cb4dbd021d04f1f4e5 -->
 
 ```json
 {
   "discriminator": {
     "mapping": {
-      "io.riverhog.riverhog.archive_copy.canceled": "#/components/schemas/ArchiveCopyCanceledEvent",
-      "io.riverhog.riverhog.archive_copy.completed": "#/components/schemas/ArchiveCopyCompletedEvent",
-      "io.riverhog.riverhog.archive_copy.issue": "#/components/schemas/ArchiveCopyIssueEvent",
-      "io.riverhog.riverhog.archive_copy.requested": "#/components/schemas/ArchiveCopyRequestedEvent",
+      "io.riverhog.riverhog.archive_copy_job.canceled": "#/components/schemas/ArchiveCopyJobCanceledEvent",
+      "io.riverhog.riverhog.archive_copy_job.completed": "#/components/schemas/ArchiveCopyJobCompletedEvent",
+      "io.riverhog.riverhog.archive_copy_job.failed": "#/components/schemas/ArchiveCopyJobFailedEvent",
+      "io.riverhog.riverhog.archive_copy_job.requested": "#/components/schemas/ArchiveCopyJobRequestedEvent",
       "io.riverhog.riverhog.collection.deleted": "#/components/schemas/CollectionDeletedEvent",
       "io.riverhog.riverhog.collection.finalized": "#/components/schemas/CollectionFinalizedEvent",
       "io.riverhog.riverhog.retrieval.canceled": "#/components/schemas/RetrievalCanceledEvent",
@@ -113,16 +113,16 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$ref": "#/components/schemas/CollectionDeletedEvent"
     },
     {
-      "$ref": "#/components/schemas/ArchiveCopyRequestedEvent"
+      "$ref": "#/components/schemas/ArchiveCopyJobRequestedEvent"
     },
     {
-      "$ref": "#/components/schemas/ArchiveCopyCompletedEvent"
+      "$ref": "#/components/schemas/ArchiveCopyJobCompletedEvent"
     },
     {
-      "$ref": "#/components/schemas/ArchiveCopyIssueEvent"
+      "$ref": "#/components/schemas/ArchiveCopyJobFailedEvent"
     },
     {
-      "$ref": "#/components/schemas/ArchiveCopyCanceledEvent"
+      "$ref": "#/components/schemas/ArchiveCopyJobCanceledEvent"
     },
     {
       "$ref": "#/components/schemas/RetrievalRequestedEvent"

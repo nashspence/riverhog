@@ -9,7 +9,7 @@ import pytest
 import riverhog_client
 import riverhog_client.client as riverhog_client_module
 import riverhog_core.services.app_keys as app_key_service_module
-import riverhog_core.services.archive_copies as archive_copy_service_module
+import riverhog_core.services.archive_copy_jobs as archive_copy_service_module
 import riverhog_core.services.archive_stores as archive_store_service_module
 import riverhog_core.services.collection_tags as tag_service_module
 import riverhog_core.services.collection_uploads as upload_service_module
@@ -63,14 +63,14 @@ from riverhog_client import (
 from riverhog_client import producer as riverhog_producer
 from riverhog_client import workflows as riverhog_workflow_client_module
 from riverhog_client.client import ApiClient
-from riverhog_core.services.archive_copy_states import ARCHIVE_COPY_STATES
+from riverhog_core.services.archive_copy_job_states import ARCHIVE_COPY_JOB_STATES
 from riverhog_protocol import (
     RIVERHOG_HTTP_ERROR_AUTHORITY,
     ApplicationAccessSort,
     ApplicationKeySort,
     ApplicationSort,
-    ArchiveCopySort,
-    ArchiveCopyState,
+    ArchiveCopyJobSort,
+    ArchiveCopyJobState,
     ArchiveStoreSort,
     ClaimState,
     CollectionRootIdentity,
@@ -654,8 +654,8 @@ NAMED_ENUM_QUERY_SELECTOR_TYPES = {
     "ApplicationKeySort": ApplicationKeySort,
     "ApplicationPermission": CanonicalApplicationPermission,
     "ApplicationSort": ApplicationSort,
-    "ArchiveCopySort": ArchiveCopySort,
-    "ArchiveCopyState": ArchiveCopyState,
+    "ArchiveCopyJobSort": ArchiveCopyJobSort,
+    "ArchiveCopyJobState": ArchiveCopyJobState,
     "ArchiveStoreSort": ArchiveStoreSort,
     "CollectionSort": CollectionSort,
     "CollectionUploadSort": CollectionUploadSort,
@@ -991,8 +991,8 @@ def test_official_client_selector_validation_projects_public_vocabularies() -> N
         "_APPLICATION_ACCESS_SORTS": ApplicationAccessSort,
         "_APPLICATION_KEY_SORTS": ApplicationKeySort,
         "_APPLICATION_SORTS": ApplicationSort,
-        "_ARCHIVE_COPY_SORTS": ArchiveCopySort,
-        "_ARCHIVE_COPY_STATES": ArchiveCopyState,
+        "_ARCHIVE_COPY_JOB_SORTS": ArchiveCopyJobSort,
+        "_ARCHIVE_COPY_JOB_STATES": ArchiveCopyJobState,
         "_ARCHIVE_STORE_SORTS": ArchiveStoreSort,
         "_COLLECTION_SORTS": CollectionSort,
         "_COLLECTION_UPLOAD_SORTS": CollectionUploadSort,
@@ -1046,7 +1046,7 @@ def test_service_selector_validation_projects_public_vocabularies() -> None:
         (provenance_service_module, "_SORT_FIELDS", ProvenanceSort),
         (provenance_service_module, "_STATUS_VALUES", ProvenanceStatus),
         (provenance_service_module, "_SORT_ORDERS", SortOrder),
-        (archive_copy_service_module, "_SORT_FIELDS", ArchiveCopySort),
+        (archive_copy_service_module, "_SORT_FIELDS", ArchiveCopyJobSort),
         (archive_copy_service_module, "_SORT_ORDERS", SortOrder),
         (archive_store_service_module, "_SORT_FIELDS", ArchiveStoreSort),
         (archive_store_service_module, "_SORT_ORDERS", SortOrder),
@@ -1098,7 +1098,7 @@ def test_archive_copy_wire_states_match_the_service_state_machine() -> None:
     schemas = openapi["components"]["schemas"]
     state_schema = schemas["ArchiveCopyJobOut"]["properties"]["state"]
 
-    assert _parameter_enum(state_schema, schemas) == ARCHIVE_COPY_STATES
+    assert _parameter_enum(state_schema, schemas) == ARCHIVE_COPY_JOB_STATES
 
 
 @pytest.mark.parametrize(

@@ -51,7 +51,7 @@ Exact externally visible contract owned by this contract element.
 - [create_app_key](riverhog-client-apiclient-create-app-key.md)
 - [create_catalog_sync_checkpoint](riverhog-client-apiclient-create-catalog-sync-checkpoint.md)
 - [create_collection_upload_session_provenance_journal](riverhog-client-apiclient-create-collection-upload-session-provenance-journal.md)
-- [create_or_resume_archive_copy](riverhog-client-apiclient-create-or-resume-archive-copy.md)
+- [create_or_resume_archive_copy_job](riverhog-client-apiclient-create-or-resume-archive-copy-job.md)
 - [create_or_resume_processing_claim](riverhog-client-apiclient-create-or-resume-processing-claim.md)
 - [create_or_resume_collection_upload_session](riverhog-client-apiclient-create-or-resume-collection-upload-session.md)
 - [create_retrieval_job](riverhog-client-apiclient-create-retrieval-job.md)

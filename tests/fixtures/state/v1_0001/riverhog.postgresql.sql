@@ -1074,7 +1074,7 @@ CREATE TABLE archive_copy_jobs (
 	batch_end_order VARCHAR(65),
 	destination_discarded_at VARCHAR,
 	next_attempt_at VARCHAR,
-	completed_at VARCHAR,
+	finished_at VARCHAR,
 	failure VARCHAR,
 	search_text VARCHAR GENERATED ALWAYS AS (lower(CAST(collection_id AS TEXT) || ' ' || source_store || ' ' || destination_store || ' ' || state)) STORED NOT NULL,
 	PRIMARY KEY (collection_id, destination_store),

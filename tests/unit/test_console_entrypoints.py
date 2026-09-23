@@ -45,7 +45,7 @@ PAGED_LIST_COMMANDS = (
     ("a-riverhog-cli", "collection", "upload", "list", "--help"),
     ("a-riverhog-cli", "collection", "provenance", "list", "--help"),
     ("a-riverhog-cli", "find", "--help"),
-    ("a-riverhog-cli", "archive", "copy", "list", "--help"),
+    ("a-riverhog-cli", "archive", "copy-job", "list", "--help"),
     ("a-riverhog-cli", "archive", "store", "list", "--help"),
     ("a-riverhog-cli", "retrieval", "cache", "list", "--help"),
     ("a-riverhog-cli", "app", "list", "--help"),

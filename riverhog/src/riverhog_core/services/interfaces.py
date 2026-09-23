@@ -588,8 +588,8 @@ class SearchService(Protocol):
     ) -> Iterator[JsonObject]: ...
 
 
-class ArchiveCopyService(Protocol):
-    def requeue_interrupted_copies_for_startup(self, *, limit: int = 100) -> int: ...
+class ArchiveCopyJobService(Protocol):
+    def requeue_interrupted_jobs_for_startup(self, *, limit: int = 100) -> int: ...
     def create_or_resume(
         self,
         collection_id: int,

@@ -11,8 +11,8 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-protocol` | [riverhog_protocol.ApplicationAccessSort](../../../authorities/riverhog-protocol/python/riverhog-protocol-applicationaccesssort.md#pa-2049ca408d) |
 | `riverhog-protocol` | [riverhog_protocol.ApplicationKeySort](../../../authorities/riverhog-protocol/python/riverhog-protocol-applicationkeysort.md#pa-b1382a6be6) |
 | `riverhog-protocol` | [riverhog_protocol.ApplicationSort](../../../authorities/riverhog-protocol/python/riverhog-protocol-applicationsort.md#pa-19432af2cb) |
-| `riverhog-protocol` | [riverhog_protocol.ArchiveCopySort](../../../authorities/riverhog-protocol/python/riverhog-protocol-archivecopysort.md#pa-58f3a11b61) |
-| `riverhog-protocol` | [riverhog_protocol.ArchiveCopyState](../../../authorities/riverhog-protocol/python/riverhog-protocol-archivecopystate.md#pa-579d82eb78) |
+| `riverhog-protocol` | [riverhog_protocol.ArchiveCopyJobSort](../../../authorities/riverhog-protocol/python/riverhog-protocol-archivecopyjobsort.md#pa-472c276683) |
+| `riverhog-protocol` | [riverhog_protocol.ArchiveCopyJobState](../../../authorities/riverhog-protocol/python/riverhog-protocol-archivecopyjobstate.md#pa-f30eaf42b6) |
 | `riverhog-protocol` | [riverhog_protocol.ArchiveCopyStoreSelectionDocument](../../../authorities/riverhog-protocol/python/riverhog-protocol-archivecopystoreselectiondocument.md#pa-28b3131d1e) |
 | `riverhog-protocol` | [riverhog_protocol.ArchiveCopyStoreSelectionDocument.validate_distinct_stores](../../../authorities/riverhog-protocol/python/riverhog-protocol-archivecopystoreselectiondocument-validate-distinct-stores.md#pa-4f27ab44ea) |
 | `riverhog-protocol` | [riverhog_protocol.ArchiveStoreName](../../../authorities/riverhog-protocol/python/riverhog-protocol-archivestorename.md#pa-c85d3972dc) |

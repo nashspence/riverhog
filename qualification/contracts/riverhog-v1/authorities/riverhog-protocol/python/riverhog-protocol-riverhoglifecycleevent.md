@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-3eecaead89"></a>`kind`: `"type-alias"`
-- <a id="s-bca9570120"></a>`value`: `"typing.Annotated[riverhog_protocol.lifecycle_events.CollectionFinalizedEvent \| riverhog_protocol.lifecycle_events.CollectionDeletedEvent \| riverhog_protocol.lifecycle_events.ArchiveCopyRequestedEvent \| riverhog_protocol.lifecycle_events.ArchiveCopyCompletedEvent \| riverhog_protocol.lifecycle_events.ArchiveCopyIssueEvent \| riverhog_protocol.lifecycle_events.ArchiveCopyCanceledEvent \| riverhog_protocol.lifecycle_events.RetrievalRequestedEvent \| riverhog_protocol.lifecycle_events.RetrievalReadyEvent \| riverhog_protocol.lifecycle_events.RetrievalRenewedEvent \| riverhog_protocol.lifecycle_events.RetrievalCompletedEvent \| riverhog_protocol.lifecycle_events.RetrievalCanceledEvent \| riverhog_protocol.lifecycle_events.RetrievalExpiredEvent \| riverhog_protocol.lifecycle_events.RetrievalIssueEvent \| riverhog_protocol.lifecycle_events.RetrievalFailedEvent, FieldInfo(annotation=NoneType, required=True, discriminator='type')]"`
+- <a id="s-bca9570120"></a>`value`: `"typing.Annotated[riverhog_protocol.lifecycle_events.CollectionFinalizedEvent \| riverhog_protocol.lifecycle_events.CollectionDeletedEvent \| riverhog_protocol.lifecycle_events.ArchiveCopyJobRequestedEvent \| riverhog_protocol.lifecycle_events.ArchiveCopyJobCompletedEvent \| riverhog_protocol.lifecycle_events.ArchiveCopyJobFailedEvent \| riverhog_protocol.lifecycle_events.ArchiveCopyJobCanceledEvent \| riverhog_protocol.lifecycle_events.RetrievalRequestedEvent \| riverhog_protocol.lifecycle_events.RetrievalReadyEvent \| riverhog_protocol.lifecycle_events.RetrievalRenewedEvent \| riverhog_protocol.lifecycle_events.RetrievalCompletedEvent \| riverhog_protocol.lifecycle_events.RetrievalCanceledEvent \| riverhog_protocol.lifecycle_events.RetrievalExpiredEvent \| riverhog_protocol.lifecycle_events.RetrievalIssueEvent \| riverhog_protocol.lifecycle_events.RetrievalFailedEvent, FieldInfo(annotation=NoneType, required=True, discriminator='type')]"`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6aa3064618823bd9d46594b6de6e465a65e6ddce13693c7133da46b96803421c -->
+<!-- exact-contract-value: 397605b2acb2f6ee246c9dca137c874b0fa3e7481602b032e2ace43653af88d1 -->
 
 ```json
 {
   "contract": {
     "kind": "type-alias",
-    "value": "typing.Annotated[riverhog_protocol.lifecycle_events.CollectionFinalizedEvent | riverhog_protocol.lifecycle_events.CollectionDeletedEvent | riverhog_protocol.lifecycle_events.ArchiveCopyRequestedEvent | riverhog_protocol.lifecycle_events.ArchiveCopyCompletedEvent | riverhog_protocol.lifecycle_events.ArchiveCopyIssueEvent | riverhog_protocol.lifecycle_events.ArchiveCopyCanceledEvent | riverhog_protocol.lifecycle_events.RetrievalRequestedEvent | riverhog_protocol.lifecycle_events.RetrievalReadyEvent | riverhog_protocol.lifecycle_events.RetrievalRenewedEvent | riverhog_protocol.lifecycle_events.RetrievalCompletedEvent | riverhog_protocol.lifecycle_events.RetrievalCanceledEvent | riverhog_protocol.lifecycle_events.RetrievalExpiredEvent | riverhog_protocol.lifecycle_events.RetrievalIssueEvent | riverhog_protocol.lifecycle_events.RetrievalFailedEvent, FieldInfo(annotation=NoneType, required=True, discriminator='type')]"
+    "value": "typing.Annotated[riverhog_protocol.lifecycle_events.CollectionFinalizedEvent | riverhog_protocol.lifecycle_events.CollectionDeletedEvent | riverhog_protocol.lifecycle_events.ArchiveCopyJobRequestedEvent | riverhog_protocol.lifecycle_events.ArchiveCopyJobCompletedEvent | riverhog_protocol.lifecycle_events.ArchiveCopyJobFailedEvent | riverhog_protocol.lifecycle_events.ArchiveCopyJobCanceledEvent | riverhog_protocol.lifecycle_events.RetrievalRequestedEvent | riverhog_protocol.lifecycle_events.RetrievalReadyEvent | riverhog_protocol.lifecycle_events.RetrievalRenewedEvent | riverhog_protocol.lifecycle_events.RetrievalCompletedEvent | riverhog_protocol.lifecycle_events.RetrievalCanceledEvent | riverhog_protocol.lifecycle_events.RetrievalExpiredEvent | riverhog_protocol.lifecycle_events.RetrievalIssueEvent | riverhog_protocol.lifecycle_events.RetrievalFailedEvent, FieldInfo(annotation=NoneType, required=True, discriminator='type')]"
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

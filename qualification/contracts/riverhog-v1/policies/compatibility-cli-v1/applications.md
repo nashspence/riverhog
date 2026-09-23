@@ -32,12 +32,12 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-cli` | [a-riverhog-cli app key rotate](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-rotate.md#pa-36c92ac145) |
 | `a-riverhog-cli` | [a-riverhog-cli app list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-list.md#pa-24d791cdb0) |
 | `a-riverhog-cli` | [a-riverhog-cli archive](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive.md#pa-cadd1db3dc) |
-| `a-riverhog-cli` | [a-riverhog-cli archive copy](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy.md#pa-3b83761ccc) |
-| `a-riverhog-cli` | [a-riverhog-cli archive copy cancel](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-cancel.md#pa-8248149d63) |
-| `a-riverhog-cli` | [a-riverhog-cli archive copy list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-list.md#pa-91d349f771) |
-| `a-riverhog-cli` | [a-riverhog-cli archive copy show](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-show.md#pa-7fc186db0e) |
-| `a-riverhog-cli` | [a-riverhog-cli archive copy start](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-start.md#pa-dca44e33c2) |
-| `a-riverhog-cli` | [a-riverhog-cli archive copy watch](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-watch.md#pa-244c96a0cb) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy-job](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job.md#pa-e3777e1236) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy-job cancel](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-cancel.md#pa-2469b495f6) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy-job list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-list.md#pa-2ccf69b8c1) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy-job show](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-show.md#pa-e691acdd17) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy-job start](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-start.md#pa-ec2eb25900) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy-job watch](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-watch.md#pa-df149cc4a2) |
 | `a-riverhog-cli` | [a-riverhog-cli archive retire](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-retire.md#pa-a742ad9c52) |
 | `a-riverhog-cli` | [a-riverhog-cli archive store](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-store.md#pa-884caf9241) |
 | `a-riverhog-cli` | [a-riverhog-cli archive store list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-store-list.md#pa-765e99bb7c) |

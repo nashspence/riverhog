@@ -7,7 +7,7 @@ These exact elements own extent decisions bound to this group. The group-wide ev
 - [riverhog: GET /v1/app-key-access](../../../authorities/riverhog/http-operations/get-v1-app-key-access.md#evidence-gaps)
 - [riverhog: GET /v1/apps](../../../authorities/riverhog/http-operations/get-v1-apps.md#evidence-gaps)
 - [riverhog: GET /v1/apps/{app}/keys](../../../authorities/riverhog/http-operations/get-v1-apps-app-keys.md#evidence-gaps)
-- [riverhog: GET /v1/archive/copies](../../../authorities/riverhog/http-operations/get-v1-archive-copies.md#evidence-gaps)
+- [riverhog: GET /v1/archive/copy-jobs](../../../authorities/riverhog/http-operations/get-v1-archive-copy-jobs.md#evidence-gaps)
 - [riverhog: GET /v1/archive/stores](../../../authorities/riverhog/http-operations/get-v1-archive-stores.md#evidence-gaps)
 - [riverhog: GET /v1/catalog-sync/changes](../../../authorities/riverhog/http-operations/get-v1-catalog-sync-changes.md#evidence-gaps)
 - [riverhog: GET /v1/catalog-sync/collections](../../../authorities/riverhog/http-operations/get-v1-catalog-sync-collections.md#evidence-gaps)

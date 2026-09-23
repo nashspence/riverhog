@@ -38,7 +38,7 @@ type DownloadQuotaSort = Literal[
     "reserved_bytes",
     "remaining_bytes",
 ]
-type ArchiveCopyState = Literal[
+type ArchiveCopyJobState = Literal[
     "requested",
     "waiting",
     "checking",
@@ -48,7 +48,7 @@ type ArchiveCopyState = Literal[
     "failed",
     "canceled",
 ]
-type ArchiveCopySort = Literal[
+type ArchiveCopyJobSort = Literal[
     "collection_id", "source_store", "destination_store", "state", "requested_at"
 ]
 ClaimState = Literal["active", "settled", "retiring", "abandoned", "released"]
@@ -60,8 +60,8 @@ __all__ = [
     "ApplicationAccessSort",
     "ApplicationKeySort",
     "ApplicationSort",
-    "ArchiveCopySort",
-    "ArchiveCopyState",
+    "ArchiveCopyJobSort",
+    "ArchiveCopyJobState",
     "ArchiveStoreSort",
     "ClaimState",
     "CollectionSort",

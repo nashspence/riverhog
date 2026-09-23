@@ -34,7 +34,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-client` | [riverhog_client.ApiClient.create_app_key](../../../authorities/riverhog-client/python/riverhog-client-apiclient-create-app-key.md#pa-98cfb3d850) |
 | `riverhog-client` | [riverhog_client.ApiClient.create_catalog_sync_checkpoint](../../../authorities/riverhog-client/python/riverhog-client-apiclient-create-catalog-sync-checkpoint.md#pa-90caa438c9) |
 | `riverhog-client` | [riverhog_client.ApiClient.create_collection_upload_session_provenance_journal](../../../authorities/riverhog-client/python/riverhog-client-apiclient-create-collection-upload-session-provenance-journal.md#pa-f76c5ece64) |
-| `riverhog-client` | [riverhog_client.ApiClient.create_or_resume_archive_copy](../../../authorities/riverhog-client/python/riverhog-client-apiclient-create-or-resume-archive-copy.md#pa-7acdf795d4) |
+| `riverhog-client` | [riverhog_client.ApiClient.create_or_resume_archive_copy_job](../../../authorities/riverhog-client/python/riverhog-client-apiclient-create-or-resume-archive-copy-job.md#pa-c996191b53) |
 | `riverhog-client` | [riverhog_client.ApiClient.create_or_resume_collection_upload_session](../../../authorities/riverhog-client/python/riverhog-client-apiclient-create-or-resume-collection-upload-session.md#pa-37f824e496) |
 | `riverhog-client` | [riverhog_client.ApiClient.create_or_resume_processing_claim](../../../authorities/riverhog-client/python/riverhog-client-apiclient-create-or-resume-processing-claim.md#pa-80db313354) |
 | `riverhog-client` | [riverhog_client.ApiClient.create_retrieval_job](../../../authorities/riverhog-client/python/riverhog-client-apiclient-create-retrieval-job.md#pa-827141e222) |

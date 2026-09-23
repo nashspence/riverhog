@@ -41,8 +41,8 @@ from riverhog_protocol import (
     ApplicationAccessSort,
     ApplicationKeySort,
     ApplicationSort,
-    ArchiveCopySort,
-    ArchiveCopyState,
+    ArchiveCopyJobSort,
+    ArchiveCopyJobState,
     ArchiveCopyStoreSelectionDocument,
     ArchiveStoreName,
     ArchiveStoreSort,
@@ -151,8 +151,8 @@ _APPLICATION_SORTS = closed_literal_values(ApplicationSort)
 _APPLICATION_KEY_SORTS = closed_literal_values(ApplicationKeySort)
 _APPLICATION_ACCESS_SORTS = closed_literal_values(ApplicationAccessSort)
 _DOWNLOAD_QUOTA_SORTS = closed_literal_values(DownloadQuotaSort)
-_ARCHIVE_COPY_SORTS = closed_literal_values(ArchiveCopySort)
-_ARCHIVE_COPY_STATES = closed_literal_values(ArchiveCopyState)
+_ARCHIVE_COPY_JOB_SORTS = closed_literal_values(ArchiveCopyJobSort)
+_ARCHIVE_COPY_JOB_STATES = closed_literal_values(ArchiveCopyJobState)
 
 _COLLECTION_UPLOAD_IDEMPOTENCY_KEY: TypeAdapter[CollectionUploadIdempotencyKey] = TypeAdapter(
     CollectionUploadIdempotencyKey
@@ -2417,7 +2417,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             params["active"] = str(active).lower()
         return self._json("list_download_quotas", "GET", "/v1/download-quotas", params=params)
 
-    def create_or_resume_archive_copy(
+    def create_or_resume_archive_copy_job(
         self,
         collection_id: CollectionId,
         *,
@@ -2441,7 +2441,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         if event_context is not None:
             payload["event_context"] = dict(event_context)
         return self._json(
-            "create_or_resume_archive_copy", "POST", "/v1/archive/copies", json=payload
+            "create_or_resume_archive_copy_job", "POST", "/v1/archive/copy-jobs", json=payload
         )
 
     def list_archive_copy_jobs(
@@ -2450,16 +2450,16 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         page_size: int = 25,
         page_token: str | None = None,
         q: str | None = None,
-        state: ArchiveCopyState | None = None,
-        sort: ArchiveCopySort = "requested_at",
+        state: ArchiveCopyJobState | None = None,
+        sort: ArchiveCopyJobSort = "requested_at",
         order: SortOrder = "desc",
     ) -> dict[str, Any]:
         params: dict[str, Any] = {
             **_page_params(page_size=page_size, page_token=page_token),
             "sort": _one_of(
                 sort,
-                _ARCHIVE_COPY_SORTS,
-                "archive-copy sort",
+                _ARCHIVE_COPY_JOB_SORTS,
+                "archive-copy job sort",
             ),
             "order": _one_of(order, _SORT_ORDERS, "sort order"),
         }
@@ -2468,10 +2468,10 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         if state:
             params["state"] = _one_of(
                 state,
-                _ARCHIVE_COPY_STATES,
-                "archive-copy state",
+                _ARCHIVE_COPY_JOB_STATES,
+                "archive-copy job state",
             )
-        return self._json("list_archive_copy_jobs", "GET", "/v1/archive/copies", params=params)
+        return self._json("list_archive_copy_jobs", "GET", "/v1/archive/copy-jobs", params=params)
 
     def get_archive_copy_job(
         self,
@@ -2482,7 +2482,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         return self._json(
             "get_archive_copy_job",
             "GET",
-            f"/v1/archive/copies/{_collection_id(collection_id)}/"
+            f"/v1/archive/copy-jobs/{_collection_id(collection_id)}/"
             f"{quote(_archive_store_name(destination_store), safe='')}",
         )
 
@@ -2495,7 +2495,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         return self._json(
             "cancel_archive_copy_job",
             "DELETE",
-            f"/v1/archive/copies/{_collection_id(collection_id)}/"
+            f"/v1/archive/copy-jobs/{_collection_id(collection_id)}/"
             f"{quote(_archive_store_name(destination_store), safe='')}",
         )
 

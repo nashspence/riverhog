@@ -26,11 +26,11 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-cli` | [a-riverhog-cli app key revoke](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-revoke.md#pa-d2f8ed17f8) |
 | `a-riverhog-cli` | [a-riverhog-cli app key rotate](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-rotate.md#pa-3679cb859e) |
 | `a-riverhog-cli` | [a-riverhog-cli app list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-list.md#pa-38d412b6a9) |
-| `a-riverhog-cli` | [a-riverhog-cli archive copy cancel](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-cancel.md#pa-566e8208d4) |
-| `a-riverhog-cli` | [a-riverhog-cli archive copy list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-list.md#pa-88ed1e58d8) |
-| `a-riverhog-cli` | [a-riverhog-cli archive copy show](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-show.md#pa-6568bcfd32) |
-| `a-riverhog-cli` | [a-riverhog-cli archive copy start](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-start.md#pa-91fe11d05c) |
-| `a-riverhog-cli` | [a-riverhog-cli archive copy watch](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-watch.md#pa-de55f535bd) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy-job cancel](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-cancel.md#pa-80f5b0f01c) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy-job list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-list.md#pa-98eb4b1653) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy-job show](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-show.md#pa-a6007277bf) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy-job start](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-start.md#pa-4e3a280cca) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy-job watch](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-watch.md#pa-0f3323ff70) |
 | `a-riverhog-cli` | [a-riverhog-cli archive retire](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-retire.md#pa-1ea6665832) |
 | `a-riverhog-cli` | [a-riverhog-cli archive store list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-store-list.md#pa-477a963949) |
 | `a-riverhog-cli` | [a-riverhog-cli archive store show](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-store-show.md#pa-8ba1cd1116) |
@@ -153,7 +153,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [GET /v1/app-key-access](../../authorities/riverhog/http-operations/get-v1-app-key-access.md#pa-24f0dffd29) |
 | `riverhog` | [GET /v1/apps](../../authorities/riverhog/http-operations/get-v1-apps.md#pa-1d13634c73) |
 | `riverhog` | [GET /v1/apps/{app}/keys](../../authorities/riverhog/http-operations/get-v1-apps-app-keys.md#pa-1ffd76d5ac) |
-| `riverhog` | [GET /v1/archive/copies](../../authorities/riverhog/http-operations/get-v1-archive-copies.md#pa-572b37830f) |
+| `riverhog` | [GET /v1/archive/copy-jobs](../../authorities/riverhog/http-operations/get-v1-archive-copy-jobs.md#pa-6d2d3c2515) |
 | `riverhog` | [GET /v1/archive/stores](../../authorities/riverhog/http-operations/get-v1-archive-stores.md#pa-b31d2a0959) |
 | `riverhog` | [GET /v1/catalog-sync/changes](../../authorities/riverhog/http-operations/get-v1-catalog-sync-changes.md#pa-54b5467e47) |
 | `riverhog` | [GET /v1/catalog-sync/collections](../../authorities/riverhog/http-operations/get-v1-catalog-sync-collections.md#pa-ebfb8770e5) |
@@ -213,11 +213,11 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: AppListOut](../../authorities/riverhog/http-schemas/schemas-applistout.md#pa-7aa50fcc91) |
 | `riverhog` | [schemas: ApplicationAccessGrantSet](../../authorities/riverhog/http-schemas/schemas-applicationaccessgrantset.md#pa-d955078dac) |
 | `riverhog` | [schemas: ApplicationKeyId](../../authorities/riverhog/http-schemas/schemas-applicationkeyid.md#pa-10e9475dd7) |
-| `riverhog` | [schemas: ArchiveCopyCanceledData](../../authorities/riverhog/http-schemas/schemas-archivecopycanceleddata.md#pa-912de3fbe0) |
-| `riverhog` | [schemas: ArchiveCopyCompletedData](../../authorities/riverhog/http-schemas/schemas-archivecopycompleteddata.md#pa-0ea26dcef1) |
-| `riverhog` | [schemas: ArchiveCopyIssueData](../../authorities/riverhog/http-schemas/schemas-archivecopyissuedata.md#pa-d6637af304) |
+| `riverhog` | [schemas: ArchiveCopyJobCanceledData](../../authorities/riverhog/http-schemas/schemas-archivecopyjobcanceleddata.md#pa-b122d581dc) |
+| `riverhog` | [schemas: ArchiveCopyJobCompletedData](../../authorities/riverhog/http-schemas/schemas-archivecopyjobcompleteddata.md#pa-c5410cfb7d) |
+| `riverhog` | [schemas: ArchiveCopyJobFailedData](../../authorities/riverhog/http-schemas/schemas-archivecopyjobfaileddata.md#pa-abb67d5027) |
 | `riverhog` | [schemas: ArchiveCopyJobListOut](../../authorities/riverhog/http-schemas/schemas-archivecopyjoblistout.md#pa-d86f6871c7) |
-| `riverhog` | [schemas: ArchiveCopyRequestedData](../../authorities/riverhog/http-schemas/schemas-archivecopyrequesteddata.md#pa-6d3de46d43) |
+| `riverhog` | [schemas: ArchiveCopyJobRequestedData](../../authorities/riverhog/http-schemas/schemas-archivecopyjobrequesteddata.md#pa-f6a4a29593) |
 | `riverhog` | [schemas: ArchiveCopyRetirementPlanOut](../../authorities/riverhog/http-schemas/schemas-archivecopyretirementplanout.md#pa-d1ae0a62b6) |
 | `riverhog` | [schemas: ArchiveStoreListOut](../../authorities/riverhog/http-schemas/schemas-archivestorelistout.md#pa-203bf4407e) |
 | `riverhog` | [schemas: ArtifactDispositionFailureDocument](../../authorities/riverhog/http-schemas/schemas-artifactdispositionfailuredocument.md#pa-0a346bb665) |
@@ -267,7 +267,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: CollectionUploadSessionOut](../../authorities/riverhog/http-schemas/schemas-collectionuploadsessionout.md#pa-e27e41d393) |
 | `riverhog` | [schemas: CollectionUploadUnitAssignmentDocument](../../authorities/riverhog/http-schemas/schemas-collectionuploadunitassignmentdocument.md#pa-f73958881a) |
 | `riverhog` | [schemas: CollectionUploadUnitSourceDocument](../../authorities/riverhog/http-schemas/schemas-collectionuploadunitsourcedocument.md#pa-eb4e2ef028) |
-| `riverhog` | [schemas: CreateArchiveCopyRequest](../../authorities/riverhog/http-schemas/schemas-createarchivecopyrequest.md#pa-7215f381fc) |
+| `riverhog` | [schemas: CreateArchiveCopyJobRequest](../../authorities/riverhog/http-schemas/schemas-createarchivecopyjobrequest.md#pa-62a8d04432) |
 | `riverhog` | [schemas: CreateOrResumeCollectionUploadSessionOut](../../authorities/riverhog/http-schemas/schemas-createorresumecollectionuploadsessionout.md#pa-1492cd155f) |
 | `riverhog` | [schemas: CreateOrResumeCollectionUploadSessionRequest](../../authorities/riverhog/http-schemas/schemas-createorresumecollectionuploadsessionrequest.md#pa-90fb155bba) |
 | `riverhog` | [schemas: CreateRetrievalJobRequest](../../authorities/riverhog/http-schemas/schemas-createretrievaljobrequest.md#pa-391e92bd00) |

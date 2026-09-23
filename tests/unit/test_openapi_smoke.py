@@ -30,8 +30,8 @@ def test_openapi_describes_archive_catalog_and_retrieval_boundaries() -> None:
         "/v1/catalog-sync/changes",
         "/v1/archive/stores",
         "/v1/archive/stores/{store}",
-        "/v1/archive/copies",
-        "/v1/archive/copies/{collection_id}/{destination_store}",
+        "/v1/archive/copy-jobs",
+        "/v1/archive/copy-jobs/{collection_id}/{destination_store}",
         "/v1/apps",
         "/v1/apps/{app}/keys",
         "/v1/apps/{app}/keys/{key_id}/access",
@@ -77,7 +77,7 @@ def test_openapi_describes_archive_catalog_and_retrieval_boundaries() -> None:
         "/v1/search",
     }.issubset(paths)
     assert "delete" in paths["/v1/retrieval-jobs/{job_id}"]
-    assert "delete" in paths["/v1/archive/copies/{collection_id}/{destination_store}"]
+    assert "delete" in paths["/v1/archive/copy-jobs/{collection_id}/{destination_store}"]
 
 
 def test_retrieval_plan_and_job_schemas_bind_exact_versions() -> None:

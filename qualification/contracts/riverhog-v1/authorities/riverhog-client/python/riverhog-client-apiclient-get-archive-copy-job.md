@@ -29,9 +29,9 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [a-riverhog-cli archive copy show](../../a-riverhog-cli/cli/a-riverhog-cli-archive-copy-show.md)
-- [a-riverhog-cli archive copy watch](../../a-riverhog-cli/cli/a-riverhog-cli-archive-copy-watch.md)
-- [GET /v1/archive/copies/{collection_id}/{destination_store}](../../riverhog/http-operations/get-v1-archive-copies-collection-id-destination-store.md)
+- [a-riverhog-cli archive copy-job show](../../a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-show.md)
+- [a-riverhog-cli archive copy-job watch](../../a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-watch.md)
+- [GET /v1/archive/copy-jobs/{collection_id}/{destination_store}](../../riverhog/http-operations/get-v1-archive-copy-jobs-collection-id-destination-store.md)
 - [ApiClient](riverhog-client-apiclient.md)
 
 ## Governing policies

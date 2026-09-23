@@ -23,14 +23,14 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-e0e56d772e"></a>`kind`: `"method"`
-- <a id="s-0de41dc32e"></a>`signature`: `"\"(self, *, page_size: 'int' = 25, page_token: 'str \| None' = None, q: 'str \| None' = None, state: 'ArchiveCopyState \| None' = None, sort: 'ArchiveCopySort' = 'requested_at', order: 'SortOrder' = 'desc') -> 'dict[str, Any]'\""`
+- <a id="s-0de41dc32e"></a>`signature`: `"\"(self, *, page_size: 'int' = 25, page_token: 'str \| None' = None, q: 'str \| None' = None, state: 'ArchiveCopyJobState \| None' = None, sort: 'ArchiveCopyJobSort' = 'requested_at', order: 'SortOrder' = 'desc') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 
 ### Related interface records
 
-- [a-riverhog-cli archive copy list](../../a-riverhog-cli/cli/a-riverhog-cli-archive-copy-list.md)
-- [GET /v1/archive/copies](../../riverhog/http-operations/get-v1-archive-copies.md)
+- [a-riverhog-cli archive copy-job list](../../a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-list.md)
+- [GET /v1/archive/copy-jobs](../../riverhog/http-operations/get-v1-archive-copy-jobs.md)
 - [ApiClient](riverhog-client-apiclient.md)
 
 ## Governing policies
@@ -61,13 +61,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fe5cf182e9a28915c3c1cb5e5c39d259567fe5db38e43508176273fbcc37d3e8 -->
+<!-- exact-contract-value: 18c9a4501c859f883205814fda8deeac7f77d6fe39c55d89c684a9ecfec00855 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, *, page_size: 'int' = 25, page_token: 'str | None' = None, q: 'str | None' = None, state: 'ArchiveCopyState | None' = None, sort: 'ArchiveCopySort' = 'requested_at', order: 'SortOrder' = 'desc') -> 'dict[str, Any]'\""
+    "signature": "\"(self, *, page_size: 'int' = 25, page_token: 'str | None' = None, q: 'str | None' = None, state: 'ArchiveCopyJobState | None' = None, sort: 'ArchiveCopyJobSort' = 'requested_at', order: 'SortOrder' = 'desc') -> 'dict[str, Any]'\""
   },
   "distribution": "riverhog-client",
   "module": "riverhog_client",

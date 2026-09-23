@@ -309,7 +309,7 @@ _CLI_RESULT_CONTRACT = {
                 },
             ],
         },
-        "archive copy watch": {
+        "archive copy-job watch": {
             "failures": [
                 {
                     "id": "usage",
@@ -674,7 +674,7 @@ collection_app.add_typer(collection_upload_app, name="upload")
 collection_app.add_typer(collection_provenance_app, name="provenance")
 app.add_typer(archive_app, name="archive")
 archive_app.add_typer(archive_store_app, name="store")
-archive_app.add_typer(archive_copy_app, name="copy")
+archive_app.add_typer(archive_copy_app, name="copy-job")
 app.add_typer(application_app, name="app")
 app.add_typer(tag_app, name="tag")
 app.add_typer(event_app, name="event")
@@ -2996,7 +2996,7 @@ def archive_copy_cmd(
 ) -> None:
     """Copy one collection between archive stores."""
 
-    payload = client().create_or_resume_archive_copy(
+    payload = client().create_or_resume_archive_copy_job(
         collection_id,
         destination_store=destination_store,
         source_store=source_store,
@@ -3004,7 +3004,7 @@ def archive_copy_cmd(
     emit(payload if json_mode else format_archive_copy_job(payload), json_mode=json_mode)
 
 
-_ARCHIVE_COPY_SORT_FIELDS = {
+_ARCHIVE_COPY_JOB_SORT_FIELDS = {
     "collection_id",
     "source_store",
     "destination_store",
@@ -3025,7 +3025,7 @@ def archive_copy_list_cmd(
     ] = None,
     state: Annotated[
         str | None,
-        typer.Option("--state", help="Exact archive-copy state"),
+        typer.Option("--state", help="Exact archive-copy job state"),
     ] = None,
     selectors: Annotated[
         bool,
@@ -3040,7 +3040,7 @@ def archive_copy_list_cmd(
 
     if selectors and json_mode:
         raise typer.BadParameter("--selectors and --json cannot be used together")
-    normalized_order = _list_order(sort, order, fields=_ARCHIVE_COPY_SORT_FIELDS)
+    normalized_order = _list_order(sort, order, fields=_ARCHIVE_COPY_JOB_SORT_FIELDS)
     api = client()
     payload = api.list_archive_copy_jobs(
         page_size=page_size,

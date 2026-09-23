@@ -122,10 +122,10 @@ def _process_archive_maintenance(
                 "startup restored interrupted collection upload discards: count=%s",
                 requeued_discards,
             )
-        requeued_copies = container.archive_copies.requeue_interrupted_copies_for_startup(limit=100)
-        progressed += requeued_copies
-        if requeued_copies:
-            _LOG.info("startup requeued interrupted archive copies: count=%s", requeued_copies)
+        requeued_jobs = container.archive_copy_jobs.requeue_interrupted_jobs_for_startup(limit=100)
+        progressed += requeued_jobs
+        if requeued_jobs:
+            _LOG.info("startup requeued interrupted archive-copy jobs: count=%s", requeued_jobs)
         requeued_descriptions = container.collection_descriptions.requeue_interrupted_for_startup(
             limit=100
         )
@@ -178,7 +178,7 @@ def _process_archive_maintenance(
     progressed += container.collection_workflows.process_due_outcome_sets(limit=1)
     progressed += container.collection_deletions.process_due(limit=1)
     progressed += container.retrieval.process_cache_accounting_reconciliation(limit=100)
-    progressed += container.archive_copies.process_due(limit=1)
+    progressed += container.archive_copy_jobs.process_due(limit=1)
     progressed += container.collection_descriptions.process_due(limit=1)
     progressed += container.collection_tags.process_due(limit=1)
     progressed += container.provenance.process_due_verifications(limit=1)

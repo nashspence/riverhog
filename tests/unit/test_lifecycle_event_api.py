@@ -24,10 +24,10 @@ from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.app_keys import SqlAlchemyAppKeyService
 from riverhog_core.services.lifecycle_events import SqlAlchemyLifecycleEventService
 from riverhog_protocol.lifecycle_events import (
-    ARCHIVE_COPY_CANCELED,
-    ARCHIVE_COPY_COMPLETED,
-    ARCHIVE_COPY_ISSUE,
-    ARCHIVE_COPY_REQUESTED,
+    ARCHIVE_COPY_JOB_CANCELED,
+    ARCHIVE_COPY_JOB_COMPLETED,
+    ARCHIVE_COPY_JOB_FAILED,
+    ARCHIVE_COPY_JOB_REQUESTED,
     COLLECTION_FINALIZED,
     MAX_LIFECYCLE_EVENT_SEQUENCE,
     RIVERHOG_EVENT_TYPES,
@@ -70,7 +70,7 @@ def test_every_emitted_riverhog_event_type_has_one_public_contract() -> None:
                     and isinstance(keyword.value, ast.Constant)
                     and isinstance(keyword.value.value, str)
                     and keyword.value.value.startswith(
-                        ("collection.", "archive_copy.", "retrieval.")
+                        ("collection.", "archive_copy_job.", "retrieval.")
                     )
                 ):
                     emitted.add("io.riverhog.riverhog." + keyword.value.value)
@@ -81,13 +81,13 @@ def test_every_emitted_riverhog_event_type_has_one_public_contract() -> None:
 @pytest.mark.parametrize(
     ("event_type", "state", "extra"),
     (
-        (ARCHIVE_COPY_REQUESTED, "requested", {}),
-        (ARCHIVE_COPY_COMPLETED, "completed", {}),
-        (ARCHIVE_COPY_ISSUE, "failed", {"error": "provider unavailable"}),
-        (ARCHIVE_COPY_CANCELED, "canceled", {}),
+        (ARCHIVE_COPY_JOB_REQUESTED, "requested", {}),
+        (ARCHIVE_COPY_JOB_COMPLETED, "completed", {}),
+        (ARCHIVE_COPY_JOB_FAILED, "failed", {"error": "provider unavailable"}),
+        (ARCHIVE_COPY_JOB_CANCELED, "canceled", {}),
     ),
 )
-def test_archive_copy_event_type_binds_its_exact_lifecycle_state(
+def test_archive_copy_job_event_type_binds_its_exact_lifecycle_state(
     event_type: str,
     state: str,
     extra: dict[str, str],

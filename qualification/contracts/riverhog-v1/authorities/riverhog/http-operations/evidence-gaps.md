@@ -23,7 +23,7 @@ The table identifies the exact evidence groups for each element. Its element lin
 | [riverhog: GET /v1/app-key-access](get-v1-app-key-access.md#evidence-gaps) | [riverhog-read-collection-progression/v1](../../../evidence/qualifications/riverhog-read-collection-progression-v1/index.md) |
 | [riverhog: GET /v1/apps](get-v1-apps.md#evidence-gaps) | [riverhog-read-collection-progression/v1](../../../evidence/qualifications/riverhog-read-collection-progression-v1/index.md) |
 | [riverhog: GET /v1/apps/{app}/keys](get-v1-apps-app-keys.md#evidence-gaps) | [riverhog-read-collection-progression/v1](../../../evidence/qualifications/riverhog-read-collection-progression-v1/index.md) |
-| [riverhog: GET /v1/archive/copies](get-v1-archive-copies.md#evidence-gaps) | [riverhog-read-collection-progression/v1](../../../evidence/qualifications/riverhog-read-collection-progression-v1/index.md) |
+| [riverhog: GET /v1/archive/copy-jobs](get-v1-archive-copy-jobs.md#evidence-gaps) | [riverhog-read-collection-progression/v1](../../../evidence/qualifications/riverhog-read-collection-progression-v1/index.md) |
 | [riverhog: GET /v1/archive/stores](get-v1-archive-stores.md#evidence-gaps) | [riverhog-read-collection-progression/v1](../../../evidence/qualifications/riverhog-read-collection-progression-v1/index.md) |
 | [riverhog: GET /v1/catalog-sync/changes](get-v1-catalog-sync-changes.md#evidence-gaps) | [riverhog-read-collection-progression/v1](../../../evidence/qualifications/riverhog-read-collection-progression-v1/index.md) |
 | [riverhog: GET /v1/catalog-sync/collections](get-v1-catalog-sync-collections.md#evidence-gaps) | [riverhog-read-collection-progression/v1](../../../evidence/qualifications/riverhog-read-collection-progression-v1/index.md) |
