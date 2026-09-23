@@ -4,8 +4,8 @@
 
 Canonical content-opaque collection orchestration contracts for Stove0.
 
-Contract elements: **205** · Extent decisions: **0**
+Contract elements: **207** · Extent decisions: **0**
 
 ## Interfaces
 
-- [Python](python/index.md) (205)
+- [Python](python/index.md) (207)

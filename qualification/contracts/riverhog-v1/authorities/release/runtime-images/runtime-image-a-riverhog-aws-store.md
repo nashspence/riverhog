@@ -37,7 +37,7 @@ Publication preserves these existing component authorities; it does not reclassi
 ## Governing policies
 
 - <a id="pa-69c459b71a"></a>[compatibility/components/v1](../compatibility-guarantees/compatibility-components.md#p-95e9a12259)
-- <a id="pa-40f2bfb96d"></a>[publication/image-digest-scope/v1](../../../policies/publication-image-digest-scope-v1/index.md#p-634e69c23f)
+- <a id="pa-846581b31b"></a>[publication/image-identity-scope/v1](../../../policies/publication-image-identity-scope-v1/index.md#p-8fb44d2436)
 - <a id="pa-8bbf703bc1"></a>[publication/platform-scope/v1](../../../policies/publication-platform-scope-v1/index.md#p-7dacd6d393)
 - <a id="pa-9b973bf0a8"></a>[publication/role-retention/v1](../../../policies/publication-role-retention-v1/index.md#p-3e4dc2e851)
 

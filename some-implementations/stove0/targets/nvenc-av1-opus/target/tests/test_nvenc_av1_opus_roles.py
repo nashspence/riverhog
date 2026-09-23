@@ -63,31 +63,30 @@ def test_nvenc_execution_identity_is_the_canonical_semantic_result() -> None:
         {
             "format": "a-stove0-nvenc-av1-opus-target-execution/v1",
             "plan_sha256": _sha("1"),
-            "image_digest": _sha("2"),
             "outputs": [output.model_dump(mode="json")],
         }
     )
 
-    assert nvenc_target._execution_sha256(_sha("1"), _sha("2"), (output,)) == expected
+    assert nvenc_target._execution_sha256(_sha("1"), (output,)) == expected
 
 
 def test_paired_nvenc_roles_bind_av1_opus_semantics_and_isolated_contracts(
     tmp_path: Path,
     monkeypatch: Any,
 ) -> None:
-    image_digest = _sha("9")
+    image_id = "sha256:" + _sha("9")
     workspace_root = tmp_path / "review-workspace"
     workspace_root.mkdir(mode=0o700)
     sampler = NvencAv1OpusReviewSampler(
         workspace_root=workspace_root,
         source_revision="fixture",
-        image_digest=image_digest,
+        image_id=image_id,
     )
     target = NvencAv1OpusTargetService(
         state_root=tmp_path / "target-state",
         workspace_root=tmp_path / "target-workspace",
         source_revision="fixture",
-        image_digest=image_digest,
+        image_id=image_id,
     )
     request = _request(workspace_root, sampler)
 
@@ -105,7 +104,7 @@ def test_paired_nvenc_roles_bind_av1_opus_semantics_and_isolated_contracts(
     target_payload = json.loads(target_response.body)
     sampler_payload = json.loads(sampler_response.body)
     assert target_response.status == 200
-    assert target_payload["image_digest"] == image_digest
+    assert target_payload["image_id"] == image_id
     assert [item["operation_id"] for item in target_payload["operations"]] == [
         AV1_OPUS_ARCHIVE_OPERATION.id
     ]
@@ -135,7 +134,7 @@ def test_nvenc_preflight_and_encode_share_one_exact_projection(tmp_path: Path) -
         state_root=tmp_path / "state",
         workspace_root=tmp_path / "workspace",
         source_revision="fixture",
-        image_digest=_sha("9"),
+        image_id="sha256:" + _sha("9"),
     )
     intent_document = {
         "codec": "av1",

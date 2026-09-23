@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-4d913c6dda"></a>`kind`: `"class"`
-- <a id="s-9e9dfc4ea1"></a>`signature`: `"\"(*, state_root: 'Path', workspace_root: 'Path', samplers: 'tuple[SamplerRegistration, ...]', source_revision: 'str' = 'unknown', image_digest: 'str', implementation_version: 'str', protocol: 'TargetProtocol', implementation_id: 'str', operation: 'OperationContract', options_schema: 'JsonSchemaValidationProfile', terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""`
+- <a id="s-9e9dfc4ea1"></a>`signature`: `"\"(*, state_root: 'Path', workspace_root: 'Path', samplers: 'tuple[SamplerRegistration, ...]', source_revision: 'str' = 'unknown', image_id: 'str', implementation_version: 'str', protocol: 'TargetProtocol', implementation_id: 'str', operation: 'OperationContract', options_schema: 'JsonSchemaValidationProfile', terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""`
 
 ## Maintained corroboration
 
@@ -64,13 +64,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d7d3766776228d294817450dfcfd3b441be20395b89ab0b8cc3185ce1cfd9ca6 -->
+<!-- exact-contract-value: 2ad11c1f6f9003e1154a7709b22b65dbb4a4da50b94174fa84b15db4372865ef -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "signature": "\"(*, state_root: 'Path', workspace_root: 'Path', samplers: 'tuple[SamplerRegistration, ...]', source_revision: 'str' = 'unknown', image_digest: 'str', implementation_version: 'str', protocol: 'TargetProtocol', implementation_id: 'str', operation: 'OperationContract', options_schema: 'JsonSchemaValidationProfile', terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""
+    "signature": "\"(*, state_root: 'Path', workspace_root: 'Path', samplers: 'tuple[SamplerRegistration, ...]', source_revision: 'str' = 'unknown', image_id: 'str', implementation_version: 'str', protocol: 'TargetProtocol', implementation_id: 'str', operation: 'OperationContract', options_schema: 'JsonSchemaValidationProfile', terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""
   },
   "distribution": "review0-target-lib",
   "module": "review0_target_lib",

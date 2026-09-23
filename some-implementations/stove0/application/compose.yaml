@@ -1,5 +1,5 @@
 x-stove0-image: &stove0-image
-  image: stove0:dev
+  image: ${STOVE0_IMAGE_REF:-stove0:dev}
   build:
     context: ../../..
     dockerfile: some-implementations/stove0/application/server/Dockerfile
@@ -148,7 +148,7 @@ services:
 
   a-stove0-ffprobe-sampling-observer:
     <<: *hardening
-    image: a-stove0-ffprobe-sampling-observer:dev
+    image: ${A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_REF:-a-stove0-ffprobe-sampling-observer:dev}
     build:
       context: ../../..
       dockerfile: some-implementations/stove0/observers/ffprobe-sampling/Dockerfile
@@ -159,7 +159,7 @@ services:
       TZ: ${TZ:-UTC}
       A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN_FILE: /run/secrets/a_stove0_ffprobe_sampling_observer_token
       A_STOVE0_FFPROBE_SAMPLING_OBSERVER_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
-      A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_DIGEST: ${A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_DIGEST:?A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_DIGEST is required}
+      A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID: ${A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID:?A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID is required}
       A_STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE: /run/a-stove0-ffprobe-sampling-observer
     secrets: ["a_stove0_ffprobe_sampling_observer_token"]
     networks: ["stove0-internal", "riverhog-control"]
@@ -182,7 +182,7 @@ services:
 
   a-stove0-exiftool-observer:
     <<: *hardening
-    image: a-stove0-exiftool-observer:dev
+    image: ${A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_REF:-a-stove0-exiftool-observer:dev}
     build:
       context: ../../..
       dockerfile: some-implementations/stove0/observers/exiftool/Dockerfile
@@ -193,7 +193,7 @@ services:
       TZ: ${TZ:-UTC}
       A_STOVE0_EXIFTOOL_OBSERVER_TOKEN_FILE: /run/secrets/a_stove0_exiftool_observer_token
       A_STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
-      A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST: ${A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST:?A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST is required}
+      A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID: ${A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID:?A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID is required}
       A_STOVE0_EXIFTOOL_OBSERVER_WORKSPACE: /run/a-stove0-exiftool-observer
     secrets: ["a_stove0_exiftool_observer_token"]
     networks: ["stove0-internal", "riverhog-control"]
@@ -204,7 +204,7 @@ services:
 
   a-stove0-opus-target:
     <<: *hardening
-    image: a-stove0-opus-target:dev
+    image: ${A_STOVE0_OPUS_TARGET_IMAGE_REF:-a-stove0-opus-target:dev}
     build: &opus-build
       context: ../../..
       dockerfile: some-implementations/stove0/targets/opus/Dockerfile
@@ -215,7 +215,7 @@ services:
       TZ: ${TZ:-UTC}
       A_STOVE0_OPUS_TARGET_TOKEN_FILE: /run/secrets/a_stove0_opus_target_token
       A_STOVE0_OPUS_TARGET_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
-      A_STOVE0_OPUS_TARGET_IMAGE_DIGEST: ${A_STOVE0_OPUS_TARGET_IMAGE_DIGEST:?A_STOVE0_OPUS_TARGET_IMAGE_DIGEST is required}
+      A_STOVE0_OPUS_TARGET_IMAGE_ID: ${A_STOVE0_OPUS_TARGET_IMAGE_ID:?A_STOVE0_OPUS_TARGET_IMAGE_ID is required}
       A_STOVE0_OPUS_TARGET_STATE_ROOT: /var/lib/a-stove0-opus-target
       A_STOVE0_OPUS_TARGET_WORKSPACE: /run/a-stove0-opus-target
       STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS: ${STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:-2592000}
@@ -230,14 +230,14 @@ services:
 
   a-review0-opus-sampler:
     <<: *hardening
-    image: a-stove0-opus-target:dev
+    image: ${A_STOVE0_OPUS_TARGET_IMAGE_REF:-a-stove0-opus-target:dev}
     build: *opus-build
     command: ["a-review0-opus-sampler", "--host", "0.0.0.0", "--port", "8080"]
     environment:
       TZ: ${TZ:-UTC}
       A_REVIEW0_OPUS_SAMPLER_TOKEN_FILE: /run/secrets/a_review0_opus_sampler_token
       A_REVIEW0_OPUS_SAMPLER_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
-      A_REVIEW0_OPUS_SAMPLER_IMAGE_DIGEST: ${A_STOVE0_OPUS_TARGET_IMAGE_DIGEST:?A_STOVE0_OPUS_TARGET_IMAGE_DIGEST is required}
+      A_REVIEW0_OPUS_SAMPLER_IMAGE_ID: ${A_STOVE0_OPUS_TARGET_IMAGE_ID:?A_STOVE0_OPUS_TARGET_IMAGE_ID is required}
       A_REVIEW0_OPUS_SAMPLER_WORKSPACE: /run/review0
     secrets: ["a_review0_opus_sampler_token"]
     networks: ["review-sampler"]
@@ -249,7 +249,7 @@ services:
 
   a-review0-materializer:
     <<: *hardening
-    image: a-review0-materializer:dev
+    image: ${A_REVIEW0_MATERIALIZER_IMAGE_REF:-a-review0-materializer:dev}
     build:
       context: ../../..
       dockerfile: some-implementations/stove0/review0/materialize-target/Dockerfile
@@ -260,11 +260,11 @@ services:
       TZ: ${TZ:-UTC}
       A_REVIEW0_MATERIALIZER_TOKEN_FILE: /run/secrets/a_review0_materializer_token
       A_REVIEW0_MATERIALIZER_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
-      A_REVIEW0_MATERIALIZER_IMAGE_DIGEST: ${A_REVIEW0_MATERIALIZER_IMAGE_DIGEST:?A_REVIEW0_MATERIALIZER_IMAGE_DIGEST is required}
+      A_REVIEW0_MATERIALIZER_IMAGE_ID: ${A_REVIEW0_MATERIALIZER_IMAGE_ID:?A_REVIEW0_MATERIALIZER_IMAGE_ID is required}
       A_REVIEW0_MATERIALIZER_STATE_ROOT: /var/lib/a-review0-materializer
       A_REVIEW0_MATERIALIZER_WORKSPACE: /run/review0
       STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS: ${STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:-2592000}
-      A_REVIEW0_MATERIALIZER_SAMPLERS_JSON: '{"samplers":[{"id":"opus","base_url":"http://a-review0-opus-sampler:8080","token_file":"/run/secrets/a_review0_opus_sampler_token","allow_insecure_http":true,"descriptor_sha256":"${A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256:?A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256 is required}","image_digest":"${A_STOVE0_OPUS_TARGET_IMAGE_DIGEST:?A_STOVE0_OPUS_TARGET_IMAGE_DIGEST is required}"}]}'
+      A_REVIEW0_MATERIALIZER_SAMPLERS_JSON: '{"samplers":[{"id":"opus","base_url":"http://a-review0-opus-sampler:8080","token_file":"/run/secrets/a_review0_opus_sampler_token","allow_insecure_http":true,"descriptor_sha256":"${A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256:?A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256 is required}","image_id":"${A_STOVE0_OPUS_TARGET_IMAGE_ID:?A_STOVE0_OPUS_TARGET_IMAGE_ID is required}"}]}'
     depends_on:
       a-review0-opus-sampler:
         condition: service_healthy
@@ -281,7 +281,7 @@ services:
 
   a-review0-rclone-target:
     <<: *hardening
-    image: a-review0-rclone-target:dev
+    image: ${A_REVIEW0_RCLONE_TARGET_IMAGE_REF:-a-review0-rclone-target:dev}
     build:
       context: ../../..
       dockerfile: some-implementations/stove0/review0/rclone-effect-target/Dockerfile
@@ -292,13 +292,13 @@ services:
       TZ: ${TZ:-UTC}
       A_REVIEW0_RCLONE_TARGET_TOKEN_FILE: /run/secrets/a_review0_rclone_target_token
       A_REVIEW0_RCLONE_TARGET_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
-      A_REVIEW0_RCLONE_TARGET_IMAGE_DIGEST: ${A_REVIEW0_RCLONE_TARGET_IMAGE_DIGEST:?A_REVIEW0_RCLONE_TARGET_IMAGE_DIGEST is required}
+      A_REVIEW0_RCLONE_TARGET_IMAGE_ID: ${A_REVIEW0_RCLONE_TARGET_IMAGE_ID:?A_REVIEW0_RCLONE_TARGET_IMAGE_ID is required}
       A_REVIEW0_RCLONE_TARGET_STATE_ROOT: /var/lib/a-review0-rclone-target
       A_REVIEW0_RCLONE_TARGET_WORKSPACE: /run/review0
       STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS: ${STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:-2592000}
       A_REVIEW0_RCLONE_TARGET_DESTINATION_IDENTITY: ${REVIEW0_RCLONE_EFFECT_DESTINATION_IDENTITY:-bdb097e00217151eda04cc51bff5262f21aea08af4da16df5467d727570875a1}
       A_REVIEW0_RCLONE_TARGET_RCLONE_REMOTE: /var/lib/review0-delivery
-      A_REVIEW0_RCLONE_TARGET_SAMPLERS_JSON: '{"samplers":[{"id":"opus","base_url":"http://a-review0-opus-sampler:8080","token_file":"/run/secrets/a_review0_opus_sampler_token","allow_insecure_http":true,"descriptor_sha256":"${A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256:?A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256 is required}","image_digest":"${A_STOVE0_OPUS_TARGET_IMAGE_DIGEST:?A_STOVE0_OPUS_TARGET_IMAGE_DIGEST is required}"}]}'
+      A_REVIEW0_RCLONE_TARGET_SAMPLERS_JSON: '{"samplers":[{"id":"opus","base_url":"http://a-review0-opus-sampler:8080","token_file":"/run/secrets/a_review0_opus_sampler_token","allow_insecure_http":true,"descriptor_sha256":"${A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256:?A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256 is required}","image_id":"${A_STOVE0_OPUS_TARGET_IMAGE_ID:?A_STOVE0_OPUS_TARGET_IMAGE_ID is required}"}]}'
     depends_on:
       a-review0-opus-sampler:
         condition: service_healthy
@@ -316,7 +316,7 @@ services:
 
   a-stove0-nvenc-av1-opus-target:
     <<: *hardening
-    image: a-stove0-nvenc-av1-opus-target:dev
+    image: ${A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_REF:-a-stove0-nvenc-av1-opus-target:dev}
     build: &nvenc-build
       context: ../../..
       dockerfile: some-implementations/stove0/targets/nvenc-av1-opus/Dockerfile
@@ -329,7 +329,7 @@ services:
       TZ: ${TZ:-UTC}
       A_STOVE0_NVENC_AV1_OPUS_TARGET_TOKEN_FILE: /run/secrets/a_stove0_nvenc_av1_opus_target_token
       A_STOVE0_NVENC_AV1_OPUS_TARGET_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
-      A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_DIGEST: ${A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_DIGEST:?A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_DIGEST is required}
+      A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID: ${A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID:?A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID is required}
       A_STOVE0_NVENC_AV1_OPUS_TARGET_STATE_ROOT: /var/lib/a-stove0-nvenc-av1-opus-target
       A_STOVE0_NVENC_AV1_OPUS_TARGET_WORKSPACE: /run/a-stove0-nvenc-av1-opus-target
       STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS: ${STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:-2592000}
@@ -344,7 +344,7 @@ services:
 
   a-review0-nvenc-av1-opus-sampler:
     <<: *hardening
-    image: a-stove0-nvenc-av1-opus-target:dev
+    image: ${A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_REF:-a-stove0-nvenc-av1-opus-target:dev}
     build: *nvenc-build
     profiles: ["nvenc"]
     gpus: all
@@ -353,7 +353,7 @@ services:
       TZ: ${TZ:-UTC}
       A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_TOKEN_FILE: /run/secrets/a_review0_nvenc_av1_opus_sampler_token
       A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
-      A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_IMAGE_DIGEST: ${A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_DIGEST:?A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_DIGEST is required}
+      A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_IMAGE_ID: ${A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID:?A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID is required}
       A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_WORKSPACE: /run/review0
     secrets: ["a_review0_nvenc_av1_opus_sampler_token"]
     networks: ["review-sampler"]

@@ -252,7 +252,7 @@ def _descriptor(contract: ObserverContract) -> ObserverDescriptor:
             implementation_id="fixture.bytes-observer/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
-            image_digest=_sha("9"),
+            image_id="sha256:" + _sha("9"),
             contracts=(ObserverContractSupport.from_contract(contract),),
         )
     )
@@ -609,7 +609,7 @@ def test_subject_batch_preference_is_not_a_request_limit() -> None:
             implementation_id="fixture.bytes-observer/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
-            image_digest=_sha("9"),
+            image_id="sha256:" + _sha("9"),
             contracts=(
                 ObserverContractSupport.from_contract(
                     contract,

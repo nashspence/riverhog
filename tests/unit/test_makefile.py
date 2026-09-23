@@ -444,13 +444,15 @@ def test_compose_services_publish_the_archive_runtime_configuration() -> None:
         (
             "unit",
             ("args=-k entrypoint",),
-            "python -m pytest -q packages some-implementations riverhog tests/unit -k entrypoint",
+            "python -m pytest -q -n 4 --dist=loadscope --durations=30 --durations-min=0.25 "
+            "packages some-implementations riverhog tests/unit -k entrypoint",
         ),
         (
             "unit",
             ("TESTS=some-implementations/stove0/application/tests/test_stove0_api_parity.py",),
             (
-                "python -m pytest -q some-implementations/stove0/application/"
+                "python -m pytest -q -n 4 --dist=loadscope --durations=30 --durations-min=0.25 "
+                "some-implementations/stove0/application/"
                 "tests/test_stove0_api_parity.py"
             ),
         ),
@@ -1048,7 +1050,8 @@ def test_test_aggregate_runs_lint_then_unit(tmp_path: Path) -> None:
     assert "python -m ruff check ." in uv_log_lines[2]
     assert "python -m mypy some-implementations/stove0/application/client/src" in uv_log_lines[3]
     assert (
-        "python -m pytest -q packages some-implementations riverhog tests/unit" in uv_log_lines[4]
+        "python -m pytest -q -n 4 --dist=loadscope --durations=30 --durations-min=0.25 "
+        "packages some-implementations riverhog tests/unit" in uv_log_lines[4]
     )
 
 

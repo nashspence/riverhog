@@ -4,7 +4,7 @@
 
 Runtime and conformance support for Review0 samplers.
 
-Contract elements: **31** · Extent decisions: **58**
+Contract elements: **31** · Extent decisions: **56**
 
 ## Interfaces
 

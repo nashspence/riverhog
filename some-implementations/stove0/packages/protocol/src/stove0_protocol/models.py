@@ -64,11 +64,13 @@ JSON_SCHEMA_PROFILE_FORMAT: Literal["stove0-json-schema-profile/v1"] = (
 )
 
 SHA256_PATTERN = r"^[0-9a-f]{64}$"
+OCI_IMAGE_ID_PATTERN = r"^sha256:[0-9a-f]{64}$"
 SEMANTIC_ID_PATTERN = r"^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$"
 ARTIFACT_ID_PATTERN = r"^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$"
 REGISTRATION_ID_PATTERN = r"^[a-z0-9](?:[a-z0-9.-]{0,118}[a-z0-9])?$"
 
 Sha256 = Annotated[str, StringConstraints(pattern=SHA256_PATTERN)]
+OciImageId = Annotated[str, StringConstraints(pattern=OCI_IMAGE_ID_PATTERN)]
 SemanticId = Annotated[str, StringConstraints(pattern=SEMANTIC_ID_PATTERN)]
 RegistrationId = Annotated[str, StringConstraints(pattern=REGISTRATION_ID_PATTERN)]
 ContentObservationState = Literal["observed", "inapplicable", "failed", "canceled"]
@@ -426,7 +428,7 @@ class ObserverDescriptorPayload(Stove0ProtocolModel):
     implementation_id: SemanticId
     implementation_version: str = Field(min_length=1, max_length=120)
     source_revision: str = Field(min_length=1, max_length=200)
-    image_digest: Sha256
+    image_id: OciImageId
     contracts: tuple[ObserverContractSupport, ...] = Field(min_length=1)
 
     @field_validator("contracts")
@@ -987,6 +989,7 @@ __all__ = [
     "ContentObservationResultPayload",
     "ContentObservationState",
     "OperationResultKind",
+    "OciImageId",
     "ObserverContract",
     "ObserverContractPayload",
     "ObserverContractSupport",
@@ -997,6 +1000,7 @@ __all__ = [
     "OperationRef",
     "PreviewOutcome",
     "RIVERHOG_CAPABILITY_TRANSPORT",
+    "OCI_IMAGE_ID_PATTERN",
     "RecipeRef",
     "RetirementPolicy",
     "SHA256_PATTERN",

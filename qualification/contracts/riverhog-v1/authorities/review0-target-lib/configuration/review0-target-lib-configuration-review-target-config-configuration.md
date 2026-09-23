@@ -34,7 +34,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-3c1ab11bee"></a>`type`: `"object"`
 - <a id="s-4fc4308ae8"></a>`additionalProperties`: `false`
-- <a id="s-1cb2659335"></a>`required`: `["id","base_url","token_file","descriptor_sha256","image_digest"]`
+- <a id="s-1cb2659335"></a>`required`: `["id","base_url","token_file","descriptor_sha256","image_id"]`
 - <a id="s-4f0c1ba433"></a>`title`: `"SamplerConfig"`
 
 #### Fields
@@ -45,7 +45,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-ed763190bb"></a>`base_url` | yes | type="string"; maxLength=2048; minLength=1; title="Base Url" |  |
 | <a id="s-690ef3edd6"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Descriptor Sha256" |  |
 | <a id="s-92e96927c5"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$"; title="Id" |  |
-| <a id="s-cbe1a1937a"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Image Digest" |  |
+| <a id="s-6b5bbbfb8c"></a>`image_id` | yes | type="string"; pattern="^sha256:[0-9a-f]{64}$"; title="Image Id" |  |
 | <a id="s-cbd17d3c25"></a>`token_file` | yes | type="string"; format="path"; title="Token File" |  |
 
 ### Progression, limits, and lifecycle
@@ -64,7 +64,6 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 |---|---|---|
 | [definition SamplerConfig · field base_url](#s-ed763190bb) | `length · characters · contract_max` | maximum=2048; minimum=1; reason="schema-maximum" |
 | [definition SamplerConfig · field descriptor_sha256](#s-690ef3edd6) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [definition SamplerConfig · field image_digest](#s-cbe1a1937a) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Governing policies
 
@@ -97,7 +96,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 465ba4684267b5a403b655bcbaaa58dbe51e259b14ffa6dc2fbd902af816ff0c -->
+<!-- exact-contract-value: 277fd97240352a778d6ac6516fca9257d8e6225b787b2cf540d39d262155ba8c -->
 
 ```json
 {
@@ -126,9 +125,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Id",
           "type": "string"
         },
-        "image_digest": {
-          "pattern": "^[0-9a-f]{64}$",
-          "title": "Image Digest",
+        "image_id": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Image Id",
           "type": "string"
         },
         "token_file": {
@@ -142,7 +141,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "base_url",
         "token_file",
         "descriptor_sha256",
-        "image_digest"
+        "image_id"
       ],
       "title": "SamplerConfig",
       "type": "object"

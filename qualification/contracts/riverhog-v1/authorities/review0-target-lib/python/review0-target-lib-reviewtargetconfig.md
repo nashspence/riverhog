@@ -46,7 +46,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-00ce18b610"></a>`type`: `"object"`
 - <a id="s-46ff9d982b"></a>`additionalProperties`: `false`
-- <a id="s-b76e161381"></a>`required`: `["id","base_url","token_file","descriptor_sha256","image_digest"]`
+- <a id="s-b76e161381"></a>`required`: `["id","base_url","token_file","descriptor_sha256","image_id"]`
 
 ###### Fields
 
@@ -56,7 +56,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-d6b0cc9e8f"></a>`base_url` | yes | type="string"; maxLength=2048; minLength=1 |  |
 | <a id="s-51174e3f6c"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-da5c66ec11"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$" |  |
-| <a id="s-82b05b07e9"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-09a7e15a31"></a>`image_id` | yes | type="string"; pattern="^sha256:[0-9a-f]{64}$" |  |
 | <a id="s-e5c3ec98d4"></a>`token_file` | yes | type="string"; format="path" |  |
 
 ## Maintained corroboration
@@ -92,7 +92,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 99b5e77e4248702847a8d16d33462ed31bc848024aef4246d19c85b1681a3666 -->
+<!-- exact-contract-value: 64776575443ce22f83fdbf81b76b78404334c23ea5d720e32b9b3aeeac4be55b -->
 
 ```json
 {
@@ -120,8 +120,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,118}[a-z0-9])?$",
               "type": "string"
             },
-            "image_digest": {
-              "pattern": "^[0-9a-f]{64}$",
+            "image_id": {
+              "pattern": "^sha256:[0-9a-f]{64}$",
               "type": "string"
             },
             "token_file": {
@@ -134,7 +134,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             "base_url",
             "token_file",
             "descriptor_sha256",
-            "image_digest"
+            "image_id"
           ],
           "type": "object"
         }

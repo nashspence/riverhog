@@ -1,5 +1,5 @@
 x-ftp-spool-image: &ftp-spool-image
-  image: a-riverhog-ftp-spool:dev
+  image: ${A_RIVERHOG_FTP_SPOOL_IMAGE_REF:-a-riverhog-ftp-spool:dev}
   build:
     context: ../../../..
     dockerfile: some-implementations/riverhog/ingress/ftp/Dockerfile

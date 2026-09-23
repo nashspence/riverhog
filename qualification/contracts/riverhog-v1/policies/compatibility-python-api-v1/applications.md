@@ -63,7 +63,7 @@ Choose an authority to inspect this policy's indexed contract-element applicatio
 | [stove0-observer-protocol](applications/stove0-observer-protocol.md) | 81 |
 | [stove0-observer-support](applications/stove0-observer-support.md) | 37 |
 | [stove0-operator-contracts](applications/stove0-operator-contracts.md) | 124 |
-| [stove0-protocol](applications/stove0-protocol.md) | 205 |
+| [stove0-protocol](applications/stove0-protocol.md) | 207 |
 | [stove0-recipe-config](applications/stove0-recipe-config.md) | 30 |
 | [stove0-server](applications/stove0-server.md) | 324 |
 | [stove0-target-client](applications/stove0-target-client.md) | 15 |

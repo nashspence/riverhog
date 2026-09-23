@@ -42,7 +42,7 @@ class FfprobeSamplingObserver:
         ffprobe: str = "ffprobe",
         workspace_root: Path | None = None,
         source_revision: str = "unknown",
-        image_digest: str,
+        image_id: str,
     ) -> None:
         self.ffprobe = ffprobe
         self.workspace_root = (
@@ -53,7 +53,7 @@ class FfprobeSamplingObserver:
                 implementation_id="a-stove0-ffprobe-sampling-observer/v1",
                 implementation_version=_version(),
                 source_revision=source_revision,
-                image_digest=image_digest,
+                image_id=image_id,
                 contracts=(
                     ObserverContractSupport.from_contract(MEDIA_SAMPLING_OBSERVER_CONTRACT),
                 ),

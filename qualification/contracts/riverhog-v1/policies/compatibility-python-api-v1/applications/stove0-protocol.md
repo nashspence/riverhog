@@ -137,6 +137,8 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-protocol` | [stove0_protocol.JsonSchemaValidationProfile](../../../authorities/stove0-protocol/python/stove0-protocol-jsonschemavalidationprofile.md#pa-1583e5d165) |
 | `stove0-protocol` | [stove0_protocol.JsonSchemaValidationProfile.from_schema](../../../authorities/stove0-protocol/python/stove0-protocol-jsonschemavalidationprofile-from-schema.md#pa-348dd1b5aa) |
 | `stove0-protocol` | [stove0_protocol.JsonSchemaValidationProfile.verify_digest](../../../authorities/stove0-protocol/python/stove0-protocol-jsonschemavalidationprofile-verify-digest.md#pa-cd04560bb7) |
+| `stove0-protocol` | [stove0_protocol.OCI_IMAGE_ID_PATTERN](../../../authorities/stove0-protocol/python/stove0-protocol-oci-image-id-pattern.md#pa-8b8e79c81b) |
+| `stove0-protocol` | [stove0_protocol.OciImageId](../../../authorities/stove0-protocol/python/stove0-protocol-ociimageid.md#pa-a73a8e6085) |
 | `stove0-protocol` | [stove0_protocol.OperationRef](../../../authorities/stove0-protocol/python/stove0-protocol-operationref.md#pa-45aad26098) |
 | `stove0-protocol` | [stove0_protocol.OperationRef.from_identity](../../../authorities/stove0-protocol/python/stove0-protocol-operationref-from-identity.md#pa-2171364a30) |
 | `stove0-protocol` | [stove0_protocol.OperationRef.to_identity](../../../authorities/stove0-protocol/python/stove0-protocol-operationref-to-identity.md#pa-38c876eddf) |

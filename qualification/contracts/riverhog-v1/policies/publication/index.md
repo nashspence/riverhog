@@ -8,4 +8,4 @@ Each definition has one primary location and states its own scope. The links bel
 |---|---|
 | [publication/role-retention/v1](../publication-role-retention-v1/index.md#p-3e4dc2e851) | [89 indexed contract elements](../publication-role-retention-v1/applications.md) |
 | [publication/platform-scope/v1](../publication-platform-scope-v1/index.md#p-7dacd6d393) | [17 indexed contract elements](../publication-platform-scope-v1/applications.md) |
-| [publication/image-digest-scope/v1](../publication-image-digest-scope-v1/index.md#p-634e69c23f) | [13 indexed contract elements](../publication-image-digest-scope-v1/applications.md) |
+| [publication/image-identity-scope/v1](../publication-image-identity-scope-v1/index.md#p-8fb44d2436) | [13 indexed contract elements](../publication-image-identity-scope-v1/applications.md) |

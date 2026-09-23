@@ -24,7 +24,7 @@ The ordinary atlas map owns the authority/interface inventory and its scope desc
 | `process-protocol-operations` | 24 |
 | `process-protocol-schemas` | 43 |
 | `publication-locations` | 2 |
-| `python` | 2838 |
+| `python` | 2840 |
 | `python-distributions` | 72 |
 | `release-artifacts` | 12 |
 | `runtime-images` | 13 |

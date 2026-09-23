@@ -17,7 +17,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-8bb085c137"></a>`type`: `"object"`
 - <a id="s-d0bad8c481"></a>`additionalProperties`: `false`
-- <a id="s-50e32b91d5"></a>`required`: `["implementation_id","implementation_version","source_revision","image_digest","primary_operation_id","primary_operation_contract_sha256","portable_intent_schema","output_role","descriptor_sha256"]`
+- <a id="s-50e32b91d5"></a>`required`: `["implementation_id","implementation_version","source_revision","image_id","primary_operation_id","primary_operation_contract_sha256","portable_intent_schema","output_role","descriptor_sha256"]`
 - <a id="s-0f9c6fea94"></a>`title`: `"SamplerDescriptor"`
 
 ### Fields
@@ -25,7 +25,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-dcde775ba7"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Descriptor Sha256" |  |
-| <a id="s-204710dce9"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Image Digest" |  |
+| <a id="s-8c617637dd"></a>`image_id` | yes | type="string"; pattern="^sha256:[0-9a-f]{64}$"; title="Image Id" |  |
 | <a id="s-5165465155"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Implementation Id" |  |
 | <a id="s-5ee4a6d95e"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1; title="Implementation Version" |  |
 | <a id="s-a556d83877"></a>`output_role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Output Role" |  |
@@ -68,7 +68,6 @@ Exact externally visible contract owned by this contract element.
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [field descriptor_sha256](#s-dcde775ba7) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field image_digest](#s-204710dce9) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [field implementation_version](#s-5ee4a6d95e) | `length · characters · contract_max` | maximum=120; minimum=1; reason="schema-maximum" |
 | [field primary_operation_contract_sha256](#s-748a6f4df7) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [field source_revision](#s-e6cc5cd820) | `length · characters · contract_max` | maximum=200; minimum=1; reason="schema-maximum" |
@@ -109,7 +108,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 832b761b94ea0fac129593c143adc45a790731e631064e9216bd7e14c746e2cf -->
+<!-- exact-contract-value: 963a7340cd7b4588b293f8f5f58ea636ae22124ed4536710d564ba8b40b89fe9 -->
 
 ```json
 {
@@ -164,9 +163,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Descriptor Sha256",
       "type": "string"
     },
-    "image_digest": {
-      "pattern": "^[0-9a-f]{64}$",
-      "title": "Image Digest",
+    "image_id": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Image Id",
       "type": "string"
     },
     "implementation_id": {
@@ -215,7 +214,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "implementation_id",
     "implementation_version",
     "source_revision",
-    "image_digest",
+    "image_id",
     "primary_operation_id",
     "primary_operation_contract_sha256",
     "portable_intent_schema",

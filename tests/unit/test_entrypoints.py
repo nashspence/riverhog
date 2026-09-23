@@ -34,6 +34,7 @@ ARCHITECTURE_CATEGORIES = {
         "Storage adapters",
         "Applications",
         "Extensions",
+        "Runtime images",
         "Transfer path",
     ],
 }
@@ -132,6 +133,7 @@ def test_readme_states_archive_and_adapter_authority() -> None:
         REPO / "SECURITY.md",
         REPO / "docs/architecture.md",
         REPO / "qualification/contracts/riverhog-v1/index.md",
+        REPO / "scripts/runtime_image_identity.py",
     }
 
 

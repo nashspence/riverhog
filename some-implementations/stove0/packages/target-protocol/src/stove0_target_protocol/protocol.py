@@ -33,6 +33,7 @@ from stove0_protocol import (
     CollectionRootRef,
     ControllerEvidence,
     JsonSchemaValidationProfile,
+    OciImageId,
     OperationResultKind,
     SemanticValidationProfile,
 )
@@ -207,7 +208,7 @@ class TargetDescriptorPayload(TargetProtocolModel):
     implementation_id: SemanticId
     implementation_version: str = Field(min_length=1, max_length=120)
     source_revision: str = Field(min_length=1, max_length=200)
-    image_digest: Sha256
+    image_id: OciImageId
     transport: Literal["riverhog-capability/v1"] = RIVERHOG_CAPABILITY_TRANSPORT
     operations: tuple[TargetOperationSupport, ...] = Field(min_length=1)
 

@@ -9,7 +9,7 @@ Configuration Environment contract owned by a-stove0-opus-target.
 [Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-89f2883f41) for this authority.
 
 - [A_STOVE0_OPUS_TARGET_HOST](a-stove0-opus-target-host.md)
-- [A_STOVE0_OPUS_TARGET_IMAGE_DIGEST](a-stove0-opus-target-image-digest.md)
+- [A_STOVE0_OPUS_TARGET_IMAGE_ID](a-stove0-opus-target-image-id.md)
 - [A_STOVE0_OPUS_TARGET_PORT](a-stove0-opus-target-port.md)
 - [A_STOVE0_OPUS_TARGET_SOURCE_REVISION](a-stove0-opus-target-source-revision.md)
 - [A_STOVE0_OPUS_TARGET_STATE_ROOT](a-stove0-opus-target-state-root.md)

@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-8b9ac96b70"></a>`kind`: `"class"`
-- <a id="s-f2edb9d68b"></a>`signature`: `"\"(*, state_root: 'Path', workspace_root: 'Path', samplers: 'tuple[SamplerRegistration, ...]', destination: 'RcloneReviewDestination', source_revision: 'str' = 'unknown', image_digest: 'str', implementation_version: 'str', terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""`
+- <a id="s-f2edb9d68b"></a>`signature`: `"\"(*, state_root: 'Path', workspace_root: 'Path', samplers: 'tuple[SamplerRegistration, ...]', destination: 'RcloneReviewDestination', source_revision: 'str' = 'unknown', image_id: 'str', implementation_version: 'str', terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""`
 
 ## Maintained corroboration
 
@@ -64,13 +64,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a92c4ceafae18f03f7db97229912bebbb1293bbe55fdb901dc0ac6e7eaf017e3 -->
+<!-- exact-contract-value: c97b9c6ed96169ba17f1073e838576baa2fa7aef48bbcee05f15839a7ebe9e98 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "signature": "\"(*, state_root: 'Path', workspace_root: 'Path', samplers: 'tuple[SamplerRegistration, ...]', destination: 'RcloneReviewDestination', source_revision: 'str' = 'unknown', image_digest: 'str', implementation_version: 'str', terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""
+    "signature": "\"(*, state_root: 'Path', workspace_root: 'Path', samplers: 'tuple[SamplerRegistration, ...]', destination: 'RcloneReviewDestination', source_revision: 'str' = 'unknown', image_id: 'str', implementation_version: 'str', terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""
   },
   "distribution": "a-review0-rclone-target",
   "module": "a_review0_rclone_target",

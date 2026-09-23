@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-5e2f595f51"></a>`kind`: `"class"`
-- <a id="s-9d0d05e3b2"></a>`signature`: `"\"(*, exiftool: 'str' = 'exiftool', workspace_root: 'Path \| None' = None, source_revision: 'str' = 'unknown', image_digest: 'str') -> 'None'\""`
+- <a id="s-9d0d05e3b2"></a>`signature`: `"\"(*, exiftool: 'str' = 'exiftool', workspace_root: 'Path \| None' = None, source_revision: 'str' = 'unknown', image_id: 'str') -> 'None'\""`
 
 ## Maintained corroboration
 
@@ -59,13 +59,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6dfc9592ba8eaf7c008b1e52f1c10e7fe63f36ac7ffac9de5d54b7e4e7fa66d8 -->
+<!-- exact-contract-value: 326f039434f5f3b679e30bc1538b5964f980b481d983d6c5469df0515efee0d1 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "signature": "\"(*, exiftool: 'str' = 'exiftool', workspace_root: 'Path | None' = None, source_revision: 'str' = 'unknown', image_digest: 'str') -> 'None'\""
+    "signature": "\"(*, exiftool: 'str' = 'exiftool', workspace_root: 'Path | None' = None, source_revision: 'str' = 'unknown', image_id: 'str') -> 'None'\""
   },
   "distribution": "a-stove0-exiftool-observer",
   "module": "a_stove0_exiftool_observer",

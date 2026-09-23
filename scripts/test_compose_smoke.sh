@@ -283,12 +283,12 @@ export A_STOVE0_OPUS_TARGET_TOKEN_FILE="${secret_root}/a-stove0-opus-target-toke
 export A_REVIEW0_OPUS_SAMPLER_TOKEN_FILE="${secret_root}/a-review0-opus-sampler-token"
 export A_REVIEW0_MATERIALIZER_TOKEN_FILE="${secret_root}/a-review0-materializer-token"
 export A_REVIEW0_RCLONE_TARGET_TOKEN_FILE="${secret_root}/a-review0-rclone-target-token"
-export A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_DIGEST="$(printf '1%.0s' {1..64})"
-export A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST="$(printf '6%.0s' {1..64})"
-export A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_DIGEST="$(printf '2%.0s' {1..64})"
-export A_STOVE0_OPUS_TARGET_IMAGE_DIGEST="$(printf '3%.0s' {1..64})"
-export A_REVIEW0_MATERIALIZER_IMAGE_DIGEST="$(printf '4%.0s' {1..64})"
-export A_REVIEW0_RCLONE_TARGET_IMAGE_DIGEST="$(printf '7%.0s' {1..64})"
+export A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID="sha256:$(printf '1%.0s' {1..64})"
+export A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID="sha256:$(printf '6%.0s' {1..64})"
+export A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID="sha256:$(printf '2%.0s' {1..64})"
+export A_STOVE0_OPUS_TARGET_IMAGE_ID="sha256:$(printf '3%.0s' {1..64})"
+export A_REVIEW0_MATERIALIZER_IMAGE_ID="sha256:$(printf '4%.0s' {1..64})"
+export A_REVIEW0_RCLONE_TARGET_IMAGE_ID="sha256:$(printf '7%.0s' {1..64})"
 # Compose interpolates the complete model before it selects services.  The
 # review targets are created only after this bootstrap value is replaced with
 # the running sampler's exact descriptor identity below.

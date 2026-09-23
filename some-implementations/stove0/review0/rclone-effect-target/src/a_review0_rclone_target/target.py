@@ -113,7 +113,7 @@ class ReviewRcloneEffectTargetService(ReviewTargetServiceBase):
         samplers: tuple[SamplerRegistration, ...],
         destination: RcloneReviewDestination,
         source_revision: str = "unknown",
-        image_digest: str,
+        image_id: str,
         implementation_version: str,
         terminal_state_retention_seconds: int = DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
     ) -> None:
@@ -123,7 +123,7 @@ class ReviewRcloneEffectTargetService(ReviewTargetServiceBase):
             workspace_root=workspace_root,
             samplers=samplers,
             source_revision=source_revision,
-            image_digest=image_digest,
+            image_id=image_id,
             implementation_version=implementation_version,
             protocol="stove0-effect-target/v1",
             implementation_id="a-review0-rclone-target/v1",

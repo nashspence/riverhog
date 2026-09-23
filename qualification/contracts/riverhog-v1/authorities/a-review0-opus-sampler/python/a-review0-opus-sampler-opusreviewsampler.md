@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-91d8d14b08"></a>`kind`: `"class"`
-- <a id="s-b56b2eb184"></a>`signature`: `"\"(*, workspace_root: 'Path', ffmpeg: 'str' = 'ffmpeg', source_revision: 'str' = 'unknown', image_digest: 'str') -> 'None'\""`
+- <a id="s-b56b2eb184"></a>`signature`: `"\"(*, workspace_root: 'Path', ffmpeg: 'str' = 'ffmpeg', source_revision: 'str' = 'unknown', image_id: 'str') -> 'None'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c38a4e67ab6590389aa9283e8339769b22150b8f03bf657437ca2d88f4648a7a -->
+<!-- exact-contract-value: da09e1de0732bc70e0b681b56a6b01f1fa9896f4b60c5d3bcad50971152adf57 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "signature": "\"(*, workspace_root: 'Path', ffmpeg: 'str' = 'ffmpeg', source_revision: 'str' = 'unknown', image_digest: 'str') -> 'None'\""
+    "signature": "\"(*, workspace_root: 'Path', ffmpeg: 'str' = 'ffmpeg', source_revision: 'str' = 'unknown', image_id: 'str') -> 'None'\""
   },
   "distribution": "a-review0-opus-sampler",
   "module": "a_review0_opus_sampler",

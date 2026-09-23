@@ -192,7 +192,7 @@ def _target(operation: OperationContract) -> TargetDescriptor:
             implementation_id="fixture.target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
-            image_digest=_sha("9"),
+            image_id="sha256:" + _sha("9"),
             operations=(
                 TargetOperationSupport(
                     operation_id=operation.id,
@@ -205,6 +205,13 @@ def _target(operation: OperationContract) -> TargetDescriptor:
             ),
         )
     )
+
+
+def test_target_descriptor_requires_an_oci_image_id() -> None:
+    payload = _target(_operation()).model_dump(mode="json", exclude={"descriptor_sha256"})
+    payload["image_id"] = _sha("9")
+    with pytest.raises(ValidationError, match="image_id"):
+        TargetDescriptorPayload.model_validate(payload)
 
 
 def _input() -> InputArtifact:
@@ -366,7 +373,7 @@ def _effect_request() -> tuple[OperationContract, TargetDescriptor, TargetJobReq
             implementation_id="fixture.index-target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
-            image_digest=_sha("8"),
+            image_id="sha256:" + _sha("8"),
             operations=(
                 TargetOperationSupport(
                     operation_id=operation.id,
@@ -949,7 +956,7 @@ def test_target_conformance_requires_every_advertised_operation() -> None:
             implementation_id="fixture.multi-target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
-            image_digest=_sha("9"),
+            image_id="sha256:" + _sha("9"),
             operations=tuple(
                 TargetOperationSupport(
                     operation_id=operation.id,

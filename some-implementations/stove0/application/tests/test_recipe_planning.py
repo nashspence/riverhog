@@ -154,7 +154,7 @@ class MediaObservers:
                 implementation_id="fixture.observer/v1",
                 implementation_version="1.0.0",
                 source_revision="fixture",
-                image_digest=_sha("9"),
+                image_id="sha256:" + _sha("9"),
                 contracts=(
                     ObserverContractSupport.from_contract(
                         MEDIA_METADATA_OBSERVER_CONTRACT,
@@ -180,7 +180,7 @@ class ArchiveTargets:
                 implementation_id="fixture.archive-target/v1",
                 implementation_version="1.0.0",
                 source_revision="fixture",
-                image_digest=_sha("8"),
+                image_id="sha256:" + _sha("8"),
                 operations=(
                     TargetOperationSupport(
                         operation_id=AUDIO_ARCHIVE_OPERATION.id,
@@ -231,7 +231,7 @@ class BatchMediaObservers:
                 implementation_id="fixture.observer/v1",
                 implementation_version="1.0.0",
                 source_revision="fixture",
-                image_digest=_sha("9"),
+                image_id="sha256:" + _sha("9"),
                 contracts=(
                     ObserverContractSupport.from_contract(
                         MEDIA_METADATA_OBSERVER_CONTRACT,
@@ -258,7 +258,7 @@ class ConformanceTargets:
                     implementation_id="fixture.target/v1",
                     implementation_version="1.0.0",
                     source_revision="fixture",
-                    image_digest=_sha("a"),
+                    image_id="sha256:" + _sha("a"),
                     operations=(
                         TargetOperationSupport(
                             operation_id=AUDIO_ARCHIVE_OPERATION.id,
@@ -273,7 +273,7 @@ class ConformanceTargets:
                     implementation_id="fixture.av1-target/v1",
                     implementation_version="1.0.0",
                     source_revision="fixture",
-                    image_digest=_sha("b"),
+                    image_id="sha256:" + _sha("b"),
                     operations=(
                         TargetOperationSupport(
                             operation_id=AV1_OPUS_ARCHIVE_OPERATION.id,
@@ -832,7 +832,7 @@ def test_review_recipe_projects_semantic_intent_and_options_before_preflight() -
             implementation_id="riverhog.review-ffmpeg/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
-            image_digest=_sha("9"),
+            image_id="sha256:" + _sha("9"),
             operations=(
                 TargetOperationSupport(
                     operation_id=REVIEW_MATERIALIZE_OPERATION.id,
@@ -1037,7 +1037,7 @@ def test_production_planner_resolves_overlapping_branches_into_one_exact_join() 
             implementation_id="fixture.target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
-            image_digest=_sha("9"),
+            image_id="sha256:" + _sha("9"),
             operations=tuple(
                 TargetOperationSupport(
                     operation_id=operation.id,
@@ -1193,7 +1193,7 @@ def _retirement_planner(recipe: RecipeDefinition) -> RecipePlanner:
             implementation_id="fixture.retirement-target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
-            image_digest=_sha("9"),
+            image_id="sha256:" + _sha("9"),
             operations=(
                 TargetOperationSupport(
                     operation_id=operation.id,

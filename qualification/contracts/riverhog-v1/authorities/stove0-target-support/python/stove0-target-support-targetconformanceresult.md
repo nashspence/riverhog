@@ -627,14 +627,14 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-3b2fd10c65"></a>`type`: `"object"`
 - <a id="s-f4cec89a43"></a>`additionalProperties`: `false`
-- <a id="s-e22ab474b9"></a>`required`: `["implementation_id","implementation_version","source_revision","image_digest","operations","descriptor_sha256"]`
+- <a id="s-e22ab474b9"></a>`required`: `["implementation_id","implementation_version","source_revision","image_id","operations","descriptor_sha256"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-08b6d438ea"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-14b1d81718"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-26db1721cc"></a>`image_id` | yes | type="string"; pattern="^sha256:[0-9a-f]{64}$" |  |
 | <a id="s-f9bcf7c653"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-9c782a6c53"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1 |  |
 | <a id="s-a007b145a1"></a>`operations` | yes | type="array"; items=([TargetOperationSupport](#s-e2738e9866)); minItems=1 |  |
@@ -1010,7 +1010,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 29ca04695319d00a3783bd02007aa17befd50ed6907f5df91d9987bc41539c04 -->
+<!-- exact-contract-value: e61683b536cc248cdfc4f387cdb272da95e848907e276581a90e5cfb03b4cf2f -->
 
 ```json
 {
@@ -2198,8 +2198,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "pattern": "^[0-9a-f]{64}$",
               "type": "string"
             },
-            "image_digest": {
-              "pattern": "^[0-9a-f]{64}$",
+            "image_id": {
+              "pattern": "^sha256:[0-9a-f]{64}$",
               "type": "string"
             },
             "implementation_id": {
@@ -2241,7 +2241,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             "implementation_id",
             "implementation_version",
             "source_revision",
-            "image_digest",
+            "image_id",
             "operations",
             "descriptor_sha256"
           ],

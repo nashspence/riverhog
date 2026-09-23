@@ -4,7 +4,7 @@
 
 Shared runtime support for Review0 targets.
 
-Contract elements: **21** · Extent decisions: **4**
+Contract elements: **21** · Extent decisions: **3**
 
 ## Interfaces
 

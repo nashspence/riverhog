@@ -29,7 +29,7 @@ from review0_target_contracts import (
 from riverhog_client import ProducerFile
 from riverhog_client.transform import TransformWorkspace
 from riverhog_protocol import canonical_json_bytes, canonical_json_sha256
-from stove0_protocol import JsonSchemaValidationProfile
+from stove0_protocol import JsonSchemaValidationProfile, OciImageId
 from stove0_target_support import (
     DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
     OperationContract,
@@ -64,7 +64,6 @@ _SAMPLER_OPTION_PROPERTIES: dict[str, JsonValue] = {
         "maximum": 1024**4,
     },
     "sampler_descriptor_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "sampler_image_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
 }
 
 
@@ -93,14 +92,14 @@ class SamplerRegistration:
     id: str
     client: ReviewSamplerClient
     descriptor_sha256: str
-    image_digest: str
+    image_id: OciImageId
 
     def descriptor(self) -> SamplerDescriptor:
         descriptor = self.client.descriptor()
         if descriptor.descriptor_sha256 != self.descriptor_sha256:
             raise RuntimeError(f"configured sampler descriptor changed: {self.id}")
-        if descriptor.image_digest != self.image_digest:
-            raise RuntimeError(f"configured sampler image digest changed: {self.id}")
+        if descriptor.image_id != self.image_id:
+            raise RuntimeError(f"configured sampler ImageID changed: {self.id}")
         return descriptor
 
 
@@ -114,7 +113,7 @@ class ReviewTargetServiceBase(PersistentTargetService, ABC):
         workspace_root: Path,
         samplers: tuple[SamplerRegistration, ...],
         source_revision: str = "unknown",
-        image_digest: str,
+        image_id: str,
         implementation_version: str,
         protocol: TargetProtocol,
         implementation_id: str,
@@ -130,7 +129,6 @@ class ReviewTargetServiceBase(PersistentTargetService, ABC):
         self.workspace_root.mkdir(mode=0o700, parents=True, exist_ok=True)
         os.chmod(self.workspace_root, 0o700)
         self.samplers = {item.id: item for item in samplers}
-        self.image_digest = image_digest
         self.implementation_version = implementation_version
         self.operation = operation
         descriptor = TargetDescriptor.seal(
@@ -139,7 +137,7 @@ class ReviewTargetServiceBase(PersistentTargetService, ABC):
                 implementation_id=implementation_id,
                 implementation_version=implementation_version,
                 source_revision=source_revision,
-                image_digest=image_digest,
+                image_id=image_id,
                 operations=(
                     TargetOperationSupport(
                         operation_id=operation.id,
@@ -199,7 +197,6 @@ class ReviewTargetServiceBase(PersistentTargetService, ABC):
             ) from exc
         expected: dict[str, JsonValue] = {
             "sampler_descriptor_sha256": descriptor.descriptor_sha256,
-            "sampler_image_digest": descriptor.image_digest,
             **self._fixed_target_options(),
         }
         for key, value in expected.items():
@@ -277,10 +274,7 @@ class ReviewTargetServiceBase(PersistentTargetService, ABC):
                 "sampler-not-configured", f"Review sampler is not configured: {sampler_id}"
             ) from exc
         descriptor = registration.descriptor()
-        if (
-            options.get("sampler_descriptor_sha256") != descriptor.descriptor_sha256
-            or options.get("sampler_image_digest") != descriptor.image_digest
-        ):
+        if options.get("sampler_descriptor_sha256") != descriptor.descriptor_sha256:
             raise RuntimeError("sealed review plan differs from the selected sampler")
         Draft202012Validator(descriptor.portable_intent_schema.document).validate(portable_intent)
         timeout = options.get("sampler_timeout_seconds", 86400)
@@ -454,7 +448,6 @@ class ReviewTargetServiceBase(PersistentTargetService, ABC):
                         execution.declare_disposition(artifact.id, "transformed")
                 execution_sha256 = _execution_sha256(
                     request.declaration.plan.plan_sha256,
-                    self.image_digest,
                     sampler_result_sha256,
                     declared,
                 )
@@ -467,9 +460,7 @@ class ReviewTargetServiceBase(PersistentTargetService, ABC):
                     execution_sha256=execution_sha256,
                     attempt=attempt,
                     runtime_evidence={
-                        "image_digest": self.image_digest,
                         "sampler_descriptor_sha256": descriptor.descriptor_sha256,
-                        "sampler_image_digest": descriptor.image_digest,
                         "sampler_result_set_sha256": sampler_result_sha256,
                     },
                 )
@@ -533,7 +524,6 @@ def _require_sampler_success(result: SamplerResult) -> None:
 
 def _execution_sha256(
     plan_sha256: str,
-    image_digest: str,
     sampler_result_sha256: str,
     outputs: Sequence[OutputArtifact],
 ) -> str:
@@ -543,7 +533,6 @@ def _execution_sha256(
         {
             "format": "review0-target-execution/v1",
             "plan_sha256": plan_sha256,
-            "image_digest": image_digest,
             "sampler_result_sha256": sampler_result_sha256,
             "outputs": [item.model_dump(mode="json") for item in outputs],
         }

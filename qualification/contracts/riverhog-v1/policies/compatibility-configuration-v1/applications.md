@@ -14,7 +14,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-gogurt-windows-listener` | [PATHEXT](../../authorities/a-gogurt-windows-listener/configuration-environment/pathext.md#pa-fd8d40cfd5) |
 | `a-gogurt-windows-listener` | [SystemRoot](../../authorities/a-gogurt-windows-listener/configuration-environment/systemroot.md#pa-f8b972ea63) |
 | `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_HOST](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-host.md#pa-65af9283a1) |
-| `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_IMAGE_DIGEST](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-image-digest.md#pa-bd3c1b504c) |
+| `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_IMAGE_ID](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-image-id.md#pa-760ff53b64) |
 | `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_PORT](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-port.md#pa-0f694302d9) |
 | `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_SAMPLERS_JSON](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-samplers-json.md#pa-f23a8c9a19) |
 | `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_SAMPLERS_JSON_FILE](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-samplers-json-file.md#pa-b7038be9c0) |
@@ -24,7 +24,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_TOKEN_FILE](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-token-file.md#pa-7a99f31ff1) |
 | `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_WORKSPACE](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-workspace.md#pa-419c8085e6) |
 | `a-review0-nvenc-av1-opus-sampler` | [A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_HOST](../../authorities/a-review0-nvenc-av1-opus-sampler/configuration-environment/a-review0-nvenc-av1-opus-sampler-host.md#pa-7d09c4a592) |
-| `a-review0-nvenc-av1-opus-sampler` | [A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_IMAGE_DIGEST](../../authorities/a-review0-nvenc-av1-opus-sampler/configuration-environment/a-review0-nvenc-av1-opus-sampler-image-digest.md#pa-286238f064) |
+| `a-review0-nvenc-av1-opus-sampler` | [A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_IMAGE_ID](../../authorities/a-review0-nvenc-av1-opus-sampler/configuration-environment/a-review0-nvenc-av1-opus-sampler-image-id.md#pa-dc26c93ee2) |
 | `a-review0-nvenc-av1-opus-sampler` | [A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_PORT](../../authorities/a-review0-nvenc-av1-opus-sampler/configuration-environment/a-review0-nvenc-av1-opus-sampler-port.md#pa-5be405f91f) |
 | `a-review0-nvenc-av1-opus-sampler` | [A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_SOURCE_REVISION](../../authorities/a-review0-nvenc-av1-opus-sampler/configuration-environment/a-review0-nvenc-av1-opus-sampler-source-revision.md#pa-68ba10a7d5) |
 | `a-review0-nvenc-av1-opus-sampler` | [A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_TOKEN](../../authorities/a-review0-nvenc-av1-opus-sampler/configuration-environment/a-review0-nvenc-av1-opus-sampler-token.md#pa-25a7f6d471) |
@@ -32,7 +32,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-review0-nvenc-av1-opus-sampler` | [A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_WORKSPACE](../../authorities/a-review0-nvenc-av1-opus-sampler/configuration-environment/a-review0-nvenc-av1-opus-sampler-workspace.md#pa-e7bfd279ae) |
 | `a-review0-nvenc-av1-opus-sampler` | [STOVE0_FFMPEG_BIN](../../authorities/a-review0-nvenc-av1-opus-sampler/configuration-environment/stove0-ffmpeg-bin.md#pa-61732f5e74) |
 | `a-review0-opus-sampler` | [A_REVIEW0_OPUS_SAMPLER_HOST](../../authorities/a-review0-opus-sampler/configuration-environment/a-review0-opus-sampler-host.md#pa-dfb53d2aac) |
-| `a-review0-opus-sampler` | [A_REVIEW0_OPUS_SAMPLER_IMAGE_DIGEST](../../authorities/a-review0-opus-sampler/configuration-environment/a-review0-opus-sampler-image-digest.md#pa-c20c4e3e33) |
+| `a-review0-opus-sampler` | [A_REVIEW0_OPUS_SAMPLER_IMAGE_ID](../../authorities/a-review0-opus-sampler/configuration-environment/a-review0-opus-sampler-image-id.md#pa-688c6ce5f7) |
 | `a-review0-opus-sampler` | [A_REVIEW0_OPUS_SAMPLER_PORT](../../authorities/a-review0-opus-sampler/configuration-environment/a-review0-opus-sampler-port.md#pa-30b094a529) |
 | `a-review0-opus-sampler` | [A_REVIEW0_OPUS_SAMPLER_SOURCE_REVISION](../../authorities/a-review0-opus-sampler/configuration-environment/a-review0-opus-sampler-source-revision.md#pa-0bdb68d6f2) |
 | `a-review0-opus-sampler` | [A_REVIEW0_OPUS_SAMPLER_TOKEN](../../authorities/a-review0-opus-sampler/configuration-environment/a-review0-opus-sampler-token.md#pa-113462ffda) |
@@ -41,7 +41,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-review0-opus-sampler` | [STOVE0_FFMPEG_BIN](../../authorities/a-review0-opus-sampler/configuration-environment/stove0-ffmpeg-bin.md#pa-75e319a243) |
 | `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_DESTINATION_IDENTITY](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-destination-identity.md#pa-a2756fc178) |
 | `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_HOST](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-host.md#pa-2be3de6109) |
-| `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_IMAGE_DIGEST](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-image-digest.md#pa-030b850d9f) |
+| `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_IMAGE_ID](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-image-id.md#pa-ad7b510a3f) |
 | `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_PORT](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-port.md#pa-f1fe6a8868) |
 | `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_RCLONE_BIN](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-rclone-bin.md#pa-8a51ad5a50) |
 | `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_RCLONE_CONFIG_FILE](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-rclone-config-file.md#pa-4b0cdd3189) |
@@ -131,7 +131,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-ftp-spool-client` | [A_RIVERHOG_FTP_SPOOL_HTTP_TIMEOUT_SECONDS](../../authorities/a-riverhog-ftp-spool-client/configuration-environment/a-riverhog-ftp-spool-http-timeout-seconds.md#pa-86e08d8a83) |
 | `a-riverhog-ftp-spool-client` | [A_RIVERHOG_FTP_SPOOL_TOKEN](../../authorities/a-riverhog-ftp-spool-client/configuration-environment/a-riverhog-ftp-spool-token.md#pa-67df6b38c6) |
 | `a-stove0-exiftool-observer` | [A_STOVE0_EXIFTOOL_OBSERVER_HOST](../../authorities/a-stove0-exiftool-observer/configuration-environment/a-stove0-exiftool-observer-host.md#pa-d9d53e20ba) |
-| `a-stove0-exiftool-observer` | [A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST](../../authorities/a-stove0-exiftool-observer/configuration-environment/a-stove0-exiftool-observer-image-digest.md#pa-68c1fdfe65) |
+| `a-stove0-exiftool-observer` | [A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID](../../authorities/a-stove0-exiftool-observer/configuration-environment/a-stove0-exiftool-observer-image-id.md#pa-de7177264b) |
 | `a-stove0-exiftool-observer` | [A_STOVE0_EXIFTOOL_OBSERVER_PORT](../../authorities/a-stove0-exiftool-observer/configuration-environment/a-stove0-exiftool-observer-port.md#pa-1a98604239) |
 | `a-stove0-exiftool-observer` | [A_STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION](../../authorities/a-stove0-exiftool-observer/configuration-environment/a-stove0-exiftool-observer-source-revision.md#pa-64ce926e7b) |
 | `a-stove0-exiftool-observer` | [A_STOVE0_EXIFTOOL_OBSERVER_TOKEN](../../authorities/a-stove0-exiftool-observer/configuration-environment/a-stove0-exiftool-observer-token.md#pa-3d7f5ab40b) |
@@ -139,7 +139,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-stove0-exiftool-observer` | [A_STOVE0_EXIFTOOL_OBSERVER_WORKSPACE](../../authorities/a-stove0-exiftool-observer/configuration-environment/a-stove0-exiftool-observer-workspace.md#pa-5f176f05f0) |
 | `a-stove0-exiftool-observer` | [STOVE0_EXIFTOOL_BIN](../../authorities/a-stove0-exiftool-observer/configuration-environment/stove0-exiftool-bin.md#pa-9db07b3d1d) |
 | `a-stove0-ffprobe-sampling-observer` | [A_STOVE0_FFPROBE_SAMPLING_OBSERVER_HOST](../../authorities/a-stove0-ffprobe-sampling-observer/configuration-environment/a-stove0-ffprobe-sampling-observer-host.md#pa-03c191bffd) |
-| `a-stove0-ffprobe-sampling-observer` | [A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_DIGEST](../../authorities/a-stove0-ffprobe-sampling-observer/configuration-environment/a-stove0-ffprobe-sampling-observer-image-digest.md#pa-461647fde6) |
+| `a-stove0-ffprobe-sampling-observer` | [A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID](../../authorities/a-stove0-ffprobe-sampling-observer/configuration-environment/a-stove0-ffprobe-sampling-observer-image-id.md#pa-ece020f53e) |
 | `a-stove0-ffprobe-sampling-observer` | [A_STOVE0_FFPROBE_SAMPLING_OBSERVER_PORT](../../authorities/a-stove0-ffprobe-sampling-observer/configuration-environment/a-stove0-ffprobe-sampling-observer-port.md#pa-7a10f89f99) |
 | `a-stove0-ffprobe-sampling-observer` | [A_STOVE0_FFPROBE_SAMPLING_OBSERVER_SOURCE_REVISION](../../authorities/a-stove0-ffprobe-sampling-observer/configuration-environment/a-stove0-ffprobe-sampling-observer-source-revision.md#pa-3c907c7f27) |
 | `a-stove0-ffprobe-sampling-observer` | [A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN](../../authorities/a-stove0-ffprobe-sampling-observer/configuration-environment/a-stove0-ffprobe-sampling-observer-token.md#pa-eb6f8ffdb8) |
@@ -147,7 +147,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-stove0-ffprobe-sampling-observer` | [A_STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE](../../authorities/a-stove0-ffprobe-sampling-observer/configuration-environment/a-stove0-ffprobe-sampling-observer-workspace.md#pa-8010d95d23) |
 | `a-stove0-ffprobe-sampling-observer` | [STOVE0_FFPROBE_BIN](../../authorities/a-stove0-ffprobe-sampling-observer/configuration-environment/stove0-ffprobe-bin.md#pa-136ee5cd4e) |
 | `a-stove0-nvenc-av1-opus-target` | [A_STOVE0_NVENC_AV1_OPUS_TARGET_HOST](../../authorities/a-stove0-nvenc-av1-opus-target/configuration-environment/a-stove0-nvenc-av1-opus-target-host.md#pa-fbe2ee6944) |
-| `a-stove0-nvenc-av1-opus-target` | [A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_DIGEST](../../authorities/a-stove0-nvenc-av1-opus-target/configuration-environment/a-stove0-nvenc-av1-opus-target-image-digest.md#pa-25cf53813c) |
+| `a-stove0-nvenc-av1-opus-target` | [A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID](../../authorities/a-stove0-nvenc-av1-opus-target/configuration-environment/a-stove0-nvenc-av1-opus-target-image-id.md#pa-4fb6b815ef) |
 | `a-stove0-nvenc-av1-opus-target` | [A_STOVE0_NVENC_AV1_OPUS_TARGET_PORT](../../authorities/a-stove0-nvenc-av1-opus-target/configuration-environment/a-stove0-nvenc-av1-opus-target-port.md#pa-8b4e58189f) |
 | `a-stove0-nvenc-av1-opus-target` | [A_STOVE0_NVENC_AV1_OPUS_TARGET_SOURCE_REVISION](../../authorities/a-stove0-nvenc-av1-opus-target/configuration-environment/a-stove0-nvenc-av1-opus-target-source-revision.md#pa-e0ba8063ec) |
 | `a-stove0-nvenc-av1-opus-target` | [A_STOVE0_NVENC_AV1_OPUS_TARGET_STATE_ROOT](../../authorities/a-stove0-nvenc-av1-opus-target/configuration-environment/a-stove0-nvenc-av1-opus-target-state-root.md#pa-efc88c67f2) |
@@ -157,7 +157,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-stove0-nvenc-av1-opus-target` | [A_STOVE0_NVENC_AV1_OPUS_TARGET_ZSTD](../../authorities/a-stove0-nvenc-av1-opus-target/configuration-environment/a-stove0-nvenc-av1-opus-target-zstd.md#pa-3f3c24fce5) |
 | `a-stove0-nvenc-av1-opus-target` | [STOVE0_FFMPEG_BIN](../../authorities/a-stove0-nvenc-av1-opus-target/configuration-environment/stove0-ffmpeg-bin.md#pa-8997796635) |
 | `a-stove0-opus-target` | [A_STOVE0_OPUS_TARGET_HOST](../../authorities/a-stove0-opus-target/configuration-environment/a-stove0-opus-target-host.md#pa-267bad1e1b) |
-| `a-stove0-opus-target` | [A_STOVE0_OPUS_TARGET_IMAGE_DIGEST](../../authorities/a-stove0-opus-target/configuration-environment/a-stove0-opus-target-image-digest.md#pa-76fe48e8bd) |
+| `a-stove0-opus-target` | [A_STOVE0_OPUS_TARGET_IMAGE_ID](../../authorities/a-stove0-opus-target/configuration-environment/a-stove0-opus-target-image-id.md#pa-434bf02457) |
 | `a-stove0-opus-target` | [A_STOVE0_OPUS_TARGET_PORT](../../authorities/a-stove0-opus-target/configuration-environment/a-stove0-opus-target-port.md#pa-1d3a528690) |
 | `a-stove0-opus-target` | [A_STOVE0_OPUS_TARGET_SOURCE_REVISION](../../authorities/a-stove0-opus-target/configuration-environment/a-stove0-opus-target-source-revision.md#pa-0c07889aed) |
 | `a-stove0-opus-target` | [A_STOVE0_OPUS_TARGET_STATE_ROOT](../../authorities/a-stove0-opus-target/configuration-environment/a-stove0-opus-target-state-root.md#pa-dd1d16ab5c) |

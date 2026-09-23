@@ -21,7 +21,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-cc3673cdeb"></a>`authorities · http_operations` | `"http_binding.operations"` |
 | <a id="s-1d737f3aa2"></a>`authorities · semantic_acceptance` | `"semantic_acceptance"` |
 | <a id="s-43d11b7c9d"></a>`authorities · structural_models` | `"schemas"` |
-| <a id="s-cd25dd0347"></a>`bundle_sha256` | `"cbb092158be9d9cc515fffa79a10d2de24145a0d759667a7af6abc773e24a711"` |
+| <a id="s-cd25dd0347"></a>`bundle_sha256` | `"046616a2439706339e32b0f318661852a748fd6f26e1ae9de5c53d1f766913f7"` |
 | <a id="s-c08d2f9d50"></a>`format` | `"review0-sampler-schema-bundle/v1"` |
 | <a id="s-772400cd68"></a>`protocol` | `"review0-sampler/v1"` |
 | <a id="s-8bdb330a36"></a>`semantic_acceptance · kind` | `"request-bound-result"` |
@@ -84,10 +84,10 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/protocol_schemas/generated:review0-sampler/bundle_sha256`
 
-<!-- exact-contract-value: aaa7eeab2831961f25cd5a11aa7e519e0d7bc5ac22bf05a773b7425c97b91416 -->
+<!-- exact-contract-value: 9879b4dc764aa1feabe9775febf0d2890732e7c6f5fca1a057ed98c733399b90 -->
 
 ```json
-"cbb092158be9d9cc515fffa79a10d2de24145a0d759667a7af6abc773e24a711"
+"046616a2439706339e32b0f318661852a748fd6f26e1ae9de5c53d1f766913f7"
 ```
 
 ### `/external_contract/protocol_schemas/generated:review0-sampler/format`

@@ -137,6 +137,8 @@ Declared public imports and their selected exact structural contracts.
 - [JsonSchemaValidationProfile](stove0-protocol-jsonschemavalidationprofile.md)
   - [from_schema](stove0-protocol-jsonschemavalidationprofile-from-schema.md)
   - [verify_digest](stove0-protocol-jsonschemavalidationprofile-verify-digest.md)
+- [OCI_IMAGE_ID_PATTERN](stove0-protocol-oci-image-id-pattern.md)
+- [OciImageId](stove0-protocol-ociimageid.md)
 - [OperationRef](stove0-protocol-operationref.md)
   - [from_identity](stove0-protocol-operationref-from-identity.md)
   - [to_identity](stove0-protocol-operationref-to-identity.md)

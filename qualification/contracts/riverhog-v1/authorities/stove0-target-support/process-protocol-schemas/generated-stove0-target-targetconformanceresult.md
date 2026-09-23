@@ -657,7 +657,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-061d2681c8"></a>`type`: `"object"`
 - <a id="s-49465b7d99"></a>`additionalProperties`: `false`
-- <a id="s-252bdc217f"></a>`required`: `["implementation_id","implementation_version","source_revision","image_digest","operations","descriptor_sha256"]`
+- <a id="s-252bdc217f"></a>`required`: `["implementation_id","implementation_version","source_revision","image_id","operations","descriptor_sha256"]`
 - <a id="s-6885eec81a"></a>`title`: `"TargetDescriptor"`
 
 #### Fields
@@ -665,7 +665,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-3a02edaf53"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Descriptor Sha256" |  |
-| <a id="s-b2f67fb2d5"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Image Digest" |  |
+| <a id="s-205ed5b733"></a>`image_id` | yes | type="string"; pattern="^sha256:[0-9a-f]{64}$"; title="Image Id" |  |
 | <a id="s-d34dda900b"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Implementation Id" |  |
 | <a id="s-d7907d80b6"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1; title="Implementation Version" |  |
 | <a id="s-6689dacd70"></a>`operations` | yes | type="array"; items=([TargetOperationSupport](#s-bf993b5ad1)); minItems=1; title="Operations" |  |
@@ -1136,7 +1136,6 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [definition OutputCollectionRef · field derivation_sha256](#s-c536e7cde3) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition RecipeRef · field sha256](#s-21ab0ccfd9) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition TargetDescriptor · field descriptor_sha256](#s-3a02edaf53) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [definition TargetDescriptor · field image_digest](#s-b2f67fb2d5) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition TargetDescriptor · field implementation_version](#s-d7907d80b6) | `length · characters · contract_max` | maximum=120; minimum=1; reason="schema-maximum" |
 | [definition TargetDescriptor · field source_revision](#s-99e61d674f) | `length · characters · contract_max` | maximum=200; minimum=1; reason="schema-maximum" |
 | [definition TargetExecutionEvidence · field execution_sha256](#s-2cc5345db5) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
@@ -1213,7 +1212,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 49420089c1a1e128c714461d72e65d547b66fa038d1dd25c68c83b568795439a -->
+<!-- exact-contract-value: 73656e8ca918b7a68c780060bf357c88f7743622cb38e33fc720884124274153 -->
 
 ```json
 {
@@ -2576,9 +2575,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Descriptor Sha256",
           "type": "string"
         },
-        "image_digest": {
-          "pattern": "^[0-9a-f]{64}$",
-          "title": "Image Digest",
+        "image_id": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Image Id",
           "type": "string"
         },
         "implementation_id": {
@@ -2626,7 +2625,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "implementation_id",
         "implementation_version",
         "source_revision",
-        "image_digest",
+        "image_id",
         "operations",
         "descriptor_sha256"
       ],

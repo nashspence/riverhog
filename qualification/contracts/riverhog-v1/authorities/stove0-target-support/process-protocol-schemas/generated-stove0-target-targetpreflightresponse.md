@@ -102,7 +102,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-21c6e1c113"></a>`type`: `"object"`
 - <a id="s-54bd79609d"></a>`additionalProperties`: `false`
-- <a id="s-5276cdc8f7"></a>`required`: `["implementation_id","implementation_version","source_revision","image_digest","operations","descriptor_sha256"]`
+- <a id="s-5276cdc8f7"></a>`required`: `["implementation_id","implementation_version","source_revision","image_id","operations","descriptor_sha256"]`
 - <a id="s-5d425c48ad"></a>`title`: `"TargetDescriptor"`
 
 #### Fields
@@ -110,7 +110,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-eaee51e011"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Descriptor Sha256" |  |
-| <a id="s-42c1080c42"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Image Digest" |  |
+| <a id="s-081d758c5b"></a>`image_id` | yes | type="string"; pattern="^sha256:[0-9a-f]{64}$"; title="Image Id" |  |
 | <a id="s-deadba7ae7"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Implementation Id" |  |
 | <a id="s-fe713a6812"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1; title="Implementation Version" |  |
 | <a id="s-9002397740"></a>`operations` | yes | type="array"; items=([TargetOperationSupport](#s-40a67f974a)); minItems=1; title="Operations" |  |
@@ -218,7 +218,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9a599a04ced070a5ada9d27e1e82e62871a84c3a9b2b1a6307cded499ae7bfe8 -->
+<!-- exact-contract-value: 6bc14275733fd8b91ab291682f01937372a13c485da9a7f45bbb0254f56d3530 -->
 
 ```json
 {
@@ -374,9 +374,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Descriptor Sha256",
           "type": "string"
         },
-        "image_digest": {
-          "pattern": "^[0-9a-f]{64}$",
-          "title": "Image Digest",
+        "image_id": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Image Id",
           "type": "string"
         },
         "implementation_id": {
@@ -424,7 +424,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "implementation_id",
         "implementation_version",
         "source_revision",
-        "image_digest",
+        "image_id",
         "operations",
         "descriptor_sha256"
       ],

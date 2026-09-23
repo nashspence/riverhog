@@ -273,7 +273,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-cbe0f513a3"></a>`type`: `"object"`
 - <a id="s-2a692d102d"></a>`additionalProperties`: `false`
-- <a id="s-09d1e56d14"></a>`required`: `["implementation_id","implementation_version","source_revision","image_digest","contracts","descriptor_sha256"]`
+- <a id="s-09d1e56d14"></a>`required`: `["implementation_id","implementation_version","source_revision","image_id","contracts","descriptor_sha256"]`
 - <a id="s-e261655d00"></a>`title`: `"ObserverDescriptor"`
 
 #### Fields
@@ -282,7 +282,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-2ef1f8a487"></a>`contracts` | yes | type="array"; items=([ObserverContractSupport](#s-c7de29acfc)); minItems=1; title="Contracts" |  |
 | <a id="s-42cfeceeff"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Descriptor Sha256" |  |
-| <a id="s-f9bf8ce9e8"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Image Digest" |  |
+| <a id="s-f320f24c38"></a>`image_id` | yes | type="string"; pattern="^sha256:[0-9a-f]{64}$"; title="Image Id" |  |
 | <a id="s-10c44bb963"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Implementation Id" |  |
 | <a id="s-dceba6dd81"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1; title="Implementation Version" |  |
 | <a id="s-1f3d23eb37"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1"; default="stove0-content-observer/v1"; title="Protocol" |  |
@@ -422,7 +422,6 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [definition ObserverContractSupport · field contract_sha256](#s-0bf8abada4) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition ObserverContractSupport · field maximum_result_bytes](#s-6c87e3c09e) | `value · schema-value · contract_max` | maximum=67108864; minimum=1; reason="schema-maximum" |
 | [definition ObserverDescriptor · field descriptor_sha256](#s-42cfeceeff) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [definition ObserverDescriptor · field image_digest](#s-f9bf8ce9e8) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition ObserverDescriptor · field implementation_version](#s-dceba6dd81) | `length · characters · contract_max` | maximum=120; minimum=1; reason="schema-maximum" |
 | [definition ObserverDescriptor · field source_revision](#s-065ca78d50) | `length · characters · contract_max` | maximum=200; minimum=1; reason="schema-maximum" |
 | [definition ObserverSemanticAcceptance · field profile_sha256](#s-4696fbe59a) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
@@ -466,7 +465,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: dd82234c3be49b1ad0866981ec79c947a0abb3227755911e05ea5de841150ea6 -->
+<!-- exact-contract-value: daf12f283376fb04758e5bd6aa3f9584c535d3de717ee8eeb0d299106b46d4e0 -->
 
 ```json
 {
@@ -1083,9 +1082,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Descriptor Sha256",
           "type": "string"
         },
-        "image_digest": {
-          "pattern": "^[0-9a-f]{64}$",
-          "title": "Image Digest",
+        "image_id": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Image Id",
           "type": "string"
         },
         "implementation_id": {
@@ -1116,7 +1115,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "implementation_id",
         "implementation_version",
         "source_revision",
-        "image_digest",
+        "image_id",
         "contracts",
         "descriptor_sha256"
       ],

@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-e01ec6e1ff"></a>`kind`: `"class"`
-- <a id="s-a5dcd36400"></a>`signature`: `"\"(id: 'str', client: 'ReviewSamplerClient', descriptor_sha256: 'str', image_digest: 'str') -> None\""`
+- <a id="s-a5dcd36400"></a>`signature`: `"\"(id: 'str', client: 'ReviewSamplerClient', descriptor_sha256: 'str', image_id: 'OciImageId') -> None\""`
 
 #### Dataclass fields
 
@@ -31,7 +31,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-71f18a90db"></a>`id` | `'str'` | `required` |
 | <a id="s-9f7be32903"></a>`client` | `'ReviewSamplerClient'` | `required` |
 | <a id="s-cb3061bbab"></a>`descriptor_sha256` | `'str'` | `required` |
-| <a id="s-3a5cf17b28"></a>`image_digest` | `'str'` | `required` |
+| <a id="s-3a5cf17b28"></a>`image_id` | `'OciImageId'` | `required` |
 
 ## Maintained corroboration
 
@@ -66,7 +66,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c504f65344acd12e2fd1134f4cc31e00b233aa40bdd9f96498bb3b98e9b76829 -->
+<!-- exact-contract-value: f9cbcbdbce7d6a53aab8626be4d75d3c8c5f29995c73c612931b7ad69f167fb8 -->
 
 ```json
 {
@@ -89,12 +89,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       {
         "default": "required",
-        "name": "image_digest",
-        "type": "'str'"
+        "name": "image_id",
+        "type": "'OciImageId'"
       }
     ],
     "kind": "class",
-    "signature": "\"(id: 'str', client: 'ReviewSamplerClient', descriptor_sha256: 'str', image_digest: 'str') -> None\""
+    "signature": "\"(id: 'str', client: 'ReviewSamplerClient', descriptor_sha256: 'str', image_id: 'OciImageId') -> None\""
   },
   "distribution": "review0-target-lib",
   "module": "review0_target_lib",

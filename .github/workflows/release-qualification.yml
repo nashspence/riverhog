@@ -290,7 +290,7 @@ jobs:
           RIVERHOG_OPERATION_SOURCE_SHA: ${{ env.SOURCE_SHA }}
           RIVERHOG_OPERATION_TIMINGS: ${{ env.OPERATIONS_TIMINGS }}
         run: >-
-          make unit
+          make unit UNIT_PYTEST_ARGS=
           TESTS="tests/unit/test_operation_lifecycle_api.py::test_riverhog_official_client_positive_disposable_lifecycle
           tests/unit/test_event_cursor_restart.py
           some-implementations/stove0/application/tests/test_stove0_api_parity.py::test_stove0_official_client_positive_disposable_lifecycle

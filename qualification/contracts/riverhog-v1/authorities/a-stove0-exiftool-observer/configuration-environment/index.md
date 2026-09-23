@@ -9,7 +9,7 @@ Configuration Environment contract owned by a-stove0-exiftool-observer.
 [Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-811ba54f7c) for this authority.
 
 - [A_STOVE0_EXIFTOOL_OBSERVER_HOST](a-stove0-exiftool-observer-host.md)
-- [A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST](a-stove0-exiftool-observer-image-digest.md)
+- [A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID](a-stove0-exiftool-observer-image-id.md)
 - [A_STOVE0_EXIFTOOL_OBSERVER_PORT](a-stove0-exiftool-observer-port.md)
 - [A_STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION](a-stove0-exiftool-observer-source-revision.md)
 - [A_STOVE0_EXIFTOOL_OBSERVER_TOKEN](a-stove0-exiftool-observer-token.md)

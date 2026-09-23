@@ -4,7 +4,7 @@
 
 This generated snapshot accounts for the externally exposed surfaces discovered from this repository revision. Discovery means inclusion; no separate acceptance decision is required.
 
-Included contract elements: **4209** · Extent decisions: **2003**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
+Included contract elements: **4211** · Extent decisions: **1996**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
 
 ## Audit references
 
@@ -309,7 +309,7 @@ Included contract elements: **4209** · Extent decisions: **2003**. Complete acc
   - [Python](authorities/stove0-operator-contracts/python/index.md) (124)
 
 - [stove0-protocol](authorities/stove0-protocol/index.md) — Canonical content-opaque collection orchestration contracts for Stove0.
-  - [Python](authorities/stove0-protocol/python/index.md) (205)
+  - [Python](authorities/stove0-protocol/python/index.md) (207)
 
 - [stove0-recipe-config](authorities/stove0-recipe-config/index.md) — Portable deployment-owned Stove0 recipe catalog contracts and validation.
   - [Configuration Documents](authorities/stove0-recipe-config/configuration/index.md) (1)

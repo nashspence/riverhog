@@ -172,7 +172,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
         ),
         source_revision=os.getenv("A_STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION", "unknown"),
-        image_digest=_image_digest(),
+        image_id=_image_id(),
     )
     token = _secret()
     with contextlib.suppress(KeyError):
@@ -181,10 +181,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     return 0
 
 
-def _image_digest() -> str:
-    value = os.getenv("A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST", "").strip()
-    if len(value) != 64 or any(character not in "0123456789abcdef" for character in value):
-        raise ValueError("A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST must be a lowercase SHA-256")
+def _image_id() -> str:
+    value = os.getenv("A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID", "").strip()
+    if not (
+        len(value) == 71
+        and value.startswith("sha256:")
+        and all(character in "0123456789abcdef" for character in value[7:])
+    ):
+        raise ValueError(
+            "A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID must be an OCI ImageID (sha256:<64 lowercase hex>)"
+        )
     return value
 
 

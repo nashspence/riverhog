@@ -9,7 +9,7 @@ Configuration Environment contract owned by a-stove0-ffprobe-sampling-observer.
 [Compare environment settings](../../../evidence/configuration/settings.md#c-9c0b6efc83-a2ad4baffe) for this authority.
 
 - [A_STOVE0_FFPROBE_SAMPLING_OBSERVER_HOST](a-stove0-ffprobe-sampling-observer-host.md)
-- [A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_DIGEST](a-stove0-ffprobe-sampling-observer-image-digest.md)
+- [A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID](a-stove0-ffprobe-sampling-observer-image-id.md)
 - [A_STOVE0_FFPROBE_SAMPLING_OBSERVER_PORT](a-stove0-ffprobe-sampling-observer-port.md)
 - [A_STOVE0_FFPROBE_SAMPLING_OBSERVER_SOURCE_REVISION](a-stove0-ffprobe-sampling-observer-source-revision.md)
 - [A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN](a-stove0-ffprobe-sampling-observer-token.md)

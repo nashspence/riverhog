@@ -86,7 +86,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-338e321dad"></a>`type`: `"object"`
 - <a id="s-ff9fd38032"></a>`additionalProperties`: `false`
-- <a id="s-40fc35c892"></a>`required`: `["implementation_id","implementation_version","source_revision","image_digest","primary_operation_id","primary_operation_contract_sha256","portable_intent_schema","output_role","descriptor_sha256"]`
+- <a id="s-40fc35c892"></a>`required`: `["implementation_id","implementation_version","source_revision","image_id","primary_operation_id","primary_operation_contract_sha256","portable_intent_schema","output_role","descriptor_sha256"]`
 - <a id="s-157d9e6c78"></a>`title`: `"SamplerDescriptor"`
 
 #### Fields
@@ -94,7 +94,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-ff4eb4b0b1"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Descriptor Sha256" |  |
-| <a id="s-e697e8fd92"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Image Digest" |  |
+| <a id="s-259057a15e"></a>`image_id` | yes | type="string"; pattern="^sha256:[0-9a-f]{64}$"; title="Image Id" |  |
 | <a id="s-835c8f3452"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Implementation Id" |  |
 | <a id="s-c484d1f4a1"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1; title="Implementation Version" |  |
 | <a id="s-f08c26ff8b"></a>`output_role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Output Role" |  |
@@ -253,7 +253,6 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [definition JsonSchemaValidationProfile · field profile_sha256](#s-0495b32f2a) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition SamplerConformanceCoverage · field exercised](#s-4a54aaf338) | `value · schema-value · contract_max` | maximum=1; minimum=0; reason="schema-maximum" |
 | [definition SamplerDescriptor · field descriptor_sha256](#s-ff4eb4b0b1) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [definition SamplerDescriptor · field image_digest](#s-e697e8fd92) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition SamplerDescriptor · field implementation_version](#s-c484d1f4a1) | `length · characters · contract_max` | maximum=120; minimum=1; reason="schema-maximum" |
 | [definition SamplerDescriptor · field primary_operation_contract_sha256](#s-467429d518) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition SamplerDescriptor · field source_revision](#s-cd700aa32e) | `length · characters · contract_max` | maximum=200; minimum=1; reason="schema-maximum" |
@@ -313,7 +312,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 90a18ba5121ac0f79b977d04f761c86e526ac794af21875b0e828efa6a5b0b6e -->
+<!-- exact-contract-value: 3320130741b29567197aa60f3d20c993b55bb1a0a8ac4c1efc00cf858f66c52c -->
 
 ```json
 {
@@ -395,9 +394,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Descriptor Sha256",
           "type": "string"
         },
-        "image_digest": {
-          "pattern": "^[0-9a-f]{64}$",
-          "title": "Image Digest",
+        "image_id": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Image Id",
           "type": "string"
         },
         "implementation_id": {
@@ -446,7 +445,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "implementation_id",
         "implementation_version",
         "source_revision",
-        "image_digest",
+        "image_id",
         "primary_operation_id",
         "primary_operation_contract_sha256",
         "portable_intent_schema",

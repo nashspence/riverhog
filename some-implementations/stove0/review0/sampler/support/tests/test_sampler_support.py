@@ -45,7 +45,7 @@ def _descriptor() -> SamplerDescriptor:
             implementation_id="fixture.sampler/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
-            image_digest=_sha("9"),
+            image_id="sha256:" + _sha("9"),
             primary_operation_id="fixture.opus/v1",
             primary_operation_contract_sha256=_sha("8"),
             portable_intent_schema=JsonSchemaValidationProfile.from_schema(
@@ -60,6 +60,13 @@ def _descriptor() -> SamplerDescriptor:
             output_role="fixture.review-audio/v1",
         )
     )
+
+
+def test_sampler_descriptor_requires_an_oci_image_id() -> None:
+    payload = _descriptor().model_dump(mode="json", exclude={"descriptor_sha256"})
+    payload["image_id"] = _sha("9")
+    with pytest.raises(ValidationError, match="image_id"):
+        SamplerDescriptorPayload.model_validate(payload)
 
 
 def _request(descriptor: SamplerDescriptor, payload: bytes = b"source") -> SamplerRequest:
@@ -109,7 +116,7 @@ def _result(descriptor: SamplerDescriptor, request: SamplerRequest) -> SamplerRe
                     derived_from=("source",),
                 ),
             ),
-            execution_evidence={"image_digest": descriptor.image_digest},
+            execution_evidence={"ffmpeg": "fixture"},
         )
     )
 
@@ -200,7 +207,7 @@ def test_binding_client_and_conformance_share_the_exact_two_endpoint_contract() 
     assert inspected.coverage.model_dump() == {"advertised": 1, "exercised": 0, "complete": False}
     assert report.status == "conformant"
     assert report.coverage.model_dump() == {"advertised": 1, "exercised": 1, "complete": True}
-    assert report.sampler.image_digest == _sha("9")
+    assert report.sampler.image_id == "sha256:" + _sha("9")
     assert report.request == request
     assert report.sample is not None and report.sample.state == "succeeded"
     assert type(report).model_validate_json(report.model_dump_json()) == report

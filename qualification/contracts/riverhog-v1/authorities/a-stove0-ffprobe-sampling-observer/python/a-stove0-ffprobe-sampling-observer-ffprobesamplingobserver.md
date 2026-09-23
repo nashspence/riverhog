@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-80b6651bba"></a>`kind`: `"class"`
-- <a id="s-e8ee3e81ce"></a>`signature`: `"\"(*, ffprobe: 'str' = 'ffprobe', workspace_root: 'Path \| None' = None, source_revision: 'str' = 'unknown', image_digest: 'str') -> 'None'\""`
+- <a id="s-e8ee3e81ce"></a>`signature`: `"\"(*, ffprobe: 'str' = 'ffprobe', workspace_root: 'Path \| None' = None, source_revision: 'str' = 'unknown', image_id: 'str') -> 'None'\""`
 
 ## Maintained corroboration
 
@@ -59,13 +59,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 550a62baad2987a0b19ae2be9ca49b16a26b54284e280bc9bdebf7f7e7a7ac46 -->
+<!-- exact-contract-value: 5b8b92c055e315f85051dfba2d9f36ebeccab9400f46c988e79b0a958e434854 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "signature": "\"(*, ffprobe: 'str' = 'ffprobe', workspace_root: 'Path | None' = None, source_revision: 'str' = 'unknown', image_digest: 'str') -> 'None'\""
+    "signature": "\"(*, ffprobe: 'str' = 'ffprobe', workspace_root: 'Path | None' = None, source_revision: 'str' = 'unknown', image_id: 'str') -> 'None'\""
   },
   "distribution": "a-stove0-ffprobe-sampling-observer",
   "module": "a_stove0_ffprobe_sampling_observer",

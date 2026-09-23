@@ -322,7 +322,7 @@ cases = ["filesystem-retrieval-cache", "b2-archive", "b2-retrieval-cache", "aws-
 [publication]
 role_retention = "Publication creates no new product, API, protocol, provider, or direct-consumption promise. Each publication unit retains its exact release role and links to its existing semantic owners."
 platform_scope = "A platform or architecture claim applies only to the exact published image, distribution, or installation form that carries it. Qualification platforms remain evidence unless an external contract independently protects them."
-image_digest_scope = "Per-release image digests are publication evidence rather than permanent v1 contract constants."
+image_identity_scope = "Runtime descriptors use OCI ImageID (the image configuration SHA-256 digest). A platform-specific image-manifest digest pins a deployed image; an image-index digest identifies the publication set, including attestations. Nonpublishing qualification records local ImageIDs; publication evidence records platform manifest digests. Per-release identities are not permanent v1 contract constants."
 
 [signing]
 checksums = "SHA-256"
