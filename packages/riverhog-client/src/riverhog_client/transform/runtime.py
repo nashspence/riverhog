@@ -11,6 +11,7 @@ from riverhog_protocol.collection_workflows import (
     ArtifactDispositionSetIdentity,
     CollectionRootIdentity,
 )
+from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 
 from riverhog_client import ApiClient
 from riverhog_client.producer import (
@@ -25,7 +26,7 @@ from riverhog_client.transform.models import (
     DerivedCollectionSpec,
 )
 from riverhog_client.transform.reader import ClaimedCollectionReader, ClaimedRetrieval
-from riverhog_client.transform.workspace import TransformWorkspace, WorkspaceAssurance
+from riverhog_client.transform.workspace import TransformWorkspace
 from riverhog_client.transform.writer import (
     DerivedCollectionWriter,
     IncrementalDerivedCollectionWriter,
@@ -157,13 +158,13 @@ class ClaimedCollectionRuntime:
         self,
         root: Path,
         *,
-        assurance: WorkspaceAssurance,
+        declared_protection: DeclaredWorkspaceProtection,
     ) -> TransformWorkspace:
         self.heartbeat()
         return TransformWorkspace.open(
             root,
             execution_id=self.execution_id,
-            assurance=assurance,
+            declared_protection=declared_protection,
         )
 
 
@@ -321,13 +322,13 @@ class CollectionTransformRuntime:
         self,
         root: Path,
         *,
-        assurance: WorkspaceAssurance,
+        declared_protection: DeclaredWorkspaceProtection,
     ) -> TransformWorkspace:
         self.heartbeat()
         return TransformWorkspace.open(
             root,
             execution_id=self.execution_id,
-            assurance=assurance,
+            declared_protection=declared_protection,
         )
 
     def publish(

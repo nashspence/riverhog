@@ -117,7 +117,7 @@ def create_stove0_contract_app() -> FastAPI:
                 target_callback_allow_insecure_http=False,
                 target_callback_signing_key="operation-qualification-callback-key",
                 target_authority_batch_size=100,
-                workspace_assurance="ephemeral",
+                declared_workspace_protection="memory-backed",
                 claim_lease_seconds=1800,
                 capability_ttl_seconds=900,
                 scheduler_interval_seconds=5,

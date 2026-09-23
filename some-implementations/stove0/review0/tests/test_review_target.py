@@ -639,7 +639,7 @@ def test_review_effect_executes_sampling_delivery_and_canonical_receipt_end_to_e
             fence=1,
             controller_evidence=evidence,
             plan=preflight.plan,
-            workspace_assurance="ephemeral",
+            declared_workspace_protection="memory-backed",
         ),
         TargetRuntimeAuthority(
             riverhog_base_url="https://riverhog.invalid",
@@ -674,7 +674,7 @@ def test_review_effect_executes_sampling_delivery_and_canonical_receipt_end_to_e
             return TransformWorkspace.open(
                 root,
                 execution_id=request.declaration.job_id,
-                assurance="ephemeral",
+                declared_protection="memory-backed",
             )
 
         def iter_inputs(self) -> tuple[tuple[InputArtifact, object], ...]:

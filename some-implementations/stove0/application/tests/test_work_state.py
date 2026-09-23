@@ -426,7 +426,7 @@ def _queued_target_callback_execution(
         fence=1,
         controller_evidence=record.controller_evidence,
         plan=record.target_plan,
-        workspace_assurance="ephemeral",
+        declared_workspace_protection="memory-backed",
     )
     request = TargetJobRequest.seal(
         declaration,
@@ -794,7 +794,7 @@ def test_one_record_carries_observation_plan_execution_verification_and_completi
         fence=1,
         controller_evidence=record.controller_evidence,
         plan=plan,
-        workspace_assurance="ephemeral",
+        declared_workspace_protection="memory-backed",
     )
     target_request = TargetJobRequest.seal(
         declaration,

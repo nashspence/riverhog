@@ -330,6 +330,7 @@ def test_observation_runtime_exposes_only_exact_requested_artifacts(tmp_path: Pa
         request=request,
         claim_id="claim-1",
         fence=3,
+        declared_workspace_protection="memory-backed",
     ) as runtime:  # type: ignore[arg-type]
         resolved = runtime.subjects()
         assert [(subject.id, artifact.path) for subject, artifact in resolved] == [
@@ -393,7 +394,7 @@ def test_conformance_report_checks_contract_schemas_and_result_binding() -> None
         runtime=ObserverRuntimeAuthority(
             riverhog_base_url="https://riverhog.invalid",
             capability_token="secret-capability",
-            workspace_assurance="ephemeral",
+            declared_workspace_protection="memory-backed",
         ),
     )
 
@@ -480,7 +481,7 @@ def test_conformance_report_exercises_semantics_locally_not_as_observer_calls() 
         runtime=ObserverRuntimeAuthority(
             riverhog_base_url="https://riverhog.invalid",
             capability_token="secret-capability",
-            workspace_assurance="ephemeral",
+            declared_workspace_protection="memory-backed",
         ),
     )
     result = _result(request, contract, descriptor, len(api.data))
@@ -586,7 +587,7 @@ def test_observer_binding_executes_advertised_request_options_schema() -> None:
         runtime=ObserverRuntimeAuthority(
             riverhog_base_url="https://riverhog.invalid",
             capability_token="secret-capability",
-            workspace_assurance="ephemeral",
+            declared_workspace_protection="memory-backed",
         ),
     )
 
@@ -680,7 +681,7 @@ def test_observer_client_rejects_a_well_formed_result_for_different_work(
         runtime=ObserverRuntimeAuthority(
             riverhog_base_url="https://riverhog.invalid",
             capability_token="secret-capability",
-            workspace_assurance="ephemeral",
+            declared_workspace_protection="memory-backed",
         ),
     )
     real_client = httpx.Client
@@ -731,7 +732,7 @@ def test_framework_neutral_observer_http_binding() -> None:
         runtime=ObserverRuntimeAuthority(
             riverhog_base_url="https://riverhog.invalid",
             capability_token="secret-capability",
-            workspace_assurance="ephemeral",
+            declared_workspace_protection="memory-backed",
         ),
     )
     binding = ObserverHttpBinding(BindingObserver(descriptor))
@@ -827,7 +828,7 @@ def test_observer_binding_and_client_execute_the_exact_semantic_profile(
         runtime=ObserverRuntimeAuthority(
             riverhog_base_url="https://riverhog.invalid",
             capability_token="secret-capability",
-            workspace_assurance="ephemeral",
+            declared_workspace_protection="memory-backed",
         ),
     )
     binding = ObserverHttpBinding(
@@ -943,7 +944,7 @@ def test_observer_implementation_value_error_is_a_server_fault() -> None:
         runtime=ObserverRuntimeAuthority(
             riverhog_base_url="https://riverhog.invalid",
             capability_token="secret-capability",
-            workspace_assurance="ephemeral",
+            declared_workspace_protection="memory-backed",
         ),
     )
 
@@ -978,7 +979,7 @@ def test_observer_binding_serializes_workspace_execution_by_default() -> None:
         runtime=ObserverRuntimeAuthority(
             riverhog_base_url="https://riverhog.invalid",
             capability_token="secret-capability",
-            workspace_assurance="ephemeral",
+            declared_workspace_protection="memory-backed",
         ),
     )
     entered = threading.Event()

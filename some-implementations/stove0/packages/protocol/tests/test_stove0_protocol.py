@@ -411,7 +411,7 @@ def test_observation_request_identity_is_independent_of_claim_generation() -> No
         runtime=ObserverRuntimeAuthority(
             riverhog_base_url="https://riverhog.invalid",
             capability_token="first-secret",
-            workspace_assurance="ephemeral",
+            declared_workspace_protection="memory-backed",
         ),
     )
     second = ObservationInvocation(
@@ -421,7 +421,7 @@ def test_observation_request_identity_is_independent_of_claim_generation() -> No
         runtime=ObserverRuntimeAuthority(
             riverhog_base_url="https://riverhog.invalid",
             capability_token="second-secret",
-            workspace_assurance="ephemeral",
+            declared_workspace_protection="memory-backed",
         ),
     )
     assert first.request.request_id == second.request.request_id

@@ -371,7 +371,7 @@ class TargetExecutionRuntime:
     def open_workspace(self, root: Path) -> TransformWorkspace:
         workspace = self.runtime.open_workspace(
             root,
-            assurance=self.request.declaration.workspace_assurance,
+            declared_protection=self.request.declaration.declared_workspace_protection,
         )
         self._workspaces.append(workspace)
         return workspace

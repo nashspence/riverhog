@@ -581,7 +581,7 @@ def test_riverhog_adapter_uses_scoped_capabilities_and_verifies_settlement() -> 
     work, workflow, target_plan, evidence = _authorities()
     api = FixtureApi()
     state = InMemoryWorkStore()
-    client = Stove0RiverhogClient(api, workspace_assurance="ephemeral", state=state)
+    client = Stove0RiverhogClient(api, declared_workspace_protection="memory-backed", state=state)
 
     claim = client.acquire_claim(work)
     assert claim == ClaimBinding(claim_id=_claim_id(), fence=1)
@@ -589,7 +589,7 @@ def test_riverhog_adapter_uses_scoped_capabilities_and_verifies_settlement() -> 
     inputs = _input_selection(work).artifacts
     client.seal_execution(claim, evidence, workflow, target_plan, inputs)
     authority = client.target_authority(claim, evidence, target_plan, inputs)
-    assert authority.workspace_assurance == "ephemeral"
+    assert authority.declared_workspace_protection == "memory-backed"
     assert authority.runtime.capability_token.startswith("secret-")
 
     record = _verifying_record(work, workflow, evidence)
@@ -614,7 +614,9 @@ def test_post_root_settlement_restarts_from_bounded_portable_inventory_progress(
     job_id = record.target_status.production.job_id
     state.record_target_output(record.work_id, job_id, _output_artifact())
 
-    first = Stove0RiverhogClient(api, state=state, authority_batch_size=1)
+    first = Stove0RiverhogClient(
+        api, declared_workspace_protection="memory-backed", state=state, authority_batch_size=1
+    )
     output, settlement = first.verify_and_settle(record)
 
     assert output == record.output
@@ -624,7 +626,9 @@ def test_post_root_settlement_restarts_from_bounded_portable_inventory_progress(
     assert checkpoint.checkpoint.inventory_cursor == "second-page"
     assert checkpoint.checkpoint.artifact_count == 0
 
-    restarted = Stove0RiverhogClient(api, state=state, authority_batch_size=1)
+    restarted = Stove0RiverhogClient(
+        api, declared_workspace_protection="memory-backed", state=state, authority_batch_size=1
+    )
     replayed_output, replayed_settlement = restarted.verify_and_settle(record)
 
     assert replayed_output == output
@@ -647,7 +651,7 @@ def test_post_root_settlement_fails_closed_on_non_bijective_output() -> None:
         record.target_status.production.job_id,
         _output_artifact().model_copy(update={"sha256": _sha("a")}),
     )
-    client = Stove0RiverhogClient(api, state=state)
+    client = Stove0RiverhogClient(api, declared_workspace_protection="memory-backed", state=state)
 
     with pytest.raises(RuntimeError, match="artifact differs"):
         client.verify_and_settle(record)
@@ -656,7 +660,7 @@ def test_post_root_settlement_fails_closed_on_non_bijective_output() -> None:
 def test_effect_target_uses_only_generic_read_custody_and_releases_without_settlement() -> None:
     work, workflow, target_plan, evidence = _effect_authorities()
     api = FixtureApi()
-    client = Stove0RiverhogClient(api, workspace_assurance="ephemeral")
+    client = Stove0RiverhogClient(api, declared_workspace_protection="memory-backed")
     claim = client.acquire_claim(work)
 
     inputs = _input_selection(work).artifacts
@@ -754,7 +758,7 @@ def test_riverhog_adapter_closes_only_the_exact_generic_outcome_set() -> None:
     )
     api = FixtureApi()
     api.processing_outcomes = [outcome.as_dict()]
-    client = Stove0RiverhogClient(api)
+    client = Stove0RiverhogClient(api, declared_workspace_protection="memory-backed")
     parent = WorkRecord(
         work=work,
         phase="coordinating",
@@ -776,7 +780,7 @@ def test_riverhog_adapter_closes_only_the_exact_generic_outcome_set() -> None:
 def test_riverhog_adapter_recovers_an_expired_claim_with_a_new_fence() -> None:
     work, _workflow, _target_plan, _evidence = _authorities()
     api = FixtureApi()
-    client = Stove0RiverhogClient(api)
+    client = Stove0RiverhogClient(api, declared_workspace_protection="memory-backed")
     claim = client.acquire_claim(work)
     api.expire_renewal = True
 
@@ -790,7 +794,7 @@ def test_riverhog_adapter_refuses_to_resume_terminal_work() -> None:
     work, _workflow, _target_plan, _evidence = _authorities()
     api = FixtureApi()
     api.claim_state = "abandoned"
-    client = Stove0RiverhogClient(api)
+    client = Stove0RiverhogClient(api, declared_workspace_protection="memory-backed")
 
     with pytest.raises(RuntimeError, match="terminal: abandoned"):
         client.acquire_claim(work)
@@ -799,7 +803,7 @@ def test_riverhog_adapter_refuses_to_resume_terminal_work() -> None:
 def test_riverhog_adapter_restarts_retryable_work_with_a_new_fence() -> None:
     work, _workflow, _target_plan, _evidence = _authorities()
     api = FixtureApi()
-    client = Stove0RiverhogClient(api)
+    client = Stove0RiverhogClient(api, declared_workspace_protection="memory-backed")
     claim = client.acquire_claim(work)
 
     restarted = client.restart_claim(work, claim)
@@ -814,7 +818,7 @@ def test_riverhog_adapter_restarts_retryable_work_with_a_new_fence() -> None:
 def test_riverhog_adapter_retirement_is_fenced_and_challenge_bound() -> None:
     work, workflow, _target_plan, evidence = _authorities("retire-after-verified-output")
     api = FixtureApi()
-    client = Stove0RiverhogClient(api)
+    client = Stove0RiverhogClient(api, declared_workspace_protection="memory-backed")
     record = _verifying_record(work, workflow, evidence).model_copy(update={"phase": "settled"})
 
     assert client.begin_retirement(record) is True
@@ -830,7 +834,7 @@ def test_riverhog_adapter_retirement_is_fenced_and_challenge_bound() -> None:
 def test_riverhog_adapter_reports_grace_and_deletion_blockers_as_waiting() -> None:
     work, workflow, _target_plan, evidence = _authorities("retire-after-verified-output")
     api = FixtureApi()
-    client = Stove0RiverhogClient(api)
+    client = Stove0RiverhogClient(api, declared_workspace_protection="memory-backed")
     record = _verifying_record(work, workflow, evidence).model_copy(update={"phase": "settled"})
 
     api.retirement_state = "settled"
@@ -846,7 +850,7 @@ def test_riverhog_adapter_reports_grace_and_deletion_blockers_as_waiting() -> No
 def test_riverhog_adapter_abandons_the_exact_claim_generation() -> None:
     work, _workflow, _target_plan, _evidence = _authorities()
     api = FixtureApi()
-    client = Stove0RiverhogClient(api)
+    client = Stove0RiverhogClient(api, declared_workspace_protection="memory-backed")
     record = WorkRecord(
         work=work,
         phase="abandon_pending",
@@ -871,6 +875,7 @@ def test_synchronous_observation_must_fit_claim_and_capability_lifetime() -> Non
     api = FixtureApi()
     client = Stove0RiverhogClient(
         api,
+        declared_workspace_protection="memory-backed",
         claim_lease_seconds=30,
         capability_ttl_seconds=30,
     )
@@ -904,7 +909,7 @@ def test_synchronous_observation_must_fit_claim_and_capability_lifetime() -> Non
 def test_observation_capability_projects_subjects_into_riverhog_artifact_order() -> None:
     work, _workflow, _target_plan, _evidence = _authorities()
     api = FixtureApi()
-    client = Stove0RiverhogClient(api)
+    client = Stove0RiverhogClient(api, declared_workspace_protection="memory-backed")
     request = ObservationRequest.seal(
         ObservationRequestPayload(
             work_id=work.work_id,
@@ -945,7 +950,7 @@ def test_observation_capability_projects_subjects_into_riverhog_artifact_order()
 def test_preview_claim_is_separate_read_only_authority_and_is_abandoned() -> None:
     work, _workflow, _target_plan, _evidence = _authorities()
     api = FixtureApi()
-    client = Stove0RiverhogClient(api)
+    client = Stove0RiverhogClient(api, declared_workspace_protection="memory-backed")
     request = WorkflowPreviewRequest.seal(WorkflowPreviewRequestPayload(work=work))
 
     first = client.acquire_preview_claim(request)

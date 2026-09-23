@@ -106,7 +106,7 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
     assert "owning contract element" in configuration_inventory
     reconciliation = checked.files["riverhog-v1/evidence/configuration/reconciliation.md"].decode()
     assert "Unique environment names: **240**" in reconciliation
-    assert "Implementation reads: **199**" in reconciliation
+    assert "Implementation reads: **198**" in reconciliation
     assert "Explicit ambiguity resolutions: **6**" in reconciliation
     assert "| unowned | pass |" in reconciliation
     settings = checked.files[atlas_navigation.CONFIGURATION_SETTINGS_PATH].decode()

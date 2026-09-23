@@ -1,4 +1,4 @@
-"""Explicit encrypted-or-ephemeral target workspace boundary."""
+"""Workspace boundary with a deployment-declared plaintext protection mode."""
 
 from __future__ import annotations
 
@@ -7,28 +7,28 @@ import os
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, Self
+from typing import Self
 
 from riverhog_protocol.collection_workflows import canonical_json_bytes
 from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 
-WorkspaceAssurance = Literal["encrypted", "ephemeral"]
 _MARKER = ".riverhog-transform-workspace.json"
 
 
 @dataclass(slots=True)
 class TransformWorkspace:
-    """A target-owned workspace with an explicit deployment assurance.
+    """A target-owned workspace with an explicit deployment declaration.
 
-    The runtime cannot prove that a mount is encrypted or memory-backed. It therefore
-    requires the target deployment to select one of those assurances explicitly,
-    rejects symlinked or broadly accessible roots, and records the binding in a
-    restart-stable marker. Plain unclassified disk is not accepted.
+    The runtime cannot prove mount encryption, memory backing, or swap policy.
+    The deployment must declare encrypted-at-rest storage or memory-backed storage
+    without unencrypted swap. The runtime checks path safety and records that
+    declaration in a restart-stable marker.
     """
 
     root: Path
     execution_id: str
-    assurance: WorkspaceAssurance
+    declared_protection: DeclaredWorkspaceProtection
 
     @classmethod
     def open(
@@ -36,10 +36,10 @@ class TransformWorkspace:
         root: Path,
         *,
         execution_id: str,
-        assurance: WorkspaceAssurance,
+        declared_protection: DeclaredWorkspaceProtection,
     ) -> TransformWorkspace:
-        if assurance not in {"encrypted", "ephemeral"}:
-            raise ValueError("transform workspace must be encrypted or ephemeral")
+        if declared_protection not in {"encrypted-at-rest", "memory-backed"}:
+            raise ValueError("transform workspace protection declaration is invalid")
         base = root.resolve()
         if root.is_symlink() or not base.is_dir():
             raise ValueError("transform workspace root must be a real directory")
@@ -60,7 +60,7 @@ class TransformWorkspace:
         payload = {
             "format": "riverhog-transform-workspace/v1",
             "execution_id": execution_id,
-            "assurance": assurance,
+            "declared_protection": declared_protection,
         }
         encoded = canonical_json_bytes(payload)
         if marker.is_symlink():
@@ -71,7 +71,9 @@ class TransformWorkspace:
             except (OSError, json.JSONDecodeError) as exc:
                 raise ValueError("transform workspace marker is unreadable") from exc
             if canonical_json_bytes(current) != encoded:
-                raise ValueError("transform workspace is bound to another execution")
+                raise ValueError(
+                    "transform workspace is bound to another execution or protection declaration"
+                )
         else:
             flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
             flags |= getattr(os, "O_NOFOLLOW", 0)
@@ -86,7 +88,7 @@ class TransformWorkspace:
                 os.fsync(directory)
             finally:
                 os.close(directory)
-        return cls(root=path, execution_id=execution_id, assurance=assurance)
+        return cls(root=path, execution_id=execution_id, declared_protection=declared_protection)
 
     def __enter__(self) -> Self:
         return self
@@ -115,4 +117,4 @@ class TransformWorkspace:
         shutil.rmtree(self.root)
 
 
-__all__ = ["TransformWorkspace", "WorkspaceAssurance"]
+__all__ = ["TransformWorkspace"]

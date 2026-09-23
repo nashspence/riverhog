@@ -1632,8 +1632,16 @@ def test_workspace_requires_explicit_protected_storage(tmp_path: Path) -> None:
     with TransformWorkspace.open(
         root,
         execution_id=EXECUTION_ID,
-        assurance="ephemeral",
+        declared_protection="memory-backed",
     ) as workspace:
+        marker = json.loads((workspace.root / ".riverhog-transform-workspace.json").read_text())
+        assert marker["declared_protection"] == "memory-backed"
+        with pytest.raises(ValueError, match="protection declaration"):
+            TransformWorkspace.open(
+                root,
+                execution_id=EXECUTION_ID,
+                declared_protection="encrypted-at-rest",
+            )
         output = workspace.resolve("video/output.mkv")
         output.parent.mkdir(parents=True)
         output.write_bytes(b"derived")

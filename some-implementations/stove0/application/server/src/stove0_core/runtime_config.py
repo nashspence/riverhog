@@ -8,8 +8,9 @@ import os
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Literal, cast
+from typing import cast
 
+from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_operator_contracts import AdmissionCatalog
 
 DEFAULT_OPERATIONAL_STATE_RETENTION_SECONDS = 30 * 24 * 60 * 60
@@ -43,7 +44,7 @@ class Stove0RuntimeConfig:
     target_callback_allow_insecure_http: bool
     target_callback_signing_key: str = field(repr=False)
     target_authority_batch_size: int
-    workspace_assurance: Literal["encrypted", "ephemeral"]
+    declared_workspace_protection: DeclaredWorkspaceProtection
     claim_lease_seconds: int
     capability_ttl_seconds: int
     scheduler_interval_seconds: float
@@ -73,9 +74,11 @@ class Stove0RuntimeConfig:
         recipes_path = Path(_required(values, "STOVE0_RECIPES_PATH")).resolve()
         if not recipes_path.is_file():
             raise ValueError("STOVE0_RECIPES_PATH must name a readable recipe document")
-        assurance = values.get("STOVE0_WORKSPACE_ASSURANCE", "encrypted").strip().casefold()
-        if assurance not in {"encrypted", "ephemeral"}:
-            raise ValueError("STOVE0_WORKSPACE_ASSURANCE must be encrypted or ephemeral")
+        protection = _required(values, "STOVE0_DECLARED_WORKSPACE_PROTECTION").casefold()
+        if protection not in {"encrypted-at-rest", "memory-backed"}:
+            raise ValueError(
+                "STOVE0_DECLARED_WORKSPACE_PROTECTION must be encrypted-at-rest or memory-backed"
+            )
         targets = _registrations(values, "STOVE0_TARGETS_JSON")
         callback_base_url = values.get("STOVE0_TARGET_CALLBACK_BASE_URL", "").strip()
         if targets and not callback_base_url:
@@ -135,10 +138,7 @@ class Stove0RuntimeConfig:
                 24 * 60 * 60,
                 minimum=1,
             ),
-            workspace_assurance=cast(
-                Literal["encrypted", "ephemeral"],
-                assurance,
-            ),
+            declared_workspace_protection=cast(DeclaredWorkspaceProtection, protection),
             claim_lease_seconds=_integer(
                 values,
                 "STOVE0_CLAIM_LEASE_SECONDS",
