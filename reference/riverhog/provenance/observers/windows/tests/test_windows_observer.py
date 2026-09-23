@@ -16,6 +16,7 @@ from riverhog_provenance import (
     SymlinkRefusedError,
     validate_graph_fragment,
 )
+from riverhog_provenance.common import canonical_json
 from riverhog_provenance_windows_observer import (
     _BY_HANDLE_FILE_INFORMATION,
     _FILE_ALLOCATED_RANGE_BUFFER,
@@ -68,7 +69,7 @@ class FakeWindowsNative:
     def _identity(path: str | None = None, fd: int | None = None) -> WindowsIdentity:
         st = os.stat(path) if path is not None else os.fstat(fd)  # type: ignore[arg-type]
         value = int(st.st_ino).to_bytes(16, "big", signed=False)
-        return WindowsIdentity(volume_serial_number=0xA1B2C3D4, file_id=value)
+        return WindowsIdentity(volume_serial_number=0x52D5A1B2C3D40001, file_id=value)
 
     def inspect_path(self, path: str, *, follow_non_name_surrogate: bool = True):
         st = os.stat(path)
@@ -215,7 +216,7 @@ class FakeWindowsNative:
         return WindowsVolumeInfo(
             filesystem_name="NTFS",
             volume_label="Archive",
-            volume_serial_number=0xA1B2C3D4,
+            volume_serial_number=0x52D5A1B2C3D40001,
             maximum_component_length=255,
             filesystem_flags=0x0000000F | 0x00040000 | 0x00800000 | 0x02000000,
             mount_path="C:\\",
@@ -271,6 +272,7 @@ def test_mocked_windows_observation_contract(tmp_path: Path, urn_factory) -> Non
     )
     fragment = result.graph_fragment()
     validate_graph_fragment(fragment)
+    canonical_json(fragment)
 
     assert result.state["content"]["size_bytes"] == str(len(content))
     assert result.state["content"]["digests"][0]["value"] == hashlib.sha256(content).hexdigest()

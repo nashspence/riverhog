@@ -404,7 +404,7 @@ with RiverhogFtpAdapterClient(
 assert len(receipt_paths) == 2, receipt_paths
 receipts = sorted(
     (json.loads(path.read_text(encoding='utf-8')) for path in receipt_paths),
-    key=lambda row: row['collection_id'],
+    key=lambda row: int(row['collection_id']),
 )
 assert receipts[0]['collection_id'] != receipts[1]['collection_id']
 print(json.dumps([
@@ -453,7 +453,7 @@ receipts = json.loads(os.environ['PARTITION_RECEIPTS'])
 expected = (b'first exact FTP event', b'second distinct exact FTP event')
 with ApiClient() as client:
     for receipt, content in zip(receipts, expected, strict=True):
-        collection_id = receipt['collection_id']
+        collection_id = int(receipt['collection_id'])
         page = client.get_portable_collection_inventory(collection_id, limit=100)
         assert page.complete, page
         by_path = {artifact.path: artifact for artifact in page.files}
@@ -639,7 +639,7 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
   --entrypoint python test -c "${classification_code}"
 
 scheduler_step_code="import json, os, urllib.request
-collection_id = int(os.environ['INPUT_COLLECTION_ID'])
+collection_id = os.environ['INPUT_COLLECTION_ID']
 expected = os.environ['RIVERHOG_SMOKE_SCHEDULER_STEP']
 state_order = {'intent': 0, 'previewed': 1, 'work_bound': 2}
 for _ in range(4):
@@ -675,7 +675,7 @@ for _ in range(4):
 else:
     raise AssertionError({'expected': expected, 'matches': matches})"
 admission_state_code="import json, os, urllib.request
-collection_id = int(os.environ['INPUT_COLLECTION_ID'])
+collection_id = os.environ['INPUT_COLLECTION_ID']
 request = urllib.request.Request(
     'http://127.0.0.1:8080/v1/admissions?page_size=100&sort=admission_id&order=asc',
     headers={'Authorization': 'Bearer stove0-compose-smoke-token'},
@@ -721,7 +721,7 @@ stove0_compose exec -T \
   api python -c "${admission_state_code}"
 
 admission_wait_code="import json, os, time, urllib.request
-collection_id = int(os.environ['INPUT_COLLECTION_ID'])
+collection_id = os.environ['INPUT_COLLECTION_ID']
 deadline = time.monotonic() + 90
 last = None
 while time.monotonic() < deadline:
@@ -801,7 +801,7 @@ def collect(method, key, **kwargs):
 with ApiClient() as client:
     input_id = int(os.environ['INPUT_COLLECTION_ID'])
     collection = client.get_collection(input_id)
-    assert collection['id'] == input_id, collection
+    assert collection['id'] == str(input_id), collection
     cached = collect(client.list_retrieval_cache_objects, 'objects', collection_id=input_id)
     assert cached, cached
     assert all(row['state'] == 'ready' for row in cached), cached
@@ -868,7 +868,7 @@ with ApiClient() as client:
         rows = collect(client.list_retrieval_cache_objects, 'objects')
         overflow = [
             row for row in rows
-            if row['collection_id'] == int(os.environ['OVERFLOW_COLLECTION_ID'])
+            if row['collection_id'] == os.environ['OVERFLOW_COLLECTION_ID']
         ]
         stores = {row['cache_store'] for row in rows if row['state'] == 'ready'}
         if overflow and all(row['state'] == 'ready' for row in overflow) and stores == {'local', 'elastic'}:
@@ -927,7 +927,7 @@ while time.monotonic() < deadline:
         if terminal_failure is not None:
             raise RuntimeError(json.dumps(diagnostic(terminal_failure), sort_keys=True))
         if all(row['phase'] == 'complete' for row in rows):
-            assert any((row.get('output') or {}).get('collection_id', 0) > 0 for row in rows)
+            assert any(int((row.get('output') or {}).get('collection_id') or 0) > 0 for row in rows)
             break
     time.sleep(0.5)
 else:
@@ -1008,7 +1008,7 @@ with ApiClient() as client:
     assert retained_xmp[0]['bytes'] == source_xmp['bytes']
     assert retained_xmp[0]['sha256'] == source_xmp['sha256']
     elapsed_seconds = int(os.environ['STOVE0_SMOKE_ELAPSED_NS']) / 1_000_000_000
-    input_bytes = sum(row['bytes'] for row in input_files)
+    input_bytes = sum(int(row['bytes']) for row in input_files)
     derivation = client.get_collection_derivation(outputs[0]['id'])
     assert derivation['derivation']['format'] == 'riverhog-collection-derivation/v1'
     authority = derivation['derivation']['input_set_sha256']
@@ -1025,7 +1025,7 @@ with ApiClient() as client:
         if page.next_ordinal is None:
             break
         ordinal = page.next_ordinal
-    assert [row.collection_id for row in roots] == [inputs[0]['id']]
+    assert [row.collection_id for row in roots] == [int(inputs[0]['id'])]
     print(json.dumps({
         'format': 'stove0-final-image-scale/v1',
         'elapsed_seconds': elapsed_seconds,
@@ -1034,7 +1034,7 @@ with ApiClient() as client:
         'items_per_second': len(input_files) / elapsed_seconds,
         'measurement': 'ftp-ingress-through-opus-derived-publication',
         'mib_per_second': input_bytes / 1048576 / elapsed_seconds,
-        'output_bytes': sum(row['bytes'] for row in output_files),
+        'output_bytes': sum(int(row['bytes']) for row in output_files),
         'output_files': len(output_files),
     }, sort_keys=True))"
 compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \

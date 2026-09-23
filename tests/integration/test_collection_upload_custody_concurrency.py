@@ -77,7 +77,7 @@ _TAGGED_CREATOR = ApplicationPrincipal(
 )
 _FILE = {
     "path": "output/artifact.bin",
-    "bytes": 0,
+    "bytes": "0",
     "sha256": hashlib.sha256(b"").hexdigest(),
 }
 
@@ -445,7 +445,7 @@ def test_exact_concurrent_registration_is_one_physical_planner_step(
             == 1
         )
         assert upload.planner_checkpoint_json is not None
-        assert '"next_file_order":1' in upload.planner_checkpoint_json
+        assert '"next_file_order":"1"' in upload.planner_checkpoint_json
         assert (upload.file_count, upload.file_bytes) == (1, 0)
 
 
@@ -498,7 +498,7 @@ def test_concurrent_provenance_retry_commits_one_next_ordinal(
         collection_id,
         journal_id,
         CollectionUploadProvenanceJournalCreateDocument(
-            bytes=len(content),
+            bytes=str(len(content)),
             sha256=hashlib.sha256(content).hexdigest(),
         ),
     )
@@ -552,7 +552,7 @@ def test_provenance_append_and_expiry_serialize_at_the_custody_fence(
         collection_id,
         journal_id,
         CollectionUploadProvenanceJournalCreateDocument(
-            bytes=len(content),
+            bytes=str(len(content)),
             sha256=hashlib.sha256(content).hexdigest(),
         ),
     )

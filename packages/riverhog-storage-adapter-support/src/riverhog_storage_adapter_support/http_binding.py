@@ -343,7 +343,8 @@ class StorageAdapterHttpBinding:
                 "adapter control request exceeds its size limit",
             )
         try:
-            return model.model_validate(parse_identity_json(body))
+            parse_identity_json(body)
+            return model.model_validate_json(body)
         except (ValidationError, ValueError) as exc:
             raise StorageAdapterServiceError(
                 400,

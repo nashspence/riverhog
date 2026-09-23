@@ -14,13 +14,22 @@ from typing import Annotated, Literal, Protocol, Self, cast
 
 from pydantic import (
     BaseModel,
+    BeforeValidator,
     ConfigDict,
     Field,
+    PlainSerializer,
     StringConstraints,
+    ValidationInfo,
+    WithJsonSchema,
     field_validator,
     model_validator,
 )
-from riverhog_canonical_json import canonical_json_bytes
+from riverhog_canonical_json import (
+    canonical_json_bytes,
+    format_scalar,
+    parse_scalar,
+    scalar_schema,
+)
 from time_formats import format_utc_timestamp, parse_utc_timestamp
 
 STORAGE_ADAPTER_PROTOCOL: Literal["riverhog-storage-adapter/v1"] = "riverhog-storage-adapter/v1"
@@ -78,6 +87,37 @@ RequiredIdentityAssertions = Annotated[
 BinaryContent = bytes | Iterable[bytes]
 
 
+def _nonnegative_decimal(value: object, info: ValidationInfo) -> int:
+    # Adapter implementations construct these models from native integer counts.
+    # JSON transport always uses the lossless decimal string representation.
+    if info.mode == "python" and type(value) is int and value >= 0:
+        return value
+    return parse_scalar("nonnegative", value)
+
+
+type NonnegativeDecimal = Annotated[
+    int,
+    BeforeValidator(_nonnegative_decimal),
+    PlainSerializer(lambda value: format_scalar("nonnegative", value), return_type=str),
+    WithJsonSchema(scalar_schema("nonnegative")),
+]
+
+
+def _positive_decimal(value: object, info: ValidationInfo) -> int:
+    result = _nonnegative_decimal(value, info)
+    if result == 0:
+        raise ValueError("positive decimal string must be greater than zero")
+    return result
+
+
+type PositiveDecimal = Annotated[
+    int,
+    BeforeValidator(_positive_decimal),
+    PlainSerializer(lambda value: format_scalar("nonnegative", value), return_type=str),
+    WithJsonSchema({"type": "string", "pattern": r"^[1-9][0-9]*(?![\s\S])"}),
+]
+
+
 def normalize_object_path(value: str, *, allow_prefix: bool = False) -> str:
     """Return an unchanged canonical relative POSIX path or raise."""
 
@@ -129,9 +169,9 @@ class AdapterDescriptor(StorageAdapterModel):
     implementation_id: SemanticId
     implementation_version: str = Field(min_length=1, max_length=120)
     read_mode: ReadMode
-    minimum_nonfinal_segment_bytes: int = Field(ge=1)
-    maximum_segment_bytes: int | None = Field(default=None, ge=1)
-    maximum_segment_count: int | None = Field(default=None, ge=1)
+    minimum_nonfinal_segment_bytes: PositiveDecimal
+    maximum_segment_bytes: PositiveDecimal | None = None
+    maximum_segment_count: PositiveDecimal | None = None
 
     @model_validator(mode="after")
     def validate_segment_limits(self) -> Self:
@@ -155,8 +195,7 @@ class ObjectLocator(StorageAdapterModel):
 
 class WriteSession(StorageAdapterModel):
     object_path: str = Field(min_length=1, max_length=4096)
-    expected_bytes: int = Field(
-        ge=1,
+    expected_bytes: PositiveDecimal = Field(
         description=(
             "Exact immutable-object byte length admitted by this write session. The value "
             "remains fixed until the write becomes terminal."
@@ -188,7 +227,7 @@ class WriteStartRequest(StorageAdapterModel):
     """
 
     object_path: str = Field(min_length=1, max_length=4096)
-    expected_bytes: int = Field(ge=1)
+    expected_bytes: PositiveDecimal
     content_type: str = Field(min_length=1, max_length=255)
     required_identity_assertions: RequiredIdentityAssertions
     placement: ObjectPlacement
@@ -205,9 +244,9 @@ class WriteStartRequest(StorageAdapterModel):
 
 
 class WriteSegmentReceipt(StorageAdapterModel):
-    number: int = Field(ge=1)
+    number: PositiveDecimal
     segment_token: str = Field(min_length=1, max_length=4000)
-    stored_bytes: int = Field(ge=1)
+    stored_bytes: PositiveDecimal
     stored_sha256: Sha256 | None = None
 
 
@@ -229,8 +268,8 @@ class WriteCompletionAuthority(StorageAdapterModel):
     transport authority for terminal reconciliation.
     """
 
-    segment_count: int = Field(ge=0)
-    stored_bytes: int = Field(ge=0)
+    segment_count: NonnegativeDecimal
+    stored_bytes: NonnegativeDecimal
     authority_token: str = Field(
         min_length=1,
         max_length=_MAX_WRITE_COMPLETION_AUTHORITY_TOKEN_LENGTH,
@@ -255,9 +294,8 @@ class WriteSegmentListRequest(StorageAdapterModel):
     """Request one bounded page from an exact accepted-segment view."""
 
     session: WriteSession
-    after_number: int = Field(
+    after_number: NonnegativeDecimal = Field(
         default=0,
-        ge=0,
         json_schema_extra={
             "x-riverhog-extent": {
                 "policy": "segmented_no_total_max",
@@ -289,7 +327,7 @@ class WriteSegmentPage(StorageAdapterModel):
             }
         },
     )
-    next_after_number: int | None = Field(default=None, ge=1)
+    next_after_number: PositiveDecimal | None = None
     completion: WriteCompletionAuthority | None = None
 
     @field_validator("segments")
@@ -313,14 +351,14 @@ class WriteSegmentPage(StorageAdapterModel):
 
 class WriteSegmentRequest(StorageAdapterModel):
     session: WriteSession
-    number: int = Field(ge=1)
-    stored_bytes: int = Field(ge=1)
+    number: PositiveDecimal
+    stored_bytes: PositiveDecimal
 
 
 class WriteCompleteRequest(StorageAdapterModel):
     session: WriteSession
     completion: WriteCompletionAuthority
-    expected_bytes: int = Field(ge=1)
+    expected_bytes: PositiveDecimal
     expected_content_type: str = Field(min_length=1, max_length=255)
     required_identity_assertions: RequiredIdentityAssertions
     expected_placement: ObjectPlacement
@@ -343,7 +381,7 @@ class WriteCompleteRequest(StorageAdapterModel):
 
 class CompletedWriteLookupRequest(StorageAdapterModel):
     object_path: str = Field(min_length=1, max_length=4096)
-    expected_bytes: int = Field(ge=1)
+    expected_bytes: PositiveDecimal
     expected_content_type: str = Field(min_length=1, max_length=255)
     required_identity_assertions: RequiredIdentityAssertions
     expected_placement: ObjectPlacement
@@ -363,7 +401,7 @@ class CompletedObjectReceipt(StorageAdapterModel):
     object_path: str = Field(min_length=1, max_length=4096)
     revision: str | None = Field(default=None, min_length=1, max_length=2000)
     entity_token: str | None = Field(default=None, min_length=1, max_length=4000)
-    stored_bytes: int = Field(ge=1)
+    stored_bytes: PositiveDecimal
     verified_content_type: str = Field(min_length=1, max_length=255)
     verified_identity_assertions: RequiredIdentityAssertions
     verified_placement: ObjectPlacement
@@ -392,7 +430,7 @@ class SmallObjectWriteRequest(StorageAdapterModel):
     placement: ObjectPlacement
     mode: Literal["create_only", "replace_current"]
     expected_current_stored_sha256: Sha256 | None = None
-    stored_bytes: int = Field(ge=0)
+    stored_bytes: NonnegativeDecimal
     stored_sha256: Sha256
 
     @field_validator("object_path")
@@ -416,7 +454,7 @@ class ImmutableObjectReceipt(StorageAdapterModel):
     object_path: str = Field(min_length=1, max_length=4096)
     revision: str | None = Field(default=None, min_length=1, max_length=2000)
     entity_token: str | None = Field(default=None, min_length=1, max_length=4000)
-    stored_bytes: int = Field(ge=0)
+    stored_bytes: NonnegativeDecimal
     stored_sha256: Sha256
     verified_content_type: str = Field(min_length=1, max_length=255)
     verified_identity_assertions: RequiredIdentityAssertions
@@ -444,7 +482,7 @@ class ObjectMetadataReceipt(StorageAdapterModel):
     revision: str | None = Field(default=None, min_length=1, max_length=2000)
     entity_token: str | None = Field(default=None, min_length=1, max_length=4000)
     content_type: str | None = Field(default=None, min_length=1, max_length=255)
-    stored_bytes: int = Field(ge=0)
+    stored_bytes: NonnegativeDecimal
     stored_sha256: Sha256 | None = None
     observed_identity_assertions: RequiredIdentityAssertions
     verified_placement: ObjectPlacement
@@ -473,9 +511,9 @@ class ObjectHeadRequest(StorageAdapterModel):
 
 class ObjectReadRequest(StorageAdapterModel):
     object: ObjectLocator
-    expected_bytes: int = Field(ge=0)
-    offset: int | None = Field(default=None, ge=0)
-    size: int | None = Field(default=None, ge=0)
+    expected_bytes: NonnegativeDecimal
+    offset: NonnegativeDecimal | None = None
+    size: NonnegativeDecimal | None = None
 
     @model_validator(mode="after")
     def validate_range(self) -> Self:
@@ -491,9 +529,9 @@ class ObjectReadReceipt(StorageAdapterModel):
     """Adapter-observed identity and range for one single-pass read."""
 
     object: ObjectLocator
-    total_bytes: int = Field(ge=0)
-    offset: int = Field(ge=0)
-    read_bytes: int = Field(ge=0)
+    total_bytes: NonnegativeDecimal
+    offset: NonnegativeDecimal
+    read_bytes: NonnegativeDecimal
 
     @model_validator(mode="after")
     def validate_range(self) -> Self:
@@ -633,7 +671,7 @@ class StorageAdapterRejection(RuntimeError):
 
 
 class MaintenanceResult(StorageAdapterModel):
-    affected: int = Field(ge=0)
+    affected: NonnegativeDecimal
 
 
 def validate_write_session_response(

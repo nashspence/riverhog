@@ -108,7 +108,7 @@ class _CatalogApi:
     ) -> dict[str, object]:
         self.membership_calls.append((collection_id, tag, revision, tag_set_identity))
         return {
-            "collection_id": collection_id,
+            "collection_id": str(collection_id),
             "tag": tag,
             "revision": revision,
             "tag_set_identity": tag_set_identity,

@@ -551,7 +551,7 @@ class CatalogReplica:
             self._invalidate(exc, serial=_required_int(before, "serial"), tag_authority=True)
             raise
         expected = (
-            int(pending["collection_id"]),
+            str(pending["collection_id"]),
             int(pending["tag_revision"]),
             str(pending["tag_set_identity"]),
         )

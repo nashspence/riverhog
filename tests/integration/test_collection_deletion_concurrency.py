@@ -1103,7 +1103,7 @@ def test_postgres_claim_acquisition_renewal_restart_and_capability_revocation_co
         )
         for service in services
     ]
-    assert {cast(int, item["fence"]) for item in renewed} == {1}
+    assert {item["fence"] for item in renewed} == {"1"}
     capability = _issue_capability(
         services[0],
         claim_id,
@@ -1137,7 +1137,7 @@ def test_postgres_claim_acquisition_renewal_restart_and_capability_revocation_co
     for thread in threads:
         thread.join(10)
 
-    assert len(restarted) == 1 and restarted[0]["fence"] == 2
+    assert len(restarted) == 1 and restarted[0]["fence"] == "2"
     assert len(stale) == 1
     assert services[0].authenticate_capability(str(capability["token"])) is None
 

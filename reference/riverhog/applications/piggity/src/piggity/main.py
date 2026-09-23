@@ -1612,18 +1612,27 @@ def _register_collection_upload_session_files(
     *,
     registration_constraints: CollectionUploadRegistrationConstraintsDocument,
 ) -> dict[str, Any]:
+    registration: list[dict[str, object]] = []
+    for item in file_payloads:
+        payload: dict[str, object] = {
+            key: value
+            for key, value in item.items()
+            if key not in {"provenance_journals", "raw_digest_spool"}
+        }
+        payload["bytes"] = str(item["bytes"])
+        raw_parts = item.get("raw_parts")
+        if raw_parts is not None:
+            payload["raw_parts"] = {
+                **raw_parts,
+                "part_plaintext_bytes": str(raw_parts["part_plaintext_bytes"]),
+                "part_count": str(raw_parts["part_count"]),
+            }
+        registration.append(payload)
     return _retry_transient_upload_operation(
         f"Upload session register {len(file_payloads)} file(s)",
         lambda: api.register_collection_upload_session_files(
             collection_id,
-            [
-                {
-                    key: value
-                    for key, value in item.items()
-                    if key not in {"provenance_journals", "raw_digest_spool"}
-                }
-                for item in file_payloads
-            ],
+            registration,
             registration_constraints=registration_constraints,
         ),
     )
@@ -1647,7 +1656,7 @@ def _register_collection_upload_raw_digests(
                         collection_id,
                         {
                             "path": entry["path"],
-                            "first_part": first_part,
+                            "first_part": str(first_part),
                             "sha256s": list(sha256s),
                         },
                     ),

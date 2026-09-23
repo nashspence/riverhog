@@ -61,7 +61,7 @@ def _race(first: Callable[[], Any], second: Callable[[], Any]) -> tuple[Any, Any
 
 def _event_data(collection_id: int) -> dict[str, object]:
     return {
-        "collection_id": collection_id,
+        "collection_id": str(collection_id),
         "collection_created_at": utc_timestamp_now(),
         "files_total": 0,
         "bytes_total": 0,

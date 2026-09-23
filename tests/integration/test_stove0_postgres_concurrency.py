@@ -209,7 +209,7 @@ def _work() -> WorkIdentity:
             recipe=RecipeRef(id="camera.archive/v1", revision=1, sha256="a" * 64),
             inputs=(
                 CollectionRootRef(
-                    collection_id=1,
+                    collection_id="1",
                     archive_root_sha256="b" * 64,
                     content_identity="c" * 64,
                 ),
@@ -409,7 +409,7 @@ def _active_target_work(
         disposition_set=disposition_set,
     )
     output_collection = OutputCollectionRef(
-        collection_id=7,
+        collection_id="7",
         archive_root_sha256="6" * 64,
         content_identity="7" * 64,
         derivation_sha256=derivation.sha256,
@@ -696,7 +696,7 @@ def _resolved_join(
     settlements: list[BranchSettlement] = []
     for offset, branch in enumerate(decision.plan.branches, start=10):
         root = CollectionRootRef(
-            collection_id=offset,
+            collection_id=str(offset),
             archive_root_sha256=f"{offset % 16:x}" * 64,
             content_identity=f"{(offset + 2) % 16:x}" * 64,
         )
@@ -923,7 +923,7 @@ def test_postgres_concurrent_classification_admission_converges_exactly_once(
 ) -> None:
     first, second = stores
     descriptor = CatalogSyncDescriptor(
-        collection_id=71,
+        collection_id="71",
         archive_root_sha256="1" * 64,
         content_identity="2" * 64,
         description=None,
@@ -976,7 +976,7 @@ def test_postgres_concurrent_classification_admission_converges_exactly_once(
             self, collection_id: int, **kwargs: object
         ) -> dict[str, object]:
             return {
-                "collection_id": collection_id,
+                "collection_id": str(collection_id),
                 "revision": kwargs["revision"],
                 "tag_set_identity": kwargs["tag_set_identity"],
                 "tag": kwargs["tag"],
@@ -1051,7 +1051,7 @@ def test_postgres_concurrent_classification_admission_converges_exactly_once(
     )["admissions"]
     assert len(cast(tuple[object, ...], admissions)) == 1
 
-    delete = CatalogSyncDelete(collection_id=descriptor.collection_id, revision="3")
+    delete = CatalogSyncDelete(collection_id=str(descriptor.collection_id), revision="3")
     delete_page = CatalogSyncChangePage(
         source_identity="6" * 64,
         authorization_view_identity="7" * 64,

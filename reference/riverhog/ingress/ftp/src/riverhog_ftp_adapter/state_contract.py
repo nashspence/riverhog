@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
+from riverhog_protocol import CollectionId
 
 from riverhog_ftp_adapter.completion import (
     COMPLETION_LOG_HEADER,
@@ -101,7 +102,7 @@ class FtpReceiptState(_StateModel):
     format: Literal["riverhog-ftp-adapter-receipt/v1"]
     claim_id: str = Field(min_length=1)
     source_event_id: str = Field(min_length=1)
-    collection_id: int = Field(ge=1)
+    collection_id: CollectionId
     archive_root_sha256: Sha256
     content_identity: Sha256
     riverhog_receipt: dict[str, Any]

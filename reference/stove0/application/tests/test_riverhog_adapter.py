@@ -299,7 +299,7 @@ class FixtureApi:
         )
         return {
             "claim_id": claim_id,
-            "fence": kwargs["fence"],
+            "fence": str(kwargs["fence"]),
             "audience": kwargs["audience"],
             "actions": list(actions),
             "principal_app": principal,

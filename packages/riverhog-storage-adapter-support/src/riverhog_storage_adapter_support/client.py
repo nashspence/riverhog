@@ -9,6 +9,7 @@ from typing import TypeVar
 import httpx
 from http_api_contracts import safe_http_base_url
 from pydantic import BaseModel, ValidationError
+from riverhog_canonical_json import parse_identity_json
 from riverhog_storage_adapter_protocol import (
     AdapterDescriptor,
     BinaryContent,
@@ -347,8 +348,9 @@ class StorageAdapterClient:
         )
         self._require_success(response)
         try:
+            parse_identity_json(response.content)
             return model.model_validate_json(response.content)
-        except ValidationError as exc:
+        except (ValidationError, ValueError) as exc:
             raise StorageAdapterProtocolError(
                 f"adapter returned an invalid {model.__name__}"
             ) from exc
@@ -365,8 +367,9 @@ class StorageAdapterClient:
             return None
         self._require_success(response)
         try:
+            parse_identity_json(response.content)
             return model.model_validate_json(response.content)
-        except ValidationError as exc:
+        except (ValidationError, ValueError) as exc:
             raise StorageAdapterProtocolError(
                 f"adapter returned an invalid {model.__name__}"
             ) from exc
@@ -429,8 +432,9 @@ class StorageAdapterClient:
     @staticmethod
     def _raise_response(response: httpx.Response) -> None:
         try:
+            parse_identity_json(response.content)
             error = StorageAdapterError.model_validate_json(response.content).error
-        except ValidationError:
+        except (ValidationError, ValueError):
             raise StorageAdapterProtocolError(
                 f"storage adapter returned HTTP {response.status_code}",
                 status_code=response.status_code,

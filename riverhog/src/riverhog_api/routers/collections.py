@@ -303,7 +303,7 @@ def register_collection_upload_session_files(
     container.collection_uploads.require_access(collection_id, principal)
     payload = container.collection_uploads.register_files(
         collection_id,
-        [item.model_dump() for item in request.files],
+        [item.model_dump(mode="json") for item in request.files],
     )
     return CollectionUploadSessionFilesRegistrationOut.model_validate(payload)
 

@@ -1247,7 +1247,7 @@ class FtpAdapter:
             "format": "riverhog-ftp-adapter-receipt/v1",
             "claim_id": claim_root.name,
             "source_event_id": str(manifest["source_event_id"]),
-            "collection_id": receipt.collection_id,
+            "collection_id": str(receipt.collection_id),
             "archive_root_sha256": receipt.archive_root_sha256,
             "content_identity": receipt.content_identity,
             "riverhog_receipt": receipt.receipt,
