@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-91bb80734b"></a>`kind`: `"class"`
-- <a id="s-d1fd26e4cc"></a>`signature`: `"'(*, segment_count: Annotated[int, Ge(ge=0)], stored_bytes: Annotated[int, Ge(ge=0)], authority_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)]) -> None'"`
+- <a id="s-d1fd26e4cc"></a>`signature`: `"'(*, segment_count: NonnegativeDecimal, stored_bytes: NonnegativeDecimal, authority_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)]) -> None'"`
 
 #### Validated model schema
 
@@ -37,8 +37,17 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-b94bef0b17"></a>`authority_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
-| <a id="s-1eb93a177f"></a>`segment_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-45cd639d4b"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-1eb93a177f"></a>`segment_count` | yes | [NonnegativeDecimal](#s-6f20695bd7) |  |
+| <a id="s-45cd639d4b"></a>`stored_bytes` | yes | [NonnegativeDecimal](#s-6f20695bd7) |  |
+
+##### Definitions
+
+- [NonnegativeDecimal](#s-6f20695bd7)
+
+##### <a id="s-6f20695bd7"></a>definition `NonnegativeDecimal`
+
+- <a id="s-944dbf2080"></a>`type`: `"string"`
+- <a id="s-7a62c5822c"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Governing policies
 
@@ -67,13 +76,19 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 21e28c7b2a0b960212fd769727eb7ab3d78213606103b2a8f3d9c32a74e2023b -->
+<!-- exact-contract-value: fb39b9a1712a1982840648a6a0dd1c47f6a79bfce3f3d5b3d206fef04740ee1f -->
 
 ```json
 {
   "contract": {
     "kind": "class",
     "schema": {
+      "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        }
+      },
       "additionalProperties": false,
       "properties": {
         "authority_token": {
@@ -82,12 +97,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "segment_count": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         "stored_bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         }
       },
       "required": [
@@ -97,7 +110,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "'(*, segment_count: Annotated[int, Ge(ge=0)], stored_bytes: Annotated[int, Ge(ge=0)], authority_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)]) -> None'"
+    "signature": "'(*, segment_count: NonnegativeDecimal, stored_bytes: NonnegativeDecimal, authority_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)]) -> None'"
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

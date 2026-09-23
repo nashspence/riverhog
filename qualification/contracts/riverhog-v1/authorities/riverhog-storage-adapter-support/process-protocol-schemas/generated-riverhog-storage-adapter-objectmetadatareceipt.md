@@ -30,9 +30,18 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-2e4dd05b51"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
 | <a id="s-b8e148ba23"></a>`observed_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; title="Observed Identity Assertions"; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
 | <a id="s-8d6db65455"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null; title="Revision" |  |
-| <a id="s-03ecfd198f"></a>`stored_bytes` | yes | type="integer"; minimum=0; title="Stored Bytes" |  |
+| <a id="s-03ecfd198f"></a>`stored_bytes` | yes | [NonnegativeDecimal](#s-6db6f11095) |  |
 | <a id="s-fd6d184c14"></a>`stored_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null; title="Stored Sha256" |  |
 | <a id="s-9740c0377a"></a>`verified_placement` | yes | type="string"; enum=["archive","immediate"]; title="Verified Placement" |  |
+
+### Definitions
+
+- [NonnegativeDecimal](#s-6db6f11095)
+
+### <a id="s-6db6f11095"></a>definition `NonnegativeDecimal`
+
+- <a id="s-81cba1ac7d"></a>`type`: `"string"`
+- <a id="s-cebd751dc9"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ### Progression, limits, and lifecycle
 
@@ -85,10 +94,16 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 10fe081f0530594bffeb9d17545b2652dd8db57725461bb29fe06922e61a7c67 -->
+<!-- exact-contract-value: c3bd42e609c6f1eb03896d013e91acea585d29dc2ec24c0c5f2bcbbf4707584e -->
 
 ```json
 {
+  "$defs": {
+    "NonnegativeDecimal": {
+      "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+      "type": "string"
+    }
+  },
   "additionalProperties": false,
   "properties": {
     "completed_at": {
@@ -160,9 +175,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Revision"
     },
     "stored_bytes": {
-      "minimum": 0,
-      "title": "Stored Bytes",
-      "type": "integer"
+      "$ref": "#/$defs/NonnegativeDecimal"
     },
     "stored_sha256": {
       "anyOf": [

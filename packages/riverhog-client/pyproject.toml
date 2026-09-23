@@ -24,6 +24,7 @@ dependencies = [
   "httpx[http2]>=0.27,<1.0",
   "pydantic>=2.7,<3.0",
   "riverhog-protocol>=0.1,<0.2",
+  "riverhog-canonical-json>=0.1,<0.2",
   "riverhog-provenance-contracts>=0.1,<0.2",
 ]
 
@@ -31,6 +32,7 @@ dependencies = [
 riverhog-application-access = { workspace = true }
 http-api-contracts = { workspace = true }
 riverhog-protocol = { workspace = true }
+riverhog-canonical-json = { workspace = true }
 riverhog-provenance-contracts = { workspace = true }
 
 [tool.riverhog.public-api]

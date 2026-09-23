@@ -24,13 +24,19 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ce0948c417"></a>`number` | yes | type="integer"; minimum=1; title="Number" |  |
+| <a id="s-ce0948c417"></a>`number` | yes | [PositiveDecimal](#s-4f75ec86d7) |  |
 | <a id="s-493606ef17"></a>`session` | yes | [WriteSession](#s-dcf667e799) |  |
-| <a id="s-2bda4ac939"></a>`stored_bytes` | yes | type="integer"; minimum=1; title="Stored Bytes" |  |
+| <a id="s-2bda4ac939"></a>`stored_bytes` | yes | [PositiveDecimal](#s-4f75ec86d7) |  |
 
 ### Definitions
 
+- [PositiveDecimal](#s-4f75ec86d7)
 - [WriteSession](#s-dcf667e799)
+
+### <a id="s-4f75ec86d7"></a>definition `PositiveDecimal`
+
+- <a id="s-331f1888f1"></a>`type`: `"string"`
+- <a id="s-d6d853b928"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
 ### <a id="s-dcf667e799"></a>definition `WriteSession`
 
@@ -43,7 +49,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-79867a2dcf"></a>`expected_bytes` | yes | type="integer"; minimum=1; title="Expected Bytes" | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
+| <a id="s-79867a2dcf"></a>`expected_bytes` | yes | [PositiveDecimal](#s-4f75ec86d7) | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
 | <a id="s-6f6eec603c"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
 | <a id="s-743f3b5ac0"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1; title="Write Token" | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
 
@@ -80,19 +86,21 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e51e90e06c0f6a6ca83920b56cbb0696ced3950650ea8d743c33191cb2cf7d31 -->
+<!-- exact-contract-value: fc04ed5676edb6e31ddd3f79ff998f2893273efab230b0c0ee7ce8481dceacb6 -->
 
 ```json
 {
   "$defs": {
+    "PositiveDecimal": {
+      "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+      "type": "string"
+    },
     "WriteSession": {
       "additionalProperties": false,
       "properties": {
         "expected_bytes": {
-          "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
-          "minimum": 1,
-          "title": "Expected Bytes",
-          "type": "integer"
+          "$ref": "#/$defs/PositiveDecimal",
+          "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal."
         },
         "object_path": {
           "maxLength": 4096,
@@ -120,17 +128,13 @@ The following JSON is the complete value owned at each machine-authority pointer
   "additionalProperties": false,
   "properties": {
     "number": {
-      "minimum": 1,
-      "title": "Number",
-      "type": "integer"
+      "$ref": "#/$defs/PositiveDecimal"
     },
     "session": {
       "$ref": "#/$defs/WriteSession"
     },
     "stored_bytes": {
-      "minimum": 1,
-      "title": "Stored Bytes",
-      "type": "integer"
+      "$ref": "#/$defs/PositiveDecimal"
     }
   },
   "required": [

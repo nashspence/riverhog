@@ -397,7 +397,7 @@ class ClassificationAdmissionService:
                 tag_set_identity=descriptor.tag_set_identity,
             )
             if (
-                response.get("collection_id") != descriptor.collection_id
+                response.get("collection_id") != str(descriptor.collection_id)
                 or response.get("revision") != descriptor.tag_revision
                 or response.get("tag_set_identity") != descriptor.tag_set_identity
                 or response.get("tag") != tag
@@ -661,7 +661,12 @@ class ClassificationAdmissionService:
         if state == "intent":
             preview = self.preview.preview(work)
             if preview.state != "ready":
-                raise RuntimeError(f"automatic preview is not acceptable: {preview.state}")
+                detail = (
+                    f" ({preview.outcome.code}: {preview.outcome.message})"
+                    if preview.outcome is not None
+                    else ""
+                )
+                raise RuntimeError(f"automatic preview is not acceptable: {preview.state}{detail}")
             encoded = json.dumps(
                 preview.model_dump(mode="json", exclude_none=True),
                 sort_keys=True,

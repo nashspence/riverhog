@@ -803,8 +803,8 @@ def _hash_local_source(
         )
         sha256 = manifest.summary.sha256
         raw_parts: dict[str, object] | None = {
-            "part_plaintext_bytes": manifest.summary.part_plaintext_bytes,
-            "part_count": manifest.summary.part_count,
+            "part_plaintext_bytes": str(manifest.summary.part_plaintext_bytes),
+            "part_count": str(manifest.summary.part_count),
             "ordered_sha256": manifest.summary.ordered_part_sha256,
         }
         raw_digest_spool: RawSourceHash | None = manifest
@@ -871,8 +871,8 @@ def _verify_stream_source(
         )
         sha256 = manifest.summary.sha256
         raw_parts: dict[str, object] | None = {
-            "part_plaintext_bytes": manifest.summary.part_plaintext_bytes,
-            "part_count": manifest.summary.part_count,
+            "part_plaintext_bytes": str(manifest.summary.part_plaintext_bytes),
+            "part_count": str(manifest.summary.part_count),
             "ordered_sha256": manifest.summary.ordered_part_sha256,
         }
         raw_digest_spool: RawSourceHash | None = manifest

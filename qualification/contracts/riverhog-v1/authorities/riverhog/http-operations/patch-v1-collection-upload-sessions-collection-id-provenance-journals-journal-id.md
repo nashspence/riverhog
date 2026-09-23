@@ -111,7 +111,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.append_collection_upload_session_provenance_journal",
       "source": {
-        "line": 1280,
+        "line": 1289,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.append_collection_upload_session_provenance_journal"

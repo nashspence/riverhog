@@ -129,7 +129,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "piggity",
       "result_identity": "piggity-cli-result/collection/archive-copies/v1",
       "source": {
-        "line": 2149,
+        "line": 2158,
         "module": "piggity.main",
         "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
         "symbol": "collection_archive_copies_cmd"
@@ -144,7 +144,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.list_collection_archive_copies",
       "source": {
-        "line": 1606,
+        "line": 1615,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.list_collection_archive_copies"

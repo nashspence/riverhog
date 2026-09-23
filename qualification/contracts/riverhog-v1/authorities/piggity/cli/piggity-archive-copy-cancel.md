@@ -89,7 +89,7 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 - [cli:piggity](../../../evidence/sources/authorities.md#src-094022231f) — [reference/riverhog/applications/piggity/src/piggity/main.py::&lt;module&gt;](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py)
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::archive\_copy\_cancel\_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L3062)
+- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::archive\_copy\_cancel\_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L3071)
 
 ### Machine authority
 

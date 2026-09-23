@@ -95,7 +95,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "piggity",
       "result_identity": "piggity-cli-result/collection/upload/start/v1",
       "source": {
-        "line": 2170,
+        "line": 2179,
         "module": "piggity.main",
         "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
         "symbol": "upload_cmd"
@@ -110,7 +110,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.register_collection_upload_session_files",
       "source": {
-        "line": 1166,
+        "line": 1175,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.register_collection_upload_session_files"

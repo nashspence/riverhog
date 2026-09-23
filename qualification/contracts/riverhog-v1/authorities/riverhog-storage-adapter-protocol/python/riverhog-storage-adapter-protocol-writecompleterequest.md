@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-9680c53b70"></a>`kind`: `"class"`
-- <a id="s-e41639107b"></a>`signature`: `"\"(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionAuthority, expected_bytes: Annotated[int, Ge(ge=1)], expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""`
+- <a id="s-e41639107b"></a>`signature`: `"\"(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionAuthority, expected_bytes: PositiveDecimal, expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""`
 
 #### Validated model schema
 
@@ -37,7 +37,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-760d87722b"></a>`completion` | yes | [WriteCompletionAuthority](#s-d78eb0b56c) |  |
-| <a id="s-7a8d87fa71"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-7a8d87fa71"></a>`expected_bytes` | yes | [PositiveDecimal](#s-be642acd83) |  |
 | <a id="s-ef006a81c9"></a>`expected_content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
 | <a id="s-5e42590d31"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
 | <a id="s-8c917da295"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} |  |
@@ -45,8 +45,20 @@ Exact externally visible contract owned by this contract element.
 
 ##### Definitions
 
+- [NonnegativeDecimal](#s-1fc0650e04)
+- [PositiveDecimal](#s-be642acd83)
 - [WriteCompletionAuthority](#s-d78eb0b56c)
 - [WriteSession](#s-7089c76a7b)
+
+##### <a id="s-1fc0650e04"></a>definition `NonnegativeDecimal`
+
+- <a id="s-0e0b9bc7d9"></a>`type`: `"string"`
+- <a id="s-00a72379cf"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
+##### <a id="s-be642acd83"></a>definition `PositiveDecimal`
+
+- <a id="s-13456a80f7"></a>`type`: `"string"`
+- <a id="s-018ca4b4b8"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
 ##### <a id="s-d78eb0b56c"></a>definition `WriteCompletionAuthority`
 
@@ -59,8 +71,8 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-3197417b17"></a>`authority_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
-| <a id="s-75cf91dbd4"></a>`segment_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-2bd6b08275"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-75cf91dbd4"></a>`segment_count` | yes | [NonnegativeDecimal](#s-1fc0650e04) |  |
+| <a id="s-2bd6b08275"></a>`stored_bytes` | yes | [NonnegativeDecimal](#s-1fc0650e04) |  |
 
 ##### <a id="s-7089c76a7b"></a>definition `WriteSession`
 
@@ -72,7 +84,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e029c297cf"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-e029c297cf"></a>`expected_bytes` | yes | [PositiveDecimal](#s-be642acd83) |  |
 | <a id="s-3af3650aa5"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-4a9ee9c2c9"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
 
@@ -110,7 +122,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7253b1030d678c8d5c0ed35a3bc411614a58364f9cbf127e679e5318f6fe1706 -->
+<!-- exact-contract-value: d3222be439ec974c7d7d8e6511f75a5ca30e71641404d0654796544ea103e744 -->
 
 ```json
 {
@@ -118,6 +130,14 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
+        "PositiveDecimal": {
+          "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+          "type": "string"
+        },
         "WriteCompletionAuthority": {
           "additionalProperties": false,
           "properties": {
@@ -127,12 +147,10 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "segment_count": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal"
             },
             "stored_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal"
             }
           },
           "required": [
@@ -146,8 +164,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "expected_bytes": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/PositiveDecimal"
             },
             "object_path": {
               "maxLength": 4096,
@@ -174,8 +191,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "$ref": "#/$defs/WriteCompletionAuthority"
         },
         "expected_bytes": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/PositiveDecimal"
         },
         "expected_content_type": {
           "maxLength": 255,
@@ -215,7 +231,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionAuthority, expected_bytes: Annotated[int, Ge(ge=1)], expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""
+    "signature": "\"(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionAuthority, expected_bytes: PositiveDecimal, expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

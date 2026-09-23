@@ -35,6 +35,7 @@ Stable positive evidence returned after the complete check set passes.
 ### Definitions
 
 - [AdapterDescriptor](#s-941580622e)
+- [PositiveDecimal](#s-cd091ef405)
 
 ### <a id="s-941580622e"></a>definition `AdapterDescriptor`
 
@@ -49,11 +50,16 @@ Stable positive evidence returned after the complete check set passes.
 |---|---:|---|---|
 | <a id="s-f1b79988eb"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Implementation Id" |  |
 | <a id="s-92ca0aae95"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1; title="Implementation Version" |  |
-| <a id="s-48168b80c7"></a>`maximum_segment_bytes` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null; title="Maximum Segment Bytes" |  |
-| <a id="s-60e6132e30"></a>`maximum_segment_count` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null; title="Maximum Segment Count" |  |
-| <a id="s-65f932beae"></a>`minimum_nonfinal_segment_bytes` | yes | type="integer"; minimum=1; title="Minimum Nonfinal Segment Bytes" |  |
+| <a id="s-48168b80c7"></a>`maximum_segment_bytes` | no | anyOf=[([PositiveDecimal](#s-cd091ef405)); (type="null")]; default=null |  |
+| <a id="s-60e6132e30"></a>`maximum_segment_count` | no | anyOf=[([PositiveDecimal](#s-cd091ef405)); (type="null")]; default=null |  |
+| <a id="s-65f932beae"></a>`minimum_nonfinal_segment_bytes` | yes | [PositiveDecimal](#s-cd091ef405) |  |
 | <a id="s-f2cd45f88a"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1"; default="riverhog-storage-adapter/v1"; title="Protocol" |  |
 | <a id="s-849366dd4b"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"]; title="Read Mode" |  |
+
+### <a id="s-cd091ef405"></a>definition `PositiveDecimal`
+
+- <a id="s-1cb792d6fd"></a>`type`: `"string"`
+- <a id="s-682d78e5b9"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
 ### Progression, limits, and lifecycle
 
@@ -110,7 +116,7 @@ Shared facts for every subject below: maximum=120; minimum=1; reason="schema-max
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: af805afd4d0dffb329ba08dde971222ad008eab2aec7afc4abc0303dd1956caf -->
+<!-- exact-contract-value: e07646cceeda153401636004dbd3bb358f3a48f4b515e25327bc651a64be8cd9 -->
 
 ```json
 {
@@ -132,33 +138,27 @@ The following JSON is the complete value owned at each machine-authority pointer
         "maximum_segment_bytes": {
           "anyOf": [
             {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/PositiveDecimal"
             },
             {
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Maximum Segment Bytes"
+          "default": null
         },
         "maximum_segment_count": {
           "anyOf": [
             {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/PositiveDecimal"
             },
             {
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Maximum Segment Count"
+          "default": null
         },
         "minimum_nonfinal_segment_bytes": {
-          "minimum": 1,
-          "title": "Minimum Nonfinal Segment Bytes",
-          "type": "integer"
+          "$ref": "#/$defs/PositiveDecimal"
         },
         "protocol": {
           "const": "riverhog-storage-adapter/v1",
@@ -183,6 +183,10 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "title": "AdapterDescriptor",
       "type": "object"
+    },
+    "PositiveDecimal": {
+      "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+      "type": "string"
     }
   },
   "additionalProperties": false,

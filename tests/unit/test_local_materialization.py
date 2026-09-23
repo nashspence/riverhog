@@ -206,7 +206,7 @@ class FakeApi:
         assert page_size == 100
         assert page_token is None
         return {
-            "collection_id": collection_id,
+            "collection_id": str(collection_id),
             "revision": revision,
             "tag_set_identity": tag_set_identity,
             "page_size": page_size,

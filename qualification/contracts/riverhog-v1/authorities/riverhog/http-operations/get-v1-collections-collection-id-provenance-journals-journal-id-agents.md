@@ -131,7 +131,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "piggity",
       "result_identity": "piggity-cli-result/collection/provenance/agents/v1",
       "source": {
-        "line": 2655,
+        "line": 2664,
         "module": "piggity.main",
         "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
         "symbol": "provenance_agents_cmd"
@@ -146,7 +146,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.list_collection_provenance_journal_agents",
       "source": {
-        "line": 1910,
+        "line": 1919,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.list_collection_provenance_journal_agents"

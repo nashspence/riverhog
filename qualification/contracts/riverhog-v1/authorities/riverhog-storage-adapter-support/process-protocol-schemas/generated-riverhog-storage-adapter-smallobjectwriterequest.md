@@ -30,8 +30,17 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-9555273565"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
 | <a id="s-60cd7fe648"></a>`placement` | yes | type="string"; enum=["archive","immediate"]; title="Placement" |  |
 | <a id="s-a8fdc8c0a1"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; title="Required Identity Assertions"; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
-| <a id="s-831f49620d"></a>`stored_bytes` | yes | type="integer"; minimum=0; title="Stored Bytes" |  |
+| <a id="s-831f49620d"></a>`stored_bytes` | yes | [NonnegativeDecimal](#s-726aeae300) |  |
 | <a id="s-d8fcaa470d"></a>`stored_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Stored Sha256" |  |
+
+### Definitions
+
+- [NonnegativeDecimal](#s-726aeae300)
+
+### <a id="s-726aeae300"></a>definition `NonnegativeDecimal`
+
+- <a id="s-067d65f35a"></a>`type`: `"string"`
+- <a id="s-55fd34b226"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ### Progression, limits, and lifecycle
 
@@ -82,10 +91,16 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 80a724477b2bedfe5fa69bfd96c571cd25a684c741a0e8d5a715c15bfc25c270 -->
+<!-- exact-contract-value: 1b6ec8a2d0dec1cb07f5f8640dbcd8b4becbfde492c53cb7a690d4979f7f1691 -->
 
 ```json
 {
+  "$defs": {
+    "NonnegativeDecimal": {
+      "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+      "type": "string"
+    }
+  },
   "additionalProperties": false,
   "properties": {
     "content_type": {
@@ -144,9 +159,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       }
     },
     "stored_bytes": {
-      "minimum": 0,
-      "title": "Stored Bytes",
-      "type": "integer"
+      "$ref": "#/$defs/NonnegativeDecimal"
     },
     "stored_sha256": {
       "pattern": "^[0-9a-f]{64}$",

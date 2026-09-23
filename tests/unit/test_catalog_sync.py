@@ -377,7 +377,7 @@ class _ReplicaApi:
         self.calls.append(f"tags:{collection_id}:{revision}:{page_size}:{page_token}")
         assert collection_id > 0 and revision == 1 and len(tag_set_identity) == 64
         return {
-            "collection_id": collection_id,
+            "collection_id": str(collection_id),
             "revision": revision,
             "tag_set_identity": tag_set_identity,
             "page_size": page_size,

@@ -85,7 +85,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "piggity",
       "result_identity": "piggity-cli-result/collection/upload/cancel/v1",
       "source": {
-        "line": 2393,
+        "line": 2402,
         "module": "piggity.main",
         "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
         "symbol": "upload_cancel_cmd"
@@ -100,7 +100,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.cancel_collection_upload_session",
       "source": {
-        "line": 1442,
+        "line": 1451,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.cancel_collection_upload_session"

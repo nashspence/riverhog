@@ -30,10 +30,19 @@ credentials used to realize that session remain adapter-private.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-f983ec7947"></a>`content_type` | yes | type="string"; maxLength=255; minLength=1; title="Content Type" |  |
-| <a id="s-ba391b3964"></a>`expected_bytes` | yes | type="integer"; minimum=1; title="Expected Bytes" |  |
+| <a id="s-ba391b3964"></a>`expected_bytes` | yes | [PositiveDecimal](#s-d52ec9da98) |  |
 | <a id="s-59aac5a432"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
 | <a id="s-23f1edee7b"></a>`placement` | yes | type="string"; enum=["archive","immediate"]; title="Placement" |  |
 | <a id="s-3f20a9ba4d"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; title="Required Identity Assertions"; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
+
+### Definitions
+
+- [PositiveDecimal](#s-d52ec9da98)
+
+### <a id="s-d52ec9da98"></a>definition `PositiveDecimal`
+
+- <a id="s-21a5b0cd8c"></a>`type`: `"string"`
+- <a id="s-93e7de28e0"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
 ### Progression, limits, and lifecycle
 
@@ -82,10 +91,16 @@ credentials used to realize that session remain adapter-private.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4394746d6639230cabebf5d57a6e369f5e1401fe144a77641c7eb0aff144d2fa -->
+<!-- exact-contract-value: 0e103c3a2f576ea678fe60069dd4eadac497e35bd3ef4babb78cd373babc08cd -->
 
 ```json
 {
+  "$defs": {
+    "PositiveDecimal": {
+      "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+      "type": "string"
+    }
+  },
   "additionalProperties": false,
   "description": "Exact authority for one idempotently established nonterminal write.\n\nRepeating the same canonical request against the same configured adapter while the\nwrite remains nonterminal returns the same continuation session. Operational\ncredentials used to realize that session remain adapter-private.",
   "properties": {
@@ -96,9 +111,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "expected_bytes": {
-      "minimum": 1,
-      "title": "Expected Bytes",
-      "type": "integer"
+      "$ref": "#/$defs/PositiveDecimal"
     },
     "object_path": {
       "maxLength": 4096,

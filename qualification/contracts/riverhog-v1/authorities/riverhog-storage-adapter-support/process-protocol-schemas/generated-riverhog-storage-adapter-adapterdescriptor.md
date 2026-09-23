@@ -26,11 +26,20 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-6157396c02"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Implementation Id" |  |
 | <a id="s-ad077bc43a"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1; title="Implementation Version" |  |
-| <a id="s-e4c53eefe8"></a>`maximum_segment_bytes` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null; title="Maximum Segment Bytes" |  |
-| <a id="s-bca1f9556e"></a>`maximum_segment_count` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null; title="Maximum Segment Count" |  |
-| <a id="s-7886488551"></a>`minimum_nonfinal_segment_bytes` | yes | type="integer"; minimum=1; title="Minimum Nonfinal Segment Bytes" |  |
+| <a id="s-e4c53eefe8"></a>`maximum_segment_bytes` | no | anyOf=[([PositiveDecimal](#s-dd88e4b546)); (type="null")]; default=null |  |
+| <a id="s-bca1f9556e"></a>`maximum_segment_count` | no | anyOf=[([PositiveDecimal](#s-dd88e4b546)); (type="null")]; default=null |  |
+| <a id="s-7886488551"></a>`minimum_nonfinal_segment_bytes` | yes | [PositiveDecimal](#s-dd88e4b546) |  |
 | <a id="s-f345896a9f"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1"; default="riverhog-storage-adapter/v1"; title="Protocol" |  |
 | <a id="s-33e9ebd76a"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"]; title="Read Mode" |  |
+
+### Definitions
+
+- [PositiveDecimal](#s-dd88e4b546)
+
+### <a id="s-dd88e4b546"></a>definition `PositiveDecimal`
+
+- <a id="s-8193162af1"></a>`type`: `"string"`
+- <a id="s-59d3d30f66"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
 ### Progression, limits, and lifecycle
 
@@ -78,10 +87,16 @@ Shared facts for every subject below: maximum=120; minimum=1; reason="schema-max
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9cee17550dd897297e60b7829813a6b432932a360b38b800c81292b1cbdda754 -->
+<!-- exact-contract-value: e6b394d55122f3c9c40d70fe2e00ae9c6c372574e448b9b6f9695a044dd965b8 -->
 
 ```json
 {
+  "$defs": {
+    "PositiveDecimal": {
+      "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+      "type": "string"
+    }
+  },
   "additionalProperties": false,
   "properties": {
     "implementation_id": {
@@ -98,33 +113,27 @@ The following JSON is the complete value owned at each machine-authority pointer
     "maximum_segment_bytes": {
       "anyOf": [
         {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/PositiveDecimal"
         },
         {
           "type": "null"
         }
       ],
-      "default": null,
-      "title": "Maximum Segment Bytes"
+      "default": null
     },
     "maximum_segment_count": {
       "anyOf": [
         {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/PositiveDecimal"
         },
         {
           "type": "null"
         }
       ],
-      "default": null,
-      "title": "Maximum Segment Count"
+      "default": null
     },
     "minimum_nonfinal_segment_bytes": {
-      "minimum": 1,
-      "title": "Minimum Nonfinal Segment Bytes",
-      "type": "integer"
+      "$ref": "#/$defs/PositiveDecimal"
     },
     "protocol": {
       "const": "riverhog-storage-adapter/v1",

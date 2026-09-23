@@ -43,6 +43,7 @@ Each row is one declared relationship. Its endpoints link to their exact node re
 | <a id="re-21d4539460"></a>[riverhog-archive-contracts](nodes.md#rn-3f00f69253) | `depends-on` | [riverhog-canonical-json](nodes.md#rn-f55ab6c77b) | `required` |
 | <a id="re-5e2f8ea9ef"></a>[riverhog-client](nodes.md#rn-8e5274344f) | `depends-on` | [http-api-contracts](nodes.md#rn-f59c7f4102) | `required` |
 | <a id="re-00d58a51b6"></a>[riverhog-client](nodes.md#rn-8e5274344f) | `depends-on` | [riverhog-application-access](nodes.md#rn-06ef7f89ca) | `required` |
+| <a id="re-22e93c149d"></a>[riverhog-client](nodes.md#rn-8e5274344f) | `depends-on` | [riverhog-canonical-json](nodes.md#rn-f55ab6c77b) | `required` |
 | <a id="re-846ca99987"></a>[riverhog-client](nodes.md#rn-8e5274344f) | `depends-on` | [riverhog-protocol](nodes.md#rn-20dbb0d5c0) | `required` |
 | <a id="re-a697846150"></a>[riverhog-client](nodes.md#rn-8e5274344f) | `depends-on` | [riverhog-provenance-contracts](nodes.md#rn-6066820038) | `required` |
 | <a id="re-62aa5033b7"></a>[riverhog-ftp-adapter](nodes.md#rn-d738980294) | `depends-on` | [http-api-contracts](nodes.md#rn-f59c7f4102) | `required` |

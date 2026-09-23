@@ -115,7 +115,7 @@ receipt="$({
     --json
 } 2>"${proof_root}/client.stderr")"
 printf '%s\n' "${receipt}" >"${proof_root}/receipt.json"
-python3 -c 'import json,sys; value=json.load(open(sys.argv[1])); assert value["collection_id"] > 0; assert len(value["archive_root_sha256"]) == 64' "${proof_root}/receipt.json"
+python3 -c 'import json,sys; value=json.load(open(sys.argv[1])); collection_id=value["collection_id"]; assert isinstance(collection_id,str) and collection_id == str(int(collection_id)) and int(collection_id) > 0; assert len(value["archive_root_sha256"]) == 64' "${proof_root}/receipt.json"
 
 compose stop app postgres filesystem-cache-adapter
 docker run --rm \

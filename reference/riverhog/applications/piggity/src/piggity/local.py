@@ -409,7 +409,7 @@ def _refresh_collection(db: sqlite3.Connection, api: ApiClient, collection_id: i
             page_token=tag_page_token,
         )
         if (
-            payload.get("collection_id") != collection_id
+            payload.get("collection_id") != str(collection_id)
             or payload.get("revision") != tag_revision
             or payload.get("tag_set_identity") != tag_set_identity
         ):

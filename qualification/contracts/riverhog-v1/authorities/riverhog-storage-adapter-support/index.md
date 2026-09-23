@@ -4,7 +4,7 @@
 
 HTTP binding and conformance support for Riverhog storage adapters.
 
-Contract elements: **86** · Extent decisions: **72**
+Contract elements: **86** · Extent decisions: **71**
 
 ## Interfaces
 

@@ -92,7 +92,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "piggity",
       "result_identity": "piggity-cli-result/collection/upload/discard/v1",
       "source": {
-        "line": 2424,
+        "line": 2433,
         "module": "piggity.main",
         "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
         "symbol": "upload_discard_cmd"
@@ -107,7 +107,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.discard_collection_upload",
       "source": {
-        "line": 1471,
+        "line": 1480,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.discard_collection_upload"

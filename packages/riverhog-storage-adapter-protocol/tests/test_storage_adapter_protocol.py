@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+import json
 import subprocess
 import sys
 from collections.abc import Callable
@@ -9,6 +10,8 @@ from typing import cast
 
 import pytest
 import riverhog_storage_adapter_protocol as protocol_package
+from jsonschema import Draft202012Validator
+from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
 from pydantic import ValidationError
 from riverhog_storage_adapter_protocol import (
     ADAPTER_PRIVATE_ASSERTION_PREFIX,
@@ -58,6 +61,33 @@ def _completion_authority(
         stored_bytes=sum(segment.stored_bytes for segment in segments),
         authority_token=f"fixture-terminal-{len(segments)}",
     )
+
+
+def test_exact_storage_byte_count_has_string_wire_and_schema() -> None:
+    request = WriteStartRequest(
+        object_path="archives/exact/object",
+        expected_bytes=2**64 + 1,
+        content_type="application/octet-stream",
+        required_identity_assertions={},
+        placement="archive",
+    )
+    encoded = request.model_dump_json().encode()
+    assert WriteStartRequest.model_validate_json(encoded) == request
+    schema = WriteStartRequest.model_json_schema()
+    validator = Draft202012Validator(schema)
+    validator.validate(json.loads(encoded))
+
+    numeric = json.loads(encoded)
+    numeric["expected_bytes"] = 2**64 + 1
+    with pytest.raises(ValidationError):
+        WriteStartRequest.model_validate_json(json.dumps(numeric))
+    with pytest.raises(JsonSchemaValidationError):
+        validator.validate(numeric)
+    zero = {**numeric, "expected_bytes": "0"}
+    with pytest.raises(ValidationError):
+        WriteStartRequest.model_validate_json(json.dumps(zero))
+    with pytest.raises(JsonSchemaValidationError):
+        validator.validate(zero)
 
 
 def test_protocol_matches_the_existing_capability_port_inventory() -> None:

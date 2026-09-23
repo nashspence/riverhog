@@ -99,7 +99,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "piggity",
       "result_identity": "piggity-cli-result/collection/provenance/show/v1",
       "source": {
-        "line": 2623,
+        "line": 2632,
         "module": "piggity.main",
         "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
         "symbol": "provenance_show_cmd"
@@ -114,7 +114,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.get_collection_file_provenance",
       "source": {
-        "line": 1657,
+        "line": 1666,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.get_collection_file_provenance"

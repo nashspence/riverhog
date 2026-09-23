@@ -34,6 +34,7 @@ from riverhog_application_access import (
 from riverhog_application_access import (
     ApplicationResource as ApplicationResource,
 )
+from riverhog_canonical_json import parse_identity_json
 from riverhog_protocol import (
     COLLECTION_TAG_REQUEST_MEMBERS_MAX,
     RIVERHOG_HTTP_ERROR_AUTHORITY,
@@ -527,7 +528,7 @@ class _HttpApiClient:
         if response.is_success:
             return
         try:
-            data = response.json()
+            data = parse_identity_json(response.content)
             code, message, details = parse_operation_error_payload(
                 RIVERHOG_HTTP_ERROR_AUTHORITY,
                 operation_id,
@@ -578,7 +579,11 @@ class _HttpApiClient:
         path: str,
         **kwargs: Any,
     ) -> dict[str, Any]:
-        payload = self._request(operation_id, method, path, **kwargs).json()
+        response = self._request(operation_id, method, path, **kwargs)
+        try:
+            payload = parse_identity_json(response.content)
+        except ValueError as exc:
+            raise InvalidState("API returned invalid JSON") from exc
         if not isinstance(payload, dict):
             raise BadRequest("API returned a non-object JSON payload")
         return payload
@@ -791,7 +796,11 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             params=params,
             headers=headers,
         )
-        page = _response_model(PortableCollectionInventoryPage, response.json())
+        try:
+            page_payload = parse_identity_json(response.content)
+        except ValueError as exc:
+            raise InvalidState("API returned invalid collection inventory JSON") from exc
+        page = _response_model(PortableCollectionInventoryPage, page_payload)
         try:
             response_identity = parse_quoted_sha256_identity(response.headers.get("ETag", ""))
         except ValueError as exc:

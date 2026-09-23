@@ -93,7 +93,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.create_catalog_sync_checkpoint",
       "source": {
-        "line": 734,
+        "line": 739,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.create_catalog_sync_checkpoint"

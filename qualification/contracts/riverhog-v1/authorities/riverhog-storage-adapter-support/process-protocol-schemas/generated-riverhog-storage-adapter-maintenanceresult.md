@@ -24,7 +24,16 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-11316610fc"></a>`affected` | yes | type="integer"; minimum=0; title="Affected" |  |
+| <a id="s-11316610fc"></a>`affected` | yes | [NonnegativeDecimal](#s-bf651de82e) |  |
+
+### Definitions
+
+- [NonnegativeDecimal](#s-bf651de82e)
+
+### <a id="s-bf651de82e"></a>definition `NonnegativeDecimal`
+
+- <a id="s-6948288d68"></a>`type`: `"string"`
+- <a id="s-d1abdfab54"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -59,16 +68,20 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1b8ad376bb41a2eb81c64450d4ccb99a09150f8f1c72f6203ecdad2b933a565c -->
+<!-- exact-contract-value: 9ada78c00de844b2231a1e4f8424b57ffde21759484b2ad78c7c4f431fa8b83d -->
 
 ```json
 {
+  "$defs": {
+    "NonnegativeDecimal": {
+      "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+      "type": "string"
+    }
+  },
   "additionalProperties": false,
   "properties": {
     "affected": {
-      "minimum": 0,
-      "title": "Affected",
-      "type": "integer"
+      "$ref": "#/$defs/NonnegativeDecimal"
     }
   },
   "required": [

@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-e361dbeb5e"></a>`kind`: `"class"`
-- <a id="s-33909c3c6d"></a>`signature`: `"'(*, affected: Annotated[int, Ge(ge=0)]) -> None'"`
+- <a id="s-33909c3c6d"></a>`signature`: `"'(*, affected: NonnegativeDecimal) -> None'"`
 
 #### Validated model schema
 
@@ -36,7 +36,16 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-17e08d246a"></a>`affected` | yes | type="integer"; minimum=0 |  |
+| <a id="s-17e08d246a"></a>`affected` | yes | [NonnegativeDecimal](#s-62760472b6) |  |
+
+##### Definitions
+
+- [NonnegativeDecimal](#s-62760472b6)
+
+##### <a id="s-62760472b6"></a>definition `NonnegativeDecimal`
+
+- <a id="s-ee81e4fefc"></a>`type`: `"string"`
+- <a id="s-a1584e6171"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Governing policies
 
@@ -65,18 +74,23 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: eaf7831ba5eaba4a661a454da40f041581b20b172e89061b11a02f3ef2b9c24f -->
+<!-- exact-contract-value: de500180b4e31b3325eb23f6ef74a6b9d71fd1f07c086f5613eea83ec8b3d5e3 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
     "schema": {
+      "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        }
+      },
       "additionalProperties": false,
       "properties": {
         "affected": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         }
       },
       "required": [
@@ -84,7 +98,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "'(*, affected: Annotated[int, Ge(ge=0)]) -> None'"
+    "signature": "'(*, affected: NonnegativeDecimal) -> None'"
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

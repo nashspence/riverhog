@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-a9a947ce74"></a>`kind`: `"class"`
-- <a id="s-885b56accb"></a>`signature`: `"'(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, expected_bytes: Annotated[int, Ge(ge=0)], offset: Annotated[int \| None, Ge(ge=0)] = None, size: Annotated[int \| None, Ge(ge=0)] = None) -> None'"`
+- <a id="s-885b56accb"></a>`signature`: `"'(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, expected_bytes: NonnegativeDecimal, offset: NonnegativeDecimal \| None = None, size: NonnegativeDecimal \| None = None) -> None'"`
 
 #### Validated model schema
 
@@ -36,14 +36,20 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7d79767301"></a>`expected_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-7d79767301"></a>`expected_bytes` | yes | [NonnegativeDecimal](#s-843f5c5e50) |  |
 | <a id="s-bee60b01d3"></a>`object` | yes | [ObjectLocator](#s-a7b8fb18e2) |  |
-| <a id="s-59bb88205a"></a>`offset` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; default=null |  |
-| <a id="s-a6488f469a"></a>`size` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; default=null |  |
+| <a id="s-59bb88205a"></a>`offset` | no | anyOf=[([NonnegativeDecimal](#s-843f5c5e50)); (type="null")]; default=null |  |
+| <a id="s-a6488f469a"></a>`size` | no | anyOf=[([NonnegativeDecimal](#s-843f5c5e50)); (type="null")]; default=null |  |
 
 ##### Definitions
 
+- [NonnegativeDecimal](#s-843f5c5e50)
 - [ObjectLocator](#s-a7b8fb18e2)
+
+##### <a id="s-843f5c5e50"></a>definition `NonnegativeDecimal`
+
+- <a id="s-bf1dee720c"></a>`type`: `"string"`
+- <a id="s-68550fdf81"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-a7b8fb18e2"></a>definition `ObjectLocator`
 
@@ -91,7 +97,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2a5a454d62e4183bea7cbc2a9c6eee49c9368a7abdc25a962f0fa84e857ce9e2 -->
+<!-- exact-contract-value: 0affea015cfedb3563e20be3c90dc5c0ac861198b97903bc81a288e755021471 -->
 
 ```json
 {
@@ -99,6 +105,10 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
         "ObjectLocator": {
           "additionalProperties": false,
           "properties": {
@@ -130,8 +140,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "additionalProperties": false,
       "properties": {
         "expected_bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         "object": {
           "$ref": "#/$defs/ObjectLocator"
@@ -139,8 +148,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "offset": {
           "anyOf": [
             {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal"
             },
             {
               "type": "null"
@@ -151,8 +159,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "size": {
           "anyOf": [
             {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal"
             },
             {
               "type": "null"
@@ -167,7 +174,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "'(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, expected_bytes: Annotated[int, Ge(ge=0)], offset: Annotated[int | None, Ge(ge=0)] = None, size: Annotated[int | None, Ge(ge=0)] = None) -> None'"
+    "signature": "'(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, expected_bytes: NonnegativeDecimal, offset: NonnegativeDecimal | None = None, size: NonnegativeDecimal | None = None) -> None'"
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

@@ -86,7 +86,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "piggity",
       "result_identity": "piggity-cli-result/collection/upload/start/v1",
       "source": {
-        "line": 2170,
+        "line": 2179,
         "module": "piggity.main",
         "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
         "symbol": "upload_cmd"
@@ -97,7 +97,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "piggity",
       "result_identity": "piggity-cli-result/collection/upload/show/v1",
       "source": {
-        "line": 2364,
+        "line": 2373,
         "module": "piggity.main",
         "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
         "symbol": "upload_show_cmd"
@@ -108,7 +108,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "piggity",
       "result_identity": "piggity-cli-result/collection/upload/watch/v1",
       "source": {
-        "line": 2404,
+        "line": 2413,
         "module": "piggity.main",
         "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
         "symbol": "upload_watch_cmd"
@@ -125,7 +125,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.get_collection_upload_session",
       "source": {
-        "line": 1450,
+        "line": 1459,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.get_collection_upload_session"

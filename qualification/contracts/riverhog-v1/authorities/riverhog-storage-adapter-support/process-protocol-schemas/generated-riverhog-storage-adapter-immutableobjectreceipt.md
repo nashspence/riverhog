@@ -28,11 +28,20 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-42c0358383"></a>`entity_token` | no | anyOf=[(type="string"; maxLength=4000; minLength=1); (type="null")]; default=null; title="Entity Token" |  |
 | <a id="s-6ac6921944"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
 | <a id="s-c6dc53bb9f"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null; title="Revision" |  |
-| <a id="s-4a063b6979"></a>`stored_bytes` | yes | type="integer"; minimum=0; title="Stored Bytes" |  |
+| <a id="s-4a063b6979"></a>`stored_bytes` | yes | [NonnegativeDecimal](#s-b5c36f762f) |  |
 | <a id="s-2806c9d5c6"></a>`stored_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Stored Sha256" |  |
 | <a id="s-eb1ed81ecd"></a>`verified_content_type` | yes | type="string"; maxLength=255; minLength=1; title="Verified Content Type" |  |
 | <a id="s-f13441d8ea"></a>`verified_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; title="Verified Identity Assertions"; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
 | <a id="s-107d1345ef"></a>`verified_placement` | yes | type="string"; enum=["archive","immediate"]; title="Verified Placement" |  |
+
+### Definitions
+
+- [NonnegativeDecimal](#s-b5c36f762f)
+
+### <a id="s-b5c36f762f"></a>definition `NonnegativeDecimal`
+
+- <a id="s-8d1cf0230d"></a>`type`: `"string"`
+- <a id="s-8e32744a24"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ### Progression, limits, and lifecycle
 
@@ -85,10 +94,16 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4246d342ca4bea1f0e76e6b31ee8d998513e8d604a1b2ef888c96c7a0776196d -->
+<!-- exact-contract-value: 4bfefaf2efc2ed6c343eb71c832f4807b708b64a5907ba28491d99b325b8bc62 -->
 
 ```json
 {
+  "$defs": {
+    "NonnegativeDecimal": {
+      "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+      "type": "string"
+    }
+  },
   "additionalProperties": false,
   "properties": {
     "completed_at": {
@@ -132,9 +147,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Revision"
     },
     "stored_bytes": {
-      "minimum": 0,
-      "title": "Stored Bytes",
-      "type": "integer"
+      "$ref": "#/$defs/NonnegativeDecimal"
     },
     "stored_sha256": {
       "pattern": "^[0-9a-f]{64}$",

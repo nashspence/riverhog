@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-ec5585b1f5"></a>`kind`: `"class"`
-- <a id="s-f0c1b873f3"></a>`signature`: `"'(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, number: Annotated[int, Ge(ge=1)], stored_bytes: Annotated[int, Ge(ge=1)]) -> None'"`
+- <a id="s-f0c1b873f3"></a>`signature`: `"'(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, number: PositiveDecimal, stored_bytes: PositiveDecimal) -> None'"`
 
 #### Validated model schema
 
@@ -36,13 +36,19 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-29ec31d434"></a>`number` | yes | type="integer"; minimum=1 |  |
+| <a id="s-29ec31d434"></a>`number` | yes | [PositiveDecimal](#s-237b867f1f) |  |
 | <a id="s-a92f6bcec1"></a>`session` | yes | [WriteSession](#s-3bcf6f4274) |  |
-| <a id="s-bdfbfb086e"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-bdfbfb086e"></a>`stored_bytes` | yes | [PositiveDecimal](#s-237b867f1f) |  |
 
 ##### Definitions
 
+- [PositiveDecimal](#s-237b867f1f)
 - [WriteSession](#s-3bcf6f4274)
+
+##### <a id="s-237b867f1f"></a>definition `PositiveDecimal`
+
+- <a id="s-6b6b3a8108"></a>`type`: `"string"`
+- <a id="s-f35eada886"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
 ##### <a id="s-3bcf6f4274"></a>definition `WriteSession`
 
@@ -54,7 +60,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-fb09cd7729"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-fb09cd7729"></a>`expected_bytes` | yes | [PositiveDecimal](#s-237b867f1f) |  |
 | <a id="s-f42929e90e"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-9a5d226096"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
 
@@ -85,7 +91,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: cc8ae42250ef44a512468a9dc62c2c71a6a839e43fae790c28223acfd2a8dee0 -->
+<!-- exact-contract-value: 391da933f95c19086ca4294deaa009a7f71bf3c0d7f854b7b7eab8440cc99c8f -->
 
 ```json
 {
@@ -93,12 +99,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "$defs": {
+        "PositiveDecimal": {
+          "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+          "type": "string"
+        },
         "WriteSession": {
           "additionalProperties": false,
           "properties": {
             "expected_bytes": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/PositiveDecimal"
             },
             "object_path": {
               "maxLength": 4096,
@@ -122,15 +131,13 @@ The following JSON is the complete value owned at each machine-authority pointer
       "additionalProperties": false,
       "properties": {
         "number": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/PositiveDecimal"
         },
         "session": {
           "$ref": "#/$defs/WriteSession"
         },
         "stored_bytes": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/PositiveDecimal"
         }
       },
       "required": [
@@ -140,7 +147,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "'(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, number: Annotated[int, Ge(ge=1)], stored_bytes: Annotated[int, Ge(ge=1)]) -> None'"
+    "signature": "'(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, number: PositiveDecimal, stored_bytes: PositiveDecimal) -> None'"
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

@@ -25,7 +25,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-6c1d725696"></a>`completion` | yes | [WriteCompletionAuthority](#s-2aa29473ed) |  |
-| <a id="s-3dd31e3915"></a>`expected_bytes` | yes | type="integer"; minimum=1; title="Expected Bytes" |  |
+| <a id="s-3dd31e3915"></a>`expected_bytes` | yes | [PositiveDecimal](#s-037927588e) |  |
 | <a id="s-918194abd0"></a>`expected_content_type` | yes | type="string"; maxLength=255; minLength=1; title="Expected Content Type" |  |
 | <a id="s-41c9c882c5"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"]; title="Expected Placement" |  |
 | <a id="s-3fe7699e11"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; title="Required Identity Assertions"; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
@@ -33,8 +33,20 @@ Exact externally visible contract owned by this contract element.
 
 ### Definitions
 
+- [NonnegativeDecimal](#s-0541f4a6f1)
+- [PositiveDecimal](#s-037927588e)
 - [WriteCompletionAuthority](#s-2aa29473ed)
 - [WriteSession](#s-43526cbe13)
+
+### <a id="s-0541f4a6f1"></a>definition `NonnegativeDecimal`
+
+- <a id="s-cf6c772cb1"></a>`type`: `"string"`
+- <a id="s-f7647e678f"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
+### <a id="s-037927588e"></a>definition `PositiveDecimal`
+
+- <a id="s-8f0cfb79a1"></a>`type`: `"string"`
+- <a id="s-426acd6167"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
 ### <a id="s-2aa29473ed"></a>definition `WriteCompletionAuthority`
 
@@ -49,8 +61,8 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-924d57268f"></a>`authority_token` | yes | type="string"; maxLength=4000; minLength=1; title="Authority Token" | Bounded opaque adapter-issued authority for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged. |
-| <a id="s-f2d5b6894e"></a>`segment_count` | yes | type="integer"; minimum=0; title="Segment Count" |  |
-| <a id="s-212652088c"></a>`stored_bytes` | yes | type="integer"; minimum=0; title="Stored Bytes" |  |
+| <a id="s-f2d5b6894e"></a>`segment_count` | yes | [NonnegativeDecimal](#s-0541f4a6f1) |  |
+| <a id="s-212652088c"></a>`stored_bytes` | yes | [NonnegativeDecimal](#s-0541f4a6f1) |  |
 
 ### <a id="s-43526cbe13"></a>definition `WriteSession`
 
@@ -63,7 +75,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2975343229"></a>`expected_bytes` | yes | type="integer"; minimum=1; title="Expected Bytes" | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
+| <a id="s-2975343229"></a>`expected_bytes` | yes | [PositiveDecimal](#s-037927588e) | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
 | <a id="s-ff6e987a77"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
 | <a id="s-751c151e29"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1; title="Write Token" | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
 
@@ -116,11 +128,19 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3b6857dbea430d76de035e4b9a4d2e0306c6b78a8f4fd827d729da581b4e9f10 -->
+<!-- exact-contract-value: f386e6cd14bead8fb90a8ed7e4c982afbe74605b3497340bc801520171d97998 -->
 
 ```json
 {
   "$defs": {
+    "NonnegativeDecimal": {
+      "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+      "type": "string"
+    },
+    "PositiveDecimal": {
+      "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+      "type": "string"
+    },
     "WriteCompletionAuthority": {
       "additionalProperties": false,
       "description": "Adapter-issued terminal authority for one exact active-write state.\n\nConsumers echo the opaque token unchanged. It is neither a credential nor a\nbearer capability; completion remains independently authorized. Once an exact\nimmutable object is published, its completed-object identity supersedes this\ntransport authority for terminal reconciliation.",
@@ -133,14 +153,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "segment_count": {
-          "minimum": 0,
-          "title": "Segment Count",
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         "stored_bytes": {
-          "minimum": 0,
-          "title": "Stored Bytes",
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         }
       },
       "required": [
@@ -155,10 +171,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "additionalProperties": false,
       "properties": {
         "expected_bytes": {
-          "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
-          "minimum": 1,
-          "title": "Expected Bytes",
-          "type": "integer"
+          "$ref": "#/$defs/PositiveDecimal",
+          "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal."
         },
         "object_path": {
           "maxLength": 4096,
@@ -189,9 +203,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$ref": "#/$defs/WriteCompletionAuthority"
     },
     "expected_bytes": {
-      "minimum": 1,
-      "title": "Expected Bytes",
-      "type": "integer"
+      "$ref": "#/$defs/PositiveDecimal"
     },
     "expected_content_type": {
       "maxLength": 255,

@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-ea83e34bf9"></a>`kind`: `"class"`
-- <a id="s-5503e8069a"></a>`signature`: `"\"(*, protocol: Literal['riverhog-storage-adapter/v1'] = 'riverhog-storage-adapter/v1', implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], read_mode: Literal['immediate', 'restore_required'], minimum_nonfinal_segment_bytes: Annotated[int, Ge(ge=1)], maximum_segment_bytes: Annotated[int \| None, Ge(ge=1)] = None, maximum_segment_count: Annotated[int \| None, Ge(ge=1)] = None) -> None\""`
+- <a id="s-5503e8069a"></a>`signature`: `"\"(*, protocol: Literal['riverhog-storage-adapter/v1'] = 'riverhog-storage-adapter/v1', implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], read_mode: Literal['immediate', 'restore_required'], minimum_nonfinal_segment_bytes: PositiveDecimal, maximum_segment_bytes: PositiveDecimal \| None = None, maximum_segment_count: PositiveDecimal \| None = None) -> None\""`
 
 #### Validated model schema
 
@@ -38,11 +38,20 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-7d113a0a6f"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-0816c01412"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1 |  |
-| <a id="s-2bf6e29577"></a>`maximum_segment_bytes` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null |  |
-| <a id="s-4de2d33675"></a>`maximum_segment_count` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null |  |
-| <a id="s-5b5c395f56"></a>`minimum_nonfinal_segment_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-2bf6e29577"></a>`maximum_segment_bytes` | no | anyOf=[([PositiveDecimal](#s-77d8f06d74)); (type="null")]; default=null |  |
+| <a id="s-4de2d33675"></a>`maximum_segment_count` | no | anyOf=[([PositiveDecimal](#s-77d8f06d74)); (type="null")]; default=null |  |
+| <a id="s-5b5c395f56"></a>`minimum_nonfinal_segment_bytes` | yes | [PositiveDecimal](#s-77d8f06d74) |  |
 | <a id="s-c01ebffa91"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1"; default="riverhog-storage-adapter/v1" |  |
 | <a id="s-f27205a52f"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"] |  |
+
+##### Definitions
+
+- [PositiveDecimal](#s-77d8f06d74)
+
+##### <a id="s-77d8f06d74"></a>definition `PositiveDecimal`
+
+- <a id="s-16b24716b5"></a>`type`: `"string"`
+- <a id="s-c8569fb39d"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -77,13 +86,19 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 597ab4ef522c7f0615a9c10b04b26cb57367ae59a058fcd0528e35d0ec4d1604 -->
+<!-- exact-contract-value: 9cab497d8d5c36daf57e9ab3ff10651627bfe47a1fd330c86e1d0c1303da977e -->
 
 ```json
 {
   "contract": {
     "kind": "class",
     "schema": {
+      "$defs": {
+        "PositiveDecimal": {
+          "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+          "type": "string"
+        }
+      },
       "additionalProperties": false,
       "properties": {
         "implementation_id": {
@@ -98,8 +113,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "maximum_segment_bytes": {
           "anyOf": [
             {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/PositiveDecimal"
             },
             {
               "type": "null"
@@ -110,8 +124,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "maximum_segment_count": {
           "anyOf": [
             {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/PositiveDecimal"
             },
             {
               "type": "null"
@@ -120,8 +133,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "default": null
         },
         "minimum_nonfinal_segment_bytes": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/PositiveDecimal"
         },
         "protocol": {
           "const": "riverhog-storage-adapter/v1",
@@ -144,7 +156,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, protocol: Literal['riverhog-storage-adapter/v1'] = 'riverhog-storage-adapter/v1', implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], read_mode: Literal['immediate', 'restore_required'], minimum_nonfinal_segment_bytes: Annotated[int, Ge(ge=1)], maximum_segment_bytes: Annotated[int | None, Ge(ge=1)] = None, maximum_segment_count: Annotated[int | None, Ge(ge=1)] = None) -> None\""
+    "signature": "\"(*, protocol: Literal['riverhog-storage-adapter/v1'] = 'riverhog-storage-adapter/v1', implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], read_mode: Literal['immediate', 'restore_required'], minimum_nonfinal_segment_bytes: PositiveDecimal, maximum_segment_bytes: PositiveDecimal | None = None, maximum_segment_count: PositiveDecimal | None = None) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

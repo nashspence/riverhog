@@ -12,6 +12,7 @@ from http_api_contracts import (
     FRAMED_BODY_MEDIA_TYPE,
 )
 from pydantic import BaseModel
+from riverhog_canonical_json import parse_identity_json
 from riverhog_storage_adapter_protocol import BinaryContent
 
 DEFAULT_MAXIMUM_HEADER_BYTES = FRAMED_BODY_MAXIMUM_DECLARATION_BYTES
@@ -117,7 +118,9 @@ def parse_framed_stream[ModelT: BaseModel](
     header_bytes = struct.unpack(">I", raw_length)[0]
     if header_bytes < 2 or header_bytes > maximum_header_bytes:
         raise FramedBodyError("framed body declaration length is invalid")
-    declaration = model.model_validate_json(cursor.read_exact(header_bytes))
+    header = cursor.read_exact(header_bytes)
+    parse_identity_json(header)
+    declaration = model.model_validate_json(header)
     expected_content = _declared_content_bytes(declaration)
     expected_total = FRAMED_BODY_DECLARATION_LENGTH_BYTES + header_bytes + expected_content
     if content_length != expected_total:

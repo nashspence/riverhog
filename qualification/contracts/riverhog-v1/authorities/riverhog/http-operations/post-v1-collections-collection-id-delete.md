@@ -94,7 +94,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "piggity",
       "result_identity": "piggity-cli-result/collection/delete/v1",
       "source": {
-        "line": 2911,
+        "line": 2920,
         "module": "piggity.main",
         "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
         "symbol": "collection_delete_cmd"
@@ -109,7 +109,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.delete_collection",
       "source": {
-        "line": 1976,
+        "line": 1985,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.delete_collection"

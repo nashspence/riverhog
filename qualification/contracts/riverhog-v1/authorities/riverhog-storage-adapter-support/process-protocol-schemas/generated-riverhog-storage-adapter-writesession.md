@@ -24,9 +24,18 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b573b398f3"></a>`expected_bytes` | yes | type="integer"; minimum=1; title="Expected Bytes" | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
+| <a id="s-b573b398f3"></a>`expected_bytes` | yes | [PositiveDecimal](#s-6d84db3c97) | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
 | <a id="s-f382e94026"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
 | <a id="s-bb12b9b006"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1; title="Write Token" | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
+
+### Definitions
+
+- [PositiveDecimal](#s-6d84db3c97)
+
+### <a id="s-6d84db3c97"></a>definition `PositiveDecimal`
+
+- <a id="s-57c6d9f62d"></a>`type`: `"string"`
+- <a id="s-e9e157f732"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
 ### Progression, limits, and lifecycle
 
@@ -75,17 +84,21 @@ Shared facts for every subject below: minimum=1; reason="schema-maximum"
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8273b4a0c12b6fa55f8669267e1ed4d9a0091e43944c85d6f7e1c16aa6e892ac -->
+<!-- exact-contract-value: 56b03e966c6aa7128fb52d098f2ffb424937df0f91ddfaa786b2d30934b759cf -->
 
 ```json
 {
+  "$defs": {
+    "PositiveDecimal": {
+      "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+      "type": "string"
+    }
+  },
   "additionalProperties": false,
   "properties": {
     "expected_bytes": {
-      "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
-      "minimum": 1,
-      "title": "Expected Bytes",
-      "type": "integer"
+      "$ref": "#/$defs/PositiveDecimal",
+      "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal."
     },
     "object_path": {
       "maxLength": 4096,

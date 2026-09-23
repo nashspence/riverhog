@@ -84,7 +84,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "piggity",
       "result_identity": "piggity-cli-result/archive/store/show/v1",
       "source": {
-        "line": 2900,
+        "line": 2909,
         "module": "piggity.main",
         "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
         "symbol": "archive_store_show_cmd"
@@ -99,7 +99,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.get_archive_store",
       "source": {
-        "line": 2058,
+        "line": 2067,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.get_archive_store"

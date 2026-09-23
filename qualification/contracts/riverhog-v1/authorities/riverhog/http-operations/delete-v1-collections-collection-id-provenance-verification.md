@@ -84,7 +84,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "piggity",
       "result_identity": "piggity-cli-result/collection/provenance/verification-cancel/v1",
       "source": {
-        "line": 2736,
+        "line": 2745,
         "module": "piggity.main",
         "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
         "symbol": "provenance_verification_cancel_cmd"
@@ -99,7 +99,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.cancel_collection_provenance_verification",
       "source": {
-        "line": 1949,
+        "line": 1958,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.cancel_collection_provenance_verification"

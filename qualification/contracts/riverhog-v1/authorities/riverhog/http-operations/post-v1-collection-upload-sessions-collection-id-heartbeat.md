@@ -84,7 +84,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.heartbeat_collection_upload_session",
       "source": {
-        "line": 1457,
+        "line": 1466,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.heartbeat_collection_upload_session"

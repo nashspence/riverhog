@@ -25,14 +25,26 @@ Request one bounded page from an exact accepted-segment view.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f1d3323083"></a>`after_number` | no | type="integer"; minimum=0; default=0; title="After Number"; x-riverhog-extent={"policy":"segmented_no_total_max","reason":"write-segment-history-bounded-traversal"} |  |
+| <a id="s-f1d3323083"></a>`after_number` | no | [NonnegativeDecimal](#s-f75d48c36d); default=0; x-riverhog-extent={"policy":"segmented_no_total_max","reason":"write-segment-history-bounded-traversal"} |  |
 | <a id="s-86d5f555d2"></a>`maximum_items` | no | type="integer"; minimum=1; maximum=128; default=128; title="Maximum Items" |  |
 | <a id="s-9142d95f27"></a>`session` | yes | [WriteSession](#s-524b3d9072) |  |
 | <a id="s-6b5c1418bd"></a>`traversal_token` | no | anyOf=[(type="string"; maxLength=4000; minLength=1); (type="null")]; default=null; title="Traversal Token" |  |
 
 ### Definitions
 
+- [NonnegativeDecimal](#s-f75d48c36d)
+- [PositiveDecimal](#s-24ddcd1ce2)
 - [WriteSession](#s-524b3d9072)
+
+### <a id="s-f75d48c36d"></a>definition `NonnegativeDecimal`
+
+- <a id="s-8d31f07532"></a>`type`: `"string"`
+- <a id="s-57493cfd19"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
+### <a id="s-24ddcd1ce2"></a>definition `PositiveDecimal`
+
+- <a id="s-abca34bf23"></a>`type`: `"string"`
+- <a id="s-23f052799d"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
 ### <a id="s-524b3d9072"></a>definition `WriteSession`
 
@@ -45,7 +57,7 @@ Request one bounded page from an exact accepted-segment view.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ec7a1bfb7a"></a>`expected_bytes` | yes | type="integer"; minimum=1; title="Expected Bytes" | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
+| <a id="s-ec7a1bfb7a"></a>`expected_bytes` | yes | [PositiveDecimal](#s-24ddcd1ce2) | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
 | <a id="s-6859981f1c"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
 | <a id="s-ca2109b609"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1; title="Write Token" | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
 
@@ -96,19 +108,25 @@ Shared facts for every subject below: minimum=1; reason="schema-maximum"
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c655ec3f5640ade7ac2d3b60a3b9bb3de1ecaf39de3d4bcd731afb029a65684f -->
+<!-- exact-contract-value: 298689d5b60eb07a5344896513365973a1f5b6d9989c3eaeaf992351a569c82a -->
 
 ```json
 {
   "$defs": {
+    "NonnegativeDecimal": {
+      "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+      "type": "string"
+    },
+    "PositiveDecimal": {
+      "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+      "type": "string"
+    },
     "WriteSession": {
       "additionalProperties": false,
       "properties": {
         "expected_bytes": {
-          "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
-          "minimum": 1,
-          "title": "Expected Bytes",
-          "type": "integer"
+          "$ref": "#/$defs/PositiveDecimal",
+          "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal."
         },
         "object_path": {
           "maxLength": 4096,
@@ -137,10 +155,8 @@ The following JSON is the complete value owned at each machine-authority pointer
   "description": "Request one bounded page from an exact accepted-segment view.",
   "properties": {
     "after_number": {
+      "$ref": "#/$defs/NonnegativeDecimal",
       "default": 0,
-      "minimum": 0,
-      "title": "After Number",
-      "type": "integer",
       "x-riverhog-extent": {
         "policy": "segmented_no_total_max",
         "reason": "write-segment-history-bounded-traversal"

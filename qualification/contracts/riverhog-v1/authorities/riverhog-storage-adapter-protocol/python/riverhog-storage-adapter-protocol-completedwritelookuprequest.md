@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-151f9f31e1"></a>`kind`: `"class"`
-- <a id="s-4e102cc2fb"></a>`signature`: `"\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: Annotated[int, Ge(ge=1)], expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""`
+- <a id="s-4e102cc2fb"></a>`signature`: `"\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: PositiveDecimal, expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""`
 
 #### Validated model schema
 
@@ -36,11 +36,20 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-5a818e43f0"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-5a818e43f0"></a>`expected_bytes` | yes | [PositiveDecimal](#s-4cbb400754) |  |
 | <a id="s-4065844c2e"></a>`expected_content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
 | <a id="s-eb7521c9e8"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
 | <a id="s-83c616d94c"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-f23981c971"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} |  |
+
+##### Definitions
+
+- [PositiveDecimal](#s-4cbb400754)
+
+##### <a id="s-4cbb400754"></a>definition `PositiveDecimal`
+
+- <a id="s-d3dfc0456e"></a>`type`: `"string"`
+- <a id="s-80241d39d9"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -76,18 +85,23 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7be90a9545c4302d9f61e3721b0a61f5d46da30068f3a00ad6617a5789caecdc -->
+<!-- exact-contract-value: c31d183af5695852a44cfeaaeb416039ccb6993414986ed13e72967630687556 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
     "schema": {
+      "$defs": {
+        "PositiveDecimal": {
+          "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+          "type": "string"
+        }
+      },
       "additionalProperties": false,
       "properties": {
         "expected_bytes": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/PositiveDecimal"
         },
         "expected_content_type": {
           "maxLength": 255,
@@ -128,7 +142,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: Annotated[int, Ge(ge=1)], expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""
+    "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: PositiveDecimal, expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

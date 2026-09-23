@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-41c34a8dd5"></a>`kind`: `"class"`
-- <a id="s-e1a22ef083"></a>`signature`: `"'(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, traversal_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)], segments: Annotated[tuple[riverhog_storage_adapter_protocol.protocol.WriteSegmentReceipt, ...], MaxLen(max_length=128)] = (), next_after_number: Annotated[int \| None, Ge(ge=1)] = None, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionAuthority \| None = None) -> None'"`
+- <a id="s-e1a22ef083"></a>`signature`: `"'(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, traversal_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)], segments: Annotated[tuple[riverhog_storage_adapter_protocol.protocol.WriteSegmentReceipt, ...], MaxLen(max_length=128)] = (), next_after_number: PositiveDecimal \| None = None, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionAuthority \| None = None) -> None'"`
 
 #### Validated model schema
 
@@ -37,16 +37,28 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-00b7280fd0"></a>`completion` | no | anyOf=[([WriteCompletionAuthority](#s-bdd5ecbe60)); (type="null")]; default=null |  |
-| <a id="s-9930afc595"></a>`next_after_number` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null |  |
+| <a id="s-9930afc595"></a>`next_after_number` | no | anyOf=[([PositiveDecimal](#s-5fe367ab7e)); (type="null")]; default=null |  |
 | <a id="s-c7cb242b01"></a>`segments` | no | type="array"; default=[]; items=([WriteSegmentReceipt](#s-f1c59d947a)); maxItems=128; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"exact-adapter-write-traversal","reason":"bounded-storage-write-segment-page"} |  |
 | <a id="s-19c41d3e62"></a>`session` | yes | [WriteSession](#s-3303effcc4) |  |
 | <a id="s-a60eb0650f"></a>`traversal_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
 
 ##### Definitions
 
+- [NonnegativeDecimal](#s-71071b1afc)
+- [PositiveDecimal](#s-5fe367ab7e)
 - [WriteCompletionAuthority](#s-bdd5ecbe60)
 - [WriteSegmentReceipt](#s-f1c59d947a)
 - [WriteSession](#s-3303effcc4)
+
+##### <a id="s-71071b1afc"></a>definition `NonnegativeDecimal`
+
+- <a id="s-e7ebe6c759"></a>`type`: `"string"`
+- <a id="s-2cfa2e037e"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
+##### <a id="s-5fe367ab7e"></a>definition `PositiveDecimal`
+
+- <a id="s-7f37f414ff"></a>`type`: `"string"`
+- <a id="s-8dcf77dcf1"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
 ##### <a id="s-bdd5ecbe60"></a>definition `WriteCompletionAuthority`
 
@@ -59,8 +71,8 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-c412c0cfe6"></a>`authority_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
-| <a id="s-93343dc83f"></a>`segment_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-45b6a6bed2"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-93343dc83f"></a>`segment_count` | yes | [NonnegativeDecimal](#s-71071b1afc) |  |
+| <a id="s-45b6a6bed2"></a>`stored_bytes` | yes | [NonnegativeDecimal](#s-71071b1afc) |  |
 
 ##### <a id="s-f1c59d947a"></a>definition `WriteSegmentReceipt`
 
@@ -72,9 +84,9 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-04a6cbda43"></a>`number` | yes | type="integer"; minimum=1 |  |
+| <a id="s-04a6cbda43"></a>`number` | yes | [PositiveDecimal](#s-5fe367ab7e) |  |
 | <a id="s-16e346847c"></a>`segment_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
-| <a id="s-5d370e6e2f"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-5d370e6e2f"></a>`stored_bytes` | yes | [PositiveDecimal](#s-5fe367ab7e) |  |
 | <a id="s-ed65f66ca2"></a>`stored_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 
 ##### <a id="s-3303effcc4"></a>definition `WriteSession`
@@ -87,7 +99,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3d82c6f0a9"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-3d82c6f0a9"></a>`expected_bytes` | yes | [PositiveDecimal](#s-5fe367ab7e) |  |
 | <a id="s-f80ef4dafd"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-d40cc4ae9e"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
 
@@ -125,7 +137,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: dc907e3ab5e960db95c573aa18b1cb8a99006d44782b4226127a9a87cb1c7b22 -->
+<!-- exact-contract-value: eff354b4e5aa51aabd0ebdb5a6bb43a0fe2784ed1541964b8331980fa95d9425 -->
 
 ```json
 {
@@ -133,6 +145,14 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
+        "PositiveDecimal": {
+          "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+          "type": "string"
+        },
         "WriteCompletionAuthority": {
           "additionalProperties": false,
           "properties": {
@@ -142,12 +162,10 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "segment_count": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal"
             },
             "stored_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal"
             }
           },
           "required": [
@@ -161,8 +179,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "number": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/PositiveDecimal"
             },
             "segment_token": {
               "maxLength": 4000,
@@ -170,8 +187,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "stored_bytes": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/PositiveDecimal"
             },
             "stored_sha256": {
               "anyOf": [
@@ -197,8 +213,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "expected_bytes": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/PositiveDecimal"
             },
             "object_path": {
               "maxLength": 4096,
@@ -235,8 +250,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "next_after_number": {
           "anyOf": [
             {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/PositiveDecimal"
             },
             {
               "type": "null"
@@ -272,7 +286,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "'(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, traversal_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)], segments: Annotated[tuple[riverhog_storage_adapter_protocol.protocol.WriteSegmentReceipt, ...], MaxLen(max_length=128)] = (), next_after_number: Annotated[int | None, Ge(ge=1)] = None, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionAuthority | None = None) -> None'"
+    "signature": "'(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, traversal_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)], segments: Annotated[tuple[riverhog_storage_adapter_protocol.protocol.WriteSegmentReceipt, ...], MaxLen(max_length=128)] = (), next_after_number: PositiveDecimal | None = None, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionAuthority | None = None) -> None'"
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

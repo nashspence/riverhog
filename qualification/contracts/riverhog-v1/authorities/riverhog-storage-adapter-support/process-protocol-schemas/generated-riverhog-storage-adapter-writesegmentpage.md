@@ -26,16 +26,28 @@ One bounded page under an adapter-owned immutable traversal view.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-05723f37a4"></a>`completion` | no | anyOf=[([WriteCompletionAuthority](#s-21da49f925)); (type="null")]; default=null |  |
-| <a id="s-2130080be0"></a>`next_after_number` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null; title="Next After Number" |  |
+| <a id="s-2130080be0"></a>`next_after_number` | no | anyOf=[([PositiveDecimal](#s-7c29ea30ee)); (type="null")]; default=null |  |
 | <a id="s-33643dd5a1"></a>`segments` | no | type="array"; default=[]; items=([WriteSegmentReceipt](#s-49182d9498)); maxItems=128; title="Segments"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"exact-adapter-write-traversal","reason":"bounded-storage-write-segment-page"} |  |
 | <a id="s-2b84ac917f"></a>`session` | yes | [WriteSession](#s-182505f3d5) |  |
 | <a id="s-401c234753"></a>`traversal_token` | yes | type="string"; maxLength=4000; minLength=1; title="Traversal Token" |  |
 
 ### Definitions
 
+- [NonnegativeDecimal](#s-66040b9130)
+- [PositiveDecimal](#s-7c29ea30ee)
 - [WriteCompletionAuthority](#s-21da49f925)
 - [WriteSegmentReceipt](#s-49182d9498)
 - [WriteSession](#s-182505f3d5)
+
+### <a id="s-66040b9130"></a>definition `NonnegativeDecimal`
+
+- <a id="s-bbb19ac481"></a>`type`: `"string"`
+- <a id="s-553097a318"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
+### <a id="s-7c29ea30ee"></a>definition `PositiveDecimal`
+
+- <a id="s-63efb9fa90"></a>`type`: `"string"`
+- <a id="s-268380c69d"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
 ### <a id="s-21da49f925"></a>definition `WriteCompletionAuthority`
 
@@ -50,8 +62,8 @@ One bounded page under an adapter-owned immutable traversal view.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-be34d2262f"></a>`authority_token` | yes | type="string"; maxLength=4000; minLength=1; title="Authority Token" | Bounded opaque adapter-issued authority for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged. |
-| <a id="s-10adf909eb"></a>`segment_count` | yes | type="integer"; minimum=0; title="Segment Count" |  |
-| <a id="s-347c213eaf"></a>`stored_bytes` | yes | type="integer"; minimum=0; title="Stored Bytes" |  |
+| <a id="s-10adf909eb"></a>`segment_count` | yes | [NonnegativeDecimal](#s-66040b9130) |  |
+| <a id="s-347c213eaf"></a>`stored_bytes` | yes | [NonnegativeDecimal](#s-66040b9130) |  |
 
 ### <a id="s-49182d9498"></a>definition `WriteSegmentReceipt`
 
@@ -64,9 +76,9 @@ One bounded page under an adapter-owned immutable traversal view.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4cd5e84a2c"></a>`number` | yes | type="integer"; minimum=1; title="Number" |  |
+| <a id="s-4cd5e84a2c"></a>`number` | yes | [PositiveDecimal](#s-7c29ea30ee) |  |
 | <a id="s-61c3694c07"></a>`segment_token` | yes | type="string"; maxLength=4000; minLength=1; title="Segment Token" |  |
-| <a id="s-888b147fe3"></a>`stored_bytes` | yes | type="integer"; minimum=1; title="Stored Bytes" |  |
+| <a id="s-888b147fe3"></a>`stored_bytes` | yes | [PositiveDecimal](#s-7c29ea30ee) |  |
 | <a id="s-bf436c18ac"></a>`stored_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null; title="Stored Sha256" |  |
 
 ### <a id="s-182505f3d5"></a>definition `WriteSession`
@@ -80,7 +92,7 @@ One bounded page under an adapter-owned immutable traversal view.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-191777666f"></a>`expected_bytes` | yes | type="integer"; minimum=1; title="Expected Bytes" | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
+| <a id="s-191777666f"></a>`expected_bytes` | yes | [PositiveDecimal](#s-7c29ea30ee) | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
 | <a id="s-d8564aa07c"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
 | <a id="s-059cc0748b"></a>`write_token` | yes | type="string"; maxLength=4000; minLength=1; title="Write Token" | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
 
@@ -159,11 +171,19 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d1d971aecf4fda3444d770576aa32bb6527302511e9401a9b027918ec8ae3b38 -->
+<!-- exact-contract-value: 6cd64e7bd0a57b50185bc48b6a03cd2b1bcdf25a2eeee7c52b23ac86176ae432 -->
 
 ```json
 {
   "$defs": {
+    "NonnegativeDecimal": {
+      "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+      "type": "string"
+    },
+    "PositiveDecimal": {
+      "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+      "type": "string"
+    },
     "WriteCompletionAuthority": {
       "additionalProperties": false,
       "description": "Adapter-issued terminal authority for one exact active-write state.\n\nConsumers echo the opaque token unchanged. It is neither a credential nor a\nbearer capability; completion remains independently authorized. Once an exact\nimmutable object is published, its completed-object identity supersedes this\ntransport authority for terminal reconciliation.",
@@ -176,14 +196,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "segment_count": {
-          "minimum": 0,
-          "title": "Segment Count",
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         "stored_bytes": {
-          "minimum": 0,
-          "title": "Stored Bytes",
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         }
       },
       "required": [
@@ -198,9 +214,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "additionalProperties": false,
       "properties": {
         "number": {
-          "minimum": 1,
-          "title": "Number",
-          "type": "integer"
+          "$ref": "#/$defs/PositiveDecimal"
         },
         "segment_token": {
           "maxLength": 4000,
@@ -209,9 +223,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "stored_bytes": {
-          "minimum": 1,
-          "title": "Stored Bytes",
-          "type": "integer"
+          "$ref": "#/$defs/PositiveDecimal"
         },
         "stored_sha256": {
           "anyOf": [
@@ -239,10 +251,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "additionalProperties": false,
       "properties": {
         "expected_bytes": {
-          "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
-          "minimum": 1,
-          "title": "Expected Bytes",
-          "type": "integer"
+          "$ref": "#/$defs/PositiveDecimal",
+          "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal."
         },
         "object_path": {
           "maxLength": 4096,
@@ -284,15 +294,13 @@ The following JSON is the complete value owned at each machine-authority pointer
     "next_after_number": {
       "anyOf": [
         {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/PositiveDecimal"
         },
         {
           "type": "null"
         }
       ],
-      "default": null,
-      "title": "Next After Number"
+      "default": null
     },
     "segments": {
       "default": [],

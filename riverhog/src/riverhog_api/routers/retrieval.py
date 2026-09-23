@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import Annotated
+from typing import Annotated, cast
 
 from fastapi import Header, Query, Request, Response
 from fastapi.responses import StreamingResponse
@@ -51,6 +51,10 @@ router = RiverhogRouter(tags=["retrieval"])
 
 def _files(request: RetrievalPlanRequest) -> list[tuple[int, str]]:
     return [(item.collection_id, item.path) for item in request.files]
+
+
+def _cache_object_wire(value: dict[str, object]) -> dict[str, object]:
+    return {**value, "collection_id": str(value["collection_id"])}
 
 
 @router.get("/retrieval-cache", response_model=RetrievalCacheStatusOut)
@@ -103,29 +107,35 @@ def list_retrieval_cache_objects(
         page_token=page_token,
         selectors=selectors,
     )
-    return RetrievalCacheObjectListOut.model_validate(
-        page_payload(
-            container.retrieval.list_cache_objects(
-                page_size=page_size,
-                position=position,
-                q=q,
-                collection_id=collection_id,
-                source_store=source_store,
-                cache_store=cache_store,
-                state=state,
-                protection=protection,
-                expires_before=expires_before,
-                expires_after=expires_after,
-                sort=sort,
-                order=order,
-                principal=principal,
-            ),
-            container=container,
+    payload = page_payload(
+        container.retrieval.list_cache_objects(
+            page_size=page_size,
+            position=position,
+            q=q,
+            collection_id=collection_id,
+            source_store=source_store,
+            cache_store=cache_store,
+            state=state,
+            protection=protection,
+            expires_before=expires_before,
+            expires_after=expires_after,
+            sort=sort,
+            order=order,
             principal=principal,
-            operation="list_retrieval_cache_objects",
-            selectors=selectors,
-        )
+        ),
+        container=container,
+        principal=principal,
+        operation="list_retrieval_cache_objects",
+        selectors=selectors,
     )
+    filters = dict(cast(dict[str, object], payload["filters"]))
+    if filters["collection_id"] is not None:
+        filters["collection_id"] = str(filters["collection_id"])
+    payload["filters"] = filters
+    payload["objects"] = [
+        _cache_object_wire(row) for row in cast(list[dict[str, object]], payload["objects"])
+    ]
+    return RetrievalCacheObjectListOut.model_validate(payload)
 
 
 @router.get(
@@ -140,11 +150,13 @@ def get_retrieval_cache_object(
     container: ContainerDep,
 ) -> RetrievalCacheObjectOut:
     return RetrievalCacheObjectOut.model_validate(
-        container.retrieval.get_cache_object(
-            collection_id=collection_id,
-            source_store=source_store,
-            object_id=object_id,
-            principal=principal,
+        _cache_object_wire(
+            container.retrieval.get_cache_object(
+                collection_id=collection_id,
+                source_store=source_store,
+                object_id=object_id,
+                principal=principal,
+            )
         )
     )
 

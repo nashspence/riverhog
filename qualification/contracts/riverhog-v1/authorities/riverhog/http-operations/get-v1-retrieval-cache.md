@@ -58,7 +58,7 @@ Retrieval Cache Status
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/retrieval.py::retrieval\_cache\_status](../../../../../../riverhog/src/riverhog_api/routers/retrieval.py#L56)
+- **Handler:** [riverhog/src/riverhog\_api/routers/retrieval.py::retrieval\_cache\_status](../../../../../../riverhog/src/riverhog_api/routers/retrieval.py#L60)
 
 ### Structural operation bindings
 
@@ -77,7 +77,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "piggity",
       "result_identity": "piggity-cli-result/retrieval/cache/status/v1",
       "source": {
-        "line": 2767,
+        "line": 2776,
         "module": "piggity.main",
         "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
         "symbol": "retrieval_cache_status_cmd"
@@ -92,7 +92,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.retrieval_cache_status",
       "source": {
-        "line": 898,
+        "line": 907,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.retrieval_cache_status"

@@ -24,14 +24,20 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-debcf1b15e"></a>`expected_bytes` | yes | type="integer"; minimum=0; title="Expected Bytes" |  |
+| <a id="s-debcf1b15e"></a>`expected_bytes` | yes | [NonnegativeDecimal](#s-7e0a34ce1f) |  |
 | <a id="s-6d80e36046"></a>`object` | yes | [ObjectLocator](#s-a35c176f55) |  |
-| <a id="s-57ba00ac3d"></a>`offset` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; default=null; title="Offset" |  |
-| <a id="s-56c4609936"></a>`size` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; default=null; title="Size" |  |
+| <a id="s-57ba00ac3d"></a>`offset` | no | anyOf=[([NonnegativeDecimal](#s-7e0a34ce1f)); (type="null")]; default=null |  |
+| <a id="s-56c4609936"></a>`size` | no | anyOf=[([NonnegativeDecimal](#s-7e0a34ce1f)); (type="null")]; default=null |  |
 
 ### Definitions
 
+- [NonnegativeDecimal](#s-7e0a34ce1f)
 - [ObjectLocator](#s-a35c176f55)
+
+### <a id="s-7e0a34ce1f"></a>definition `NonnegativeDecimal`
+
+- <a id="s-9673f50c44"></a>`type`: `"string"`
+- <a id="s-302da974e8"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ### <a id="s-a35c176f55"></a>definition `ObjectLocator`
 
@@ -80,11 +86,15 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8f080cf57778767bde220ff2111c9ba3501ad753c8492b1759db04b8451d108d -->
+<!-- exact-contract-value: 40b0c2a8fb49466de3f72787caecdc5ce3da3f780ec89cdcf58c61a8ee84f95e -->
 
 ```json
 {
   "$defs": {
+    "NonnegativeDecimal": {
+      "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+      "type": "string"
+    },
     "ObjectLocator": {
       "additionalProperties": false,
       "properties": {
@@ -119,9 +129,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "additionalProperties": false,
   "properties": {
     "expected_bytes": {
-      "minimum": 0,
-      "title": "Expected Bytes",
-      "type": "integer"
+      "$ref": "#/$defs/NonnegativeDecimal"
     },
     "object": {
       "$ref": "#/$defs/ObjectLocator"
@@ -129,28 +137,24 @@ The following JSON is the complete value owned at each machine-authority pointer
     "offset": {
       "anyOf": [
         {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         {
           "type": "null"
         }
       ],
-      "default": null,
-      "title": "Offset"
+      "default": null
     },
     "size": {
       "anyOf": [
         {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         {
           "type": "null"
         }
       ],
-      "default": null,
-      "title": "Size"
+      "default": null
     }
   },
   "required": [

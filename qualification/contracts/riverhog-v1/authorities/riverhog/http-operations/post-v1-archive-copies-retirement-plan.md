@@ -88,7 +88,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "piggity",
       "result_identity": "piggity-cli-result/archive/retire/v1",
       "source": {
-        "line": 3110,
+        "line": 3119,
         "module": "piggity.main",
         "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
         "symbol": "archive_retire_cmd"
@@ -103,7 +103,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.plan_archive_copy_retirement",
       "source": {
-        "line": 2493,
+        "line": 2502,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.plan_archive_copy_retirement"

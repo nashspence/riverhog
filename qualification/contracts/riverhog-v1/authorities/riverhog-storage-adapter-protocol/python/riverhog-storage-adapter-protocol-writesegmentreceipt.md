@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-3443b7a8ad"></a>`kind`: `"class"`
-- <a id="s-e987d5edeb"></a>`signature`: `"\"(*, number: Annotated[int, Ge(ge=1)], segment_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)], stored_bytes: Annotated[int, Ge(ge=1)], stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None) -> None\""`
+- <a id="s-e987d5edeb"></a>`signature`: `"\"(*, number: PositiveDecimal, segment_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)], stored_bytes: PositiveDecimal, stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None) -> None\""`
 
 #### Validated model schema
 
@@ -36,10 +36,19 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-41111b1770"></a>`number` | yes | type="integer"; minimum=1 |  |
+| <a id="s-41111b1770"></a>`number` | yes | [PositiveDecimal](#s-4550057dcf) |  |
 | <a id="s-8e844b4616"></a>`segment_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
-| <a id="s-2114107bd7"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-2114107bd7"></a>`stored_bytes` | yes | [PositiveDecimal](#s-4550057dcf) |  |
 | <a id="s-a22f06e6d5"></a>`stored_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
+
+##### Definitions
+
+- [PositiveDecimal](#s-4550057dcf)
+
+##### <a id="s-4550057dcf"></a>definition `PositiveDecimal`
+
+- <a id="s-c46635ae77"></a>`type`: `"string"`
+- <a id="s-1a72f85b47"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
 ## Governing policies
 
@@ -68,18 +77,23 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c1d481fd51eb44770f0deb3d5c419abf4f89f4db6e0d8749705ec34cb748254d -->
+<!-- exact-contract-value: 2cdc57e92a34d7c2a2dfeda1ab2938a6997765f94eff31f9d01840b61c79a46e -->
 
 ```json
 {
   "contract": {
     "kind": "class",
     "schema": {
+      "$defs": {
+        "PositiveDecimal": {
+          "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+          "type": "string"
+        }
+      },
       "additionalProperties": false,
       "properties": {
         "number": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/PositiveDecimal"
         },
         "segment_token": {
           "maxLength": 4000,
@@ -87,8 +101,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "stored_bytes": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/PositiveDecimal"
         },
         "stored_sha256": {
           "anyOf": [
@@ -110,7 +123,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, number: Annotated[int, Ge(ge=1)], segment_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)], stored_bytes: Annotated[int, Ge(ge=1)], stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None) -> None\""
+    "signature": "\"(*, number: PositiveDecimal, segment_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)], stored_bytes: PositiveDecimal, stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

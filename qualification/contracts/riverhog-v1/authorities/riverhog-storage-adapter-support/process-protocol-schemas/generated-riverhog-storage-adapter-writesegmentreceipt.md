@@ -24,10 +24,19 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-88035ebc6e"></a>`number` | yes | type="integer"; minimum=1; title="Number" |  |
+| <a id="s-88035ebc6e"></a>`number` | yes | [PositiveDecimal](#s-68b98886d0) |  |
 | <a id="s-0f6d9c2a15"></a>`segment_token` | yes | type="string"; maxLength=4000; minLength=1; title="Segment Token" |  |
-| <a id="s-4186773e61"></a>`stored_bytes` | yes | type="integer"; minimum=1; title="Stored Bytes" |  |
+| <a id="s-4186773e61"></a>`stored_bytes` | yes | [PositiveDecimal](#s-68b98886d0) |  |
 | <a id="s-48aa910874"></a>`stored_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null; title="Stored Sha256" |  |
+
+### Definitions
+
+- [PositiveDecimal](#s-68b98886d0)
+
+### <a id="s-68b98886d0"></a>definition `PositiveDecimal`
+
+- <a id="s-5a7acb4aff"></a>`type`: `"string"`
+- <a id="s-5ccbf487ff"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
 ### Progression, limits, and lifecycle
 
@@ -74,16 +83,20 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 78f82d84ff68316a37a5d4d95d212d082ea0eada74506b6745aee67978f169da -->
+<!-- exact-contract-value: b47c6bd29cd5c5919a0e62979094f00ea0fbc7668a311dc2aebf42345fce0b60 -->
 
 ```json
 {
+  "$defs": {
+    "PositiveDecimal": {
+      "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+      "type": "string"
+    }
+  },
   "additionalProperties": false,
   "properties": {
     "number": {
-      "minimum": 1,
-      "title": "Number",
-      "type": "integer"
+      "$ref": "#/$defs/PositiveDecimal"
     },
     "segment_token": {
       "maxLength": 4000,
@@ -92,9 +105,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "stored_bytes": {
-      "minimum": 1,
-      "title": "Stored Bytes",
-      "type": "integer"
+      "$ref": "#/$defs/PositiveDecimal"
     },
     "stored_sha256": {
       "anyOf": [

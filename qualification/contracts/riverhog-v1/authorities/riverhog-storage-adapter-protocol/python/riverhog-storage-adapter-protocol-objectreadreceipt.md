@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-0dae936377"></a>`kind`: `"class"`
-- <a id="s-147b5a8af6"></a>`signature`: `"'(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, total_bytes: Annotated[int, Ge(ge=0)], offset: Annotated[int, Ge(ge=0)], read_bytes: Annotated[int, Ge(ge=0)]) -> None'"`
+- <a id="s-147b5a8af6"></a>`signature`: `"'(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, total_bytes: NonnegativeDecimal, offset: NonnegativeDecimal, read_bytes: NonnegativeDecimal) -> None'"`
 
 #### Validated model schema
 
@@ -37,13 +37,19 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-3feef6f54a"></a>`object` | yes | [ObjectLocator](#s-4d487770c6) |  |
-| <a id="s-897ac44be0"></a>`offset` | yes | type="integer"; minimum=0 |  |
-| <a id="s-db424d7fdd"></a>`read_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-e930bb066b"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-897ac44be0"></a>`offset` | yes | [NonnegativeDecimal](#s-c58b8e0d85) |  |
+| <a id="s-db424d7fdd"></a>`read_bytes` | yes | [NonnegativeDecimal](#s-c58b8e0d85) |  |
+| <a id="s-e930bb066b"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-c58b8e0d85) |  |
 
 ##### Definitions
 
+- [NonnegativeDecimal](#s-c58b8e0d85)
 - [ObjectLocator](#s-4d487770c6)
+
+##### <a id="s-c58b8e0d85"></a>definition `NonnegativeDecimal`
+
+- <a id="s-4c30e57ae3"></a>`type`: `"string"`
+- <a id="s-2ffc7cae7a"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-4d487770c6"></a>definition `ObjectLocator`
 
@@ -91,7 +97,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f87d936730c11d2d83e10b7ee800519af927d0cd228db5945e0eecef367e1b29 -->
+<!-- exact-contract-value: ce4d2dc228f17f529e4adda1c10d7dc201549f2d89a9f357edb68bf4e6cd4681 -->
 
 ```json
 {
@@ -99,6 +105,10 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
         "ObjectLocator": {
           "additionalProperties": false,
           "properties": {
@@ -133,16 +143,13 @@ The following JSON is the complete value owned at each machine-authority pointer
           "$ref": "#/$defs/ObjectLocator"
         },
         "offset": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         "read_bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         },
         "total_bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal"
         }
       },
       "required": [
@@ -153,7 +160,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "'(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, total_bytes: Annotated[int, Ge(ge=0)], offset: Annotated[int, Ge(ge=0)], read_bytes: Annotated[int, Ge(ge=0)]) -> None'"
+    "signature": "'(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, total_bytes: NonnegativeDecimal, offset: NonnegativeDecimal, read_bytes: NonnegativeDecimal) -> None'"
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

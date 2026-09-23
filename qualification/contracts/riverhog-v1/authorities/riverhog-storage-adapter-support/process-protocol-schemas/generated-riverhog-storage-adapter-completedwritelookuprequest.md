@@ -24,11 +24,20 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d6b613d625"></a>`expected_bytes` | yes | type="integer"; minimum=1; title="Expected Bytes" |  |
+| <a id="s-d6b613d625"></a>`expected_bytes` | yes | [PositiveDecimal](#s-53abf440a5) |  |
 | <a id="s-558690d0bf"></a>`expected_content_type` | yes | type="string"; maxLength=255; minLength=1; title="Expected Content Type" |  |
 | <a id="s-8c0b60131f"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"]; title="Expected Placement" |  |
 | <a id="s-ceec1bb3a7"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
 | <a id="s-dc8a372d2a"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; title="Required Identity Assertions"; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
+
+### Definitions
+
+- [PositiveDecimal](#s-53abf440a5)
+
+### <a id="s-53abf440a5"></a>definition `PositiveDecimal`
+
+- <a id="s-26846a936f"></a>`type`: `"string"`
+- <a id="s-1e72974aa8"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
 ### Progression, limits, and lifecycle
 
@@ -77,16 +86,20 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3f6289ea7cdb8562a130c3d3df28e4217ae0490a38d84f2f2158dafb98e18689 -->
+<!-- exact-contract-value: 8557b5a8676d11e86387a84720802c031aad1a451b29d1b96872109b8a993834 -->
 
 ```json
 {
+  "$defs": {
+    "PositiveDecimal": {
+      "pattern": "^[1-9][0-9]*(?![\\s\\S])",
+      "type": "string"
+    }
+  },
   "additionalProperties": false,
   "properties": {
     "expected_bytes": {
-      "minimum": 1,
-      "title": "Expected Bytes",
-      "type": "integer"
+      "$ref": "#/$defs/PositiveDecimal"
     },
     "expected_content_type": {
       "maxLength": 255,

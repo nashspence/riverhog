@@ -166,6 +166,26 @@ def test_client_download_timeout_environment_reaches_download_transport(
 
 
 @pytest.mark.parametrize(
+    "raw",
+    [
+        b'{"collection_id":"1","collection_id":"2"}',
+        b'{"collection_id":9007199254740993}',
+    ],
+)
+def test_client_rejects_ambiguous_json_response(raw: bytes) -> None:
+    client = ApiClient(base_url="https://riverhog.test")
+    client._request_client = httpx.Client(
+        base_url=client.base_url,
+        transport=httpx.MockTransport(lambda _request: httpx.Response(200, content=raw)),
+    )
+    try:
+        with pytest.raises(InvalidState, match="invalid JSON"):
+            client._json("list_collections", "GET", "/v1/catalog/collections")
+    finally:
+        client.close()
+
+
+@pytest.mark.parametrize(
     ("code", "error_type", "status"),
     [
         ("unauthorized", Unauthorized, 401),

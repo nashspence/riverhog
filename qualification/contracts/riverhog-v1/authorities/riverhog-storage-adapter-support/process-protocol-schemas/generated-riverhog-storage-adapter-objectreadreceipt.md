@@ -26,13 +26,19 @@ Adapter-observed identity and range for one single-pass read.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-036b19f39b"></a>`object` | yes | [ObjectLocator](#s-43c741ab8f) |  |
-| <a id="s-66b82b7e4f"></a>`offset` | yes | type="integer"; minimum=0; title="Offset" |  |
-| <a id="s-cbc2c869b9"></a>`read_bytes` | yes | type="integer"; minimum=0; title="Read Bytes" |  |
-| <a id="s-214b4e2d30"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
+| <a id="s-66b82b7e4f"></a>`offset` | yes | [NonnegativeDecimal](#s-04ccbcd3c8) |  |
+| <a id="s-cbc2c869b9"></a>`read_bytes` | yes | [NonnegativeDecimal](#s-04ccbcd3c8) |  |
+| <a id="s-214b4e2d30"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-04ccbcd3c8) |  |
 
 ### Definitions
 
+- [NonnegativeDecimal](#s-04ccbcd3c8)
 - [ObjectLocator](#s-43c741ab8f)
+
+### <a id="s-04ccbcd3c8"></a>definition `NonnegativeDecimal`
+
+- <a id="s-a4f2ac2bc4"></a>`type`: `"string"`
+- <a id="s-057b6a6cd3"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ### <a id="s-43c741ab8f"></a>definition `ObjectLocator`
 
@@ -48,16 +54,6 @@ Adapter-observed identity and range for one single-pass read.
 | <a id="s-bb4835dae2"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
 | <a id="s-d0c342614f"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null; title="Revision" |  |
 
-### Progression, limits, and lifecycle
-
-#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog-storage-adapter-protocol"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [field offset](#s-66b82b7e4f) | `value · schema-value · operational_policy` | shared above |
-
 ## Maintained corroboration
 
 ### Related interface records
@@ -66,10 +62,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ## Governing policies
 
-[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
-
 - <a id="pa-5c2c31854c"></a>[compatibility/components/v1](../../release/compatibility-guarantees/compatibility-components.md#p-95e9a12259)
-- <a id="pa-a3448a507f"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 
 ## Evidence
 
@@ -94,11 +87,15 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c00ab742b44d1b708bac1d252dd1dd6fb4882bdec441eb330f63746d635820ce -->
+<!-- exact-contract-value: 250cd17c37e3fc7dd7f3138baaa8404b1d8d4a26b504abbb217a4f37045d1715 -->
 
 ```json
 {
   "$defs": {
+    "NonnegativeDecimal": {
+      "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+      "type": "string"
+    },
     "ObjectLocator": {
       "additionalProperties": false,
       "properties": {
@@ -137,19 +134,13 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$ref": "#/$defs/ObjectLocator"
     },
     "offset": {
-      "minimum": 0,
-      "title": "Offset",
-      "type": "integer"
+      "$ref": "#/$defs/NonnegativeDecimal"
     },
     "read_bytes": {
-      "minimum": 0,
-      "title": "Read Bytes",
-      "type": "integer"
+      "$ref": "#/$defs/NonnegativeDecimal"
     },
     "total_bytes": {
-      "minimum": 0,
-      "title": "Total Bytes",
-      "type": "integer"
+      "$ref": "#/$defs/NonnegativeDecimal"
     }
   },
   "required": [

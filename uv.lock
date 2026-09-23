@@ -1682,6 +1682,7 @@ dependencies = [
     { name = "httpx", extra = ["http2"] },
     { name = "pydantic" },
     { name = "riverhog-application-access" },
+    { name = "riverhog-canonical-json" },
     { name = "riverhog-protocol" },
     { name = "riverhog-provenance-contracts" },
 ]
@@ -1692,6 +1693,7 @@ requires-dist = [
     { name = "httpx", extras = ["http2"], specifier = ">=0.27,<1.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
     { name = "riverhog-application-access", editable = "packages/riverhog-application-access" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
 ]

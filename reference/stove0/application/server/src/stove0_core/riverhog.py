@@ -910,7 +910,7 @@ class Stove0RiverhogClient:
         )
         if (
             payload.get("claim_id") != claim.claim_id
-            or payload.get("fence") != claim.fence
+            or _positive_int(payload.get("fence"), "capability fence") != claim.fence
             or payload.get("audience") != audience
             or tuple(payload.get("actions", ())) != tuple(sorted(set(actions)))
         ):

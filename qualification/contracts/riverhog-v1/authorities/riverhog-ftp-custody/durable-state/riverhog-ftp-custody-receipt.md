@@ -33,11 +33,25 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-9d7edc41a5"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
 | <a id="s-a02010b383"></a>`claim_id` | yes | type="string"; minLength=1; title="Claim Id" |  |
-| <a id="s-26fb5dc079"></a>`collection_id` | yes | type="integer"; minimum=1; title="Collection Id" |  |
+| <a id="s-26fb5dc079"></a>`collection_id` | yes | [CollectionId](#s-fa11e063f9) |  |
 | <a id="s-02b9d25461"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
 | <a id="s-fb0e5e377d"></a>`format` | yes | type="string"; const="riverhog-ftp-adapter-receipt/v1"; title="Format" |  |
 | <a id="s-085dd88286"></a>`riverhog_receipt` | yes | type="object"; additionalProperties=(any JSON value); title="Riverhog Receipt" |  |
 | <a id="s-a6edc25a15"></a>`source_event_id` | yes | type="string"; minLength=1; title="Source Event Id" |  |
+
+#### Definitions
+
+- [CollectionId](#s-fa11e063f9)
+
+#### <a id="s-fa11e063f9"></a>definition `CollectionId`
+
+
+##### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-d37124a68c"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-24935dac01"></a>2 | not=(const="0") |
 
 ## Maintained corroboration
 
@@ -72,13 +86,28 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f364260e5a010db8b2aa8f5c51796183ebf798416a28cbe7b82b0b829e5635e6 -->
+<!-- exact-contract-value: 7526f85189d52134779eccfc8f0b5c5b0a03a47213c542c0be6ba7db0c4ea970 -->
 
 ```json
 {
   "id": "receipt",
   "kind": "json-document",
   "schema": {
+    "$defs": {
+      "CollectionId": {
+        "allOf": [
+          {
+            "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])",
+            "type": "string"
+          },
+          {
+            "not": {
+              "const": "0"
+            }
+          }
+        ]
+      }
+    },
     "additionalProperties": false,
     "properties": {
       "archive_root_sha256": {
@@ -92,9 +121,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "type": "string"
       },
       "collection_id": {
-        "minimum": 1,
-        "title": "Collection Id",
-        "type": "integer"
+        "$ref": "#/$defs/CollectionId"
       },
       "content_identity": {
         "pattern": "^[0-9a-f]{64}$",

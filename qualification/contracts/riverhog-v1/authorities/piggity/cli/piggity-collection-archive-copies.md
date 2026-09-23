@@ -92,7 +92,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 - [cli:piggity](../../../evidence/sources/authorities.md#src-094022231f) — [reference/riverhog/applications/piggity/src/piggity/main.py::&lt;module&gt;](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py)
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::collection\_archive\_copies\_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L2149)
+- **Command callback:** [reference/riverhog/applications/piggity/src/piggity/main.py::collection\_archive\_copies\_cmd](../../../../../../reference/riverhog/applications/piggity/src/piggity/main.py#L2158)
 
 ### Machine authority
 

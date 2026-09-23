@@ -4,7 +4,7 @@
 
 This generated snapshot accounts for the externally exposed surfaces discovered from this repository revision. Discovery means inclusion; no separate acceptance decision is required.
 
-Included contract elements: **4210** · Extent decisions: **2004**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
+Included contract elements: **4210** · Extent decisions: **2003**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
 
 Checked-in references form a closed, tightly scoped, maintainer-selected, nonnormative conformance set.
 
