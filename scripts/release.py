@@ -50,10 +50,6 @@ NOTICE_POLICY = {
     "required_for": ["wheel", "image"],
 }
 IMAGE_DISTRIBUTION_ROOTS_LABEL = "io.github.nashspence.riverhog.distribution-roots"
-REFERENCE_POLICY = (
-    "Checked-in references form a closed, tightly scoped, maintainer-selected, nonnormative "
-    "conformance set."
-)
 PUBLICATION_SCHEMA = "riverhog-release-publication/v1"
 PUBLICATION_POLICY_KEYS = {
     "role_retention",
@@ -65,37 +61,35 @@ CONTRACT_AUTHORITIES = {
     "release": "Coordinated v1 compatibility and publication promises.",
     "repository": "Repository-owned v1 boundary and packaging promises.",
     "riverhog": "The Riverhog service API and its maintained cross-interface operation parity.",
-    "stove0": (
-        "The Stove0 reference application API and its maintained cross-interface operation parity."
-    ),
+    "stove0": "The Stove0 application API and its maintained cross-interface operation parity.",
 }
-GOGURT_REFERENCE_QUALIFICATION = {
-    "purpose": "Maintainer-selected Gogurt reference conformance.",
+GOGURT_PROVIDER_QUALIFICATION = {
+    "purpose": "Gogurt provider conformance for selected platforms.",
     "linux-x64": {
-        "mounted_volume_distribution": "gogurt-linux-mounted-volume",
-        "mounted_volume_provider": "gogurt-linux-mounted-volume",
-        "listener_host_distribution": "gogurt-linux-listener-host",
-        "listener_host_provider": "gogurt-linux-listener-host",
+        "mounted_volume_distribution": "a-gogurt-linux-volume",
+        "mounted_volume_provider": "a-gogurt-linux-volume",
+        "listener_host_distribution": "a-gogurt-linux-listener",
+        "listener_host_provider": "a-gogurt-linux-listener",
     },
     "macos-arm64": {
-        "mounted_volume_distribution": "gogurt-macos-mounted-volume",
-        "mounted_volume_provider": "gogurt-macos-mounted-volume",
-        "listener_host_distribution": "gogurt-macos-listener-host",
-        "listener_host_provider": "gogurt-macos-listener-host",
+        "mounted_volume_distribution": "a-gogurt-macos-volume",
+        "mounted_volume_provider": "a-gogurt-macos-volume",
+        "listener_host_distribution": "a-gogurt-macos-listener",
+        "listener_host_provider": "a-gogurt-macos-listener",
     },
     "windows-x64": {
-        "mounted_volume_distribution": "gogurt-windows-mounted-volume",
-        "mounted_volume_provider": "gogurt-windows-mounted-volume",
-        "listener_host_distribution": "gogurt-windows-listener-host",
-        "listener_host_provider": "gogurt-windows-listener-host",
+        "mounted_volume_distribution": "a-gogurt-windows-volume",
+        "mounted_volume_provider": "a-gogurt-windows-volume",
+        "listener_host_distribution": "a-gogurt-windows-listener",
+        "listener_host_provider": "a-gogurt-windows-listener",
     },
 }
-STORAGE_REFERENCE_QUALIFICATION = {
-    "purpose": "Maintainer-selected storage-adapter reference conformance.",
+STORAGE_PROVIDER_QUALIFICATION = {
+    "purpose": "Storage adapter conformance across selected providers.",
     "distributions": [
-        "riverhog-storage-adapter-aws",
-        "riverhog-storage-adapter-backblaze",
-        "riverhog-storage-adapter-filesystem",
+        "a-riverhog-aws-store",
+        "a-riverhog-b2-store",
+        "a-riverhog-filesystem-store",
     ],
     "cases": [
         "filesystem-retrieval-cache",
@@ -108,38 +102,14 @@ STORAGE_REFERENCE_QUALIFICATION = {
 RELEASE_ROLES = (
     "end_user_artifact",
     "deployed_implementation",
-    "reference_application",
-    "reference_component",
+    "application",
+    "component",
     "reusable_library",
     "internal_build_unit",
     "test_only_artifact",
 )
 STATE_INVENTORY_SCHEMA = "riverhog-durable-state-inventory/v1"
-PROJECT_README = {
-    "text": "Riverhog v1 component. See the project URL for documentation and releases.",
-    "content-type": "text/markdown",
-}
-REFERENCE_PROJECT_README = {
-    "text": (
-        "Optional nonnormative Riverhog v1 reference component. "
-        "See the project URL for documentation and releases."
-    ),
-    "content-type": "text/markdown",
-}
-REFERENCE_APPLICATION_README = {
-    "text": (
-        "Optional nonnormative Riverhog v1 reference application. "
-        "See the project URL for documentation and releases."
-    ),
-    "content-type": "text/markdown",
-}
-REFERENCE_APPLICATION_LIBRARY_README = {
-    "text": (
-        "Public contract or support for a nonnormative Riverhog v1 reference application. "
-        "See the project URL for documentation and releases."
-    ),
-    "content-type": "text/markdown",
-}
+PROJECT_README_FOOTER = "\n\nSee the project URL for documentation and releases."
 PROJECT_PEOPLE = [{"name": "Nash Spence"}]
 PROJECT_CLASSIFIERS = [
     "Programming Language :: Python :: 3 :: Only",
@@ -583,8 +553,6 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
         raise ReleaseError("release tags must use v{version}")
     if config.get("version_policy") != "coordinated":
         raise ReleaseError("Riverhog requires one coordinated product version")
-    if config.get("references") != {"policy": REFERENCE_POLICY}:
-        raise ReleaseError("release.toml differs from the first-party reference policy")
     publication = config.get("publication")
     if (
         not isinstance(publication, dict)
@@ -595,10 +563,10 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
     if config.get("contract_authorities") != CONTRACT_AUTHORITIES:
         raise ReleaseError("release.toml differs from the explicit contract authorities")
     if config.get("qualification") != {
-        "gogurt_reference": GOGURT_REFERENCE_QUALIFICATION,
-        "storage_reference": STORAGE_REFERENCE_QUALIFICATION,
+        "gogurt_providers": GOGURT_PROVIDER_QUALIFICATION,
+        "storage_providers": STORAGE_PROVIDER_QUALIFICATION,
     }:
-        raise ReleaseError("release.toml differs from the selected reference qualifications")
+        raise ReleaseError("release.toml differs from the selected provider qualifications")
     governance = config.get("governance")
     if not isinstance(governance, dict) or set(governance) != GOVERNANCE_KEYS:
         raise ReleaseError("release.toml lacks the complete GitHub governance contract")
@@ -713,16 +681,12 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
             raise ReleaseError(f"{name} has invalid Requires-Python") from exc
         if expected_version is not None and version != expected_version:
             raise ReleaseError(f"{name} is {version}, expected {expected_version}")
-        if classified[relative] == "reference_component":
-            expected_readme = REFERENCE_PROJECT_README
-        elif classified[relative] == "reference_application":
-            expected_readme = REFERENCE_APPLICATION_README
-        elif relative.startswith(("reference/gogurt/packages/", "reference/stove0/packages/")):
-            expected_readme = REFERENCE_APPLICATION_LIBRARY_README
-        else:
-            expected_readme = PROJECT_README
-        if metadata.get("readme") != expected_readme:
-            raise ReleaseError(f"{name} does not carry the common package README")
+        description = str(metadata["description"])
+        if not description.strip() or metadata.get("readme") != {
+            "text": description + PROJECT_README_FOOTER,
+            "content-type": "text/markdown",
+        }:
+            raise ReleaseError(f"{name} does not carry its descriptive package README")
         if metadata.get("authors") != PROJECT_PEOPLE:
             raise ReleaseError(f"{name} does not carry canonical authorship")
         if metadata.get("maintainers") != PROJECT_PEOPLE:
@@ -741,30 +705,18 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
                 path=relative,
                 role=classified[relative],
                 version=version,
-                description=str(metadata["description"]),
+                description=description,
                 requires_python=requires_python,
                 license_expression=license_expression,
             )
         )
 
     for project in projects:
-        is_reference_path = project.path.startswith("reference/")
-        is_reference_role = project.role in {"reference_application", "reference_component"}
-        is_reference_application_library = (
-            project.role == "reusable_library"
-            and project.path.startswith(
-                ("reference/gogurt/packages/", "reference/stove0/packages/")
-            )
-        )
-        if is_reference_path != (is_reference_role or is_reference_application_library):
-            raise ReleaseError(
-                f"{project.name} path and release role disagree about reference ownership"
-            )
-        if is_reference_role and not all(
-            word in project.description.casefold()
-            for word in ("optional", "nonnormative", "reference")
-        ):
-            raise ReleaseError(f"{project.name} does not describe its nonnormative reference role")
+        supplied_path = project.path.startswith("some-implementations/")
+        supplied_role = project.role in {"application", "component"}
+        supplied_library = project.role == "reusable_library" and supplied_path
+        if supplied_path != (supplied_role or supplied_library):
+            raise ReleaseError(f"{project.name} path and release role disagree")
 
     versions = {item.version for item in projects}
     if len(versions) != 1:
@@ -868,41 +820,40 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
         root,
         projects,
     )
-    reference_names = {
-        project.name for project in projects if project.path.startswith("reference/")
+    supplied_names = {
+        project.name for project in projects if project.path.startswith("some-implementations/")
     }
-    reference_component_names = {
-        project.name for project in projects if project.role == "reference_component"
-    }
+    component_names = {project.name for project in projects if project.role == "component"}
     implementation_names = {
         project.name
         for project in projects
-        if project.role in {"end_user_artifact", "deployed_implementation", "reference_application"}
+        if project.role in {"end_user_artifact", "deployed_implementation", "application"}
     }
     for project in projects:
-        if project.path.startswith("reference/"):
+        if project.path.startswith("some-implementations/"):
             continue
-        references = sorted(artifact_dependencies[project.name] & reference_names)
-        if references:
+        supplied_dependencies = sorted(artifact_dependencies[project.name] & supplied_names)
+        if supplied_dependencies:
             raise ReleaseError(
-                f"{project.name} product-owned release unit depends on references: {references}"
+                f"{project.name} product-owned release unit depends on supplied implementations: "
+                f"{supplied_dependencies}"
             )
     for project in projects:
-        if project.role == "reference_component":
+        if project.role == "component":
             continue
-        references = sorted(artifact_dependencies[project.name] & reference_component_names)
-        if references:
+        component_dependencies = sorted(artifact_dependencies[project.name] & component_names)
+        if component_dependencies:
             raise ReleaseError(
-                f"{project.name} depends on independently selected reference components: "
-                f"{references}"
+                f"{project.name} depends on independently selected components: "
+                f"{component_dependencies}"
             )
     for project in projects:
-        if project.role not in {"reference_application", "reference_component"}:
+        if project.role not in {"application", "component"}:
             continue
         implementations = sorted(artifact_dependencies[project.name] & implementation_names)
         if implementations:
             raise ReleaseError(
-                f"{project.name} reference release unit depends on implementation release units: "
+                f"{project.name} supplied release unit depends on application release units: "
                 f"{implementations}"
             )
     for target, value in runtime_images.items():
@@ -912,25 +863,24 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
         ]
         if len(configured_roots) != len(set(configured_roots)):
             raise ReleaseError(f"runtime image repeats a canonical distribution root: {target}")
-        if value["role"] == "reference":
-            if any(
-                roles_by_name[root] not in {"reference_application", "reference_component"}
-                for root in configured_roots
-            ):
-                raise ReleaseError(f"reference image contains a non-reference root: {target}")
+        if value["role"] in {"application", "component"}:
+            expected_roles = (
+                {"application", "component"} if value["role"] == "application" else {"component"}
+            )
+            if any(roles_by_name[root] not in expected_roles for root in configured_roots):
+                raise ReleaseError(f"runtime image has a mismatched structural root: {target}")
         elif value["role"] == "product":
             if roles_by_name[configured_roots[0]] != "deployed_implementation":
                 raise ReleaseError(f"product image lacks a deployed implementation root: {target}")
             product_closure = set().union(
                 *(_dependency_closure(internal_dependencies, root) for root in configured_roots)
             )
-            reference_dependencies = sorted(
-                name for name in product_closure if name in reference_names
+            supplied_dependencies = sorted(
+                name for name in product_closure if name in supplied_names
             )
-            if reference_dependencies:
+            if supplied_dependencies:
                 raise ReleaseError(
-                    f"product image contains reference components: {target} "
-                    f"{reference_dependencies}"
+                    f"product image contains supplied components: {target} {supplied_dependencies}"
                 )
         else:
             raise ReleaseError(f"runtime image has an unknown release role: {target}")
@@ -941,9 +891,10 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
             )
     repositories = [str(value.get("repository", "")) for value in runtime_images.values()]
     if len(set(repositories)) != len(repositories) or any(
-        not value.startswith("ghcr.io/nashspence/riverhog") for value in repositories
+        value["repository"] != f"ghcr.io/nashspence/{target}"
+        for target, value in runtime_images.items()
     ):
-        raise ReleaseError("runtime image repositories are absent, duplicated, or outside GHCR")
+        raise ReleaseError("runtime image repositories must match exact GHCR target names")
     compatibility = config.get("compatibility")
     if not isinstance(compatibility, dict) or set(compatibility) != {
         "components",
@@ -1384,7 +1335,6 @@ def build_release_plan(root: Path, version: str, *, allow_dirty: bool = False) -
         "release_branch": config["release_branch"],
         "version_policy": config["version_policy"],
         "compatibility": config["compatibility"],
-        "reference_policy": config["references"]["policy"],
         "publication": publication,
         "python": python_artifacts,
         "images": images,
@@ -1412,7 +1362,6 @@ def render_release_markdown(plan: dict[str, Any]) -> str:
         f"`{item['license_expression']}` |"
         for item in plan["python"]
     )
-    lines.extend(["", "## First-party reference policy", "", plan["reference_policy"]])
     lines.extend(["", "## Runtime images", ""])
     lines.extend(
         f"- `{item['tags'][0]}` and `{item['tags'][1]}` — {item['role']}, "

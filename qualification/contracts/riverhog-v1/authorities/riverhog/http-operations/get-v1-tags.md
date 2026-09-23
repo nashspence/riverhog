@@ -81,7 +81,7 @@ Exact evidence groups for this contract element:
 
 ### Related interface records
 
-- [piggity tag list](../../piggity/cli/piggity-tag-list.md)
+- [a-riverhog-cli tag list](../../a-riverhog-cli/cli/a-riverhog-cli-tag-list.md)
 - [riverhog_client.ApiClient.list_tags](../../riverhog-client/python/riverhog-client-apiclient-list-tags.md)
 
 ### Referenced contract elements
@@ -127,12 +127,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "tag list",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/tag/list/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/tag/list/v1",
       "source": {
-        "line": 975,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 977,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "tag_list_cmd"
       }
     }

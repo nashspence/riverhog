@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity collection provenance list](../../piggity/cli/piggity-collection-provenance-list.md)
+- [a-riverhog-cli collection provenance list](../../a-riverhog-cli/cli/a-riverhog-cli-collection-provenance-list.md)
 - [GET /v1/collections/{collection_id}/provenance/files](../../riverhog/http-operations/get-v1-collections-collection-id-provenance-files.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

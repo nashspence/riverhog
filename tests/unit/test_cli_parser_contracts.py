@@ -7,11 +7,11 @@ import sys
 from pathlib import Path
 
 import pytest
+from a_riverhog_recovery_tool.cli import _parser as recovery_parser
+from a_stove0_cli.main import app as stove0_app
 from gogurt.cli import app as gogurt_app
 from riverhog_api.app import _parser as riverhog_parser
-from riverhog_recover.cli import _parser as recovery_parser
 from stove0_api.app import _parser as stove0_parser
-from stove0_cli.main import app as stove0_app
 from typer._click.exceptions import BadParameter, UsageError
 from typer.main import get_command
 

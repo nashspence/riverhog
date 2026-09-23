@@ -51,7 +51,7 @@ Remove Collection Tag
 
 ### Related interface records
 
-- [piggity collection tag remove](../../piggity/cli/piggity-collection-tag-remove.md)
+- [a-riverhog-cli collection tag remove](../../a-riverhog-cli/cli/a-riverhog-cli-collection-tag-remove.md)
 - [riverhog_client.ApiClient.remove_collection_tag](../../riverhog-client/python/riverhog-client-apiclient-remove-collection-tag.md)
 
 ### Referenced contract elements
@@ -92,12 +92,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection tag remove",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/tag/remove/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/tag/remove/v1",
       "source": {
-        "line": 1086,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 1088,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "collection_tag_remove_cmd"
       }
     }

@@ -29,9 +29,9 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity local add](../../piggity/cli/piggity-local-add.md)
-- [piggity local repair](../../piggity/cli/piggity-local-repair.md)
-- [piggity local sync](../../piggity/cli/piggity-local-sync.md)
+- [a-riverhog-cli local add](../../a-riverhog-cli/cli/a-riverhog-cli-local-add.md)
+- [a-riverhog-cli local repair](../../a-riverhog-cli/cli/a-riverhog-cli-local-repair.md)
+- [a-riverhog-cli local sync](../../a-riverhog-cli/cli/a-riverhog-cli-local-sync.md)
 - [GET /v1/catalog/collections/{collection_id}/inventory](../../riverhog/http-operations/get-v1-catalog-collections-collection-id-inventory.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

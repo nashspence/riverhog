@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-client:riverhog-token:f05f510122 -->
+<!-- contract-element: configuration-environment:riverhog-client:riverhog-token:e753345b9a -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-c9bbf6ae4d"></a>
+<a id="s-29be11acec"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-f8e9201576"></a>`consumers` | `["riverhog-client"]` |
-| <a id="s-d4eff3f5c1"></a>`default_expressions` | `["unset"]` |
-| <a id="s-cf2890bc74"></a>`id` | `"riverhog-client:environment:RIVERHOG_TOKEN"` |
-| <a id="s-d5025fbc5e"></a>`input_shape` | `"environment-string"` |
-| <a id="s-3ea82a14dd"></a>`name` | `"RIVERHOG_TOKEN"` |
-| <a id="s-12f813c67b"></a>`owner` | `"riverhog-client"` |
+| <a id="s-9e151f5d6f"></a>`consumers` | `["riverhog-client"]` |
+| <a id="s-bf93b03aae"></a>`default_expressions` | `["unset"]` |
+| <a id="s-453e030848"></a>`id` | `"riverhog-client:environment:RIVERHOG_TOKEN"` |
+| <a id="s-0676e4ac00"></a>`input_shape` | `"environment-string"` |
+| <a id="s-7b3cc3529a"></a>`name` | `"RIVERHOG_TOKEN"` |
+| <a id="s-254f42a6bc"></a>`owner` | `"riverhog-client"` |
 
 ## Governing policies
 
-- <a id="pa-bcc80691e8"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-7cc6ae640c"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/20`
+- `/external_contract/configuration_environment/162`
 
 ### Exact owned JSON
 

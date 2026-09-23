@@ -48,7 +48,7 @@ Discard Collection Upload
 
 ### Related interface records
 
-- [piggity collection upload discard](../../piggity/cli/piggity-collection-upload-discard.md)
+- [a-riverhog-cli collection upload discard](../../a-riverhog-cli/cli/a-riverhog-cli-collection-upload-discard.md)
 - [riverhog_client.ApiClient.discard_collection_upload](../../riverhog-client/python/riverhog-client-apiclient-discard-collection-upload.md)
 
 ### Referenced contract elements
@@ -89,12 +89,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection upload discard",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/upload/discard/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/upload/discard/v1",
       "source": {
-        "line": 2433,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2439,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "upload_discard_cmd"
       }
     }

@@ -4,7 +4,7 @@
 
 <!-- contract-element: runtime-images:release:runtime-image-stove0:100d9c8df0 -->
 
-Optional nonnormative transformation reference application for Riverhog.
+Content-opaque transformation application for Riverhog.
 
 | Audit field | Value |
 |---|---|
@@ -17,16 +17,16 @@ Optional nonnormative transformation reference application for Riverhog.
 | Concern | Contract |
 |---|---|
 | <a id="s-a66428c82b"></a>`build_target` | `"stove0"` |
-| <a id="s-4539b9404a"></a>`description` | `"Optional nonnormative transformation reference application for Riverhog."` |
+| <a id="s-4539b9404a"></a>`description` | `"Content-opaque transformation application for Riverhog."` |
 | <a id="s-b9fa096e27"></a>`distribution_roots` | `["stove0-server"]` |
 | <a id="s-3387ab3766"></a>`format` | `"oci-image"` |
 | <a id="s-34f1c9327d"></a>`license_baseline` | `"first-v1-publication"` |
 | <a id="s-dd3feade3c"></a>`license_expression` | `"CAL-1.0"` |
 | <a id="s-858594d9f9"></a>`platforms` | `["linux/amd64"]` |
-| <a id="s-96c6cc98a8"></a>`publication_identity` | `{"coordinate":"ghcr.io/nashspence/riverhog-stove0","kind":"oci-repository"}` |
-| <a id="s-27218090de"></a>`repository` | `"ghcr.io/nashspence/riverhog-stove0"` |
-| <a id="s-309b0af8a3"></a>`role` | `"reference"` |
-| <a id="s-1ca6b0b8f3"></a>`tag_templates` | `["ghcr.io/nashspence/riverhog-stove0:{version}","ghcr.io/nashspence/riverhog-stove0:sha-{source_sha}"]` |
+| <a id="s-96c6cc98a8"></a>`publication_identity` | `{"coordinate":"ghcr.io/nashspence/stove0","kind":"oci-repository"}` |
+| <a id="s-27218090de"></a>`repository` | `"ghcr.io/nashspence/stove0"` |
+| <a id="s-309b0af8a3"></a>`role` | `"application"` |
+| <a id="s-1ca6b0b8f3"></a>`tag_templates` | `["ghcr.io/nashspence/stove0:{version}","ghcr.io/nashspence/stove0:sha-{source_sha}"]` |
 
 ## Existing ownership context
 
@@ -67,12 +67,12 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 01acb7bbdade4ff5c524df803baf9982c1b1c4016598975ebee8b9d1dc4ba65e -->
+<!-- exact-contract-value: 32804e85d63341dfe8876af2d4ff662c8ea44d97db6304132852d57ae79aa807 -->
 
 ```json
 {
   "build_target": "stove0",
-  "description": "Optional nonnormative transformation reference application for Riverhog.",
+  "description": "Content-opaque transformation application for Riverhog.",
   "distribution_roots": [
     "stove0-server"
   ],
@@ -83,14 +83,14 @@ The following JSON is the complete value owned at each machine-authority pointer
     "linux/amd64"
   ],
   "publication_identity": {
-    "coordinate": "ghcr.io/nashspence/riverhog-stove0",
+    "coordinate": "ghcr.io/nashspence/stove0",
     "kind": "oci-repository"
   },
-  "repository": "ghcr.io/nashspence/riverhog-stove0",
-  "role": "reference",
+  "repository": "ghcr.io/nashspence/stove0",
+  "role": "application",
   "tag_templates": [
-    "ghcr.io/nashspence/riverhog-stove0:{version}",
-    "ghcr.io/nashspence/riverhog-stove0:sha-{source_sha}"
+    "ghcr.io/nashspence/stove0:{version}",
+    "ghcr.io/nashspence/stove0:sha-{source_sha}"
   ]
 }
 ```

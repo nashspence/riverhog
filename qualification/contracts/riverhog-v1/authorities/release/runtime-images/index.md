@@ -10,16 +10,16 @@ Published OCI runtime-image identities.
 
 | Exact unit | Classification |
 |---|---|
-| [mango-fish](runtime-image-mango-fish.md) | `reference_application` |
+| [a-review0-materializer](runtime-image-a-review0-materializer.md) | `component` |
+| [a-review0-rclone-target](runtime-image-a-review0-rclone-target.md) | `component` |
+| [a-riverhog-aws-store](runtime-image-a-riverhog-aws-store.md) | `component` |
+| [a-riverhog-b2-store](runtime-image-a-riverhog-b2-store.md) | `component` |
+| [a-riverhog-event-relay](runtime-image-a-riverhog-event-relay.md) | `application` |
+| [a-riverhog-filesystem-store](runtime-image-a-riverhog-filesystem-store.md) | `component` |
+| [a-riverhog-ftp-spool](runtime-image-a-riverhog-ftp-spool.md) | `component` |
+| [a-stove0-exiftool-observer](runtime-image-a-stove0-exiftool-observer.md) | `component` |
+| [a-stove0-ffprobe-sampling-observer](runtime-image-a-stove0-ffprobe-sampling-observer.md) | `component` |
+| [a-stove0-nvenc-av1-opus-target](runtime-image-a-stove0-nvenc-av1-opus-target.md) | `component` |
+| [a-stove0-opus-target](runtime-image-a-stove0-opus-target.md) | `component` |
 | [riverhog](runtime-image-riverhog.md) | `product` |
-| [riverhog-ftp-adapter](runtime-image-riverhog-ftp-adapter.md) | `reference_component` |
-| [riverhog-storage-adapter-aws](runtime-image-riverhog-storage-adapter-aws.md) | `reference_component` |
-| [riverhog-storage-adapter-backblaze](runtime-image-riverhog-storage-adapter-backblaze.md) | `reference_component` |
-| [riverhog-storage-adapter-filesystem](runtime-image-riverhog-storage-adapter-filesystem.md) | `reference_component` |
-| [stove0](runtime-image-stove0.md) | `reference_application` |
-| [stove0-exiftool-observer](runtime-image-stove0-exiftool-observer.md) | `reference_component` |
-| [stove0-ffprobe-sampling-observer](runtime-image-stove0-ffprobe-sampling-observer.md) | `reference_component` |
-| [stove0-nvenc-av1-opus-target](runtime-image-stove0-nvenc-av1-opus-target.md) | `reference_component` |
-| [stove0-opus-target](runtime-image-stove0-opus-target.md) | `reference_component` |
-| [stove0-review-materialize-target](runtime-image-stove0-review-materialize-target.md) | `reference_component` |
-| [stove0-review-rclone-effect-target](runtime-image-stove0-review-rclone-effect-target.md) | `reference_component` |
+| [stove0](runtime-image-stove0.md) | `application` |

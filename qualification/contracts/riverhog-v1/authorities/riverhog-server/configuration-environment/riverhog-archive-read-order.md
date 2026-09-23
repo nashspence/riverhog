@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-archive-read-order:7440a65a7e -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-archive-read-order:43422d392e -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-b200cddc47"></a>
+<a id="s-bd4498fcba"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-a64ea888cd"></a>`consumers` | `["riverhog-server"]` |
-| <a id="s-45ea5bbfc8"></a>`default_expressions` | `["','.join(names)"]` |
-| <a id="s-114bfa5509"></a>`id` | `"riverhog-server:environment:RIVERHOG_ARCHIVE_READ_ORDER"` |
-| <a id="s-e3a22daa43"></a>`input_shape` | `"environment-string"` |
-| <a id="s-5b43242159"></a>`name` | `"RIVERHOG_ARCHIVE_READ_ORDER"` |
-| <a id="s-3435db812d"></a>`owner` | `"riverhog-server"` |
+| <a id="s-b833b4fe07"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-66e522afce"></a>`default_expressions` | `["','.join(names)"]` |
+| <a id="s-5e1fc08ef8"></a>`id` | `"riverhog-server:environment:RIVERHOG_ARCHIVE_READ_ORDER"` |
+| <a id="s-5b74b79655"></a>`input_shape` | `"environment-string"` |
+| <a id="s-9a7cb5cb3c"></a>`name` | `"RIVERHOG_ARCHIVE_READ_ORDER"` |
+| <a id="s-7dd1a5ae30"></a>`owner` | `"riverhog-server"` |
 
 ## Governing policies
 
-- <a id="pa-336f19ad4e"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-1f05d4e5bd"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/41`
+- `/external_contract/configuration_environment/175`
 
 ### Exact owned JSON
 

@@ -37,7 +37,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Executable sources
 
-- [configuration-environment:stove0-server:STOVE0_RECIPES_PATH](../../../evidence/sources/authorities.md#src-afbf7c2b57) — [reference/stove0/application/server/src/stove0\_core/runtime\_config.py::\_required](../../../../../../reference/stove0/application/server/src/stove0_core/runtime_config.py)
+- [configuration-environment:stove0-server:STOVE0_RECIPES_PATH](../../../evidence/sources/authorities.md#src-afbf7c2b57) — [some-implementations/stove0/application/server/src/stove0\_core/runtime\_config.py::\_required](../../../../../../some-implementations/stove0/application/server/src/stove0_core/runtime_config.py)
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
@@ -46,7 +46,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| parser | `stove0-server` | [reference/stove0/application/server/src/stove0\_core/runtime\_config.py](../../../../../../reference/stove0/application/server/src/stove0_core/runtime_config.py) | `values.get(name, '')` |
+| parser | `stove0-server` | [some-implementations/stove0/application/server/src/stove0\_core/runtime\_config.py](../../../../../../some-implementations/stove0/application/server/src/stove0_core/runtime_config.py) | `values.get(name, '')` |
 
 ### Machine authority
 

@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Optional nonnormative path-mounted-volume support for Gogurt reference providers.
+Path-mounted volume support shared by Gogurt providers.
 
 Contract elements: **7** · Extent decisions: **0**
 

@@ -260,7 +260,6 @@ def _relationship_model(
         "schema": RELATIONSHIP_SCHEMA,
         "center": product_nodes[0],
         "product": product_images[0],
-        "reference_policy": boundaries["reference_policy"],
         "nodes": sorted(nodes, key=lambda value: str(value["id"])),
         "edges": sorted(
             edges,

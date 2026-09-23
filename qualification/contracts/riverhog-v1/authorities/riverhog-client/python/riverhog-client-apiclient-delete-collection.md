@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity collection delete](../../piggity/cli/piggity-collection-delete.md)
+- [a-riverhog-cli collection delete](../../a-riverhog-cli/cli/a-riverhog-cli-collection-delete.md)
 - [POST /v1/collections/{collection_id}/delete](../../riverhog/http-operations/post-v1-collections-collection-id-delete.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

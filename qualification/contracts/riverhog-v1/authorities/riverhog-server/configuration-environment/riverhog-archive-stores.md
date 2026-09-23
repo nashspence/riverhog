@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-archive-stores:90252c9be9 -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-archive-stores:2c1c0c6068 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-c80b060880"></a>
+<a id="s-387607e502"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-fe8922d859"></a>`consumers` | `["riverhog-server"]` |
-| <a id="s-63325e3b83"></a>`default_expressions` | `["'archive'"]` |
-| <a id="s-8546fde067"></a>`id` | `"riverhog-server:environment:RIVERHOG_ARCHIVE_STORES"` |
-| <a id="s-2ae46bdb0a"></a>`input_shape` | `"environment-string"` |
-| <a id="s-e9729640af"></a>`name` | `"RIVERHOG_ARCHIVE_STORES"` |
-| <a id="s-09d7007204"></a>`owner` | `"riverhog-server"` |
+| <a id="s-dd9424e6bc"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-43cf01e1d2"></a>`default_expressions` | `["'archive'"]` |
+| <a id="s-84fa5e52b6"></a>`id` | `"riverhog-server:environment:RIVERHOG_ARCHIVE_STORES"` |
+| <a id="s-1939accc0e"></a>`input_shape` | `"environment-string"` |
+| <a id="s-bd5b86f3b7"></a>`name` | `"RIVERHOG_ARCHIVE_STORES"` |
+| <a id="s-c1e07431f9"></a>`owner` | `"riverhog-server"` |
 
 ## Governing policies
 
-- <a id="pa-fc829ed686"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-1a6a6e7494"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/43`
+- `/external_contract/configuration_environment/177`
 
 ### Exact owned JSON
 

@@ -429,7 +429,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Executable sources
 
-- [configuration:stove0-recipe-config:configuration:recipe-catalog](../../../evidence/sources/authorities.md#src-28686050a7) — [reference/stove0/packages/recipe-config/src/stove0\_recipe\_config/models.py::RecipeCatalog](../../../../../../reference/stove0/packages/recipe-config/src/stove0_recipe_config/models.py)
+- [configuration:stove0-recipe-config:configuration:recipe-catalog](../../../evidence/sources/authorities.md#src-28686050a7) — [some-implementations/stove0/packages/recipe-config/src/stove0\_recipe\_config/models.py::RecipeCatalog](../../../../../../some-implementations/stove0/packages/recipe-config/src/stove0_recipe_config/models.py)
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority

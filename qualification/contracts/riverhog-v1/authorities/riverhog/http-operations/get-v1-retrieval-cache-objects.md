@@ -90,7 +90,7 @@ Exact evidence groups for this contract element:
 
 ### Related interface records
 
-- [piggity retrieval cache list](../../piggity/cli/piggity-retrieval-cache-list.md)
+- [a-riverhog-cli retrieval cache list](../../a-riverhog-cli/cli/a-riverhog-cli-retrieval-cache-list.md)
 - [riverhog_client.ApiClient.list_retrieval_cache_objects](../../riverhog-client/python/riverhog-client-apiclient-list-retrieval-cache-objects.md)
 
 ### Referenced contract elements
@@ -143,12 +143,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "retrieval cache list",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/retrieval/cache/list/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/retrieval/cache/list/v1",
       "source": {
-        "line": 2786,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2792,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "retrieval_cache_list_cmd"
       }
     }

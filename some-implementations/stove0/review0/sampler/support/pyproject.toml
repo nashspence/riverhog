@@ -1,0 +1,39 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "review0-sampler-lib"
+version = "0.1.0"
+description = "Runtime and conformance support for Review0 samplers."
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+readme = { text = "Runtime and conformance support for Review0 samplers.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+authors = [{ name = "Nash Spence" }]
+maintainers = [{ name = "Nash Spence" }]
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
+]
+urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
+dependencies = [
+  "http-api-contracts>=0.1,<0.2",
+  "jsonschema>=4.25,<5.0",
+  "pydantic>=2.7,<3.0",
+  "review0-sampler-client>=0.1,<0.2",
+  "review0-sampler-protocol>=0.1,<0.2",
+]
+
+[project.scripts]
+review0-sampler-conformance = "review0_sampler_lib.conformance:main"
+review0-sampler-schemas = "review0_sampler_lib.schemas:main"
+
+[tool.uv.sources]
+http-api-contracts = { workspace = true }
+review0-sampler-client = { workspace = true }
+review0-sampler-protocol = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/review0_sampler_lib"]

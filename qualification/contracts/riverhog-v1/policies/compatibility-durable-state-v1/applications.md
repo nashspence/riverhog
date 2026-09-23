@@ -8,19 +8,25 @@ These are the indexed contract-element applications. Each link reaches the polic
 
 | Authority | Contract element |
 |---|---|
+| `a-riverhog-cli-local` | [a-riverhog-cli-local durable-state identity](../../authorities/a-riverhog-cli-local/durable-state/a-riverhog-cli-local-durable-state-identity.md#pa-775b0800cd) |
+| `a-riverhog-cli-local` | [a-riverhog-cli-local: desired_collection_tags](../../authorities/a-riverhog-cli-local/durable-state/a-riverhog-cli-local-desired-collection-tags.md#pa-8dce33cf4b) |
+| `a-riverhog-cli-local` | [a-riverhog-cli-local: desired_collections](../../authorities/a-riverhog-cli-local/durable-state/a-riverhog-cli-local-desired-collections.md#pa-bada06921a) |
+| `a-riverhog-cli-local` | [a-riverhog-cli-local: desired_files](../../authorities/a-riverhog-cli-local/durable-state/a-riverhog-cli-local-desired-files.md#pa-e5b7da6661) |
+| `a-riverhog-cli-local` | [a-riverhog-cli-local: retrieval_job_files](../../authorities/a-riverhog-cli-local/durable-state/a-riverhog-cli-local-retrieval-job-files.md#pa-ae6f1361af) |
+| `a-riverhog-cli-local` | [a-riverhog-cli-local: retrieval_jobs](../../authorities/a-riverhog-cli-local/durable-state/a-riverhog-cli-local-retrieval-jobs.md#pa-3bb97f1a2a) |
+| `a-riverhog-cli-local` | [a-riverhog-cli-local: settings](../../authorities/a-riverhog-cli-local/durable-state/a-riverhog-cli-local-settings.md#pa-95b367e130) |
+| `a-riverhog-event-relay-cursor` | [a-riverhog-event-relay-cursor durable-state identity](../../authorities/a-riverhog-event-relay-cursor/durable-state/a-riverhog-event-relay-cursor-durable-state-identity.md#pa-7227fa240d) |
+| `a-riverhog-event-relay-cursor` | [a-riverhog-event-relay-cursor: source_cursors](../../authorities/a-riverhog-event-relay-cursor/durable-state/a-riverhog-event-relay-cursor-source-cursors.md#pa-b23785d393) |
+| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody durable-state identity](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-durable-state-identity.md#pa-ef197c2397) |
+| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody: claim](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-claim.md#pa-c59372ca25) |
+| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody: completion-log](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-completion-log.md#pa-f0bcd4a5cf) |
+| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody: operational-database](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-operational-database.md#pa-960ca824e6) |
+| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody: payload](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-payload.md#pa-d97cf58f9f) |
+| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody: receipt](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-receipt.md#pa-12ae7579b8) |
 | `gogurt-listener` | [gogurt-listener durable-state identity](../../authorities/gogurt-listener/durable-state/gogurt-listener-durable-state-identity.md#pa-7ceba5b7a0) |
 | `gogurt-listener` | [gogurt-listener: dispatches](../../authorities/gogurt-listener/durable-state/gogurt-listener-dispatches.md#pa-53b33b8833) |
 | `gogurt-listener` | [gogurt-listener: listener_meta](../../authorities/gogurt-listener/durable-state/gogurt-listener-listener-meta.md#pa-a319da3b00) |
 | `gogurt-listener` | [gogurt-listener: observed_mounts](../../authorities/gogurt-listener/durable-state/gogurt-listener-observed-mounts.md#pa-e4fb6a8fc8) |
-| `mango-fish-cursor` | [mango-fish-cursor durable-state identity](../../authorities/mango-fish-cursor/durable-state/mango-fish-cursor-durable-state-identity.md#pa-2e74142c90) |
-| `mango-fish-cursor` | [mango-fish-cursor: source_cursors](../../authorities/mango-fish-cursor/durable-state/mango-fish-cursor-source-cursors.md#pa-f193d3d478) |
-| `piggity-local` | [piggity-local durable-state identity](../../authorities/piggity-local/durable-state/piggity-local-durable-state-identity.md#pa-f61cf95fd5) |
-| `piggity-local` | [piggity-local: desired_collection_tags](../../authorities/piggity-local/durable-state/piggity-local-desired-collection-tags.md#pa-bd7fe39c0e) |
-| `piggity-local` | [piggity-local: desired_collections](../../authorities/piggity-local/durable-state/piggity-local-desired-collections.md#pa-7b2c0e2091) |
-| `piggity-local` | [piggity-local: desired_files](../../authorities/piggity-local/durable-state/piggity-local-desired-files.md#pa-40c084d495) |
-| `piggity-local` | [piggity-local: retrieval_job_files](../../authorities/piggity-local/durable-state/piggity-local-retrieval-job-files.md#pa-65657b7ffc) |
-| `piggity-local` | [piggity-local: retrieval_jobs](../../authorities/piggity-local/durable-state/piggity-local-retrieval-jobs.md#pa-cd09452534) |
-| `piggity-local` | [piggity-local: settings](../../authorities/piggity-local/durable-state/piggity-local-settings.md#pa-30fa3a7658) |
 | `riverhog-catalog` | [riverhog-catalog durable-state identity](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-durable-state-identity.md#pa-665622a720) |
 | `riverhog-catalog` | [riverhog-catalog: app_key_access_grants](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-app-key-access-grants.md#pa-f421cc5d7b) |
 | `riverhog-catalog` | [riverhog-catalog: app_keys](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-app-keys.md#pa-bbe51cde6f) |
@@ -112,12 +118,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-catalog` | [riverhog-catalog: ux_collection_archive_object_uploads_sequence](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-ux-collection-archive-object-uploads-sequence.md#pa-f8651ed18a) |
 | `riverhog-catalog` | [riverhog-catalog: ux_collection_upload_files_order](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-ux-collection-upload-files-order.md#pa-6de2428404) |
 | `riverhog-catalog` | [riverhog-catalog: ux_collection_uploads_application_idempotency_key](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-ux-collection-uploads-application-idempotency-key.md#pa-51c5d75cb9) |
-| `riverhog-ftp-custody` | [riverhog-ftp-custody durable-state identity](../../authorities/riverhog-ftp-custody/durable-state/riverhog-ftp-custody-durable-state-identity.md#pa-22b7a696d2) |
-| `riverhog-ftp-custody` | [riverhog-ftp-custody: claim](../../authorities/riverhog-ftp-custody/durable-state/riverhog-ftp-custody-claim.md#pa-f978cf0126) |
-| `riverhog-ftp-custody` | [riverhog-ftp-custody: completion-log](../../authorities/riverhog-ftp-custody/durable-state/riverhog-ftp-custody-completion-log.md#pa-a0bfcb8259) |
-| `riverhog-ftp-custody` | [riverhog-ftp-custody: operational-database](../../authorities/riverhog-ftp-custody/durable-state/riverhog-ftp-custody-operational-database.md#pa-5d85c95598) |
-| `riverhog-ftp-custody` | [riverhog-ftp-custody: payload](../../authorities/riverhog-ftp-custody/durable-state/riverhog-ftp-custody-payload.md#pa-eaccf80426) |
-| `riverhog-ftp-custody` | [riverhog-ftp-custody: receipt](../../authorities/riverhog-ftp-custody/durable-state/riverhog-ftp-custody-receipt.md#pa-9da0040fcf) |
 | `riverhog-provenance-installation` | [riverhog-provenance-installation durable state](../../authorities/riverhog-provenance-installation/durable-state/riverhog-provenance-installation-durable-state.md#pa-7845ed3800) |
 | `stove0-control` | [stove0-control durable-state identity](../../authorities/stove0-control/durable-state/stove0-control-durable-state-identity.md#pa-443b48ffb4) |
 | `stove0-control` | [stove0-control: ix_stove0_selection_members_continuation](../../authorities/stove0-control/durable-state/stove0-control-ix-stove0-selection-members-continuation.md#pa-32e00fce9f) |

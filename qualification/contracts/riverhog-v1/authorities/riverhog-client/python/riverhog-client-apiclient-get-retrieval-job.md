@@ -29,10 +29,10 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity local evict](../../piggity/cli/piggity-local-evict.md)
-- [piggity local remove](../../piggity/cli/piggity-local-remove.md)
-- [piggity local repair](../../piggity/cli/piggity-local-repair.md)
-- [piggity local sync](../../piggity/cli/piggity-local-sync.md)
+- [a-riverhog-cli local evict](../../a-riverhog-cli/cli/a-riverhog-cli-local-evict.md)
+- [a-riverhog-cli local remove](../../a-riverhog-cli/cli/a-riverhog-cli-local-remove.md)
+- [a-riverhog-cli local repair](../../a-riverhog-cli/cli/a-riverhog-cli-local-repair.md)
+- [a-riverhog-cli local sync](../../a-riverhog-cli/cli/a-riverhog-cli-local-sync.md)
 - [GET /v1/retrieval-jobs/{job_id}](../../riverhog/http-operations/get-v1-retrieval-jobs-job-id.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

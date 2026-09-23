@@ -77,39 +77,39 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
     assert {project.version for project in projects} == {"0.1.0"}
     assert Counter(project.role for project in projects) == {
         "deployed_implementation": 1,
-        "reference_application": 6,
-        "reference_component": 37,
-        "reusable_library": 25,
+        "application": 6,
+        "component": 29,
+        "reusable_library": 33,
         "internal_build_unit": 3,
     }
     assert {project.name for project in projects} >= {
         "riverhog-client",
         "riverhog-application-access",
-        "riverhog-ftp-adapter",
-        "riverhog-ftp-adapter-api-client",
-        "riverhog-recover",
+        "a-riverhog-ftp-spool",
+        "a-riverhog-ftp-spool-client",
+        "a-riverhog-recovery-tool",
         "riverhog-server",
-        "piggity",
-        "riverhog-storage-adapter-aws",
-        "riverhog-storage-adapter-backblaze",
-        "riverhog-storage-adapter-filesystem",
-        "gogurt-linux-listener-host",
-        "gogurt-linux-mounted-volume",
-        "gogurt-macos-listener-host",
-        "gogurt-macos-mounted-volume",
-        "gogurt-windows-listener-host",
-        "gogurt-windows-mounted-volume",
+        "a-riverhog-cli",
+        "a-riverhog-aws-store",
+        "a-riverhog-b2-store",
+        "a-riverhog-filesystem-store",
+        "a-gogurt-linux-listener",
+        "a-gogurt-linux-volume",
+        "a-gogurt-macos-listener",
+        "a-gogurt-macos-volume",
+        "a-gogurt-windows-listener",
+        "a-gogurt-windows-volume",
         "stove0-server",
-        "stove0-client",
-        "stove0-exiftool-observer",
-        "stove0-ffprobe-sampling-observer",
-        "stove0-nvenc-av1-opus-target",
-        "stove0-nvenc-av1-opus-review-sampler",
-        "stove0-opus-target",
-        "stove0-opus-review-sampler",
-        "stove0-review-materialize-target",
-        "stove0-review-rclone-effect-target",
-        "stove0-review-target-support",
+        "a-stove0-cli",
+        "a-stove0-exiftool-observer",
+        "a-stove0-ffprobe-sampling-observer",
+        "a-stove0-nvenc-av1-opus-target",
+        "a-review0-nvenc-av1-opus-sampler",
+        "a-stove0-opus-target",
+        "a-review0-opus-sampler",
+        "a-review0-materializer",
+        "a-review0-rclone-target",
+        "review0-target-lib",
         "stove0-api-client",
         "stove0-observer-protocol",
         "stove0-observer-client",
@@ -121,21 +121,21 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
         "stove0-media-archive-target-support",
         "stove0-media-metadata-observer-contracts",
         "stove0-media-sampling-observer-contracts",
-        "stove0-review-planning",
-        "stove0-review-target-contracts",
-        "stove0-review-sampler-client",
-        "stove0-review-sampler-protocol",
-        "stove0-review-sampler-support",
+        "review0-planner",
+        "review0-target-contracts",
+        "review0-sampler-client",
+        "review0-sampler-protocol",
+        "review0-sampler-lib",
         "stove0-target-protocol",
         "stove0-target-client",
         "stove0-target-support",
     }
-    assert {project.name for project in projects if project.role == "reference_application"} == {
+    assert {project.name for project in projects if project.role == "application"} == {
         "gogurt",
-        "mango-fish",
-        "piggity",
-        "riverhog-recover",
-        "stove0-client",
+        "a-riverhog-event-relay",
+        "a-riverhog-cli",
+        "a-riverhog-recovery-tool",
+        "a-stove0-cli",
         "stove0-server",
     }
     release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
@@ -145,10 +145,10 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
     assert "first shipped in v1" in release["compatibility"]["licensing"]
     assert {owner["id"] for owner in release["state"]["owners"]} == {
         "gogurt-listener",
-        "mango-fish-cursor",
+        "a-riverhog-event-relay-cursor",
         "riverhog-catalog",
-        "riverhog-ftp-custody",
-        "piggity-local",
+        "a-riverhog-ftp-spool-custody",
+        "a-riverhog-cli-local",
         "riverhog-provenance-installation",
         "stove0-control",
         "stove0-target-jobs",
@@ -180,14 +180,14 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
         "runtime_images": ["linux/amd64"],
     }
     assert all(
-        project.role in {"reference_application", "reference_component", "reusable_library"}
+        project.role in {"application", "component", "reusable_library"}
         for project in projects
-        if project.path.startswith("reference/")
+        if project.path.startswith("some-implementations/")
     )
     qualification = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))[
         "qualification"
     ]
-    assert qualification["storage_reference"] == module.STORAGE_REFERENCE_QUALIFICATION
+    assert qualification["storage_providers"] == module.STORAGE_PROVIDER_QUALIFICATION
 
 
 def test_python_distribution_identities_use_pep_503_canonical_names(
@@ -205,7 +205,7 @@ def test_python_distribution_identities_use_pep_503_canonical_names(
         )
 
     _copy_release_contract(module, tmp_path)
-    pyproject = tmp_path / "reference/gogurt/packages/listener-runtime/pyproject.toml"
+    pyproject = tmp_path / "some-implementations/gogurt/packages/listener-runtime/pyproject.toml"
     pyproject.write_text(
         pyproject.read_text(encoding="utf-8").replace(
             'name = "gogurt-listener-runtime"',
@@ -255,7 +255,7 @@ def test_reusable_library_requires_explicit_exports_for_every_public_module(
 ) -> None:
     module = load_script()
     _copy_release_contract(module, tmp_path)
-    public_root = tmp_path / "reference/gogurt/packages/core/src/gogurt_core/__init__.py"
+    public_root = tmp_path / "some-implementations/gogurt/packages/core/src/gogurt_core/__init__.py"
     public_root.write_text('"""No declared public surface."""\n', encoding="utf-8")
 
     with pytest.raises(module.ReleaseError, match="explicit public __all__"):
@@ -290,37 +290,37 @@ def test_release_role_dependency_direction_is_exact() -> None:
     )
     roles = {project.name: project.role for project in projects}
     paths = {project.name: project.path for project in projects}
-    references = {name for name, path in paths.items() if path.startswith("reference/")}
-    components = {name for name, role in roles.items() if role == "reference_component"}
+    supplied = {name for name, path in paths.items() if path.startswith("some-implementations/")}
+    components = {name for name, role in roles.items() if role == "component"}
     implementations = {
         name
         for name, role in roles.items()
-        if role in {"end_user_artifact", "deployed_implementation", "reference_application"}
+        if role in {"end_user_artifact", "deployed_implementation", "application"}
     }
 
     assert all(
         not (artifact_dependencies[name] & components)
         for name, role in roles.items()
-        if role != "reference_component"
+        if role != "component"
     )
     assert all(
-        not (artifact_dependencies[name] & references)
+        not (artifact_dependencies[name] & supplied)
         for name, path in paths.items()
-        if not path.startswith("reference/")
+        if not path.startswith("some-implementations/")
     )
     assert all(
         not (artifact_dependencies[name] & implementations)
         for name, role in roles.items()
-        if role in {"reference_application", "reference_component"}
+        if role in {"application", "component"}
     )
     architecture = " ".join(
         (REPO_ROOT / "docs/architecture.md").read_text(encoding="utf-8").split()
     )
-    assert "Both are nonnormative, family-owned" in architecture
+    assert "Supplied applications own their workflows" in architecture
     assert "enter Riverhog only through public contracts" in architecture
 
 
-def test_release_contract_rejects_optional_reference_dependency_from_product(
+def test_release_contract_rejects_optional_supplied_dependency_from_product(
     tmp_path: Path,
 ) -> None:
     module = load_script()
@@ -329,24 +329,24 @@ def test_release_contract_rejects_optional_reference_dependency_from_product(
     pyproject.write_text(
         pyproject.read_text(encoding="utf-8")
         + "\n[project.optional-dependencies]\n"
-        + 'fixture = ["riverhog-provenance-linux-observer>=0.1,<0.2"]\n',
+        + 'fixture = ["a-riverhog-linux-provenance-observer>=0.1,<0.2"]\n',
         encoding="utf-8",
     )
 
     with pytest.raises(
-        module.ReleaseError, match="product-owned release unit depends on references"
+        module.ReleaseError, match="product-owned release unit depends on supplied implementations"
     ):
         module.validate_release_contract(tmp_path)
 
 
-@pytest.mark.parametrize("dependency", ["stove0-client", "stove0-server"])
-def test_release_contract_rejects_product_dependency_from_reference(
+@pytest.mark.parametrize("dependency", ["a-stove0-cli", "stove0-server"])
+def test_release_contract_rejects_application_dependency_from_supplied_component(
     tmp_path: Path,
     dependency: str,
 ) -> None:
     module = load_script()
     _copy_release_contract(module, tmp_path)
-    pyproject = tmp_path / "reference/stove0/targets/review/planning/pyproject.toml"
+    pyproject = tmp_path / "some-implementations/stove0/review0/planning/pyproject.toml"
     pyproject.write_text(
         pyproject.read_text(encoding="utf-8")
         + "\n[project.optional-dependencies]\n"
@@ -354,7 +354,7 @@ def test_release_contract_rejects_product_dependency_from_reference(
         encoding="utf-8",
     )
 
-    with pytest.raises(module.ReleaseError, match="depends on implementation release units"):
+    with pytest.raises(module.ReleaseError, match="depends on application release units"):
         module.validate_release_contract(tmp_path)
 
 
@@ -577,8 +577,11 @@ def test_release_plan_is_exact_sha_bound_and_excludes_the_test_image() -> None:
     assert all(project["requires_python"] == ">=3.12" for project in plan["python"])
     assert all(project["license_expression"] for project in plan["python"])
     assert all(project["publication_identity"] for project in plan["python"])
-    assert plan["reference_policy"] == module.REFERENCE_POLICY
-    assert {image["role"] for image in plan["images"]} == {"product", "reference"}
+    assert {image["role"] for image in plan["images"]} == {
+        "product",
+        "application",
+        "component",
+    }
     assert {image["target"] for image in plan["images"] if image["role"] == "product"} == {
         "riverhog"
     }
@@ -589,20 +592,20 @@ def test_release_plan_is_exact_sha_bound_and_excludes_the_test_image() -> None:
         "distributions"
     ] == ["stove0-server"]
     assert next(
-        image for image in plan["images"] if image["target"] == "stove0-nvenc-av1-opus-target"
+        image for image in plan["images"] if image["target"] == "a-stove0-nvenc-av1-opus-target"
     )["distributions"] == [
-        "stove0-nvenc-av1-opus-target",
-        "stove0-nvenc-av1-opus-review-sampler",
+        "a-stove0-nvenc-av1-opus-target",
+        "a-review0-nvenc-av1-opus-sampler",
     ]
-    assert next(image for image in plan["images"] if image["target"] == "stove0-opus-target")[
+    assert next(image for image in plan["images"] if image["target"] == "a-stove0-opus-target")[
         "distributions"
     ] == [
-        "stove0-opus-target",
-        "stove0-opus-review-sampler",
+        "a-stove0-opus-target",
+        "a-review0-opus-sampler",
     ]
     assert (
-        module._image_distribution_roots_label(["stove0-opus-target", "stove0-opus-review-sampler"])
-        == '["stove0-opus-target","stove0-opus-review-sampler"]'
+        module._image_distribution_roots_label(["a-stove0-opus-target", "a-review0-opus-sampler"])
+        == '["a-stove0-opus-target","a-review0-opus-sampler"]'
     )
     assert all(image["platforms"] == ["linux/amd64"] for image in plan["images"])
     assert all(
@@ -622,9 +625,9 @@ def test_release_plan_is_exact_sha_bound_and_excludes_the_test_image() -> None:
             "manifest": "install-manifest.json",
             "locks": [
                 "pylock.gogurt.toml",
-                "pylock.piggity.toml",
-                "pylock.riverhog-recover.toml",
-                "pylock.stove0-client.toml",
+                "pylock.a-riverhog-cli.toml",
+                "pylock.a-riverhog-recovery-tool.toml",
+                "pylock.a-stove0-cli.toml",
             ],
             "index_snapshot": "riverhog-python-index-v1.0.0.tar.gz",
             "gogurt_listener_reference": "gogurt-listener-v1.0.0.md",
@@ -650,9 +653,8 @@ def test_release_plan_is_exact_sha_bound_and_excludes_the_test_image() -> None:
     markdown = module.render_release_markdown(plan)
     assert markdown.startswith("# Riverhog v1.0.0\n\n")
     assert f"Source: `{plan['source_sha']}`" in markdown
-    assert "## First-party reference policy" in markdown
-    assert module.REFERENCE_POLICY in markdown
-    assert "Optional nonnormative" in markdown
+    assert "## Runtime images" in markdown
+    assert "AWS-backed Riverhog archive and retrieval store." in markdown
     assert "Initial v1 release; there is no previous release tag." in markdown
 
 

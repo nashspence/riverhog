@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-client:riverhog-http-timeout-seconds:88c9199de7 -->
+<!-- contract-element: configuration-environment:riverhog-client:riverhog-http-timeout-seconds:e2c1d7c9a9 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,16 +13,16 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-dc3b9e297a"></a>
+<a id="s-8f59324207"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-2cfcf2ca71"></a>`consumers` | `["riverhog-client"]` |
-| <a id="s-221130ca92"></a>`default_expressions` | `["unset"]` |
-| <a id="s-57bcabee8d"></a>`id` | `"riverhog-client:environment:RIVERHOG_HTTP_TIMEOUT_SECONDS"` |
-| <a id="s-fd0988394a"></a>`input_shape` | `"environment-string"` |
-| <a id="s-3d0c74b453"></a>`name` | `"RIVERHOG_HTTP_TIMEOUT_SECONDS"` |
-| <a id="s-90ff047361"></a>`owner` | `"riverhog-client"` |
+| <a id="s-5ce476d592"></a>`consumers` | `["riverhog-client"]` |
+| <a id="s-3b4a852639"></a>`default_expressions` | `["unset"]` |
+| <a id="s-8697d6dfab"></a>`id` | `"riverhog-client:environment:RIVERHOG_HTTP_TIMEOUT_SECONDS"` |
+| <a id="s-7e4f4054fb"></a>`input_shape` | `"environment-string"` |
+| <a id="s-514286516a"></a>`name` | `"RIVERHOG_HTTP_TIMEOUT_SECONDS"` |
+| <a id="s-2e2d9517c4"></a>`owner` | `"riverhog-client"` |
 
 ### Progression, limits, and lifecycle
 
@@ -32,14 +32,14 @@ Shared facts for every subject below: configuration="RIVERHOG_HTTP_TIMEOUT_SECON
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_HTTP_TIMEOUT_SECONDS](#s-dc3b9e297a) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_HTTP_TIMEOUT_SECONDS](#s-8f59324207) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-060be294c9"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
-- <a id="pa-fe9e95331c"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
+- <a id="pa-f94de76c91"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-8908897b59"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -63,7 +63,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/19`
+- `/external_contract/configuration_environment/161`
 
 ### Exact owned JSON
 

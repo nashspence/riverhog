@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-0c3140f9d7"></a>`kind`: `"constant"`
-- <a id="s-526d83103e"></a>`value`: `"gogurt-provider-reference/v1"`
+- <a id="s-526d83103e"></a>`value`: `"gogurt-provider-some-implementations/v1"`
 
 ## Governing policies
 
@@ -38,7 +38,7 @@ Exact externally visible contract owned by this contract element.
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [python:gogurt-core:gogurt_core](../../../evidence/sources/authorities.md#src-e253e4a684) — [reference/gogurt/packages/core/src/gogurt\_core/\_\_init\_\_.py](../../../../../../reference/gogurt/packages/core/src/gogurt_core/__init__.py)
+- [python:gogurt-core:gogurt_core](../../../evidence/sources/authorities.md#src-e253e4a684) — [some-implementations/gogurt/packages/core/src/gogurt\_core/\_\_init\_\_.py](../../../../../../some-implementations/gogurt/packages/core/src/gogurt_core/__init__.py)
 
 ### Machine authority
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: feb8fa7b0f3508fada0e08c29361225365ff13e0bfa0a7dc2c77cd4e19b44d64 -->
+<!-- exact-contract-value: a6ee5a55d7bab6ed5eaed4885e10233e5851813254686eb2103a86c513dc7aa9 -->
 
 ```json
 {
   "contract": {
     "kind": "constant",
-    "value": "gogurt-provider-reference/v1"
+    "value": "gogurt-provider-some-implementations/v1"
   },
   "distribution": "gogurt-core",
   "module": "gogurt_core",

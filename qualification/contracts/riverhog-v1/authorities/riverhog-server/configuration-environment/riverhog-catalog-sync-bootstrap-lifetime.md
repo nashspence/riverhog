@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-catalog-sync-bootstrap-lifetime:2f5209b270 -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-catalog-sync-bootstrap-lifetime:f0c64d7ce6 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-9857458ffa"></a>
+<a id="s-556ef016c2"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-fe693377ae"></a>`consumers` | `["riverhog-server"]` |
-| <a id="s-0473aebcab"></a>`default_expressions` | `["'7d'"]` |
-| <a id="s-8cbdf403cb"></a>`id` | `"riverhog-server:environment:RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME"` |
-| <a id="s-7b2e5c71b6"></a>`input_shape` | `"environment-string"` |
-| <a id="s-03c589148c"></a>`name` | `"RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME"` |
-| <a id="s-0666993cd6"></a>`owner` | `"riverhog-server"` |
+| <a id="s-548453c111"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-99cea19f4f"></a>`default_expressions` | `["'7d'"]` |
+| <a id="s-d75baad09a"></a>`id` | `"riverhog-server:environment:RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME"` |
+| <a id="s-83a8339220"></a>`input_shape` | `"environment-string"` |
+| <a id="s-36b352e866"></a>`name` | `"RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME"` |
+| <a id="s-5c39fe51b8"></a>`owner` | `"riverhog-server"` |
 
 ## Governing policies
 
-- <a id="pa-419f97cb39"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-9b83ec85b5"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/51`
+- `/external_contract/configuration_environment/185`
 
 ### Exact owned JSON
 

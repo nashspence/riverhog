@@ -85,7 +85,7 @@ Exact evidence groups for this contract element:
 
 ### Related interface records
 
-- [piggity app key quota list](../../piggity/cli/piggity-app-key-quota-list.md)
+- [a-riverhog-cli app key quota list](../../a-riverhog-cli/cli/a-riverhog-cli-app-key-quota-list.md)
 - [riverhog_client.ApiClient.list_download_quotas](../../riverhog-client/python/riverhog-client-apiclient-list-download-quotas.md)
 
 ### Referenced contract elements
@@ -134,12 +134,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "app key quota list",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/app/key/quota/list/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/app/key/quota/list/v1",
       "source": {
-        "line": 1385,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 1387,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "app_key_quota_list_cmd"
       }
     }

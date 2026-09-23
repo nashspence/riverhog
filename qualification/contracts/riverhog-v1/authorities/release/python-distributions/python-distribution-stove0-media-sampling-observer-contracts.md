@@ -4,7 +4,7 @@
 
 <!-- contract-element: python-distributions:release:python-distribution-stove0-media-sampling-4ca590c993:65c10085b8 -->
 
-Optional nonnormative media-sampling contract reference for Stove0 observers.
+Shared media sampling contracts for Stove0.
 
 | Audit field | Value |
 |---|---|
@@ -18,13 +18,13 @@ Optional nonnormative media-sampling contract reference for Stove0 observers.
 |---|---|
 | <a id="s-eb0f414944"></a>`artifacts` | `[{"coordinate":"dist/stove0_media_sampling_observer_contracts-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_media_sampling_observer_contracts-{version}.tar.gz","format":"sdist"}]` |
 | <a id="s-746731254e"></a>`channel` | `"github-release"` |
-| <a id="s-86f06d9fa2"></a>`description` | `"Optional nonnormative media-sampling contract reference for Stove0 observers."` |
+| <a id="s-86f06d9fa2"></a>`description` | `"Shared media sampling contracts for Stove0."` |
 | <a id="s-5120a00b37"></a>`license_baseline` | `"first-v1-publication"` |
 | <a id="s-b99d46021e"></a>`license_expression` | `"Apache-2.0"` |
 | <a id="s-4c84c5b198"></a>`publication_identity` | `{"coordinate":"stove0-media-sampling-observer-contracts","kind":"python-distribution"}` |
 | <a id="s-d12d732533"></a>`requires_python` | `">=3.12"` |
-| <a id="s-405f29c76f"></a>`role` | `"reference_component"` |
-| <a id="s-6e9d31eb75"></a>`source` | `"reference/stove0/observers/contracts/media-sampling/pyproject.toml"` |
+| <a id="s-405f29c76f"></a>`role` | `"component"` |
+| <a id="s-6e9d31eb75"></a>`source` | `"some-implementations/stove0/observers/contracts/media-sampling/pyproject.toml"` |
 
 ## Existing ownership context
 
@@ -48,7 +48,7 @@ Publication preserves these existing component authorities; it does not reclassi
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [release-distribution:stove0-media-sampling-observer-contracts](../../../evidence/sources/authorities.md#src-135c11f96b) — [reference/stove0/observers/contracts/media-sampling/pyproject.toml](../../../../../../reference/stove0/observers/contracts/media-sampling/pyproject.toml)
+- [release-distribution:stove0-media-sampling-observer-contracts](../../../evidence/sources/authorities.md#src-135c11f96b) — [some-implementations/stove0/observers/contracts/media-sampling/pyproject.toml](../../../../../../some-implementations/stove0/observers/contracts/media-sampling/pyproject.toml)
 - [release-publication:planner](../../../evidence/sources/authorities.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
 - [release:release.toml](../../../evidence/sources/authorities.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
 
@@ -63,7 +63,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3894318136e4e040b9ab07aac9bfed1895f7db9c031f54ea4841e23143e0174e -->
+<!-- exact-contract-value: 2db618e534f7d35bc48213234aaa507e2201f17c7f70f41b8c7a3e22768ff105 -->
 
 ```json
 {
@@ -78,7 +78,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   ],
   "channel": "github-release",
-  "description": "Optional nonnormative media-sampling contract reference for Stove0 observers.",
+  "description": "Shared media sampling contracts for Stove0.",
   "license_baseline": "first-v1-publication",
   "license_expression": "Apache-2.0",
   "publication_identity": {
@@ -86,8 +86,8 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "python-distribution"
   },
   "requires_python": ">=3.12",
-  "role": "reference_component",
-  "source": "reference/stove0/observers/contracts/media-sampling/pyproject.toml"
+  "role": "component",
+  "source": "some-implementations/stove0/observers/contracts/media-sampling/pyproject.toml"
 }
 ```
 

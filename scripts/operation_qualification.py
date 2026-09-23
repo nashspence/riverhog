@@ -24,23 +24,23 @@ from statistics import median
 from typing import Any, TypeGuard, cast, get_origin, get_type_hints
 from unittest.mock import patch
 
+from a_riverhog_cli import main as a_riverhog_cli
+from a_riverhog_ftp_spool.app import FtpSpoolComposition
+from a_riverhog_ftp_spool.app import build_parser as build_adapter_parser
+from a_riverhog_ftp_spool.app import create_app as create_adapter_app
+from a_riverhog_ftp_spool.config import FtpSpoolConfig, SourceConfig
+from a_riverhog_ftp_spool_client import RiverhogFtpSpoolClient
+from a_stove0_cli import main as a_stove0_cli
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
-from piggity import main as piggity
 from pydantic import BaseModel, TypeAdapter
 from riverhog_api.app import create_app as create_riverhog_app
 from riverhog_client.client import ApiClient
-from riverhog_ftp_adapter.app import FtpAdapterComposition
-from riverhog_ftp_adapter.app import build_parser as build_adapter_parser
-from riverhog_ftp_adapter.app import create_app as create_adapter_app
-from riverhog_ftp_adapter.config import FtpAdapterConfig, SourceConfig
-from riverhog_ftp_adapter_api_client import RiverhogFtpAdapterClient
 from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from stove0_api.app import Stove0Composition
 from stove0_api.app import create_app as create_stove0_app
 from stove0_api_client import Stove0ApiClient
-from stove0_cli import main as stove0_cli
 from stove0_core import (
     EvaluationService,
     RecipeCatalog,
@@ -85,13 +85,13 @@ class _RiverhogContractApi:
 
 class _AdapterContractService:
     def status(self) -> dict[str, object]:
-        return {"format": "riverhog-ftp-adapter-status/v1", "sources": []}
+        return {"format": "a-riverhog-ftp-spool-status/v1", "sources": []}
 
     def run_once(self) -> dict[str, object]:
-        return {"format": "riverhog-ftp-adapter-pass/v1", "sources": []}
+        return {"format": "a-riverhog-ftp-spool-pass/v1", "sources": []}
 
     def flush(self, source_id: str) -> dict[str, object]:
-        return {"format": "riverhog-ftp-adapter-pass/v1", "sources": [source_id]}
+        return {"format": "a-riverhog-ftp-spool-pass/v1", "sources": [source_id]}
 
 
 def create_stove0_contract_app() -> FastAPI:
@@ -137,7 +137,7 @@ def create_stove0_contract_app() -> FastAPI:
 
 
 def create_adapter_contract_app() -> FastAPI:
-    config = FtpAdapterConfig(
+    config = FtpSpoolConfig(
         host_id="qualification-host",
         riverhog_base_url="https://riverhog.invalid",
         riverhog_token="riverhog-qualification-token",
@@ -153,7 +153,7 @@ def create_adapter_contract_app() -> FastAPI:
         ),
     )
     return create_adapter_app(
-        FtpAdapterComposition(
+        FtpSpoolComposition(
             config,
             cast(Any, _RiverhogContractApi()),
             cast(Any, _AdapterContractService()),
@@ -347,18 +347,18 @@ def application_surfaces() -> tuple[ApplicationSurface, ...]:
             "riverhog",
             riverhog_app,
             (ApiClient,),
-            tuple(_typer_commands(piggity.app)),
+            tuple(_typer_commands(a_riverhog_cli.app)),
         ),
         ApplicationSurface(
             "stove0",
             create_stove0_contract_app(),
             (Stove0ApiClient, TargetCallbackClient),
-            tuple(_typer_commands(stove0_cli.app)),
+            tuple(_typer_commands(a_stove0_cli.app)),
         ),
         ApplicationSurface(
-            "riverhog-ftp-adapter",
+            "a-riverhog-ftp-spool",
             create_adapter_contract_app(),
-            (RiverhogFtpAdapterClient,),
+            (RiverhogFtpSpoolClient,),
             tuple(_argparse_commands(build_adapter_parser())),
         ),
     )
@@ -368,7 +368,8 @@ def _project_callable(value: object) -> TypeGuard[Callable[..., object]]:
     module = str(getattr(value, "__module__", ""))
     return inspect.isfunction(value) and module.startswith(
         (
-            "piggity",
+            "a_riverhog_",
+            "a_stove0_",
             "riverhog_",
             "stove0_",
         )
@@ -444,7 +445,7 @@ def _response_authority(response_model: object) -> str:
         get_origin(response_model) is dict
         or response_model is dict
         or module == "http_api_contracts"
-        or module.startswith(("riverhog_api.", "stove0_api.", "riverhog_ftp_adapter."))
+        or module.startswith(("riverhog_api.", "stove0_api.", "a_riverhog_ftp_spool."))
     ):
         return "http-json"
     return "canonical-document"
@@ -838,10 +839,10 @@ def _contract_freeze_identity(path: Path = CONTRACT_FREEZE) -> dict[str, object]
 
 def _cold_cli_timings(*, trials: int = 3) -> dict[str, object]:
     entrypoints = {
-        "riverhog": "from piggity.main import main; raise SystemExit(main())",
-        "stove0": "from stove0_cli.main import main; main()",
-        "riverhog-ftp-adapter": (
-            "from riverhog_ftp_adapter.app import main; raise SystemExit(main())"
+        "riverhog": "from a_riverhog_cli.main import main; raise SystemExit(main())",
+        "stove0": "from a_stove0_cli.main import main; main()",
+        "a-riverhog-ftp-spool": (
+            "from a_riverhog_ftp_spool.app import main; raise SystemExit(main())"
         ),
     }
     timings: dict[str, object] = {}
@@ -1101,7 +1102,7 @@ def evidence(*, source_sha: str, timings: Path) -> dict[str, object]:
             "bounded_state_access": {
                 "status": "not_established",
                 "reason": "Operation timings do not measure state-access bounds.",
-                "applications": ["riverhog", "riverhog-ftp-adapter", "stove0"],
+                "applications": ["riverhog", "a-riverhog-ftp-spool", "stove0"],
             },
             "event_cursor_restart_resume": restart_claim,
             "provider_backed_lifecycles": {

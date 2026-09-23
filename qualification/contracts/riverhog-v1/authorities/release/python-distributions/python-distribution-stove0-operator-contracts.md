@@ -24,7 +24,7 @@ Canonical public state contracts for the Stove0 v1 operator surface.
 | <a id="s-2f3336bfc9"></a>`publication_identity` | `{"coordinate":"stove0-operator-contracts","kind":"python-distribution"}` |
 | <a id="s-dcfe4d710a"></a>`requires_python` | `">=3.12"` |
 | <a id="s-e09f9568be"></a>`role` | `"reusable_library"` |
-| <a id="s-d71c83df6a"></a>`source` | `"reference/stove0/packages/operator-contracts/pyproject.toml"` |
+| <a id="s-d71c83df6a"></a>`source` | `"some-implementations/stove0/packages/operator-contracts/pyproject.toml"` |
 
 ## Existing ownership context
 
@@ -48,7 +48,7 @@ Publication preserves these existing component authorities; it does not reclassi
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [release-distribution:stove0-operator-contracts](../../../evidence/sources/authorities.md#src-3697a2cd79) — [reference/stove0/packages/operator-contracts/pyproject.toml](../../../../../../reference/stove0/packages/operator-contracts/pyproject.toml)
+- [release-distribution:stove0-operator-contracts](../../../evidence/sources/authorities.md#src-3697a2cd79) — [some-implementations/stove0/packages/operator-contracts/pyproject.toml](../../../../../../some-implementations/stove0/packages/operator-contracts/pyproject.toml)
 - [release-publication:planner](../../../evidence/sources/authorities.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
 - [release:release.toml](../../../evidence/sources/authorities.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
 
@@ -63,7 +63,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 79a48d70babff3f189712aff1c094b5b2c90130d03cee1aa20f119fac2f09377 -->
+<!-- exact-contract-value: 0fea9f7b4f960f1a966a584f25065124b6fb3d482e5ebbd52e9a8e0728929b8f -->
 
 ```json
 {
@@ -87,7 +87,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "requires_python": ">=3.12",
   "role": "reusable_library",
-  "source": "reference/stove0/packages/operator-contracts/pyproject.toml"
+  "source": "some-implementations/stove0/packages/operator-contracts/pyproject.toml"
 }
 ```
 

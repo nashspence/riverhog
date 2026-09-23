@@ -49,7 +49,7 @@ Create App Key
 
 ### Related interface records
 
-- [piggity app key create](../../piggity/cli/piggity-app-key-create.md)
+- [a-riverhog-cli app key create](../../a-riverhog-cli/cli/a-riverhog-cli-app-key-create.md)
 - [riverhog_client.ApiClient.create_app_key](../../riverhog-client/python/riverhog-client-apiclient-create-app-key.md)
 
 ### Referenced contract elements
@@ -90,12 +90,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "app key create",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/app/key/create/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/app/key/create/v1",
       "source": {
-        "line": 1133,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 1135,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "app_key_create_cmd"
       }
     }

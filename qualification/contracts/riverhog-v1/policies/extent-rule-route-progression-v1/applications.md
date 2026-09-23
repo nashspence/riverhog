@@ -8,6 +8,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 
 | Authority | Contract element |
 |---|---|
+| `a-riverhog-ftp-spool` | [GET /v1/status](../../authorities/a-riverhog-ftp-spool/http-operations/get-v1-status.md#pa-10323a440b) |
 | `riverhog` | [GET /v1/app-key-access](../../authorities/riverhog/http-operations/get-v1-app-key-access.md#pa-d36cf09b03) |
 | `riverhog` | [GET /v1/apps](../../authorities/riverhog/http-operations/get-v1-apps.md#pa-c156c5e29f) |
 | `riverhog` | [GET /v1/apps/{app}/keys](../../authorities/riverhog/http-operations/get-v1-apps-app-keys.md#pa-6c484fd5a1) |
@@ -62,7 +63,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: RiverhogEventPage](../../authorities/riverhog/http-schemas/schemas-riverhogeventpage.md#pa-365042f4b3) |
 | `riverhog` | [schemas: SearchResponse](../../authorities/riverhog/http-schemas/schemas-searchresponse.md#pa-b79e60e6fa) |
 | `riverhog` | [schemas: TagListOut](../../authorities/riverhog/http-schemas/schemas-taglistout.md#pa-38d721dd6a) |
-| `riverhog-ftp-adapter` | [GET /v1/status](../../authorities/riverhog-ftp-adapter/http-operations/get-v1-status.md#pa-1aad6e2eb6) |
 | `stove0` | [GET /v1/admissions](../../authorities/stove0/http-operations/get-v1-admissions.md#pa-7a2b378d49) |
 | `stove0` | [GET /v1/artifact-selections/{selection_sha256}](../../authorities/stove0/http-operations/get-v1-artifact-selections-selection-sha256.md#pa-b00656c731) |
 | `stove0` | [GET /v1/evaluations](../../authorities/stove0/http-operations/get-v1-evaluations.md#pa-2b69f66470) |

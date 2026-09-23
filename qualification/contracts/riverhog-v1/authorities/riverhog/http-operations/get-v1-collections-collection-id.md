@@ -41,15 +41,15 @@ Get Collection
 
 ### Related interface records
 
-- [piggity collection describe](../../piggity/cli/piggity-collection-describe.md)
-- [piggity collection show](../../piggity/cli/piggity-collection-show.md)
-- [piggity collection tag add](../../piggity/cli/piggity-collection-tag-add.md)
-- [piggity collection tag contains](../../piggity/cli/piggity-collection-tag-contains.md)
-- [piggity collection tag list](../../piggity/cli/piggity-collection-tag-list.md)
-- [piggity collection tag remove](../../piggity/cli/piggity-collection-tag-remove.md)
-- [piggity local add](../../piggity/cli/piggity-local-add.md)
-- [piggity local repair](../../piggity/cli/piggity-local-repair.md)
-- [piggity local sync](../../piggity/cli/piggity-local-sync.md)
+- [a-riverhog-cli collection describe](../../a-riverhog-cli/cli/a-riverhog-cli-collection-describe.md)
+- [a-riverhog-cli collection show](../../a-riverhog-cli/cli/a-riverhog-cli-collection-show.md)
+- [a-riverhog-cli collection tag add](../../a-riverhog-cli/cli/a-riverhog-cli-collection-tag-add.md)
+- [a-riverhog-cli collection tag contains](../../a-riverhog-cli/cli/a-riverhog-cli-collection-tag-contains.md)
+- [a-riverhog-cli collection tag list](../../a-riverhog-cli/cli/a-riverhog-cli-collection-tag-list.md)
+- [a-riverhog-cli collection tag remove](../../a-riverhog-cli/cli/a-riverhog-cli-collection-tag-remove.md)
+- [a-riverhog-cli local add](../../a-riverhog-cli/cli/a-riverhog-cli-local-add.md)
+- [a-riverhog-cli local repair](../../a-riverhog-cli/cli/a-riverhog-cli-local-repair.md)
+- [a-riverhog-cli local sync](../../a-riverhog-cli/cli/a-riverhog-cli-local-sync.md)
 - [riverhog_client.ApiClient.get_collection](../../riverhog-client/python/riverhog-client-apiclient-get-collection.md)
 
 ### Referenced contract elements
@@ -89,100 +89,100 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection show",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/show/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/show/v1",
       "source": {
-        "line": 2534,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2540,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "show_cmd"
       }
     },
     {
       "command": "collection describe",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/describe/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/describe/v1",
       "source": {
-        "line": 2545,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2551,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "collection_describe_cmd"
       }
     },
     {
       "command": "collection tag list",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/tag/list/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/tag/list/v1",
       "source": {
-        "line": 998,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 1000,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "collection_tag_list_cmd"
       }
     },
     {
       "command": "collection tag contains",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/tag/contains/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/tag/contains/v1",
       "source": {
-        "line": 1030,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 1032,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "collection_tag_contains_cmd"
       }
     },
     {
       "command": "collection tag add",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/tag/add/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/tag/add/v1",
       "source": {
-        "line": 1057,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 1059,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "collection_tag_add_cmd"
       }
     },
     {
       "command": "collection tag remove",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/tag/remove/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/tag/remove/v1",
       "source": {
-        "line": 1086,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 1088,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "collection_tag_remove_cmd"
       }
     },
     {
       "command": "local add",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/local/add/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/local/add/v1",
       "source": {
         "line": 902,
-        "module": "piggity.local",
-        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "module": "a_riverhog_cli.local",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/local.py",
         "symbol": "add_collection"
       }
     },
     {
       "command": "local sync",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/local/sync/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/local/sync/v1",
       "source": {
-        "line": 1101,
-        "module": "piggity.local",
-        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "line": 1103,
+        "module": "a_riverhog_cli.local",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/local.py",
         "symbol": "sync"
       }
     },
     {
       "command": "local repair",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/local/repair/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/local/repair/v1",
       "source": {
-        "line": 1122,
-        "module": "piggity.local",
-        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "line": 1124,
+        "module": "a_riverhog_cli.local",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/local.py",
         "symbol": "repair"
       }
     }

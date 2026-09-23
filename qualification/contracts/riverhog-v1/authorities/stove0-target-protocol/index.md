@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Dependency-light public contracts for external stove0 targets.
+Dependency-light public contracts for external Stove0 targets.
 
 Contract elements: **137** · Extent decisions: **0**
 

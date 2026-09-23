@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-9d96804bb7"></a>`kind`: `"class"`
-- <a id="s-c1f563fee2"></a>`signature`: `"\"(kind: 'GogurtProviderKind', name: 'str', provider_id: 'str', format: 'str' = 'gogurt-provider-reference/v1') -> None\""`
+- <a id="s-c1f563fee2"></a>`signature`: `"\"(kind: 'GogurtProviderKind', name: 'str', provider_id: 'str', format: 'str' = 'gogurt-provider-some-implementations/v1') -> None\""`
 
 #### Dataclass fields
 
@@ -31,7 +31,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-b5c754032b"></a>`kind` | `'GogurtProviderKind'` | `required` |
 | <a id="s-b7a63935f9"></a>`name` | `'str'` | `required` |
 | <a id="s-e99960a627"></a>`provider_id` | `'str'` | `required` |
-| <a id="s-b7a9e18096"></a>`format` | `'str'` | `'gogurt-provider-reference/v1'` |
+| <a id="s-b7a9e18096"></a>`format` | `'str'` | `'gogurt-provider-some-implementations/v1'` |
 
 ## Maintained corroboration
 
@@ -54,7 +54,7 @@ Exact externally visible contract owned by this contract element.
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [python:gogurt-core:gogurt_core](../../../evidence/sources/authorities.md#src-e253e4a684) — [reference/gogurt/packages/core/src/gogurt\_core/\_\_init\_\_.py](../../../../../../reference/gogurt/packages/core/src/gogurt_core/__init__.py)
+- [python:gogurt-core:gogurt_core](../../../evidence/sources/authorities.md#src-e253e4a684) — [some-implementations/gogurt/packages/core/src/gogurt\_core/\_\_init\_\_.py](../../../../../../some-implementations/gogurt/packages/core/src/gogurt_core/__init__.py)
 
 ### Machine authority
 
@@ -67,7 +67,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 97b4b308816aa0100328cc2950057510eb73670c73e6af9ea1c3efbc677b8081 -->
+<!-- exact-contract-value: d12906f3a992852c676d44e44c82b840a48c971d7b3799041c60135223410d51 -->
 
 ```json
 {
@@ -89,13 +89,13 @@ The following JSON is the complete value owned at each machine-authority pointer
         "type": "'str'"
       },
       {
-        "default": "'gogurt-provider-reference/v1'",
+        "default": "'gogurt-provider-some-implementations/v1'",
         "name": "format",
         "type": "'str'"
       }
     ],
     "kind": "class",
-    "signature": "\"(kind: 'GogurtProviderKind', name: 'str', provider_id: 'str', format: 'str' = 'gogurt-provider-reference/v1') -> None\""
+    "signature": "\"(kind: 'GogurtProviderKind', name: 'str', provider_id: 'str', format: 'str' = 'gogurt-provider-some-implementations/v1') -> None\""
   },
   "distribution": "gogurt-core",
   "module": "gogurt_core",

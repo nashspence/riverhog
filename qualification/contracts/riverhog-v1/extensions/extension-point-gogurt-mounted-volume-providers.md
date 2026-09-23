@@ -12,8 +12,8 @@ Entry-point extension boundary owned by gogurt-core.
 
 - [gogurt-core · Python](../authorities/gogurt-core/python/index.md)
 
-## Checked-in nonnormative implementations
+## Supplied implementations
 
-- [gogurt-linux-mounted-volume](../evidence/relationships/edges.md#re-775d931d8b) — Optional nonnormative Linux mounted-volume reference for Gogurt.
-- [gogurt-macos-mounted-volume](../evidence/relationships/edges.md#re-765f888766) — Optional nonnormative macOS mounted-volume reference for Gogurt.
-- [gogurt-windows-mounted-volume](../evidence/relationships/edges.md#re-280a7f4425) — Optional nonnormative Windows mounted-volume reference for Gogurt.
+- [a-gogurt-linux-volume](../evidence/relationships/edges.md#re-0d2e18c569) — Linux mounted-volume provider for Gogurt.
+- [a-gogurt-macos-volume](../evidence/relationships/edges.md#re-921f30cbcc) — macOS mounted-volume provider for Gogurt.
+- [a-gogurt-windows-volume](../evidence/relationships/edges.md#re-dbf67c3c10) — Windows mounted-volume provider for Gogurt.

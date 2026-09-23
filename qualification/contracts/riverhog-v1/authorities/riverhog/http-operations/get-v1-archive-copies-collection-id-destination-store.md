@@ -42,8 +42,8 @@ Get Archive Copy Job
 
 ### Related interface records
 
-- [piggity archive copy show](../../piggity/cli/piggity-archive-copy-show.md)
-- [piggity archive copy watch](../../piggity/cli/piggity-archive-copy-watch.md)
+- [a-riverhog-cli archive copy show](../../a-riverhog-cli/cli/a-riverhog-cli-archive-copy-show.md)
+- [a-riverhog-cli archive copy watch](../../a-riverhog-cli/cli/a-riverhog-cli-archive-copy-watch.md)
 - [riverhog_client.ApiClient.get_archive_copy_job](../../riverhog-client/python/riverhog-client-apiclient-get-archive-copy-job.md)
 
 ### Referenced contract elements
@@ -83,23 +83,23 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "archive copy show",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/archive/copy/show/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/archive/copy/show/v1",
       "source": {
-        "line": 3053,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 3059,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "archive_copy_show_cmd"
       }
     },
     {
       "command": "archive copy watch",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/archive/copy/watch/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/archive/copy/watch/v1",
       "source": {
-        "line": 3089,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 3095,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "archive_copy_watch_cmd"
       }
     }

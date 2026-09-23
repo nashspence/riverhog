@@ -8,12 +8,12 @@ from contextlib import closing
 from pathlib import Path
 
 import pytest
+from a_riverhog_cli.local_state import state_schema as local_state_schema
+from a_riverhog_event_relay.relay import CursorState
+from a_riverhog_event_relay.schema import state_schema as a_riverhog_event_relay_state_schema
+from a_riverhog_ftp_spool.state_contract import FTP_OPERATIONAL_STATE_DDL
 from gogurt_listener_runtime import ListenerStore
-from mango_fish.relay import CursorState
-from mango_fish.schema import state_schema as mango_fish_state_schema
-from piggity.local_state import state_schema as local_state_schema
 from riverhog_core.state_migrations.v1_ddl import POSTGRESQL_DDL
-from riverhog_ftp_adapter.state_contract import FTP_OPERATIONAL_STATE_DDL
 from riverhog_provenance import load_or_create_installation_id
 from sqlalchemy.dialects import postgresql
 from stove0_core.state_migrations.v1_ddl import POSTGRESQL_DDL as STOVE0_POSTGRESQL_DDL
@@ -28,20 +28,26 @@ MIGRATION_BASELINES = {
         "alembic",
         "riverhog_core.state_migrations.v1_ddl",
     ),
-    "reference/stove0/application/server/src/stove0_core/state_migrations/versions/v1_0001.py": (
+    (
+        "some-implementations/stove0/application/server/src/stove0_core/"
+        "state_migrations/versions/v1_0001.py"
+    ): (
         "alembic",
         "stove0_core.state_migrations.v1_ddl",
     ),
-    "reference/riverhog/applications/piggity/src/piggity/state_migrations/versions/v1_0001.py": (
+    (
+        "some-implementations/riverhog/applications/a-riverhog-cli/"
+        "src/a_riverhog_cli/state_migrations/versions/v1_0001.py"
+    ): (
         "alembic",
-        "piggity.state_migrations.v1_ddl",
+        "a_riverhog_cli.state_migrations.v1_ddl",
     ),
     (
-        "reference/riverhog/applications/mango-fish/src/mango_fish/state_migrations/"
+        "some-implementations/riverhog/applications/a-riverhog-event-relay/src/a_riverhog_event_relay/state_migrations/"
         "versions/v1_0001.py"
     ): (
         "alembic",
-        "mango_fish.state_migrations.v1_ddl",
+        "a_riverhog_event_relay.state_migrations.v1_ddl",
     ),
 }
 
@@ -58,11 +64,11 @@ def _connect(database: Path) -> sqlite3.Connection:
     return connection
 
 
-def test_piggity_current_v1_fixture_restarts_with_selection_and_retrieval_state(
+def test_a_riverhog_cli_current_v1_fixture_restarts_with_selection_and_retrieval_state(
     tmp_path: Path,
 ) -> None:
-    database = tmp_path / "piggity.sqlite3"
-    _restore_sqlite(FIXTURES / "piggity.sqlite.sql", database)
+    database = tmp_path / "a-riverhog-cli.sqlite3"
+    _restore_sqlite(FIXTURES / "a-riverhog-cli.sqlite.sql", database)
 
     status = local_state_schema(database).upgrade()
     with closing(_connect(database)) as connection:
@@ -92,11 +98,13 @@ def test_piggity_current_v1_fixture_restarts_with_selection_and_retrieval_state(
     assert tuple(retrieval_file) == (1, "notes/fixture.txt", 12, "a" * 64)
 
 
-def test_mango_fish_current_v1_fixture_restarts_with_source_cursor(tmp_path: Path) -> None:
-    database = tmp_path / "mango-fish.sqlite3"
-    _restore_sqlite(FIXTURES / "mango-fish.sqlite.sql", database)
+def test_a_riverhog_event_relay_current_v1_fixture_restarts_with_source_cursor(
+    tmp_path: Path,
+) -> None:
+    database = tmp_path / "a-riverhog-event-relay.sqlite3"
+    _restore_sqlite(FIXTURES / "a-riverhog-event-relay.sqlite.sql", database)
 
-    status = mango_fish_state_schema(database).upgrade()
+    status = a_riverhog_event_relay_state_schema(database).upgrade()
     cursor_state = CursorState(database)
 
     assert status.condition == "current"
@@ -208,7 +216,7 @@ def test_every_v1_state_owner_projects_its_component_owned_exact_structure() -> 
     }
     assert all(document["schema"]["type"] == "object" for document in target_documents)
 
-    ftp_units = projected["riverhog-ftp-custody"]["structure"]["units"]
+    ftp_units = projected["a-riverhog-ftp-spool-custody"]["structure"]["units"]
     assert {unit["id"] for unit in ftp_units} == {
         "operational-database",
         "completion-log",

@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, cast
 from urllib.parse import unquote
 
-import piggity.main
+import a_riverhog_cli.main
 import pytest
 from riverhog_api.routers import collections as collection_routes
 from riverhog_client import ApiClient
@@ -184,7 +184,7 @@ def test_collection_list_has_a_readable_mutual_http_client_cli_audit_path() -> N
         for title in (
             "POST /v1/collections:search",
             "riverhog_client.ApiClient.list_collections",
-            "piggity collection list",
+            "a-riverhog-cli collection list",
         )
     ]
     ids = {item["id"] for item in selected}
@@ -193,7 +193,7 @@ def test_collection_list_has_a_readable_mutual_http_client_cli_audit_path() -> N
         (
             collection_routes.list_collections,
             ApiClient.list_collections,
-            piggity.main.collection_list_cmd,
+            a_riverhog_cli.main.collection_list_cmd,
         ),
         strict=True,
     ):
@@ -300,7 +300,7 @@ def test_operation_command_binding_uses_relative_paths_without_prefix_collisions
                 {
                     "distribution": "command-owner",
                     "path": "apps/command-owner",
-                    "console_scripts": {"piggity": "different_import.cli:main"},
+                    "console_scripts": {"a-riverhog-cli": "different_import.cli:main"},
                 },
                 {
                     "distribution": "shared-callback",
@@ -321,15 +321,15 @@ def test_operation_command_binding_uses_relative_paths_without_prefix_collisions
             },
         }
         for name, path in (
-            ("short", ["piggity", "inspect"]),
-            ("nested", ["piggity", "piggity", "inspect"]),
+            ("short", ["a-riverhog-cli", "inspect"]),
+            ("nested", ["a-riverhog-cli", "a-riverhog-cli", "inspect"]),
         )
     ]
     if reverse:
         elements.reverse()
     binding = {
-        "command": "piggity inspect",
-        "executable": "piggity",
+        "command": "a-riverhog-cli inspect",
+        "executable": "a-riverhog-cli",
         "result_identity": "nested",
         "source": {
             "path": "packages/callback/src/different_import/cli.py",
@@ -568,7 +568,7 @@ def test_every_dossier_is_lossless_and_representative_contract_classes_are_seman
     "title,parameter,expected",
     [
         (
-            "piggity collection list",
+            "a-riverhog-cli collection list",
             "page_size",
             (
                 "`--page-size`",
@@ -579,17 +579,17 @@ def test_every_dossier_is_lossless_and_representative_contract_classes_are_seman
             ),
         ),
         (
-            "piggity collection list",
+            "a-riverhog-cli collection list",
             "json_mode",
             ("optional flag; 0 values", "boolean", "| `false`<br>Env: `null` |"),
         ),
         (
-            "piggity collection list",
+            "a-riverhog-cli collection list",
             "tag",
             ("collects repeats; maximum 100 occurrences", "not recorded"),
         ),
         (
-            "piggity app key access list",
+            "a-riverhog-cli app key access list",
             "active",
             ("`--active`", "alternate: `--inactive`", "0 values"),
         ),
@@ -599,12 +599,12 @@ def test_every_dossier_is_lossless_and_representative_contract_classes_are_seman
             ('Env: `"GOGURT_MOUNTED_VOLUME_PROVIDER"`', "not recorded"),
         ),
         (
-            "riverhog-ftp-adapter status",
+            "a-riverhog-ftp-spool status",
             "page_size",
             ("optional option; 1 value", "| int | `25` |"),
         ),
         (
-            "riverhog-recover",
+            "a-riverhog-recovery-tool",
             "output",
             ("optional positional; 0–1 values", "| Path | not recorded |"),
         ),
@@ -636,7 +636,7 @@ def test_every_dossier_is_lossless_and_representative_contract_classes_are_seman
             ),
         ),
         (
-            "riverhog-storage-adapter-filesystem-materialize",
+            "a-riverhog-filesystem-store-materialize",
             "path",
             ("collects repeats; no declared occurrence maximum", "| `[]` |"),
         ),
@@ -657,7 +657,7 @@ def test_cli_primary_reading_path_exposes_parameter_semantics(
     ("title", "expected"),
     [
         (
-            "riverhog-recover",
+            "a-riverhog-recovery-tool",
             (
                 "Unique long-option abbreviations: accepted.",
                 "### Argument combinations",
@@ -755,7 +755,7 @@ def test_cli_authority_resolution_fails_closed() -> None:
     command = next(
         item
         for item in elements.values()
-        if item["interface"] == "cli" and item["title"] == "piggity collection list"
+        if item["interface"] == "cli" and item["title"] == "a-riverhog-cli collection list"
     )
     result_pointer = next(
         pointer for pointer in command["pointers"] if pointer.endswith("/result_contract")
@@ -896,8 +896,8 @@ def _primary_contract(authority: str, title: str) -> tuple[dict[str, Any], str]:
         ),
         ("stove0", "schemas: JsonValue", ("Accepts: any JSON value.",)),
         (
-            "riverhog-ftp-adapter",
-            "securitySchemes: RiverhogFtpAdapterBearer",
+            "a-riverhog-ftp-spool",
+            "securitySchemes: RiverhogFtpSpoolBearer",
             ('`scheme` | `"bearer"`', '`type` | `"http"`'),
         ),
         (
@@ -914,8 +914,8 @@ def _primary_contract(authority: str, title: str) -> tuple[dict[str, Any], str]:
             ('`parameters · store · normalization` | `"uppercase-dashes-to-underscores"`',),
         ),
         (
-            "riverhog-ftp-custody",
-            "riverhog-ftp-custody: operational-database",
+            "a-riverhog-ftp-spool-custody",
+            "a-riverhog-ftp-spool-custody: operational-database",
             (
                 "### Table: `claims`",
                 "### Table: `adapter_state`",
@@ -928,8 +928,8 @@ def _primary_contract(authority: str, title: str) -> tuple[dict[str, Any], str]:
             ),
         ),
         (
-            "riverhog-ftp-custody",
-            "riverhog-ftp-custody: completion-log",
+            "a-riverhog-ftp-spool-custody",
+            "a-riverhog-ftp-spool-custody: completion-log",
             (
                 "### Record schema",
                 '`event_id` | yes | type="string"; minLength=1',
@@ -947,8 +947,8 @@ def _primary_contract(authority: str, title: str) -> tuple[dict[str, Any], str]:
             ),
         ),
         (
-            "riverhog-recover",
-            "riverhog-recover",
+            "a-riverhog-recovery-tool",
+            "a-riverhog-recovery-tool",
             (
                 "### Local structured outputs",
                 '`framing` | `"newline-delimited-json"`',
@@ -961,8 +961,8 @@ def _primary_contract(authority: str, title: str) -> tuple[dict[str, Any], str]:
             ),
         ),
         (
-            "stove0-review-planning",
-            "stove0-review-planning",
+            "review0-planner",
+            "review0-planner",
             (
                 "### Local structured outputs",
                 '`status` | `"conformant"`',

@@ -1277,7 +1277,7 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 |---|---:|---|---|
 | <a id="s-3364aa53c5"></a>`contract_id` | yes | [nonEmptyString](#s-ddcf450d4d) |  |
 | <a id="s-fcb904cc59"></a>`contract_sha256` | yes | [sha256Hex](#s-1ceccb1b61) |  |
-| <a id="s-55636c6819"></a>`format` | yes | const="riverhog-provenance-contract-reference/v1" |  |
+| <a id="s-55636c6819"></a>`format` | yes | const="riverhog-provenance-contract-some-implementations/v1" |  |
 | <a id="s-21e1491e3c"></a>`provider` | yes | [nonEmptyString](#s-ddcf450d4d) |  |
 
 ### <a id="s-307ea8eb10"></a>definition `provenanceObserverReference`
@@ -1293,7 +1293,7 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 |---|---:|---|---|
 | <a id="s-18050facad"></a>`contract` | yes | [provenanceContractReference](#s-e81f29b9b5) |  |
 | <a id="s-dda36f3f57"></a>`distribution` | no | [nonEmptyString](#s-ddcf450d4d) |  |
-| <a id="s-cf1b267210"></a>`format` | yes | const="riverhog-provenance-observer-reference/v1" |  |
+| <a id="s-cf1b267210"></a>`format` | yes | const="riverhog-provenance-observer-some-implementations/v1" |  |
 | <a id="s-c070509dc7"></a>`observer_id` | yes | [nonEmptyString](#s-ddcf450d4d) |  |
 | <a id="s-852a4de7dc"></a>`provider` | yes | [nonEmptyString](#s-ddcf450d4d) |  |
 | <a id="s-a566978066"></a>`version` | no | [nonEmptyString](#s-ddcf450d4d) |  |
@@ -1766,7 +1766,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e3c5f07c4c12cee037e14c2a5f8a4433c5ffefb9d54df76d178182eb34194183 -->
+<!-- exact-contract-value: d947d079d5148db7a8b70f0e135730716f4425d44b157d816af411e47270d986 -->
 
 ```json
 {
@@ -5007,7 +5007,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "$ref": "#/$defs/sha256Hex"
         },
         "format": {
-          "const": "riverhog-provenance-contract-reference/v1"
+          "const": "riverhog-provenance-contract-some-implementations/v1"
         },
         "provider": {
           "$ref": "#/$defs/nonEmptyString"
@@ -5039,7 +5039,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "$ref": "#/$defs/nonEmptyString"
         },
         "format": {
-          "const": "riverhog-provenance-observer-reference/v1"
+          "const": "riverhog-provenance-observer-some-implementations/v1"
         },
         "observer_id": {
           "$ref": "#/$defs/nonEmptyString"

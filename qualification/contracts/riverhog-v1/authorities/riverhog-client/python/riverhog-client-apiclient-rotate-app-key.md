@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity app key rotate](../../piggity/cli/piggity-app-key-rotate.md)
+- [a-riverhog-cli app key rotate](../../a-riverhog-cli/cli/a-riverhog-cli-app-key-rotate.md)
 - [POST /v1/apps/{app}/keys/{key_id}/rotate](../../riverhog/http-operations/post-v1-apps-app-keys-key-id-rotate.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

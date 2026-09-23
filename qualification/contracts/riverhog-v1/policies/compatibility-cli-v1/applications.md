@@ -8,6 +8,154 @@ These are the indexed contract-element applications. Each link reaches the polic
 
 | Authority | Contract element |
 |---|---|
+| `a-review0-materializer` | [a-review0-materializer](../../authorities/a-review0-materializer/cli/a-review0-materializer.md#pa-479a9a8f2a) |
+| `a-review0-nvenc-av1-opus-sampler` | [a-review0-nvenc-av1-opus-sampler](../../authorities/a-review0-nvenc-av1-opus-sampler/cli/a-review0-nvenc-av1-opus-sampler.md#pa-04a97810e5) |
+| `a-review0-opus-sampler` | [a-review0-opus-sampler](../../authorities/a-review0-opus-sampler/cli/a-review0-opus-sampler.md#pa-ac729f8e0e) |
+| `a-review0-rclone-target` | [a-review0-rclone-target](../../authorities/a-review0-rclone-target/cli/a-review0-rclone-target.md#pa-31e536853f) |
+| `a-riverhog-aws-store` | [a-riverhog-aws-store](../../authorities/a-riverhog-aws-store/cli/a-riverhog-aws-store.md#pa-c07b709b89) |
+| `a-riverhog-b2-store` | [a-riverhog-b2-store](../../authorities/a-riverhog-b2-store/cli/a-riverhog-b2-store.md#pa-838ab7aebd) |
+| `a-riverhog-cli` | [a-riverhog-cli](../../authorities/a-riverhog-cli/cli/a-riverhog-cli.md#pa-5b8c1aac42) |
+| `a-riverhog-cli` | [a-riverhog-cli app](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app.md#pa-8843223174) |
+| `a-riverhog-cli` | [a-riverhog-cli app key](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key.md#pa-afaf9c550f) |
+| `a-riverhog-cli` | [a-riverhog-cli app key access](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-access.md#pa-128cbc0021) |
+| `a-riverhog-cli` | [a-riverhog-cli app key access add](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-access-add.md#pa-9bbd093d2b) |
+| `a-riverhog-cli` | [a-riverhog-cli app key access list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-access-list.md#pa-25e22e0a5b) |
+| `a-riverhog-cli` | [a-riverhog-cli app key access remove](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-access-remove.md#pa-d0ddd1f2bb) |
+| `a-riverhog-cli` | [a-riverhog-cli app key access set](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-access-set.md#pa-5bd7644302) |
+| `a-riverhog-cli` | [a-riverhog-cli app key create](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-create.md#pa-5425fe7d4e) |
+| `a-riverhog-cli` | [a-riverhog-cli app key list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-list.md#pa-d8f11f4ed2) |
+| `a-riverhog-cli` | [a-riverhog-cli app key quota](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-quota.md#pa-d3a16dd918) |
+| `a-riverhog-cli` | [a-riverhog-cli app key quota list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-quota-list.md#pa-0a4b0934f4) |
+| `a-riverhog-cli` | [a-riverhog-cli app key quota set](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-quota-set.md#pa-4336861731) |
+| `a-riverhog-cli` | [a-riverhog-cli app key quota show](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-quota-show.md#pa-423557334f) |
+| `a-riverhog-cli` | [a-riverhog-cli app key revoke](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-revoke.md#pa-a05d802279) |
+| `a-riverhog-cli` | [a-riverhog-cli app key rotate](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-rotate.md#pa-36c92ac145) |
+| `a-riverhog-cli` | [a-riverhog-cli app list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-list.md#pa-24d791cdb0) |
+| `a-riverhog-cli` | [a-riverhog-cli archive](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive.md#pa-cadd1db3dc) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy.md#pa-3b83761ccc) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy cancel](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-cancel.md#pa-8248149d63) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-list.md#pa-91d349f771) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy show](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-show.md#pa-7fc186db0e) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy start](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-start.md#pa-dca44e33c2) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy watch](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-watch.md#pa-244c96a0cb) |
+| `a-riverhog-cli` | [a-riverhog-cli archive retire](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-retire.md#pa-a742ad9c52) |
+| `a-riverhog-cli` | [a-riverhog-cli archive store](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-store.md#pa-884caf9241) |
+| `a-riverhog-cli` | [a-riverhog-cli archive store list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-store-list.md#pa-765e99bb7c) |
+| `a-riverhog-cli` | [a-riverhog-cli archive store show](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-store-show.md#pa-4fbc3464d5) |
+| `a-riverhog-cli` | [a-riverhog-cli catalog-sync](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-catalog-sync.md#pa-8e74364d6e) |
+| `a-riverhog-cli` | [a-riverhog-cli catalog-sync changes](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-catalog-sync-changes.md#pa-0d4ef01316) |
+| `a-riverhog-cli` | [a-riverhog-cli catalog-sync checkpoint](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-catalog-sync-checkpoint.md#pa-06cfea8f6f) |
+| `a-riverhog-cli` | [a-riverhog-cli catalog-sync collections](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-catalog-sync-collections.md#pa-905ab27dd8) |
+| `a-riverhog-cli` | [a-riverhog-cli collection](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection.md#pa-ec00c05b75) |
+| `a-riverhog-cli` | [a-riverhog-cli collection archive-copies](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-archive-copies.md#pa-f2dde2bc7b) |
+| `a-riverhog-cli` | [a-riverhog-cli collection delete](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-delete.md#pa-3cac49046b) |
+| `a-riverhog-cli` | [a-riverhog-cli collection describe](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-describe.md#pa-b7045d6a86) |
+| `a-riverhog-cli` | [a-riverhog-cli collection list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-list.md#pa-c05ce53c80) |
+| `a-riverhog-cli` | [a-riverhog-cli collection provenance](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-provenance.md#pa-b0c1e15c7f) |
+| `a-riverhog-cli` | [a-riverhog-cli collection provenance agents](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-provenance-agents.md#pa-822f548b77) |
+| `a-riverhog-cli` | [a-riverhog-cli collection provenance export](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-provenance-export.md#pa-9d4ebaa3e5) |
+| `a-riverhog-cli` | [a-riverhog-cli collection provenance list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-provenance-list.md#pa-a47fcfefaa) |
+| `a-riverhog-cli` | [a-riverhog-cli collection provenance show](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-provenance-show.md#pa-9edfc8c216) |
+| `a-riverhog-cli` | [a-riverhog-cli collection provenance trace](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-provenance-trace.md#pa-978b253b19) |
+| `a-riverhog-cli` | [a-riverhog-cli collection provenance verification-cancel](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-provenance-verification-cancel.md#pa-7d8ecefa14) |
+| `a-riverhog-cli` | [a-riverhog-cli collection provenance verification-show](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-provenance-verification-show.md#pa-11b679826b) |
+| `a-riverhog-cli` | [a-riverhog-cli collection provenance verify](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-provenance-verify.md#pa-5fb5c625b1) |
+| `a-riverhog-cli` | [a-riverhog-cli collection show](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-show.md#pa-3aa63c5d3d) |
+| `a-riverhog-cli` | [a-riverhog-cli collection tag](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-tag.md#pa-4a86058af6) |
+| `a-riverhog-cli` | [a-riverhog-cli collection tag add](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-tag-add.md#pa-55a17e6b22) |
+| `a-riverhog-cli` | [a-riverhog-cli collection tag contains](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-tag-contains.md#pa-1adae63136) |
+| `a-riverhog-cli` | [a-riverhog-cli collection tag list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-tag-list.md#pa-a58a45a0b9) |
+| `a-riverhog-cli` | [a-riverhog-cli collection tag remove](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-tag-remove.md#pa-c132991a55) |
+| `a-riverhog-cli` | [a-riverhog-cli collection upload](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-upload.md#pa-8adde3ccfe) |
+| `a-riverhog-cli` | [a-riverhog-cli collection upload cancel](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-upload-cancel.md#pa-8e72c6b848) |
+| `a-riverhog-cli` | [a-riverhog-cli collection upload discard](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-upload-discard.md#pa-6363da1d68) |
+| `a-riverhog-cli` | [a-riverhog-cli collection upload files](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-upload-files.md#pa-07f3e57193) |
+| `a-riverhog-cli` | [a-riverhog-cli collection upload list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-upload-list.md#pa-fdb3751df1) |
+| `a-riverhog-cli` | [a-riverhog-cli collection upload show](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-upload-show.md#pa-a8b916f674) |
+| `a-riverhog-cli` | [a-riverhog-cli collection upload start](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-upload-start.md#pa-eadffb8810) |
+| `a-riverhog-cli` | [a-riverhog-cli collection upload watch](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-upload-watch.md#pa-395ee553b3) |
+| `a-riverhog-cli` | [a-riverhog-cli event](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-event.md#pa-2d94c909f1) |
+| `a-riverhog-cli` | [a-riverhog-cli event list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-event-list.md#pa-712c574bed) |
+| `a-riverhog-cli` | [a-riverhog-cli find](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-find.md#pa-8f14ad3b78) |
+| `a-riverhog-cli` | [a-riverhog-cli local](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-local.md#pa-aa461c547f) |
+| `a-riverhog-cli` | [a-riverhog-cli local add](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-local-add.md#pa-c3eab4a59e) |
+| `a-riverhog-cli` | [a-riverhog-cli local audit](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-local-audit.md#pa-48e5bc5fd7) |
+| `a-riverhog-cli` | [a-riverhog-cli local evict](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-local-evict.md#pa-438a51a388) |
+| `a-riverhog-cli` | [a-riverhog-cli local list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-local-list.md#pa-e4b51f129f) |
+| `a-riverhog-cli` | [a-riverhog-cli local provenance-observer](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-local-provenance-observer.md#pa-d303cff2b0) |
+| `a-riverhog-cli` | [a-riverhog-cli local provenance-observer list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-local-provenance-observer-list.md#pa-e9b70bb284) |
+| `a-riverhog-cli` | [a-riverhog-cli local provenance-observer show](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-local-provenance-observer-show.md#pa-0f6147b52d) |
+| `a-riverhog-cli` | [a-riverhog-cli local remove](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-local-remove.md#pa-4af925a919) |
+| `a-riverhog-cli` | [a-riverhog-cli local repair](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-local-repair.md#pa-fea31fec66) |
+| `a-riverhog-cli` | [a-riverhog-cli local show](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-local-show.md#pa-16a049c3ef) |
+| `a-riverhog-cli` | [a-riverhog-cli local state](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-local-state.md#pa-b4d61b4297) |
+| `a-riverhog-cli` | [a-riverhog-cli local state status](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-local-state-status.md#pa-4a32830247) |
+| `a-riverhog-cli` | [a-riverhog-cli local state upgrade](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-local-state-upgrade.md#pa-6d67b1c6ee) |
+| `a-riverhog-cli` | [a-riverhog-cli local state verify](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-local-state-verify.md#pa-b41d453ad5) |
+| `a-riverhog-cli` | [a-riverhog-cli local sync](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-local-sync.md#pa-b519628ad7) |
+| `a-riverhog-cli` | [a-riverhog-cli retrieval](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-retrieval.md#pa-1481e37dec) |
+| `a-riverhog-cli` | [a-riverhog-cli retrieval cache](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-retrieval-cache.md#pa-fc4b0233e8) |
+| `a-riverhog-cli` | [a-riverhog-cli retrieval cache list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-retrieval-cache-list.md#pa-d8cbe628a7) |
+| `a-riverhog-cli` | [a-riverhog-cli retrieval cache show](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-retrieval-cache-show.md#pa-6564a716ea) |
+| `a-riverhog-cli` | [a-riverhog-cli retrieval cache status](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-retrieval-cache-status.md#pa-ae2c7db7bc) |
+| `a-riverhog-cli` | [a-riverhog-cli tag](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-tag.md#pa-0b87b67825) |
+| `a-riverhog-cli` | [a-riverhog-cli tag list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-tag-list.md#pa-1394d843bf) |
+| `a-riverhog-event-relay` | [a-riverhog-event-relay](../../authorities/a-riverhog-event-relay/cli/a-riverhog-event-relay.md#pa-f2c5fcb1bc) |
+| `a-riverhog-event-relay` | [a-riverhog-event-relay state](../../authorities/a-riverhog-event-relay/cli/a-riverhog-event-relay-state.md#pa-3b4f00f542) |
+| `a-riverhog-event-relay` | [a-riverhog-event-relay state status](../../authorities/a-riverhog-event-relay/cli/a-riverhog-event-relay-state-status.md#pa-3a3fcac945) |
+| `a-riverhog-event-relay` | [a-riverhog-event-relay state upgrade](../../authorities/a-riverhog-event-relay/cli/a-riverhog-event-relay-state-upgrade.md#pa-d1832ab6ab) |
+| `a-riverhog-event-relay` | [a-riverhog-event-relay state verify](../../authorities/a-riverhog-event-relay/cli/a-riverhog-event-relay-state-verify.md#pa-f5e6691c03) |
+| `a-riverhog-filesystem-store` | [a-riverhog-filesystem-store](../../authorities/a-riverhog-filesystem-store/cli/a-riverhog-filesystem-store.md#pa-a8e088804f) |
+| `a-riverhog-filesystem-store` | [a-riverhog-filesystem-store-materialize](../../authorities/a-riverhog-filesystem-store/cli/a-riverhog-filesystem-store-materialize.md#pa-49b98a91af) |
+| `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool.md#pa-04676086ff) |
+| `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool check-config](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-check-config.md#pa-dd0e313330) |
+| `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool flush](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-flush.md#pa-c6186dbe54) |
+| `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool listen](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-listen.md#pa-967aa4bb16) |
+| `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool run](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-run.md#pa-bba5ad7683) |
+| `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool serve](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-serve.md#pa-90509ac9d0) |
+| `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool status](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-status.md#pa-e5f197d21a) |
+| `a-riverhog-recovery-tool` | [a-riverhog-recovery-tool](../../authorities/a-riverhog-recovery-tool/cli/a-riverhog-recovery-tool.md#pa-f58bc73f71) |
+| `a-stove0-cli` | [stove0](../../authorities/a-stove0-cli/cli/stove0.md#pa-cf8f172231) |
+| `a-stove0-cli` | [stove0 admission](../../authorities/a-stove0-cli/cli/stove0-admission.md#pa-c5ed43c6cf) |
+| `a-stove0-cli` | [stove0 admission list](../../authorities/a-stove0-cli/cli/stove0-admission-list.md#pa-3300fe0b77) |
+| `a-stove0-cli` | [stove0 admission policy](../../authorities/a-stove0-cli/cli/stove0-admission-policy.md#pa-0ed6884a4e) |
+| `a-stove0-cli` | [stove0 admission policy backfill](../../authorities/a-stove0-cli/cli/stove0-admission-policy-backfill.md#pa-4bd524f8e3) |
+| `a-stove0-cli` | [stove0 admission policy list](../../authorities/a-stove0-cli/cli/stove0-admission-policy-list.md#pa-aa5412bdc5) |
+| `a-stove0-cli` | [stove0 admission policy rebaseline](../../authorities/a-stove0-cli/cli/stove0-admission-policy-rebaseline.md#pa-7a4713d5d7) |
+| `a-stove0-cli` | [stove0 admission show](../../authorities/a-stove0-cli/cli/stove0-admission-show.md#pa-c28f9ce4e8) |
+| `a-stove0-cli` | [stove0 evaluation](../../authorities/a-stove0-cli/cli/stove0-evaluation.md#pa-2949566a49) |
+| `a-stove0-cli` | [stove0 evaluation cancel](../../authorities/a-stove0-cli/cli/stove0-evaluation-cancel.md#pa-29e80b8d74) |
+| `a-stove0-cli` | [stove0 evaluation create](../../authorities/a-stove0-cli/cli/stove0-evaluation-create.md#pa-ef381b3425) |
+| `a-stove0-cli` | [stove0 evaluation list](../../authorities/a-stove0-cli/cli/stove0-evaluation-list.md#pa-356a95e671) |
+| `a-stove0-cli` | [stove0 evaluation retry](../../authorities/a-stove0-cli/cli/stove0-evaluation-retry.md#pa-14cce91c9e) |
+| `a-stove0-cli` | [stove0 evaluation review](../../authorities/a-stove0-cli/cli/stove0-evaluation-review.md#pa-a4756bb4e4) |
+| `a-stove0-cli` | [stove0 evaluation show](../../authorities/a-stove0-cli/cli/stove0-evaluation-show.md#pa-6ff29c118c) |
+| `a-stove0-cli` | [stove0 evaluation step](../../authorities/a-stove0-cli/cli/stove0-evaluation-step.md#pa-c129ffe7d9) |
+| `a-stove0-cli` | [stove0 event](../../authorities/a-stove0-cli/cli/stove0-event.md#pa-78f8797448) |
+| `a-stove0-cli` | [stove0 event list](../../authorities/a-stove0-cli/cli/stove0-event-list.md#pa-66900bbfb8) |
+| `a-stove0-cli` | [stove0 health](../../authorities/a-stove0-cli/cli/stove0-health.md#pa-cbc6473828) |
+| `a-stove0-cli` | [stove0 preview](../../authorities/a-stove0-cli/cli/stove0-preview.md#pa-74111163cf) |
+| `a-stove0-cli` | [stove0 recipe](../../authorities/a-stove0-cli/cli/stove0-recipe.md#pa-ab2319503e) |
+| `a-stove0-cli` | [stove0 recipe list](../../authorities/a-stove0-cli/cli/stove0-recipe-list.md#pa-be87237ec0) |
+| `a-stove0-cli` | [stove0 recipe show](../../authorities/a-stove0-cli/cli/stove0-recipe-show.md#pa-24d8dfb265) |
+| `a-stove0-cli` | [stove0 recipe validate](../../authorities/a-stove0-cli/cli/stove0-recipe-validate.md#pa-508e0cb53b) |
+| `a-stove0-cli` | [stove0 scheduler](../../authorities/a-stove0-cli/cli/stove0-scheduler.md#pa-94d4aad47b) |
+| `a-stove0-cli` | [stove0 scheduler run](../../authorities/a-stove0-cli/cli/stove0-scheduler-run.md#pa-a898e85a75) |
+| `a-stove0-cli` | [stove0 scheduler status](../../authorities/a-stove0-cli/cli/stove0-scheduler-status.md#pa-e064a2dfc6) |
+| `a-stove0-cli` | [stove0 selection](../../authorities/a-stove0-cli/cli/stove0-selection.md#pa-9c04285c03) |
+| `a-stove0-cli` | [stove0 selection show](../../authorities/a-stove0-cli/cli/stove0-selection-show.md#pa-f1c6a0dabc) |
+| `a-stove0-cli` | [stove0 work](../../authorities/a-stove0-cli/cli/stove0-work.md#pa-fad8ecb5d5) |
+| `a-stove0-cli` | [stove0 work cancel](../../authorities/a-stove0-cli/cli/stove0-work-cancel.md#pa-46f74c16e6) |
+| `a-stove0-cli` | [stove0 work coordination](../../authorities/a-stove0-cli/cli/stove0-work-coordination.md#pa-43cb0adfed) |
+| `a-stove0-cli` | [stove0 work create](../../authorities/a-stove0-cli/cli/stove0-work-create.md#pa-989dbc007e) |
+| `a-stove0-cli` | [stove0 work list](../../authorities/a-stove0-cli/cli/stove0-work-list.md#pa-5e8fd4fb9a) |
+| `a-stove0-cli` | [stove0 work retry](../../authorities/a-stove0-cli/cli/stove0-work-retry.md#pa-d0e236cafd) |
+| `a-stove0-cli` | [stove0 work show](../../authorities/a-stove0-cli/cli/stove0-work-show.md#pa-38428c1ecc) |
+| `a-stove0-cli` | [stove0 work step](../../authorities/a-stove0-cli/cli/stove0-work-step.md#pa-5563e32146) |
+| `a-stove0-exiftool-observer` | [a-stove0-exiftool-observer](../../authorities/a-stove0-exiftool-observer/cli/a-stove0-exiftool-observer.md#pa-b525803ee9) |
+| `a-stove0-ffprobe-sampling-observer` | [a-stove0-ffprobe-sampling-observer](../../authorities/a-stove0-ffprobe-sampling-observer/cli/a-stove0-ffprobe-sampling-observer.md#pa-e5a8928ad5) |
+| `a-stove0-nvenc-av1-opus-target` | [a-stove0-nvenc-av1-opus-target](../../authorities/a-stove0-nvenc-av1-opus-target/cli/a-stove0-nvenc-av1-opus-target.md#pa-24883bb517) |
+| `a-stove0-opus-target` | [a-stove0-opus-target](../../authorities/a-stove0-opus-target/cli/a-stove0-opus-target.md#pa-b169b62e49) |
 | `gogurt` | [gogurt](../../authorities/gogurt/cli/gogurt.md#pa-3fff9909bc) |
 | `gogurt` | [gogurt list](../../authorities/gogurt/cli/gogurt-list.md#pa-b94ad11697) |
 | `gogurt` | [gogurt listener](../../authorities/gogurt/cli/gogurt-listener.md#pa-1806686ddc) |
@@ -29,166 +177,18 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `gogurt` | [gogurt run](../../authorities/gogurt/cli/gogurt-run.md#pa-0f66efd540) |
 | `gogurt` | [gogurt watch](../../authorities/gogurt/cli/gogurt-watch.md#pa-98faceebfa) |
 | `gogurt` | [gogurt write](../../authorities/gogurt/cli/gogurt-write.md#pa-69134ccf54) |
-| `mango-fish` | [mango-fish](../../authorities/mango-fish/cli/mango-fish.md#pa-833cbd0fc1) |
-| `mango-fish` | [mango-fish state](../../authorities/mango-fish/cli/mango-fish-state.md#pa-e3d02a1e34) |
-| `mango-fish` | [mango-fish state status](../../authorities/mango-fish/cli/mango-fish-state-status.md#pa-182241e1a2) |
-| `mango-fish` | [mango-fish state upgrade](../../authorities/mango-fish/cli/mango-fish-state-upgrade.md#pa-2172d213e7) |
-| `mango-fish` | [mango-fish state verify](../../authorities/mango-fish/cli/mango-fish-state-verify.md#pa-ffc58149b1) |
-| `piggity` | [piggity](../../authorities/piggity/cli/piggity.md#pa-bb10a51cf9) |
-| `piggity` | [piggity app](../../authorities/piggity/cli/piggity-app.md#pa-899e844a26) |
-| `piggity` | [piggity app key](../../authorities/piggity/cli/piggity-app-key.md#pa-db0c801ba7) |
-| `piggity` | [piggity app key access](../../authorities/piggity/cli/piggity-app-key-access.md#pa-199633f801) |
-| `piggity` | [piggity app key access add](../../authorities/piggity/cli/piggity-app-key-access-add.md#pa-68e6be4baf) |
-| `piggity` | [piggity app key access list](../../authorities/piggity/cli/piggity-app-key-access-list.md#pa-bdbed2e331) |
-| `piggity` | [piggity app key access remove](../../authorities/piggity/cli/piggity-app-key-access-remove.md#pa-c00ba93760) |
-| `piggity` | [piggity app key access set](../../authorities/piggity/cli/piggity-app-key-access-set.md#pa-9649e3e3ef) |
-| `piggity` | [piggity app key create](../../authorities/piggity/cli/piggity-app-key-create.md#pa-283950b798) |
-| `piggity` | [piggity app key list](../../authorities/piggity/cli/piggity-app-key-list.md#pa-e8929fa0f0) |
-| `piggity` | [piggity app key quota](../../authorities/piggity/cli/piggity-app-key-quota.md#pa-6fe1d36b52) |
-| `piggity` | [piggity app key quota list](../../authorities/piggity/cli/piggity-app-key-quota-list.md#pa-679547cd49) |
-| `piggity` | [piggity app key quota set](../../authorities/piggity/cli/piggity-app-key-quota-set.md#pa-65f15a3820) |
-| `piggity` | [piggity app key quota show](../../authorities/piggity/cli/piggity-app-key-quota-show.md#pa-98fa19b358) |
-| `piggity` | [piggity app key revoke](../../authorities/piggity/cli/piggity-app-key-revoke.md#pa-e88cb85e3c) |
-| `piggity` | [piggity app key rotate](../../authorities/piggity/cli/piggity-app-key-rotate.md#pa-3a0600115f) |
-| `piggity` | [piggity app list](../../authorities/piggity/cli/piggity-app-list.md#pa-6121dc3fdd) |
-| `piggity` | [piggity archive](../../authorities/piggity/cli/piggity-archive.md#pa-1196c30236) |
-| `piggity` | [piggity archive copy](../../authorities/piggity/cli/piggity-archive-copy.md#pa-da3b747625) |
-| `piggity` | [piggity archive copy cancel](../../authorities/piggity/cli/piggity-archive-copy-cancel.md#pa-734c0c7791) |
-| `piggity` | [piggity archive copy list](../../authorities/piggity/cli/piggity-archive-copy-list.md#pa-f88d1a0271) |
-| `piggity` | [piggity archive copy show](../../authorities/piggity/cli/piggity-archive-copy-show.md#pa-d0d2284ab2) |
-| `piggity` | [piggity archive copy start](../../authorities/piggity/cli/piggity-archive-copy-start.md#pa-ff4020f583) |
-| `piggity` | [piggity archive copy watch](../../authorities/piggity/cli/piggity-archive-copy-watch.md#pa-1972a063ae) |
-| `piggity` | [piggity archive retire](../../authorities/piggity/cli/piggity-archive-retire.md#pa-0297f57ebb) |
-| `piggity` | [piggity archive store](../../authorities/piggity/cli/piggity-archive-store.md#pa-cc1f497c31) |
-| `piggity` | [piggity archive store list](../../authorities/piggity/cli/piggity-archive-store-list.md#pa-24cb372b9b) |
-| `piggity` | [piggity archive store show](../../authorities/piggity/cli/piggity-archive-store-show.md#pa-89803a94ac) |
-| `piggity` | [piggity catalog-sync](../../authorities/piggity/cli/piggity-catalog-sync.md#pa-8e4998a3b6) |
-| `piggity` | [piggity catalog-sync changes](../../authorities/piggity/cli/piggity-catalog-sync-changes.md#pa-23408f750a) |
-| `piggity` | [piggity catalog-sync checkpoint](../../authorities/piggity/cli/piggity-catalog-sync-checkpoint.md#pa-5191603172) |
-| `piggity` | [piggity catalog-sync collections](../../authorities/piggity/cli/piggity-catalog-sync-collections.md#pa-7eeb011cfa) |
-| `piggity` | [piggity collection](../../authorities/piggity/cli/piggity-collection.md#pa-878cac7200) |
-| `piggity` | [piggity collection archive-copies](../../authorities/piggity/cli/piggity-collection-archive-copies.md#pa-9461f49c48) |
-| `piggity` | [piggity collection delete](../../authorities/piggity/cli/piggity-collection-delete.md#pa-4850efa6f3) |
-| `piggity` | [piggity collection describe](../../authorities/piggity/cli/piggity-collection-describe.md#pa-0dc8f5a626) |
-| `piggity` | [piggity collection list](../../authorities/piggity/cli/piggity-collection-list.md#pa-30dcf41924) |
-| `piggity` | [piggity collection provenance](../../authorities/piggity/cli/piggity-collection-provenance.md#pa-9b3a252c39) |
-| `piggity` | [piggity collection provenance agents](../../authorities/piggity/cli/piggity-collection-provenance-agents.md#pa-edd0c56851) |
-| `piggity` | [piggity collection provenance export](../../authorities/piggity/cli/piggity-collection-provenance-export.md#pa-549f52d451) |
-| `piggity` | [piggity collection provenance list](../../authorities/piggity/cli/piggity-collection-provenance-list.md#pa-0023cfd324) |
-| `piggity` | [piggity collection provenance show](../../authorities/piggity/cli/piggity-collection-provenance-show.md#pa-742fdd1081) |
-| `piggity` | [piggity collection provenance trace](../../authorities/piggity/cli/piggity-collection-provenance-trace.md#pa-39d373d3ef) |
-| `piggity` | [piggity collection provenance verification-cancel](../../authorities/piggity/cli/piggity-collection-provenance-verification-cancel.md#pa-70e17be81c) |
-| `piggity` | [piggity collection provenance verification-show](../../authorities/piggity/cli/piggity-collection-provenance-verification-show.md#pa-4f1e86f98e) |
-| `piggity` | [piggity collection provenance verify](../../authorities/piggity/cli/piggity-collection-provenance-verify.md#pa-cd0b0ce8ba) |
-| `piggity` | [piggity collection show](../../authorities/piggity/cli/piggity-collection-show.md#pa-04303a13f7) |
-| `piggity` | [piggity collection tag](../../authorities/piggity/cli/piggity-collection-tag.md#pa-14494ded51) |
-| `piggity` | [piggity collection tag add](../../authorities/piggity/cli/piggity-collection-tag-add.md#pa-6aebf9da13) |
-| `piggity` | [piggity collection tag contains](../../authorities/piggity/cli/piggity-collection-tag-contains.md#pa-16a606c9d1) |
-| `piggity` | [piggity collection tag list](../../authorities/piggity/cli/piggity-collection-tag-list.md#pa-d4f4071a44) |
-| `piggity` | [piggity collection tag remove](../../authorities/piggity/cli/piggity-collection-tag-remove.md#pa-0a88143a26) |
-| `piggity` | [piggity collection upload](../../authorities/piggity/cli/piggity-collection-upload.md#pa-1453ccea68) |
-| `piggity` | [piggity collection upload cancel](../../authorities/piggity/cli/piggity-collection-upload-cancel.md#pa-11a502a900) |
-| `piggity` | [piggity collection upload discard](../../authorities/piggity/cli/piggity-collection-upload-discard.md#pa-f7d3f1a5d7) |
-| `piggity` | [piggity collection upload files](../../authorities/piggity/cli/piggity-collection-upload-files.md#pa-a23438d51a) |
-| `piggity` | [piggity collection upload list](../../authorities/piggity/cli/piggity-collection-upload-list.md#pa-303c90f849) |
-| `piggity` | [piggity collection upload show](../../authorities/piggity/cli/piggity-collection-upload-show.md#pa-2e10ed8929) |
-| `piggity` | [piggity collection upload start](../../authorities/piggity/cli/piggity-collection-upload-start.md#pa-149ede1bf9) |
-| `piggity` | [piggity collection upload watch](../../authorities/piggity/cli/piggity-collection-upload-watch.md#pa-68e00b687c) |
-| `piggity` | [piggity event](../../authorities/piggity/cli/piggity-event.md#pa-0a0b724eef) |
-| `piggity` | [piggity event list](../../authorities/piggity/cli/piggity-event-list.md#pa-ff78854f85) |
-| `piggity` | [piggity find](../../authorities/piggity/cli/piggity-find.md#pa-aa7de01a40) |
-| `piggity` | [piggity local](../../authorities/piggity/cli/piggity-local.md#pa-7ff030ea0f) |
-| `piggity` | [piggity local add](../../authorities/piggity/cli/piggity-local-add.md#pa-0ae575b104) |
-| `piggity` | [piggity local audit](../../authorities/piggity/cli/piggity-local-audit.md#pa-68b1c4ca6b) |
-| `piggity` | [piggity local evict](../../authorities/piggity/cli/piggity-local-evict.md#pa-3736eb6c21) |
-| `piggity` | [piggity local list](../../authorities/piggity/cli/piggity-local-list.md#pa-5c9636c70c) |
-| `piggity` | [piggity local provenance-observer](../../authorities/piggity/cli/piggity-local-provenance-observer.md#pa-dfb55f7e21) |
-| `piggity` | [piggity local provenance-observer list](../../authorities/piggity/cli/piggity-local-provenance-observer-list.md#pa-e5add4c790) |
-| `piggity` | [piggity local provenance-observer show](../../authorities/piggity/cli/piggity-local-provenance-observer-show.md#pa-5bde38f73e) |
-| `piggity` | [piggity local remove](../../authorities/piggity/cli/piggity-local-remove.md#pa-cca1fe01f1) |
-| `piggity` | [piggity local repair](../../authorities/piggity/cli/piggity-local-repair.md#pa-858cb581f0) |
-| `piggity` | [piggity local show](../../authorities/piggity/cli/piggity-local-show.md#pa-5ab3380de6) |
-| `piggity` | [piggity local state](../../authorities/piggity/cli/piggity-local-state.md#pa-2fed7467de) |
-| `piggity` | [piggity local state status](../../authorities/piggity/cli/piggity-local-state-status.md#pa-e1bf744d04) |
-| `piggity` | [piggity local state upgrade](../../authorities/piggity/cli/piggity-local-state-upgrade.md#pa-298f823303) |
-| `piggity` | [piggity local state verify](../../authorities/piggity/cli/piggity-local-state-verify.md#pa-9966cf947e) |
-| `piggity` | [piggity local sync](../../authorities/piggity/cli/piggity-local-sync.md#pa-0ffe3dba51) |
-| `piggity` | [piggity retrieval](../../authorities/piggity/cli/piggity-retrieval.md#pa-2b48a84c00) |
-| `piggity` | [piggity retrieval cache](../../authorities/piggity/cli/piggity-retrieval-cache.md#pa-1b50814180) |
-| `piggity` | [piggity retrieval cache list](../../authorities/piggity/cli/piggity-retrieval-cache-list.md#pa-f312dafc30) |
-| `piggity` | [piggity retrieval cache show](../../authorities/piggity/cli/piggity-retrieval-cache-show.md#pa-904c7ce100) |
-| `piggity` | [piggity retrieval cache status](../../authorities/piggity/cli/piggity-retrieval-cache-status.md#pa-6249452792) |
-| `piggity` | [piggity tag](../../authorities/piggity/cli/piggity-tag.md#pa-2a4f2ccfd5) |
-| `piggity` | [piggity tag list](../../authorities/piggity/cli/piggity-tag-list.md#pa-80e20c1465) |
-| `riverhog-ftp-adapter` | [riverhog-ftp-adapter](../../authorities/riverhog-ftp-adapter/cli/riverhog-ftp-adapter.md#pa-e28bfc5496) |
-| `riverhog-ftp-adapter` | [riverhog-ftp-adapter check-config](../../authorities/riverhog-ftp-adapter/cli/riverhog-ftp-adapter-check-config.md#pa-c148700d0e) |
-| `riverhog-ftp-adapter` | [riverhog-ftp-adapter flush](../../authorities/riverhog-ftp-adapter/cli/riverhog-ftp-adapter-flush.md#pa-6fb4224b0e) |
-| `riverhog-ftp-adapter` | [riverhog-ftp-adapter listen](../../authorities/riverhog-ftp-adapter/cli/riverhog-ftp-adapter-listen.md#pa-33760781cb) |
-| `riverhog-ftp-adapter` | [riverhog-ftp-adapter run](../../authorities/riverhog-ftp-adapter/cli/riverhog-ftp-adapter-run.md#pa-5bb50b3c4a) |
-| `riverhog-ftp-adapter` | [riverhog-ftp-adapter serve](../../authorities/riverhog-ftp-adapter/cli/riverhog-ftp-adapter-serve.md#pa-fe9b5262be) |
-| `riverhog-ftp-adapter` | [riverhog-ftp-adapter status](../../authorities/riverhog-ftp-adapter/cli/riverhog-ftp-adapter-status.md#pa-8898c3a011) |
-| `riverhog-recover` | [riverhog-recover](../../authorities/riverhog-recover/cli/riverhog-recover.md#pa-23fb9963f8) |
+| `review0-planner` | [review0-planner](../../authorities/review0-planner/cli/review0-planner.md#pa-3ba2398da5) |
+| `review0-sampler-lib` | [review0-sampler-conformance](../../authorities/review0-sampler-lib/cli/review0-sampler-conformance.md#pa-2348cdacec) |
+| `review0-sampler-lib` | [review0-sampler-schemas](../../authorities/review0-sampler-lib/cli/review0-sampler-schemas.md#pa-e225c4ef22) |
 | `riverhog-server` | [riverhog-api](../../authorities/riverhog-server/cli/riverhog-api.md#pa-190c4aa3d6) |
 | `riverhog-server` | [riverhog-api state](../../authorities/riverhog-server/cli/riverhog-api-state.md#pa-35197467d0) |
 | `riverhog-server` | [riverhog-api state status](../../authorities/riverhog-server/cli/riverhog-api-state-status.md#pa-c492602d9b) |
 | `riverhog-server` | [riverhog-api state upgrade](../../authorities/riverhog-server/cli/riverhog-api-state-upgrade.md#pa-d424ac54f9) |
 | `riverhog-server` | [riverhog-api state verify](../../authorities/riverhog-server/cli/riverhog-api-state-verify.md#pa-9464da49d9) |
-| `riverhog-storage-adapter-aws` | [riverhog-storage-adapter-aws](../../authorities/riverhog-storage-adapter-aws/cli/riverhog-storage-adapter-aws.md#pa-a3aff67bd2) |
-| `riverhog-storage-adapter-backblaze` | [riverhog-storage-adapter-backblaze](../../authorities/riverhog-storage-adapter-backblaze/cli/riverhog-storage-adapter-backblaze.md#pa-c3c3374a48) |
-| `riverhog-storage-adapter-filesystem` | [riverhog-storage-adapter-filesystem](../../authorities/riverhog-storage-adapter-filesystem/cli/riverhog-storage-adapter-filesystem.md#pa-23f0e9008d) |
-| `riverhog-storage-adapter-filesystem` | [riverhog-storage-adapter-filesystem-materialize](../../authorities/riverhog-storage-adapter-filesystem/cli/riverhog-storage-adapter-filesystem-materialize.md#pa-783f799413) |
 | `riverhog-storage-adapter-support` | [riverhog-storage-adapter-conformance](../../authorities/riverhog-storage-adapter-support/cli/riverhog-storage-adapter-conformance.md#pa-beccba9633) |
 | `riverhog-storage-adapter-support` | [riverhog-storage-adapter-schemas](../../authorities/riverhog-storage-adapter-support/cli/riverhog-storage-adapter-schemas.md#pa-eddc7d3b95) |
-| `stove0-client` | [stove0](../../authorities/stove0-client/cli/stove0.md#pa-7f11bd5a20) |
-| `stove0-client` | [stove0 admission](../../authorities/stove0-client/cli/stove0-admission.md#pa-c5f0ab24d8) |
-| `stove0-client` | [stove0 admission list](../../authorities/stove0-client/cli/stove0-admission-list.md#pa-295f616395) |
-| `stove0-client` | [stove0 admission policy](../../authorities/stove0-client/cli/stove0-admission-policy.md#pa-e63002e29a) |
-| `stove0-client` | [stove0 admission policy backfill](../../authorities/stove0-client/cli/stove0-admission-policy-backfill.md#pa-c5455176ab) |
-| `stove0-client` | [stove0 admission policy list](../../authorities/stove0-client/cli/stove0-admission-policy-list.md#pa-fdb1ffea78) |
-| `stove0-client` | [stove0 admission policy rebaseline](../../authorities/stove0-client/cli/stove0-admission-policy-rebaseline.md#pa-ebb9b5a22b) |
-| `stove0-client` | [stove0 admission show](../../authorities/stove0-client/cli/stove0-admission-show.md#pa-14d82a14fd) |
-| `stove0-client` | [stove0 evaluation](../../authorities/stove0-client/cli/stove0-evaluation.md#pa-5df12fe3a7) |
-| `stove0-client` | [stove0 evaluation cancel](../../authorities/stove0-client/cli/stove0-evaluation-cancel.md#pa-d9921a868b) |
-| `stove0-client` | [stove0 evaluation create](../../authorities/stove0-client/cli/stove0-evaluation-create.md#pa-665719a78f) |
-| `stove0-client` | [stove0 evaluation list](../../authorities/stove0-client/cli/stove0-evaluation-list.md#pa-4f096fd7a5) |
-| `stove0-client` | [stove0 evaluation retry](../../authorities/stove0-client/cli/stove0-evaluation-retry.md#pa-d4ab408a42) |
-| `stove0-client` | [stove0 evaluation review](../../authorities/stove0-client/cli/stove0-evaluation-review.md#pa-0cebf7d3f5) |
-| `stove0-client` | [stove0 evaluation show](../../authorities/stove0-client/cli/stove0-evaluation-show.md#pa-5eccb9cdfc) |
-| `stove0-client` | [stove0 evaluation step](../../authorities/stove0-client/cli/stove0-evaluation-step.md#pa-4d9fd49985) |
-| `stove0-client` | [stove0 event](../../authorities/stove0-client/cli/stove0-event.md#pa-f0f9b48556) |
-| `stove0-client` | [stove0 event list](../../authorities/stove0-client/cli/stove0-event-list.md#pa-dfe26bc39a) |
-| `stove0-client` | [stove0 health](../../authorities/stove0-client/cli/stove0-health.md#pa-208e924490) |
-| `stove0-client` | [stove0 preview](../../authorities/stove0-client/cli/stove0-preview.md#pa-dee2418915) |
-| `stove0-client` | [stove0 recipe](../../authorities/stove0-client/cli/stove0-recipe.md#pa-5929222a0b) |
-| `stove0-client` | [stove0 recipe list](../../authorities/stove0-client/cli/stove0-recipe-list.md#pa-1b0ed68560) |
-| `stove0-client` | [stove0 recipe show](../../authorities/stove0-client/cli/stove0-recipe-show.md#pa-b53e37e910) |
-| `stove0-client` | [stove0 recipe validate](../../authorities/stove0-client/cli/stove0-recipe-validate.md#pa-76761e57b4) |
-| `stove0-client` | [stove0 scheduler](../../authorities/stove0-client/cli/stove0-scheduler.md#pa-4fc3956827) |
-| `stove0-client` | [stove0 scheduler run](../../authorities/stove0-client/cli/stove0-scheduler-run.md#pa-2767b83d1b) |
-| `stove0-client` | [stove0 scheduler status](../../authorities/stove0-client/cli/stove0-scheduler-status.md#pa-e33f070f71) |
-| `stove0-client` | [stove0 selection](../../authorities/stove0-client/cli/stove0-selection.md#pa-56e8b3e31e) |
-| `stove0-client` | [stove0 selection show](../../authorities/stove0-client/cli/stove0-selection-show.md#pa-63cdade1dd) |
-| `stove0-client` | [stove0 work](../../authorities/stove0-client/cli/stove0-work.md#pa-42bcfbfddc) |
-| `stove0-client` | [stove0 work cancel](../../authorities/stove0-client/cli/stove0-work-cancel.md#pa-876a88a4fd) |
-| `stove0-client` | [stove0 work coordination](../../authorities/stove0-client/cli/stove0-work-coordination.md#pa-3fa12340ed) |
-| `stove0-client` | [stove0 work create](../../authorities/stove0-client/cli/stove0-work-create.md#pa-913bb74f8b) |
-| `stove0-client` | [stove0 work list](../../authorities/stove0-client/cli/stove0-work-list.md#pa-8a3471f4dc) |
-| `stove0-client` | [stove0 work retry](../../authorities/stove0-client/cli/stove0-work-retry.md#pa-208b64eec5) |
-| `stove0-client` | [stove0 work show](../../authorities/stove0-client/cli/stove0-work-show.md#pa-ae9ebfa5a8) |
-| `stove0-client` | [stove0 work step](../../authorities/stove0-client/cli/stove0-work-step.md#pa-6a175a8310) |
-| `stove0-exiftool-observer` | [stove0-exiftool-observer](../../authorities/stove0-exiftool-observer/cli/stove0-exiftool-observer.md#pa-96a44db515) |
-| `stove0-ffprobe-sampling-observer` | [stove0-ffprobe-sampling-observer](../../authorities/stove0-ffprobe-sampling-observer/cli/stove0-ffprobe-sampling-observer.md#pa-943b7b4f9f) |
-| `stove0-nvenc-av1-opus-review-sampler` | [stove0-nvenc-av1-opus-review-sampler](../../authorities/stove0-nvenc-av1-opus-review-sampler/cli/stove0-nvenc-av1-opus-review-sampler.md#pa-eec3b25247) |
-| `stove0-nvenc-av1-opus-target` | [stove0-nvenc-av1-opus-target](../../authorities/stove0-nvenc-av1-opus-target/cli/stove0-nvenc-av1-opus-target.md#pa-a0a41bd094) |
 | `stove0-observer-support` | [stove0-observer-conformance](../../authorities/stove0-observer-support/cli/stove0-observer-conformance.md#pa-cb8af50470) |
 | `stove0-observer-support` | [stove0-observer-schemas](../../authorities/stove0-observer-support/cli/stove0-observer-schemas.md#pa-3d85929844) |
-| `stove0-opus-review-sampler` | [stove0-opus-review-sampler](../../authorities/stove0-opus-review-sampler/cli/stove0-opus-review-sampler.md#pa-6bd590a18c) |
-| `stove0-opus-target` | [stove0-opus-target](../../authorities/stove0-opus-target/cli/stove0-opus-target.md#pa-9bf8261659) |
-| `stove0-review-materialize-target` | [stove0-review-materialize-target](../../authorities/stove0-review-materialize-target/cli/stove0-review-materialize-target.md#pa-8b88da6b6a) |
-| `stove0-review-planning` | [stove0-review-planning](../../authorities/stove0-review-planning/cli/stove0-review-planning.md#pa-cfaa1d3c31) |
-| `stove0-review-rclone-effect-target` | [stove0-review-rclone-effect-target](../../authorities/stove0-review-rclone-effect-target/cli/stove0-review-rclone-effect-target.md#pa-cd251b9f5a) |
-| `stove0-review-sampler-support` | [stove0-review-sampler-conformance](../../authorities/stove0-review-sampler-support/cli/stove0-review-sampler-conformance.md#pa-9c0ca7f8a1) |
-| `stove0-review-sampler-support` | [stove0-review-sampler-schemas](../../authorities/stove0-review-sampler-support/cli/stove0-review-sampler-schemas.md#pa-7d5ccbfbd2) |
 | `stove0-server` | [stove0-server](../../authorities/stove0-server/cli/stove0-server.md#pa-03bffe565f) |
 | `stove0-server` | [stove0-server scheduler](../../authorities/stove0-server/cli/stove0-server-scheduler.md#pa-95efd85860) |
 | `stove0-server` | [stove0-server serve](../../authorities/stove0-server/cli/stove0-server-serve.md#pa-72feee4c74) |

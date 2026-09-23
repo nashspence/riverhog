@@ -35,7 +35,7 @@ Create Catalog Sync Checkpoint
 
 ### Related interface records
 
-- [piggity catalog-sync checkpoint](../../piggity/cli/piggity-catalog-sync-checkpoint.md)
+- [a-riverhog-cli catalog-sync checkpoint](../../a-riverhog-cli/cli/a-riverhog-cli-catalog-sync-checkpoint.md)
 - [riverhog_client.ApiClient.create_catalog_sync_checkpoint](../../riverhog-client/python/riverhog-client-apiclient-create-catalog-sync-checkpoint.md)
 
 ### Referenced contract elements
@@ -75,12 +75,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "catalog-sync checkpoint",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/catalog-sync/checkpoint/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/catalog-sync/checkpoint/v1",
       "source": {
-        "line": 770,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 772,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "catalog_sync_checkpoint_cmd"
       }
     }

@@ -145,7 +145,7 @@ def test_every_repo_query_selector_is_classified_and_every_database_selector_is_
     schemas = {
         "riverhog": create_riverhog_app().openapi(),
         "stove0": create_stove0_contract_app().openapi(),
-        "riverhog-ftp-adapter": create_adapter_contract_app().openapi(),
+        "a-riverhog-ftp-spool": create_adapter_contract_app().openapi(),
     }
     operations = {
         (application, operation_id): operation

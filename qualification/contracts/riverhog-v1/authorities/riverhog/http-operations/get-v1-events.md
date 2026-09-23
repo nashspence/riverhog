@@ -80,7 +80,7 @@ Exact evidence groups for this contract element:
 
 ### Related interface records
 
-- [piggity event list](../../piggity/cli/piggity-event-list.md)
+- [a-riverhog-cli event list](../../a-riverhog-cli/cli/a-riverhog-cli-event-list.md)
 - [riverhog_client.ApiClient.list_lifecycle_events](../../riverhog-client/python/riverhog-client-apiclient-list-lifecycle-events.md)
 
 ### Referenced contract elements
@@ -125,12 +125,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "event list",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/event/list/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/event/list/v1",
       "source": {
-        "line": 751,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 753,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "event_list_cmd"
       }
     }

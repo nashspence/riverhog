@@ -19,7 +19,7 @@ def _defaults(value: str) -> str:
 def _public_compose_files() -> tuple[Path, ...]:
     return tuple(
         path
-        for owner in ("reference", "riverhog")
+        for owner in ("some-implementations", "riverhog")
         for path in sorted((ROOT / owner).rglob("*"))
         if path.is_file() and path.name in COMPOSE_NAMES
     )
@@ -40,10 +40,12 @@ def test_public_compose_published_ports_default_to_loopback() -> None:
 
 def test_stove0_and_adapter_apis_default_to_loopback() -> None:
     compose = yaml.safe_load(
-        (ROOT / "reference/stove0/application/compose.yaml").read_text(encoding="utf-8")
+        (ROOT / "some-implementations/stove0/application/compose.yaml").read_text(encoding="utf-8")
     )
     assert _defaults(compose["services"]["api"]["ports"][0]).startswith("127.0.0.1:")
     adapters = yaml.safe_load(
-        (ROOT / "reference/riverhog/ingress/ftp/compose.yaml").read_text(encoding="utf-8")
+        (ROOT / "some-implementations/riverhog/ingress/ftp/compose.yaml").read_text(
+            encoding="utf-8"
+        )
     )
-    assert _defaults(adapters["services"]["ftp-adapter"]["ports"][0]).startswith("127.0.0.1:")
+    assert _defaults(adapters["services"]["ftp-spool"]["ports"][0]).startswith("127.0.0.1:")

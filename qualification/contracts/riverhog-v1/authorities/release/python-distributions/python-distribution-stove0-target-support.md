@@ -4,7 +4,7 @@
 
 <!-- contract-element: python-distributions:release:python-distribution-stove0-target-support:e554274152 -->
 
-Hardware-neutral target protocol, runtime, and conformance support for stove0.
+Hardware-neutral target protocol, runtime, and conformance support for Stove0.
 
 | Audit field | Value |
 |---|---|
@@ -18,13 +18,13 @@ Hardware-neutral target protocol, runtime, and conformance support for stove0.
 |---|---|
 | <a id="s-2803e8fc81"></a>`artifacts` | `[{"coordinate":"dist/stove0_target_support-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_target_support-{version}.tar.gz","format":"sdist"}]` |
 | <a id="s-173a1aade9"></a>`channel` | `"github-release"` |
-| <a id="s-da0d411de2"></a>`description` | `"Hardware-neutral target protocol, runtime, and conformance support for stove0."` |
+| <a id="s-da0d411de2"></a>`description` | `"Hardware-neutral target protocol, runtime, and conformance support for Stove0."` |
 | <a id="s-28e808853a"></a>`license_baseline` | `"first-v1-publication"` |
 | <a id="s-977a1b24ac"></a>`license_expression` | `"Apache-2.0"` |
 | <a id="s-9e0ab37fce"></a>`publication_identity` | `{"coordinate":"stove0-target-support","kind":"python-distribution"}` |
 | <a id="s-0af918987f"></a>`requires_python` | `">=3.12"` |
 | <a id="s-2c563a70b4"></a>`role` | `"reusable_library"` |
-| <a id="s-bee42faebb"></a>`source` | `"reference/stove0/packages/target-support/pyproject.toml"` |
+| <a id="s-bee42faebb"></a>`source` | `"some-implementations/stove0/packages/target-support/pyproject.toml"` |
 
 ## Existing ownership context
 
@@ -48,7 +48,7 @@ Publication preserves these existing component authorities; it does not reclassi
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [release-distribution:stove0-target-support](../../../evidence/sources/authorities.md#src-745a95dbc1) — [reference/stove0/packages/target-support/pyproject.toml](../../../../../../reference/stove0/packages/target-support/pyproject.toml)
+- [release-distribution:stove0-target-support](../../../evidence/sources/authorities.md#src-745a95dbc1) — [some-implementations/stove0/packages/target-support/pyproject.toml](../../../../../../some-implementations/stove0/packages/target-support/pyproject.toml)
 - [release-publication:planner](../../../evidence/sources/authorities.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
 - [release:release.toml](../../../evidence/sources/authorities.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
 
@@ -63,7 +63,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 335367a21da45a84f2307d42458d7b23705dd9eee2f99d112600561b8b17df83 -->
+<!-- exact-contract-value: b17048124ddab04ba1f199064b4d5e258f1528dd56a4fd5f7ca664fdc783b02f -->
 
 ```json
 {
@@ -78,7 +78,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   ],
   "channel": "github-release",
-  "description": "Hardware-neutral target protocol, runtime, and conformance support for stove0.",
+  "description": "Hardware-neutral target protocol, runtime, and conformance support for Stove0.",
   "license_baseline": "first-v1-publication",
   "license_expression": "Apache-2.0",
   "publication_identity": {
@@ -87,7 +87,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "requires_python": ">=3.12",
   "role": "reusable_library",
-  "source": "reference/stove0/packages/target-support/pyproject.toml"
+  "source": "some-implementations/stove0/packages/target-support/pyproject.toml"
 }
 ```
 

@@ -346,8 +346,8 @@ def _publication_classification(role: str) -> str:
         "end_user_artifact",
         "reusable_library",
         "internal_build_unit",
-        "reference_application",
-        "reference_component",
+        "application",
+        "component",
     }
     if role not in classifications:
         raise ContractAtlasError(f"published unit has no release classification: {role}")

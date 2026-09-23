@@ -85,7 +85,7 @@ def test_derivation_is_self_contained_and_canonical() -> None:
 
 def test_producer_evidence_round_trips_without_mutable_catalog_state() -> None:
     evidence = ProducerEvidence(
-        producer_app="ftp-adapter/v1",
+        producer_app="ftp-spool/v1",
         adapter_id="ftp/v1",
         adapter_version="1.0.0",
         source_event_id="camera/upload-0042",

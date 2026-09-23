@@ -49,7 +49,7 @@ Replace Collection Description
 
 ### Related interface records
 
-- [piggity collection describe](../../piggity/cli/piggity-collection-describe.md)
+- [a-riverhog-cli collection describe](../../a-riverhog-cli/cli/a-riverhog-cli-collection-describe.md)
 - [riverhog_client.ApiClient.replace_collection_description](../../riverhog-client/python/riverhog-client-apiclient-replace-collection-description.md)
 
 ### Referenced contract elements
@@ -90,12 +90,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection describe",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/describe/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/describe/v1",
       "source": {
-        "line": 2545,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2551,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "collection_describe_cmd"
       }
     }

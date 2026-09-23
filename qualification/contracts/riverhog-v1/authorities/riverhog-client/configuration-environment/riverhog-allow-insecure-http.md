@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-client:riverhog-allow-insecure-http:1ccb08eb7b -->
+<!-- contract-element: configuration-environment:riverhog-client:riverhog-allow-insecure-http:ce46645025 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-b6148dfd81"></a>
+<a id="s-3f89961eb2"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-b49faf4a7f"></a>`consumers` | `["riverhog-client"]` |
-| <a id="s-e4135fc5a3"></a>`default_expressions` | `["unset"]` |
-| <a id="s-23f3a2f19a"></a>`id` | `"riverhog-client:environment:RIVERHOG_ALLOW_INSECURE_HTTP"` |
-| <a id="s-41c7764688"></a>`input_shape` | `"environment-string"` |
-| <a id="s-a2dcbb91e6"></a>`name` | `"RIVERHOG_ALLOW_INSECURE_HTTP"` |
-| <a id="s-392cf8391f"></a>`owner` | `"riverhog-client"` |
+| <a id="s-67e906ba4c"></a>`consumers` | `["riverhog-client"]` |
+| <a id="s-bff9a69f3a"></a>`default_expressions` | `["unset"]` |
+| <a id="s-96bdabf9ee"></a>`id` | `"riverhog-client:environment:RIVERHOG_ALLOW_INSECURE_HTTP"` |
+| <a id="s-6d52655fc2"></a>`input_shape` | `"environment-string"` |
+| <a id="s-a96edc8bcf"></a>`name` | `"RIVERHOG_ALLOW_INSECURE_HTTP"` |
+| <a id="s-749493ebc6"></a>`owner` | `"riverhog-client"` |
 
 ## Governing policies
 
-- <a id="pa-a2ec68e706"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-d68c2a1c03"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/12`
+- `/external_contract/configuration_environment/154`
 
 ### Exact owned JSON
 

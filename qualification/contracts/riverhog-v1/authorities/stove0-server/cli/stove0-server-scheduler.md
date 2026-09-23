@@ -75,7 +75,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Executable sources
 
-- [cli:stove0-server](../../../evidence/sources/authorities.md#src-6f5bc9f6db) — [reference/stove0/application/server/src/stove0\_api/app.py::&lt;module&gt;](../../../../../../reference/stove0/application/server/src/stove0_api/app.py)
+- [cli:stove0-server](../../../evidence/sources/authorities.md#src-6f5bc9f6db) — [some-implementations/stove0/application/server/src/stove0\_api/app.py::&lt;module&gt;](../../../../../../some-implementations/stove0/application/server/src/stove0_api/app.py)
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority

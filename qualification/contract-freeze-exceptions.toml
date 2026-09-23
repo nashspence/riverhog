@@ -5,31 +5,31 @@ schema = "riverhog-contract-freeze-exceptions/v1"
 # candidate universe or any candidate's external semantics.
 
 [[resolution]]
-detection_id = "configuration-read:mango-fish:2c3a486d9d8f786a"
-source_authority_id = "configuration:mango-fish:configuration:mango-fish-config"
+detection_id = "configuration-read:a-riverhog-event-relay:1667c5273cd3d3c1"
+source_authority_id = "configuration:a-riverhog-event-relay:configuration:event-relay-config"
 reason = "The source-owned configuration document supplies the environment-variable name."
 
 [[resolution]]
-detection_id = "configuration-read:mango-fish:93609f279899a18f"
-source_authority_id = "configuration:mango-fish:configuration:mango-fish-config"
+detection_id = "configuration-read:a-riverhog-event-relay:6e03790e9c0c8199"
+source_authority_id = "configuration:a-riverhog-event-relay:configuration:event-relay-config"
 reason = "The source-owned configuration document supplies the environment-variable name."
 
 [[resolution]]
-detection_id = "configuration-read:mango-fish:983cd6a9e15979be"
-source_authority_id = "configuration:mango-fish:configuration:mango-fish-config"
+detection_id = "configuration-read:a-riverhog-event-relay:dc2f1ccf2894edb7"
+source_authority_id = "configuration:a-riverhog-event-relay:configuration:event-relay-config"
 reason = "The source-owned configuration document supplies the environment-variable name."
 
 [[resolution]]
-detection_id = "configuration-read:mango-fish:a59c36f74b58cadd"
-source_authority_id = "configuration:mango-fish:configuration:mango-fish-config"
+detection_id = "configuration-read:a-riverhog-event-relay:fcf073a2f80b9ec3"
+source_authority_id = "configuration:a-riverhog-event-relay:configuration:event-relay-config"
 reason = "The source-owned configuration document supplies the environment-variable name."
 
 [[resolution]]
-detection_id = "configuration-read:riverhog-ftp-adapter:31be0d5047843c08"
-source_authority_id = "configuration:riverhog-ftp-adapter:configuration:ftp-adapter-config"
+detection_id = "configuration-read:a-riverhog-ftp-spool:95f6b084138a2b71"
+source_authority_id = "configuration:a-riverhog-ftp-spool:configuration:ftp-spool-config"
 reason = "The source-owned FTP configuration document supplies the secret environment-variable name."
 
 [[resolution]]
-detection_id = "configuration-read:riverhog-ftp-adapter:d69305fda9399057"
-source_authority_id = "configuration:riverhog-ftp-adapter:configuration:ftp-adapter-config"
+detection_id = "configuration-read:a-riverhog-ftp-spool:c742949f45b50014"
+source_authority_id = "configuration:a-riverhog-ftp-spool:configuration:ftp-spool-config"
 reason = "The source-owned FTP configuration document supplies the secret environment-variable name."

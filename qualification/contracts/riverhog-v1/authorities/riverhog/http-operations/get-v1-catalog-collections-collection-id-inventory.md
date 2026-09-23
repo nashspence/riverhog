@@ -93,9 +93,9 @@ Exact evidence groups for this contract element:
 
 ### Related interface records
 
-- [piggity local add](../../piggity/cli/piggity-local-add.md)
-- [piggity local repair](../../piggity/cli/piggity-local-repair.md)
-- [piggity local sync](../../piggity/cli/piggity-local-sync.md)
+- [a-riverhog-cli local add](../../a-riverhog-cli/cli/a-riverhog-cli-local-add.md)
+- [a-riverhog-cli local repair](../../a-riverhog-cli/cli/a-riverhog-cli-local-repair.md)
+- [a-riverhog-cli local sync](../../a-riverhog-cli/cli/a-riverhog-cli-local-sync.md)
 - [riverhog_client.ApiClient.get_portable_collection_inventory](../../riverhog-client/python/riverhog-client-apiclient-get-portable-collection-inventory.md)
 
 ### Referenced contract elements
@@ -139,34 +139,34 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "local add",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/local/add/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/local/add/v1",
       "source": {
         "line": 902,
-        "module": "piggity.local",
-        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "module": "a_riverhog_cli.local",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/local.py",
         "symbol": "add_collection"
       }
     },
     {
       "command": "local sync",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/local/sync/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/local/sync/v1",
       "source": {
-        "line": 1101,
-        "module": "piggity.local",
-        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "line": 1103,
+        "module": "a_riverhog_cli.local",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/local.py",
         "symbol": "sync"
       }
     },
     {
       "command": "local repair",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/local/repair/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/local/repair/v1",
       "source": {
-        "line": 1122,
-        "module": "piggity.local",
-        "path": "reference/riverhog/applications/piggity/src/piggity/local.py",
+        "line": 1124,
+        "module": "a_riverhog_cli.local",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/local.py",
         "symbol": "repair"
       }
     }

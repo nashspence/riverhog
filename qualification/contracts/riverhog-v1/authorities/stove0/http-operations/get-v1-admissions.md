@@ -83,7 +83,7 @@ Exact evidence groups for this contract element:
 
 ### Related interface records
 
-- [stove0 admission list](../../stove0-client/cli/stove0-admission-list.md)
+- [stove0 admission list](../../a-stove0-cli/cli/stove0-admission-list.md)
 - [stove0_api_client.Stove0ApiClient.list_admissions](../../stove0-api-client/python/stove0-api-client-stove0apiclient-list-admissions.md)
 
 ### Referenced contract elements
@@ -113,7 +113,7 @@ Exact evidence groups for this contract element:
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:stove0](../../../evidence/sources/authorities.md#src-52e6e32124) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [reference/stove0/application/server/src/stove0\_api/app.py::create\_app.&lt;locals&gt;.list\_admissions](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L603)
+- **Handler:** [some-implementations/stove0/application/server/src/stove0\_api/app.py::create\_app.&lt;locals&gt;.list\_admissions](../../../../../../some-implementations/stove0/application/server/src/stove0_api/app.py#L603)
 
 ### Structural operation bindings
 
@@ -133,8 +133,8 @@ This generated record links maintained client, CLI, response-authority, and prov
       "result_identity": "stove0-cli-result/admission/list/v1",
       "source": {
         "line": 207,
-        "module": "stove0_cli.main",
-        "path": "reference/stove0/application/client/src/stove0_cli/main.py",
+        "module": "a_stove0_cli.main",
+        "path": "some-implementations/stove0/application/client/src/a_stove0_cli/main.py",
         "symbol": "list_admissions"
       }
     }
@@ -149,7 +149,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "source": {
         "line": 182,
         "module": "stove0_api_client.client",
-        "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py",
+        "path": "some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py",
         "symbol": "Stove0ApiClient.list_admissions"
       }
     }

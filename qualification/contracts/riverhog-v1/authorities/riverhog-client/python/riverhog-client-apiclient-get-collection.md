@@ -29,15 +29,15 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity collection describe](../../piggity/cli/piggity-collection-describe.md)
-- [piggity collection show](../../piggity/cli/piggity-collection-show.md)
-- [piggity collection tag add](../../piggity/cli/piggity-collection-tag-add.md)
-- [piggity collection tag contains](../../piggity/cli/piggity-collection-tag-contains.md)
-- [piggity collection tag list](../../piggity/cli/piggity-collection-tag-list.md)
-- [piggity collection tag remove](../../piggity/cli/piggity-collection-tag-remove.md)
-- [piggity local add](../../piggity/cli/piggity-local-add.md)
-- [piggity local repair](../../piggity/cli/piggity-local-repair.md)
-- [piggity local sync](../../piggity/cli/piggity-local-sync.md)
+- [a-riverhog-cli collection describe](../../a-riverhog-cli/cli/a-riverhog-cli-collection-describe.md)
+- [a-riverhog-cli collection show](../../a-riverhog-cli/cli/a-riverhog-cli-collection-show.md)
+- [a-riverhog-cli collection tag add](../../a-riverhog-cli/cli/a-riverhog-cli-collection-tag-add.md)
+- [a-riverhog-cli collection tag contains](../../a-riverhog-cli/cli/a-riverhog-cli-collection-tag-contains.md)
+- [a-riverhog-cli collection tag list](../../a-riverhog-cli/cli/a-riverhog-cli-collection-tag-list.md)
+- [a-riverhog-cli collection tag remove](../../a-riverhog-cli/cli/a-riverhog-cli-collection-tag-remove.md)
+- [a-riverhog-cli local add](../../a-riverhog-cli/cli/a-riverhog-cli-local-add.md)
+- [a-riverhog-cli local repair](../../a-riverhog-cli/cli/a-riverhog-cli-local-repair.md)
+- [a-riverhog-cli local sync](../../a-riverhog-cli/cli/a-riverhog-cli-local-sync.md)
 - [GET /v1/collections/{collection_id}](../../riverhog/http-operations/get-v1-collections-collection-id.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

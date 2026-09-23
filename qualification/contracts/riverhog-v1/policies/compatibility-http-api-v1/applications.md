@@ -8,6 +8,18 @@ These are the indexed contract-element applications. Each link reaches the polic
 
 | Authority | Contract element |
 |---|---|
+| `a-riverhog-ftp-spool` | [GET /health/live](../../authorities/a-riverhog-ftp-spool/http-operations/get-health-live.md#pa-66899beaa9) |
+| `a-riverhog-ftp-spool` | [GET /health/ready](../../authorities/a-riverhog-ftp-spool/http-operations/get-health-ready.md#pa-008e54067d) |
+| `a-riverhog-ftp-spool` | [GET /v1/status](../../authorities/a-riverhog-ftp-spool/http-operations/get-v1-status.md#pa-54016ca0e2) |
+| `a-riverhog-ftp-spool` | [POST /v1/run](../../authorities/a-riverhog-ftp-spool/http-operations/post-v1-run.md#pa-e04a47d973) |
+| `a-riverhog-ftp-spool` | [POST /v1/sources/{source_id}/flush](../../authorities/a-riverhog-ftp-spool/http-operations/post-v1-sources-source-id-flush.md#pa-dbf25d69f2) |
+| `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool HTTP service](../../authorities/a-riverhog-ftp-spool/http-service-declaration/a-riverhog-ftp-spool-http-service.md#pa-38f90c352f) |
+| `a-riverhog-ftp-spool` | [schemas: ErrorBody](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-errorbody.md#pa-12ba80ad58) |
+| `a-riverhog-ftp-spool` | [schemas: ErrorResponse](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-errorresponse.md#pa-eab9e105b3) |
+| `a-riverhog-ftp-spool` | [schemas: HTTPValidationError](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-httpvalidationerror.md#pa-708ca35070) |
+| `a-riverhog-ftp-spool` | [schemas: HealthResponse](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-healthresponse.md#pa-f7bd67bebe) |
+| `a-riverhog-ftp-spool` | [schemas: ValidationError](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-validationerror.md#pa-b0da1ed38e) |
+| `a-riverhog-ftp-spool` | [securitySchemes: RiverhogFtpSpoolBearer](../../authorities/a-riverhog-ftp-spool/http-security-schemes/securityschemes-riverhogftpspoolbearer.md#pa-79b7fc4d8c) |
 | `riverhog` | [DELETE /v1/apps/{app}/keys/{key_id}/access](../../authorities/riverhog/http-operations/delete-v1-apps-app-keys-key-id-access.md#pa-eb47e0c0cf) |
 | `riverhog` | [DELETE /v1/archive/copies/{collection_id}/{destination_store}](../../authorities/riverhog/http-operations/delete-v1-archive-copies-collection-id-destination-store.md#pa-edfcb3f5aa) |
 | `riverhog` | [DELETE /v1/collections/{collection_id}/provenance/verification](../../authorities/riverhog/http-operations/delete-v1-collections-collection-id-provenance-verification.md#pa-ee77d7df4f) |
@@ -376,18 +388,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: ValidationError](../../authorities/riverhog/http-schemas/schemas-validationerror.md#pa-0a55ea5e9f) |
 | `riverhog` | [schemas: _FileProvenanceOut](../../authorities/riverhog/http-schemas/schemas-fileprovenanceout.md#pa-bc72071f42) |
 | `riverhog` | [securitySchemes: HTTPBearer](../../authorities/riverhog/http-security-schemes/securityschemes-httpbearer.md#pa-a8c9c22b69) |
-| `riverhog-ftp-adapter` | [GET /health/live](../../authorities/riverhog-ftp-adapter/http-operations/get-health-live.md#pa-69cc298c2e) |
-| `riverhog-ftp-adapter` | [GET /health/ready](../../authorities/riverhog-ftp-adapter/http-operations/get-health-ready.md#pa-af773e56fd) |
-| `riverhog-ftp-adapter` | [GET /v1/status](../../authorities/riverhog-ftp-adapter/http-operations/get-v1-status.md#pa-8a5e37e320) |
-| `riverhog-ftp-adapter` | [POST /v1/run](../../authorities/riverhog-ftp-adapter/http-operations/post-v1-run.md#pa-b22c5f6cca) |
-| `riverhog-ftp-adapter` | [POST /v1/sources/{source_id}/flush](../../authorities/riverhog-ftp-adapter/http-operations/post-v1-sources-source-id-flush.md#pa-da1091c998) |
-| `riverhog-ftp-adapter` | [riverhog-ftp-adapter HTTP service](../../authorities/riverhog-ftp-adapter/http-service-declaration/riverhog-ftp-adapter-http-service.md#pa-50e8fd242e) |
-| `riverhog-ftp-adapter` | [schemas: ErrorBody](../../authorities/riverhog-ftp-adapter/http-schemas/schemas-errorbody.md#pa-a64ae9d696) |
-| `riverhog-ftp-adapter` | [schemas: ErrorResponse](../../authorities/riverhog-ftp-adapter/http-schemas/schemas-errorresponse.md#pa-c67c8e80f0) |
-| `riverhog-ftp-adapter` | [schemas: HTTPValidationError](../../authorities/riverhog-ftp-adapter/http-schemas/schemas-httpvalidationerror.md#pa-087c1f5f43) |
-| `riverhog-ftp-adapter` | [schemas: HealthResponse](../../authorities/riverhog-ftp-adapter/http-schemas/schemas-healthresponse.md#pa-8d902939f8) |
-| `riverhog-ftp-adapter` | [schemas: ValidationError](../../authorities/riverhog-ftp-adapter/http-schemas/schemas-validationerror.md#pa-fd134c659f) |
-| `riverhog-ftp-adapter` | [securitySchemes: RiverhogFtpAdapterBearer](../../authorities/riverhog-ftp-adapter/http-security-schemes/securityschemes-riverhogftpadapterbearer.md#pa-b1b73dc9bc) |
 | `stove0` | [GET /health/live](../../authorities/stove0/http-operations/get-health-live.md#pa-04205a7230) |
 | `stove0` | [GET /health/ready](../../authorities/stove0/http-operations/get-health-ready.md#pa-e6eb779028) |
 | `stove0` | [GET /v1/admin/scheduler](../../authorities/stove0/http-operations/get-v1-admin-scheduler.md#pa-613b1abf60) |

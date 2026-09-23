@@ -45,7 +45,7 @@ Retire Archive Copy
 
 ### Related interface records
 
-- [piggity archive retire](../../piggity/cli/piggity-archive-retire.md)
+- [a-riverhog-cli archive retire](../../a-riverhog-cli/cli/a-riverhog-cli-archive-retire.md)
 - [riverhog_client.ApiClient.retire_archive_copy](../../riverhog-client/python/riverhog-client-apiclient-retire-archive-copy.md)
 
 ### Referenced contract elements
@@ -86,12 +86,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "archive retire",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/archive/retire/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/archive/retire/v1",
       "source": {
-        "line": 3119,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 3125,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "archive_retire_cmd"
       }
     }

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from a_riverhog_cli.main import app
 from click import unstyle
-from piggity.main import app
 from typer.testing import CliRunner
 
 runner = CliRunner()

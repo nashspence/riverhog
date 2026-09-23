@@ -4,7 +4,7 @@
 
 <!-- contract-element: python-distributions:release:python-distribution-gogurt:7df28f3cb4 -->
 
-Optional nonnormative mounted-volume ingestion reference application for Riverhog.
+Mounted-volume ingestion application for Riverhog.
 
 | Audit field | Value |
 |---|---|
@@ -18,13 +18,13 @@ Optional nonnormative mounted-volume ingestion reference application for Riverho
 |---|---|
 | <a id="s-9f96bcff2f"></a>`artifacts` | `[{"coordinate":"dist/gogurt-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/gogurt-{version}.tar.gz","format":"sdist"}]` |
 | <a id="s-9323e67d07"></a>`channel` | `"github-release"` |
-| <a id="s-d290b63892"></a>`description` | `"Optional nonnormative mounted-volume ingestion reference application for Riverhog."` |
+| <a id="s-d290b63892"></a>`description` | `"Mounted-volume ingestion application for Riverhog."` |
 | <a id="s-1eff1678b9"></a>`license_baseline` | `"first-v1-publication"` |
 | <a id="s-6fe04d5edc"></a>`license_expression` | `"Apache-2.0"` |
 | <a id="s-960ac88e05"></a>`publication_identity` | `{"coordinate":"gogurt","kind":"python-distribution"}` |
 | <a id="s-55f6e90fbe"></a>`requires_python` | `">=3.12"` |
-| <a id="s-198b438cc4"></a>`role` | `"reference_application"` |
-| <a id="s-1962b7fa78"></a>`source` | `"reference/gogurt/application/pyproject.toml"` |
+| <a id="s-198b438cc4"></a>`role` | `"application"` |
+| <a id="s-1962b7fa78"></a>`source` | `"some-implementations/gogurt/application/pyproject.toml"` |
 
 ## Existing ownership context
 
@@ -48,7 +48,7 @@ Publication preserves these existing component authorities; it does not reclassi
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [release-distribution:gogurt](../../../evidence/sources/authorities.md#src-3e7b582a54) — [reference/gogurt/application/pyproject.toml](../../../../../../reference/gogurt/application/pyproject.toml)
+- [release-distribution:gogurt](../../../evidence/sources/authorities.md#src-3e7b582a54) — [some-implementations/gogurt/application/pyproject.toml](../../../../../../some-implementations/gogurt/application/pyproject.toml)
 - [release-publication:planner](../../../evidence/sources/authorities.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
 - [release:release.toml](../../../evidence/sources/authorities.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
 
@@ -63,7 +63,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4f999054fbeefdcdef454ab5169ad9b3a446b09209e25f9256c8ea4cba1495be -->
+<!-- exact-contract-value: e4617d56fed31cef22e0e4841e50e3fda77bff137fbd6a8168cd25a66b01eb81 -->
 
 ```json
 {
@@ -78,7 +78,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   ],
   "channel": "github-release",
-  "description": "Optional nonnormative mounted-volume ingestion reference application for Riverhog.",
+  "description": "Mounted-volume ingestion application for Riverhog.",
   "license_baseline": "first-v1-publication",
   "license_expression": "Apache-2.0",
   "publication_identity": {
@@ -86,8 +86,8 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "python-distribution"
   },
   "requires_python": ">=3.12",
-  "role": "reference_application",
-  "source": "reference/gogurt/application/pyproject.toml"
+  "role": "application",
+  "source": "some-implementations/gogurt/application/pyproject.toml"
 }
 ```
 

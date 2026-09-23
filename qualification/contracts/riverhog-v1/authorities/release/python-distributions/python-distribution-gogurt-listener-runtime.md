@@ -24,7 +24,7 @@ Portable durable listener runtime and native-platform port for Gogurt.
 | <a id="s-2ff9d99d6f"></a>`publication_identity` | `{"coordinate":"gogurt-listener-runtime","kind":"python-distribution"}` |
 | <a id="s-6cdafa600f"></a>`requires_python` | `">=3.12"` |
 | <a id="s-30723da06a"></a>`role` | `"reusable_library"` |
-| <a id="s-786d10abd4"></a>`source` | `"reference/gogurt/packages/listener-runtime/pyproject.toml"` |
+| <a id="s-786d10abd4"></a>`source` | `"some-implementations/gogurt/packages/listener-runtime/pyproject.toml"` |
 
 ## Existing ownership context
 
@@ -48,7 +48,7 @@ Publication preserves these existing component authorities; it does not reclassi
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [release-distribution:gogurt-listener-runtime](../../../evidence/sources/authorities.md#src-23725dce0b) — [reference/gogurt/packages/listener-runtime/pyproject.toml](../../../../../../reference/gogurt/packages/listener-runtime/pyproject.toml)
+- [release-distribution:gogurt-listener-runtime](../../../evidence/sources/authorities.md#src-23725dce0b) — [some-implementations/gogurt/packages/listener-runtime/pyproject.toml](../../../../../../some-implementations/gogurt/packages/listener-runtime/pyproject.toml)
 - [release-publication:planner](../../../evidence/sources/authorities.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
 - [release:release.toml](../../../evidence/sources/authorities.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
 
@@ -63,7 +63,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 14895bb9895fa4cda46648493ecb27da2b5d3b628bb611ef5cd836bc6b1fd4c1 -->
+<!-- exact-contract-value: 1876768ae2dc0ee46a10bf5d5ba486faccd13c356b239d75c51eb09886b149e6 -->
 
 ```json
 {
@@ -87,7 +87,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "requires_python": ">=3.12",
   "role": "reusable_library",
-  "source": "reference/gogurt/packages/listener-runtime/pyproject.toml"
+  "source": "some-implementations/gogurt/packages/listener-runtime/pyproject.toml"
 }
 ```
 

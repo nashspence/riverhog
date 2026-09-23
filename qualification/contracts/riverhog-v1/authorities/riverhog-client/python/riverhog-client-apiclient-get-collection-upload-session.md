@@ -29,9 +29,9 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity collection upload show](../../piggity/cli/piggity-collection-upload-show.md)
-- [piggity collection upload start](../../piggity/cli/piggity-collection-upload-start.md)
-- [piggity collection upload watch](../../piggity/cli/piggity-collection-upload-watch.md)
+- [a-riverhog-cli collection upload show](../../a-riverhog-cli/cli/a-riverhog-cli-collection-upload-show.md)
+- [a-riverhog-cli collection upload start](../../a-riverhog-cli/cli/a-riverhog-cli-collection-upload-start.md)
+- [a-riverhog-cli collection upload watch](../../a-riverhog-cli/cli/a-riverhog-cli-collection-upload-watch.md)
 - [GET /v1/collection-upload-sessions/{collection_id}](../../riverhog/http-operations/get-v1-collection-upload-sessions-collection-id.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

@@ -41,7 +41,7 @@ Request Collection Provenance Verification
 
 ### Related interface records
 
-- [piggity collection provenance verify](../../piggity/cli/piggity-collection-provenance-verify.md)
+- [a-riverhog-cli collection provenance verify](../../a-riverhog-cli/cli/a-riverhog-cli-collection-provenance-verify.md)
 - [riverhog_client.ApiClient.request_collection_provenance_verification](../../riverhog-client/python/riverhog-client-apiclient-request-collection-provenance-verification.md)
 
 ### Referenced contract elements
@@ -81,12 +81,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection provenance verify",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/provenance/verify/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/provenance/verify/v1",
       "source": {
-        "line": 2715,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2721,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "provenance_verify_cmd"
       }
     }

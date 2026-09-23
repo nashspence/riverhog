@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity collection upload discard](../../piggity/cli/piggity-collection-upload-discard.md)
+- [a-riverhog-cli collection upload discard](../../a-riverhog-cli/cli/a-riverhog-cli-collection-upload-discard.md)
 - [POST /v1/collection-upload-sessions/{collection_id}/discard](../../riverhog/http-operations/post-v1-collection-upload-sessions-collection-id-discard.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

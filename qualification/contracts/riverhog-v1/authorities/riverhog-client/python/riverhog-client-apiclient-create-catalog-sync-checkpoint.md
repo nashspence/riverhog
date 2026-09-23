@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity catalog-sync checkpoint](../../piggity/cli/piggity-catalog-sync-checkpoint.md)
+- [a-riverhog-cli catalog-sync checkpoint](../../a-riverhog-cli/cli/a-riverhog-cli-catalog-sync-checkpoint.md)
 - [GET /v1/catalog-sync/checkpoint](../../riverhog/http-operations/get-v1-catalog-sync-checkpoint.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

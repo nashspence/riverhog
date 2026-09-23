@@ -43,7 +43,7 @@ Cancel Archive Copy Job
 
 ### Related interface records
 
-- [piggity archive copy cancel](../../piggity/cli/piggity-archive-copy-cancel.md)
+- [a-riverhog-cli archive copy cancel](../../a-riverhog-cli/cli/a-riverhog-cli-archive-copy-cancel.md)
 - [riverhog_client.ApiClient.cancel_archive_copy_job](../../riverhog-client/python/riverhog-client-apiclient-cancel-archive-copy-job.md)
 
 ### Referenced contract elements
@@ -83,12 +83,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "archive copy cancel",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/archive/copy/cancel/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/archive/copy/cancel/v1",
       "source": {
-        "line": 3071,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 3077,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "archive_copy_cancel_cmd"
       }
     }

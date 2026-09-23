@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Dependency-light public contracts for external stove0 content observers.
+Dependency-light public contracts for external Stove0 content observers.
 
 Contract elements: **81** · Extent decisions: **0**
 

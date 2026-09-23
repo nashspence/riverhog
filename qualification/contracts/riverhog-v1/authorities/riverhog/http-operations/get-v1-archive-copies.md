@@ -84,7 +84,7 @@ Exact evidence groups for this contract element:
 
 ### Related interface records
 
-- [piggity archive copy list](../../piggity/cli/piggity-archive-copy-list.md)
+- [a-riverhog-cli archive copy list](../../a-riverhog-cli/cli/a-riverhog-cli-archive-copy-list.md)
 - [riverhog_client.ApiClient.list_archive_copy_jobs](../../riverhog-client/python/riverhog-client-apiclient-list-archive-copy-jobs.md)
 
 ### Referenced contract elements
@@ -133,12 +133,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "archive copy list",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/archive/copy/list/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/archive/copy/list/v1",
       "source": {
-        "line": 3010,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 3016,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "archive_copy_list_cmd"
       }
     }

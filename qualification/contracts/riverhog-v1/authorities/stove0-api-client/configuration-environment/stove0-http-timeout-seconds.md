@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-api-client:stove0-http-timeout-seconds:77beb70893 -->
+<!-- contract-element: configuration-environment:stove0-api-client:stove0-http-timeout-seconds:13d46178b4 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,16 +13,16 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-5d16c3676e"></a>
+<a id="s-15035a28e0"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-a4f6afb693"></a>`consumers` | `["stove0-api-client"]` |
-| <a id="s-3a22260cfc"></a>`default_expressions` | `["unset"]` |
-| <a id="s-b53af91022"></a>`id` | `"stove0-api-client:environment:STOVE0_HTTP_TIMEOUT_SECONDS"` |
-| <a id="s-5fe728f6a8"></a>`input_shape` | `"environment-string"` |
-| <a id="s-93dd6b430c"></a>`name` | `"STOVE0_HTTP_TIMEOUT_SECONDS"` |
-| <a id="s-36acc9190a"></a>`owner` | `"stove0-api-client"` |
+| <a id="s-950ec387ff"></a>`consumers` | `["stove0-api-client"]` |
+| <a id="s-ad12dc509a"></a>`default_expressions` | `["unset"]` |
+| <a id="s-85a7db9bee"></a>`id` | `"stove0-api-client:environment:STOVE0_HTTP_TIMEOUT_SECONDS"` |
+| <a id="s-48f3fe11a2"></a>`input_shape` | `"environment-string"` |
+| <a id="s-20ead7c234"></a>`name` | `"STOVE0_HTTP_TIMEOUT_SECONDS"` |
+| <a id="s-b5a7f86294"></a>`owner` | `"stove0-api-client"` |
 
 ### Progression, limits, and lifecycle
 
@@ -32,14 +32,14 @@ Shared facts for every subject below: configuration="STOVE0_HTTP_TIMEOUT_SECONDS
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [STOVE0_HTTP_TIMEOUT_SECONDS](#s-5d16c3676e) | `value · configured-value · operational_policy` | shared above |
+| [STOVE0_HTTP_TIMEOUT_SECONDS](#s-15035a28e0) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-142681f0d2"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
-- <a id="pa-64ad6f6949"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
+- <a id="pa-c2be500139"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-7451ad24bc"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ Shared facts for every subject below: configuration="STOVE0_HTTP_TIMEOUT_SECONDS
 
 ### Executable sources
 
-- [configuration-environment:stove0-api-client:STOVE0_HTTP_TIMEOUT_SECONDS](../../../evidence/sources/authorities.md#src-a470f49fc7) — [reference/stove0/packages/api-client/src/stove0\_api\_client/client.py::\_positive\_float\_env](../../../../../../reference/stove0/packages/api-client/src/stove0_api_client/client.py)
+- [configuration-environment:stove0-api-client:STOVE0_HTTP_TIMEOUT_SECONDS](../../../evidence/sources/authorities.md#src-a470f49fc7) — [some-implementations/stove0/packages/api-client/src/stove0\_api\_client/client.py::\_positive\_float\_env](../../../../../../some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py)
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
@@ -59,11 +59,11 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| parser | `stove0-api-client` | [reference/stove0/packages/api-client/src/stove0\_api\_client/client.py](../../../../../../reference/stove0/packages/api-client/src/stove0_api_client/client.py) | `os.getenv(name)` |
+| parser | `stove0-api-client` | [some-implementations/stove0/packages/api-client/src/stove0\_api\_client/client.py](../../../../../../some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py) | `os.getenv(name)` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/146`
+- `/external_contract/configuration_environment/222`
 
 ### Exact owned JSON
 

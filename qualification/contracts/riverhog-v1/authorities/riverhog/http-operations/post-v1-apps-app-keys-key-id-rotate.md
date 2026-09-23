@@ -52,7 +52,7 @@ Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-publ
 
 ### Related interface records
 
-- [piggity app key rotate](../../piggity/cli/piggity-app-key-rotate.md)
+- [a-riverhog-cli app key rotate](../../a-riverhog-cli/cli/a-riverhog-cli-app-key-rotate.md)
 - [riverhog_client.ApiClient.rotate_app_key](../../riverhog-client/python/riverhog-client-apiclient-rotate-app-key.md)
 
 ### Referenced contract elements
@@ -95,12 +95,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "app key rotate",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/app/key/rotate/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/app/key/rotate/v1",
       "source": {
-        "line": 1221,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 1223,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "app_key_rotate_cmd"
       }
     }

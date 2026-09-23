@@ -8,9 +8,22 @@ These are the indexed contract-element applications. Each link reaches the polic
 
 | Authority | Contract element |
 |---|---|
-| `piggity` | [piggity app key access set](../../authorities/piggity/cli/piggity-app-key-access-set.md#pa-55226477c9) |
-| `piggity` | [piggity app key create](../../authorities/piggity/cli/piggity-app-key-create.md#pa-7e4275b7ff) |
-| `piggity` | [piggity collection upload start](../../authorities/piggity/cli/piggity-collection-upload-start.md#pa-c79796e4d4) |
+| `a-riverhog-cli` | [a-riverhog-cli app key access set](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-access-set.md#pa-d22eafe3e9) |
+| `a-riverhog-cli` | [a-riverhog-cli app key create](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-create.md#pa-e079551311) |
+| `a-riverhog-cli` | [a-riverhog-cli collection upload start](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-upload-start.md#pa-c3cff7cb75) |
+| `a-riverhog-filesystem-store` | [a-riverhog-filesystem-store-materialize](../../authorities/a-riverhog-filesystem-store/cli/a-riverhog-filesystem-store-materialize.md#pa-cb3846edb7) |
+| `a-riverhog-ftp-spool` | [GET /v1/status](../../authorities/a-riverhog-ftp-spool/http-operations/get-v1-status.md#pa-4aaaf8c17a) |
+| `a-riverhog-ftp-spool` | [POST /v1/run](../../authorities/a-riverhog-ftp-spool/http-operations/post-v1-run.md#pa-591ccf3e13) |
+| `a-riverhog-ftp-spool` | [POST /v1/sources/{source_id}/flush](../../authorities/a-riverhog-ftp-spool/http-operations/post-v1-sources-source-id-flush.md#pa-4ee4ea0c4c) |
+| `a-riverhog-ftp-spool` | [schemas: ErrorBody](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-errorbody.md#pa-24ec92c55f) |
+| `a-riverhog-ftp-spool` | [schemas: HTTPValidationError](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-httpvalidationerror.md#pa-ac60aff257) |
+| `a-riverhog-ftp-spool` | [schemas: ValidationError](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-validationerror.md#pa-1bbb29f7ef) |
+| `a-stove0-cli` | [stove0 preview](../../authorities/a-stove0-cli/cli/stove0-preview.md#pa-754e1c9400) |
+| `a-stove0-cli` | [stove0 work create](../../authorities/a-stove0-cli/cli/stove0-work-create.md#pa-147ac44921) |
+| `review0-sampler-lib` | [generated:review0-sampler: ErrorResponse](../../authorities/review0-sampler-lib/process-protocol-schemas/generated-review0-sampler-errorresponse.md#pa-530dbfced0) |
+| `review0-sampler-lib` | [generated:review0-sampler: SamplerConformanceResult](../../authorities/review0-sampler-lib/process-protocol-schemas/generated-review0-sampler-samplerconformanceresult.md#pa-16c85e3bd6) |
+| `review0-sampler-lib` | [generated:review0-sampler: SamplerRequest](../../authorities/review0-sampler-lib/process-protocol-schemas/generated-review0-sampler-samplerrequest.md#pa-312e54bfb0) |
+| `review0-sampler-lib` | [generated:review0-sampler: SamplerResult](../../authorities/review0-sampler-lib/process-protocol-schemas/generated-review0-sampler-samplerresult.md#pa-4537532a02) |
 | `riverhog` | [schemas: ApplicationAccessGrantSet](../../authorities/riverhog/http-schemas/schemas-applicationaccessgrantset.md#pa-91c21de56a) |
 | `riverhog` | [schemas: ArchiveCopyCanceledData](../../authorities/riverhog/http-schemas/schemas-archivecopycanceleddata.md#pa-306dd4c4fa) |
 | `riverhog` | [schemas: ArchiveCopyCompletedData](../../authorities/riverhog/http-schemas/schemas-archivecopycompleteddata.md#pa-aa0641f0a7) |
@@ -59,18 +72,11 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: TransformCapabilityCreateDocument](../../authorities/riverhog/http-schemas/schemas-transformcapabilitycreatedocument.md#pa-33160173de) |
 | `riverhog` | [schemas: TransformCapabilityDocument](../../authorities/riverhog/http-schemas/schemas-transformcapabilitydocument.md#pa-c51f15c08d) |
 | `riverhog` | [schemas: ValidationError](../../authorities/riverhog/http-schemas/schemas-validationerror.md#pa-2786c5d75c) |
-| `riverhog-ftp-adapter` | [GET /v1/status](../../authorities/riverhog-ftp-adapter/http-operations/get-v1-status.md#pa-3de630cc34) |
-| `riverhog-ftp-adapter` | [POST /v1/run](../../authorities/riverhog-ftp-adapter/http-operations/post-v1-run.md#pa-17df150351) |
-| `riverhog-ftp-adapter` | [POST /v1/sources/{source_id}/flush](../../authorities/riverhog-ftp-adapter/http-operations/post-v1-sources-source-id-flush.md#pa-24983dd5c5) |
-| `riverhog-ftp-adapter` | [schemas: ErrorBody](../../authorities/riverhog-ftp-adapter/http-schemas/schemas-errorbody.md#pa-3cbc84abc5) |
-| `riverhog-ftp-adapter` | [schemas: HTTPValidationError](../../authorities/riverhog-ftp-adapter/http-schemas/schemas-httpvalidationerror.md#pa-116263e2a3) |
-| `riverhog-ftp-adapter` | [schemas: ValidationError](../../authorities/riverhog-ftp-adapter/http-schemas/schemas-validationerror.md#pa-809f75b3f4) |
 | `riverhog-provenance` | [Riverhog provenance observer capture policy](../../authorities/riverhog-provenance/schema/riverhog-provenance-observer-capture-policy.md#pa-6b70997ac3) |
 | `riverhog-provenance` | [Riverhog provenance v1 journal entry](../../authorities/riverhog-provenance/schema/riverhog-provenance-v1-journal-entry.md#pa-b3e2a1266e) |
 | `riverhog-provenance` | [Riverhog v1 bounded provenance file bindings](../../authorities/riverhog-provenance/schema/riverhog-v1-bounded-provenance-file-bindings.md#pa-64e1afdd8d) |
 | `riverhog-provenance` | [Riverhog v1 bounded provenance volume](../../authorities/riverhog-provenance/schema/riverhog-v1-bounded-provenance-volume.md#pa-35684ce1ff) |
 | `riverhog-provenance` | [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/sparse-map.json](../../authorities/riverhog-provenance/schema/https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-sparse-map-json.md#pa-4fe0210c0e) |
-| `riverhog-storage-adapter-filesystem` | [riverhog-storage-adapter-filesystem-materialize](../../authorities/riverhog-storage-adapter-filesystem/cli/riverhog-storage-adapter-filesystem-materialize.md#pa-c191b6e90f) |
 | `riverhog-storage-adapter-support` | [generated:riverhog-storage-adapter: ReadPreparationRequest](../../authorities/riverhog-storage-adapter-support/process-protocol-schemas/generated-riverhog-storage-adapter-readpreparationrequest.md#pa-aba137fd76) |
 | `riverhog-storage-adapter-support` | [generated:riverhog-storage-adapter: ReadStatus](../../authorities/riverhog-storage-adapter-support/process-protocol-schemas/generated-riverhog-storage-adapter-readstatus.md#pa-10929e59e5) |
 | `riverhog-storage-adapter-support` | [generated:riverhog-storage-adapter: StorageAdapterConformanceResult](../../authorities/riverhog-storage-adapter-support/process-protocol-schemas/generated-riverhog-storage-adapter-storageadapterconformanceresult.md#pa-66fa794c5f) |
@@ -132,8 +138,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: WorkflowPlanIntent](../../authorities/stove0/http-schemas/schemas-workflowplanintent.md#pa-6baa6dfffe) |
 | `stove0` | [schemas: WorkflowPreview](../../authorities/stove0/http-schemas/schemas-workflowpreview.md#pa-2c59a99bbc) |
 | `stove0` | [schemas: WorkflowPreviewIn](../../authorities/stove0/http-schemas/schemas-workflowpreviewin.md#pa-1e2526838b) |
-| `stove0-client` | [stove0 preview](../../authorities/stove0-client/cli/stove0-preview.md#pa-54b56d3f9d) |
-| `stove0-client` | [stove0 work create](../../authorities/stove0-client/cli/stove0-work-create.md#pa-fe11e087d1) |
 | `stove0-observer-support` | [generated:stove0-observer: ErrorResponse](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-errorresponse.md#pa-93bdcc0380) |
 | `stove0-observer-support` | [generated:stove0-observer: ObservationInvocation](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observationinvocation.md#pa-b88d960466) |
 | `stove0-observer-support` | [generated:stove0-observer: ObservationRequest](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observationrequest.md#pa-345f3c0e70) |
@@ -141,10 +145,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-observer-support` | [generated:stove0-observer: ObserverConformanceResult](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observerconformanceresult.md#pa-95bb6c7bd0) |
 | `stove0-observer-support` | [generated:stove0-observer: ObserverDescriptor](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observerdescriptor.md#pa-fb54bcd5a4) |
 | `stove0-observer-support` | [stove0-observer-conformance](../../authorities/stove0-observer-support/cli/stove0-observer-conformance.md#pa-997f1966d4) |
-| `stove0-review-sampler-support` | [generated:stove0-review-sampler: ErrorResponse](../../authorities/stove0-review-sampler-support/process-protocol-schemas/generated-stove0-review-sampler-errorresponse.md#pa-a7f9f031c3) |
-| `stove0-review-sampler-support` | [generated:stove0-review-sampler: SamplerConformanceResult](../../authorities/stove0-review-sampler-support/process-protocol-schemas/generated-stove0-review-sampler-samplerconformanceresult.md#pa-ee2b23b4b8) |
-| `stove0-review-sampler-support` | [generated:stove0-review-sampler: SamplerRequest](../../authorities/stove0-review-sampler-support/process-protocol-schemas/generated-stove0-review-sampler-samplerrequest.md#pa-3e4cc643b6) |
-| `stove0-review-sampler-support` | [generated:stove0-review-sampler: SamplerResult](../../authorities/stove0-review-sampler-support/process-protocol-schemas/generated-stove0-review-sampler-samplerresult.md#pa-5cdfdc424e) |
 | `stove0-target-support` | [generated:stove0-target: ErrorResponse](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-errorresponse.md#pa-601f5a477a) |
 | `stove0-target-support` | [generated:stove0-target: OperationContract](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-operationcontract.md#pa-31d61071b2) |
 | `stove0-target-support` | [generated:stove0-target: TargetConformanceResult](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-targetconformanceresult.md#pa-f18a8edd46) |

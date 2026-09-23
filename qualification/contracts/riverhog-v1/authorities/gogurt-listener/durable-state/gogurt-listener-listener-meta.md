@@ -44,7 +44,7 @@ Exact externally visible contract owned by this contract element.
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [state:gogurt-listener](../../../evidence/sources/authorities.md#src-6b3ecfced3) — [reference/gogurt/packages/listener-runtime/src/gogurt\_listener\_runtime/listener.py::\_LISTENER\_STATE\_DDL](../../../../../../reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/listener.py)
+- [state:gogurt-listener](../../../evidence/sources/authorities.md#src-6b3ecfced3) — [some-implementations/gogurt/packages/listener-runtime/src/gogurt\_listener\_runtime/listener.py::\_LISTENER\_STATE\_DDL](../../../../../../some-implementations/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/listener.py)
 
 ### Machine authority
 

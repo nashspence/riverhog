@@ -46,8 +46,8 @@ Exact externally visible contract owned by this contract element.
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [python:stove0-target-client:stove0_target_client](../../../evidence/sources/authorities.md#src-be4c80156f) — [reference/stove0/packages/target-client/src/stove0\_target\_client/\_\_init\_\_.py](../../../../../../reference/stove0/packages/target-client/src/stove0_target_client/__init__.py)
-- **Client method:** [reference/stove0/packages/target-client/src/stove0\_target\_client/client.py::TargetCallbackClient.seal\_target\_execution\_production](../../../../../../reference/stove0/packages/target-client/src/stove0_target_client/client.py#L265)
+- [python:stove0-target-client:stove0_target_client](../../../evidence/sources/authorities.md#src-be4c80156f) — [some-implementations/stove0/packages/target-client/src/stove0\_target\_client/\_\_init\_\_.py](../../../../../../some-implementations/stove0/packages/target-client/src/stove0_target_client/__init__.py)
+- **Client method:** [some-implementations/stove0/packages/target-client/src/stove0\_target\_client/client.py::TargetCallbackClient.seal\_target\_execution\_production](../../../../../../some-implementations/stove0/packages/target-client/src/stove0_target_client/client.py#L265)
 
 ### Machine authority
 

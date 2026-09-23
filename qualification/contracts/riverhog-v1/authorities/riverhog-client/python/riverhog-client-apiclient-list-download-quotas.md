@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity app key quota list](../../piggity/cli/piggity-app-key-quota-list.md)
+- [a-riverhog-cli app key quota list](../../a-riverhog-cli/cli/a-riverhog-cli-app-key-quota-list.md)
 - [GET /v1/download-quotas](../../riverhog/http-operations/get-v1-download-quotas.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

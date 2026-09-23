@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-archive-upload-request-concurrency:1ab8cef668 -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-archive-upload-request-concurrency:d0f0ea566b -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,16 +13,16 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-ee975e99ad"></a>
+<a id="s-25e3b58251"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-ca55d6dc58"></a>`consumers` | `["riverhog-server"]` |
-| <a id="s-306a5ba67b"></a>`default_expressions` | `["unset"]` |
-| <a id="s-777167e457"></a>`id` | `"riverhog-server:environment:RIVERHOG_ARCHIVE_UPLOAD_REQUEST_CONCURRENCY"` |
-| <a id="s-faf3e3ddf2"></a>`input_shape` | `"environment-string"` |
-| <a id="s-1a8ef76883"></a>`name` | `"RIVERHOG_ARCHIVE_UPLOAD_REQUEST_CONCURRENCY"` |
-| <a id="s-1095e66092"></a>`owner` | `"riverhog-server"` |
+| <a id="s-71ff5053cc"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-161ddad828"></a>`default_expressions` | `["unset"]` |
+| <a id="s-c822a85dc1"></a>`id` | `"riverhog-server:environment:RIVERHOG_ARCHIVE_UPLOAD_REQUEST_CONCURRENCY"` |
+| <a id="s-2cab81cbef"></a>`input_shape` | `"environment-string"` |
+| <a id="s-3b82021d67"></a>`name` | `"RIVERHOG_ARCHIVE_UPLOAD_REQUEST_CONCURRENCY"` |
+| <a id="s-0b55c318c0"></a>`owner` | `"riverhog-server"` |
 
 ### Progression, limits, and lifecycle
 
@@ -32,14 +32,14 @@ Shared facts for every subject below: configuration="RIVERHOG_ARCHIVE_UPLOAD_REQ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_ARCHIVE_UPLOAD_REQUEST_CONCURRENCY](#s-ee975e99ad) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_ARCHIVE_UPLOAD_REQUEST_CONCURRENCY](#s-25e3b58251) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-e2e4e55abf"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
-- <a id="pa-4d269e552c"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
+- <a id="pa-ff47fb2286"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-2abedf676a"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -63,7 +63,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/44`
+- `/external_contract/configuration_environment/178`
 
 ### Exact owned JSON
 

@@ -29,8 +29,8 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity archive copy show](../../piggity/cli/piggity-archive-copy-show.md)
-- [piggity archive copy watch](../../piggity/cli/piggity-archive-copy-watch.md)
+- [a-riverhog-cli archive copy show](../../a-riverhog-cli/cli/a-riverhog-cli-archive-copy-show.md)
+- [a-riverhog-cli archive copy watch](../../a-riverhog-cli/cli/a-riverhog-cli-archive-copy-watch.md)
 - [GET /v1/archive/copies/{collection_id}/{destination_store}](../../riverhog/http-operations/get-v1-archive-copies-collection-id-destination-store.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

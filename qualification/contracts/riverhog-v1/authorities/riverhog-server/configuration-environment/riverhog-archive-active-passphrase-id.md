@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-archive-active-passphrase-id:3e56f3cb4d -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-archive-active-passphrase-id:ce46300325 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-ee8d4c5bb2"></a>
+<a id="s-60d36f56ec"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-9cef198e9c"></a>`consumers` | `["riverhog-server"]` |
-| <a id="s-4e914a87ae"></a>`default_expressions` | `["''"]` |
-| <a id="s-c87995acf3"></a>`id` | `"riverhog-server:environment:RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID"` |
-| <a id="s-1c5840c446"></a>`input_shape` | `"environment-string"` |
-| <a id="s-199cea8e22"></a>`name` | `"RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID"` |
-| <a id="s-a35e48e93a"></a>`owner` | `"riverhog-server"` |
+| <a id="s-6a75627f71"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-7f0cb5f08e"></a>`default_expressions` | `["''"]` |
+| <a id="s-9855b52610"></a>`id` | `"riverhog-server:environment:RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID"` |
+| <a id="s-93a8c602ad"></a>`input_shape` | `"environment-string"` |
+| <a id="s-25d67a7319"></a>`name` | `"RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID"` |
+| <a id="s-1c9291919b"></a>`owner` | `"riverhog-server"` |
 
 ## Governing policies
 
-- <a id="pa-8190e92e05"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-ccc776d9d4"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/37`
+- `/external_contract/configuration_environment/171`
 
 ### Exact owned JSON
 

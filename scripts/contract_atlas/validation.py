@@ -840,7 +840,7 @@ def validate_atlas(
             f"- Identity: `{extension_id}`" not in extension_page
             or _md(extension["description"]) not in extension_page
             or f"]({node_link})" not in extension_page
-            or "## Checked-in nonnormative implementations" not in extension_page
+            or "## Supplied implementations" not in extension_page
         ):
             raise ContractAtlasError(f"extension context is incomplete: {extension_id}")
         owner = str(extension["owner"])
@@ -940,8 +940,6 @@ def validate_atlas(
                         f"extension provider is misrepresented as interface ownership: "
                         f"{provider_name}: {extension_id}"
                     )
-    if str(relationship["reference_policy"]) not in root_page:
-        raise ContractAtlasError("atlas opening omits the declared reference policy")
     if any("/families/" in path for path in atlas.files) or "Semantic families" in root_page:
         raise ContractAtlasError("semantic-family navigation remains in the human atlas")
     for path, descriptor in descriptors.items():

@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-External-author protocol, runtime, and conformance support for stove0 content observers.
+External-author protocol, runtime, and conformance support for Stove0 content observers.
 
 Contract elements: **49** · Extent decisions: **86**
 

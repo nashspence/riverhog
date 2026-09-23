@@ -293,19 +293,19 @@ jobs:
           make unit
           TESTS="tests/unit/test_operation_lifecycle_api.py::test_riverhog_official_client_positive_disposable_lifecycle
           tests/unit/test_event_cursor_restart.py
-          reference/stove0/application/tests/test_stove0_api_parity.py::test_stove0_official_client_positive_disposable_lifecycle
-          reference/stove0/application/tests/test_stove0_api_parity.py::test_target_callback_surface_has_one_current_target_client_and_real_api_witness
-          reference/riverhog/ingress/ftp/tests/test_ftp_adapter_api_parity.py::test_official_client_positive_disposable_lifecycle
+          some-implementations/stove0/application/tests/test_stove0_api_parity.py::test_stove0_official_client_positive_disposable_lifecycle
+          some-implementations/stove0/application/tests/test_stove0_api_parity.py::test_target_callback_surface_has_one_current_target_client_and_real_api_witness
+          some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_api_parity.py::test_official_client_positive_disposable_lifecycle
           tests/unit/test_collection_reads.py::test_collection_list_query_count_is_independent_of_page_rows
-          reference/stove0/application/tests/test_work_state.py::test_unified_state_store_is_restart_safe_and_compare_and_swap
-          reference/stove0/application/tests/test_preview_and_evaluation.py::test_unified_evaluation_store_is_restart_safe
-          reference/stove0/application/tests/test_scheduler_roles.py::test_scheduler_uses_bounded_keyset_scans_and_rotates_past_a_permanent_noop
-          reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::test_landing_adapter_reconciles_lost_response_without_releasing_custody
-          reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::test_explicit_flush_is_the_same_bounded_claim_and_receipt_path
+          some-implementations/stove0/application/tests/test_work_state.py::test_unified_state_store_is_restart_safe_and_compare_and_swap
+          some-implementations/stove0/application/tests/test_preview_and_evaluation.py::test_unified_evaluation_store_is_restart_safe
+          some-implementations/stove0/application/tests/test_scheduler_roles.py::test_scheduler_uses_bounded_keyset_scans_and_rotates_past_a_permanent_noop
+          some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_landing_adapter_reconciles_lost_response_without_releasing_custody
+          some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_explicit_flush_is_the_same_bounded_claim_and_receipt_path
           tests/unit/test_cli_*.py
           tests/unit/test_local_materialization.py
-          reference/stove0/application/tests/test_cli.py
-          reference/riverhog/ingress/ftp/tests/test_ftp_adapter_api_parity.py::test_operator_cli_has_human_and_json_views_for_each_management_operation"
+          some-implementations/stove0/application/tests/test_cli.py
+          some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_api_parity.py::test_operator_cli_has_human_and_json_views_for_each_management_operation"
           args="-p tests.operation_observer"
       - name: Verify and record the complete operation matrix
         run: |
@@ -336,7 +336,7 @@ jobs:
             and .qualification.provider_backed_lifecycles.status == "linked"
             and .performance.local_api.schema == "riverhog-operation-timings/v1"
             and .performance.local_api.source_sha == $sha
-            and (.summary.applications | keys == ["riverhog", "riverhog-ftp-adapter", "stove0"])
+            and (.summary.applications | keys == ["a-riverhog-ftp-spool", "riverhog", "stove0"])
             and (.summary.classifications | keys == [
               "client-only-primitive",
               "human-cli+json",

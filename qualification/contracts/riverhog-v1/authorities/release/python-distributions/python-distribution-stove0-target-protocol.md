@@ -4,7 +4,7 @@
 
 <!-- contract-element: python-distributions:release:python-distribution-stove0-target-protocol:e147e52544 -->
 
-Dependency-light public contracts for external stove0 targets.
+Dependency-light public contracts for external Stove0 targets.
 
 | Audit field | Value |
 |---|---|
@@ -18,13 +18,13 @@ Dependency-light public contracts for external stove0 targets.
 |---|---|
 | <a id="s-764e625f32"></a>`artifacts` | `[{"coordinate":"dist/stove0_target_protocol-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_target_protocol-{version}.tar.gz","format":"sdist"}]` |
 | <a id="s-125473a001"></a>`channel` | `"github-release"` |
-| <a id="s-67d653caf2"></a>`description` | `"Dependency-light public contracts for external stove0 targets."` |
+| <a id="s-67d653caf2"></a>`description` | `"Dependency-light public contracts for external Stove0 targets."` |
 | <a id="s-7a5ee45887"></a>`license_baseline` | `"first-v1-publication"` |
 | <a id="s-5e60cfd849"></a>`license_expression` | `"Apache-2.0"` |
 | <a id="s-bd2ec35ede"></a>`publication_identity` | `{"coordinate":"stove0-target-protocol","kind":"python-distribution"}` |
 | <a id="s-bf7c3b499d"></a>`requires_python` | `">=3.12"` |
 | <a id="s-413d844e13"></a>`role` | `"reusable_library"` |
-| <a id="s-2a2b42bd50"></a>`source` | `"reference/stove0/packages/target-protocol/pyproject.toml"` |
+| <a id="s-2a2b42bd50"></a>`source` | `"some-implementations/stove0/packages/target-protocol/pyproject.toml"` |
 
 ## Existing ownership context
 
@@ -48,7 +48,7 @@ Publication preserves these existing component authorities; it does not reclassi
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [release-distribution:stove0-target-protocol](../../../evidence/sources/authorities.md#src-182457b760) — [reference/stove0/packages/target-protocol/pyproject.toml](../../../../../../reference/stove0/packages/target-protocol/pyproject.toml)
+- [release-distribution:stove0-target-protocol](../../../evidence/sources/authorities.md#src-182457b760) — [some-implementations/stove0/packages/target-protocol/pyproject.toml](../../../../../../some-implementations/stove0/packages/target-protocol/pyproject.toml)
 - [release-publication:planner](../../../evidence/sources/authorities.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
 - [release:release.toml](../../../evidence/sources/authorities.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
 
@@ -63,7 +63,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 410132d97f804be392a0e99352466ee2394c048f382f6ebcbcf8a4058c63a40a -->
+<!-- exact-contract-value: 8b23cae81d5bebdd2d125585c2cc0f4eb3842310eb42d1c9d893455b45aaef76 -->
 
 ```json
 {
@@ -78,7 +78,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   ],
   "channel": "github-release",
-  "description": "Dependency-light public contracts for external stove0 targets.",
+  "description": "Dependency-light public contracts for external Stove0 targets.",
   "license_baseline": "first-v1-publication",
   "license_expression": "Apache-2.0",
   "publication_identity": {
@@ -87,7 +87,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "requires_python": ">=3.12",
   "role": "reusable_library",
-  "source": "reference/stove0/packages/target-protocol/pyproject.toml"
+  "source": "some-implementations/stove0/packages/target-protocol/pyproject.toml"
 }
 ```
 

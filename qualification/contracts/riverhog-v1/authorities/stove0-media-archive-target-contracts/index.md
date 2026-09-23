@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Optional nonnormative media-archive contract reference for Stove0 targets.
+Shared media archive target contracts for Stove0.
 
 Contract elements: **30** · Extent decisions: **0**
 

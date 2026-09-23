@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Optional nonnormative S3 support for Riverhog storage references.
+S3 store support shared by Riverhog storage adapters.
 
 Contract elements: **24** · Extent decisions: **0**
 

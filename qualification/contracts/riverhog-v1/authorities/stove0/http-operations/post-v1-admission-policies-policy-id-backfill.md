@@ -38,7 +38,7 @@ Backfill Admission Policy
 
 ### Related interface records
 
-- [stove0 admission policy backfill](../../stove0-client/cli/stove0-admission-policy-backfill.md)
+- [stove0 admission policy backfill](../../a-stove0-cli/cli/stove0-admission-policy-backfill.md)
 - [stove0_api_client.Stove0ApiClient.backfill_admission_policy](../../stove0-api-client/python/stove0-api-client-stove0apiclient-backfill-admission-policy.md)
 
 ### Referenced contract elements
@@ -62,7 +62,7 @@ Backfill Admission Policy
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:stove0](../../../evidence/sources/authorities.md#src-52e6e32124) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [reference/stove0/application/server/src/stove0\_api/app.py::create\_app.&lt;locals&gt;.backfill\_admission\_policy](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L593)
+- **Handler:** [some-implementations/stove0/application/server/src/stove0\_api/app.py::create\_app.&lt;locals&gt;.backfill\_admission\_policy](../../../../../../some-implementations/stove0/application/server/src/stove0_api/app.py#L593)
 
 ### Structural operation bindings
 
@@ -82,8 +82,8 @@ This generated record links maintained client, CLI, response-authority, and prov
       "result_identity": "stove0-cli-result/admission/policy/backfill/v1",
       "source": {
         "line": 201,
-        "module": "stove0_cli.main",
-        "path": "reference/stove0/application/client/src/stove0_cli/main.py",
+        "module": "a_stove0_cli.main",
+        "path": "some-implementations/stove0/application/client/src/a_stove0_cli/main.py",
         "symbol": "backfill_admission_policy"
       }
     }
@@ -98,7 +98,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "source": {
         "line": 173,
         "module": "stove0_api_client.client",
-        "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py",
+        "path": "some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py",
         "symbol": "Stove0ApiClient.backfill_admission_policy"
       }
     }

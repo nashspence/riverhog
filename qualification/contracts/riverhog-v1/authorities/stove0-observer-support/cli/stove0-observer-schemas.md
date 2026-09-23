@@ -78,7 +78,7 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 
 ### Executable sources
 
-- [cli:stove0-observer-schemas](../../../evidence/sources/authorities.md#src-e6175e3ae2) — [reference/stove0/packages/observer-support/src/stove0\_observer\_support/schemas.py::&lt;module&gt;](../../../../../../reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py)
+- [cli:stove0-observer-schemas](../../../evidence/sources/authorities.md#src-e6175e3ae2) — [some-implementations/stove0/packages/observer-support/src/stove0\_observer\_support/schemas.py::&lt;module&gt;](../../../../../../some-implementations/stove0/packages/observer-support/src/stove0_observer_support/schemas.py)
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority

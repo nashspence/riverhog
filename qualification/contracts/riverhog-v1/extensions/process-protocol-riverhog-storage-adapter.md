@@ -17,8 +17,8 @@ Independently deployed process protocol owned by riverhog-storage-adapter-protoc
 
 - **[riverhog-storage-adapter-support · Process Protocol Schemas](../authorities/riverhog-storage-adapter-support/process-protocol-schemas/index.md)** [📦](../authorities/riverhog-storage-adapter-support/process-protocol-schemas/evidence-gaps.md) ([exact binding](../evidence/relationships/edges.md#re-5b6ba26bb3))
 
-## Checked-in nonnormative implementations
+## Supplied implementations
 
-- [riverhog-storage-adapter-aws](../evidence/relationships/edges.md#re-200e65554b) — Optional nonnormative AWS storage reference for Riverhog.
-- [riverhog-storage-adapter-backblaze](../evidence/relationships/edges.md#re-505927b13d) — Optional nonnormative Backblaze B2 storage reference for Riverhog.
-- [riverhog-storage-adapter-filesystem](../evidence/relationships/edges.md#re-4ab0fd0ac4) — Optional nonnormative Linux filesystem storage reference for Riverhog.
+- [a-riverhog-aws-store](../evidence/relationships/edges.md#re-7aa460cac5) — AWS-backed Riverhog archive and retrieval store.
+- [a-riverhog-b2-store](../evidence/relationships/edges.md#re-15f88503da) — Backblaze B2-backed Riverhog archive and retrieval store.
+- [a-riverhog-filesystem-store](../evidence/relationships/edges.md#re-1ef237a930) — Filesystem-backed Riverhog archive and retrieval store.

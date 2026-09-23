@@ -12,8 +12,8 @@ Entry-point extension boundary owned by gogurt-listener-runtime.
 
 - [gogurt-listener-runtime · Python](../authorities/gogurt-listener-runtime/python/index.md)
 
-## Checked-in nonnormative implementations
+## Supplied implementations
 
-- [gogurt-linux-listener-host](../evidence/relationships/edges.md#re-71a9ece012) — Optional nonnormative Linux systemd-user listener-host reference for Gogurt.
-- [gogurt-macos-listener-host](../evidence/relationships/edges.md#re-c1004e9eb0) — Optional nonnormative macOS launchd listener-host reference for Gogurt.
-- [gogurt-windows-listener-host](../evidence/relationships/edges.md#re-9ca9159b86) — Optional nonnormative Windows Task Scheduler listener-host reference for Gogurt.
+- [a-gogurt-linux-listener](../evidence/relationships/edges.md#re-dfa347fe9c) — Linux systemd user listener for Gogurt.
+- [a-gogurt-macos-listener](../evidence/relationships/edges.md#re-a78789c92e) — macOS launchd listener for Gogurt.
+- [a-gogurt-windows-listener](../evidence/relationships/edges.md#re-f75c6ea6c0) — Windows Task Scheduler listener for Gogurt.

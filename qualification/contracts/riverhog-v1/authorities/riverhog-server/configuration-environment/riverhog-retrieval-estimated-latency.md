@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-estimated-latency:5916c51f2f -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-estimated-latency:01128a5275 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-80acbe8bb3"></a>
+<a id="s-3c35501075"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-63d41d35b6"></a>`consumers` | `["riverhog-server"]` |
-| <a id="s-698b9afc79"></a>`default_expressions` | `["'48h'"]` |
-| <a id="s-6991f7b9b9"></a>`id` | `"riverhog-server:environment:RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY"` |
-| <a id="s-0783a8b801"></a>`input_shape` | `"environment-string"` |
-| <a id="s-8091a081fc"></a>`name` | `"RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY"` |
-| <a id="s-cc5e961af0"></a>`owner` | `"riverhog-server"` |
+| <a id="s-31006fedc6"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-26574b8277"></a>`default_expressions` | `["'48h'"]` |
+| <a id="s-e67ce255bb"></a>`id` | `"riverhog-server:environment:RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY"` |
+| <a id="s-8748b2ca37"></a>`input_shape` | `"environment-string"` |
+| <a id="s-446e3477ab"></a>`name` | `"RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY"` |
+| <a id="s-f2a83e023e"></a>`owner` | `"riverhog-server"` |
 
 ## Governing policies
 
-- <a id="pa-e3951f0544"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-173fde8e5a"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/75`
+- `/external_contract/configuration_environment/209`
 
 ### Exact owned JSON
 

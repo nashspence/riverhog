@@ -41,9 +41,9 @@ Get Collection Upload Session
 
 ### Related interface records
 
-- [piggity collection upload show](../../piggity/cli/piggity-collection-upload-show.md)
-- [piggity collection upload start](../../piggity/cli/piggity-collection-upload-start.md)
-- [piggity collection upload watch](../../piggity/cli/piggity-collection-upload-watch.md)
+- [a-riverhog-cli collection upload show](../../a-riverhog-cli/cli/a-riverhog-cli-collection-upload-show.md)
+- [a-riverhog-cli collection upload start](../../a-riverhog-cli/cli/a-riverhog-cli-collection-upload-start.md)
+- [a-riverhog-cli collection upload watch](../../a-riverhog-cli/cli/a-riverhog-cli-collection-upload-watch.md)
 - [riverhog_client.ApiClient.get_collection_upload_session](../../riverhog-client/python/riverhog-client-apiclient-get-collection-upload-session.md)
 
 ### Referenced contract elements
@@ -83,34 +83,34 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection upload start",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/upload/start/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/upload/start/v1",
       "source": {
-        "line": 2179,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2185,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "upload_cmd"
       }
     },
     {
       "command": "collection upload show",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/upload/show/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/upload/show/v1",
       "source": {
-        "line": 2373,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2379,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "upload_show_cmd"
       }
     },
     {
       "command": "collection upload watch",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/upload/watch/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/upload/watch/v1",
       "source": {
-        "line": 2413,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2419,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "upload_watch_cmd"
       }
     }

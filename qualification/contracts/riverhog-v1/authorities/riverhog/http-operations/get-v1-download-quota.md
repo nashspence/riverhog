@@ -36,7 +36,7 @@ Get Download Quota
 
 ### Related interface records
 
-- [piggity app key quota show](../../piggity/cli/piggity-app-key-quota-show.md)
+- [a-riverhog-cli app key quota show](../../a-riverhog-cli/cli/a-riverhog-cli-app-key-quota-show.md)
 - [riverhog_client.ApiClient.get_download_quota](../../riverhog-client/python/riverhog-client-apiclient-get-download-quota.md)
 
 ### Referenced contract elements
@@ -76,12 +76,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "app key quota show",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/app/key/quota/show/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/app/key/quota/show/v1",
       "source": {
-        "line": 1355,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 1357,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "app_key_quota_show_cmd"
       }
     }

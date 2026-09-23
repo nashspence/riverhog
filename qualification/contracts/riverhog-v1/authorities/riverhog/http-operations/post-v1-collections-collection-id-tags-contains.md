@@ -62,7 +62,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Related interface records
 
-- [piggity collection tag contains](../../piggity/cli/piggity-collection-tag-contains.md)
+- [a-riverhog-cli collection tag contains](../../a-riverhog-cli/cli/a-riverhog-cli-collection-tag-contains.md)
 - [riverhog_client.ApiClient.collection_contains_tag](../../riverhog-client/python/riverhog-client-apiclient-collection-contains-tag.md)
 
 ### Referenced contract elements
@@ -106,12 +106,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection tag contains",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/tag/contains/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/tag/contains/v1",
       "source": {
-        "line": 1030,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 1032,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "collection_tag_contains_cmd"
       }
     }

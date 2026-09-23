@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-provenance:xdg-state-home:6ffca58246 -->
+<!-- contract-element: configuration-environment:riverhog-provenance:xdg-state-home:75441a7ea6 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-1545d1acc2"></a>
+<a id="s-522054ba96"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-5a43b64463"></a>`consumers` | `["riverhog-provenance"]` |
-| <a id="s-be1388564a"></a>`default_expressions` | `["unset"]` |
-| <a id="s-84bf2d47b0"></a>`id` | `"riverhog-provenance:environment:XDG_STATE_HOME"` |
-| <a id="s-74d37a60a9"></a>`input_shape` | `"environment-string"` |
-| <a id="s-e838cafed4"></a>`name` | `"XDG_STATE_HOME"` |
-| <a id="s-ee0809963a"></a>`owner` | `"riverhog-provenance"` |
+| <a id="s-10b1bd0fd7"></a>`consumers` | `["riverhog-provenance"]` |
+| <a id="s-4987bd6783"></a>`default_expressions` | `["unset"]` |
+| <a id="s-881365a784"></a>`id` | `"riverhog-provenance:environment:XDG_STATE_HOME"` |
+| <a id="s-43682c84fe"></a>`input_shape` | `"environment-string"` |
+| <a id="s-020147690b"></a>`name` | `"XDG_STATE_HOME"` |
+| <a id="s-3bb548651c"></a>`owner` | `"riverhog-provenance"` |
 
 ## Governing policies
 
-- <a id="pa-982044df1f"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-4ced077b91"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/34`
+- `/external_contract/configuration_environment/168`
 
 ### Exact owned JSON
 

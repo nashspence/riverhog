@@ -12,8 +12,8 @@ Entry-point extension boundary owned by riverhog-provenance.
 
 - [riverhog-provenance · Python](../authorities/riverhog-provenance/python/index.md)
 
-## Checked-in nonnormative implementations
+## Supplied implementations
 
-- [riverhog-provenance-linux-observer](../evidence/relationships/edges.md#re-2a91805068) — Optional nonnormative Linux filesystem-observer reference for Riverhog provenance.
-- [riverhog-provenance-macos-observer](../evidence/relationships/edges.md#re-b6c6305d6a) — Optional nonnormative macOS filesystem-observer reference for Riverhog provenance.
-- [riverhog-provenance-windows-observer](../evidence/relationships/edges.md#re-df8b886ff9) — Optional nonnormative Windows filesystem-observer reference for Riverhog provenance.
+- [a-riverhog-linux-provenance-observer](../evidence/relationships/edges.md#re-b4eb37a306) — Linux filesystem observer for Riverhog provenance.
+- [a-riverhog-macos-provenance-observer](../evidence/relationships/edges.md#re-2d07d03755) — macOS filesystem observer for Riverhog provenance.
+- [a-riverhog-windows-provenance-observer](../evidence/relationships/edges.md#re-7373133171) — Windows filesystem observer for Riverhog provenance.

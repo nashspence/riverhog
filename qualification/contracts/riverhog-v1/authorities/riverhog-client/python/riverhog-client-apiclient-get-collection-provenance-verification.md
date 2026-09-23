@@ -29,8 +29,8 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity collection provenance verification-show](../../piggity/cli/piggity-collection-provenance-verification-show.md)
-- [piggity collection provenance verify](../../piggity/cli/piggity-collection-provenance-verify.md)
+- [a-riverhog-cli collection provenance verification-show](../../a-riverhog-cli/cli/a-riverhog-cli-collection-provenance-verification-show.md)
+- [a-riverhog-cli collection provenance verify](../../a-riverhog-cli/cli/a-riverhog-cli-collection-provenance-verify.md)
 - [GET /v1/collections/{collection_id}/provenance/verification](../../riverhog/http-operations/get-v1-collections-collection-id-provenance-verification.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

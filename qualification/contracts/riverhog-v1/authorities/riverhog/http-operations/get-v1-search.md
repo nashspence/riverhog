@@ -84,7 +84,7 @@ Exact evidence groups for this contract element:
 
 ### Related interface records
 
-- [piggity find](../../piggity/cli/piggity-find.md)
+- [a-riverhog-cli find](../../a-riverhog-cli/cli/a-riverhog-cli-find.md)
 - [riverhog_client.ApiClient.search](../../riverhog-client/python/riverhog-client-apiclient-search.md)
 
 ### Referenced contract elements
@@ -133,12 +133,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "find",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/find/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/find/v1",
       "source": {
-        "line": 2487,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2493,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "find_cmd"
       }
     }

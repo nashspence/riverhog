@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "review0-target-contracts"
+version = "0.1.0"
+description = "Review0 target execution and artifact contracts."
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+readme = { text = "Review0 target execution and artifact contracts.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+authors = [{ name = "Nash Spence" }]
+maintainers = [{ name = "Nash Spence" }]
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
+]
+urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
+dependencies = [
+  "pydantic>=2.7,<3.0",
+  "stove0-protocol>=0.1,<0.2",
+  "stove0-target-protocol>=0.1,<0.2",
+]
+
+[tool.uv.sources]
+stove0-protocol = { workspace = true }
+stove0-target-protocol = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/review0_target_contracts"]

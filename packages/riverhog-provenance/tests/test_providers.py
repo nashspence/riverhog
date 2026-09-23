@@ -302,15 +302,15 @@ def test_contract_format_keywords_are_annotations_without_portable_constraints()
     )
 
 
-def test_first_party_reference_uses_the_public_composition_and_contract_path(
+def test_supplied_observer_uses_the_public_composition_and_contract_path(
     tmp_path: Path,
 ) -> None:
     selector = (
-        "riverhog-linux"
+        "a-riverhog-linux-provenance-observer"
         if sys.platform.startswith("linux")
-        else "riverhog-macos"
+        else "a-riverhog-macos-provenance-observer"
         if sys.platform == "darwin"
-        else "riverhog-windows"
+        else "a-riverhog-windows-provenance-observer"
     )
     payload = tmp_path / "payload.bin"
     payload.write_bytes(b"provider composition proof")
@@ -326,7 +326,9 @@ def test_first_party_reference_uses_the_public_composition_and_contract_path(
     )
 
     assert journal.startswith(b"\x1e{")
-    assert resolved.binding.contract_provider == selector
+    assert (
+        resolved.binding.contract_provider == selector.removesuffix("-observer") + "-contract-lib"
+    )
     frames = [json.loads(line) for line in journal.replace(b"\x1e", b"").splitlines() if line]
     capture_frame = next(
         frame for frame in frames if frame.get("body", {}).get("assertions", {}).get("captures")

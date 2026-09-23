@@ -30,7 +30,7 @@ Health Ready
 
 ### Related interface records
 
-- [stove0 health](../../stove0-client/cli/stove0-health.md)
+- [stove0 health](../../a-stove0-cli/cli/stove0-health.md)
 - [stove0_api_client.Stove0ApiClient.health_ready](../../stove0-api-client/python/stove0-api-client-stove0apiclient-health-ready.md)
 
 ### Referenced contract elements
@@ -54,7 +54,7 @@ Health Ready
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:stove0](../../../evidence/sources/authorities.md#src-52e6e32124) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [reference/stove0/application/server/src/stove0\_api/app.py::create\_app.&lt;locals&gt;.health\_ready](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L515)
+- **Handler:** [some-implementations/stove0/application/server/src/stove0\_api/app.py::create\_app.&lt;locals&gt;.health\_ready](../../../../../../some-implementations/stove0/application/server/src/stove0_api/app.py#L515)
 
 ### Structural operation bindings
 
@@ -74,8 +74,8 @@ This generated record links maintained client, CLI, response-authority, and prov
       "result_identity": "stove0-cli-result/health/v1",
       "source": {
         "line": 163,
-        "module": "stove0_cli.main",
-        "path": "reference/stove0/application/client/src/stove0_cli/main.py",
+        "module": "a_stove0_cli.main",
+        "path": "some-implementations/stove0/application/client/src/a_stove0_cli/main.py",
         "symbol": "health"
       }
     }
@@ -90,7 +90,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "source": {
         "line": 136,
         "module": "stove0_api_client.client",
-        "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py",
+        "path": "some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py",
         "symbol": "Stove0ApiClient.health_ready"
       }
     }

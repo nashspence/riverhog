@@ -53,7 +53,7 @@ Shared facts for every subject below: maximum=4096; minimum=1; reason="schema-ma
 
 ### Related interface records
 
-- [piggity collection provenance show](../../piggity/cli/piggity-collection-provenance-show.md)
+- [a-riverhog-cli collection provenance show](../../a-riverhog-cli/cli/a-riverhog-cli-collection-provenance-show.md)
 - [riverhog_client.ApiClient.get_collection_file_provenance](../../riverhog-client/python/riverhog-client-apiclient-get-collection-file-provenance.md)
 
 ### Referenced contract elements
@@ -96,12 +96,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection provenance show",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/provenance/show/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/provenance/show/v1",
       "source": {
-        "line": 2632,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2638,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "provenance_show_cmd"
       }
     }

@@ -433,23 +433,26 @@ def test_compose_services_publish_the_archive_runtime_configuration() -> None:
         ("ruff", (), "python -m ruff check ."),
         (
             "ruff-fix",
-            ("FILES=reference/stove0/application/server",),
-            "python -m ruff check --fix reference/stove0/application/server",
+            ("FILES=some-implementations/stove0/application/server",),
+            "python -m ruff check --fix some-implementations/stove0/application/server",
         ),
         (
             "format",
-            ("FILES=reference/stove0/application/server",),
-            "python -m ruff format reference/stove0/application/server",
+            ("FILES=some-implementations/stove0/application/server",),
+            "python -m ruff format some-implementations/stove0/application/server",
         ),
         (
             "unit",
             ("args=-k entrypoint",),
-            "python -m pytest -q packages reference riverhog tests/unit -k entrypoint",
+            "python -m pytest -q packages some-implementations riverhog tests/unit -k entrypoint",
         ),
         (
             "unit",
-            ("TESTS=reference/stove0/application/tests/test_stove0_api_parity.py",),
-            "python -m pytest -q reference/stove0/application/tests/test_stove0_api_parity.py",
+            ("TESTS=some-implementations/stove0/application/tests/test_stove0_api_parity.py",),
+            (
+                "python -m pytest -q some-implementations/stove0/application/"
+                "tests/test_stove0_api_parity.py"
+            ),
         ),
         (
             "operation-qualification",
@@ -501,8 +504,11 @@ def test_compose_services_publish_the_archive_runtime_configuration() -> None:
         ),
         (
             "transfer-profile",
-            ("args=--scenario reference-recovery --workload large-file --payload-bytes 1 -- true",),
-            "python scripts/transfer_profile.py --scenario reference-recovery "
+            (
+                "args=--scenario a-riverhog-recovery-tool --workload large-file "
+                "--payload-bytes 1 -- true",
+            ),
+            "python scripts/transfer_profile.py --scenario a-riverhog-recovery-tool "
             "--workload large-file --payload-bytes 1 -- true",
         ),
     ],
@@ -525,15 +531,18 @@ def test_fix_runs_ruff_fix_then_format(tmp_path: Path) -> None:
     completed, docker_log_path, uv_log_path = _run_make(
         tmp_path,
         "fix",
-        "FILES=reference/stove0/application/server",
+        "FILES=some-implementations/stove0/application/server",
     )
 
     assert completed.returncode == 0, completed.stderr
     assert _read_log_lines(docker_log_path) == []
     uv_log_lines = _read_log_lines(uv_log_path)
     assert len(uv_log_lines) == 2
-    assert "python -m ruff check --fix reference/stove0/application/server" in uv_log_lines[0]
-    assert "python -m ruff format reference/stove0/application/server" in uv_log_lines[1]
+    assert (
+        "python -m ruff check --fix some-implementations/stove0/application/server"
+        in uv_log_lines[0]
+    )
+    assert "python -m ruff format some-implementations/stove0/application/server" in uv_log_lines[1]
 
 
 def test_local_targets_fail_clearly_when_mise_is_missing(tmp_path: Path) -> None:
@@ -558,40 +567,41 @@ def test_mypy_target_covers_source_and_service_apps(tmp_path: Path) -> None:
     assert _read_log_lines(docker_log_path) == []
     uv_log_lines = _read_log_lines(uv_log_path)
     assert len(uv_log_lines) == 1
-    assert "python -m mypy reference/stove0/application/client/src" in uv_log_lines[0]
+    assert "python -m mypy some-implementations/stove0/application/client/src" in uv_log_lines[0]
     for source in (
-        "reference/stove0/observers/exiftool/src",
-        "reference/stove0/observers/ffprobe-sampling/src",
-        "reference/stove0/targets/nvenc-av1-opus/review-sampler/src",
-        "reference/stove0/targets/nvenc-av1-opus/target/src",
-        "reference/stove0/targets/opus/review-sampler/src",
-        "reference/stove0/targets/opus/target/src",
-        "reference/stove0/targets/review/materialize-target/src",
-        "reference/stove0/targets/review/rclone-effect-target/src",
-        "reference/stove0/targets/review/support/src",
-        "reference/stove0/application/server/src",
-        "reference/stove0/targets/media-archive/contracts/src",
-        "reference/stove0/targets/media-archive/support/src",
-        "reference/stove0/observers/contracts/media-metadata/src",
-        "reference/stove0/observers/contracts/media-sampling/src",
-        "reference/stove0/packages/observer-client/src",
-        "reference/stove0/targets/review/planning/src",
-        "reference/stove0/targets/review/sampler/protocol/src",
-        "reference/stove0/targets/review/sampler/support/src",
-        "reference/stove0/targets/review/sampler/client/src",
-        "reference/stove0/targets/review/contracts/src",
-        "reference/stove0/packages/target-client/src",
+        "some-implementations/stove0/observers/exiftool/src",
+        "some-implementations/stove0/observers/ffprobe-sampling/src",
+        "some-implementations/stove0/review0/samplers/nvenc-av1-opus/src",
+        "some-implementations/stove0/targets/nvenc-av1-opus/target/src",
+        "some-implementations/stove0/review0/samplers/opus/src",
+        "some-implementations/stove0/targets/opus/target/src",
+        "some-implementations/stove0/review0/materialize-target/src",
+        "some-implementations/stove0/review0/rclone-effect-target/src",
+        "some-implementations/stove0/review0/support/src",
+        "some-implementations/stove0/application/server/src",
+        "some-implementations/stove0/targets/media-archive/contracts/src",
+        "some-implementations/stove0/targets/media-archive/support/src",
+        "some-implementations/stove0/observers/contracts/media-metadata/src",
+        "some-implementations/stove0/observers/contracts/media-sampling/src",
+        "some-implementations/stove0/packages/observer-client/src",
+        "some-implementations/stove0/review0/planning/src",
+        "some-implementations/stove0/review0/sampler/protocol/src",
+        "some-implementations/stove0/review0/sampler/support/src",
+        "some-implementations/stove0/review0/sampler/client/src",
+        "some-implementations/stove0/review0/contracts/src",
+        "some-implementations/stove0/packages/target-client/src",
     ):
         assert source in uv_log_lines[0]
     assert (
-        "reference/riverhog/applications/piggity/src "
-        "reference/riverhog/ingress/ftp/src reference/riverhog/recovery/src" in uv_log_lines[0]
+        "some-implementations/riverhog/applications/a-riverhog-cli/src "
+        "some-implementations/riverhog/ingress/ftp/src some-implementations/riverhog/recovery/src"
+        in uv_log_lines[0]
     )
     assert "scripts/operation_qualification.py" in uv_log_lines[0]
     assert "scripts/provider_qualification.py" in uv_log_lines[0]
     assert (
-        "reference/gogurt/application/src reference/riverhog/applications/mango-fish/src"
-        in uv_log_lines[0]
+        "some-implementations/gogurt/application/src "
+        "some-implementations/riverhog/applications/a-riverhog-event-relay/src" in uv_log_lines[0]
     )
     assert "--no-error-summary --no-color-output --strict" in uv_log_lines[0]
 
@@ -622,7 +632,7 @@ def test_lint_runs_license_format_ruff_and_mypy(tmp_path: Path) -> None:
     assert "python -m reuse lint" in uv_log_lines[0]
     assert "python -m ruff format --check ." in uv_log_lines[1]
     assert "python -m ruff check ." in uv_log_lines[2]
-    assert "python -m mypy reference/stove0/application/client/src" in uv_log_lines[3]
+    assert "python -m mypy some-implementations/stove0/application/client/src" in uv_log_lines[3]
 
 
 def test_build_targets_use_the_canonical_bake_graph(tmp_path: Path) -> None:
@@ -653,18 +663,18 @@ def test_build_targets_use_the_canonical_bake_graph(tmp_path: Path) -> None:
     ).stdout.strip()
     targets = (
         "riverhog",
-        "riverhog-ftp-adapter",
-        "riverhog-storage-adapter-aws",
-        "riverhog-storage-adapter-backblaze",
-        "riverhog-storage-adapter-filesystem",
+        "a-riverhog-ftp-spool",
+        "a-riverhog-aws-store",
+        "a-riverhog-b2-store",
+        "a-riverhog-filesystem-store",
         "stove0",
-        "stove0-exiftool-observer",
-        "stove0-ffprobe-sampling-observer",
-        "stove0-nvenc-av1-opus-target",
-        "stove0-opus-target",
-        "stove0-review-materialize-target",
-        "stove0-review-rclone-effect-target",
-        "mango-fish",
+        "a-stove0-exiftool-observer",
+        "a-stove0-ffprobe-sampling-observer",
+        "a-stove0-nvenc-av1-opus-target",
+        "a-stove0-opus-target",
+        "a-review0-materializer",
+        "a-review0-rclone-target",
+        "a-riverhog-event-relay",
         "test",
     )
     assert _read_log_lines(docker_log_path) == [
@@ -771,7 +781,7 @@ def test_compose_smoke_starts_and_cleans_a_fresh_stack(tmp_path: Path) -> None:
     assert docker_log.count(" restart api") == 3
     assert "RIVERHOG_SMOKE_ADMISSION_OUTPUT=ftp" in docker_log
     assert "RIVERHOG_SMOKE_CLIENT_RECEIPT_OUTPUT=1" in docker_log
-    assert "collection upload start /reference-client-input" in docker_log
+    assert "collection upload start /cli-input" in docker_log
     assert "--tag stove0/conformance" in docker_log
     assert "RIVERHOG_SMOKE_ADMISSION_OUTPUT=client" in docker_log
     assert "EXPECTED_WORK_ID=" in docker_log
@@ -803,12 +813,16 @@ def test_stove0_scale_qualification_reuses_the_final_image_lifecycle(
     assert " down --volumes --remove-orphans" in docker_log
 
 
-def test_mango_fish_smoke_uses_the_repo_python_and_final_image_script(tmp_path: Path) -> None:
-    completed, docker_log_path, uv_log_path = _run_make(tmp_path, "mango-fish-smoke")
+def test_a_riverhog_event_relay_smoke_uses_the_repo_python_and_final_image_script(
+    tmp_path: Path,
+) -> None:
+    completed, docker_log_path, uv_log_path = _run_make(tmp_path, "a-riverhog-event-relay-smoke")
 
     assert completed.returncode == 0, completed.stderr
     assert _read_log_lines(docker_log_path) == []
-    assert _read_log_lines(uv_log_path) == ["|x python -- python scripts/test_mango_fish_image.py"]
+    assert _read_log_lines(uv_log_path) == [
+        "|x python -- python scripts/test_a_riverhog_event_relay_image.py"
+    ]
 
 
 def test_postgres_concurrency_target_uses_disposable_postgres(tmp_path: Path) -> None:
@@ -854,7 +868,7 @@ def test_dockerfiles_keep_dependency_layers_independent_of_docs_and_tests() -> N
         "uv sync --frozen --package riverhog-server --no-dev --no-editable"
     )
     assert test_dockerfile.index("COPY pyproject.toml uv.lock ./") < test_dockerfile.index(
-        "COPY reference reference"
+        "COPY some-implementations some-implementations"
     )
     assert "uv sync --frozen --all-packages --group dev --no-editable" in test_dockerfile
     assert '"$(mise which uv)" /opt/riverhog-tools/bin/uv' in test_dockerfile
@@ -863,7 +877,7 @@ def test_dockerfiles_keep_dependency_layers_independent_of_docs_and_tests() -> N
     assert test_dockerfile.index("COPY pyproject.toml uv.lock ./") < test_dockerfile.index(
         "COPY tests tests"
     )
-    assert "COPY reference reference" in test_dockerfile
+    assert "COPY some-implementations some-implementations" in test_dockerfile
     assert "COPY packages packages" in test_dockerfile
     assert "COPY riverhog riverhog" in test_dockerfile
     assert "COPY tests tests" in test_dockerfile
@@ -873,7 +887,7 @@ def test_dockerfiles_keep_dependency_layers_independent_of_docs_and_tests() -> N
 def test_dockerfile_copy_sources_are_git_owned() -> None:
     dockerfiles = [
         REPO_ROOT / "tests" / "Dockerfile",
-        *sorted((REPO_ROOT / "reference").rglob("Dockerfile")),
+        *sorted((REPO_ROOT / "some-implementations").rglob("Dockerfile")),
         *sorted((REPO_ROOT / "riverhog").rglob("Dockerfile")),
     ]
 
@@ -897,14 +911,20 @@ def test_dockerfile_copy_sources_are_git_owned() -> None:
 
 
 def test_workspace_unit_lane_owns_application_unit_tests() -> None:
-    assert (REPO_ROOT / "reference/stove0/application/tests/test_stove0_api_parity.py").is_file()
     assert (
-        REPO_ROOT / "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_api_parity.py"
+        REPO_ROOT / "some-implementations/stove0/application/tests/test_stove0_api_parity.py"
     ).is_file()
     assert (
-        REPO_ROOT / "reference/riverhog/applications/mango-fish/tests/test_mango_fish.py"
+        REPO_ROOT / "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_api_parity.py"
     ).is_file()
-    assert (REPO_ROOT / "reference/gogurt/application/tests/test_gogurt.py").is_file()
+    assert (
+        REPO_ROOT
+        / (
+            "some-implementations/riverhog/applications/a-riverhog-event-relay/"
+            "tests/test_a_riverhog_event_relay.py"
+        )
+    ).is_file()
+    assert (REPO_ROOT / "some-implementations/gogurt/application/tests/test_gogurt.py").is_file()
 
 
 def test_repo_wide_lint_targets_cover_source_and_service_apps() -> None:
@@ -936,22 +956,22 @@ def test_format_check_and_compile_are_non_mutating_repository_targets(tmp_path: 
     assert _read_log_lines(docker_log_path) == []
     assert _read_log_lines(uv_log_path) == [
         "|x -- uv run --locked --all-packages --group dev "
-        "python -m compileall -q packages reference riverhog scripts tests"
+        "python -m compileall -q packages some-implementations riverhog scripts tests"
     ]
 
 
 def test_deployed_application_dockerfiles_use_locked_workspace_dependencies() -> None:
     service_dockerfiles = [
         REPO_ROOT / "riverhog/Dockerfile",
-        REPO_ROOT / "reference/riverhog/ingress/ftp/Dockerfile",
-        REPO_ROOT / "reference/stove0/application/server/Dockerfile",
-        REPO_ROOT / "reference/stove0/observers/exiftool/Dockerfile",
-        REPO_ROOT / "reference/stove0/observers/ffprobe-sampling/Dockerfile",
-        REPO_ROOT / "reference/stove0/targets/nvenc-av1-opus/Dockerfile",
-        REPO_ROOT / "reference/stove0/targets/opus/Dockerfile",
-        REPO_ROOT / "reference/stove0/targets/review/materialize-target/Dockerfile",
-        REPO_ROOT / "reference/stove0/targets/review/rclone-effect-target/Dockerfile",
-        REPO_ROOT / "reference/riverhog/applications/mango-fish/Dockerfile",
+        REPO_ROOT / "some-implementations/riverhog/ingress/ftp/Dockerfile",
+        REPO_ROOT / "some-implementations/stove0/application/server/Dockerfile",
+        REPO_ROOT / "some-implementations/stove0/observers/exiftool/Dockerfile",
+        REPO_ROOT / "some-implementations/stove0/observers/ffprobe-sampling/Dockerfile",
+        REPO_ROOT / "some-implementations/stove0/targets/nvenc-av1-opus/Dockerfile",
+        REPO_ROOT / "some-implementations/stove0/targets/opus/Dockerfile",
+        REPO_ROOT / "some-implementations/stove0/review0/materialize-target/Dockerfile",
+        REPO_ROOT / "some-implementations/stove0/review0/rclone-effect-target/Dockerfile",
+        REPO_ROOT / "some-implementations/riverhog/applications/a-riverhog-event-relay/Dockerfile",
     ]
 
     for path in service_dockerfiles:
@@ -965,7 +985,7 @@ def test_deployed_application_dockerfiles_use_locked_workspace_dependencies() ->
 
 
 def test_stove0_nvenc_ffmpeg_retains_cuda_features_without_nonfree_code() -> None:
-    target = REPO_ROOT / "reference/stove0/targets/nvenc-av1-opus"
+    target = REPO_ROOT / "some-implementations/stove0/targets/nvenc-av1-opus"
     dockerfile = (target / "Dockerfile").read_text(encoding="utf-8")
     verification = (target / "verify-ffmpeg").read_text(encoding="utf-8")
 
@@ -985,16 +1005,16 @@ def test_stove0_nvenc_ffmpeg_retains_cuda_features_without_nonfree_code() -> Non
 
 
 def test_nvenc_target_includes_source_artifact_runtime_tools() -> None:
-    dockerfile = (REPO_ROOT / "reference/stove0/targets/nvenc-av1-opus/Dockerfile").read_text(
-        encoding="utf-8"
-    )
+    dockerfile = (
+        REPO_ROOT / "some-implementations/stove0/targets/nvenc-av1-opus/Dockerfile"
+    ).read_text(encoding="utf-8")
 
     for tool in ("ffmpeg", "mkvtoolnix", "zstd"):
         assert tool in dockerfile
 
 
 def test_opus_target_is_a_slim_non_cuda_image() -> None:
-    dockerfile = (REPO_ROOT / "reference/stove0/targets/opus/Dockerfile").read_text(
+    dockerfile = (REPO_ROOT / "some-implementations/stove0/targets/opus/Dockerfile").read_text(
         encoding="utf-8"
     )
 
@@ -1026,8 +1046,10 @@ def test_test_aggregate_runs_lint_then_unit(tmp_path: Path) -> None:
     assert "python -m reuse lint" in uv_log_lines[0]
     assert "python -m ruff format --check ." in uv_log_lines[1]
     assert "python -m ruff check ." in uv_log_lines[2]
-    assert "python -m mypy reference/stove0/application/client/src" in uv_log_lines[3]
-    assert "python -m pytest -q packages reference riverhog tests/unit" in uv_log_lines[4]
+    assert "python -m mypy some-implementations/stove0/application/client/src" in uv_log_lines[3]
+    assert (
+        "python -m pytest -q packages some-implementations riverhog tests/unit" in uv_log_lines[4]
+    )
 
 
 def test_down_target_uses_compose_down_with_volumes(tmp_path: Path) -> None:
@@ -1045,16 +1067,16 @@ def test_help_describes_make_targets(tmp_path: Path) -> None:
     assert completed.returncode == 0, completed.stderr
     assert "make bootstrap-garage" in completed.stdout
     assert "make build-riverhog" in completed.stdout
-    assert "make build-riverhog-ftp-adapter" in completed.stdout
+    assert "make build-a-riverhog-ftp-spool" in completed.stdout
     assert "make build-stove0" in completed.stdout
-    assert "make build-stove0-exiftool-observer" in completed.stdout
-    assert "make build-stove0-ffprobe-sampling-observer" in completed.stdout
-    assert "make build-stove0-nvenc-av1-opus-target" in completed.stdout
-    assert "make build-stove0-opus-target" in completed.stdout
-    assert "make build-stove0-review-materialize-target" in completed.stdout
-    assert "make build-stove0-review-rclone-effect-target" in completed.stdout
-    assert "make build-mango-fish" in completed.stdout
-    assert "make mango-fish-smoke" in completed.stdout
+    assert "make build-a-stove0-exiftool-observer" in completed.stdout
+    assert "make build-a-stove0-ffprobe-sampling-observer" in completed.stdout
+    assert "make build-a-stove0-nvenc-av1-opus-target" in completed.stdout
+    assert "make build-a-stove0-opus-target" in completed.stdout
+    assert "make build-a-review0-materializer" in completed.stdout
+    assert "make build-a-review0-rclone-target" in completed.stdout
+    assert "make build-a-riverhog-event-relay" in completed.stdout
+    assert "make a-riverhog-event-relay-smoke" in completed.stdout
     assert "make stove0-scale-qualification" in completed.stdout
     assert "make build-test" in completed.stdout
     assert "make dist-smoke" in completed.stdout

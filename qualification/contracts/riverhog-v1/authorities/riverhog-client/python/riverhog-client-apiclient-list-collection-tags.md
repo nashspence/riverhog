@@ -29,10 +29,10 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity collection tag list](../../piggity/cli/piggity-collection-tag-list.md)
-- [piggity local add](../../piggity/cli/piggity-local-add.md)
-- [piggity local repair](../../piggity/cli/piggity-local-repair.md)
-- [piggity local sync](../../piggity/cli/piggity-local-sync.md)
+- [a-riverhog-cli collection tag list](../../a-riverhog-cli/cli/a-riverhog-cli-collection-tag-list.md)
+- [a-riverhog-cli local add](../../a-riverhog-cli/cli/a-riverhog-cli-local-add.md)
+- [a-riverhog-cli local repair](../../a-riverhog-cli/cli/a-riverhog-cli-local-repair.md)
+- [a-riverhog-cli local sync](../../a-riverhog-cli/cli/a-riverhog-cli-local-sync.md)
 - [GET /v1/collections/{collection_id}/tags](../../riverhog/http-operations/get-v1-collections-collection-id-tags.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

@@ -1,0 +1,135 @@
+# https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-attributes.json
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: schema:a-riverhog-macos-provenance-contract-lib:https-nashspence-github-io-riverhog-v1-pr-cda5d58e04:998faa53b2 -->
+
+Exact externally visible contract owned by this contract element.
+
+| Audit field | Value |
+|---|---|
+| Authority | [a-riverhog-macos-provenance-contract-lib](../index.md) |
+| Interface | [Schemas](index.md) |
+
+## External contract
+
+<a id="s-fa8175ab36"></a>
+
+- <a id="s-a98e6c7a22"></a>`type`: `"object"`
+- <a id="s-e76df1f7e2"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-attributes.json"`
+- <a id="s-1fa97f6014"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
+- <a id="s-f39eae0b2d"></a>`additionalProperties`: `false`
+- <a id="s-830c680f91"></a>`minProperties`: `1`
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-37d4950c5e"></a>`allocation_size` | no | type="integer"; minimum=0 |  |
+| <a id="s-4a6aac106d"></a>`data_allocation_size` | no | type="integer"; minimum=0 |  |
+| <a id="s-545313b166"></a>`data_length` | no | type="integer"; minimum=0 |  |
+| <a id="s-e7cc87a404"></a>`document_id` | no | type="integer"; minimum=0 |  |
+| <a id="s-237b7d85e3"></a>`generation` | no | type="integer"; minimum=0 |  |
+| <a id="s-54c5f49a97"></a>`io_block_size` | no | type="integer"; minimum=0 |  |
+| <a id="s-8f6b576eb6"></a>`resource_fork_allocation_size` | no | type="integer"; minimum=0 |  |
+| <a id="s-d63f79a6b4"></a>`resource_fork_length` | no | type="integer"; minimum=0 |  |
+| <a id="s-170283d8ae"></a>`total_size` | no | type="integer"; minimum=0 |  |
+
+### Progression, limits, and lifecycle
+
+#### [extent-rule/extension-contract/v1](../../extent-contract/extent/extent-rule-extension-contract.md#p-75a89f9d1c)
+
+Shared facts for every subject below: maximum=null; reason="independently-versioned-extension-authority"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-attributes.json](#s-fa8175ab36) | `cardinality · entries · extension_owned` | shared above |
+| [field allocation_size](#s-37d4950c5e) | `value · schema-value · extension_owned` | shared above |
+| [field data_allocation_size](#s-4a6aac106d) | `value · schema-value · extension_owned` | shared above |
+| [field data_length](#s-545313b166) | `value · schema-value · extension_owned` | shared above |
+| [field io_block_size](#s-54c5f49a97) | `value · schema-value · extension_owned` | shared above |
+| [field resource_fork_allocation_size](#s-8f6b576eb6) | `value · schema-value · extension_owned` | shared above |
+| [field resource_fork_length](#s-d63f79a6b4) | `value · schema-value · extension_owned` | shared above |
+| [field total_size](#s-170283d8ae) | `value · schema-value · extension_owned` | shared above |
+
+## Governing policies
+
+[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
+
+- <a id="pa-5ba7153e34"></a>[compatibility/components/v1](../../release/compatibility-guarantees/compatibility-components.md#p-95e9a12259)
+- <a id="pa-06b635050e"></a>[extent-rule/extension-contract/v1](../../extent-contract/extent/extent-rule-extension-contract.md#p-75a89f9d1c)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources/commands.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources/commands.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-attributes.json](../../../evidence/sources/authorities.md#src-8191cd2baf) — [some-implementations/riverhog/provenance/contracts/macos/src/a\_riverhog\_macos\_provenance\_contract\_lib/schemas/darwin-file-attributes.schema.json](../../../../../../some-implementations/riverhog/provenance/contracts/macos/src/a_riverhog_macos_provenance_contract_lib/schemas/darwin-file-attributes.schema.json)
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1darwin-file-attributes.json`
+
+### Exact owned JSON
+
+<details>
+<summary>Expand exact machine-owned values</summary>
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: d93ccd741dbce58c24079da050ac8396123467f74d0e749607ce56e379106d5c -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-attributes.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "minProperties": 1,
+  "properties": {
+    "allocation_size": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "data_allocation_size": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "data_length": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "document_id": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "generation": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "io_block_size": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "resource_fork_allocation_size": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "resource_fork_length": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "total_size": {
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "type": "object"
+}
+```
+
+</details>

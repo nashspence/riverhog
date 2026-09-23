@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity retrieval cache status](../../piggity/cli/piggity-retrieval-cache-status.md)
+- [a-riverhog-cli retrieval cache status](../../a-riverhog-cli/cli/a-riverhog-cli-retrieval-cache-status.md)
 - [GET /v1/retrieval-cache](../../riverhog/http-operations/get-v1-retrieval-cache.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

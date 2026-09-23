@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity collection upload list](../../piggity/cli/piggity-collection-upload-list.md)
+- [a-riverhog-cli collection upload list](../../a-riverhog-cli/cli/a-riverhog-cli-collection-upload-list.md)
 - [GET /v1/collection-upload-sessions](../../riverhog/http-operations/get-v1-collection-upload-sessions.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

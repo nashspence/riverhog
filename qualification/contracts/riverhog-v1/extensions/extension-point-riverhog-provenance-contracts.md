@@ -12,8 +12,8 @@ Entry-point extension boundary owned by riverhog-provenance-contracts.
 
 - [riverhog-provenance-contracts · Python](../authorities/riverhog-provenance-contracts/python/index.md)
 
-## Checked-in nonnormative implementations
+## Supplied implementations
 
-- [riverhog-provenance-linux-contracts](../evidence/relationships/edges.md#re-93d7304e4e) — Optional nonnormative Linux observation-contract reference for Riverhog provenance.
-- [riverhog-provenance-macos-contracts](../evidence/relationships/edges.md#re-33a1c904bb) — Optional nonnormative macOS observation-contract reference for Riverhog provenance.
-- [riverhog-provenance-windows-contracts](../evidence/relationships/edges.md#re-e086123a37) — Optional nonnormative Windows observation-contract reference for Riverhog provenance.
+- [a-riverhog-linux-provenance-contract-lib](../evidence/relationships/edges.md#re-586e713a8b) — Linux filesystem observation contracts for Riverhog provenance.
+- [a-riverhog-macos-provenance-contract-lib](../evidence/relationships/edges.md#re-4bdb55aa17) — macOS filesystem observation contracts for Riverhog provenance.
+- [a-riverhog-windows-provenance-contract-lib](../evidence/relationships/edges.md#re-9eb6bf008c) — Windows filesystem observation contracts for Riverhog provenance.

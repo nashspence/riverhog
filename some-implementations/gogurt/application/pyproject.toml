@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gogurt"
+version = "0.1.0"
+description = "Mounted-volume ingestion application for Riverhog."
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+readme = { text = "Mounted-volume ingestion application for Riverhog.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+authors = [{ name = "Nash Spence" }]
+maintainers = [{ name = "Nash Spence" }]
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
+]
+urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
+dependencies = [
+  "config-validation>=0.1,<0.2",
+  "gogurt-core>=0.1,<0.2",
+  "gogurt-listener-runtime>=0.1,<0.2",
+  "typer>=0.12,<1.0",
+]
+
+[project.scripts]
+gogurt = "gogurt.cli:main"
+
+[tool.uv.sources]
+config-validation = { workspace = true }
+gogurt-core = { workspace = true }
+gogurt-listener-runtime = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gogurt"]

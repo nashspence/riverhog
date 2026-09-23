@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-cache-stores:2b91111628 -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-cache-stores:99035853ca -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-c992f01b6c"></a>
+<a id="s-db3079284d"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-ad7e41feee"></a>`consumers` | `["riverhog-server"]` |
-| <a id="s-3b77a1770c"></a>`default_expressions` | `["''"]` |
-| <a id="s-82330ee13f"></a>`id` | `"riverhog-server:environment:RIVERHOG_RETRIEVAL_CACHE_STORES"` |
-| <a id="s-15b98567cc"></a>`input_shape` | `"environment-string"` |
-| <a id="s-4a3181eea5"></a>`name` | `"RIVERHOG_RETRIEVAL_CACHE_STORES"` |
-| <a id="s-e9681c4a64"></a>`owner` | `"riverhog-server"` |
+| <a id="s-29a59a341d"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-4c06c96747"></a>`default_expressions` | `["''"]` |
+| <a id="s-f5e3342d1e"></a>`id` | `"riverhog-server:environment:RIVERHOG_RETRIEVAL_CACHE_STORES"` |
+| <a id="s-b760c5b8bf"></a>`input_shape` | `"environment-string"` |
+| <a id="s-6b7538ff8b"></a>`name` | `"RIVERHOG_RETRIEVAL_CACHE_STORES"` |
+| <a id="s-601f416108"></a>`owner` | `"riverhog-server"` |
 
 ## Governing policies
 
-- <a id="pa-d664db62e8"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-56ff328551"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/71`
+- `/external_contract/configuration_environment/205`
 
 ### Exact owned JSON
 

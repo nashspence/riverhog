@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-archive-passphrases-json:e40e3be4a2 -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-archive-passphrases-json:a5957c211a -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-71ed3f559b"></a>
+<a id="s-5a6a419251"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-93ede9eab6"></a>`consumers` | `["riverhog-server"]` |
-| <a id="s-5513911e29"></a>`default_expressions` | `["''"]` |
-| <a id="s-b5799a6efe"></a>`id` | `"riverhog-server:environment:RIVERHOG_ARCHIVE_PASSPHRASES_JSON"` |
-| <a id="s-12fb5098c2"></a>`input_shape` | `"environment-string"` |
-| <a id="s-a3d7c530e4"></a>`name` | `"RIVERHOG_ARCHIVE_PASSPHRASES_JSON"` |
-| <a id="s-23d7da2e59"></a>`owner` | `"riverhog-server"` |
+| <a id="s-d1adf7e576"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-8b1df3c62a"></a>`default_expressions` | `["''"]` |
+| <a id="s-484c2fd384"></a>`id` | `"riverhog-server:environment:RIVERHOG_ARCHIVE_PASSPHRASES_JSON"` |
+| <a id="s-5a3e13b794"></a>`input_shape` | `"environment-string"` |
+| <a id="s-893eec5e8f"></a>`name` | `"RIVERHOG_ARCHIVE_PASSPHRASES_JSON"` |
+| <a id="s-322eda2582"></a>`owner` | `"riverhog-server"` |
 
 ## Governing policies
 
-- <a id="pa-a792e3794e"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-ca154d1eea"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/39`
+- `/external_contract/configuration_environment/173`
 
 ### Exact owned JSON
 

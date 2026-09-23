@@ -10,19 +10,19 @@ from tests.workspace import workspace_pyprojects
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SERVER_PROJECTS = {
     Path("riverhog/pyproject.toml"),
-    Path("reference/riverhog/storage/aws/pyproject.toml"),
-    Path("reference/riverhog/storage/backblaze/pyproject.toml"),
-    Path("reference/riverhog/storage/filesystem/pyproject.toml"),
-    Path("reference/stove0/application/server/pyproject.toml"),
-    Path("reference/stove0/observers/ffprobe-sampling/pyproject.toml"),
-    Path("reference/stove0/observers/exiftool/pyproject.toml"),
-    Path("reference/stove0/targets/nvenc-av1-opus/review-sampler/pyproject.toml"),
-    Path("reference/stove0/targets/nvenc-av1-opus/target/pyproject.toml"),
-    Path("reference/stove0/targets/opus/target/pyproject.toml"),
-    Path("reference/stove0/targets/opus/review-sampler/pyproject.toml"),
-    Path("reference/stove0/targets/review/materialize-target/pyproject.toml"),
-    Path("reference/stove0/targets/review/rclone-effect-target/pyproject.toml"),
-    Path("reference/stove0/targets/review/support/pyproject.toml"),
+    Path("some-implementations/riverhog/storage/aws/pyproject.toml"),
+    Path("some-implementations/riverhog/storage/backblaze/pyproject.toml"),
+    Path("some-implementations/riverhog/storage/filesystem/pyproject.toml"),
+    Path("some-implementations/stove0/application/server/pyproject.toml"),
+    Path("some-implementations/stove0/observers/ffprobe-sampling/pyproject.toml"),
+    Path("some-implementations/stove0/observers/exiftool/pyproject.toml"),
+    Path("some-implementations/stove0/review0/samplers/nvenc-av1-opus/pyproject.toml"),
+    Path("some-implementations/stove0/targets/nvenc-av1-opus/target/pyproject.toml"),
+    Path("some-implementations/stove0/targets/opus/target/pyproject.toml"),
+    Path("some-implementations/stove0/review0/samplers/opus/pyproject.toml"),
+    Path("some-implementations/stove0/review0/materialize-target/pyproject.toml"),
+    Path("some-implementations/stove0/review0/rclone-effect-target/pyproject.toml"),
+    Path("some-implementations/stove0/review0/support/pyproject.toml"),
 }
 
 
@@ -38,15 +38,15 @@ def test_reuse_policy_assigns_an_apache_default_and_narrow_server_overrides() ->
     }
     assert annotations[1]["path"] == [
         "riverhog/**",
-        "reference/riverhog/storage/aws/**",
-        "reference/riverhog/storage/backblaze/**",
-        "reference/riverhog/storage/filesystem/**",
-        "reference/stove0/application/server/**",
-        "reference/stove0/observers/exiftool/**",
-        "reference/stove0/observers/ffprobe-sampling/**",
-        "reference/stove0/targets/nvenc-av1-opus/**",
-        "reference/stove0/targets/opus/**",
-        "reference/stove0/targets/review/**",
+        "some-implementations/riverhog/storage/aws/**",
+        "some-implementations/riverhog/storage/backblaze/**",
+        "some-implementations/riverhog/storage/filesystem/**",
+        "some-implementations/stove0/application/server/**",
+        "some-implementations/stove0/observers/exiftool/**",
+        "some-implementations/stove0/observers/ffprobe-sampling/**",
+        "some-implementations/stove0/targets/nvenc-av1-opus/**",
+        "some-implementations/stove0/targets/opus/**",
+        "some-implementations/stove0/review0/**",
     ]
     assert annotations[1]["SPDX-License-Identifier"] == "CAL-1.0"
     assert annotations[2]["path"] == [
@@ -85,7 +85,9 @@ def test_every_workspace_distribution_uses_the_canonical_build_system() -> None:
 
 def test_recovery_tool_is_independent_and_advertised() -> None:
     config = tomllib.loads(
-        (REPO_ROOT / "reference/riverhog/recovery/pyproject.toml").read_text(encoding="utf-8")
+        (REPO_ROOT / "some-implementations/riverhog/recovery/pyproject.toml").read_text(
+            encoding="utf-8"
+        )
     )
     architecture = " ".join(
         (REPO_ROOT / "docs/architecture.md").read_text(encoding="utf-8").split()
@@ -103,7 +105,9 @@ def test_recovery_tool_is_independent_and_advertised() -> None:
     )
     assert contracts["project"]["dependencies"] == ["riverhog-canonical-json>=0.1,<0.2"]
     assert contracts["project"]["license"] == "Apache-2.0"
-    assert config["project"]["scripts"] == {"riverhog-recover": "riverhog_recover.cli:main"}
+    assert config["project"]["scripts"] == {
+        "a-riverhog-recovery-tool": "a_riverhog_recovery_tool.cli:main"
+    }
     assert "permissively licensed independent recovery tool" in architecture
     assert "archives remain recoverable with standard tools" in architecture
 
@@ -111,17 +115,19 @@ def test_recovery_tool_is_independent_and_advertised() -> None:
 def test_published_images_carry_source_and_license_identity() -> None:
     images = {
         "riverhog/Dockerfile": "CAL-1.0",
-        "reference/riverhog/ingress/ftp/Dockerfile": "Apache-2.0",
-        "reference/riverhog/storage/aws/Dockerfile": "CAL-1.0",
-        "reference/riverhog/storage/backblaze/Dockerfile": "CAL-1.0",
-        "reference/stove0/application/server/Dockerfile": "CAL-1.0",
-        "reference/stove0/observers/ffprobe-sampling/Dockerfile": "CAL-1.0",
-        "reference/stove0/observers/exiftool/Dockerfile": "CAL-1.0",
-        "reference/stove0/targets/nvenc-av1-opus/Dockerfile": "CAL-1.0",
-        "reference/stove0/targets/opus/Dockerfile": "CAL-1.0",
-        "reference/stove0/targets/review/materialize-target/Dockerfile": "CAL-1.0",
-        "reference/stove0/targets/review/rclone-effect-target/Dockerfile": "CAL-1.0",
-        "reference/riverhog/applications/mango-fish/Dockerfile": "Apache-2.0",
+        "some-implementations/riverhog/ingress/ftp/Dockerfile": "Apache-2.0",
+        "some-implementations/riverhog/storage/aws/Dockerfile": "CAL-1.0",
+        "some-implementations/riverhog/storage/backblaze/Dockerfile": "CAL-1.0",
+        "some-implementations/stove0/application/server/Dockerfile": "CAL-1.0",
+        "some-implementations/stove0/observers/ffprobe-sampling/Dockerfile": "CAL-1.0",
+        "some-implementations/stove0/observers/exiftool/Dockerfile": "CAL-1.0",
+        "some-implementations/stove0/targets/nvenc-av1-opus/Dockerfile": "CAL-1.0",
+        "some-implementations/stove0/targets/opus/Dockerfile": "CAL-1.0",
+        "some-implementations/stove0/review0/materialize-target/Dockerfile": "CAL-1.0",
+        "some-implementations/stove0/review0/rclone-effect-target/Dockerfile": "CAL-1.0",
+        (
+            "some-implementations/riverhog/applications/a-riverhog-event-relay/Dockerfile"
+        ): "Apache-2.0",
     }
     for relative, expected_license in images.items():
         dockerfile = (REPO_ROOT / relative).read_text(encoding="utf-8")
@@ -134,13 +140,13 @@ def test_published_images_carry_source_and_license_identity() -> None:
 
 
 def test_standalone_runtime_tools_preserve_their_exact_attribution_text() -> None:
-    exiftool = (REPO_ROOT / "reference/stove0/observers/exiftool/Dockerfile").read_text(
+    exiftool = (REPO_ROOT / "some-implementations/stove0/observers/exiftool/Dockerfile").read_text(
         encoding="utf-8"
     )
     review = (
-        REPO_ROOT / "reference/stove0/targets/review/rclone-effect-target/Dockerfile"
+        REPO_ROOT / "some-implementations/stove0/review0/rclone-effect-target/Dockerfile"
     ).read_text(encoding="utf-8")
-    av1 = (REPO_ROOT / "reference/stove0/targets/nvenc-av1-opus/Dockerfile").read_text(
+    av1 = (REPO_ROOT / "some-implementations/stove0/targets/nvenc-av1-opus/Dockerfile").read_text(
         encoding="utf-8"
     )
 
@@ -161,18 +167,18 @@ def test_every_first_party_image_build_requests_an_sbom_attestation() -> None:
 
     image_targets = [
         "riverhog",
-        "riverhog-ftp-adapter",
-        "riverhog-storage-adapter-aws",
-        "riverhog-storage-adapter-backblaze",
-        "riverhog-storage-adapter-filesystem",
+        "a-riverhog-ftp-spool",
+        "a-riverhog-aws-store",
+        "a-riverhog-b2-store",
+        "a-riverhog-filesystem-store",
         "stove0",
-        "stove0-ffprobe-sampling-observer",
-        "stove0-exiftool-observer",
-        "stove0-nvenc-av1-opus-target",
-        "stove0-opus-target",
-        "stove0-review-materialize-target",
-        "stove0-review-rclone-effect-target",
-        "mango-fish",
+        "a-stove0-ffprobe-sampling-observer",
+        "a-stove0-exiftool-observer",
+        "a-stove0-nvenc-av1-opus-target",
+        "a-stove0-opus-target",
+        "a-review0-materializer",
+        "a-review0-rclone-target",
+        "a-riverhog-event-relay",
         "test",
     ]
     sbom_generator = (

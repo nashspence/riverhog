@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Optional nonnormative projection support for Stove0 media-archive references.
+Shared media archive projection support for Stove0.
 
 Contract elements: **24** · Extent decisions: **0**
 

@@ -22,7 +22,7 @@ CANONICAL_UUID_URN_PATTERN = (
 )
 PROVENANCE_CONTRACT_ENTRY_POINT_GROUP = "riverhog.provenance-contracts"
 PROVENANCE_CONTRACT_BINDING_FORMAT = "riverhog-provenance-contract-binding/v1"
-PROVENANCE_CONTRACT_REFERENCE_FORMAT = "riverhog-provenance-contract-reference/v1"
+PROVENANCE_CONTRACT_REFERENCE_FORMAT = "riverhog-provenance-contract-some-implementations/v1"
 PROVENANCE_SCHEMA_DIALECT = "https://json-schema.org/draft/2020-12/schema"
 PROVENANCE_SCHEMA_FORMAT_POLICY = "annotation-only"
 SHA256_PATTERN = r"^[0-9a-f]{64}$"

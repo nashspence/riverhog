@@ -12,7 +12,7 @@ Entry-point extension boundary owned by stove0-observer-client.
 
 - [stove0-observer-client · Python](../authorities/stove0-observer-client/python/index.md)
 
-## Checked-in nonnormative implementations
+## Supplied implementations
 
-- [stove0-media-metadata-observer-contracts](../evidence/relationships/edges.md#re-c903afedb9) — Optional nonnormative media-metadata contract reference for Stove0 observers.
-- [stove0-media-sampling-observer-contracts](../evidence/relationships/edges.md#re-3deafed4a9) — Optional nonnormative media-sampling contract reference for Stove0 observers.
+- [stove0-media-metadata-observer-contracts](../evidence/relationships/edges.md#re-c903afedb9) — Shared media metadata observation contracts for Stove0.
+- [stove0-media-sampling-observer-contracts](../evidence/relationships/edges.md#re-3deafed4a9) — Shared media sampling contracts for Stove0.

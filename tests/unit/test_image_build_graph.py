@@ -19,18 +19,18 @@ MISE_IMAGE = (
 )
 MISE_CONTAINER_TOOLS = {
     "riverhog": {"uv"},
-    "riverhog-ftp-adapter": {"uv"},
-    "riverhog-storage-adapter-aws": {"uv"},
-    "riverhog-storage-adapter-backblaze": {"uv"},
-    "riverhog-storage-adapter-filesystem": {"uv"},
+    "a-riverhog-ftp-spool": {"uv"},
+    "a-riverhog-aws-store": {"uv"},
+    "a-riverhog-b2-store": {"uv"},
+    "a-riverhog-filesystem-store": {"uv"},
     "stove0": {"uv"},
-    "stove0-exiftool-observer": {"http:exiftool", "uv"},
-    "stove0-ffprobe-sampling-observer": {"uv"},
-    "stove0-nvenc-av1-opus-target": {"uv"},
-    "stove0-opus-target": {"uv"},
-    "stove0-review-materialize-target": {"uv"},
-    "stove0-review-rclone-effect-target": {"rclone", "uv"},
-    "mango-fish": {"uv"},
+    "a-stove0-exiftool-observer": {"http:exiftool", "uv"},
+    "a-stove0-ffprobe-sampling-observer": {"uv"},
+    "a-stove0-nvenc-av1-opus-target": {"uv"},
+    "a-stove0-opus-target": {"uv"},
+    "a-review0-materializer": {"uv"},
+    "a-review0-rclone-target": {"rclone", "uv"},
+    "a-riverhog-event-relay": {"uv"},
     "test": {"age", "http:exiftool", "minisign", "uv"},
 }
 NON_ROOT_RUNTIME_IMAGES = set(MISE_CONTAINER_TOOLS) - {"test"}
@@ -46,99 +46,118 @@ IMAGE_CONTRACTS = {
             ("riverhog/compose.yaml", "app"),
         ),
     },
-    "riverhog-ftp-adapter": {
-        "dockerfile": "reference/riverhog/ingress/ftp/Dockerfile",
-        "tag": "riverhog-ftp-adapter:dev",
-        "title": "Riverhog FTP adapter",
+    "a-riverhog-ftp-spool": {
+        "dockerfile": "some-implementations/riverhog/ingress/ftp/Dockerfile",
+        "tag": "a-riverhog-ftp-spool:dev",
+        "title": "Riverhog FTP spool",
         "license": "Apache-2.0",
-        "compose": (("reference/riverhog/ingress/ftp/compose.yaml", "ftp-adapter"),),
+        "compose": (("some-implementations/riverhog/ingress/ftp/compose.yaml", "ftp-spool"),),
     },
-    "riverhog-storage-adapter-aws": {
-        "dockerfile": "reference/riverhog/storage/aws/Dockerfile",
-        "tag": "riverhog-storage-adapter-aws:dev",
-        "title": "Riverhog AWS storage adapter",
+    "a-riverhog-aws-store": {
+        "dockerfile": "some-implementations/riverhog/storage/aws/Dockerfile",
+        "tag": "a-riverhog-aws-store:dev",
+        "title": "Riverhog AWS store",
         "license": "CAL-1.0",
         "compose": (),
     },
-    "riverhog-storage-adapter-backblaze": {
-        "dockerfile": "reference/riverhog/storage/backblaze/Dockerfile",
-        "tag": "riverhog-storage-adapter-backblaze:dev",
-        "title": "Riverhog Backblaze storage adapter",
+    "a-riverhog-b2-store": {
+        "dockerfile": "some-implementations/riverhog/storage/backblaze/Dockerfile",
+        "tag": "a-riverhog-b2-store:dev",
+        "title": "Riverhog B2 store",
         "license": "CAL-1.0",
         "compose": (),
     },
-    "riverhog-storage-adapter-filesystem": {
-        "dockerfile": "reference/riverhog/storage/filesystem/Dockerfile",
-        "tag": "riverhog-storage-adapter-filesystem:dev",
-        "title": "Riverhog filesystem storage adapter",
+    "a-riverhog-filesystem-store": {
+        "dockerfile": "some-implementations/riverhog/storage/filesystem/Dockerfile",
+        "tag": "a-riverhog-filesystem-store:dev",
+        "title": "Riverhog filesystem store",
         "license": "CAL-1.0",
         "compose": (("riverhog/compose.yaml", "filesystem-cache-adapter"),),
     },
     "stove0": {
-        "dockerfile": "reference/stove0/application/server/Dockerfile",
+        "dockerfile": "some-implementations/stove0/application/server/Dockerfile",
         "tag": "stove0:dev",
-        "compose_target": "reference-composition",
+        "compose_target": "bundled-components",
         "title": "stove0",
         "license": "CAL-1.0",
         "compose": (
-            ("reference/stove0/application/compose.yaml", "state"),
-            ("reference/stove0/application/compose.yaml", "api"),
-            ("reference/stove0/application/compose.yaml", "controller"),
-            ("reference/stove0/application/compose.yaml", "worker"),
+            ("some-implementations/stove0/application/compose.yaml", "state"),
+            ("some-implementations/stove0/application/compose.yaml", "api"),
+            ("some-implementations/stove0/application/compose.yaml", "controller"),
+            ("some-implementations/stove0/application/compose.yaml", "worker"),
         ),
     },
-    "stove0-exiftool-observer": {
-        "dockerfile": "reference/stove0/observers/exiftool/Dockerfile",
-        "tag": "stove0-exiftool-observer:dev",
+    "a-stove0-exiftool-observer": {
+        "dockerfile": "some-implementations/stove0/observers/exiftool/Dockerfile",
+        "tag": "a-stove0-exiftool-observer:dev",
         "title": "stove0 ExifTool observer",
         "license": "CAL-1.0",
-        "compose": (("reference/stove0/application/compose.yaml", "exiftool-observer"),),
+        "compose": (
+            ("some-implementations/stove0/application/compose.yaml", "a-stove0-exiftool-observer"),
+        ),
     },
-    "stove0-ffprobe-sampling-observer": {
-        "dockerfile": "reference/stove0/observers/ffprobe-sampling/Dockerfile",
-        "tag": "stove0-ffprobe-sampling-observer:dev",
+    "a-stove0-ffprobe-sampling-observer": {
+        "dockerfile": "some-implementations/stove0/observers/ffprobe-sampling/Dockerfile",
+        "tag": "a-stove0-ffprobe-sampling-observer:dev",
         "title": "stove0 FFprobe sampling observer",
         "license": "CAL-1.0",
-        "compose": (("reference/stove0/application/compose.yaml", "ffprobe-sampling-observer"),),
+        "compose": (
+            (
+                "some-implementations/stove0/application/compose.yaml",
+                "a-stove0-ffprobe-sampling-observer",
+            ),
+        ),
     },
-    "stove0-nvenc-av1-opus-target": {
-        "dockerfile": "reference/stove0/targets/nvenc-av1-opus/Dockerfile",
-        "tag": "stove0-nvenc-av1-opus-target:dev",
+    "a-stove0-nvenc-av1-opus-target": {
+        "dockerfile": "some-implementations/stove0/targets/nvenc-av1-opus/Dockerfile",
+        "tag": "a-stove0-nvenc-av1-opus-target:dev",
         "title": "stove0 NVENC AV1 + Opus target",
         "license": "CAL-1.0",
         "compose": (
-            ("reference/stove0/application/compose.yaml", "nvenc-av1-opus-target"),
-            ("reference/stove0/application/compose.yaml", "nvenc-av1-opus-review-sampler"),
+            (
+                "some-implementations/stove0/application/compose.yaml",
+                "a-stove0-nvenc-av1-opus-target",
+            ),
+            (
+                "some-implementations/stove0/application/compose.yaml",
+                "a-review0-nvenc-av1-opus-sampler",
+            ),
         ),
     },
-    "stove0-opus-target": {
-        "dockerfile": "reference/stove0/targets/opus/Dockerfile",
-        "tag": "stove0-opus-target:dev",
+    "a-stove0-opus-target": {
+        "dockerfile": "some-implementations/stove0/targets/opus/Dockerfile",
+        "tag": "a-stove0-opus-target:dev",
         "title": "stove0 Opus target",
         "license": "CAL-1.0",
         "compose": (
-            ("reference/stove0/application/compose.yaml", "opus-target"),
-            ("reference/stove0/application/compose.yaml", "opus-review-sampler"),
+            ("some-implementations/stove0/application/compose.yaml", "a-stove0-opus-target"),
+            ("some-implementations/stove0/application/compose.yaml", "a-review0-opus-sampler"),
         ),
     },
-    "stove0-review-materialize-target": {
-        "dockerfile": "reference/stove0/targets/review/materialize-target/Dockerfile",
-        "tag": "stove0-review-materialize-target:dev",
-        "title": "stove0 review materialize target",
+    "a-review0-materializer": {
+        "dockerfile": "some-implementations/stove0/review0/materialize-target/Dockerfile",
+        "tag": "a-review0-materializer:dev",
+        "title": "Review0 materializer",
         "license": "CAL-1.0",
-        "compose": (("reference/stove0/application/compose.yaml", "review-materialize-target"),),
+        "compose": (
+            ("some-implementations/stove0/application/compose.yaml", "a-review0-materializer"),
+        ),
     },
-    "stove0-review-rclone-effect-target": {
-        "dockerfile": "reference/stove0/targets/review/rclone-effect-target/Dockerfile",
-        "tag": "stove0-review-rclone-effect-target:dev",
-        "title": "stove0 rclone review-effect target",
+    "a-review0-rclone-target": {
+        "dockerfile": "some-implementations/stove0/review0/rclone-effect-target/Dockerfile",
+        "tag": "a-review0-rclone-target:dev",
+        "title": "Review0 rclone target",
         "license": "CAL-1.0",
-        "compose": (("reference/stove0/application/compose.yaml", "review-rclone-effect-target"),),
+        "compose": (
+            ("some-implementations/stove0/application/compose.yaml", "a-review0-rclone-target"),
+        ),
     },
-    "mango-fish": {
-        "dockerfile": "reference/riverhog/applications/mango-fish/Dockerfile",
-        "tag": "mango-fish:dev",
-        "title": "Mango Fish",
+    "a-riverhog-event-relay": {
+        "dockerfile": (
+            "some-implementations/riverhog/applications/a-riverhog-event-relay/Dockerfile"
+        ),
+        "tag": "a-riverhog-event-relay:dev",
+        "title": "Riverhog event relay",
         "license": "Apache-2.0",
         "compose": (),
     },
@@ -367,7 +386,7 @@ def test_mise_artifacts_match_each_image_role() -> None:
     for binary in ("age", "age-keygen", "age-plugin-batchpass", "minisign", "uv"):
         assert f'"$(mise which {binary})" /opt/riverhog-tools/bin/{binary}' in test
     assert 'test "$(exiftool -ver)" = "13.59"' in test
-    observer = (REPO_ROOT / IMAGE_CONTRACTS["stove0-exiftool-observer"]["dockerfile"]).read_text(
+    observer = (REPO_ROOT / IMAGE_CONTRACTS["a-stove0-exiftool-observer"]["dockerfile"]).read_text(
         encoding="utf-8"
     )
     assert 'test "$(exiftool -ver)" = "13.59"' in observer
@@ -383,10 +402,10 @@ def test_production_images_use_the_common_unprivileged_runtime_identity() -> Non
             runtime_base = dockerfile.split(" AS runtime-base", 1)[1].split("\nFROM ", 1)[0]
             assert "\nUSER 65532:65532\n" in runtime_base
 
-    mango_fish = (REPO_ROOT / IMAGE_CONTRACTS["mango-fish"]["dockerfile"]).read_text(
-        encoding="utf-8"
-    )
-    assert "install -d -o 65532 -g 65532 -m 0700 /state" in mango_fish
+    a_riverhog_event_relay = (
+        REPO_ROOT / IMAGE_CONTRACTS["a-riverhog-event-relay"]["dockerfile"]
+    ).read_text(encoding="utf-8")
+    assert "install -d -o 65532 -g 65532 -m 0700 /state" in a_riverhog_event_relay
 
     riverhog = (REPO_ROOT / IMAGE_CONTRACTS["riverhog"]["dockerfile"]).read_text(encoding="utf-8")
     assert "HOME=/tmp" in riverhog
@@ -410,14 +429,14 @@ def test_container_python_ownership_matches_the_supported_runtime_minor() -> Non
     assert observed_python_bases == {supported_minor}
 
     av1_dockerfile = (
-        REPO_ROOT / IMAGE_CONTRACTS["stove0-nvenc-av1-opus-target"]["dockerfile"]
+        REPO_ROOT / IMAGE_CONTRACTS["a-stove0-nvenc-av1-opus-target"]["dockerfile"]
     ).read_text(encoding="utf-8")
     assert "assert sys.version_info[:2] == (3, 12)" in av1_dockerfile
 
 
 def test_av1_source_builds_verify_the_exact_requested_commits() -> None:
     dockerfile = (
-        REPO_ROOT / IMAGE_CONTRACTS["stove0-nvenc-av1-opus-target"]["dockerfile"]
+        REPO_ROOT / IMAGE_CONTRACTS["a-stove0-nvenc-av1-opus-target"]["dockerfile"]
     ).read_text(encoding="utf-8")
 
     assert 'test "$(git rev-parse HEAD)" = "${NV_CODEC_HEADERS_REF}"' in dockerfile
@@ -446,40 +465,38 @@ def test_compose_build_services_match_the_canonical_bake_graph() -> None:
             assert build.get("target") == contract.get("compose_target")
 
 
-def test_stove0_reference_validators_are_compose_composition_only() -> None:
+def test_stove0_supplied_validators_are_compose_composition_only() -> None:
     dockerfile = (REPO_ROOT / IMAGE_CONTRACTS["stove0"]["dockerfile"]).read_text(encoding="utf-8")
     generic_build, composition_and_runtime = dockerfile.split(
-        "FROM build AS reference-composition-build", 1
+        "FROM build AS bundled-components-build", 1
     )
     composition_build, runtime_stages = composition_and_runtime.split("FROM python:3.12-slim@", 1)
     composition_runtime, generic_runtime = runtime_stages.split("FROM runtime-base AS runtime", 1)
 
-    assert "reference/stove0/observers/" not in generic_build
-    assert "reference/stove0/targets/" not in generic_build
+    assert "some-implementations/stove0/observers/" not in generic_build
+    assert "some-implementations/stove0/targets/" not in generic_build
     assert "--package stove0-server --no-dev --no-editable" in generic_build
     assert "stove0-media-metadata-observer-contracts" not in generic_build
     assert "stove0-media-sampling-observer-contracts" not in generic_build
 
     assert (
-        "COPY reference/stove0/observers/contracts/media-metadata "
-        "reference/stove0/observers/contracts/media-metadata"
+        "COPY some-implementations/stove0/observers/contracts/media-metadata "
+        "some-implementations/stove0/observers/contracts/media-metadata"
     ) in composition_build
     assert (
-        "COPY reference/stove0/observers/contracts/media-sampling "
-        "reference/stove0/observers/contracts/media-sampling"
+        "COPY some-implementations/stove0/observers/contracts/media-sampling "
+        "some-implementations/stove0/observers/contracts/media-sampling"
     ) in composition_build
     assert "--package stove0-media-metadata-observer-contracts" in composition_build
     assert "--package stove0-media-sampling-observer-contracts" in composition_build
 
-    assert "FROM runtime-base AS reference-composition" in composition_runtime
-    assert (
-        'io.github.nashspence.riverhog.composition="reference-composition"' in composition_runtime
-    )
+    assert "FROM runtime-base AS bundled-components" in composition_runtime
+    assert 'io.github.nashspence.riverhog.composition="bundled-components"' in composition_runtime
     assert 'io.github.nashspence.riverhog.release-role="product"' not in composition_runtime
-    assert "COPY --from=reference-composition-build /opt/venv /opt/venv" in (composition_runtime)
-    assert 'io.github.nashspence.riverhog.release-role="reference"' in generic_runtime
+    assert "COPY --from=bundled-components-build /opt/venv /opt/venv" in (composition_runtime)
+    assert 'io.github.nashspence.riverhog.release-role="application"' in generic_runtime
     assert "COPY --from=build /opt/venv /opt/venv" in generic_runtime
-    assert "reference-composition-build" not in generic_runtime
+    assert "bundled-components-build" not in generic_runtime
 
 
 def test_github_image_matrix_uses_bounded_per_image_bake_caches() -> None:
@@ -495,9 +512,9 @@ def test_github_image_matrix_uses_bounded_per_image_bake_caches() -> None:
         "uses": "docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c",
         "with": {"version": "v0.36.0", "driver": "docker"},
     }
-    assert steps["Install Mango Fish smoke toolchain"] == {
-        "name": "Install Mango Fish smoke toolchain",
-        "if": "matrix.target == 'mango-fish'",
+    assert steps["Install Riverhog event relay smoke toolchain"] == {
+        "name": "Install Riverhog event relay smoke toolchain",
+        "if": "matrix.target == 'a-riverhog-event-relay'",
         "uses": "jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14",
         "with": {"install_args": "python"},
     }
@@ -527,8 +544,8 @@ def test_github_image_matrix_uses_bounded_per_image_bake_caches() -> None:
             ),
         },
     }
-    assert steps["Smoke Mango Fish image"] == {
-        "name": "Smoke Mango Fish image",
-        "if": "matrix.target == 'mango-fish'",
-        "run": "make mango-fish-smoke",
+    assert steps["Smoke Riverhog event relay image"] == {
+        "name": "Smoke Riverhog event relay image",
+        "if": "matrix.target == 'a-riverhog-event-relay'",
+        "run": "make a-riverhog-event-relay-smoke",
     }

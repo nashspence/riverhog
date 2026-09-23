@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "review0-target-lib"
+version = "0.1.0"
+description = "Shared runtime support for Review0 targets."
+requires-python = ">=3.12"
+license = "CAL-1.0"
+license-files = ["LICENSE"]
+readme = { text = "Shared runtime support for Review0 targets.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+authors = [{ name = "Nash Spence" }]
+maintainers = [{ name = "Nash Spence" }]
+classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.12", "Typing :: Typed"]
+urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
+dependencies = [
+  "fastapi>=0.111,<1.0",
+  "http-api-contracts>=0.1,<0.2",
+  "jsonschema>=4.25,<5.0",
+  "pydantic>=2.7,<3.0",
+  "riverhog-client>=0.1,<0.2",
+  "riverhog-protocol>=0.1,<0.2",
+  "stove0-protocol>=0.1,<0.2",
+  "review0-target-contracts>=0.1,<0.2",
+  "review0-sampler-client>=0.1,<0.2",
+  "review0-sampler-protocol>=0.1,<0.2",
+  "stove0-target-support>=0.1,<0.2",
+]
+
+[tool.uv.sources]
+http-api-contracts = { workspace = true }
+riverhog-client = { workspace = true }
+riverhog-protocol = { workspace = true }
+stove0-protocol = { workspace = true }
+review0-target-contracts = { workspace = true }
+review0-sampler-client = { workspace = true }
+review0-sampler-protocol = { workspace = true }
+stove0-target-support = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/review0_target_lib"]

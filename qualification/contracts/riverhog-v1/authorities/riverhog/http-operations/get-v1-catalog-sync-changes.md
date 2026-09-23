@@ -83,7 +83,7 @@ Exact evidence groups for this contract element:
 
 ### Related interface records
 
-- [piggity catalog-sync changes](../../piggity/cli/piggity-catalog-sync-changes.md)
+- [a-riverhog-cli catalog-sync changes](../../a-riverhog-cli/cli/a-riverhog-cli-catalog-sync-changes.md)
 - [riverhog_client.ApiClient.list_catalog_sync_changes](../../riverhog-client/python/riverhog-client-apiclient-list-catalog-sync-changes.md)
 
 ### Referenced contract elements
@@ -127,12 +127,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "catalog-sync changes",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/catalog-sync/changes/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/catalog-sync/changes/v1",
       "source": {
-        "line": 813,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 815,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "catalog_sync_changes_cmd"
       }
     }

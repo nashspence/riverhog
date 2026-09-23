@@ -5,10 +5,10 @@ import json
 from types import SimpleNamespace
 from typing import Any
 
+import a_riverhog_cli.main
 import httpx
-import piggity.main
 import pytest
-from piggity.main import app as cli_app
+from a_riverhog_cli.main import app as cli_app
 from pydantic import TypeAdapter
 from riverhog_api.app import create_app
 from riverhog_api.schemas.collections import CollectionTagSelectorBatch
@@ -50,7 +50,7 @@ def test_client_and_cli_send_large_valid_selectors_in_a_json_body(
         base_url=api.base_url,
         transport=httpx.MockTransport(handle),
     )
-    monkeypatch.setattr(piggity.main, "client", lambda: api)
+    monkeypatch.setattr(a_riverhog_cli.main, "client", lambda: api)
     try:
         assert api.list_collections(tags=valid_large_tags) == {"collections": []}
         args = ["collection", "list", "--json"]
@@ -145,7 +145,7 @@ def test_tag_membership_selector_uses_json_through_client_cli_and_http(
         base_url=api.base_url,
         transport=httpx.MockTransport(handle),
     )
-    monkeypatch.setattr(piggity.main, "client", lambda: api)
+    monkeypatch.setattr(a_riverhog_cli.main, "client", lambda: api)
     try:
         assert (
             api.collection_contains_tag(42, tag=tag, revision=1, tag_set_identity=identity)["tag"]

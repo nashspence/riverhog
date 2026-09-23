@@ -24,7 +24,7 @@ Portable Gogurt marker, routing, action, and watch semantics.
 | <a id="s-7396d330e7"></a>`publication_identity` | `{"coordinate":"gogurt-core","kind":"python-distribution"}` |
 | <a id="s-1a41c5d00c"></a>`requires_python` | `">=3.12"` |
 | <a id="s-01b66a1a3a"></a>`role` | `"reusable_library"` |
-| <a id="s-7f695858d5"></a>`source` | `"reference/gogurt/packages/core/pyproject.toml"` |
+| <a id="s-7f695858d5"></a>`source` | `"some-implementations/gogurt/packages/core/pyproject.toml"` |
 
 ## Existing ownership context
 
@@ -48,7 +48,7 @@ Publication preserves these existing component authorities; it does not reclassi
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [release-distribution:gogurt-core](../../../evidence/sources/authorities.md#src-2850fdf46b) — [reference/gogurt/packages/core/pyproject.toml](../../../../../../reference/gogurt/packages/core/pyproject.toml)
+- [release-distribution:gogurt-core](../../../evidence/sources/authorities.md#src-2850fdf46b) — [some-implementations/gogurt/packages/core/pyproject.toml](../../../../../../some-implementations/gogurt/packages/core/pyproject.toml)
 - [release-publication:planner](../../../evidence/sources/authorities.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
 - [release:release.toml](../../../evidence/sources/authorities.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
 
@@ -63,7 +63,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fd96ab5e76adbb11e3cab4255a5acebccd5405ead67acbd7b562832f2f37ea35 -->
+<!-- exact-contract-value: 7229655eda024f67e37f9f9e7415347198a9719868cbd93255ed165449931db0 -->
 
 ```json
 {
@@ -87,7 +87,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "requires_python": ">=3.12",
   "role": "reusable_library",
-  "source": "reference/gogurt/packages/core/pyproject.toml"
+  "source": "some-implementations/gogurt/packages/core/pyproject.toml"
 }
 ```
 

@@ -1048,7 +1048,7 @@ def test_runtime_environment_uses_scoped_credentials_and_cloudfront(
     assert "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY=" in riverhog_text
     compose_names = {line.partition("=")[0] for line in text.splitlines()}
     assert compose_names - riverhog_names == {
-        "RIVERHOG_AWS_STORAGE_ADAPTER_CLOUDFRONT_PRIVATE_KEY_HOST_PATH",
+        "A_RIVERHOG_AWS_STORE_CLOUDFRONT_PRIVATE_KEY_HOST_PATH",
         "RIVERHOG_COMPOSE_ENV_FILE",
         "RIVERHOG_QUALIFICATION_AWS_ADAPTER_ENV_FILE",
         "RIVERHOG_QUALIFICATION_B2_ARCHIVE_ADAPTER_ENV_FILE",
@@ -1061,21 +1061,13 @@ def test_runtime_environment_uses_scoped_credentials_and_cloudfront(
     assert "BACKBLAZE_STORAGE_ADAPTER" not in riverhog_text
     assert "STORAGE_CLASS" not in riverhog_text
     assert "RESTORE_TIER" not in riverhog_text
-    assert 'RIVERHOG_AWS_STORAGE_ADAPTER_ARCHIVE_STORAGE_CLASS="DEEP_ARCHIVE"' in aws_adapter
-    assert 'RIVERHOG_AWS_STORAGE_ADAPTER_RESTORE_TIER="Bulk"' in aws_adapter
-    assert 'RIVERHOG_AWS_STORAGE_ADAPTER_SESSION_TOKEN="aws-session"' in aws_adapter
-    assert "RIVERHOG_AWS_STORAGE_ADAPTER_CLOUDFRONT_BASE_URL=" in aws_adapter
-    assert (
-        'RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_SECRET_ACCESS_KEY="b2-archive-secret"'
-        in b2_archive_adapter
-    )
-    assert (
-        f'RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_ROOT_PREFIX="{checkpoint.namespace}"'
-        in b2_archive_adapter
-    )
-    assert (
-        'RIVERHOG_BACKBLAZE_STORAGE_ADAPTER_SECRET_ACCESS_KEY="b2-retrieval-cache-secret"'
-    ) in b2_cache_adapter
+    assert 'A_RIVERHOG_AWS_STORE_ARCHIVE_STORAGE_CLASS="DEEP_ARCHIVE"' in aws_adapter
+    assert 'A_RIVERHOG_AWS_STORE_RESTORE_TIER="Bulk"' in aws_adapter
+    assert 'A_RIVERHOG_AWS_STORE_SESSION_TOKEN="aws-session"' in aws_adapter
+    assert "A_RIVERHOG_AWS_STORE_CLOUDFRONT_BASE_URL=" in aws_adapter
+    assert 'A_RIVERHOG_B2_STORE_SECRET_ACCESS_KEY="b2-archive-secret"' in b2_archive_adapter
+    assert f'A_RIVERHOG_B2_STORE_ROOT_PREFIX="{checkpoint.namespace}"' in b2_archive_adapter
+    assert ('A_RIVERHOG_B2_STORE_SECRET_ACCESS_KEY="b2-retrieval-cache-secret"') in b2_cache_adapter
     assert "AWS_STORAGE_ADAPTER" not in b2_archive_adapter
     assert "BACKBLAZE_STORAGE_ADAPTER" not in aws_adapter
 
@@ -1271,7 +1263,7 @@ def test_official_upload_client_writes_directly_and_resumes_after_interruption(
         ) -> CollectionUploadUnitWorkDocument:
             return self.acquire_collection_upload_session_work(_collection_id).work[0].unit
 
-    monkeypatch.setattr(module.shutil, "which", lambda _name: "/usr/bin/piggity")
+    monkeypatch.setattr(module.shutil, "which", lambda _name: "/usr/bin/a-riverhog-cli")
     monkeypatch.setattr(module.subprocess, "Popen", popen)
     monkeypatch.setattr(module.time, "sleep", lambda _seconds: None)
 

@@ -16,19 +16,19 @@ required_check_integration_id = 15368
 required_checks = [
   "Analyze (actions)",
   "Analyze (python)",
-  "build mango-fish",
+  "build a-review0-materializer",
+  "build a-review0-rclone-target",
+  "build a-riverhog-aws-store",
+  "build a-riverhog-b2-store",
+  "build a-riverhog-event-relay",
+  "build a-riverhog-filesystem-store",
+  "build a-riverhog-ftp-spool",
+  "build a-stove0-exiftool-observer",
+  "build a-stove0-ffprobe-sampling-observer",
+  "build a-stove0-nvenc-av1-opus-target",
+  "build a-stove0-opus-target",
   "build riverhog",
-  "build riverhog-ftp-adapter",
-  "build riverhog-storage-adapter-aws",
-  "build riverhog-storage-adapter-backblaze",
-  "build riverhog-storage-adapter-filesystem",
   "build stove0",
-  "build stove0-exiftool-observer",
-  "build stove0-ffprobe-sampling-observer",
-  "build stove0-nvenc-av1-opus-target",
-  "build stove0-opus-target",
-  "build stove0-review-materialize-target",
-  "build stove0-review-rclone-effect-target",
   "build test",
   "client platform (macos-15)",
   "client platform (ubuntu-24.04)",
@@ -78,74 +78,74 @@ provider_qualification_runtime = "provider-qualification"
 
 [governance.boundary_freeze]
 status = "frozen"
-protected_boundary_sha256 = "a9d263ac82b5d916cb5e2e7e9a4a82615d2b9e42b5db3c9366f4cfda2bc397d2"
+protected_boundary_sha256 = "437bb372d20c5442cfdfa2fe2ed4ae7837dc4f1317e56d912f57e9a2e5b78e4a"
 protected_components = [
   "config-validation",
   "gogurt",
   "gogurt-core",
-  "gogurt-linux-listener-host",
-  "gogurt-linux-mounted-volume",
+  "a-gogurt-linux-listener",
+  "a-gogurt-linux-volume",
   "gogurt-listener-runtime",
-  "gogurt-macos-listener-host",
-  "gogurt-macos-mounted-volume",
+  "a-gogurt-macos-listener",
+  "a-gogurt-macos-volume",
   "gogurt-path-volume-support",
-  "gogurt-windows-listener-host",
-  "gogurt-windows-mounted-volume",
+  "a-gogurt-windows-listener",
+  "a-gogurt-windows-volume",
   "http-api-contracts",
   "lifecycle-events",
-  "mango-fish",
-  "piggity",
+  "a-riverhog-event-relay",
+  "a-riverhog-cli",
   "riverhog-age",
   "riverhog-application-access",
   "riverhog-archive-contracts",
   "riverhog-client",
-  "riverhog-ftp-adapter",
-  "riverhog-ftp-adapter-api-client",
+  "a-riverhog-ftp-spool",
+  "a-riverhog-ftp-spool-client",
   "riverhog-protocol",
   "riverhog-provenance",
   "riverhog-provenance-contracts",
-  "riverhog-provenance-linux-contracts",
-  "riverhog-provenance-linux-observer",
-  "riverhog-provenance-macos-contracts",
-  "riverhog-provenance-macos-observer",
-  "riverhog-provenance-windows-contracts",
-  "riverhog-provenance-windows-observer",
-  "riverhog-recover",
+  "a-riverhog-linux-provenance-contract-lib",
+  "a-riverhog-linux-provenance-observer",
+  "a-riverhog-macos-provenance-contract-lib",
+  "a-riverhog-macos-provenance-observer",
+  "a-riverhog-windows-provenance-contract-lib",
+  "a-riverhog-windows-provenance-observer",
+  "a-riverhog-recovery-tool",
   "riverhog-server",
   "riverhog-storage-adapter-asgi-support",
-  "riverhog-storage-adapter-aws",
-  "riverhog-storage-adapter-backblaze",
-  "riverhog-storage-adapter-filesystem",
+  "a-riverhog-aws-store",
+  "a-riverhog-b2-store",
+  "a-riverhog-filesystem-store",
   "riverhog-storage-adapter-protocol",
   "riverhog-storage-adapter-s3-support",
   "riverhog-storage-adapter-support",
   "state-schema",
   "stove0-api-client",
-  "stove0-client",
-  "stove0-exiftool-observer",
-  "stove0-ffprobe-sampling-observer",
+  "a-stove0-cli",
+  "a-stove0-exiftool-observer",
+  "a-stove0-ffprobe-sampling-observer",
   "stove0-media-archive-target-contracts",
   "stove0-media-archive-target-support",
   "stove0-media-metadata-observer-contracts",
   "stove0-media-sampling-observer-contracts",
-  "stove0-nvenc-av1-opus-review-sampler",
-  "stove0-nvenc-av1-opus-target",
+  "a-review0-nvenc-av1-opus-sampler",
+  "a-stove0-nvenc-av1-opus-target",
   "stove0-observer-client",
   "stove0-observer-protocol",
   "stove0-observer-support",
   "stove0-operator-contracts",
-  "stove0-opus-review-sampler",
-  "stove0-opus-target",
+  "a-review0-opus-sampler",
+  "a-stove0-opus-target",
   "stove0-protocol",
   "stove0-recipe-config",
-  "stove0-review-materialize-target",
-  "stove0-review-planning",
-  "stove0-review-rclone-effect-target",
-  "stove0-review-sampler-client",
-  "stove0-review-sampler-protocol",
-  "stove0-review-sampler-support",
-  "stove0-review-target-contracts",
-  "stove0-review-target-support",
+  "a-review0-materializer",
+  "review0-planner",
+  "a-review0-rclone-target",
+  "review0-sampler-client",
+  "review0-sampler-protocol",
+  "review0-sampler-lib",
+  "review0-target-contracts",
+  "review0-target-lib",
   "stove0-server",
   "stove0-target-client",
   "stove0-target-protocol",
@@ -153,26 +153,26 @@ protected_components = [
   "time-formats",
 ]
 protected_runtime_images = [
-  "mango-fish",
+  "a-riverhog-event-relay",
   "riverhog",
-  "riverhog-ftp-adapter",
-  "riverhog-storage-adapter-aws",
-  "riverhog-storage-adapter-backblaze",
-  "riverhog-storage-adapter-filesystem",
+  "a-riverhog-ftp-spool",
+  "a-riverhog-aws-store",
+  "a-riverhog-b2-store",
+  "a-riverhog-filesystem-store",
   "stove0",
-  "stove0-exiftool-observer",
-  "stove0-ffprobe-sampling-observer",
-  "stove0-nvenc-av1-opus-target",
-  "stove0-opus-target",
-  "stove0-review-materialize-target",
-  "stove0-review-rclone-effect-target",
+  "a-stove0-exiftool-observer",
+  "a-stove0-ffprobe-sampling-observer",
+  "a-stove0-nvenc-av1-opus-target",
+  "a-stove0-opus-target",
+  "a-review0-materializer",
+  "a-review0-rclone-target",
 ]
 
 [contract_authorities]
 repository = "Repository-owned v1 boundary and packaging promises."
 release = "Coordinated v1 compatibility and publication promises."
 riverhog = "The Riverhog service API and its maintained cross-interface operation parity."
-stove0 = "The Stove0 reference application API and its maintained cross-interface operation parity."
+stove0 = "The Stove0 application API and its maintained cross-interface operation parity."
 extent-contract = "Repository-wide v1 external extent principles and rules."
 
 [compatibility]
@@ -199,22 +199,22 @@ structure = { kind = "sql-ddl", dialect = "postgresql", module = "riverhog_core.
 fixtures = ["tests/fixtures/state/v1_0001/riverhog.postgresql.sql"]
 
 [[state.owners]]
-id = "piggity-local"
-distribution = "piggity"
+id = "a-riverhog-cli-local"
+distribution = "a-riverhog-cli"
 format = "state-schema/sqlite"
 head = "v1_0001"
 transition = "forward-migration-chain"
-structure = { kind = "sql-ddl", dialect = "sqlite", module = "piggity.state_migrations.v1_ddl", symbol = "SQLITE_DDL" }
-fixtures = ["tests/fixtures/state/v1_0001/piggity.sqlite.sql"]
+structure = { kind = "sql-ddl", dialect = "sqlite", module = "a_riverhog_cli.state_migrations.v1_ddl", symbol = "SQLITE_DDL" }
+fixtures = ["tests/fixtures/state/v1_0001/a-riverhog-cli.sqlite.sql"]
 
 [[state.owners]]
-id = "mango-fish-cursor"
-distribution = "mango-fish"
+id = "a-riverhog-event-relay-cursor"
+distribution = "a-riverhog-event-relay"
 format = "state-schema/sqlite"
 head = "v1_0001"
 transition = "forward-migration-chain"
-structure = { kind = "sql-ddl", dialect = "sqlite", module = "mango_fish.state_migrations.v1_ddl", symbol = "SQLITE_DDL" }
-fixtures = ["tests/fixtures/state/v1_0001/mango-fish.sqlite.sql"]
+structure = { kind = "sql-ddl", dialect = "sqlite", module = "a_riverhog_event_relay.state_migrations.v1_ddl", symbol = "SQLITE_DDL" }
+fixtures = ["tests/fixtures/state/v1_0001/a-riverhog-event-relay.sqlite.sql"]
 
 [[state.owners]]
 id = "stove0-control"
@@ -249,15 +249,15 @@ fixtures = [
 ]
 
 [[state.owners]]
-id = "riverhog-ftp-custody"
-distribution = "riverhog-ftp-adapter"
-format = "riverhog-ftp-adapter-claim/v1"
+id = "a-riverhog-ftp-spool-custody"
+distribution = "a-riverhog-ftp-spool"
+format = "a-riverhog-ftp-spool-claim/v1"
 head = "v1"
 transition = "backward-readable-documents"
-structure = { kind = "python-contract", module = "riverhog_ftp_adapter.state_contract", symbol = "ftp_custody_state_contract" }
+structure = { kind = "python-contract", module = "a_riverhog_ftp_spool.state_contract", symbol = "ftp_custody_state_contract" }
 fixtures = [
-  "tests/fixtures/state/v1_0001/riverhog-ftp-adapter/claim.json",
-  "tests/fixtures/state/v1_0001/riverhog-ftp-adapter/payload.bin",
+  "tests/fixtures/state/v1_0001/a-riverhog-ftp-spool/claim.json",
+  "tests/fixtures/state/v1_0001/a-riverhog-ftp-spool/payload.bin",
 ]
 
 [[state.owners]]
@@ -298,7 +298,7 @@ lock_format = "pylock.toml"
 managed_python = true
 wheel_only = true
 simple_index_path = "artifacts/v{version}/simple/"
-roots = ["gogurt", "piggity", "riverhog-recover", "stove0-client"]
+roots = ["gogurt", "a-riverhog-cli", "a-riverhog-recovery-tool", "a-stove0-cli"]
 
 [installation.listener]
 root = "gogurt"
@@ -308,19 +308,16 @@ autorun = "explicit-required"
 provider_selection = "explicit"
 provider_identity = "persisted-exactly"
 
-[qualification.gogurt_reference]
-purpose = "Maintainer-selected Gogurt reference conformance."
-linux-x64 = { mounted_volume_distribution = "gogurt-linux-mounted-volume", mounted_volume_provider = "gogurt-linux-mounted-volume", listener_host_distribution = "gogurt-linux-listener-host", listener_host_provider = "gogurt-linux-listener-host" }
-macos-arm64 = { mounted_volume_distribution = "gogurt-macos-mounted-volume", mounted_volume_provider = "gogurt-macos-mounted-volume", listener_host_distribution = "gogurt-macos-listener-host", listener_host_provider = "gogurt-macos-listener-host" }
-windows-x64 = { mounted_volume_distribution = "gogurt-windows-mounted-volume", mounted_volume_provider = "gogurt-windows-mounted-volume", listener_host_distribution = "gogurt-windows-listener-host", listener_host_provider = "gogurt-windows-listener-host" }
+[qualification.gogurt_providers]
+purpose = "Gogurt provider conformance for selected platforms."
+linux-x64 = { mounted_volume_distribution = "a-gogurt-linux-volume", mounted_volume_provider = "a-gogurt-linux-volume", listener_host_distribution = "a-gogurt-linux-listener", listener_host_provider = "a-gogurt-linux-listener" }
+macos-arm64 = { mounted_volume_distribution = "a-gogurt-macos-volume", mounted_volume_provider = "a-gogurt-macos-volume", listener_host_distribution = "a-gogurt-macos-listener", listener_host_provider = "a-gogurt-macos-listener" }
+windows-x64 = { mounted_volume_distribution = "a-gogurt-windows-volume", mounted_volume_provider = "a-gogurt-windows-volume", listener_host_distribution = "a-gogurt-windows-listener", listener_host_provider = "a-gogurt-windows-listener" }
 
-[qualification.storage_reference]
-purpose = "Maintainer-selected storage-adapter reference conformance."
-distributions = ["riverhog-storage-adapter-aws", "riverhog-storage-adapter-backblaze", "riverhog-storage-adapter-filesystem"]
+[qualification.storage_providers]
+purpose = "Storage adapter conformance across selected providers."
+distributions = ["a-riverhog-aws-store", "a-riverhog-b2-store", "a-riverhog-filesystem-store"]
 cases = ["filesystem-retrieval-cache", "b2-archive", "b2-retrieval-cache", "aws-deep-archive", "aws-cloudfront-egress"]
-
-[references]
-policy = "Checked-in references form a closed, tightly scoped, maintainer-selected, nonnormative conformance set."
 
 [publication]
 role_retention = "Publication creates no new product, API, protocol, provider, or direct-consumption promise. Each publication unit retains its exact release role and links to its existing semantic owners."
@@ -342,56 +339,56 @@ end_user_artifact = []
 deployed_implementation = [
   "riverhog",
 ]
-reference_application = [
-  "reference/gogurt/application",
-  "reference/riverhog/applications/mango-fish",
-  "reference/riverhog/applications/piggity",
-  "reference/riverhog/recovery",
-  "reference/stove0/application/client",
-  "reference/stove0/application/server",
+application = [
+  "some-implementations/gogurt/application",
+  "some-implementations/riverhog/applications/a-riverhog-event-relay",
+  "some-implementations/riverhog/applications/a-riverhog-cli",
+  "some-implementations/riverhog/recovery",
+  "some-implementations/stove0/application/client",
+  "some-implementations/stove0/application/server",
 ]
-reference_component = [
-  "reference/gogurt/listener-host/linux",
-  "reference/gogurt/listener-host/macos",
-  "reference/gogurt/listener-host/windows",
-  "reference/gogurt/mounted-volume/linux",
-  "reference/gogurt/mounted-volume/macos",
-  "reference/gogurt/mounted-volume/path-support",
-  "reference/gogurt/mounted-volume/windows",
-  "reference/riverhog/ingress/ftp",
-  "reference/riverhog/ingress/ftp-api-client",
-  "reference/riverhog/provenance/contracts/linux",
-  "reference/riverhog/provenance/contracts/macos",
-  "reference/riverhog/provenance/contracts/windows",
-  "reference/riverhog/provenance/observers/linux",
-  "reference/riverhog/provenance/observers/macos",
-  "reference/riverhog/provenance/observers/windows",
-  "reference/riverhog/storage/aws",
-  "reference/riverhog/storage/backblaze",
-  "reference/riverhog/storage/filesystem",
-  "reference/riverhog/storage/s3-support",
-  "reference/stove0/observers/contracts/media-metadata",
-  "reference/stove0/observers/contracts/media-sampling",
-  "reference/stove0/observers/exiftool",
-  "reference/stove0/observers/ffprobe-sampling",
-  "reference/stove0/targets/media-archive/contracts",
-  "reference/stove0/targets/media-archive/support",
-  "reference/stove0/targets/nvenc-av1-opus/review-sampler",
-  "reference/stove0/targets/nvenc-av1-opus/target",
-  "reference/stove0/targets/opus/review-sampler",
-  "reference/stove0/targets/opus/target",
-  "reference/stove0/targets/review/contracts",
-  "reference/stove0/targets/review/planning",
-  "reference/stove0/targets/review/sampler/client",
-  "reference/stove0/targets/review/sampler/protocol",
-  "reference/stove0/targets/review/sampler/support",
-  "reference/stove0/targets/review/materialize-target",
-  "reference/stove0/targets/review/rclone-effect-target",
-  "reference/stove0/targets/review/support",
+component = [
+  "some-implementations/stove0/targets/media-archive/support",
+  "some-implementations/stove0/review0/planning",
+  "some-implementations/stove0/observers/contracts/media-metadata",
+  "some-implementations/stove0/observers/contracts/media-sampling",
+  "some-implementations/gogurt/listener-host/linux",
+  "some-implementations/gogurt/listener-host/macos",
+  "some-implementations/gogurt/listener-host/windows",
+  "some-implementations/gogurt/mounted-volume/linux",
+  "some-implementations/gogurt/mounted-volume/macos",
+  "some-implementations/gogurt/mounted-volume/windows",
+  "some-implementations/riverhog/ingress/ftp",
+  "some-implementations/riverhog/ingress/ftp-api-client",
+  "some-implementations/riverhog/provenance/contracts/linux",
+  "some-implementations/riverhog/provenance/contracts/macos",
+  "some-implementations/riverhog/provenance/contracts/windows",
+  "some-implementations/riverhog/provenance/observers/linux",
+  "some-implementations/riverhog/provenance/observers/macos",
+  "some-implementations/riverhog/provenance/observers/windows",
+  "some-implementations/riverhog/storage/aws",
+  "some-implementations/riverhog/storage/backblaze",
+  "some-implementations/riverhog/storage/filesystem",
+  "some-implementations/stove0/observers/exiftool",
+  "some-implementations/stove0/observers/ffprobe-sampling",
+  "some-implementations/stove0/review0/samplers/nvenc-av1-opus",
+  "some-implementations/stove0/targets/nvenc-av1-opus/target",
+  "some-implementations/stove0/review0/samplers/opus",
+  "some-implementations/stove0/targets/opus/target",
+  "some-implementations/stove0/review0/materialize-target",
+  "some-implementations/stove0/review0/rclone-effect-target",
 ]
 reusable_library = [
-  "reference/gogurt/packages/core",
-  "reference/gogurt/packages/listener-runtime",
+  "some-implementations/gogurt/mounted-volume/path-support",
+  "some-implementations/riverhog/storage/s3-support",
+  "some-implementations/stove0/targets/media-archive/contracts",
+  "some-implementations/stove0/review0/contracts",
+  "some-implementations/stove0/review0/sampler/client",
+  "some-implementations/stove0/review0/sampler/protocol",
+  "some-implementations/stove0/review0/sampler/support",
+  "some-implementations/stove0/review0/support",
+  "some-implementations/gogurt/packages/core",
+  "some-implementations/gogurt/packages/listener-runtime",
   "packages/riverhog-application-access",
   "packages/http-api-contracts",
   "packages/lifecycle-events",
@@ -405,16 +402,16 @@ reusable_library = [
   "packages/riverhog-storage-adapter-asgi-support",
   "packages/riverhog-storage-adapter-protocol",
   "packages/riverhog-storage-adapter-support",
-  "reference/stove0/packages/observer-protocol",
-  "reference/stove0/packages/observer-support",
-  "reference/stove0/packages/observer-client",
-  "reference/stove0/packages/api-client",
-  "reference/stove0/packages/operator-contracts",
-  "reference/stove0/packages/protocol",
-  "reference/stove0/packages/recipe-config",
-  "reference/stove0/packages/target-client",
-  "reference/stove0/packages/target-protocol",
-  "reference/stove0/packages/target-support",
+  "some-implementations/stove0/packages/observer-protocol",
+  "some-implementations/stove0/packages/observer-support",
+  "some-implementations/stove0/packages/observer-client",
+  "some-implementations/stove0/packages/api-client",
+  "some-implementations/stove0/packages/operator-contracts",
+  "some-implementations/stove0/packages/protocol",
+  "some-implementations/stove0/packages/recipe-config",
+  "some-implementations/stove0/packages/target-client",
+  "some-implementations/stove0/packages/target-protocol",
+  "some-implementations/stove0/packages/target-support",
 ]
 internal_build_unit = [
   "packages/config-validation",
@@ -432,18 +429,18 @@ platforms = ["linux/amd64"]
 
 [images.runtime]
 riverhog = { role = "product", description = "Riverhog archive service.", distributions = ["riverhog-server"], repository = "ghcr.io/nashspence/riverhog" }
-mango-fish = { role = "reference", description = "Optional nonnormative CloudEvents reference application for Riverhog.", distributions = ["mango-fish"], repository = "ghcr.io/nashspence/riverhog-mango-fish" }
-riverhog-ftp-adapter = { role = "reference", description = "Optional nonnormative Riverhog FTP ingress reference.", distributions = ["riverhog-ftp-adapter", "riverhog-provenance-linux-observer"], repository = "ghcr.io/nashspence/riverhog-ftp-adapter" }
-riverhog-storage-adapter-aws = { role = "reference", description = "Optional nonnormative AWS storage reference for Riverhog.", distributions = ["riverhog-storage-adapter-aws"], repository = "ghcr.io/nashspence/riverhog-storage-adapter-aws" }
-riverhog-storage-adapter-backblaze = { role = "reference", description = "Optional nonnormative Backblaze B2 storage reference for Riverhog.", distributions = ["riverhog-storage-adapter-backblaze"], repository = "ghcr.io/nashspence/riverhog-storage-adapter-backblaze" }
-riverhog-storage-adapter-filesystem = { role = "reference", description = "Optional nonnormative Linux filesystem storage reference for Riverhog.", distributions = ["riverhog-storage-adapter-filesystem"], repository = "ghcr.io/nashspence/riverhog-storage-adapter-filesystem" }
-stove0 = { role = "reference", description = "Optional nonnormative transformation reference application for Riverhog.", distributions = ["stove0-server"], repository = "ghcr.io/nashspence/riverhog-stove0" }
-stove0-exiftool-observer = { role = "reference", description = "Optional nonnormative ExifTool observer reference for Stove0.", distributions = ["stove0-exiftool-observer"], repository = "ghcr.io/nashspence/riverhog-stove0-exiftool-observer" }
-stove0-ffprobe-sampling-observer = { role = "reference", description = "Optional nonnormative FFprobe sampling-observer reference for Stove0.", distributions = ["stove0-ffprobe-sampling-observer"], repository = "ghcr.io/nashspence/riverhog-stove0-ffprobe-sampling-observer" }
-stove0-nvenc-av1-opus-target = { role = "reference", description = "Optional nonnormative NVENC AV1 and Opus target reference for Stove0.", distributions = ["stove0-nvenc-av1-opus-target", "stove0-nvenc-av1-opus-review-sampler"], repository = "ghcr.io/nashspence/riverhog-stove0-nvenc-av1-opus-target" }
-stove0-opus-target = { role = "reference", description = "Optional nonnormative Opus target reference for Stove0.", distributions = ["stove0-opus-target", "stove0-opus-review-sampler"], repository = "ghcr.io/nashspence/riverhog-stove0-opus-target" }
-stove0-review-materialize-target = { role = "reference", description = "Optional nonnormative review materialization target reference for Stove0.", distributions = ["stove0-review-materialize-target"], repository = "ghcr.io/nashspence/riverhog-stove0-review-materialize-target" }
-stove0-review-rclone-effect-target = { role = "reference", description = "Optional nonnormative rclone review-effect target reference for Stove0.", distributions = ["stove0-review-rclone-effect-target"], repository = "ghcr.io/nashspence/riverhog-stove0-review-rclone-effect-target" }
+a-riverhog-event-relay = { role = "application", description = "CloudEvents event relay for Riverhog.", distributions = ["a-riverhog-event-relay"], repository = "ghcr.io/nashspence/a-riverhog-event-relay" }
+a-riverhog-ftp-spool = { role = "component", description = "FTP upload spool and ingestion adapter for Riverhog.", distributions = ["a-riverhog-ftp-spool", "a-riverhog-linux-provenance-observer"], repository = "ghcr.io/nashspence/a-riverhog-ftp-spool" }
+a-riverhog-aws-store = { role = "component", description = "AWS-backed Riverhog archive and retrieval store.", distributions = ["a-riverhog-aws-store"], repository = "ghcr.io/nashspence/a-riverhog-aws-store" }
+a-riverhog-b2-store = { role = "component", description = "Backblaze B2-backed Riverhog archive and retrieval store.", distributions = ["a-riverhog-b2-store"], repository = "ghcr.io/nashspence/a-riverhog-b2-store" }
+a-riverhog-filesystem-store = { role = "component", description = "Filesystem-backed Riverhog archive and retrieval store.", distributions = ["a-riverhog-filesystem-store"], repository = "ghcr.io/nashspence/a-riverhog-filesystem-store" }
+stove0 = { role = "application", description = "Content-opaque transformation application for Riverhog.", distributions = ["stove0-server"], repository = "ghcr.io/nashspence/stove0" }
+a-stove0-exiftool-observer = { role = "component", description = "ExifTool media metadata observer for Stove0.", distributions = ["a-stove0-exiftool-observer"], repository = "ghcr.io/nashspence/a-stove0-exiftool-observer" }
+a-stove0-ffprobe-sampling-observer = { role = "component", description = "FFprobe media sampling observer for Stove0.", distributions = ["a-stove0-ffprobe-sampling-observer"], repository = "ghcr.io/nashspence/a-stove0-ffprobe-sampling-observer" }
+a-stove0-nvenc-av1-opus-target = { role = "component", description = "NVENC AV1 and Opus transformation target for Stove0.", distributions = ["a-stove0-nvenc-av1-opus-target", "a-review0-nvenc-av1-opus-sampler"], repository = "ghcr.io/nashspence/a-stove0-nvenc-av1-opus-target" }
+a-stove0-opus-target = { role = "component", description = "Opus transformation target for Stove0.", distributions = ["a-stove0-opus-target", "a-review0-opus-sampler"], repository = "ghcr.io/nashspence/a-stove0-opus-target" }
+a-review0-materializer = { role = "component", description = "Review0 materialization target for Stove0.", distributions = ["a-review0-materializer"], repository = "ghcr.io/nashspence/a-review0-materializer" }
+a-review0-rclone-target = { role = "component", description = "Review0 rclone delivery target for Stove0.", distributions = ["a-review0-rclone-target"], repository = "ghcr.io/nashspence/a-review0-rclone-target" }
 
 [images.test_only]
 test = { local_tag = "riverhog-test:dev" }

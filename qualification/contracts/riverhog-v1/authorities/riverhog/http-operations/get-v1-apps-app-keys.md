@@ -85,7 +85,7 @@ Exact evidence groups for this contract element:
 
 ### Related interface records
 
-- [piggity app key list](../../piggity/cli/piggity-app-key-list.md)
+- [a-riverhog-cli app key list](../../a-riverhog-cli/cli/a-riverhog-cli-app-key-list.md)
 - [riverhog_client.ApiClient.list_app_keys](../../riverhog-client/python/riverhog-client-apiclient-list-app-keys.md)
 
 ### Referenced contract elements
@@ -133,12 +133,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "app key list",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/app/key/list/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/app/key/list/v1",
       "source": {
-        "line": 1170,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 1172,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "app_key_list_cmd"
       }
     }

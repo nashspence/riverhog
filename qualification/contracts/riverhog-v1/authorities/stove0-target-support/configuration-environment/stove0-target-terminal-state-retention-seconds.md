@@ -50,7 +50,7 @@ Shared facts for every subject below: configuration="STOVE0_TARGET_TERMINAL_STAT
 
 ### Executable sources
 
-- [configuration-environment:stove0-target-support:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS](../../../evidence/sources/authorities.md#src-a4a7b5aed4) — [reference/stove0/packages/target-support/src/stove0\_target\_support/configuration.py::terminal\_state\_retention\_seconds](../../../../../../reference/stove0/packages/target-support/src/stove0_target_support/configuration.py)
+- [configuration-environment:stove0-target-support:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS](../../../evidence/sources/authorities.md#src-a4a7b5aed4) — [some-implementations/stove0/packages/target-support/src/stove0\_target\_support/configuration.py::terminal\_state\_retention\_seconds](../../../../../../some-implementations/stove0/packages/target-support/src/stove0_target_support/configuration.py)
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
@@ -59,7 +59,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| parser | `stove0-target-support` | [reference/stove0/packages/target-support/src/stove0\_target\_support/configuration.py](../../../../../../reference/stove0/packages/target-support/src/stove0_target_support/configuration.py) | `values.get(TARGET_TERMINAL_STATE_RETENTION_ENV, str(DEFAULT_TERMINAL_STATE_RETENTION_SECONDS))` |
+| parser | `stove0-target-support` | [some-implementations/stove0/packages/target-support/src/stove0\_target\_support/configuration.py](../../../../../../some-implementations/stove0/packages/target-support/src/stove0_target_support/configuration.py) | `values.get(TARGET_TERMINAL_STATE_RETENTION_ENV, str(DEFAULT_TERMINAL_STATE_RETENTION_SECONDS))` |
 
 ### Machine authority
 

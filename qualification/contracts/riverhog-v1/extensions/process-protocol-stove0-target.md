@@ -15,9 +15,9 @@ Independently deployed process protocol owned by stove0-target-protocol.
 - [stove0-target-support · Process Protocol Operations](../authorities/stove0-target-support/process-protocol-operations/index.md) ([exact binding](../evidence/relationships/edges.md#re-f67fa92e93))
 - [stove0-target-support · Process Protocol Schemas](../authorities/stove0-target-support/process-protocol-schemas/index.md) ([exact binding](../evidence/relationships/edges.md#re-f67fa92e93))
 
-## Checked-in nonnormative implementations
+## Supplied implementations
 
-- [stove0-nvenc-av1-opus-target](../evidence/relationships/edges.md#re-6b92eeff44) — Optional nonnormative NVENC AV1 and Opus target reference for Stove0.
-- [stove0-opus-target](../evidence/relationships/edges.md#re-55ca15ecf2) — Optional nonnormative Opus target reference for Stove0.
-- [stove0-review-materialize-target](../evidence/relationships/edges.md#re-4424eb3893) — Optional nonnormative review materialization target reference for Stove0.
-- [stove0-review-rclone-effect-target](../evidence/relationships/edges.md#re-6d03890ef2) — Optional nonnormative rclone review-effect target reference for Stove0.
+- [a-review0-materializer](../evidence/relationships/edges.md#re-5b06c75938) — Review0 materialization target for Stove0.
+- [a-review0-rclone-target](../evidence/relationships/edges.md#re-7de97306b0) — Review0 rclone delivery target for Stove0.
+- [a-stove0-nvenc-av1-opus-target](../evidence/relationships/edges.md#re-35ffe49912) — NVENC AV1 and Opus transformation target for Stove0.
+- [a-stove0-opus-target](../evidence/relationships/edges.md#re-168ac15c4a) — Opus transformation target for Stove0.

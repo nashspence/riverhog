@@ -1,11 +1,11 @@
 services:
   qualification-filesystem-cache-adapter:
-    image: riverhog-storage-adapter-filesystem:dev
+    image: a-riverhog-filesystem-store:dev
     restart: unless-stopped
     environment:
-      RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_TOKEN_FILE: /run/secrets/riverhog-storage-adapter.token
-      RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_ROOT: /var/lib/riverhog-filesystem
-      RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_MINIMUM_FREE_BYTES: 0B
+      A_RIVERHOG_FILESYSTEM_STORE_TOKEN_FILE: /run/secrets/riverhog-storage-adapter.token
+      A_RIVERHOG_FILESYSTEM_STORE_ROOT: /var/lib/riverhog-filesystem
+      A_RIVERHOG_FILESYSTEM_STORE_MINIMUM_FREE_BYTES: 0B
     volumes:
       - qualification-filesystem-cache-data:/var/lib/riverhog-filesystem
       - type: bind
@@ -20,7 +20,7 @@ services:
       start_period: 2s
 
   aws-deep-archive-adapter:
-    image: riverhog-storage-adapter-aws:dev
+    image: a-riverhog-aws-store:dev
     restart: unless-stopped
     env_file:
       - path: ${RIVERHOG_QUALIFICATION_AWS_ADAPTER_ENV_FILE}
@@ -31,7 +31,7 @@ services:
         target: /run/secrets/riverhog-storage-adapter.token
         read_only: true
       - type: bind
-        source: ${RIVERHOG_AWS_STORAGE_ADAPTER_CLOUDFRONT_PRIVATE_KEY_HOST_PATH}
+        source: ${A_RIVERHOG_AWS_STORE_CLOUDFRONT_PRIVATE_KEY_HOST_PATH}
         target: /run/secrets/riverhog-cloudfront.pem
         read_only: true
     healthcheck:
@@ -42,7 +42,7 @@ services:
       start_period: 2s
 
   b2-archive-adapter:
-    image: riverhog-storage-adapter-backblaze:dev
+    image: a-riverhog-b2-store:dev
     restart: unless-stopped
     env_file:
       - path: ${RIVERHOG_QUALIFICATION_B2_ARCHIVE_ADAPTER_ENV_FILE}
@@ -60,7 +60,7 @@ services:
       start_period: 2s
 
   b2-retrieval-cache-adapter:
-    image: riverhog-storage-adapter-backblaze:dev
+    image: a-riverhog-b2-store:dev
     restart: unless-stopped
     env_file:
       - path: ${RIVERHOG_QUALIFICATION_B2_CACHE_ADAPTER_ENV_FILE}

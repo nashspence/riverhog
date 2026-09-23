@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-429bcc520e"></a>`kind`: `"constant"`
-- <a id="s-83f21b27ab"></a>`value`: `"riverhog-provenance-contract-reference/v1"`
+- <a id="s-83f21b27ab"></a>`value`: `"riverhog-provenance-contract-some-implementations/v1"`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9b99df2f8813741fd5cc2defe9d4db7171d5fca07c5d0a40ccb11de019fa8bf9 -->
+<!-- exact-contract-value: 88e04411607ca71538bc70b089e13ae1e39beb9e317874a6d115e1748a181fa1 -->
 
 ```json
 {
   "contract": {
     "kind": "constant",
-    "value": "riverhog-provenance-contract-reference/v1"
+    "value": "riverhog-provenance-contract-some-implementations/v1"
   },
   "distribution": "riverhog-provenance-contracts",
   "module": "riverhog_provenance_contracts",

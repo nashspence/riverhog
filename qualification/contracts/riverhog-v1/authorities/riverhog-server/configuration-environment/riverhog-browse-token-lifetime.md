@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-browse-token-lifetime:d0d653facb -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-browse-token-lifetime:d432f3bed2 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-be3c1ab328"></a>
+<a id="s-653001cc1d"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-53a8b95257"></a>`consumers` | `["riverhog-server"]` |
-| <a id="s-92b359eb99"></a>`default_expressions` | `["'24h'"]` |
-| <a id="s-0695702476"></a>`id` | `"riverhog-server:environment:RIVERHOG_BROWSE_TOKEN_LIFETIME"` |
-| <a id="s-204d487369"></a>`input_shape` | `"environment-string"` |
-| <a id="s-e79d9952b9"></a>`name` | `"RIVERHOG_BROWSE_TOKEN_LIFETIME"` |
-| <a id="s-5894963f53"></a>`owner` | `"riverhog-server"` |
+| <a id="s-fd02060d9a"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-0c88846b1b"></a>`default_expressions` | `["'24h'"]` |
+| <a id="s-aac583777d"></a>`id` | `"riverhog-server:environment:RIVERHOG_BROWSE_TOKEN_LIFETIME"` |
+| <a id="s-4bde8896ce"></a>`input_shape` | `"environment-string"` |
+| <a id="s-02d5ecfb28"></a>`name` | `"RIVERHOG_BROWSE_TOKEN_LIFETIME"` |
+| <a id="s-30d31b3b91"></a>`owner` | `"riverhog-server"` |
 
 ## Governing policies
 
-- <a id="pa-33daa7dfb0"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-eeea7d9fd0"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/49`
+- `/external_contract/configuration_environment/183`
 
 ### Exact owned JSON
 

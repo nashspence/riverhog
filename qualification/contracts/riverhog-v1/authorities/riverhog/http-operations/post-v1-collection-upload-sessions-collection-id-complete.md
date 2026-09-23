@@ -43,7 +43,7 @@ Complete Collection Upload Session
 
 ### Related interface records
 
-- [piggity collection upload start](../../piggity/cli/piggity-collection-upload-start.md)
+- [a-riverhog-cli collection upload start](../../a-riverhog-cli/cli/a-riverhog-cli-collection-upload-start.md)
 - [riverhog_client.ApiClient.complete_collection_upload_session](../../riverhog-client/python/riverhog-client-apiclient-complete-collection-upload-session.md)
 
 ### Referenced contract elements
@@ -83,12 +83,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection upload start",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/upload/start/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/upload/start/v1",
       "source": {
-        "line": 2179,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2185,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "upload_cmd"
       }
     }

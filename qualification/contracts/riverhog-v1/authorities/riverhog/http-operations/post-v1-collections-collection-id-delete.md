@@ -50,7 +50,7 @@ Delete Collection
 
 ### Related interface records
 
-- [piggity collection delete](../../piggity/cli/piggity-collection-delete.md)
+- [a-riverhog-cli collection delete](../../a-riverhog-cli/cli/a-riverhog-cli-collection-delete.md)
 - [riverhog_client.ApiClient.delete_collection](../../riverhog-client/python/riverhog-client-apiclient-delete-collection.md)
 
 ### Referenced contract elements
@@ -91,12 +91,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection delete",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/delete/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/delete/v1",
       "source": {
-        "line": 2920,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2926,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "collection_delete_cmd"
       }
     }

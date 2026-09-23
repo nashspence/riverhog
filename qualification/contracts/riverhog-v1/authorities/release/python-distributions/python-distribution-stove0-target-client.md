@@ -24,7 +24,7 @@ Narrow HTTP client for Stove0 transform targets.
 | <a id="s-5874aefd83"></a>`publication_identity` | `{"coordinate":"stove0-target-client","kind":"python-distribution"}` |
 | <a id="s-cb102729fa"></a>`requires_python` | `">=3.12"` |
 | <a id="s-f66a0dc4a7"></a>`role` | `"reusable_library"` |
-| <a id="s-b4c91f375a"></a>`source` | `"reference/stove0/packages/target-client/pyproject.toml"` |
+| <a id="s-b4c91f375a"></a>`source` | `"some-implementations/stove0/packages/target-client/pyproject.toml"` |
 
 ## Existing ownership context
 
@@ -48,7 +48,7 @@ Publication preserves these existing component authorities; it does not reclassi
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [release-distribution:stove0-target-client](../../../evidence/sources/authorities.md#src-370da30421) — [reference/stove0/packages/target-client/pyproject.toml](../../../../../../reference/stove0/packages/target-client/pyproject.toml)
+- [release-distribution:stove0-target-client](../../../evidence/sources/authorities.md#src-370da30421) — [some-implementations/stove0/packages/target-client/pyproject.toml](../../../../../../some-implementations/stove0/packages/target-client/pyproject.toml)
 - [release-publication:planner](../../../evidence/sources/authorities.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
 - [release:release.toml](../../../evidence/sources/authorities.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
 
@@ -63,7 +63,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a075e44d4b49933da14ca1abf787bdf80104cca58eb1d1e52994753c9e351517 -->
+<!-- exact-contract-value: 0e8bcd342183da780151ec4a4b0f7297211c77a1117a32ee28b03fb068f04f74 -->
 
 ```json
 {
@@ -87,7 +87,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "requires_python": ">=3.12",
   "role": "reusable_library",
-  "source": "reference/stove0/packages/target-client/pyproject.toml"
+  "source": "some-implementations/stove0/packages/target-client/pyproject.toml"
 }
 ```
 

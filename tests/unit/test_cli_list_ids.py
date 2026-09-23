@@ -3,10 +3,10 @@ from __future__ import annotations
 import json
 from typing import Any
 
+import a_riverhog_cli.main
 import httpx
-import piggity.main
 import pytest
-from piggity.main import app
+from a_riverhog_cli.main import app
 from riverhog_api.schemas.collections import ListCollectionsResponse
 from riverhog_client import ApiClient
 from riverhog_protocol import COLLECTION_TAG_REQUEST_MEMBERS_MAX
@@ -49,7 +49,7 @@ def test_collection_list_tag_batch_preserves_the_client_acceptance_boundary(
             transport=httpx.MockTransport(handle),
         ) as transport:
             monkeypatch.setattr(api, "_persistent_client", lambda: transport)
-            monkeypatch.setattr(piggity.main, "client", lambda: api)
+            monkeypatch.setattr(a_riverhog_cli.main, "client", lambda: api)
             result = runner.invoke(
                 app,
                 ["collection", "list", "--json", *(arg for tag in tags for arg in ("--tag", tag))],
@@ -79,7 +79,7 @@ def test_collection_list_ids_emits_one_pipeable_bounded_page(monkeypatch) -> Non
                 "next_page_token": "later-page",
             }
 
-    monkeypatch.setattr(piggity.main, "client", FakeClient)
+    monkeypatch.setattr(a_riverhog_cli.main, "client", FakeClient)
 
     result = runner.invoke(
         app,
@@ -121,7 +121,7 @@ def test_collection_upload_list_ids_forwards_bounded_page_and_filters(monkeypatc
                 "next_page_token": None,
             }
 
-    monkeypatch.setattr(piggity.main, "client", FakeClient)
+    monkeypatch.setattr(a_riverhog_cli.main, "client", FakeClient)
 
     result = runner.invoke(
         app,
@@ -162,7 +162,7 @@ def test_find_selectors_emits_pipeable_file_identities_from_one_page(monkeypatch
                 "next_page_token": None,
             }
 
-    monkeypatch.setattr(piggity.main, "client", FakeClient)
+    monkeypatch.setattr(a_riverhog_cli.main, "client", FakeClient)
 
     result = runner.invoke(app, ["find", "-q", "invoice", "--selectors"])
 
@@ -185,10 +185,10 @@ def test_riverhog_closes_its_shared_api_client(monkeypatch) -> None:
         def close(self) -> None:
             closed.append(True)
 
-    monkeypatch.setattr(piggity.main, "_API_CLIENT", FakeClient())
+    monkeypatch.setattr(a_riverhog_cli.main, "_API_CLIENT", FakeClient())
 
     result = runner.invoke(app, ["collection", "list"])
 
     assert result.exit_code == 0
     assert closed == [True]
-    assert piggity.main._API_CLIENT is None
+    assert a_riverhog_cli.main._API_CLIENT is None

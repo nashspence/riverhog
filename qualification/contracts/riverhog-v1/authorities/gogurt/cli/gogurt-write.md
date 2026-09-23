@@ -164,7 +164,7 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 ### Executable sources
 
-- [cli:gogurt](../../../evidence/sources/authorities.md#src-3b2297c37d) — [reference/gogurt/application/src/gogurt/cli.py::&lt;module&gt;](../../../../../../reference/gogurt/application/src/gogurt/cli.py)
+- [cli:gogurt](../../../evidence/sources/authorities.md#src-3b2297c37d) — [some-implementations/gogurt/application/src/gogurt/cli.py::&lt;module&gt;](../../../../../../some-implementations/gogurt/application/src/gogurt/cli.py)
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Machine authority

@@ -4,7 +4,7 @@
 
 <!-- contract-element: python-distributions:release:python-distribution-stove0-api-client:6a123d166a -->
 
-Official Python client for the stove0 v1 workflow API.
+Official Python client for the Stove0 v1 workflow API.
 
 | Audit field | Value |
 |---|---|
@@ -18,13 +18,13 @@ Official Python client for the stove0 v1 workflow API.
 |---|---|
 | <a id="s-a89e3100a3"></a>`artifacts` | `[{"coordinate":"dist/stove0_api_client-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_api_client-{version}.tar.gz","format":"sdist"}]` |
 | <a id="s-2d20f67164"></a>`channel` | `"github-release"` |
-| <a id="s-b9888c2b34"></a>`description` | `"Official Python client for the stove0 v1 workflow API."` |
+| <a id="s-b9888c2b34"></a>`description` | `"Official Python client for the Stove0 v1 workflow API."` |
 | <a id="s-63a90b4cf7"></a>`license_baseline` | `"first-v1-publication"` |
 | <a id="s-06e8c84e58"></a>`license_expression` | `"Apache-2.0"` |
 | <a id="s-18ed427769"></a>`publication_identity` | `{"coordinate":"stove0-api-client","kind":"python-distribution"}` |
 | <a id="s-4e0677b005"></a>`requires_python` | `">=3.12"` |
 | <a id="s-46dca634a2"></a>`role` | `"reusable_library"` |
-| <a id="s-21998422fc"></a>`source` | `"reference/stove0/packages/api-client/pyproject.toml"` |
+| <a id="s-21998422fc"></a>`source` | `"some-implementations/stove0/packages/api-client/pyproject.toml"` |
 
 ## Existing ownership context
 
@@ -48,7 +48,7 @@ Publication preserves these existing component authorities; it does not reclassi
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [release-distribution:stove0-api-client](../../../evidence/sources/authorities.md#src-65fbc03822) — [reference/stove0/packages/api-client/pyproject.toml](../../../../../../reference/stove0/packages/api-client/pyproject.toml)
+- [release-distribution:stove0-api-client](../../../evidence/sources/authorities.md#src-65fbc03822) — [some-implementations/stove0/packages/api-client/pyproject.toml](../../../../../../some-implementations/stove0/packages/api-client/pyproject.toml)
 - [release-publication:planner](../../../evidence/sources/authorities.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
 - [release:release.toml](../../../evidence/sources/authorities.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
 
@@ -63,7 +63,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4387312aff5927947c9d0dbe04b7d92d92eac87e317b260a6096477962ed37e7 -->
+<!-- exact-contract-value: 0a57190b4c7277d9e9d1cbd026b5c33473cad645a6e8f984f82543a818d64684 -->
 
 ```json
 {
@@ -78,7 +78,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   ],
   "channel": "github-release",
-  "description": "Official Python client for the stove0 v1 workflow API.",
+  "description": "Official Python client for the Stove0 v1 workflow API.",
   "license_baseline": "first-v1-publication",
   "license_expression": "Apache-2.0",
   "publication_identity": {
@@ -87,7 +87,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "requires_python": ">=3.12",
   "role": "reusable_library",
-  "source": "reference/stove0/packages/api-client/pyproject.toml"
+  "source": "some-implementations/stove0/packages/api-client/pyproject.toml"
 }
 ```
 

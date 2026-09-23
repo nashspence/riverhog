@@ -42,7 +42,7 @@ def test_generated_operation_matrix_is_complete_and_fail_closed() -> None:
     assert len(identities) == len(matrix)
     assert {item.application for item in matrix} == {
         "riverhog",
-        "riverhog-ftp-adapter",
+        "a-riverhog-ftp-spool",
         "stove0",
     }
     assert {item.classification for item in matrix} == {
@@ -86,7 +86,7 @@ def test_operation_audiences_distinguish_commands_wires_and_protocols() -> None:
     assert by_identity[("stove0", "list_work")].classification == "human-cli+json"
     assert "work list" in by_identity[("stove0", "list_work")].cli_commands
     assert (
-        by_identity[("riverhog-ftp-adapter", "get_ftp_adapter_status")].classification
+        by_identity[("a-riverhog-ftp-spool", "get_ftp_spool_status")].classification
         == "human-cli+json"
     )
 
@@ -310,7 +310,7 @@ def test_release_disposable_selection_satisfies_current_observation_requirements
         assert partial["local_api_process_restart"]["status"] == "not_established"
     invalid_witnesses = [None, [*witnesses, witnesses[0]]]
     for field, value in (
-        ("application", "riverhog-ftp-adapter"),
+        ("application", "a-riverhog-ftp-spool"),
         ("operation_id", "unknown"),
         ("test_nodeid", "tests/unit/test_operation_lifecycle_api.py::unrelated_test"),
     ):

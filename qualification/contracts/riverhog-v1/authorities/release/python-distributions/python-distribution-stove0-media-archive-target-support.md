@@ -4,7 +4,7 @@
 
 <!-- contract-element: python-distributions:release:python-distribution-stove0-media-archive-b00fdb281d:bb4d5d7e62 -->
 
-Optional nonnormative projection support for Stove0 media-archive references.
+Shared media archive projection support for Stove0.
 
 | Audit field | Value |
 |---|---|
@@ -18,13 +18,13 @@ Optional nonnormative projection support for Stove0 media-archive references.
 |---|---|
 | <a id="s-bd29910202"></a>`artifacts` | `[{"coordinate":"dist/stove0_media_archive_target_support-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_media_archive_target_support-{version}.tar.gz","format":"sdist"}]` |
 | <a id="s-22858dde60"></a>`channel` | `"github-release"` |
-| <a id="s-49b902ddc9"></a>`description` | `"Optional nonnormative projection support for Stove0 media-archive references."` |
+| <a id="s-49b902ddc9"></a>`description` | `"Shared media archive projection support for Stove0."` |
 | <a id="s-3242049ede"></a>`license_baseline` | `"first-v1-publication"` |
 | <a id="s-5e0238e823"></a>`license_expression` | `"Apache-2.0"` |
 | <a id="s-2e4bca5189"></a>`publication_identity` | `{"coordinate":"stove0-media-archive-target-support","kind":"python-distribution"}` |
 | <a id="s-3975191073"></a>`requires_python` | `">=3.12"` |
-| <a id="s-15914f1586"></a>`role` | `"reference_component"` |
-| <a id="s-f6fc831e11"></a>`source` | `"reference/stove0/targets/media-archive/support/pyproject.toml"` |
+| <a id="s-15914f1586"></a>`role` | `"component"` |
+| <a id="s-f6fc831e11"></a>`source` | `"some-implementations/stove0/targets/media-archive/support/pyproject.toml"` |
 
 ## Existing ownership context
 
@@ -48,7 +48,7 @@ Publication preserves these existing component authorities; it does not reclassi
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [release-distribution:stove0-media-archive-target-support](../../../evidence/sources/authorities.md#src-0d39629f02) — [reference/stove0/targets/media-archive/support/pyproject.toml](../../../../../../reference/stove0/targets/media-archive/support/pyproject.toml)
+- [release-distribution:stove0-media-archive-target-support](../../../evidence/sources/authorities.md#src-0d39629f02) — [some-implementations/stove0/targets/media-archive/support/pyproject.toml](../../../../../../some-implementations/stove0/targets/media-archive/support/pyproject.toml)
 - [release-publication:planner](../../../evidence/sources/authorities.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
 - [release:release.toml](../../../evidence/sources/authorities.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
 
@@ -63,7 +63,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f5eeda825365fad193a8bc1499cef24371fee95c025cce90506e1f3c69e87c84 -->
+<!-- exact-contract-value: a4b467aa35257d306676baf2714d00d301d0efeaeeb7861e5f548bb34fd5d3a4 -->
 
 ```json
 {
@@ -78,7 +78,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   ],
   "channel": "github-release",
-  "description": "Optional nonnormative projection support for Stove0 media-archive references.",
+  "description": "Shared media archive projection support for Stove0.",
   "license_baseline": "first-v1-publication",
   "license_expression": "Apache-2.0",
   "publication_identity": {
@@ -86,8 +86,8 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "python-distribution"
   },
   "requires_python": ">=3.12",
-  "role": "reference_component",
-  "source": "reference/stove0/targets/media-archive/support/pyproject.toml"
+  "role": "component",
+  "source": "some-implementations/stove0/targets/media-archive/support/pyproject.toml"
 }
 ```
 

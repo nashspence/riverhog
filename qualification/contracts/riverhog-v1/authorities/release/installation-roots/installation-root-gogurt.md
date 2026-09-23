@@ -45,7 +45,7 @@ Publication preserves these existing component authorities; it does not reclassi
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [release-distribution:gogurt](../../../evidence/sources/authorities.md#src-3e7b582a54) — [reference/gogurt/application/pyproject.toml](../../../../../../reference/gogurt/application/pyproject.toml)
+- [release-distribution:gogurt](../../../evidence/sources/authorities.md#src-3e7b582a54) — [some-implementations/gogurt/application/pyproject.toml](../../../../../../some-implementations/gogurt/application/pyproject.toml)
 - [release-installation:planner](../../../evidence/sources/authorities.md#src-d1a927fc4b) — [scripts/release\_installation.py::INSTALLATION\_POLICY](../../../../../../scripts/release_installation.py)
 - [release-publication:planner](../../../evidence/sources/authorities.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
 - [release:release.toml](../../../evidence/sources/authorities.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)

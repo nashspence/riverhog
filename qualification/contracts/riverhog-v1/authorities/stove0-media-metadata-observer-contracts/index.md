@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Optional nonnormative media-metadata contract reference for Stove0 observers.
+Shared media metadata observation contracts for Stove0.
 
 Contract elements: **19** · Extent decisions: **0**
 

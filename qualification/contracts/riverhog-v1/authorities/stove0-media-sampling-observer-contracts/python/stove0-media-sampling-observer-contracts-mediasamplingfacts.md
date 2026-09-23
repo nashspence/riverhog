@@ -90,7 +90,7 @@ Exact externally visible contract owned by this contract element.
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [python:stove0-media-sampling-observer-contracts:stove0_media_sampling_observer_contracts](../../../evidence/sources/authorities.md#src-b9344d06d7) — [reference/stove0/observers/contracts/media-sampling/src/stove0\_media\_sampling\_observer\_contracts/\_\_init\_\_.py](../../../../../../reference/stove0/observers/contracts/media-sampling/src/stove0_media_sampling_observer_contracts/__init__.py)
+- [python:stove0-media-sampling-observer-contracts:stove0_media_sampling_observer_contracts](../../../evidence/sources/authorities.md#src-b9344d06d7) — [some-implementations/stove0/observers/contracts/media-sampling/src/stove0\_media\_sampling\_observer\_contracts/\_\_init\_\_.py](../../../../../../some-implementations/stove0/observers/contracts/media-sampling/src/stove0_media_sampling_observer_contracts/__init__.py)
 
 ### Machine authority
 

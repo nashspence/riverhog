@@ -84,7 +84,7 @@ Exact evidence groups for this contract element:
 
 ### Related interface records
 
-- [piggity collection upload list](../../piggity/cli/piggity-collection-upload-list.md)
+- [a-riverhog-cli collection upload list](../../a-riverhog-cli/cli/a-riverhog-cli-collection-upload-list.md)
 - [riverhog_client.ApiClient.list_collection_upload_sessions](../../riverhog-client/python/riverhog-client-apiclient-list-collection-upload-sessions.md)
 
 ### Referenced contract elements
@@ -133,12 +133,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection upload list",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/upload/list/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/upload/list/v1",
       "source": {
-        "line": 2330,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2336,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "upload_list_cmd"
       }
     }

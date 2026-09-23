@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-api-client:stove0-allow-insecure-http:03dc6fb209 -->
+<!-- contract-element: configuration-environment:stove0-api-client:stove0-allow-insecure-http:d092d32bbd -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-d0c45c1a2b"></a>
+<a id="s-dfda7a7a4a"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-47cc2d8760"></a>`consumers` | `["stove0-api-client"]` |
-| <a id="s-d2d1e00bbb"></a>`default_expressions` | `["unset"]` |
-| <a id="s-820d19aacb"></a>`id` | `"stove0-api-client:environment:STOVE0_ALLOW_INSECURE_HTTP"` |
-| <a id="s-2953890d77"></a>`input_shape` | `"environment-string"` |
-| <a id="s-a1035d4640"></a>`name` | `"STOVE0_ALLOW_INSECURE_HTTP"` |
-| <a id="s-5796450659"></a>`owner` | `"stove0-api-client"` |
+| <a id="s-47f3bdaf5e"></a>`consumers` | `["stove0-api-client"]` |
+| <a id="s-e3b07c3ef7"></a>`default_expressions` | `["unset"]` |
+| <a id="s-81786082bc"></a>`id` | `"stove0-api-client:environment:STOVE0_ALLOW_INSECURE_HTTP"` |
+| <a id="s-a71ba1fcc4"></a>`input_shape` | `"environment-string"` |
+| <a id="s-9d1fbfc618"></a>`name` | `"STOVE0_ALLOW_INSECURE_HTTP"` |
+| <a id="s-9d55402f49"></a>`owner` | `"stove0-api-client"` |
 
 ## Governing policies
 
-- <a id="pa-7777078974"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-c08d5b338b"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -37,7 +37,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Executable sources
 
-- [configuration-environment:stove0-api-client:STOVE0_ALLOW_INSECURE_HTTP](../../../evidence/sources/authorities.md#src-a9f40fdb75) — [reference/stove0/packages/api-client/src/stove0\_api\_client/client.py::\_boolean\_env](../../../../../../reference/stove0/packages/api-client/src/stove0_api_client/client.py)
+- [configuration-environment:stove0-api-client:STOVE0_ALLOW_INSECURE_HTTP](../../../evidence/sources/authorities.md#src-a9f40fdb75) — [some-implementations/stove0/packages/api-client/src/stove0\_api\_client/client.py::\_boolean\_env](../../../../../../some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py)
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 
 ### Configuration authority and bindings
@@ -46,11 +46,11 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| parser | `stove0-api-client` | [reference/stove0/packages/api-client/src/stove0\_api\_client/client.py](../../../../../../reference/stove0/packages/api-client/src/stove0_api_client/client.py) | `os.getenv(name)` |
+| parser | `stove0-api-client` | [some-implementations/stove0/packages/api-client/src/stove0\_api\_client/client.py](../../../../../../some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py) | `os.getenv(name)` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/143`
+- `/external_contract/configuration_environment/219`
 
 ### Exact owned JSON
 

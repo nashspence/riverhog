@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 def prepare(workspace: Path) -> None:
-    from riverhog_storage_adapter_filesystem import (
+    from a_riverhog_filesystem_store import (
         FilesystemStorageAdapter,
         FilesystemStorageAdapterConfig,
     )

@@ -34,7 +34,7 @@ Retrieval Cache Status
 
 ### Related interface records
 
-- [piggity retrieval cache status](../../piggity/cli/piggity-retrieval-cache-status.md)
+- [a-riverhog-cli retrieval cache status](../../a-riverhog-cli/cli/a-riverhog-cli-retrieval-cache-status.md)
 - [riverhog_client.ApiClient.retrieval_cache_status](../../riverhog-client/python/riverhog-client-apiclient-retrieval-cache-status.md)
 
 ### Referenced contract elements
@@ -74,12 +74,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "retrieval cache status",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/retrieval/cache/status/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/retrieval/cache/status/v1",
       "source": {
-        "line": 2776,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2782,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "retrieval_cache_status_cmd"
       }
     }

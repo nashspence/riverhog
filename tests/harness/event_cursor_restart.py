@@ -7,6 +7,7 @@ server, production database, mutation-lifecycle, or consumer-checkpoint proof.
 from __future__ import annotations
 
 import json
+import runpy
 import sys
 from contextlib import ExitStack
 from pathlib import Path
@@ -64,11 +65,16 @@ def exercise(application: str, phase: str, root: Path) -> dict[str, object]:
             from stove0_api.app import create_app
             from stove0_api_client import Stove0ApiClient
 
-            from reference.stove0.application.tests.test_stove0_api_parity import (
-                _composition,
-                _fixture_work,
-            )
             from tests.unit.db_helpers import sqlite_url
+
+            parity = runpy.run_path(
+                str(
+                    Path(__file__).resolve().parents[2]
+                    / "some-implementations/stove0/application/tests/test_stove0_api_parity.py"
+                )
+            )
+            _composition = parity["_composition"]
+            _fixture_work = parity["_fixture_work"]
 
             composition = _composition(sqlite_url(root / "stove0.sqlite3"))
             app = create_app(composition)

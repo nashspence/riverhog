@@ -16,7 +16,7 @@ EXCEPTION_SCHEMA = "riverhog-contract-freeze-exceptions/v1"
 ENVIRONMENT_NAME = re.compile(r"^[A-Za-z][A-Za-z0-9_]+$")
 CONFIGURATION_LIKE_NAME = re.compile(r"^[A-Z][A-Z0-9_]+$")
 PROJECT_CONFIGURATION_NAME = re.compile(
-    r"^(?:GOGURT|MANGO|PIGGITY|RIVERHOG|STOVE0|VCRUNCH)_[A-Z0-9_]+$"
+    r"^(?:GOGURT|MANGO|A_RIVERHOG_CLI|RIVERHOG|STOVE0|VCRUNCH)_[A-Z0-9_]+$"
 )
 
 

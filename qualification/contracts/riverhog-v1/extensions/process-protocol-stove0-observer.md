@@ -15,7 +15,7 @@ Independently deployed process protocol owned by stove0-observer-protocol.
 - [stove0-observer-support · Process Protocol Operations](../authorities/stove0-observer-support/process-protocol-operations/index.md) ([exact binding](../evidence/relationships/edges.md#re-ee62dc4283))
 - [stove0-observer-support · Process Protocol Schemas](../authorities/stove0-observer-support/process-protocol-schemas/index.md) ([exact binding](../evidence/relationships/edges.md#re-ee62dc4283))
 
-## Checked-in nonnormative implementations
+## Supplied implementations
 
-- [stove0-exiftool-observer](../evidence/relationships/edges.md#re-a63b7d6287) — Optional nonnormative ExifTool observer reference for Stove0.
-- [stove0-ffprobe-sampling-observer](../evidence/relationships/edges.md#re-517453cd2d) — Optional nonnormative FFprobe sampling-observer reference for Stove0.
+- [a-stove0-exiftool-observer](../evidence/relationships/edges.md#re-dc0c8c0db5) — ExifTool media metadata observer for Stove0.
+- [a-stove0-ffprobe-sampling-observer](../evidence/relationships/edges.md#re-0950b46c5c) — FFprobe media sampling observer for Stove0.

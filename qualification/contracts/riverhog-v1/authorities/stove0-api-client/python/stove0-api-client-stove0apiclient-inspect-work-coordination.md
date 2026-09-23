@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [stove0 work coordination](../../stove0-client/cli/stove0-work-coordination.md)
+- [stove0 work coordination](../../a-stove0-cli/cli/stove0-work-coordination.md)
 - [GET /v1/work/{work_id}/coordination](../../stove0/http-operations/get-v1-work-work-id-coordination.md)
 - [Stove0ApiClient](stove0-api-client-stove0apiclient.md)
 
@@ -47,8 +47,8 @@ Exact externally visible contract owned by this contract element.
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [python:stove0-api-client:stove0_api_client](../../../evidence/sources/authorities.md#src-5d52ac5998) — [reference/stove0/packages/api-client/src/stove0\_api\_client/\_\_init\_\_.py](../../../../../../reference/stove0/packages/api-client/src/stove0_api_client/__init__.py)
-- **Client method:** [reference/stove0/packages/api-client/src/stove0\_api\_client/client.py::Stove0ApiClient.inspect\_work\_coordination](../../../../../../reference/stove0/packages/api-client/src/stove0_api_client/client.py#L285)
+- [python:stove0-api-client:stove0_api_client](../../../evidence/sources/authorities.md#src-5d52ac5998) — [some-implementations/stove0/packages/api-client/src/stove0\_api\_client/\_\_init\_\_.py](../../../../../../some-implementations/stove0/packages/api-client/src/stove0_api_client/__init__.py)
+- **Client method:** [some-implementations/stove0/packages/api-client/src/stove0\_api\_client/client.py::Stove0ApiClient.inspect\_work\_coordination](../../../../../../some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py#L285)
 
 ### Machine authority
 

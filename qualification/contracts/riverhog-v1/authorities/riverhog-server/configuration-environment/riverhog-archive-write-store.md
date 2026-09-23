@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-archive-write-store:883509b2e8 -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-archive-write-store:b8a709410a -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-5581cd63e1"></a>
+<a id="s-878b94fc4c"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-77d05a28fd"></a>`consumers` | `["riverhog-server"]` |
-| <a id="s-64e0770d83"></a>`default_expressions` | `["names[0]"]` |
-| <a id="s-f39456d089"></a>`id` | `"riverhog-server:environment:RIVERHOG_ARCHIVE_WRITE_STORE"` |
-| <a id="s-d4011511cf"></a>`input_shape` | `"environment-string"` |
-| <a id="s-f0549843d7"></a>`name` | `"RIVERHOG_ARCHIVE_WRITE_STORE"` |
-| <a id="s-4055a76d48"></a>`owner` | `"riverhog-server"` |
+| <a id="s-5577bc1efe"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-62d5424dac"></a>`default_expressions` | `["names[0]"]` |
+| <a id="s-74edd7d6cc"></a>`id` | `"riverhog-server:environment:RIVERHOG_ARCHIVE_WRITE_STORE"` |
+| <a id="s-2a05dd31cf"></a>`input_shape` | `"environment-string"` |
+| <a id="s-6bcf4de7ec"></a>`name` | `"RIVERHOG_ARCHIVE_WRITE_STORE"` |
+| <a id="s-dcd2efd7de"></a>`owner` | `"riverhog-server"` |
 
 ## Governing policies
 
-- <a id="pa-ca2580ea94"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-1c6af55ae7"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/47`
+- `/external_contract/configuration_environment/181`
 
 ### Exact owned JSON
 

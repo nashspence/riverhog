@@ -41,7 +41,7 @@ Get Archive Store
 
 ### Related interface records
 
-- [piggity archive store show](../../piggity/cli/piggity-archive-store-show.md)
+- [a-riverhog-cli archive store show](../../a-riverhog-cli/cli/a-riverhog-cli-archive-store-show.md)
 - [riverhog_client.ApiClient.get_archive_store](../../riverhog-client/python/riverhog-client-apiclient-get-archive-store.md)
 
 ### Referenced contract elements
@@ -81,12 +81,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "archive store show",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/archive/store/show/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/archive/store/show/v1",
       "source": {
-        "line": 2909,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2915,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "archive_store_show_cmd"
       }
     }

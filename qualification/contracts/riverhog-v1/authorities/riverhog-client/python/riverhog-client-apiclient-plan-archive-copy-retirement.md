@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity archive retire](../../piggity/cli/piggity-archive-retire.md)
+- [a-riverhog-cli archive retire](../../a-riverhog-cli/cli/a-riverhog-cli-archive-retire.md)
 - [POST /v1/archive/copies/retirement-plan](../../riverhog/http-operations/post-v1-archive-copies-retirement-plan.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

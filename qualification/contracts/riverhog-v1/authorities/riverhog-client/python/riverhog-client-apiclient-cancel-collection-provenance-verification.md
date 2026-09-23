@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity collection provenance verification-cancel](../../piggity/cli/piggity-collection-provenance-verification-cancel.md)
+- [a-riverhog-cli collection provenance verification-cancel](../../a-riverhog-cli/cli/a-riverhog-cli-collection-provenance-verification-cancel.md)
 - [DELETE /v1/collections/{collection_id}/provenance/verification](../../riverhog/http-operations/delete-v1-collections-collection-id-provenance-verification.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

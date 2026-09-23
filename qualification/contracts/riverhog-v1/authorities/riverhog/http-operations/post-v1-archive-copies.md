@@ -44,7 +44,7 @@ Create Or Resume Archive Copy
 
 ### Related interface records
 
-- [piggity archive copy start](../../piggity/cli/piggity-archive-copy-start.md)
+- [a-riverhog-cli archive copy start](../../a-riverhog-cli/cli/a-riverhog-cli-archive-copy-start.md)
 - [riverhog_client.ApiClient.create_or_resume_archive_copy](../../riverhog-client/python/riverhog-client-apiclient-create-or-resume-archive-copy.md)
 
 ### Referenced contract elements
@@ -85,12 +85,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "archive copy start",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/archive/copy/start/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/archive/copy/start/v1",
       "source": {
-        "line": 2978,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2984,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "archive_copy_cmd"
       }
     }

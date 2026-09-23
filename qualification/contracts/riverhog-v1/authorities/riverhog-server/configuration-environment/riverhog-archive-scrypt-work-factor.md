@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-archive-scrypt-work-factor:92e0418b6a -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-archive-scrypt-work-factor:b590ffce21 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-ba8bf00da0"></a>
+<a id="s-dac516bc47"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-fefed5a14e"></a>`consumers` | `["riverhog-server"]` |
-| <a id="s-9f9519b503"></a>`default_expressions` | `["str(DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR)"]` |
-| <a id="s-6e9078eeef"></a>`id` | `"riverhog-server:environment:RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR"` |
-| <a id="s-b017fa7a37"></a>`input_shape` | `"environment-string"` |
-| <a id="s-5c224fe460"></a>`name` | `"RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR"` |
-| <a id="s-316a058fc1"></a>`owner` | `"riverhog-server"` |
+| <a id="s-457ed73ac2"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-63608cfcca"></a>`default_expressions` | `["str(DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR)"]` |
+| <a id="s-26cf215710"></a>`id` | `"riverhog-server:environment:RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR"` |
+| <a id="s-c508465db1"></a>`input_shape` | `"environment-string"` |
+| <a id="s-9c80ef951b"></a>`name` | `"RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR"` |
+| <a id="s-946b8d2b86"></a>`owner` | `"riverhog-server"` |
 
 ## Governing policies
 
-- <a id="pa-9485ecb079"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-1d8346f44b"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/42`
+- `/external_contract/configuration_environment/176`
 
 ### Exact owned JSON
 

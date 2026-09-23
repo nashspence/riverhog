@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Official Python client for the stove0 v1 workflow API.
+Official Python client for the Stove0 v1 workflow API.
 
 Contract elements: **39** · Extent decisions: **1**
 

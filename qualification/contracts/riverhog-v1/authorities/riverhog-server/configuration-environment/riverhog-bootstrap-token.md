@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-bootstrap-token:9ef567a98d -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-bootstrap-token:d9f79786ef -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-6d67d56ce0"></a>
+<a id="s-4ce7abb670"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-1a3e8ba501"></a>`consumers` | `["riverhog-server"]` |
-| <a id="s-303afe34c5"></a>`default_expressions` | `["''"]` |
-| <a id="s-c1495d444f"></a>`id` | `"riverhog-server:environment:RIVERHOG_BOOTSTRAP_TOKEN"` |
-| <a id="s-a4570fd55b"></a>`input_shape` | `"environment-string"` |
-| <a id="s-639a4bef7f"></a>`name` | `"RIVERHOG_BOOTSTRAP_TOKEN"` |
-| <a id="s-a908c852ad"></a>`owner` | `"riverhog-server"` |
+| <a id="s-ebe8a893a2"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-003bc4201d"></a>`default_expressions` | `["''"]` |
+| <a id="s-f10ba9f7a8"></a>`id` | `"riverhog-server:environment:RIVERHOG_BOOTSTRAP_TOKEN"` |
+| <a id="s-7aa187d92b"></a>`input_shape` | `"environment-string"` |
+| <a id="s-51849146a8"></a>`name` | `"RIVERHOG_BOOTSTRAP_TOKEN"` |
+| <a id="s-a7a04652dd"></a>`owner` | `"riverhog-server"` |
 
 ## Governing policies
 
-- <a id="pa-d994654b33"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-cddbd2d501"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/48`
+- `/external_contract/configuration_environment/182`
 
 ### Exact owned JSON
 

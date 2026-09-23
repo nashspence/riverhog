@@ -1,5 +1,5 @@
 {
-  "authority": "nonnormative-implementation-correctness",
+  "authority": "implementation-correctness",
   "coverage": {
     "classifications": {
       "external_contract": 1,

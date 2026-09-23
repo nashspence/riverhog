@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity archive copy cancel](../../piggity/cli/piggity-archive-copy-cancel.md)
+- [a-riverhog-cli archive copy cancel](../../a-riverhog-cli/cli/a-riverhog-cli-archive-copy-cancel.md)
 - [DELETE /v1/archive/copies/{collection_id}/{destination_store}](../../riverhog/http-operations/delete-v1-archive-copies-collection-id-destination-store.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

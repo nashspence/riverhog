@@ -24,7 +24,7 @@ Portable deployment-owned Stove0 recipe catalog contracts and validation.
 | <a id="s-0e29a60d96"></a>`publication_identity` | `{"coordinate":"stove0-recipe-config","kind":"python-distribution"}` |
 | <a id="s-20b053f119"></a>`requires_python` | `">=3.12"` |
 | <a id="s-37ea58adfd"></a>`role` | `"reusable_library"` |
-| <a id="s-8ce4670477"></a>`source` | `"reference/stove0/packages/recipe-config/pyproject.toml"` |
+| <a id="s-8ce4670477"></a>`source` | `"some-implementations/stove0/packages/recipe-config/pyproject.toml"` |
 
 ## Existing ownership context
 
@@ -48,7 +48,7 @@ Publication preserves these existing component authorities; it does not reclassi
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [release-distribution:stove0-recipe-config](../../../evidence/sources/authorities.md#src-124da7769c) — [reference/stove0/packages/recipe-config/pyproject.toml](../../../../../../reference/stove0/packages/recipe-config/pyproject.toml)
+- [release-distribution:stove0-recipe-config](../../../evidence/sources/authorities.md#src-124da7769c) — [some-implementations/stove0/packages/recipe-config/pyproject.toml](../../../../../../some-implementations/stove0/packages/recipe-config/pyproject.toml)
 - [release-publication:planner](../../../evidence/sources/authorities.md#src-03a2f48338) — [scripts/release.py::publication\_contract](../../../../../../scripts/release.py)
 - [release:release.toml](../../../evidence/sources/authorities.md#src-c5380dbe5f) — [release.toml](../../../../../../release.toml)
 
@@ -63,7 +63,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: be1ba4b6ab5677236d35e5ce93705adb1aa181cfad66f7eb727ea06c0aba7fe9 -->
+<!-- exact-contract-value: 4636f089621930999aad8351efa4760d46de77fad31367cdab81157cd9dd9376 -->
 
 ```json
 {
@@ -87,7 +87,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "requires_python": ">=3.12",
   "role": "reusable_library",
-  "source": "reference/stove0/packages/recipe-config/pyproject.toml"
+  "source": "some-implementations/stove0/packages/recipe-config/pyproject.toml"
 }
 ```
 

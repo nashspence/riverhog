@@ -85,7 +85,7 @@ Exact evidence groups for this contract element:
 
 ### Related interface records
 
-- [piggity collection provenance trace](../../piggity/cli/piggity-collection-provenance-trace.md)
+- [a-riverhog-cli collection provenance trace](../../a-riverhog-cli/cli/a-riverhog-cli-collection-provenance-trace.md)
 - [riverhog_client.ApiClient.trace_collection_file_provenance](../../riverhog-client/python/riverhog-client-apiclient-trace-collection-file-provenance.md)
 
 ### Referenced contract elements
@@ -130,12 +130,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection provenance trace",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/provenance/trace/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/provenance/trace/v1",
       "source": {
-        "line": 2644,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2650,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "provenance_trace_cmd"
       }
     }

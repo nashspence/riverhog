@@ -51,7 +51,7 @@ Add Collection Tag
 
 ### Related interface records
 
-- [piggity collection tag add](../../piggity/cli/piggity-collection-tag-add.md)
+- [a-riverhog-cli collection tag add](../../a-riverhog-cli/cli/a-riverhog-cli-collection-tag-add.md)
 - [riverhog_client.ApiClient.add_collection_tag](../../riverhog-client/python/riverhog-client-apiclient-add-collection-tag.md)
 
 ### Referenced contract elements
@@ -92,12 +92,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection tag add",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/tag/add/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/tag/add/v1",
       "source": {
-        "line": 1057,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 1059,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "collection_tag_add_cmd"
       }
     }

@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity app key access remove](../../piggity/cli/piggity-app-key-access-remove.md)
+- [a-riverhog-cli app key access remove](../../a-riverhog-cli/cli/a-riverhog-cli-app-key-access-remove.md)
 - [DELETE /v1/apps/{app}/keys/{key_id}/access](../../riverhog/http-operations/delete-v1-apps-app-keys-key-id-access.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

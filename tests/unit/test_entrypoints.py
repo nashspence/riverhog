@@ -10,9 +10,9 @@ ENTRYPOINTS = {REPO / "README.md", REPO / "AGENTS.md"}
 DURABLE_CONTEXT = {REPO / "docs/architecture.md"}
 REPOSITORY_MAP_TARGETS = {
     REPO / "riverhog",
-    REPO / "reference/gogurt",
-    REPO / "reference/riverhog",
-    REPO / "reference/stove0",
+    REPO / "some-implementations/gogurt",
+    REPO / "some-implementations/riverhog",
+    REPO / "some-implementations/stove0",
     REPO / "packages",
 }
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
@@ -32,7 +32,7 @@ ARCHITECTURE_CATEGORIES = {
         "Riverhog platform",
         "Ingress adapters",
         "Storage adapters",
-        "Reference applications",
+        "Applications",
         "Extensions",
         "Transfer path",
     ],
@@ -126,10 +126,7 @@ def test_readme_states_archive_and_adapter_authority() -> None:
         "storage-adapter capabilities"
     ) in readme
     assert "archives remain independently recoverable with standard tools" in readme
-    assert (
-        "Checked-in references form a closed, tightly scoped, maintainer-selected, "
-        "nonnormative conformance set"
-    ) in readme
+    assert "some-implementations/" in readme
     assert _local_links(readme_path) == {
         REPO / "LICENSE.md",
         REPO / "SECURITY.md",

@@ -131,7 +131,7 @@ assert_cli_usage_failure() {
   [[ -s "${SCRATCH}/${environment}-usage.stderr" ]]
 }
 
-recovery_wheel="$(single_wheel 'riverhog_recover-*.whl')"
+recovery_wheel="$(single_wheel 'a_riverhog_recovery_tool-*.whl')"
 server_wheel="$(single_wheel 'riverhog_server-*.whl')"
 
 smoke_workspace_distribution \
@@ -142,25 +142,25 @@ env -u PYTHONPATH "${SCRATCH}/riverhog-client/bin/python" -I \
   "${ROOT_DIR}/tests/fixtures/external_riverhog_client_application.py"
 
 smoke_workspace_distribution \
-  piggity \
-  'piggity-*.whl' \
-  'import importlib.metadata as m; import piggity.main; import piggity.cli_support; names = {d.metadata["Name"].lower() for d in m.distributions()}; native = {"riverhog-provenance-linux-observer", "riverhog-provenance-macos-observer", "riverhog-provenance-windows-observer"}; contracts = {"riverhog-provenance-linux-contracts", "riverhog-provenance-macos-contracts", "riverhog-provenance-windows-contracts"}; assert names.isdisjoint(native | contracts); assert "riverhog-provenance-contracts" in names; assert m.version("piggity")' \
-  piggity
-assert_installed_cli_version piggity piggity piggity
-assert_cli_usage_failure piggity piggity collection show
+  a-riverhog-cli \
+  'a_riverhog_cli-*.whl' \
+  'import importlib.metadata as m; import a_riverhog_cli.main; import a_riverhog_cli.cli_support; names = {d.metadata["Name"].lower() for d in m.distributions()}; native = {"a-riverhog-linux-provenance-observer", "a-riverhog-macos-provenance-observer", "a-riverhog-windows-provenance-observer"}; contracts = {"a-riverhog-linux-provenance-contract-lib", "a-riverhog-macos-provenance-contract-lib", "a-riverhog-windows-provenance-contract-lib"}; assert names.isdisjoint(native | contracts); assert "riverhog-provenance-contracts" in names; assert m.version("a-riverhog-cli")' \
+  a-riverhog-cli
+assert_installed_cli_version a-riverhog-cli a-riverhog-cli a-riverhog-cli
+assert_cli_usage_failure a-riverhog-cli a-riverhog-cli collection show
 
-linux_observer_wheel="$(single_wheel 'riverhog_provenance_linux_observer-*.whl')"
+linux_observer_wheel="$(single_wheel 'a_riverhog_linux_provenance_observer-*.whl')"
 mapfile -t linux_observer_wheels < <(
   workspace_wheel_closure "${linux_observer_wheel}"
 )
 run_uv pip install \
   --strict \
-  --python "${SCRATCH}/piggity/bin/python" \
+  --python "${SCRATCH}/a-riverhog-cli/bin/python" \
   --find-links "${DIST_DIR}" \
   "${linux_observer_wheels[@]}"
-"${SCRATCH}/piggity/bin/piggity" local provenance-observer show riverhog-linux --json \
-  | "${SCRATCH}/piggity/bin/python" -I -c \
-    'import json, sys; value = json.load(sys.stdin); assert value["observer_id"] == "riverhog-provenance-linux-observer/v1"; assert value["contract_id"] == "riverhog-provenance-linux-observation/v1"; assert len(value["contract_sha256"]) == 64'
+"${SCRATCH}/a-riverhog-cli/bin/a-riverhog-cli" local provenance-observer show a-riverhog-linux-provenance-observer --json \
+  | "${SCRATCH}/a-riverhog-cli/bin/python" -I -c \
+    'import json, sys; value = json.load(sys.stdin); assert value["observer_id"] == "a-riverhog-linux-provenance-observer/v1"; assert value["contract_id"] == "riverhog-provenance-linux-observation/v1"; assert len(value["contract_sha256"]) == 64'
 
 run_uv venv --python 3.12 "${SCRATCH}/recovery"
 mapfile -t recovery_wheels < <(
@@ -173,9 +173,9 @@ run_uv pip install \
   "${recovery_wheels[@]}"
 (
   cd "${SCRATCH}"
-  env -u PYTHONPATH "${SCRATCH}/recovery/bin/riverhog-recover" --help >/dev/null
+  env -u PYTHONPATH "${SCRATCH}/recovery/bin/a-riverhog-recovery-tool" --help >/dev/null
   "${SCRATCH}/recovery/bin/python" -I -c \
-    'import importlib.metadata as m; import riverhog_recover; m.version("riverhog-recover")'
+    'import importlib.metadata as m; import a_riverhog_recovery_tool; m.version("a-riverhog-recovery-tool")'
 )
 
 run_uv venv --python 3.12 "${SCRATCH}/server"
@@ -223,15 +223,15 @@ run_uv pip install \
 )
 
 smoke_workspace_distribution \
-  riverhog-ftp-adapter \
-  'riverhog_ftp_adapter-*.whl' \
-  'import importlib.metadata as m; import riverhog_ftp_adapter.app; m.version("riverhog-ftp-adapter")' \
-  riverhog-ftp-adapter
+  a-riverhog-ftp-spool \
+  'a_riverhog_ftp_spool-*.whl' \
+  'import importlib.metadata as m; import a_riverhog_ftp_spool.app; m.version("a-riverhog-ftp-spool")' \
+  a-riverhog-ftp-spool
 smoke_workspace_distribution \
-  riverhog-storage-adapter-filesystem \
-  'riverhog_storage_adapter_filesystem-*.whl' \
-  'import importlib.metadata as m; import riverhog_storage_adapter_filesystem.materialize; m.version("riverhog-storage-adapter-filesystem")' \
-  riverhog-storage-adapter-filesystem-materialize
+  a-riverhog-filesystem-store \
+  'a_riverhog_filesystem_store-*.whl' \
+  'import importlib.metadata as m; import a_riverhog_filesystem_store.materialize; m.version("a-riverhog-filesystem-store")' \
+  a-riverhog-filesystem-store-materialize
 
 # Produce the source with the full development tree, then prove that the built
 # adapter-owned exporter and independent recovery application need neither the
@@ -241,9 +241,9 @@ proof_path="$(dirname "$("${MISE_BIN}" which age)"):${PATH}"
 PATH="${proof_path}" "${MISE_BIN}" x -- uv run --locked --all-packages --group dev \
   python -I "${ROOT_DIR}/tests/harness/filesystem_recovery_materialization.py" \
   prepare "${proof_root}"
-filesystem_materializer="${SCRATCH}/riverhog-storage-adapter-filesystem/bin/riverhog-storage-adapter-filesystem-materialize"
-recovery_command="${SCRATCH}/recovery/bin/riverhog-recover"
-"${SCRATCH}/riverhog-storage-adapter-filesystem/bin/python" -I -c \
+filesystem_materializer="${SCRATCH}/a-riverhog-filesystem-store/bin/a-riverhog-filesystem-store-materialize"
+recovery_command="${SCRATCH}/recovery/bin/a-riverhog-recovery-tool"
+"${SCRATCH}/a-riverhog-filesystem-store/bin/python" -I -c \
   'import importlib.util; assert importlib.util.find_spec("riverhog_core") is None; assert importlib.util.find_spec("sqlalchemy") is None'
 "${SCRATCH}/recovery/bin/python" -I -c \
   'import importlib.util; assert importlib.util.find_spec("riverhog_core") is None; assert importlib.util.find_spec("sqlalchemy") is None'
@@ -278,68 +278,68 @@ for proof in full description tags; do
     "verify-${proof}" "${proof_root}"
 done
 smoke_workspace_distribution \
-  stove0-client \
-  'stove0_client-*.whl' \
-  'import importlib.metadata as m; import stove0_cli.main; m.version("stove0-client")' \
+  a-stove0-cli \
+  'a_stove0_cli-*.whl' \
+  'import importlib.metadata as m; import a_stove0_cli.main; m.version("a-stove0-cli")' \
   stove0
-assert_installed_cli_version stove0-client stove0 stove0-client
+assert_installed_cli_version a-stove0-cli stove0 a-stove0-cli
 smoke_workspace_distribution \
   stove0-server \
   'stove0_server-*.whl' \
   'import importlib.metadata as m; import stove0_api.app; import stove0_core; m.version("stove0-server")' \
   stove0-server
 smoke_workspace_distribution \
-  stove0-ffprobe-sampling-observer \
-  'stove0_ffprobe_sampling_observer-*.whl' \
-  'import importlib.metadata as m; import stove0_ffprobe_sampling_observer.app; m.version("stove0-ffprobe-sampling-observer")' \
-  stove0-ffprobe-sampling-observer
+  a-stove0-ffprobe-sampling-observer \
+  'a_stove0_ffprobe_sampling_observer-*.whl' \
+  'import importlib.metadata as m; import a_stove0_ffprobe_sampling_observer.app; m.version("a-stove0-ffprobe-sampling-observer")' \
+  a-stove0-ffprobe-sampling-observer
 smoke_workspace_distribution \
-  stove0-exiftool-observer \
-  'stove0_exiftool_observer-*.whl' \
-  'import importlib.metadata as m; import stove0_exiftool_observer.app; m.version("stove0-exiftool-observer")' \
-  stove0-exiftool-observer
+  a-stove0-exiftool-observer \
+  'a_stove0_exiftool_observer-*.whl' \
+  'import importlib.metadata as m; import a_stove0_exiftool_observer.app; m.version("a-stove0-exiftool-observer")' \
+  a-stove0-exiftool-observer
 smoke_workspace_distribution \
-  stove0-nvenc-av1-opus-target \
-  'stove0_nvenc_av1_opus_target-*.whl' \
-  'import importlib.metadata as m; import stove0_nvenc_av1_opus_target.app; m.version("stove0-nvenc-av1-opus-target")' \
-  stove0-nvenc-av1-opus-target
+  a-stove0-nvenc-av1-opus-target \
+  'a_stove0_nvenc_av1_opus_target-*.whl' \
+  'import importlib.metadata as m; import a_stove0_nvenc_av1_opus_target.app; m.version("a-stove0-nvenc-av1-opus-target")' \
+  a-stove0-nvenc-av1-opus-target
 smoke_workspace_distribution \
-  stove0-nvenc-av1-opus-review-sampler \
-  'stove0_nvenc_av1_opus_review_sampler-*.whl' \
-  'import importlib.metadata as m; import stove0_nvenc_av1_opus_review_sampler.app; m.version("stove0-nvenc-av1-opus-review-sampler")' \
-  stove0-nvenc-av1-opus-review-sampler
+  a-review0-nvenc-av1-opus-sampler \
+  'a_review0_nvenc_av1_opus_sampler-*.whl' \
+  'import importlib.metadata as m; import a_review0_nvenc_av1_opus_sampler.app; m.version("a-review0-nvenc-av1-opus-sampler")' \
+  a-review0-nvenc-av1-opus-sampler
 smoke_workspace_distribution \
-  stove0-opus-target \
-  'stove0_opus_target-*.whl' \
-  'import importlib.metadata as m; import stove0_opus_target.app; m.version("stove0-opus-target")' \
-  stove0-opus-target
+  a-stove0-opus-target \
+  'a_stove0_opus_target-*.whl' \
+  'import importlib.metadata as m; import a_stove0_opus_target.app; m.version("a-stove0-opus-target")' \
+  a-stove0-opus-target
 smoke_workspace_distribution \
-  stove0-opus-review-sampler \
-  'stove0_opus_review_sampler-*.whl' \
-  'import importlib.metadata as m; import stove0_opus_review_sampler.app; m.version("stove0-opus-review-sampler")' \
-  stove0-opus-review-sampler
+  a-review0-opus-sampler \
+  'a_review0_opus_sampler-*.whl' \
+  'import importlib.metadata as m; import a_review0_opus_sampler.app; m.version("a-review0-opus-sampler")' \
+  a-review0-opus-sampler
 smoke_workspace_distribution \
-  stove0-review-target-support \
-  'stove0_review_target_support-*.whl' \
-  'import importlib.metadata as m; import stove0_review_target_support; m.version("stove0-review-target-support")'
+  review0-target-lib \
+  'review0_target_lib-*.whl' \
+  'import importlib.metadata as m; import review0_target_lib; m.version("review0-target-lib")'
 smoke_workspace_distribution \
-  stove0-review-planning \
-  'stove0_review_planning-*.whl' \
-  'import importlib.metadata as m; import stove0_review_planning; m.version("stove0-review-planning")' \
-  stove0-review-planning
-env -u PYTHONPATH "${SCRATCH}/stove0-review-planning/bin/stove0-review-planning" \
-  | "${SCRATCH}/stove0-review-planning/bin/python" -I -c \
-    'import json, sys; assert json.load(sys.stdin)["format"] == "stove0-review-contract-report/v1"'
+  review0-planner \
+  'review0_planner-*.whl' \
+  'import importlib.metadata as m; import review0_planner; m.version("review0-planner")' \
+  review0-planner
+env -u PYTHONPATH "${SCRATCH}/review0-planner/bin/review0-planner" \
+  | "${SCRATCH}/review0-planner/bin/python" -I -c \
+    'import json, sys; assert json.load(sys.stdin)["format"] == "review0-contract-report/v1"'
 smoke_workspace_distribution \
-  stove0-review-materialize-target \
-  'stove0_review_materialize_target-*.whl' \
-  'import importlib.metadata as m; import stove0_review_materialize_target.app; m.version("stove0-review-materialize-target")' \
-  stove0-review-materialize-target
+  a-review0-materializer \
+  'a_review0_materializer-*.whl' \
+  'import importlib.metadata as m; import a_review0_materializer.app; m.version("a-review0-materializer")' \
+  a-review0-materializer
 smoke_workspace_distribution \
-  stove0-review-rclone-effect-target \
-  'stove0_review_rclone_effect_target-*.whl' \
-  'import importlib.metadata as m; import stove0_review_rclone_effect_target.app; m.version("stove0-review-rclone-effect-target")' \
-  stove0-review-rclone-effect-target
+  a-review0-rclone-target \
+  'a_review0_rclone_target-*.whl' \
+  'import importlib.metadata as m; import a_review0_rclone_target.app; m.version("a-review0-rclone-target")' \
+  a-review0-rclone-target
 smoke_workspace_distribution \
   stove0-observer-support \
   'stove0_observer_support-*.whl' \
@@ -351,11 +351,11 @@ smoke_workspace_distribution \
   'import importlib.metadata as m; import stove0_target_support; m.version("stove0-target-support")' \
   stove0-target-conformance
 smoke_workspace_distribution \
-  stove0-review-sampler-support \
-  'stove0_review_sampler_support-*.whl' \
-  'import importlib.metadata as m; import stove0_review_sampler_support; m.version("stove0-review-sampler-support")' \
-  stove0-review-sampler-conformance \
-  stove0-review-sampler-schemas
+  review0-sampler-lib \
+  'review0_sampler_lib-*.whl' \
+  'import importlib.metadata as m; import review0_sampler_lib; m.version("review0-sampler-lib")' \
+  review0-sampler-conformance \
+  review0-sampler-schemas
 smoke_workspace_distribution \
   gogurt-listener-runtime \
   'gogurt_listener_runtime-*.whl' \
@@ -374,7 +374,7 @@ set -e
 printf '%s' "${gogurt_error}" \
   | "${SCRATCH}/gogurt/bin/python" -I -c \
     'import json, sys; value = json.load(sys.stdin); assert value["error"]["code"] == "config_error"'
-linux_mounted_volume_wheel="$(single_wheel 'gogurt_linux_mounted_volume-*.whl')"
+linux_mounted_volume_wheel="$(single_wheel 'a_gogurt_linux_volume-*.whl')"
 mapfile -t linux_mounted_volume_wheels < <(
   workspace_wheel_closure "${linux_mounted_volume_wheel}"
 )
@@ -384,9 +384,9 @@ run_uv pip install \
   --find-links "${DIST_DIR}" \
   "${linux_mounted_volume_wheels[@]}"
 "${SCRATCH}/gogurt/bin/python" -c \
-  'import importlib.metadata as m; mounted = {e.name for e in m.entry_points(group="gogurt.mounted-volume-providers")}; listeners = {e.name for e in m.entry_points(group="gogurt.listener-host-providers")}; assert "gogurt-linux-mounted-volume" in mounted; assert "gogurt-linux-listener-host" not in listeners'
-"${SCRATCH}/gogurt/bin/gogurt" provider mounted-volume show gogurt-linux-mounted-volume --json >/dev/null
-linux_listener_host_wheel="$(single_wheel 'gogurt_linux_listener_host-*.whl')"
+  'import importlib.metadata as m; mounted = {e.name for e in m.entry_points(group="gogurt.mounted-volume-providers")}; listeners = {e.name for e in m.entry_points(group="gogurt.listener-host-providers")}; assert "a-gogurt-linux-volume" in mounted; assert "a-gogurt-linux-listener" not in listeners'
+"${SCRATCH}/gogurt/bin/gogurt" provider mounted-volume show a-gogurt-linux-volume --json >/dev/null
+linux_listener_host_wheel="$(single_wheel 'a_gogurt_linux_listener-*.whl')"
 mapfile -t linux_listener_host_wheels < <(
   workspace_wheel_closure "${linux_listener_host_wheel}"
 )
@@ -395,12 +395,12 @@ run_uv pip install \
   --python "${SCRATCH}/gogurt/bin/python" \
   --find-links "${DIST_DIR}" \
   "${linux_listener_host_wheels[@]}"
-"${SCRATCH}/gogurt/bin/gogurt" provider listener-host show gogurt-linux-listener-host --json >/dev/null
+"${SCRATCH}/gogurt/bin/gogurt" provider listener-host show a-gogurt-linux-listener --json >/dev/null
 smoke_workspace_distribution \
-  mango-fish \
-  'mango_fish-*.whl' \
-  'import importlib.metadata as m; import mango_fish.cli; m.version("mango-fish")' \
-  mango-fish
-assert_installed_cli_version mango-fish mango-fish mango-fish
+  a-riverhog-event-relay \
+  'a_riverhog_event_relay-*.whl' \
+  'import importlib.metadata as m; import a_riverhog_event_relay.cli; m.version("a-riverhog-event-relay")' \
+  a-riverhog-event-relay
+assert_installed_cli_version a-riverhog-event-relay a-riverhog-event-relay a-riverhog-event-relay
 
 printf 'All application distribution smoke tests passed.\n'

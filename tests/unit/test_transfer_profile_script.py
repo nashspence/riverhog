@@ -144,7 +144,7 @@ def test_network_profile_requires_a_raw_baseline() -> None:
         )
 
 
-def test_reference_recovery_profile_does_not_require_network_baseline(
+def test_recovery_tool_profile_does_not_require_network_baseline(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
@@ -161,7 +161,7 @@ def test_reference_recovery_profile_does_not_require_network_baseline(
         module.main(
             [
                 "--scenario",
-                "reference-recovery",
+                "a-riverhog-recovery-tool",
                 "--workload",
                 "many-small-files",
                 "--payload-bytes",
@@ -169,7 +169,7 @@ def test_reference_recovery_profile_does_not_require_network_baseline(
                 "--items",
                 "20",
                 "--",
-                "riverhog-recover",
+                "a-riverhog-recovery-tool",
                 "archive",
                 "output",
             ]

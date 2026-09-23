@@ -61,7 +61,7 @@ Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-publ
 
 ### Related interface records
 
-- [piggity app key quota set](../../piggity/cli/piggity-app-key-quota-set.md)
+- [a-riverhog-cli app key quota set](../../a-riverhog-cli/cli/a-riverhog-cli-app-key-quota-set.md)
 - [riverhog_client.ApiClient.set_app_key_download_quota](../../riverhog-client/python/riverhog-client-apiclient-set-app-key-download-quota.md)
 
 ### Referenced contract elements
@@ -105,12 +105,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "app key quota set",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/app/key/quota/set/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/app/key/quota/set/v1",
       "source": {
-        "line": 1365,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 1367,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "app_key_quota_set_cmd"
       }
     }

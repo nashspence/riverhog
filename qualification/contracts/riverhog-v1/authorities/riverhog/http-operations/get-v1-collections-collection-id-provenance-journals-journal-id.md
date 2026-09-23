@@ -60,7 +60,7 @@ Stream Collection Provenance Journal
 
 ### Related interface records
 
-- [piggity collection provenance export](../../piggity/cli/piggity-collection-provenance-export.md)
+- [a-riverhog-cli collection provenance export](../../a-riverhog-cli/cli/a-riverhog-cli-collection-provenance-export.md)
 - [riverhog_client.ApiClient.stream_collection_provenance_journal](../../riverhog-client/python/riverhog-client-apiclient-stream-collection-provenance-journal.md)
 
 ### Referenced contract elements
@@ -99,12 +99,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection provenance export",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/provenance/export/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/provenance/export/v1",
       "source": {
-        "line": 2684,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2690,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "provenance_export_cmd"
       }
     }

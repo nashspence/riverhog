@@ -27,7 +27,7 @@ SCENARIO_OPERATIONS: Mapping[str, frozenset[str]] = {
     "riverhog-retrieval": frozenset(
         {"pack_retrieval_member", "pack_retrieval_range", "raw_retrieval_part"}
     ),
-    "reference-recovery": frozenset(),
+    "a-riverhog-recovery-tool": frozenset(),
     "archive-upload": frozenset(
         {"pack_upload_open", "pack_write_segment", "raw_upload_open", "raw_write_segment"}
     ),
@@ -41,7 +41,7 @@ SCENARIO_OPERATIONS: Mapping[str, frozenset[str]] = {
     ),
     "archive-replication": frozenset({"archive_copy_segment", "archive_copy_object"}),
 }
-NETWORK_SCENARIOS = frozenset(SCENARIO_OPERATIONS) - {"reference-recovery"}
+NETWORK_SCENARIOS = frozenset(SCENARIO_OPERATIONS) - {"a-riverhog-recovery-tool"}
 WORKLOADS = ("large-file", "many-small-files", "resume")
 _FIELD_RE = re.compile(r"([a-z_]+)=([^ ]+)")
 
@@ -185,7 +185,7 @@ def _validate_args(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
         parser.error("--target-utilization must be at most 1")
     expected = SCENARIO_OPERATIONS[args.scenario]
     if args.transfer_log is not None and not expected:
-        parser.error("reference-recovery has no server transfer log")
+        parser.error("a-riverhog-recovery-tool has no server transfer log")
     return command
 
 

@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-The Stove0 reference application API and its maintained cross-interface operation parity.
+The Stove0 application API and its maintained cross-interface operation parity.
 
 Contract elements: **170** · Extent decisions: **346**
 

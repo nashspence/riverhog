@@ -43,7 +43,7 @@ Get Retrieval Cache Object
 
 ### Related interface records
 
-- [piggity retrieval cache show](../../piggity/cli/piggity-retrieval-cache-show.md)
+- [a-riverhog-cli retrieval cache show](../../a-riverhog-cli/cli/a-riverhog-cli-retrieval-cache-show.md)
 - [riverhog_client.ApiClient.get_retrieval_cache_object](../../riverhog-client/python/riverhog-client-apiclient-get-retrieval-cache-object.md)
 
 ### Referenced contract elements
@@ -83,12 +83,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "retrieval cache show",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/retrieval/cache/show/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/retrieval/cache/show/v1",
       "source": {
-        "line": 2859,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2865,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "retrieval_cache_show_cmd"
       }
     }

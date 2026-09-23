@@ -5,14 +5,15 @@ accepts logical collections without staging plaintext on its host, constructs ca
 archive layouts, encrypts them, records collection identity and placement in PostgreSQL, and
 coordinates verified archive transfer and retrieval through published storage-adapter
 capabilities. Its archives remain independently recoverable with standard tools, without its
-service or database. This
-repository centers the Riverhog server and generic `riverhog-client` library; nonnormative
-reference applications and components integrate through public contracts.
+service or database. This repository centers the Riverhog server and generic
+`riverhog-client` library; applications and components in `some-implementations/`
+integrate through public contracts.
 
 ## Contributions
 
-New mechanisms are independently owned and published over Riverhog's public contracts. Checked-in
-references form a closed, tightly scoped, maintainer-selected, nonnormative conformance set.
+New mechanisms are independently owned and published over Riverhog's public contracts.
+The `some-implementations/` tree contains supplied applications and components with their
+own identities and maintained interfaces.
 Report suspected vulnerabilities privately through [security reporting](SECURITY.md).
 
 ## Start here

@@ -24,9 +24,8 @@ Contracts define packages; architecture records ownership.
 ## Boundary model
 
 - **Implementation ownership.** Riverhog owns product implementations and generic contracts.
-  Reference applications own their workflows and public interfaces; reference components own one
-  independently selected extension capability. Both are nonnormative, family-owned, and enter
-  Riverhog only through public contracts.
+  Supplied applications own their workflows and public interfaces; supplied components own one
+  independently selected extension capability. They enter Riverhog only through public contracts.
 - **Public contracts.** Published HTTP and CloudEvents contracts define integration. Shared models
   own identities; HTTP/OpenAPI owns CRUD and maintained-client JSON. The generated freeze
   inventories external extents.
@@ -37,7 +36,7 @@ Contracts define packages; architecture records ownership.
   relinquish bytes only after finalization.
 - **Storage adapters.** Storage adapters translate opaque objects into provider mechanisms and
   materialize canonical logical trees; provider policy remains external.
-- **Reference applications.** Reference applications use Riverhog capabilities and own their state;
+- **Applications.** Applications use Riverhog capabilities and own their state;
   their contracts are authoritative for the application, not for Riverhog.
 - **Extensions.** Observers report immutable-artifact facts; targets perform declared operations.
   Each selected distribution owns one capability; shared-dependency image bundles preserve separate
@@ -50,8 +49,8 @@ Workspace checks enforce ownership boundaries.
 ## Repository map
 
 - [`riverhog`](../riverhog/): archive service.
-- [`reference/gogurt`](../reference/gogurt/): Gogurt reference application and components.
-- [`reference/riverhog`](../reference/riverhog/): Riverhog reference applications and components,
+- [`some-implementations/gogurt`](../some-implementations/gogurt/): Gogurt application and components.
+- [`some-implementations/riverhog`](../some-implementations/riverhog/): Riverhog applications and components,
   including the permissively licensed independent recovery tool.
-- [`reference/stove0`](../reference/stove0/): Stove0 reference application and components.
+- [`some-implementations/stove0`](../some-implementations/stove0/): Stove0 application and components.
 - [`packages`](../packages/): product-owned contracts and support.

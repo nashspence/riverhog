@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Optional nonnormative content-opaque transformation reference application for Riverhog.
+Content-opaque transformation application for Riverhog.
 
 Contract elements: **356** · Extent decisions: **12**
 

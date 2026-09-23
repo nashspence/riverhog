@@ -61,7 +61,7 @@ Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-publ
 
 ### Related interface records
 
-- [piggity app key access add](../../piggity/cli/piggity-app-key-access-add.md)
+- [a-riverhog-cli app key access add](../../a-riverhog-cli/cli/a-riverhog-cli-app-key-access-add.md)
 - [riverhog_client.ApiClient.add_app_key_access](../../riverhog-client/python/riverhog-client-apiclient-add-app-key-access.md)
 
 ### Referenced contract elements
@@ -105,12 +105,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "app key access add",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/app/key/access/add/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/app/key/access/add/v1",
       "source": {
-        "line": 1316,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 1318,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "app_key_access_add_cmd"
       }
     }

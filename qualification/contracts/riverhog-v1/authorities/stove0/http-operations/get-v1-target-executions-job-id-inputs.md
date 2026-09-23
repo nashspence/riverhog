@@ -97,7 +97,7 @@ Exact evidence groups for this contract element:
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:stove0](../../../evidence/sources/authorities.md#src-52e6e32124) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [reference/stove0/application/server/src/stove0\_api/app.py::create\_app.&lt;locals&gt;.get\_target\_execution\_inputs](../../../../../../reference/stove0/application/server/src/stove0_api/app.py#L355)
+- **Handler:** [some-implementations/stove0/application/server/src/stove0\_api/app.py::create\_app.&lt;locals&gt;.get\_target\_execution\_inputs](../../../../../../some-implementations/stove0/application/server/src/stove0_api/app.py#L355)
 
 ### Structural operation bindings
 
@@ -119,7 +119,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "source": {
         "line": 221,
         "module": "stove0_target_client.client",
-        "path": "reference/stove0/packages/target-client/src/stove0_target_client/client.py",
+        "path": "some-implementations/stove0/packages/target-client/src/stove0_target_client/client.py",
         "symbol": "TargetCallbackClient.get_target_execution_inputs"
       }
     }

@@ -10,7 +10,7 @@ Maintained installation roots and their exact installation forms.
 
 | Exact unit | Classification |
 |---|---|
-| [gogurt](installation-root-gogurt.md) | `reference_application` |
-| [piggity](installation-root-piggity.md) | `reference_application` |
-| [riverhog-recover](installation-root-riverhog-recover.md) | `reference_application` |
-| [stove0-client](installation-root-stove0-client.md) | `reference_application` |
+| [a-riverhog-cli](installation-root-a-riverhog-cli.md) | `application` |
+| [a-riverhog-recovery-tool](installation-root-a-riverhog-recovery-tool.md) | `application` |
+| [a-stove0-cli](installation-root-a-stove0-cli.md) | `application` |
+| [gogurt](installation-root-gogurt.md) | `application` |

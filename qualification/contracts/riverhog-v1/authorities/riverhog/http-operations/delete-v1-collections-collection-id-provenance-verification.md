@@ -41,7 +41,7 @@ Cancel Collection Provenance Verification
 
 ### Related interface records
 
-- [piggity collection provenance verification-cancel](../../piggity/cli/piggity-collection-provenance-verification-cancel.md)
+- [a-riverhog-cli collection provenance verification-cancel](../../a-riverhog-cli/cli/a-riverhog-cli-collection-provenance-verification-cancel.md)
 - [riverhog_client.ApiClient.cancel_collection_provenance_verification](../../riverhog-client/python/riverhog-client-apiclient-cancel-collection-provenance-verification.md)
 
 ### Referenced contract elements
@@ -81,12 +81,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "collection provenance verification-cancel",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/collection/provenance/verification-cancel/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/collection/provenance/verification-cancel/v1",
       "source": {
-        "line": 2745,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 2751,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "provenance_verification_cancel_cmd"
       }
     }

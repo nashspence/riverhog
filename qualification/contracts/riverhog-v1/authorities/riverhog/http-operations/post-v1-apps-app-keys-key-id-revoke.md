@@ -52,7 +52,7 @@ Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-publ
 
 ### Related interface records
 
-- [piggity app key revoke](../../piggity/cli/piggity-app-key-revoke.md)
+- [a-riverhog-cli app key revoke](../../a-riverhog-cli/cli/a-riverhog-cli-app-key-revoke.md)
 - [riverhog_client.ApiClient.revoke_app_key](../../riverhog-client/python/riverhog-client-apiclient-revoke-app-key.md)
 
 ### Referenced contract elements
@@ -95,12 +95,12 @@ This generated record links maintained client, CLI, response-authority, and prov
   "cli_bindings": [
     {
       "command": "app key revoke",
-      "executable": "piggity",
-      "result_identity": "piggity-cli-result/app/key/revoke/v1",
+      "executable": "a-riverhog-cli",
+      "result_identity": "a-riverhog-cli-result/app/key/revoke/v1",
       "source": {
-        "line": 1209,
-        "module": "piggity.main",
-        "path": "reference/riverhog/applications/piggity/src/piggity/main.py",
+        "line": 1211,
+        "module": "a_riverhog_cli.main",
+        "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "app_key_revoke_cmd"
       }
     }

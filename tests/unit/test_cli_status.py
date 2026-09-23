@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from piggity.main import _archive_wait_status
-from piggity.output import format_collection_upload
+from a_riverhog_cli.main import _archive_wait_status
+from a_riverhog_cli.output import format_collection_upload
 
 
 def test_archive_wait_status_reports_the_current_phase() -> None:

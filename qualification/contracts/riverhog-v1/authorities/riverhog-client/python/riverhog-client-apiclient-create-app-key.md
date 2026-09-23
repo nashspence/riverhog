@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [piggity app key create](../../piggity/cli/piggity-app-key-create.md)
+- [a-riverhog-cli app key create](../../a-riverhog-cli/cli/a-riverhog-cli-app-key-create.md)
 - [POST /v1/apps/{app}/keys](../../riverhog/http-operations/post-v1-apps-app-keys.md)
 - [ApiClient](riverhog-client-apiclient.md)
 

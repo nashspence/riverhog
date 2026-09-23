@@ -102,7 +102,7 @@ jobs:
           mise x python uv age -- uv run --locked --all-packages --group dev
           python -m pytest -q
           packages/riverhog-provenance/tests/test_platform_live.py
-          reference/gogurt/application/tests
+          some-implementations/gogurt/application/tests
           tests/platform/test_end_user_artifacts.py
       - name: Qualify independent staged uv-tool installs
         run: >-
@@ -130,18 +130,18 @@ jobs:
       matrix:
         target:
           - riverhog
-          - riverhog-ftp-adapter
-          - riverhog-storage-adapter-aws
-          - riverhog-storage-adapter-backblaze
-          - riverhog-storage-adapter-filesystem
+          - a-riverhog-ftp-spool
+          - a-riverhog-aws-store
+          - a-riverhog-b2-store
+          - a-riverhog-filesystem-store
           - stove0
-          - stove0-exiftool-observer
-          - stove0-ffprobe-sampling-observer
-          - stove0-nvenc-av1-opus-target
-          - stove0-opus-target
-          - stove0-review-materialize-target
-          - stove0-review-rclone-effect-target
-          - mango-fish
+          - a-stove0-exiftool-observer
+          - a-stove0-ffprobe-sampling-observer
+          - a-stove0-nvenc-av1-opus-target
+          - a-stove0-opus-target
+          - a-review0-materializer
+          - a-review0-rclone-target
+          - a-riverhog-event-relay
           - test
     steps:
       - name: Check out repository
@@ -164,8 +164,8 @@ jobs:
         with:
           version: v0.36.0
           driver: docker
-      - name: Install Mango Fish smoke toolchain
-        if: matrix.target == 'mango-fish'
+      - name: Install Riverhog event relay smoke toolchain
+        if: matrix.target == 'a-riverhog-event-relay'
         uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4.2.3
         with:
           install_args: python
@@ -188,9 +188,9 @@ jobs:
             *.args.RELEASE_VERSION=development
             *.cache-from=type=gha,scope=${{ matrix.target }}
             *.cache-to=type=gha,scope=${{ matrix.target }},mode=min,ignore-error=true
-      - name: Smoke Mango Fish image
-        if: matrix.target == 'mango-fish'
-        run: make mango-fish-smoke
+      - name: Smoke Riverhog event relay image
+        if: matrix.target == 'a-riverhog-event-relay'
+        run: make a-riverhog-event-relay-smoke
       - name: Verify runtime image isolation
         if: matrix.target != 'test'
         env:

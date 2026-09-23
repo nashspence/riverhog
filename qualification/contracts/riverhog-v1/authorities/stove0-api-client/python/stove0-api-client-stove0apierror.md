@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-b6e990aade"></a>`kind`: `"class"`
-- <a id="s-0423fa905b"></a>`signature`: `"\"(message: 'str', *, code: 'str' = 'stove0_client_error', observed_status: 'int \| None' = None, details: 'Mapping[str, Any] \| None' = None) -> 'None'\""`
+- <a id="s-0423fa905b"></a>`signature`: `"\"(message: 'str', *, code: 'str' = 'a_stove0_client_error', observed_status: 'int \| None' = None, details: 'Mapping[str, Any] \| None' = None) -> 'None'\""`
 
 ## Governing policies
 
@@ -38,7 +38,7 @@ Exact externally visible contract owned by this contract element.
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [python:stove0-api-client:stove0_api_client](../../../evidence/sources/authorities.md#src-5d52ac5998) — [reference/stove0/packages/api-client/src/stove0\_api\_client/\_\_init\_\_.py](../../../../../../reference/stove0/packages/api-client/src/stove0_api_client/__init__.py)
+- [python:stove0-api-client:stove0_api_client](../../../evidence/sources/authorities.md#src-5d52ac5998) — [some-implementations/stove0/packages/api-client/src/stove0\_api\_client/\_\_init\_\_.py](../../../../../../some-implementations/stove0/packages/api-client/src/stove0_api_client/__init__.py)
 
 ### Machine authority
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2644508ef9d420b023acb0a1e0560551890b74a50905764b46d5d30029df4c35 -->
+<!-- exact-contract-value: 01f0fdf0aa607636c149ddea1f83b1a019da8e6c19b2d537012c5d6767f7bcd2 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "signature": "\"(message: 'str', *, code: 'str' = 'stove0_client_error', observed_status: 'int | None' = None, details: 'Mapping[str, Any] | None' = None) -> 'None'\""
+    "signature": "\"(message: 'str', *, code: 'str' = 'a_stove0_client_error', observed_status: 'int | None' = None, details: 'Mapping[str, Any] | None' = None) -> 'None'\""
   },
   "distribution": "stove0-api-client",
   "module": "stove0_api_client",
