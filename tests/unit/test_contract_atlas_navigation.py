@@ -79,7 +79,7 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
     assert "Discovery means inclusion" in root_page
     assert "Complete accounting does not establish" in root_page
     assert relationship["reference_policy"] in root_page
-    assert "[machine artifact](../riverhog-v1.json)" in root_page
+    assert "[machine artifact (raw JSON)](../riverhog-v1.json?raw=1)" in root_page
     for target in (
         "policies/index.md",
         "evidence/index.md",
@@ -618,7 +618,7 @@ def test_navigation_is_representation_only(
 def test_atlas_routes_policies_sources_and_relationships_to_exact_subjects() -> None:
     checked = checked_atlas()
     root = checked.root
-    definitions = atlas_navigation._policy_definition_elements(root["elements"])
+    definitions = atlas_navigation._policy_definition_elements(root["elements"], root["policies"])
     for category in root["policies"].values():
         for policy in category:
             path, anchor = atlas_navigation._policy_destination(policy["id"], definitions)
@@ -664,7 +664,7 @@ def test_every_recorded_qualification_follows_exact_ordinary_selection_paths() -
         authority_link = atlas._relative_link(root_path, authority_path)
         root_line = next(line for line in root_page.splitlines() if f"]({authority_link})" in line)
         owned = [item for item in elements if item["authority"] == authority]
-        assert ("[(!)](" in root_line) == any(expected[e["id"]] for e in owned)
+        assert ("[📦](" in root_line) == any(expected[e["id"]] for e in owned)
         authority_page = checked.files[authority_path].decode()
         for interface in {item["interface"] for item in owned}:
             values = [item for item in owned if item["interface"] == interface]
@@ -675,12 +675,12 @@ def test_every_recorded_qualification_follows_exact_ordinary_selection_paths() -
             ):
                 target = atlas._relative_link(parent_path, interface_path)
                 line = next(line for line in parent_page.splitlines() if f"]({target})" in line)
-                assert ("[(!)](" in line) == any(expected[e["id"]] for e in values)
+                assert ("[📦](" in line) == any(expected[e["id"]] for e in values)
             interface_page = checked.files[interface_path].decode()
             for item in values:
                 target = atlas._relative_link(interface_path, item["dossier"])
                 line = next(line for line in interface_page.splitlines() if f"]({target})" in line)
-                assert ("[(!)](" in line) == bool(expected[item["id"]])
+                assert ("[📦](" in line) == bool(expected[item["id"]])
                 for witness in expected[item["id"]]:
                     assert f"]({target}#evidence-gaps)" in line
                     witness_path = atlas_navigation._witness_path(witness)
@@ -703,7 +703,7 @@ def test_every_recorded_qualification_follows_exact_ordinary_selection_paths() -
                 affected = [item for item in values if expected[item["id"]]]
                 if affected:
                     scope_path = atlas_navigation._scope_qualification_path(interface_path)
-                    assert f"[(!)]({atlas._relative_link(parent_path, scope_path)})" in line
+                    assert f"[📦]({atlas._relative_link(parent_path, scope_path)})" in line
                     scope_page = checked.files[scope_path].decode()
                     for item in values:
                         link = (
@@ -731,7 +731,7 @@ def test_every_recorded_qualification_follows_exact_ordinary_selection_paths() -
                 if e["authority"] == interface["authority"]
                 and e["interface"] == interface["interface"]
             )
-            assert ("[(!)](" in line) == affected
+            assert ("[📦](" in line) == affected
     # An operation's related CLI/client records do not inherit its qualification.
     operation = next(
         e for e in elements if e["authority"] == "riverhog" and e["title"] == "GET /v1/collections"
@@ -778,21 +778,28 @@ def test_shared_qualification_is_scoped_once_and_mixed_entries_are_exact() -> No
     lines, suffixes = atlas_rendering._interface_qualifications(values, mapping, page)
     assert "All contract elements on this page" in "\n".join(lines)
     assert "same recorded evidence gaps" in "\n".join(lines)
-    assert "[(!)](evidence-gaps.md)" in "\n".join(lines)
+    assert "[📦](evidence-gaps.md)" in "\n".join(lines)
     assert not suffixes
     mapping["b"] = ()
     lines, suffixes = atlas_rendering._interface_qualifications(values, mapping, page)
     assert "All contract elements on this page" not in "\n".join(lines)
-    assert suffixes == {"a": " [(!)](a.md#evidence-gaps)"}
+    assert suffixes == {"a": " [📦](a.md#evidence-gaps)"}
     mapping["a"] = ()
     assert atlas_rendering._interface_qualifications(values, mapping, page) == ([], {})
 
 
 def test_machine_artifact_route_accepts_only_the_exact_companion() -> None:
     root = "riverhog-v1/index.md"
-    assert atlas._reachable_atlas_documents(root, {root: b"[Machine](../riverhog-v1.json)"}) == {
-        root
-    }
-    for target in ("../other.json", "../riverhog-v1.json#invented", "../../riverhog-v1.json"):
+    assert atlas._reachable_atlas_documents(
+        root, {root: b"[Machine](../riverhog-v1.json?raw=1)"}
+    ) == {root}
+    for target in (
+        "../other.json?raw=1",
+        "../riverhog-v1.json",
+        "../riverhog-v1.json?raw=1#invented",
+        "../../riverhog-v1.json?raw=1",
+        "../riverhog-v1.json?raw=0",
+        "../riverhog-v1.json?raw=1&other=1",
+    ):
         with pytest.raises(atlas.ContractAtlasError, match="unresolved local link"):
             atlas._reachable_atlas_documents(root, {root: f"[Machine]({target})".encode()})

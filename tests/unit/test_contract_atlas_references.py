@@ -71,7 +71,7 @@ def test_policies_keep_one_definition_and_exact_application_lists(
 ) -> None:
     checked = checked_contract_closure["atlas"]
     root = checked.root
-    definitions = nav._policy_definition_elements(root["elements"])
+    definitions = nav._policy_definition_elements(root["elements"], root["policies"])
     assert len(definitions) == 21
     for category, policies in root["policies"].items():
         category_path = f"riverhog-v1/policies/{category}/index.md"
@@ -82,7 +82,6 @@ def test_policies_keep_one_definition_and_exact_application_lists(
             assert f"]({nav._anchor_link(category_path, target, anchor)})" in category_page
             definition_page = checked.files[target].decode()
             application_path = nav._policy_applications_path(identity)
-            assert f"]({nav._relative_link(target, application_path)})" in definition_page
             application_pages = {
                 path: content.decode()
                 for path, content in checked.files.items()
@@ -94,6 +93,16 @@ def test_policies_keep_one_definition_and_exact_application_lists(
                 for item in root["elements"]
                 if identity in item["policy_ids"]
             }
+            if expected:
+                assert f"]({nav._relative_link(target, application_path)})" in definition_page
+                assert f"{len(expected)} indexed contract elements" in category_page
+            else:
+                assert not application_pages
+                assert (
+                    "Whole extent contract"
+                    if category == "extent_principles"
+                    else "Scope stated in definition; no element index"
+                ) in category_page
             targets = []
             for path, content in application_pages.items():
                 rows = [line for line in content.splitlines() if line.startswith("| `")]
@@ -112,11 +121,41 @@ def test_policies_keep_one_definition_and_exact_application_lists(
             else:
                 assert category == "publication"
                 assert policy["meaning"] in definition_page
-                assert policy["source_pointer"] in definition_page
+                assert policy["definition_pointer"] in definition_page
+
+    principle_page = checked.files[nav.EXTENT_PRINCIPLES_PATH].decode()
+    extents = root["projection"]["external_contract"]["extents"]
+    assert f"{len(extents['decisions'])} recorded extent decisions" in principle_page
+    assert f"{len(extents['rules'])} rules" in principle_page
+    for element in root["elements"]:
+        if element["extent_decision_ids"]:
+            page = checked.files[element["dossier"]].decode()
+            assert (
+                f"]({nav._relative_link(element['dossier'], nav.EXTENT_PRINCIPLES_PATH)})" in page
+            )
 
     publication = "riverhog-v1/policies/publication/index.md"
     for parent in (root["atlas"]["root"], "riverhog-v1/authorities/release/index.md"):
         assert f"]({nav._relative_link(parent, publication)})" in checked.files[parent].decode()
+
+
+def test_policy_definition_cannot_be_its_own_application_or_hide_scope_drift(
+    checked_contract_closure: dict[str, Any],
+) -> None:
+    checked = checked_contract_closure["atlas"]
+    root = checked.root
+    policy = root["policies"]["extent_principles"][0]
+    elements = copy.deepcopy(root["elements"])
+    definition = next(item for item in elements if policy["definition_pointer"] in item["pointers"])
+    definition["policy_ids"].append(policy["id"])
+    with pytest.raises(atlas.ContractAtlasError, match="counts itself as an application"):
+        nav._policy_definition_elements(elements, root["policies"])
+
+    policies = copy.deepcopy(root["policies"])
+    policies["extent_principles"][0]["applies_to"] = [policy["definition_pointer"]]
+    changed = atlas.ContractAtlas(root={**root, "policies": policies}, files=checked.files)
+    with pytest.raises(atlas.ContractAtlasError, match="declared scope differ from the projection"):
+        atlas.validate_atlas(changed)
 
 
 def test_configuration_comparison_is_available_from_each_owning_interface(
@@ -219,7 +258,7 @@ def test_clearing_group_claims_preserves_bindings_without_reporting_open_gaps(
             {record["id"]: record for record in root["sources"]},
             root["atlas"]["relationships"],
             nav._element_progression_witnesses(root["elements"], trace),
-            nav._policy_definition_elements(root["elements"]),
+            nav._policy_definition_elements(root["elements"], root["policies"]),
         )
 
     # The current groups' output is unchanged by the empty-state handling.

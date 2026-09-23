@@ -13,6 +13,7 @@ from typing import cast
 
 from .discovery import (
     _counts,
+    _policy_registry,
     _projection_coverage,
     _source_index,
     _validate_authority_registry,
@@ -41,6 +42,8 @@ from .model import (
     reassemble_trace,
 )
 from .navigation import (
+    EXTENT_PRINCIPLES_PATH,
+    MACHINE_ARTIFACT_TARGET,
     QUALIFICATION_ROUTES_PATH,
     RELATIONSHIP_EDGES_PATH,
     RELATIONSHIP_NODES_PATH,
@@ -139,7 +142,7 @@ def _reachable_atlas_documents(
                 else posixpath.normpath(posixpath.join(posixpath.dirname(source), local_path))
             )
             if resolved not in files:
-                if resolved == f"{ATLAS_DIRECTORY}.json" and not separator:
+                if resolved == MACHINE_ARTIFACT_TARGET and not separator:
                     continue
                 repository_target = f"{resolved}#{fragment}" if separator else resolved
                 if repository_target in repository_sources:
@@ -222,7 +225,10 @@ def validate_atlas(
             )["decisions"],
         )
     }
-    policy_definitions = _policy_definition_elements(elements)
+    policies = cast(Mapping[str, object], root["policies"])
+    if policies != _policy_registry(projection_value):
+        raise ContractAtlasError("policy definitions or declared scope differ from the projection")
+    policy_definitions = _policy_definition_elements(elements, policies)
     source_evidence_path = SOURCE_AUTHORITIES_PATH
     for item in elements:
         marker = f"<!-- contract-element: {item['id']} -->".encode()
@@ -278,6 +284,12 @@ def validate_atlas(
             ):
                 raise ContractAtlasError(
                     f"atlas dossier does not route an exact policy application: {item['id']}"
+                )
+        if item["extent_decision_ids"]:
+            link = _relative_link(str(item["dossier"]), EXTENT_PRINCIPLES_PATH)
+            if f"]({link})" not in dossier_text:
+                raise ContractAtlasError(
+                    f"atlas element omits governing extent principles: {item['id']}"
                 )
         for route in cast(Sequence[str], item["qualification_routes"]):
             link = _anchor_link(
@@ -565,8 +577,9 @@ def validate_atlas(
     heading_offsets = [root_page.index(heading) for heading in ordered_headings]
     if heading_offsets != sorted(heading_offsets):
         raise ContractAtlasError("atlas references must be discoverable before the inventory")
-    if f"](../{ATLAS_DIRECTORY}.json)" not in root_page:
-        raise ContractAtlasError("atlas root omits its exact machine artifact")
+    for path in (root_path, f"{ATLAS_DIRECTORY}/evidence/identities.md"):
+        if f"]({_relative_link(path, MACHINE_ARTIFACT_TARGET)})" not in atlas.files[path].decode():
+            raise ContractAtlasError(f"atlas page omits its exact machine artifact: {path}")
     reachable_documents = _reachable_atlas_documents(
         root_path,
         atlas.files,

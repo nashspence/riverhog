@@ -20,6 +20,7 @@ from .navigation import (
     CONFIGURATION_DOCUMENTS_PATH,
     CONFIGURATION_FAMILIES_PATH,
     CONFIGURATION_SETTINGS_PATH,
+    MACHINE_ARTIFACT_TARGET,
     RELATIONSHIP_EDGES_PATH,
     RELATIONSHIP_NODES_PATH,
     _anchor_id,
@@ -211,7 +212,7 @@ def _interface_qualifications(
         target = _relative_link(interface_path, _scope_qualification_path(interface_path))
         lines.extend(
             [
-                f"**All contract elements on this page** [(!)]({target}) share the "
+                f"**All contract elements on this page** [📦]({target}) share the "
                 "same recorded evidence gaps.",
                 "",
             ]
@@ -220,7 +221,7 @@ def _interface_qualifications(
     return lines, {
         str(
             item["id"]
-        ): f" [(!)]({_relative_link(interface_path, str(item['dossier']))}#evidence-gaps)"
+        ): f" [📦]({_relative_link(interface_path, str(item['dossier']))}#evidence-gaps)"
         for item in values
         if qualifications[str(item["id"])]
     }
@@ -332,7 +333,7 @@ def _render_extension_contexts(
                 f"{interface_authority} · {interface['label']}",
                 _scope_qualification_path(interface_path) if affected else "",
             )
-            if affected and not any("**(!)**" in line for line in lines):
+            if affected and not any("**📦**" in line for line in lines):
                 lines.extend(_qualification_legend())
             lines.append(f"- {name}{binding}")
         lines.extend(
@@ -384,7 +385,7 @@ def _render_atlas(
         grouped[str(item["authority"])][str(item["interface"])].append(item)
 
     qualifications = _element_progression_witnesses(elements, trace)
-    policy_definitions = _policy_definition_elements(elements)
+    policy_definitions = _policy_definition_elements(elements, policies)
     witnesses = {
         str(item["id"]): item
         for item in cast(Sequence[Mapping[str, object]], trace["segmented_extent_witnesses"])
@@ -729,7 +730,8 @@ def _render_atlas(
         f"- [Declared relationships]({_relative_link(root_path, relationship_evidence_path)}) — "
         "exact dependency, packaging, and extension joins.",
         f"- [Snapshot identities]({_relative_link(root_path, identity_evidence_path)}) "
-        f"and [machine artifact](../{ATLAS_DIRECTORY}.json) — "
+        "and [machine artifact (raw JSON)]"
+        f"({_relative_link(root_path, MACHINE_ARTIFACT_TARGET)}) — "
         "match semantic, accounting, trace, and presentation records.",
         "",
         *(_qualification_legend() if any(qualifications.values()) else []),
